@@ -16,7 +16,7 @@ import { createTargetExecutor, joinWorkdir } from '../../../plugins/file-operati
  * @property {string} created 创建时间（ISO）
  * @property {string} updated 更新时间（ISO）
  * @property {object} memory chat_scoped_char_memory
- * @property {Array<{id: string, uid: string, role: string, name: string, content: string, time: string, extension?: object}>} entries 消息列表
+ * @property {Array<import('../../../../../decl/chatLog.ts').chatLogEntry_t & {time: string}>} entries 消息列表（content=agent 层，content_for_show=人类展示层；同时保留 content_for_edit / charVisibility / files）
  */
 
 /**

@@ -3621,6 +3621,13 @@
 			"jumpToSource": "前往來源",
 			"sendToChat": "複製到聊天",
 			"copied": "已複製到剪貼簿"
+		},
+		"sourceNode": {
+			"label": "來源節點",
+			"block": "屏蔽",
+			"blockConfirm": "確定屏蔽來源節點 ${node}？來自該節點的聯邦結果將被過濾。",
+			"blocked": "已屏蔽來源節點",
+			"blockFailed": "屏蔽來源節點失敗：${error}"
 		}
 	},
 	"easynew": {
@@ -5070,6 +5077,13 @@
 			"jumpToSource": "前往來源",
 			"sendToSocial": "複製到貼文",
 			"copied": "已複製到剪貼簿"
+		},
+		"sourceNode": {
+			"label": "來源節點",
+			"block": "屏蔽",
+			"blockConfirm": "確定屏蔽來源節點 ${node}？來自該節點的聯邦結果將被過濾。",
+			"blocked": "已屏蔽來源節點",
+			"blockFailed": "屏蔽來源節點失敗：${error}"
 		}
 	},
 	"cabinet": {
@@ -5397,7 +5411,10 @@
 		"search": {
 			"placeholder": "搜尋標題、摘要或標籤…",
 			"aria-label": "搜尋文章",
-			"empty": "沒有符合的文章——換個關鍵字試試？"
+			"empty": "沒有符合的文章——換個關鍵字試試？",
+			"clear": {
+				"aria-label": "清除搜尋"
+			}
 		},
 		"home": {
 			"title": "fount 首頁",
@@ -6396,20 +6413,46 @@
 		"sessions": {
 			"new": "新對話",
 			"untitled": "未命名對話",
-			"yesterday": "昨天"
+			"yesterday": "昨天",
+			"delete": "刪除對話",
+			"deleteConfirm": "確定刪除對話「${title}」嗎？此操作不可撤銷。",
+			"deleted": "已刪除對話"
 		},
 		"workspaces": {
 			"browse": "瀏覽…",
 			"remove": "移除目前工作區",
+			"removeConfirm": "確定移除工作區「${name}」嗎？磁碟上的工作階段檔案會保留。",
 			"none": "尚未選擇工作區",
-			"overviewEmpty": "尚無對話"
+			"overviewEmpty": "尚無對話",
+			"search": {
+				"placeholder": "搜尋工作區…",
+				"aria-label": "搜尋工作區"
+			}
 		},
 		"home": {
-			"aria-label": "工作區與對話總覽"
+			"aria-label": "工作區與對話總覽",
+			"title": "工作區與對話",
+			"workspacesTitle": "工作區",
+			"sessionsTitle": "對話",
+			"emptyWorkspaces": "還沒有工作區，點選「瀏覽…」新增。",
+			"search": {
+				"placeholder": "搜尋工作區或對話…",
+				"aria-label": "搜尋工作區或對話"
+			},
+			"noMatch": "沒有匹配的結果"
 		},
 		"tabs": {
 			"aria-label": "對話分頁",
-			"close": "關閉分頁"
+			"close": "關閉分頁",
+			"closeGenerating": "正在產生的分頁無法關閉",
+			"rename": "重新命名",
+			"closeMenu": {
+				"aria-label": "分頁操作",
+				"others": "關閉其他分頁",
+				"left": "關閉左側分頁",
+				"right": "關閉右側分頁",
+				"all": "關閉全部分頁"
+			}
 		},
 		"newTab": {
 			"aria-label": "新增對話"
@@ -6443,7 +6486,10 @@
 			"placeholder": "輸入指令，Ctrl/Cmd+Enter 執行（清空以退出 shell 模式）",
 			"placeholderNormal": "開始輸入訊息…（@ 引用檔案 · / 執行指令）",
 			"placeholderShell": "輸入 shell 指令…（例如 git status）",
-			"aria-label": "訊息輸入框"
+			"aria-label": "訊息輸入框",
+			"mentionSuggest": {
+				"aria-label": "提及建議"
+			}
 		},
 		"aiSource": {
 			"panelTitle": "管理 AI 來源顯示",
@@ -6501,7 +6547,25 @@
 			"noChar": "請先選擇角色"
 		},
 		"notify": {
-			"done": null
+			"done": "對話已完成"
+		},
+		"power": {
+			"settings": {
+				"button": "完成後自動操作設定",
+				"aria": "完成後自動操作設定",
+				"title": "任務完成後的自動操作",
+				"hint": "所有任務產生完畢後，將對下列主機執行所選操作。"
+			},
+			"action": {
+				"none": "不操作",
+				"shutdown": "關機",
+				"sleep": "休眠",
+				"restart": "重新啟動"
+			},
+			"armedCount": "任務完成後：${count} 台主機",
+			"armedAria": "已完成自動操作設定：${count} 台主機",
+			"armedToast": "已設定：所有任務產生完畢後執行所選操作",
+			"cancelled": "已取消自動操作"
 		},
 		"home_function_buttons": {
 			"code": {
@@ -6522,6 +6586,21 @@
 			"code": {
 				"title": "來自編程工作階段"
 			}
+		},
+		"tool": {
+			"userShell": "終端機命令",
+			"readFile": "讀取檔案",
+			"findFiles": "尋找檔案",
+			"searchContent": "搜尋內容",
+			"editFile": "編輯檔案",
+			"writeFile": "寫入檔案",
+			"setWorkdir": "設定工作目錄",
+			"listMachines": "列出機器",
+			"preload": "載入上下文",
+			"viewFiles": "檢視檔案",
+			"addFiles": "傳送檔案",
+			"callback": "工具回呼",
+			"runShell": "執行 ${lang}"
 		}
 	},
 	"gist": {
@@ -6546,7 +6625,51 @@
 		"list": {
 			"new": "新增 gist",
 			"empty": "還沒有 gist，按一下右上角的「新增 gist」建立第一個。",
-			"updatedAt": "更新於"
+			"updatedAt": "更新於",
+			"selectAll": "全選",
+			"noneSelected": "未選擇",
+			"selectedCount": "已選擇 ${count} 個",
+			"batch": {
+				"download": "批次下載",
+				"delete": "批次刪除",
+				"deleteConfirm": "確定刪除選取的 ${count} 個 gist？此操作無法復原。",
+				"deleted": "已刪除 ${count} 個 gist",
+				"downloaded": "已下載 ${count} 個 gist"
+			},
+			"noResults": "沒有符合的 gist。",
+			"search": {
+				"placeholder": "搜尋 gist…",
+				"aria-label": "搜尋 gist"
+			},
+			"sortLabel": "排序方式",
+			"sort": {
+				"updatedDesc": "更新時間（新→舊）",
+				"updatedAsc": "更新時間（舊→新）",
+				"createdDesc": "建立時間（新→舊）",
+				"createdAsc": "建立時間（舊→新）",
+				"titleAsc": "標題（A→Z）",
+				"titleDesc": "標題（Z→A）"
+			},
+			"select": "多選",
+			"exitSelection": "退出多選",
+			"view": {
+				"grid": {
+					"title": "網格視圖",
+					"aria-label": "網格視圖"
+				},
+				"list": {
+					"title": "清單視圖",
+					"aria-label": "清單視圖"
+				}
+			},
+			"filter": {
+				"all": "全部",
+				"security": "依安全等級篩選",
+				"source": "依來源篩選"
+			},
+			"clearSearch": "清除搜尋",
+			"emptyHint": "也可以把 Markdown 檔案拖進此頁面",
+			"loading": "載入中…"
 		},
 		"source": {
 			"manual": "手動建立",
@@ -6575,7 +6698,6 @@
 		"edit": {
 			"save": "儲存",
 			"cancel": "返回",
-			"title": "標題",
 			"editor": {
 				"placeholder": "輸入 Markdown 內容…",
 				"aria-label": "Markdown 編輯器"

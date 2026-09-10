@@ -10,6 +10,7 @@ import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
 import { joinGroup } from '../src/endpoints/groupCore.mjs'
 import { postRelationshipFollow } from '../src/endpoints/social.mjs'
+import { handleSourceNodeBlockClick, renderSourceNodesHtml } from '../src/lib/sourceNodes.mjs'
 
 applyTheme()
 await initTranslations()
@@ -75,6 +76,22 @@ function renderOfferCard(offer) {
 	card.querySelector('.emoji-pack-offer-meta').textContent = geti18n('chat.emojiPacks.itemCount', {
 		count: offer.itemCount || offer.items?.length || 0,
 	}) || `${offer.itemCount || 0}`
+
+	const sourceNodes = [...new Set((offer.sourceNodes || []).filter(Boolean))]
+	if (sourceNodes.length) {
+		const holder = document.createElement('div')
+		holder.innerHTML = renderSourceNodesHtml(sourceNodes)
+		const strip = holder.firstElementChild
+		const actionsHost = card.querySelector('.emoji-pack-offer-actions')
+		if (strip && actionsHost) {
+			strip.addEventListener('click', event => {
+				const button = event.target instanceof Element ? event.target.closest('[data-block-source-node]') : null
+				if (button instanceof HTMLElement) void handleSourceNodeBlockClick(button)
+			})
+			card.dataset.sourceNodeItem = '1'
+			card.insertBefore(strip, actionsHost)
+		}
+	}
 
 	const actions = card.querySelector('.emoji-pack-offer-actions')
 	/** @type {HTMLButtonElement} */

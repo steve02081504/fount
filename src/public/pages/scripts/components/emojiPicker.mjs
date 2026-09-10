@@ -20,6 +20,7 @@ import {
 } from '../features/emoji/unicodeData.mjs'
 import { handleError } from '../features/errorHandlers.mjs'
 import { escapeHtml } from '../lib/escapeHtml.mjs'
+import { svgInliner } from '../lib/svgInliner.mjs'
 
 import { showEmojiPackPreview } from './emojiPackPreview.mjs'
 import { positionFloatingPanel, wireOutsideClickClose } from './floatingPanel.mjs'
@@ -27,8 +28,8 @@ import { positionFloatingPanel, wireOutsideClickClose } from './floatingPanel.mj
 /** 重导出 showEmojiPackPreview。 */
 export { showEmojiPackPreview } from './emojiPackPreview.mjs'
 
-const JUMP_START_ICON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 4h16v2H4V4zm8 3l6 6h-4v7h-4v-7H6l6-6z"/></svg>'
-const JUMP_UNICODE_ICON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-4.5-7.5c.83 0 1.5-.67 1.5-1.5S8.33 9.5 7.5 9.5 6 10.17 6 11s.67 1.5 1.5 1.5zm9 0c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5zm-4.5 5.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/></svg>'
+const JUMP_START_ICON = '<img src="https://api.iconify.design/mdi/arrow-collapse-up.svg" class="text-icon" width="16" height="16" alt="" aria-hidden="true" />'
+const JUMP_UNICODE_ICON = '<img src="https://api.iconify.design/mdi/earth.svg" class="text-icon" width="16" height="16" alt="" aria-hidden="true" />'
 
 /**
  * 来源侧默认包：由 provider/API 回显的 defaultEmojiPackId（已在后端 resolve）判定。
@@ -323,6 +324,7 @@ function renderContinuousPicker(host, sections, handlers) {
 	jumpStart.className = 'emoji-rail-jump emoji-rail-jump-start'
 	jumpStart.dataset.i18n = 'chat.emoji.jumpToStart'
 	jumpStart.innerHTML = JUMP_START_ICON
+	void svgInliner(jumpStart)
 
 	const rail = document.createElement('div')
 	rail.className = 'emoji-rail'
@@ -333,6 +335,7 @@ function renderContinuousPicker(host, sections, handlers) {
 	jumpUnicode.className = 'emoji-rail-jump emoji-rail-jump-unicode'
 	jumpUnicode.dataset.i18n = 'chat.emoji.jumpToUnicode'
 	jumpUnicode.innerHTML = JUMP_UNICODE_ICON
+	void svgInliner(jumpUnicode)
 
 	railWrap.append(jumpStart, rail, jumpUnicode)
 

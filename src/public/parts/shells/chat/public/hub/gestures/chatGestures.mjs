@@ -5,6 +5,7 @@
  * 【关联】scripts/template、src/endpoints/groupChannel、core/state
  */
 import { modifyBranch } from '../../src/endpoints/groupChannel.mjs'
+import { isDagEventId } from '../../src/lib/eventId.mjs'
 import { renderTemplate } from '../../src/templates.mjs'
 import { store } from '../core/state.mjs'
 
@@ -166,7 +167,7 @@ function ensureSwipeDelegation(container) {
 		}
 		if (deltaX <= 0) return
 		const eventId = target.getAttribute('data-message-id') || ''
-		if (!/^[\da-f]{64}$/.test(eventId)) return
+		if (!isDagEventId(eventId)) return
 		const { setReplyTarget } = await import('../composerReply.mjs')
 		const { authorPresentationKeys } = await import('../core/domUtils.mjs')
 		const authorKey = target.getAttribute('data-char-id')

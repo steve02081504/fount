@@ -10,12 +10,14 @@ import { geti18n, initTranslations, onLanguageChange } from '/scripts/i18n/index
 import { ensureHistory, updateComposerPlaceholder, wireComposerEvents } from './composer.mjs'
 import * as api from './endpoints.mjs'
 import { registerFountUserApi } from './fountUser.mjs'
+import { openHomePicker, refreshHomePicker } from './home.mjs'
 import { backToBottom, updateEmptyMode } from './messages.mjs'
 import {
 	applyWorkspaceCharConfig,
 	loadShellOptions,
 	mountPillChrome,
 	openCharSwitchDialog,
+	openPowerSettings,
 	refreshAiSources,
 	refreshChars,
 	refreshProfiles,
@@ -27,8 +29,7 @@ import {
 	renderMachinePillLabel,
 	renderModeMenu,
 	renderModePillLabel,
-	renderPowerMenu,
-	renderPowerPillLabel,
+	renderPowerButton,
 	renderShellMenu,
 	renderShellPillLabel,
 	renderWorkspaceMenu,
@@ -43,7 +44,6 @@ import {
 	execShellMode,
 	loadTabPrefs,
 	refreshAllSessions,
-	renderHomeMenu,
 	renderTabs,
 	sendMessage,
 	startNewSession,
@@ -55,7 +55,7 @@ import { elements, getPref, initComposer, richInput, setPref, store } from './st
 
 /** 语言切换时的动态文案重渲染。 */
 function rerenderDynamicText() {
-	renderHomeMenu()
+	refreshHomePicker()
 	renderTabs()
 	renderMachinePillLabel()
 	renderMachineMenu()
@@ -72,8 +72,7 @@ function rerenderDynamicText() {
 	updateComposerPlaceholder()
 	updateEmptyMode()
 	renderCharRecommendation()
-	renderPowerPillLabel()
-	renderPowerMenu()
+	renderPowerButton()
 	backToBottom.setAttribute('aria-label', geti18n('code.messages.backToBottom'))
 }
 
@@ -121,12 +120,16 @@ export async function boot() {
 	store.profile = getPref('profile', 'build')
 	store.aiSource = getPref('aiSource', '')
 	await loadShellOptions(store.machine)
-	await Promise.all([refreshProfiles(), refreshAiSources(), refreshAllSessions(), refreshChars(), refreshShutdownState()])
-	// `fount run` 打开的页面经 ?workspace= 直达目标工作区
-	const urlWorkspace = new URLSearchParams(location.search).get('workspace')
+	// `fount run` 打开的页面经 ?workspace= 直达目标工作区；?session= 可直达会话
+	// 先定 store.workspace 再拉 profiles/commands：refreshProfiles 依当前工作区合并命令列表，
+	// 定晚了会让 / 命令面板在启动后拿到空列表（与恢复标签同工作区时不触发 selectWorkspace，命令永不加载）
+	const urlParams = new URLSearchParams(location.search)
+	const urlWorkspace = urlParams.get('workspace')
+	const urlSession = urlParams.get('session')
 	const savedWorkspace = urlWorkspace || getPref('workspace')
 	store.workspace = workspaces.find(w => w.id === savedWorkspace) || workspaces[0] || null
 	if (store.workspace && urlWorkspace) setPref('workspace', store.workspace.id)
+	await Promise.all([refreshProfiles(), refreshAiSources(), refreshAllSessions(), refreshChars(), refreshShutdownState()])
 	warmupWorkspaceBrowser()
 	// 标签恢复：丢弃指向已消失工作区/会话的标签（草稿标签连同未发送内容保留）；?workspace= 直达时聚焦该工作区的新草稿
 	await loadTabPrefs()
@@ -134,11 +137,20 @@ export async function boot() {
 		(tab.workspaceId === '' || store.workspaces.some(w => w.id === tab.workspaceId))
 		&& (tab.type === 'draft' || store.allSessions.some(s => s.id === tab.id && s.workspaceId === tab.workspaceId)))
 	let initialTab = activeTab() || store.tabs[0] || null
-	if (urlWorkspace)
+	// ?session= 直达会话：命中已开标签则聚焦，否则新建会话标签（从磁盘加载）
+	if (urlSession) {
+		let sessionTab = store.tabs.find(t => t.type === 'session' && t.id === urlSession)
+		if (!sessionTab && store.workspace) {
+			sessionTab = { type: 'session', id: urlSession, workspaceId: store.workspace.id }
+			store.tabs.push(sessionTab)
+		}
+		if (sessionTab) initialTab = sessionTab
+	}
+	// `fount run` 的 ?workspace= 始终聚焦该工作区的新草稿；否则回退现有标签 / 新建草稿
+	else if (urlWorkspace)
 		initialTab = createDraftTab(store.workspace?.id || '')
-
-	else if (!initialTab) initialTab = createDraftTab(store.workspace?.id || '')
-	// 恢复的活动标签指向其他工作区时以标签为准
+	if (!initialTab) initialTab = createDraftTab(store.workspace?.id || '')
+	// 恢复的活动标签指向其他工作区时以标签为准（仅无显式 ?workspace= 时）
 	if (!urlWorkspace && initialTab.workspaceId && initialTab.workspaceId !== store.workspace?.id)
 		store.workspace = store.workspaces.find(w => w.id === initialTab.workspaceId) || store.workspace
 	store.activeTabKey = tabKeyOf(initialTab)
@@ -154,7 +166,7 @@ export async function boot() {
 
 /** 绑定顶栏 / pill / 发送按钮事件（pill 镀铬挂载后调用）。 */
 function wireGlobalEvents() {
-	elements.homeToggle.addEventListener('click', renderHomeMenu)
+	elements.homeToggle.addEventListener('click', () => void openHomePicker())
 	// Alt+1..9 切换标签，Alt+T 新建会话（浏览器页签保留键无法拦截，改用浏览器安全的 Alt 系）
 	document.addEventListener('keydown', event => {
 		if (!event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return
@@ -176,7 +188,7 @@ function wireGlobalEvents() {
 	elements.modePill.addEventListener('click', () => renderModeMenu())
 	elements.aiSourcePill.addEventListener('click', () => renderAiSourceMenu())
 	elements.shellPill.addEventListener('click', () => renderShellMenu())
-	elements.powerPill.addEventListener('click', () => renderPowerMenu())
+	elements.powerSettingsButton.addEventListener('click', () => void openPowerSettings())
 	// charPill 无 click 绑定：daisyUI dropdown 依赖焦点行为展开
 	elements.charSwitchButton.addEventListener('click', () => {
 		void openCharSwitchDialog()

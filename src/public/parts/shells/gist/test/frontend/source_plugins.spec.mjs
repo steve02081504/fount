@@ -15,7 +15,6 @@ async function createGist(request, baseUrl, apiKey, source) {
 	const response = await request.post(`${baseUrl}/api/parts/shells:gist/gists`, {
 		headers: { 'fount-apikey': apiKey },
 		data: {
-			title: `source-${source.type}`,
 			markdown: `# ${source.type} source test`,
 			securityLevel: 'secure',
 			source,

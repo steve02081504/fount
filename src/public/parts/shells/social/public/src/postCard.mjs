@@ -16,6 +16,7 @@ import {
 import { renderEngagementBarHtml } from './lib/engagementBar.mjs'
 import { playHeartAnim } from './lib/heartAnim.mjs'
 import { renderPollHtml } from './lib/pollUi.mjs'
+import { renderSourceNodesHtml } from './lib/sourceNodes.mjs'
 import { renderMediaHtml } from './mediaRender.mjs'
 import { viewerEntityHash } from './state.mjs'
 import { renderTemplate, renderTemplateAsHtmlString } from './templates.mjs'
@@ -203,6 +204,9 @@ export async function buildPostCard(item, options = {}) {
 			})
 			: ''
 
+	const sourceNodesHtml = item.sourceNodes?.length
+		? renderSourceNodesHtml(item.sourceNodes)
+		: ''
 	const card = await renderTemplate('post_card', {
 		postId: item.postId,
 		postTextEncoded: encodeURIComponent(decryptFailed ? '' : text),
@@ -225,6 +229,7 @@ export async function buildPostCard(item, options = {}) {
 		contentBlock,
 		albumChips,
 		communityNoteHtml,
+		sourceNodesHtml,
 		engagementBarHtml,
 		actionKey,
 		postDetailHref,
@@ -239,6 +244,7 @@ export async function buildPostCard(item, options = {}) {
 	const el = /** @type {HTMLElement} */ card
 	el.dataset.mediaEntity = actionEntity
 	el.dataset.mediaPostId = actionPostId
+	if (sourceNodesHtml) el.dataset.sourceNodeItem = '1'
 	const mediaRoot = el.querySelector('.post-media')
 	if (mediaRoot instanceof HTMLElement) {
 		mediaRoot.dataset.mediaEntity = actionEntity

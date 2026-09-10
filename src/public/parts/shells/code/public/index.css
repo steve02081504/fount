@@ -1,4 +1,4 @@
-/* code shell：opencode 风格会话布局。颜色一律引用 daisyUI 语义变量（--color-*）或原子类，随 data-theme 深浅自适应。 */
+/* code shell：会话布局。颜色一律引用 daisyUI 语义变量（--color-*）或原子类，随 data-theme 深浅自适应。 */
 
 /* ---------------- 主区 ---------------- */
 
@@ -6,7 +6,7 @@
 	z-index: 10;
 }
 
-/* ---------------- 标签条（opencode 式） ---------------- */
+/* ---------------- 标签条 ---------------- */
 
 .code-tab-strip {
 	display: flex;
@@ -138,7 +138,15 @@
 	background: color-mix(in oklch, var(--color-base-content) 12%, transparent);
 }
 
-/* pill 选择器（opencode 式） */
+.code-tab-unread {
+	flex-shrink: 0;
+	width: 0.5rem;
+	height: 0.5rem;
+	border-radius: var(--radius-selector);
+	background: var(--color-error);
+}
+
+/* pill 选择器 */
 .code-pill {
 	display: inline-flex;
 	align-items: center;
@@ -176,6 +184,17 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+}
+
+/* 工作区下拉顶部搜索行（垫掉 daisyUI .menu li 内边距，输入框贴近菜单边缘） */
+.code-workspace-search {
+	padding: 0 0.25rem 0.375rem;
+	margin-bottom: 0.125rem;
+	border-bottom: var(--border) solid color-mix(in oklch, var(--color-base-content) 10%, transparent);
+}
+
+.code-workspace-search .input {
+	height: 2rem;
 }
 
 /* ---------------- 消息流 ---------------- */
@@ -235,21 +254,25 @@
 
 /* ---------------- 消息操作（hover 操作栏 / 反馈条 / 行内编辑） ---------------- */
 
-/* hover 操作栏：浮在气泡右上（气泡间 gap 内），悬停/键盘聚焦时显示 */
+/* hover 操作栏：贴在本条消息下缘（悬停/键盘聚焦时滑出），明确归属当前消息；
+   放在消息上方会让下一条消息的操作栏看起来属于上一条，造成误点（复制到邻居消息）。 */
 .code-message-actions {
 	position: absolute;
-	top: -1.25rem;
+	top: calc(100% - 0.25rem);
 	right: 0;
 	display: flex;
 	align-items: center;
 	gap: 0.125rem;
 	opacity: 0;
 	pointer-events: none;
-	transition: opacity 0.12s;
-	z-index: 5;
-	background: color-mix(in oklch, var(--color-base-100) 88%, transparent);
+	transform: translateY(-0.25rem);
+	transition: opacity 0.12s ease, transform 0.12s ease;
+	z-index: 6;
+	background: color-mix(in oklch, var(--color-base-100) 92%, transparent);
+	border: var(--border) solid color-mix(in oklch, var(--color-base-content) 12%, transparent);
 	border-radius: var(--radius-field);
-	padding: 0.0625rem 0.125rem;
+	box-shadow: 0 2px 8px color-mix(in oklch, var(--color-base-content) 14%, transparent);
+	padding: 0.0625rem 0.1875rem;
 }
 
 .code-message:hover > .code-message-actions,
@@ -257,6 +280,18 @@
 .code-message.editing > .code-message-actions {
 	opacity: 1;
 	pointer-events: auto;
+	transform: translateY(0);
+}
+
+/* 角色消息的反馈条（👍/👎/↻）在左下，操作栏与它同一行靠右，避免再多出一行 */
+.code-message.role-char > .code-message-actions {
+	top: auto;
+	bottom: 0;
+}
+
+/* 点踩原因区展开时隐藏操作栏，避免压住原因区的提交/取消按钮 */
+.code-message:has(> .code-message-feedback-reason) > .code-message-actions {
+	display: none;
 }
 
 /* hidden 属性压过 btn 的 inline-flex（regen 按钮的显隐开关） */
@@ -354,6 +389,16 @@ details.code-tool-log > summary .code-tool-log-name {
 	margin-bottom: 0.25rem;
 }
 
+/* 超长代码块自身横向滚动：rehype-pretty-code 的 figure 带 daisyUI .join（inline-flex，按内容定宽），
+   还原为块级 flex 后代码块可收缩，pre 再内部滚动而不撑破消息容器（工具日志同享）。 */
+.code-message-body figure.join {
+	display: flex;
+}
+
+.code-message-body pre {
+	overflow-x: auto;
+}
+
 .code-message.generating {
 	opacity: 0.85;
 }
@@ -376,7 +421,7 @@ details.code-tool-log > summary .code-tool-log-name {
 	pointer-events: auto;
 }
 
-/* ---------------- 空态（opencode 式：composer 垂直居中 + wordmark） ---------------- */
+/* ---------------- 空态（composer 垂直居中 + wordmark） ---------------- */
 
 /* 无会话内容时：消息区收起，composer 居中成为页面主体 */
 .code-main.empty-mode .code-messages {
@@ -550,7 +595,7 @@ details.code-tool-log > summary .code-tool-log-name {
 	text-align: center;
 }
 
-/* 机器 / 工作区 / 角色选择行：composer 卡片下方，居中（卡片→targets 保持 opencode 式 ~12px 节奏） */
+/* 机器 / 工作区 / 角色选择行：composer 卡片下方，居中（卡片→targets 保持 ~12px 节奏） */
 .code-composer-targets {
 	display: flex;
 	flex-wrap: wrap;
@@ -558,6 +603,31 @@ details.code-tool-log > summary .code-tool-log-name {
 	justify-content: center;
 	gap: 0.375rem;
 	margin: 0.75rem auto 0;
+}
+
+/* 任务完成后的自动电源操作：targets 下方独立一行、居中 */
+.code-composer-power-actions {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 0.375rem;
+	margin: 0.5rem auto 0;
+}
+
+/* 电源操作设置对话框中的主机行 */
+.code-power-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75rem;
+	padding: 0.375rem 0;
+}
+
+.code-power-row-name {
+	font-size: 0.875rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 /* slash 命令面板（composer 上方弹出卡片） */
@@ -596,6 +666,50 @@ details.code-tool-log > summary .code-tool-log-name {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+}
+
+/* `@` 补全面板（gist / 文件，composer 上方弹出卡片） */
+.mention-panel {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: calc(100% + 0.25rem);
+	z-index: 60;
+	max-height: 14rem;
+	overflow-y: auto;
+	padding: 0.25rem;
+	border-radius: var(--radius-box);
+	border: var(--border) solid color-mix(in oklch, var(--color-base-content) 20%, transparent);
+	background: var(--color-base-100);
+	box-shadow: 0 8px 24px color-mix(in oklch, var(--color-base-content) 20%, transparent);
+}
+
+.mention-option {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	gap: 0.5rem;
+	width: 100%;
+	padding: 0.375rem 0.625rem;
+	border-radius: var(--radius-field);
+	font-size: 0.8125rem;
+	text-align: left;
+	cursor: pointer;
+}
+
+.mention-option.active,
+.mention-option:hover {
+	background: color-mix(in oklch, var(--color-base-300) 90%, transparent);
+}
+
+.mention-option small {
+	opacity: 0.6;
+}
+
+.mention-empty {
+	padding: 0.5rem 0.625rem;
+	font-size: 0.8125rem;
+	opacity: 0.6;
 }
 
 /* ---------------- 角色推荐卡（右下角） ---------------- */
@@ -642,4 +756,141 @@ details.code-tool-log > summary .code-tool-log-name {
 
 .char-option.active {
 	font-weight: 600;
+}
+
+/* ---------------- 工作区 / 对话总览弹窗 ---------------- */
+
+.code-home-picker {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	padding-top: 0.5rem;
+}
+
+.code-home-cols {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+	gap: 0.75rem;
+}
+
+@media (max-width: 40rem) {
+	.code-home-cols {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+.code-home-col {
+	min-width: 0;
+}
+
+.code-home-col-title {
+	padding: 0 0.25rem 0.375rem;
+	font-size: 0.75rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	opacity: 0.6;
+}
+
+.code-home-list {
+	display: flex;
+	flex-direction: column;
+	gap: 0.125rem;
+	max-height: 22rem;
+	overflow-y: auto;
+}
+
+.code-home-row {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+}
+
+.code-home-row-main {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 0.0625rem;
+	flex: 1;
+	min-width: 0;
+	padding: 0.375rem 0.5rem;
+	border-radius: var(--radius-field);
+	text-align: left;
+	cursor: pointer;
+	transition: background-color 0.12s;
+}
+
+.code-home-row-main:hover,
+.code-home-row-main.active {
+	background: color-mix(in oklch, var(--color-base-content) 10%, transparent);
+}
+
+.code-home-row-title {
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: 0.8125rem;
+}
+
+.code-home-row-sub {
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: 0.6875rem;
+	opacity: 0.6;
+}
+
+.code-home-row-delete {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	width: 1.75rem;
+	height: 1.75rem;
+	border-radius: var(--radius-field);
+	color: color-mix(in oklch, var(--color-base-content) 55%, transparent);
+	cursor: pointer;
+	opacity: 0;
+	transition: opacity 0.12s, background-color 0.12s, color 0.12s;
+}
+
+.code-home-row:hover .code-home-row-delete,
+.code-home-row:focus-within .code-home-row-delete {
+	opacity: 1;
+}
+
+.code-home-row-delete:hover {
+	color: var(--color-error);
+	background: color-mix(in oklch, var(--color-error) 12%, transparent);
+}
+
+.code-home-empty {
+	padding: 0.375rem 0.5rem;
+	font-size: 0.8125rem;
+	opacity: 0.6;
+}
+
+/* 标签右键菜单项（破坏性项由 .text-error 着色） */
+.code-tab-menu {
+	display: flex;
+	flex-direction: column;
+	gap: 0.125rem;
+}
+
+.code-tab-menu-item {
+	display: block;
+	width: 100%;
+	padding: 0.375rem 0.625rem;
+	border-radius: var(--radius-field);
+	text-align: left;
+	font-size: 0.8125rem;
+	white-space: nowrap;
+	cursor: pointer;
+	transition: background-color 0.12s;
+}
+
+.code-tab-menu-item:hover {
+	background: color-mix(in oklch, var(--color-base-content) 10%, transparent);
 }

@@ -27,6 +27,10 @@ Do not use Shiki `transformers.root` wrapping — it breaks inline `{:lang}` (ex
 
 `isSafeHtmlUrl` (Markdown sanitize + mediaRefs) rejects `javascript:` / `data:` and protocol-relative `//…`.
 
+## CJK-friendly emphasis
+
+CommonMark flanking assumes space-delimited text; a delimiter run closed by fullwidth punctuation immediately followed by a CJK character is not right-flanking, so `**…**` / `~~…~~` stay literal. `GetMarkdownConvertor` registers `remark-cjk-friendly` + `remark-cjk-friendly-gfm-strikethrough` **after** `remark-gfm` — order matters, the strikethrough extension must override GFM's `~~` tokenizer. Do not move them above `remark-gfm`.
+
 ## no-cors proxy
 
 Authenticated streaming proxy (`/api/no-cors`) for embeds / OG. Forwards Range / conditional / Content-Type; inject upstream Cookie/Authorization via `No-Cors-*` prefix. `X-No-Cors-Final-Url` after redirects.

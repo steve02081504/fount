@@ -2,6 +2,7 @@
  * 频道消息扩展字段清洗（locale / content_warning / sensitive_media / extension.chat.replyTo|forwardedFrom）。
  * 入站联邦与本机写入共用。
  */
+import { isDagEventId } from '../src/lib/eventId.mjs'
 
 /** 内容警告字段最大长度。 */
 export const CONTENT_WARNING_MAX = 200
@@ -94,7 +95,7 @@ export function sanitizeReplyTo(raw) {
 	if (!raw || typeof raw !== 'object') return undefined
 	const src = /** @type {Record<string, unknown>} */ raw
 	const eventId = src.eventId || ''
-	if (!/^[\da-f]{64}$/.test(eventId)) return undefined
+	if (!isDagEventId(eventId)) return undefined
 	const out = {
 		eventId,
 		...src.senderName != null

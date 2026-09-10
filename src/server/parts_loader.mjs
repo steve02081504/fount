@@ -5,6 +5,7 @@ import url from 'node:url'
 
 import { compositeKey } from 'npm:@steve02081504/fount-p2p/core/composite_key'
 
+import { canonicalPath, readDirEntries } from '../scripts/fs_walk.mjs'
 import { backupGitUncommittedChanges, run_git } from '../scripts/git.mjs'
 import { console } from '../scripts/i18n/index.mjs'
 import { loadJsonFile } from '../scripts/json_loader.mjs'
@@ -180,29 +181,30 @@ const PARTS_REGISTRIES_CACHE_NAME = 'parts_registries_cache'
  */
 
 /**
- * 遍历指定目录下的所有 fount.json。
+ * 遍历指定目录下的所有 fount.json，跟随符号链接/junction 进入被挂载的部件目录。
  * @param {string} rootPath - 要扫描的根目录。
  * @returns {string[]} - fount.json 的完整路径列表。
  */
-function walkFountJsonFiles(rootPath) {
+export function walkFountJsonFiles(rootPath) {
 	const files = []
 	if (!fs.existsSync(rootPath)) return files
 
+	const seen = new Set()
+	const rootReal = canonicalPath(rootPath)
+	if (rootReal) seen.add(rootReal)
+
 	const stack = [rootPath]
 	while (stack.length) {
-		const current = stack.pop()
-		let dirents = []
-		try {
-			dirents = fs.readdirSync(current, { withFileTypes: true })
-		} catch { continue }
-
-		for (const dirent of dirents) {
-			const fullPath = path.join(current, dirent.name)
-			if (dirent.isDirectory())
-				stack.push(fullPath)
-			else if (dirent.isFile() && dirent.name === 'fount.json')
-				files.push(fullPath)
-		}
+		const entryPath = stack.pop()
+		for (const entry of readDirEntries(entryPath))
+			if (entry.isDirectory) {
+				const real = canonicalPath(entry.fullPath)
+				if (real && seen.has(real)) continue
+				if (real) seen.add(real)
+				stack.push(entry.fullPath)
+			}
+			else if (entry.isFile && entry.name === 'fount.json')
+				files.push(entry.fullPath)
 	}
 
 	return files

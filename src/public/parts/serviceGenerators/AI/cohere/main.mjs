@@ -1,5 +1,6 @@
 import { escapeRegExp } from '../../../../../scripts/regex.mjs'
 import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../shells/chat/src/prompt_struct/index.mjs'
+import { buildSourceInfo } from '../proxy/src/sourceInfo.mjs'
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
@@ -55,10 +56,7 @@ async function GetSource(config) {
 	 */
 	const result = {
 		type: 'text-chat',
-		info: Object.fromEntries(Object.entries(structuredClone(product_info)).map(([k, v]) => {
-			v.name = config.name || config.model
-			return [k, v]
-		})),
+		info: buildSourceInfo(product_info, config),
 		is_paid: false,
 		extension: {},
 

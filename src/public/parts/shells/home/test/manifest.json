@@ -25,7 +25,9 @@
 					"triggers": [
 						"src/public/parts/shells/home/test/frontend/smoke.spec.mjs",
 						"src/public/parts/shells/home/test/frontend/fixtures.mjs",
+						"src/public/parts/shells/gist/public/src/title.mjs",
 						"src/public/parts/shells/home/public/index.{html,mjs}",
+						"src/public/pages/scripts/lib/viewTransition.mjs",
 						"src/public/parts/shells/home/public/src/templates.mjs",
 						"src/public/pages/scripts/features/template.mjs",
 						"src/public/pages/base.mjs",

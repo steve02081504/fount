@@ -112,12 +112,11 @@ function handlePaste(event) {
 }
 
 /**
- * 保存 gist：新建或更新后跳查看页；空标题由服务端用 markdown 首行兜底。
+ * 保存 gist：新建或更新后跳查看页；标题由 markdown 内容推导，不再单独提交。
  * @returns {Promise<void>} 保存完成。
  */
 async function saveGist() {
-	const title = document.getElementById('title-input').value.trim()
-	const payload = { markdown: richInput.value, title, securityLevel }
+	const payload = { markdown: richInput.value, securityLevel }
 	const gist = gistId
 		? await updateGist(gistId, payload)
 		: await createGist(payload)
@@ -131,7 +130,6 @@ async function saveGist() {
  */
 async function loadExistingGist(id) {
 	const gist = await getGist(id)
-	document.getElementById('title-input').value = gist.title || ''
 	richInput.value = gist.markdown || ''
 	setSecurityLevel(gist.securityLevel === 'secure' ? 'secure' : 'trusted')
 }

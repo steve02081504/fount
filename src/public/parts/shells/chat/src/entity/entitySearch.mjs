@@ -8,6 +8,7 @@ import { pickNodeScore } from 'npm:@steve02081504/fount-p2p/node/reputation_stor
 import { getShellPartpath } from 'npm:@steve02081504/fount-p2p/registries/part_path'
 import { queryNetwork, registerQueryInboundHandler } from 'npm:@steve02081504/fount-p2p/wire/part/query'
 
+import { isSourceNodeBlocked, sourceNodesOf } from '../../../../../../scripts/p2p/source_block.mjs'
 import { escapeRegExp } from '../../../../../../scripts/regex.mjs'
 import { getAllUserNames } from '../../../../../../server/auth/index.mjs'
 
@@ -231,21 +232,23 @@ export async function searchEntitiesNetwork(username, q, options = {}) {
 
 	const maxHits = Math.min(32, Math.max(1, Math.floor(Number(options.maxHits) || 20)))
 	const partpath = getShellPartpath('chat')
-	const clues = await queryNetwork(username, partpath, ENTITY_SEARCH_KIND, { q: normalized }, {
+	/**
+	 * @param {unknown} row 行
+	 * @returns {string} 去重键
+	 */
+	const clueRowKey = row => String(/** @type {{ entityHash?: unknown }} */row?.entityHash || '')
+	const { rows: clues, sources } = await queryNetwork(username, partpath, ENTITY_SEARCH_KIND, { q: normalized }, {
 		ttl: options.ttl,
 		maxHits,
-		/**
-		 * @param {unknown} row 行
-		 * @returns {string} 去重键
-		 */
-		rowKey: row => String(/** @type {{ entityHash?: unknown }} */row?.entityHash || ''),
+		rowKey: clueRowKey,
+		isSourceBlocked: isSourceNodeBlocked,
 	})
 
-	/** @type {Map<string, { entityHash: string, handle: string, name: string, charPartName?: string }>} */
+	/** @type {Map<string, { entityHash: string, handle: string, name: string, charPartName?: string, sourceNodes: string[] }>} */
 	const unique = new Map()
 	for (const raw of clues) {
 		const row = normalizeClueRow(raw)
-		if (row) unique.set(row.entityHash, row)
+		if (row) unique.set(row.entityHash, { ...row, sourceNodes: sourceNodesOf(sources, clueRowKey(raw)) })
 	}
 
 	let hideThreshold = -0.5
@@ -308,6 +311,7 @@ export async function searchEntitiesNetwork(username, q, options = {}) {
 			nodeHash: parsed.nodeHash,
 			nodeScore: Number(score) || 0,
 			alias: aliases[entityHash] || '',
+			sourceNodes: unique.get(entityHash)?.sourceNodes || [],
 			...flags,
 		}
 	}), 8)

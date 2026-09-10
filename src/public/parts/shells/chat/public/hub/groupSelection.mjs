@@ -1,8 +1,24 @@
 /**
  * 侧栏群图标多选（Shift 范围 / Ctrl 切换）与选中样式同步。
  */
+import { createSelectionController } from '/scripts/components/selectionController.mjs'
+
 import { store } from './core/state.mjs'
 import { isFriendBoundGroup } from './friendBindings.mjs'
+
+/** 侧栏群多选控制器（顺序与 serverBar 渲染一致，供 Shift 范围使用）。 */
+const selection = createSelectionController({
+	/**
+	 * @returns {string[]} 侧栏可见群 ID 顺序
+	 */
+	getOrderedIds: () => orderedSidebarGroupIds(),
+	/**
+	 * @returns {void}
+	 */
+	onChange: () => syncGroupSelectionStyles(),
+	plainClick: 'single',
+	shiftRange: 'replace',
+})
 
 /**
  * @returns {string[]} 侧栏可见群 ID（内存顺序，与 serverBar 渲染一致）
@@ -24,7 +40,7 @@ export function orderedSidebarGroupIds() {
  * @returns {string[]} 当前选中的群 ID 列表
  */
 export function getSelectedGroupIds() {
-	return [...store.sidebar.selectedGroupIds]
+	return selection.getSelected()
 }
 
 /**
@@ -32,21 +48,19 @@ export function getSelectedGroupIds() {
  * @returns {boolean} 是否在多选集中
  */
 export function isGroupSelected(groupId) {
-	return store.sidebar.selectedGroupIds.has(groupId)
+	return selection.isSelected(groupId)
 }
 
 /** @returns {void} */
 export function clearGroupSelection() {
-	store.sidebar.selectedGroupIds.clear()
-	store.sidebar.selectionAnchorGroupId = null
-	syncGroupSelectionStyles()
+	selection.clear()
 }
 
 /** @returns {void} */
 export function syncGroupSelectionStyles() {
 	document.querySelectorAll('#server-list .server-item[data-group-id]').forEach(el => {
 		const id = el.dataset.groupId || ''
-		el.classList.toggle('is-multi-selected', store.sidebar.selectedGroupIds.has(id))
+		el.classList.toggle('is-multi-selected', selection.isSelected(id))
 	})
 }
 
@@ -56,40 +70,9 @@ export function syncGroupSelectionStyles() {
  * @returns {void}
  */
 export function handleGroupItemModifierClick(groupId, mod = {}) {
-	const ids = orderedSidebarGroupIds()
-	if (!ids.includes(groupId)) return
-
-	if (mod.ctrl) {
-		if (store.sidebar.selectedGroupIds.has(groupId))
-			store.sidebar.selectedGroupIds.delete(groupId)
-		else store.sidebar.selectedGroupIds.add(groupId)
-		store.sidebar.selectionAnchorGroupId = groupId
-		syncGroupSelectionStyles()
-		return
-	}
-
-	if (mod.shift) {
-		const anchor = store.sidebar.selectionAnchorGroupId
-		if (!anchor || !ids.includes(anchor)) {
-			store.sidebar.selectedGroupIds.clear()
-			store.sidebar.selectedGroupIds.add(groupId)
-			store.sidebar.selectionAnchorGroupId = groupId
-			syncGroupSelectionStyles()
-			return
-		}
-		const a = ids.indexOf(anchor)
-		const b = ids.indexOf(groupId)
-		const [lo, hi] = a <= b ? [a, b] : [b, a]
-		store.sidebar.selectedGroupIds.clear()
-		for (let i = lo; i <= hi; i++) store.sidebar.selectedGroupIds.add(ids[i])
-		syncGroupSelectionStyles()
-		return
-	}
-
-	store.sidebar.selectedGroupIds.clear()
-	store.sidebar.selectedGroupIds.add(groupId)
-	store.sidebar.selectionAnchorGroupId = groupId
-	syncGroupSelectionStyles()
+	// Ctrl 优先于 Shift（与旧行为一致）：Ctrl 切换单项，Shift 替换为范围。
+	if (mod.ctrl) selection.handleClick(groupId, { ctrl: true })
+	else selection.handleClick(groupId, { shift: mod.shift })
 }
 
 /**
@@ -99,8 +82,9 @@ export function handleGroupItemModifierClick(groupId, mod = {}) {
  */
 export function contextMenuTargetGroupIds(groupId) {
 	const id = groupId.trim()
-	if (store.sidebar.selectedGroupIds.size > 1 && store.sidebar.selectedGroupIds.has(id))
-		return getSelectedGroupIds()
+	const selected = selection.getSelected()
+	if (selected.length > 1 && selection.isSelected(id))
+		return selected
 	if (id) return [id]
 	return []
 }
@@ -113,9 +97,6 @@ export function contextMenuTargetGroupIds(groupId) {
 export function primeContextMenuSelection(groupId) {
 	const id = groupId.trim()
 	if (!id) return
-	if (store.sidebar.selectedGroupIds.has(id)) return
-	clearGroupSelection()
-	store.sidebar.selectedGroupIds.add(id)
-	store.sidebar.selectionAnchorGroupId = id
-	syncGroupSelectionStyles()
+	if (selection.isSelected(id)) return
+	selection.setSelection([id], { anchor: id })
 }

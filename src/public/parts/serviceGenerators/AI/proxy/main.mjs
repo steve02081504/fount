@@ -66,5 +66,6 @@ async function GetSource(config, { SaveConfig }) {
 		product_info,
 		SaveConfig,
 		is_paid: false,
+		providerUrl: { url: config.url, defaultUrl: configTemplate.url },
 	})
 }

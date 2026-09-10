@@ -151,6 +151,19 @@ test.describe('markdown secure render', () => {
 		expect(html).not.toContain('data-rehype-pretty-code-figure')
 	})
 
+	test('CJK emphasis works without surrounding spaces (fullwidth punctuation)', async ({ modulePage }) => {
+		// CommonMark 默认要求标记外侧为空白/标点；全角括号 + 后接汉字会让关闭标记无法 right-flanking
+		const html = await renderMarkdown(modulePage, '它是**自带（builtin）**来源')
+		expect(html).toContain('<strong>自带（builtin）</strong>')
+		expect(html).not.toContain('**自带')
+	})
+
+	test('CJK GFM strikethrough works without surrounding spaces', async ({ modulePage }) => {
+		const html = await renderMarkdown(modulePage, '这是~~删除（test）~~文本')
+		expect(html).toContain('<del>删除（test）</del>')
+		expect(html).not.toContain('~~删除')
+	})
+
 	test('secure render keeps spoiler onclick + style', async ({ modulePage }) => {
 		const html = await renderMarkdown(modulePage, '||secret||')
 		expect(html).toContain('class="spoiler"')

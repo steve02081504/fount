@@ -5,6 +5,12 @@
 import * as Sentry from 'npm:@sentry/deno'
 
 /**
+ * fount 官方 Sentry 项目的 DSN；隧道转发只允许发往此目标（防任意主机 SSRF）。
+ * @type {string}
+ */
+export const FOUNT_SENTRY_DSN = 'https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704'
+
+/**
  * 是否启用 Sentry 进行错误报告。
  * @type {boolean}
  */
@@ -20,7 +26,7 @@ export function set_sentry_enabled(new_sentry_enabled) {
 		// deno-lint-ignore no-cond-assign
 		if (sentry_enabled = new_sentry_enabled) Sentry.init({
 			release: 'not-set-yet',
-			dsn: 'https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704',
+			dsn: FOUNT_SENTRY_DSN,
 		})
 		else Sentry.close().catch(console.error)
 	} catch (error) { console.error(error) }

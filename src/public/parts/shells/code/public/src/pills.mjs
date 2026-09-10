@@ -2,6 +2,7 @@
  * Pill 选择器：机器 / 工作区 / mode / AI 源 / shell / 角色，含文件夹浏览器与工作区角色推荐。
  */
 import { getPartList, runPart } from '/scripts/endpoints/parts.mjs'
+import { confirmAction } from '/scripts/features/promptDialog.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
 import { openFolderBrowser as openFolderBrowserComponent } from '/scripts/components/folderBrowser.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
@@ -9,17 +10,11 @@ import { geti18n } from '/scripts/i18n/index.mjs'
 import { ensureHistory, removeGhost } from './composer.mjs'
 import * as api from './endpoints.mjs'
 import { renderMessages } from './messages.mjs'
-import { activateDraftForWorkspace, activeTab, refreshAllSessions, renderHomeMenu, renderTabs, saveTabPrefs, startNewSession, tabKeyOf } from './session.mjs'
+import { activateDraftForWorkspace, activeTab, refreshAllSessions, renderTabs, saveTabPrefs, startNewSession, tabKeyOf } from './session.mjs'
 import { elements, setPref, store, target } from './store.mjs'
 import { openDialogFromTemplate, renderTemplate } from './templates.mjs'
 
 /* ---------------- pill 镀铬（模板渲染，boot 中挂载） ---------------- */
-
-/** 角色 pill 菜单底部固定项。 */
-const CHAR_MENU_FOOTER = `
-<li id="char-switch-item"><button id="char-switch-button" data-i18n="code.char.switch"></button></li>
-<li><a id="char-settings-link" data-i18n="code.char.settings" href="#"></a></li>
-<li><a data-i18n="code.char.goodAgent" href="https://steve02081504.github.io/fount/blog/" target="_blank" rel="noopener"></a></li>`
 
 /** pill 规格（name 参与 id 拼接；key 为元素引用后缀）。 */
 const PILL_SPECS = [
@@ -28,16 +23,15 @@ const PILL_SPECS = [
 	{ name: 'shell', menuClass: 'w-48', hidden: true },
 	{ name: 'machine', menuClass: 'w-64' },
 	{ name: 'workspace', menuClass: 'w-64' },
-	{ name: 'char', menuClass: 'w-64', footer: CHAR_MENU_FOOTER },
-	{ name: 'power', menuClass: 'w-64' },
+	{ name: 'char', menuClass: 'w-64' },
 ]
 
 /** 挂载全部 pill 下拉（模板渲染）并补全元素引用。 */
 export async function mountPillChrome() {
-	// hidden / footer 必须始终传入：模板 ${} 表达式引用未定义变量会让 async_eval 抛 ReferenceError
-	const pills = await Promise.all(PILL_SPECS.map(spec => renderTemplate('pill_dropdown', { hidden: false, footer: '', ...spec })))
+	// hidden 必须始终传入：模板 ${} 表达式引用未定义变量会让 async_eval 抛 ReferenceError
+	const pills = await Promise.all(PILL_SPECS.map(spec => renderTemplate('pill_dropdown', { hidden: false, ...spec })))
 	elements.composerControlsMain.append(pills[0], pills[1], pills[2])
-	elements.composerTargets.append(pills[3], pills[4], pills[5], pills[6])
+	elements.composerTargets.append(pills[3], pills[4], pills[5])
 	/**
 	 * 按 id 取元素。
 	 * @param {string} id - 元素 id。
@@ -51,6 +45,7 @@ export async function mountPillChrome() {
 		elements[`${key}PillLabel`] = byId(`${spec.name}-pill-label`)
 		elements[`${key}Menu`] = byId(`${spec.name}-menu`)
 	}
+	elements.charMenu.append(await renderTemplate('char_menu_footer'))
 	elements.charSwitchButton = byId('char-switch-button')
 	elements.charSettingsLink = byId('char-settings-link')
 }
@@ -154,109 +149,178 @@ export async function loadShellOptions(machine) {
 	store.shell = data.default || store.shells[0] || ''
 }
 
-/* ---------------- 任务完成后关机 ---------------- */
+/* ---------------- 任务完成后的自动电源操作 ---------------- */
 
-/** 从后端刷新待关机状态并更新 pill。 */
+/** 从后端刷新待执行电源操作并更新按钮。 */
 export async function refreshShutdownState() {
 	try {
 		const data = await api.getShutdown()
-		store.shutdownMachine = data.machine ?? null
+		store.shutdownActions = data.actions || {}
 		store.shutdownActive = data.active || 0
 	}
 	catch {
-		store.shutdownMachine = null
+		store.shutdownActions = {}
 		store.shutdownActive = 0
 	}
-	renderPowerPillLabel()
-	renderPowerMenu()
+	renderPowerButton()
 }
 
-/** 渲染“任务完成后关机”菜单：主机勾选（无 subfount 仅本机）。 */
-export function renderPowerMenu() {
-	const menu = elements.powerMenu
-	menu.replaceChildren()
-	const titleLi = document.createElement('li')
-	const title = document.createElement('div')
-	title.className = 'menu-title'
-	title.textContent = geti18n('code.power.menuTitle')
-	titleLi.appendChild(title)
-	menu.appendChild(titleLi)
-	for (const machine of store.machines) {
-		const id = String(machine.id)
-		const disabled = id !== '0' && !machine.isConnected
-		const listItem = document.createElement('li')
-		const label = document.createElement('label')
-		label.className = 'code-power-item flex items-center gap-2 px-2 py-1.5 cursor-pointer' + (disabled ? ' opacity-50' : '')
-		const checkbox = document.createElement('input')
-		checkbox.type = 'checkbox'
-		checkbox.className = 'checkbox checkbox-sm'
-		checkbox.checked = String(store.shutdownMachine) === id
-		checkbox.disabled = disabled
-		checkbox.dataset.machineId = id
-		const text = document.createElement('span')
-		text.className = 'code-menu-item-title'
-		// 机器名称为用户动态数据，跳过语种扫描
-		text.setAttribute('user-content', '')
-		text.textContent = machineDisplayName(machine)
-		label.append(checkbox, text)
-		checkbox.addEventListener('change', () => void toggleShutdown(id, checkbox.checked))
-		listItem.appendChild(label)
-		menu.appendChild(listItem)
-	}
+/** 更新电源操作按钮（文案 + 启用态配色）。 */
+export function renderPowerButton() {
+	const button = elements.powerSettingsButton
+	const count = Object.keys(store.shutdownActions || {}).length
+	button.textContent = count
+		? geti18n('code.power.armedCount', { count })
+		: geti18n('code.power.settings.button')
+	button.setAttribute('aria-label', count
+		? geti18n('code.power.armedAria', { count })
+		: geti18n('code.power.settings.aria'))
+	button.classList.toggle('btn-warning', count > 0)
+	button.classList.toggle('btn-ghost', count === 0)
 }
 
-/** 更新关机 pill 标签。 */
-export function renderPowerPillLabel() {
-	const id = store.shutdownMachine
-	const machine = id != null ? store.machines.find(m => String(m.id) === String(id)) : null
-	elements.powerPill.setAttribute('aria-label', geti18n('code.power.aria-label'))
-	elements.powerPillLabel.textContent = id != null
-		? geti18n('code.power.armed', { host: machine ? machineDisplayName(machine) : `#${id}` })
-		: geti18n('code.power.label')
-}
-
-/** 将菜单内复选框勾选态同步为当前待关机主机（不重建 DOM，避免抢焦点）。 */
-function syncPowerCheckboxes() {
-	for (const checkbox of elements.powerMenu.querySelectorAll('input[data-machine-id]'))
-		checkbox.checked = String(store.shutdownMachine) === checkbox.dataset.machineId
-}
-
-/**
- * 勾选 / 取消：预定所有任务生成完毕后关闭该主机。
- * @param {string} id - 主机 id。
- * @param {boolean} checked - 是否勾选。
- * @returns {Promise<void>}
- */
-async function toggleShutdown(id, checked) {
+/** 打开「任务完成后的自动操作」设置对话框。 */
+export async function openPowerSettings() {
 	try {
-		const data = checked ? await api.setShutdown(id) : await api.setShutdown(null)
-		store.shutdownMachine = data.machine ?? null
-		store.shutdownActive = data.active || 0
-		if (store.shutdownMachine != null)
-			// 不使用主机名插值：toast 的 params 在语种切换时不会重解析，会把原语种主机名漏到他语种
-			showToastI18n('info', 'code.power.armedToast')
-		else
-			showToastI18n('info', 'code.power.cancelled')
+		await openDialogFromTemplate('power_settings', {}, { onReady: renderPowerSettings })
 	}
 	catch (error) {
 		showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
 	}
-	syncPowerCheckboxes()
-	renderPowerPillLabel()
+}
+
+/**
+ * 渲染设置对话框中的主机行（每台主机独立选择操作）。
+ * @param {HTMLDialogElement} dialog - 已打开的对话框。
+ * @returns {void}
+ */
+function renderPowerSettings(dialog) {
+	const list = dialog.querySelector('#power-settings-list')
+	list.replaceChildren(...store.machines.map(machine => {
+		const id = String(machine.id)
+		const row = document.createElement('div')
+		row.className = 'code-power-row'
+		const name = document.createElement('span')
+		name.className = 'code-power-row-name'
+		// 机器名称为用户动态数据，跳过语种扫描
+		name.setAttribute('user-content', '')
+		name.textContent = machineDisplayName(machine)
+		const select = document.createElement('select')
+		select.className = 'select select-sm'
+		select.dataset.machineId = id
+		select.disabled = id !== '0' && !machine.isConnected
+		// 以下拉所在主机的名称作为可访问名称（用户动态数据，跳过语种扫描）
+		select.setAttribute('aria-label', machineDisplayName(machine))
+		select.setAttribute('user-content', 'aria-label')
+		for (const value of ['', 'shutdown', 'sleep', 'restart']) {
+			const option = document.createElement('option')
+			option.value = value
+			// 经 data-i18n 让选项在语种切换时由 i18n 观察器重译（而非一次性 geti18n 快照）
+			option.dataset.i18n = value ? `code.power.action.${value}` : 'code.power.action.none'
+			select.appendChild(option)
+		}
+		select.value = store.shutdownActions[id] || ''
+		select.addEventListener('change', () => void applyPowerAction(id, select.value))
+		row.append(name, select)
+		return row
+	}))
+}
+
+/**
+ * 应用某主机的电源操作（空值 = 取消）。
+ * @param {string} id - 主机 id。
+ * @param {string} action - 操作（shutdown / sleep / restart）或空串。
+ * @returns {Promise<void>}
+ */
+async function applyPowerAction(id, action) {
+	try {
+		const data = await api.setShutdown(id, action || null)
+		store.shutdownActions = data.actions || {}
+		store.shutdownActive = data.active || 0
+		showToastI18n('info', action ? 'code.power.armedToast' : 'code.power.cancelled')
+	}
+	catch (error) {
+		showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
+	}
+	renderPowerButton()
+	syncPowerSelects()
+}
+
+/** 将设置对话框内各下拉同步为当前状态（不重建 DOM，避免抢焦点）。 */
+function syncPowerSelects() {
+	const list = document.getElementById('power-settings-list')
+	if (!list) return
+	for (const select of list.querySelectorAll('select[data-machine-id]'))
+		select.value = store.shutdownActions[select.dataset.machineId] || ''
 }
 
 /* ---------------- 工作区 ---------------- */
 
-/** 渲染工作区 pill 下拉（列表 + 浏览/移除）。 */
+/** 工作区下拉的搜索词（菜单重渲染时保留，输入框值与焦点不回跳）。 */
+let workspaceFilterTerm = ''
+
+/**
+ * 工作区按常用程度排序：最近使用优先（lastUsedAt 降序），并列按名称。
+ * @param {object} a - 工作区 a。
+ * @param {object} b - 工作区 b。
+ * @returns {number} 排序结果。
+ */
+function sortWorkspacesByUsage(a, b) {
+	const ta = new Date(a.lastUsedAt || 0).getTime()
+	const tb = new Date(b.lastUsedAt || 0).getTime()
+	return tb - ta || String(a.name || a.path).localeCompare(String(b.name || b.path))
+}
+
+/** 渲染工作区 pill 下拉（搜索框置顶 + 常用程度排序 + 浏览/移除）。 */
 export function renderWorkspaceMenu() {
 	const menu = elements.workspaceMenu
-	menu.replaceChildren()
-	if (store.workspaces.length) {
-		store.workspaces.forEach(workspace => {
+	// 搜索输入框保持稳定（重建会丢焦点，daisyUI 下拉靠 :focus-within 展开，换元素会关菜单）；
+	// 只在首建时插入，其后复用同一元素并同步搜索词
+	let search = menu.querySelector('.code-workspace-search input')
+	if (!search) {
+		const searchItem = document.createElement('li')
+		searchItem.className = 'code-workspace-search'
+		search = document.createElement('input')
+		search.type = 'search'
+		search.className = 'input input-sm input-bordered w-full'
+		search.addEventListener('input', () => {
+			workspaceFilterTerm = search.value
+			renderWorkspaceItems()
+		})
+		searchItem.appendChild(search)
+		menu.appendChild(searchItem)
+	}
+	search.setAttribute('placeholder', geti18n('code.workspaces.search.placeholder'))
+	search.setAttribute('aria-label', geti18n('code.workspaces.search.aria-label'))
+	search.value = workspaceFilterTerm
+	renderWorkspaceItems()
+}
+
+/** 重渲染工作区下拉的条目区（保留搜索输入框，聚焦不受影响）。 */
+function renderWorkspaceItems() {
+	const menu = elements.workspaceMenu
+	const searchItem = menu.querySelector('.code-workspace-search')
+	// 清掉搜索行之后的所有条目（replaceChildren 会连搜索框一起重建，改用逐项移除）
+	while (searchItem?.nextSibling) searchItem.nextSibling.remove()
+	const term = workspaceFilterTerm.trim().toLowerCase()
+	/**
+	 * 工作区是否匹配搜索词（名称 / 路径子串，忽略大小写）。
+	 * @param {object} workspace - 工作区。
+	 * @returns {boolean} 是否匹配。
+	 */
+	const matchWorkspace = workspace => !term
+		|| (workspace.name || '').toLowerCase().includes(term)
+		|| (workspace.path || '').toLowerCase().includes(term)
+	const visible = [...store.workspaces].sort(sortWorkspacesByUsage).filter(matchWorkspace)
+	if (visible.length) {
+		visible.forEach(workspace => {
 			const name = document.createElement('span')
+			// 工作区名 / 路径为用户数据，跳过语种轮换扫描
+			name.setAttribute('user-content', '')
 			name.textContent = workspace.name || workspace.path
 			const path = document.createElement('span')
 			path.className = 'opacity-60 text-xs'
+			path.setAttribute('user-content', '')
 			path.textContent = workspace.path
 			menu.appendChild(menuItem([name, path], {
 				active: store.workspace?.id === workspace.id,
@@ -306,6 +370,9 @@ export async function selectWorkspace(id, { fromTabSwitch = false } = {}) {
 	const current = activeTab()
 	if (current && store.session) store.sessionCache.set(tabKeyOf(current), store.session)
 	store.workspace = workspace
+	// 记录使用时间（本地即时更新 + 后端持久化），供工作区下拉按常用程度排序
+	workspace.lastUsedAt = new Date().toISOString()
+	void api.useWorkspace(id).catch(() => { })
 	if (workspace.machine !== store.machine) {
 		store.machine = String(workspace.machine)
 		setPref('machine', store.machine)
@@ -324,30 +391,36 @@ export async function selectWorkspace(id, { fromTabSwitch = false } = {}) {
 	renderMessages()
 	renderWorkspacePillLabel()
 	renderWorkspaceMenu()
-	renderHomeMenu()
 	renderTabs()
 	void ensureHistory(store.shellMode ? 'shell' : 'message')
 	void applyWorkspaceCharConfig()
 	if (!fromTabSwitch) await activateDraftForWorkspace(workspace.id)
 }
 
-/** 移除当前工作区。 */
-async function removeCurrentWorkspace() {
-	if (!store.workspace) return
-	const removedId = store.workspace.id
+/**
+ * 移除指定工作区（确认后仅从保存列表移除；磁盘上的会话文件保留）。
+ * @param {string} id - 工作区 id。
+ * @returns {Promise<void>}
+ */
+export async function removeWorkspaceById(id) {
+	const workspace = store.workspaces.find(w => w.id === id)
+	if (!workspace) return
+	if (!await confirmAction('code.workspaces.removeConfirm', { name: workspace.name || workspace.path })) return
 	// 后端确认删除成功后才更新本地列表；失败则提示并保留现状
 	try {
-		await api.removeWorkspace(removedId)
+		await api.removeWorkspace(id)
 	}
 	catch (error) {
 		showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
 		return
 	}
-	store.workspaces = store.workspaces.filter(w => w.id !== removedId)
-	store.workspace = null
-	setPref('workspace', '')
+	store.workspaces = store.workspaces.filter(w => w.id !== id)
+	if (store.workspace?.id === id) {
+		store.workspace = null
+		setPref('workspace', '')
+	}
 	// 丢弃指向该工作区的标签；活动标签被移除时清空会话视图
-	store.tabs = store.tabs.filter(tab => tab.workspaceId !== removedId)
+	store.tabs = store.tabs.filter(tab => tab.workspaceId !== id)
 	if (store.activeTabKey && !activeTab()) {
 		store.activeTabKey = ''
 		store.session = null
@@ -355,12 +428,17 @@ async function removeCurrentWorkspace() {
 	store.dirtyTabKey = ''
 	renderWorkspacePillLabel()
 	renderWorkspaceMenu()
-	renderHomeMenu()
 	await Promise.all([refreshAllSessions(), refreshProfiles()])
 	renderTabs()
 	saveTabPrefs()
 	renderMessages()
 	if (!store.activeTabKey) await startNewSession()
+}
+
+/** 移除当前工作区。 */
+async function removeCurrentWorkspace() {
+	if (!store.workspace) return
+	await removeWorkspaceById(store.workspace.id)
 }
 
 /** 渲染 shell pill 下拉（! 模式）。 */
@@ -722,7 +800,6 @@ export async function openFolderBrowser() {
 			store.workspace = store.workspaces.find(w => w.path === path && w.machine === machine) || null
 			renderWorkspacePillLabel()
 			renderWorkspaceMenu()
-			renderHomeMenu()
 			await selectWorkspace(store.workspace?.id || '')
 		},
 		/**

@@ -20,6 +20,7 @@ import { displayProfileAvatar, listAvatarTemplateFields } from '../shared/hashAv
 import { resolveDisplayName } from '../shared/nameResolve.mjs'
 import { searchEntities } from '../src/endpoints/entities.mjs'
 import { deleteSession } from '../src/endpoints/groupCore.mjs'
+import { handleSourceNodeBlockClick, renderSourceNodesHtml } from '../src/lib/sourceNodes.mjs'
 import { mountTemplate, renderTemplate } from '../src/templates.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { promptText } from '/scripts/features/promptDialog.mjs'
@@ -52,6 +53,7 @@ import { loadGroups } from './serverBar.mjs'
  * @property {string} [name] 资料名
  * @property {string} [activePubKeyHex] 活跃公钥 hex
  * @property {string} [avatar] 头像 URL
+ * @property {string[]} [sourceNodes] 联邦来源节点
  */
 
 /**
@@ -424,6 +426,22 @@ async function appendFriendsSearchHit(hit, resultsHost) {
 			})
 		})()
 	})
+	if (!isChar && hit.sourceNodes?.length) {
+		const meta = row.querySelector('.friends-search-hit-meta')
+		if (meta) {
+			const holder = document.createElement('div')
+			holder.innerHTML = renderSourceNodesHtml(hit.sourceNodes)
+			const strip = holder.firstElementChild
+			if (strip) {
+				strip.addEventListener('click', event => {
+					const button = event.target instanceof Element ? event.target.closest('[data-block-source-node]') : null
+					if (button instanceof HTMLElement) void handleSourceNodeBlockClick(button)
+				})
+				row.dataset.sourceNodeItem = '1'
+				meta.appendChild(strip)
+			}
+		}
+	}
 	resultsHost.appendChild(row)
 }
 
@@ -483,6 +501,7 @@ async function runFriendsEntitySearch(input, resultsHost) {
 			alias: entity.alias,
 			name: entity.name,
 			activePubKeyHex: entity.activePubKeyHex,
+			sourceNodes: entity.sourceNodes || [],
 			label: entity.alias || entity.name || handle,
 			subtitle: handle,
 		})

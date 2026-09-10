@@ -102,7 +102,7 @@ async function releaseLocale(page) {
 test.describe('gist edit paste security', () => {
 	test('secure mode paste of script-bearing html never executes nor leaves active markup', async ({ page, baseUrl, context }) => {
 		await page.goto(`${baseUrl}${EDIT_URL}`, { waitUntil: 'domcontentloaded' })
-		await expect(page.locator('#title-input')).toBeVisible({ timeout: 30_000 })
+		await expect(page.locator('#markdown-editor')).toBeVisible({ timeout: 30_000 })
 		await expect(page.locator('input[name="securityLevel"][value="trusted"]')).toBeChecked({ timeout: 30_000 })
 		await page.locator('input[name="securityLevel"][value="secure"]').check()
 		await expect(page.locator('input[name="securityLevel"][value="secure"]')).toBeChecked()
@@ -122,7 +122,7 @@ test.describe('gist edit paste security', () => {
 
 	test('declining the danger prompt keeps the payload inert and switches to secure', async ({ page, baseUrl, context }) => {
 		await page.goto(`${baseUrl}${EDIT_URL}`, { waitUntil: 'domcontentloaded' })
-		await expect(page.locator('#title-input')).toBeVisible({ timeout: 30_000 })
+		await expect(page.locator('#markdown-editor')).toBeVisible({ timeout: 30_000 })
 		await expect(page.locator('input[name="securityLevel"][value="trusted"]')).toBeChecked({ timeout: 30_000 })
 		await installActiveInsertTracker(page)
 		await context.grantPermissions(['clipboard-read', 'clipboard-write'])

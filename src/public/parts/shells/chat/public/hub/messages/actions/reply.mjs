@@ -2,6 +2,7 @@
  * 【文件】public/hub/messages/actions/reply.mjs
  * 【职责】内联 quote-reply：把目标消息填入 composer 引用状态。
  */
+import { isDagEventId } from '../../../src/lib/eventId.mjs'
 import { setReplyTarget } from '../../composerReply.mjs'
 import { authorPresentationKeys } from '../../core/domUtils.mjs'
 import { getMessageText } from '../render/text.mjs'
@@ -13,7 +14,7 @@ import { getMessageText } from '../render/text.mjs'
  */
 export async function handleReply(button, channelMessage) {
 	const eventId = button.dataset.eventId || channelMessage?.eventId || ''
-	if (!/^[\da-f]{64}$/.test(eventId)) return true
+	if (!isDagEventId(eventId)) return true
 	const { displayName } = authorPresentationKeys(
 		channelMessage?.charId ?? channelMessage?.authorPubKeyHash ?? channelMessage?.sender ?? '?',
 	)

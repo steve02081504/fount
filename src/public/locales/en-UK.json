@@ -3622,6 +3622,13 @@
 			"jumpToSource": "Jump to source",
 			"sendToChat": "Copy to chat",
 			"copied": "Copied to clipboard"
+		},
+		"sourceNode": {
+			"label": "Source node",
+			"block": "Block",
+			"blockConfirm": "Block source node ${node}? Federated results from it will be filtered.",
+			"blocked": "Source node blocked",
+			"blockFailed": "Failed to block source node: ${error}"
 		}
 	},
 	"easynew": {
@@ -5071,6 +5078,13 @@
 			"jumpToSource": "Jump to source",
 			"sendToSocial": "Copy to post",
 			"copied": "Copied to clipboard"
+		},
+		"sourceNode": {
+			"label": "Source node",
+			"block": "Block",
+			"blockConfirm": "Block source node ${node}? Federated results from it will be filtered.",
+			"blocked": "Source node blocked",
+			"blockFailed": "Failed to block source node: ${error}"
 		}
 	},
 	"cabinet": {
@@ -5398,7 +5412,10 @@
 		"search": {
 			"placeholder": "Search titles, summaries and tags…",
 			"aria-label": "Search articles",
-			"empty": "No matching articles — try another keyword?"
+			"empty": "No matching articles — try another keyword?",
+			"clear": {
+				"aria-label": "Clear search"
+			}
 		},
 		"home": {
 			"title": "fount home",
@@ -6397,20 +6414,46 @@
 		"sessions": {
 			"new": "New session",
 			"untitled": "Untitled session",
-			"yesterday": "yesterday"
+			"yesterday": "yesterday",
+			"delete": "Delete conversation",
+			"deleteConfirm": "Delete the conversation “${title}”? This cannot be undone.",
+			"deleted": "Conversation deleted"
 		},
 		"workspaces": {
 			"browse": "Browse…",
 			"remove": "Remove current workspace",
+			"removeConfirm": "Remove the workspace “${name}”? Its session files on disk will be kept.",
 			"none": "No workspace selected",
-			"overviewEmpty": "No conversations yet"
+			"overviewEmpty": "No conversations yet",
+			"search": {
+				"placeholder": "Search workspaces…",
+				"aria-label": "Search workspaces"
+			}
 		},
 		"home": {
-			"aria-label": "Workspaces & sessions"
+			"aria-label": "Workspaces & sessions",
+			"title": "Workspaces & conversations",
+			"workspacesTitle": "Workspaces",
+			"sessionsTitle": "Conversations",
+			"emptyWorkspaces": "No workspaces yet. Click “Browse…” to add one.",
+			"search": {
+				"placeholder": "Search workspaces or conversations…",
+				"aria-label": "Search workspaces or conversations"
+			},
+			"noMatch": "No matching results"
 		},
 		"tabs": {
 			"aria-label": "Session tabs",
-			"close": "Close tab"
+			"close": "Close tab",
+			"closeGenerating": "A tab that is still generating cannot be closed",
+			"rename": "Rename",
+			"closeMenu": {
+				"aria-label": "Tab actions",
+				"others": "Close other tabs",
+				"left": "Close tabs to the left",
+				"right": "Close tabs to the right",
+				"all": "Close all tabs"
+			}
 		},
 		"newTab": {
 			"aria-label": "New session"
@@ -6444,7 +6487,10 @@
 			"placeholder": "Type a command; Ctrl/Cmd+Enter runs it (clear to leave shell mode)",
 			"placeholderNormal": "Ask anything… (@ to reference files, / for commands)",
 			"placeholderShell": "Type a shell command… (e.g. git status)",
-			"aria-label": "Message input"
+			"aria-label": "Message input",
+			"mentionSuggest": {
+				"aria-label": "Mention suggestions"
+			}
 		},
 		"aiSource": {
 			"panelTitle": "Manage AI source visibility",
@@ -6505,12 +6551,22 @@
 			"done": "The conversation has finished"
 		},
 		"power": {
-			"label": "Shut down when done",
-			"aria-label": "Shut down after tasks",
-			"menuTitle": "Shut down a host once all tasks finish",
-			"armed": "Will shut down ${host} after all tasks finish",
-			"armedToast": "Armed: shut down a host once all tasks finish",
-			"cancelled": "Cancelled shutting down after tasks"
+			"settings": {
+				"button": "After-task action settings",
+				"aria": "After-task action settings",
+				"title": "Automatic action after tasks",
+				"hint": "When all tasks have finished generating, run the chosen action on the hosts below."
+			},
+			"action": {
+				"none": "No action",
+				"shutdown": "Shut down",
+				"sleep": "Sleep",
+				"restart": "Restart"
+			},
+			"armedCount": "After tasks: ${count} host(s)",
+			"armedAria": "After-task action settings: ${count} host(s)",
+			"armedToast": "Set: run the chosen action once all tasks finish generating",
+			"cancelled": "After-task action cancelled"
 		},
 		"home_function_buttons": {
 			"code": {
@@ -6531,6 +6587,21 @@
 			"code": {
 				"title": "From coding session"
 			}
+		},
+		"tool": {
+			"userShell": "Terminal command",
+			"readFile": "Read file",
+			"findFiles": "Find files",
+			"searchContent": "Search content",
+			"editFile": "Edit file",
+			"writeFile": "Write file",
+			"setWorkdir": "Set working directory",
+			"listMachines": "List machines",
+			"preload": "Load context",
+			"viewFiles": "View files",
+			"addFiles": "Send files",
+			"callback": "Tool callback",
+			"runShell": "Run ${lang}"
 		}
 	},
 	"gist": {
@@ -6558,7 +6629,7 @@
 			"updatedAt": "Updated",
 			"selectAll": "Select all",
 			"noneSelected": "None selected",
-			"selectedCount": "Selected ${count}",
+			"selectedCount": "${count} selected",
 			"batch": {
 				"download": "Download selected",
 				"delete": "Delete selected",
@@ -6568,8 +6639,8 @@
 			},
 			"noResults": "No matching gists.",
 			"search": {
-				"placeholder": "Search titles…",
-				"aria-label": "Search gist titles"
+				"placeholder": "Search gist…",
+				"aria-label": "Search gist"
 			},
 			"sortLabel": "Sort by",
 			"sort": {
@@ -6581,7 +6652,25 @@
 				"titleDesc": "Title (Z–A)"
 			},
 			"select": "Select",
-			"exitSelection": "Exit selection"
+			"exitSelection": "Exit selection",
+			"view": {
+				"grid": {
+					"title": "Grid view",
+					"aria-label": "Grid view"
+				},
+				"list": {
+					"title": "List view",
+					"aria-label": "List view"
+				}
+			},
+			"filter": {
+				"all": "All",
+				"security": "Filter by security level",
+				"source": "Filter by source"
+			},
+			"clearSearch": "Clear search",
+			"emptyHint": "You can also drag the Markdown file into this page",
+			"loading": "Loading…"
 		},
 		"source": {
 			"manual": "Manual",
@@ -6610,7 +6699,6 @@
 		"edit": {
 			"save": "Save",
 			"cancel": "Back",
-			"title": "Title",
 			"editor": {
 				"placeholder": "Enter Markdown…",
 				"aria-label": "Markdown editor"

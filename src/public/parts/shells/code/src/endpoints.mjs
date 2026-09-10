@@ -25,11 +25,13 @@ import { collectEditorSources } from './editor_sources.mjs'
 import { appendOwnHistory, getHistory } from './history.mjs'
 import {
 	beginCodeGeneration,
-	cancelShutdown,
+	cancelAllPowerActions,
+	cancelPowerAction,
 	finishCodeGeneration,
 	getShutdownState,
 	notifyCodeCompletion,
-	scheduleShutdown,
+	POWER_ACTIONS,
+	schedulePowerAction,
 } from './lifecycle.mjs'
 import { triggerCodeReply } from './request.mjs'
 import { availableShells, machineDefaultShell, runShellCommand } from './runner.mjs'
@@ -279,16 +281,24 @@ function sanitizeTab(tab) {
 
 /**
  * 将 tool 日志条目规整为可持久化形状（buffer 转 base64 字符串）。
+ * 保留 agent 层 `content` 与人类展示层 `content_for_show`/`content_for_edit`、`charVisibility`，
+ * 以便重载后完整还原对话（见 `request.mjs` `sessionToChatLog` 仅取 agent 层）。
  * @param {object} entry - chatLogEntry_t 形状的条目。
  * @returns {object} 规整后的条目。
  */
 function sanitizeEntry(entry) {
+	const content = String(entry.content ?? '')
+	const show = entry.content_for_show
+	const edit = entry.content_for_edit
 	return {
 		id: entry.id || randomUUID(),
 		uid: entry.uid || (entry.role === 'char' ? 'char' : entry.role === 'user' ? 'user' : 'system'),
 		role: entry.role,
 		name: entry.name || '',
-		content: entry.content_for_show || entry.content || '',
+		content,
+		...show != null && show !== content ? { content_for_show: String(show) } : {},
+		...edit != null && edit !== content ? { content_for_edit: String(edit) } : {},
+		...Array.isArray(entry.charVisibility) && entry.charVisibility.length ? { charVisibility: entry.charVisibility.map(String) } : {},
 		time: entry.time_stamp instanceof Date ? entry.time_stamp.toISOString() : String(entry.time_stamp ?? new Date().toISOString()),
 		files: (entry.files || []).map(f => ({ name: f.name, mime_type: f.mime_type, buffer: Buffer.isBuffer(f.buffer) ? f.buffer.toString('base64') : String(f.buffer ?? ''), description: f.description || '' })),
 		extension: {},
@@ -361,7 +371,7 @@ export function setEndpoints(router) {
 		const { name, machine = '0', path } = req.body || {}
 		if (!path) throw httpError(400, 'path is required.')
 		const data = getWorkspaces(username)
-		const workspace = { id: randomUUID().slice(0, 8), name: name || path, machine: String(machine ?? '0'), path }
+		const workspace = { id: randomUUID().slice(0, 8), name: name || path, machine: String(machine ?? '0'), path, lastUsedAt: new Date().toISOString() }
 		if (data.list.some(w => w.path === path && w.machine === workspace.machine))
 			throw httpError(400, 'workspace already exists.')
 		data.list.push(workspace)
@@ -375,6 +385,17 @@ export function setEndpoints(router) {
 		const workspace = data.list.find(w => w.id === req.params.id)
 		if (!workspace) throw httpError(404, 'workspace not found.')
 		if (req.body?.name != null) workspace.name = String(req.body.name)
+		saveShellData(username, 'code', 'workspaces', data)
+		res.json(data)
+	})
+
+	// 标记工作区被使用（最近使用时间），供前端下拉按常用程度排序
+	router.put('/api/parts/shells\\:code/workspaces/:id/use', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const data = getWorkspaces(username)
+		const workspace = data.list.find(w => w.id === req.params.id)
+		if (!workspace) throw httpError(404, 'workspace not found.')
+		workspace.lastUsedAt = new Date().toISOString()
 		saveShellData(username, 'code', 'workspaces', data)
 		res.json(data)
 	})
@@ -511,7 +532,7 @@ export function setEndpoints(router) {
 		res.json({ hidden })
 	})
 
-	// 待关机状态：所有任务生成完毕后关闭选定主机
+	// 待电源操作：所有任务生成完毕后对选定主机执行关机/休眠/重启
 	router.get('/api/parts/shells\\:code/shutdown', authenticate, (req, res) => {
 		const { username } = getUserByReq(req)
 		res.json(getShutdownState(username))
@@ -519,15 +540,22 @@ export function setEndpoints(router) {
 
 	router.put('/api/parts/shells\\:code/shutdown', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const raw = req.body?.machine
-		if (raw == null || raw === '') {
-			res.json(cancelShutdown(username))
+		const rawMachine = req.body?.machine
+		// machine 为空 = 取消全部；action 为空 = 取消该主机
+		if (rawMachine == null || rawMachine === '') {
+			res.json(cancelAllPowerActions(username))
 			return
 		}
-		const machine = String(raw)
+		const machine = String(rawMachine)
+		const action = req.body?.action
+		if (action == null || action === '') {
+			res.json(cancelPowerAction(username, machine))
+			return
+		}
+		if (!POWER_ACTIONS.has(action)) throw httpError(400, 'invalid action.')
 		const target = (await listMachines(username)).find(m => String(m.id) === machine)
 		if (!target || (machine !== '0' && !target.isConnected)) throw httpError(400, 'machine not available.')
-		res.json(scheduleShutdown(username, machine))
+		res.json(schedulePowerAction(username, machine, action))
 	})
 
 	// 会话存取（前端为唯一写入方；存于工作区 .fount/code/sessions）
@@ -603,9 +631,13 @@ export function setEndpoints(router) {
 			const entries = []
 			const requestSession = { ...session, entries: [...session.entries || []] }
 			if (msg.type === 'send') {
-				const userEntry = sanitizeEntry({ role: 'user', name: username, content, uid: 'user', time_stamp: new Date(), files: Array.isArray(msg.files) ? msg.files : [] })
-				entries.push(userEntry)
-				requestSession.entries.push({ ...userEntry, time: userEntry.time })
+				// 前端已乐观插入用户条目（clientEntryId）时不再重复追加/回传，避免 AI 看到两条、UI 重复
+				const alreadyInSession = msg.clientEntryId && requestSession.entries.some(entry => entry?.id === msg.clientEntryId)
+				if (!alreadyInSession) {
+					const userEntry = sanitizeEntry({ id: msg.clientEntryId || undefined, role: 'user', name: username, content, uid: 'user', time_stamp: new Date(), files: Array.isArray(msg.files) ? msg.files : [] })
+					entries.push(userEntry)
+					requestSession.entries.push({ ...userEntry, time: userEntry.time })
+				}
 			}
 			beginCodeGeneration(username)
 			try {

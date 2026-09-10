@@ -2,6 +2,10 @@
  * 预加载 URL 静态提取：跳过未插值模板占位。
  */
 /* global Deno */
+import { mkdir, mkdtemp, rm, symlink } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import path from 'node:path'
+
 import { assertEquals } from 'jsr:@std/assert'
 
 const GODBOLT_TEMPLATE = `\
@@ -64,4 +68,24 @@ Deno.test('mergeAndDedupe drops unresolved ${…} preload URLs (godbolt executor
 		[],
 	)
 	assertEquals(isConcreteExternalUrl('https://godbolt.org/api/compiler/${compilerId}/compile'), false)
+})
+
+Deno.test('collectPublicDirs follows symlinked/junction part dirs', async () => {
+	const { collectPublicDirs } = await import('../../web_server/preload_list.mjs')
+	const isWin = process.platform === 'win32'
+	const root = await mkdtemp(path.join(tmpdir(), 'fount_preload_'))
+	try {
+		const realPart = path.join(root, 'real-part')
+		await mkdir(path.join(realPart, 'public'), { recursive: true })
+		const mount = path.join(root, 'mount')
+		await mkdir(mount, { recursive: true })
+		const alias = path.join(mount, 'mounted-part')
+		if (isWin) await symlink(realPart, alias, 'junction')
+		else await symlink(realPart, alias)
+
+		assertEquals(collectPublicDirs(mount), [path.join(alias, 'public')])
+	}
+	finally {
+		await rm(root, { recursive: true, force: true })
+	}
 })

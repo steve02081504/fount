@@ -20,6 +20,7 @@
 			"src/public/parts/shells/social/src/lib/emojiPostEmbed.mjs",
 			"deno.json",
 			"src/server/p2p_server/**",
+			"src/scripts/p2p/**",
 			"src/server/{registries.mjs,parts_loader.mjs}",
 			"src/public/pages/scripts/endpoints/registries.mjs",
 			"src/public/pages/scripts/lib/memo.mjs",
@@ -31,6 +32,8 @@
 			"src/scripts/search/**",
 			"src/server/p2p_server/**",
 			"src/server/{registries.mjs,parts_loader.mjs}",
+			"src/server/web_server/notify/**",
+			"src/server/web_server/event_dispatcher.mjs",
 			"src/public/pages/scripts/endpoints/registries.mjs",
 			"src/public/pages/scripts/features/markdown/extensions.mjs",
 			"src/public/pages/scripts/components/emojiPicker.mjs"
@@ -177,7 +180,7 @@
 	"suites": [
 		{
 			"name": "pure",
-			"expected": "2m11s",
+			"expected": "10m30s",
 			"trigger": [
 				"shellBackend",
 				"shellPureExtra",
@@ -197,7 +200,7 @@
 		},
 		{
 			"name": "integration",
-			"expected": "3m16s",
+			"expected": "18m18s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -220,7 +223,7 @@
 		},
 		{
 			"name": "smoke_chat",
-			"expected": "4m54s",
+			"expected": "2m29s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -612,7 +615,7 @@
 		},
 		{
 			"name": "fed_emoji",
-			"expected": "58s",
+			"expected": "3m18s",
 			"dependsOn": [
 				"fed_core"
 			],
@@ -746,7 +749,7 @@
 		},
 		{
 			"name": "fed_entity_search",
-			"expected": "45s",
+			"expected": "2m35s",
 			"dependsOn": [
 				"fed_core"
 			],
@@ -862,6 +865,8 @@
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/navigation.spec.mjs",
 						"src/public/parts/shells/chat/public/hub/serverBar.mjs",
+						"src/public/parts/shells/chat/public/hub/groupSelection.mjs",
+						"src/public/pages/scripts/components/selectionController.mjs",
 						"src/public/parts/shells/chat/public/hub/sidebar/**"
 					]
 				},
@@ -892,7 +897,7 @@
 				},
 				{
 					"name": "messageActions",
-					"expected": "2m44s",
+					"expected": "5m18s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/messageActions.spec.mjs",
 						"src/public/parts/shells/chat/test/frontend/run.mjs",

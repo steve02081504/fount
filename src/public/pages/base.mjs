@@ -9,6 +9,33 @@ import * as Sentry from 'https://esm.sh/@sentry/browser'
 import { onServerEvent } from './scripts/endpoints/server_events.mjs'
 
 let skipBreadcrumb = false
+
+/**
+ * 初始化 Service Worker 活跃状态同步与通知抑制分发。
+ * @returns {void}
+ */
+function initServiceWorkerIntegration() {
+	if (!navigator.serviceWorker) return
+	navigator.serviceWorker.addEventListener('message', event => {
+		const { type, data, suppressed } = event.data || {}
+		if (type !== 'notification') return
+		// 始终抛事件：各 shell 据此更新页内角标（通知驱动，不依赖是否活跃）
+		window.dispatchEvent(new CustomEvent('fount-notification', { detail: { ...data, suppressed: !!suppressed } }))
+		if (!suppressed) return
+		// 页面活跃时播放页面内通知音；播放失败则回退到系统通知
+		import('./scripts/features/notificationSound.mjs')
+			.then(({ playNotificationSound }) => playNotificationSound())
+			.catch(() => {
+				const controller = navigator.serviceWorker?.controller
+				if (controller) controller.postMessage({ type: 'SHOW_NOTIFICATION_FALLBACK', data })
+			})
+	})
+	// SW 接管时立即同步一次活跃状态
+	navigator.serviceWorker.addEventListener('controllerchange', async () => {
+		const { syncUserActivityNow } = await import('./scripts/features/userActivity.mjs')
+		syncUserActivityNow()
+	})
+}
 if (!globalThis.fount?.test?.enabled) try {
 	Sentry.init({
 		dsn: 'https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704',
@@ -112,6 +139,9 @@ async function ensureWebPushSubscription() {
 	try {
 		await navigator.serviceWorker.register('/service_worker.mjs', { scope: '/', type: 'module' })
 		await navigator.serviceWorker.ready
+		initServiceWorkerIntegration()
+		const { initUserActivityTracking } = await import('./scripts/features/userActivity.mjs')
+		initUserActivityTracking()
 		await Promise.all([ensureWebPushSubscription(), queryFountVersion()])
 	} catch (error) {
 		if (error.name != 'SecurityError') console.error('Service Worker registration failed: ', error)

@@ -1,7 +1,7 @@
 /**
  * 投票 ballot 截止与关票通知。
  */
-import { notifyUser } from 'fount/server/web_server/notify/notify.mjs'
+import { notifyUserI18n } from 'fount/server/web_server/notify/notify.mjs'
 
 import { readChannelMessagesForUser } from '../../group/queries.mjs'
 import { getState } from '../dag/materialize.mjs'
@@ -65,8 +65,8 @@ export async function fireVoteClosed(username, groupId, channelId, ballotId) {
 		})
 		await appendChatInbox(username, recipientHash, row)
 		if (recipientHash === operator)
-			void notifyUser(username, {
-				title: '投票已结束',
+			void notifyUserI18n(username, {
+				titleKey: 'chat.hub.inbox.tabs.voteClosed',
 				body: preview,
 				url,
 				tag: `vote-closed:${ballotId}`,

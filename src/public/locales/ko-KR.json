@@ -3622,6 +3622,13 @@
 			"jumpToSource": "원본으로 이동",
 			"sendToChat": "채팅으로 복사",
 			"copied": "클립보드에 복사되었습니다"
+		},
+		"sourceNode": {
+			"label": "소스 노드",
+			"block": "차단",
+			"blockConfirm": "소스 노드 ${node}을(를) 차단할까요? 이 노드의 페더레이션 결과는 필터링됩니다.",
+			"blocked": "소스 노드를 차단했습니다",
+			"blockFailed": "소스 노드를 차단하지 못했습니다: ${error}"
 		}
 	},
 	"easynew": {
@@ -5071,6 +5078,13 @@
 			"jumpToSource": "원본으로 이동",
 			"sendToSocial": "게시물로 복사",
 			"copied": "클립보드에 복사되었습니다"
+		},
+		"sourceNode": {
+			"label": "소스 노드",
+			"block": "차단",
+			"blockConfirm": "소스 노드 ${node}을(를) 차단할까요? 이 노드의 페더레이션 결과는 필터링됩니다.",
+			"blocked": "소스 노드를 차단했습니다",
+			"blockFailed": "소스 노드를 차단하지 못했습니다: ${error}"
 		}
 	},
 	"cabinet": {
@@ -5398,7 +5412,10 @@
 		"search": {
 			"placeholder": "제목, 요약 또는 태그 검색…",
 			"aria-label": "글 검색",
-			"empty": "일치하는 글이 없습니다. 다른 키워드로 시도해 보세요."
+			"empty": "일치하는 글이 없습니다. 다른 키워드로 시도해 보세요.",
+			"clear": {
+				"aria-label": "검색 지우기"
+			}
 		},
 		"home": {
 			"title": "fount 홈",
@@ -6397,20 +6414,46 @@
 		"sessions": {
 			"new": "새 세션",
 			"untitled": "제목 없는 세션",
-			"yesterday": "어제"
+			"yesterday": "어제",
+			"delete": "대화 삭제",
+			"deleteConfirm": "\"${title}\" 대화를 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.",
+			"deleted": "대화를 삭제했습니다"
 		},
 		"workspaces": {
 			"browse": "찾아보기…",
 			"remove": "현재 작업 영역 제거",
+			"removeConfirm": "\"${name}\" 작업 영역을 제거하시겠습니까? 디스크의 세션 파일은 유지됩니다.",
 			"none": "작업 영역 선택 안 됨",
-			"overviewEmpty": "아직 대화가 없습니다"
+			"overviewEmpty": "아직 대화가 없습니다",
+			"search": {
+				"placeholder": "작업 영역 검색…",
+				"aria-label": "작업 영역 검색"
+			}
 		},
 		"home": {
-			"aria-label": "작업 영역 및 세션"
+			"aria-label": "작업 영역 및 세션",
+			"title": "작업 영역 및 대화",
+			"workspacesTitle": "작업 영역",
+			"sessionsTitle": "대화",
+			"emptyWorkspaces": "아직 작업 영역이 없습니다. \"찾아보기…\"를 클릭하여 추가하세요.",
+			"search": {
+				"placeholder": "작업 영역 또는 대화 검색…",
+				"aria-label": "작업 영역 또는 대화 검색"
+			},
+			"noMatch": "일치하는 결과가 없습니다"
 		},
 		"tabs": {
 			"aria-label": "세션 탭",
-			"close": "탭 닫기"
+			"close": "탭 닫기",
+			"closeGenerating": "생성 중인 탭은 닫을 수 없습니다",
+			"rename": "이름 바꾸기",
+			"closeMenu": {
+				"aria-label": "탭 작업",
+				"others": "다른 탭 닫기",
+				"left": "왼쪽 탭 닫기",
+				"right": "오른쪽 탭 닫기",
+				"all": "모든 탭 닫기"
+			}
 		},
 		"newTab": {
 			"aria-label": "새 세션"
@@ -6444,7 +6487,10 @@
 			"placeholder": "명령을 입력하고 Ctrl/Cmd+Enter 로 실행하세요(비우면 셸 모드 종료)",
 			"placeholderNormal": "메시지를 입력하세요…(@ 로 파일 참조, / 로 명령)",
 			"placeholderShell": "셸 명령을 입력하세요…(예: git status)",
-			"aria-label": "메시지 입력"
+			"aria-label": "메시지 입력",
+			"mentionSuggest": {
+				"aria-label": "멘션 제안"
+			}
 		},
 		"aiSource": {
 			"panelTitle": "AI 소스 표시 관리",
@@ -6502,7 +6548,25 @@
 			"noChar": "먼저 캐릭터를 선택하세요"
 		},
 		"notify": {
-			"done": null
+			"done": "대화가 완료되었습니다"
+		},
+		"power": {
+			"settings": {
+				"button": "완료 후 자동 작업 설정",
+				"aria": "완료 후 자동 작업 설정",
+				"title": "작업 완료 후 자동 작업",
+				"hint": "모든 작업 생성이 끝나면 아래 호스트에서 선택한 작업을 실행합니다."
+			},
+			"action": {
+				"none": "아무 작업 안 함",
+				"shutdown": "종료",
+				"sleep": "절전",
+				"restart": "다시 시작"
+			},
+			"armedCount": "작업 완료 후: 호스트 ${count}대",
+			"armedAria": "완료 후 자동 작업 설정: 호스트 ${count}대",
+			"armedToast": "설정됨: 모든 작업 생성이 끝나면 선택한 작업을 실행합니다",
+			"cancelled": "완료 후 자동 작업이 취소되었습니다"
 		},
 		"home_function_buttons": {
 			"code": {
@@ -6523,6 +6587,21 @@
 			"code": {
 				"title": "코딩 세션에서"
 			}
+		},
+		"tool": {
+			"userShell": "터미널 명령",
+			"readFile": "파일 읽기",
+			"findFiles": "파일 찾기",
+			"searchContent": "내용 검색",
+			"editFile": "파일 편집",
+			"writeFile": "파일 쓰기",
+			"setWorkdir": "작업 디렉터리 설정",
+			"listMachines": "머신 목록",
+			"preload": "컨텍스트 불러오기",
+			"viewFiles": "파일 보기",
+			"addFiles": "파일 보내기",
+			"callback": "도구 콜백",
+			"runShell": "${lang} 실행"
 		}
 	},
 	"gist": {
@@ -6547,7 +6626,51 @@
 		"list": {
 			"new": "새 gist",
 			"empty": "아직 gist가 없습니다. 오른쪽 위의 '새 gist'를 눌러 첫 번째 gist를 만드세요.",
-			"updatedAt": "업데이트됨"
+			"updatedAt": "업데이트됨",
+			"selectAll": "전체 선택",
+			"noneSelected": "선택 없음",
+			"selectedCount": "${count}개 선택됨",
+			"batch": {
+				"download": "선택 항목 다운로드",
+				"delete": "선택 항목 삭제",
+				"deleteConfirm": "선택한 gist ${count}개를 삭제하시겠습니까? 되돌릴 수 없습니다.",
+				"deleted": "gist ${count}개를 삭제했습니다",
+				"downloaded": "gist ${count}개를 다운로드했습니다"
+			},
+			"noResults": "일치하는 gist가 없습니다.",
+			"search": {
+				"placeholder": "gist 검색…",
+				"aria-label": "gist 검색"
+			},
+			"sortLabel": "정렬 기준",
+			"sort": {
+				"updatedDesc": "업데이트순(최신순)",
+				"updatedAsc": "업데이트순(오래된순)",
+				"createdDesc": "생성순(최신순)",
+				"createdAsc": "생성순(오래된순)",
+				"titleAsc": "제목(A–Z)",
+				"titleDesc": "제목(Z–A)"
+			},
+			"select": "선택",
+			"exitSelection": "선택 종료",
+			"view": {
+				"grid": {
+					"title": "그리드 보기",
+					"aria-label": "그리드 보기"
+				},
+				"list": {
+					"title": "목록 보기",
+					"aria-label": "목록 보기"
+				}
+			},
+			"filter": {
+				"all": "전체",
+				"security": "보안 수준으로 필터링",
+				"source": "소스로 필터링"
+			},
+			"clearSearch": "검색 지우기",
+			"emptyHint": "Markdown 파일을 이 페이지로 드래그할 수도 있습니다.",
+			"loading": "불러오는 중…"
 		},
 		"source": {
 			"manual": "수동",
@@ -6576,7 +6699,6 @@
 		"edit": {
 			"save": "저장",
 			"cancel": "뒤로",
-			"title": "제목",
 			"editor": {
 				"placeholder": "Markdown을 입력하세요…",
 				"aria-label": "Markdown 편집기"

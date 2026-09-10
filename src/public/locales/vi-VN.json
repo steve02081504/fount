@@ -3622,6 +3622,13 @@
 			"jumpToSource": "Đến nguồn",
 			"sendToChat": "Sao chép vào trò chuyện",
 			"copied": "Đã sao chép vào bộ nhớ tạm"
+		},
+		"sourceNode": {
+			"label": "Nút nguồn",
+			"block": "Chặn",
+			"blockConfirm": "Chặn nút nguồn ${node}? Kết quả liên bang từ nút này sẽ bị lọc.",
+			"blocked": "Đã chặn nút nguồn",
+			"blockFailed": "Không chặn được nút nguồn: ${error}"
 		}
 	},
 	"easynew": {
@@ -5071,6 +5078,13 @@
 			"jumpToSource": "Đến nguồn",
 			"sendToSocial": "Sao chép vào bài đăng",
 			"copied": "Đã sao chép vào bộ nhớ tạm"
+		},
+		"sourceNode": {
+			"label": "Nút nguồn",
+			"block": "Chặn",
+			"blockConfirm": "Chặn nút nguồn ${node}? Kết quả liên bang từ nút này sẽ bị lọc.",
+			"blocked": "Đã chặn nút nguồn",
+			"blockFailed": "Không chặn được nút nguồn: ${error}"
 		}
 	},
 	"cabinet": {
@@ -5398,7 +5412,10 @@
 		"search": {
 			"placeholder": "Tìm theo tiêu đề, tóm tắt hoặc thẻ…",
 			"aria-label": "Tìm bài viết",
-			"empty": "Không tìm thấy bài viết phù hợp — thử từ khóa khác nhé?"
+			"empty": "Không tìm thấy bài viết phù hợp — thử từ khóa khác nhé?",
+			"clear": {
+				"aria-label": "Xóa tìm kiếm"
+			}
 		},
 		"home": {
 			"title": "Trang chủ fount",
@@ -6397,20 +6414,46 @@
 		"sessions": {
 			"new": "Phiên mới",
 			"untitled": "Phiên chưa đặt tên",
-			"yesterday": "hôm qua"
+			"yesterday": "hôm qua",
+			"delete": "Xóa hội thoại",
+			"deleteConfirm": "Bạn có chắc chắn muốn xóa hội thoại \"${title}\" không? Không thể hoàn tác hành động này.",
+			"deleted": "Đã xóa hội thoại"
 		},
 		"workspaces": {
 			"browse": "Duyệt…",
 			"remove": "Xóa không gian làm việc hiện tại",
+			"removeConfirm": "Bạn có chắc chắn muốn xóa không gian làm việc \"${name}\" không? Các tệp phiên trên đĩa sẽ được giữ lại.",
 			"none": "Chưa chọn không gian làm việc",
-			"overviewEmpty": "Chưa có hội thoại nào"
+			"overviewEmpty": "Chưa có hội thoại nào",
+			"search": {
+				"placeholder": "Tìm kiếm không gian làm việc…",
+				"aria-label": "Tìm kiếm không gian làm việc"
+			}
 		},
 		"home": {
-			"aria-label": "Không gian làm việc và phiên"
+			"aria-label": "Không gian làm việc và phiên",
+			"title": "Không gian làm việc và hội thoại",
+			"workspacesTitle": "Không gian làm việc",
+			"sessionsTitle": "Hội thoại",
+			"emptyWorkspaces": "Chưa có không gian làm việc nào. Nhấp vào \"Duyệt…\" để thêm.",
+			"search": {
+				"placeholder": "Tìm kiếm không gian làm việc hoặc cuộc trò chuyện…",
+				"aria-label": "Tìm kiếm không gian làm việc hoặc cuộc trò chuyện"
+			},
+			"noMatch": "Không có kết quả phù hợp"
 		},
 		"tabs": {
 			"aria-label": "Thẻ phiên",
-			"close": "Đóng thẻ"
+			"close": "Đóng thẻ",
+			"closeGenerating": "Không thể đóng thẻ đang tạo",
+			"rename": "Đổi tên",
+			"closeMenu": {
+				"aria-label": "Thao tác thẻ",
+				"others": "Đóng các thẻ khác",
+				"left": "Đóng các thẻ bên trái",
+				"right": "Đóng các thẻ bên phải",
+				"all": "Đóng tất cả thẻ"
+			}
 		},
 		"newTab": {
 			"aria-label": "Phiên mới"
@@ -6444,7 +6487,10 @@
 			"placeholder": "Nhập lệnh, Ctrl/Cmd+Enter để chạy (xóa để thoát chế độ shell)",
 			"placeholderNormal": "Nhập tin nhắn… (@ để tham chiếu tệp, / để dùng lệnh)",
 			"placeholderShell": "Nhập lệnh shell… (ví dụ: git status)",
-			"aria-label": "Ô nhập tin nhắn"
+			"aria-label": "Ô nhập tin nhắn",
+			"mentionSuggest": {
+				"aria-label": "Gợi ý nhắc đến"
+			}
 		},
 		"aiSource": {
 			"panelTitle": "Quản lý hiển thị nguồn AI",
@@ -6502,7 +6548,25 @@
 			"noChar": "Vui lòng chọn nhân vật trước"
 		},
 		"notify": {
-			"done": null
+			"done": "Cuộc trò chuyện đã hoàn tất"
+		},
+		"power": {
+			"settings": {
+				"button": "Cài đặt thao tác sau khi hoàn thành",
+				"aria": "Cài đặt thao tác sau khi hoàn thành",
+				"title": "Thao tác tự động sau khi hoàn thành tác vụ",
+				"hint": "Sau khi tất cả tác vụ được tạo xong, thao tác đã chọn sẽ được thực thi trên các máy chủ bên dưới."
+			},
+			"action": {
+				"none": "Không thao tác",
+				"shutdown": "Tắt máy",
+				"sleep": "Ngủ",
+				"restart": "Khởi động lại"
+			},
+			"armedCount": "Sau khi hoàn thành: ${count} máy chủ",
+			"armedAria": "Cài đặt thao tác sau khi hoàn thành: ${count} máy chủ",
+			"armedToast": "Đã đặt: thao tác đã chọn sẽ chạy sau khi mọi tác vụ tạo xong",
+			"cancelled": "Đã hủy thao tác sau khi hoàn thành"
 		},
 		"home_function_buttons": {
 			"code": {
@@ -6523,6 +6587,21 @@
 			"code": {
 				"title": "Từ phiên lập trình"
 			}
+		},
+		"tool": {
+			"userShell": "Lệnh terminal",
+			"readFile": "Đọc tệp",
+			"findFiles": "Tìm tệp",
+			"searchContent": "Tìm trong nội dung",
+			"editFile": "Chỉnh sửa tệp",
+			"writeFile": "Ghi tệp",
+			"setWorkdir": "Đặt thư mục làm việc",
+			"listMachines": "Liệt kê máy",
+			"preload": "Tải ngữ cảnh",
+			"viewFiles": "Xem tệp",
+			"addFiles": "Gửi tệp",
+			"callback": "Gọi lại công cụ",
+			"runShell": "Chạy ${lang}"
 		}
 	},
 	"gist": {
@@ -6547,7 +6626,51 @@
 		"list": {
 			"new": "Gist mới",
 			"empty": "Chưa có gist nào. Nhấp “Gist mới” ở góc trên bên phải để tạo gist đầu tiên.",
-			"updatedAt": "Đã cập nhật"
+			"updatedAt": "Đã cập nhật",
+			"selectAll": "Chọn tất cả",
+			"noneSelected": "Chưa chọn mục nào",
+			"selectedCount": "Đã chọn ${count}",
+			"batch": {
+				"download": "Tải xuống mục đã chọn",
+				"delete": "Xóa mục đã chọn",
+				"deleteConfirm": "Xóa ${count} gist đã chọn? Không thể hoàn tác thao tác này.",
+				"deleted": "Đã xóa ${count} gist",
+				"downloaded": "Đã tải xuống ${count} gist"
+			},
+			"noResults": "Không có gist nào khớp.",
+			"search": {
+				"placeholder": "Tìm gist…",
+				"aria-label": "Tìm gist"
+			},
+			"sortLabel": "Sắp xếp theo",
+			"sort": {
+				"updatedDesc": "Cập nhật (mới nhất trước)",
+				"updatedAsc": "Cập nhật (cũ nhất trước)",
+				"createdDesc": "Ngày tạo (mới nhất trước)",
+				"createdAsc": "Ngày tạo (cũ nhất trước)",
+				"titleAsc": "Tiêu đề (A–Z)",
+				"titleDesc": "Tiêu đề (Z–A)"
+			},
+			"select": "Chọn",
+			"exitSelection": "Thoát chọn",
+			"view": {
+				"grid": {
+					"title": "Chế độ xem lưới",
+					"aria-label": "Chế độ xem lưới"
+				},
+				"list": {
+					"title": "Chế độ xem danh sách",
+					"aria-label": "Chế độ xem danh sách"
+				}
+			},
+			"filter": {
+				"all": "Tất cả",
+				"security": "Lọc theo cấp độ bảo mật",
+				"source": "Lọc theo nguồn"
+			},
+			"clearSearch": "Xóa tìm kiếm",
+			"emptyHint": "Bạn cũng có thể kéo tệp Markdown vào trang này",
+			"loading": "Đang tải…"
 		},
 		"source": {
 			"manual": "Thủ công",
@@ -6576,7 +6699,6 @@
 		"edit": {
 			"save": "Lưu",
 			"cancel": "Quay lại",
-			"title": "Tiêu đề",
 			"editor": {
 				"placeholder": "Nhập Markdown…",
 				"aria-label": "Trình soạn thảo Markdown"

@@ -74,6 +74,7 @@ async function GetSource(config, { SaveConfig }) {
 			apikey: config.apikey,
 		}, {
 			product_info,
+			providerUrl: {},
 			clientOptions: {
 				defaultHeaders: gatewayHeaders,
 			},

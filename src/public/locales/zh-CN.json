@@ -3622,6 +3622,13 @@
 			"jumpToSource": "跳转到来源",
 			"sendToChat": "复制到聊天",
 			"copied": "已复制到剪贴板"
+		},
+		"sourceNode": {
+			"label": "来源节点",
+			"block": "屏蔽",
+			"blockConfirm": "确定屏蔽来源节点 ${node}？来自该节点的联邦结果将被过滤。",
+			"blocked": "已屏蔽来源节点",
+			"blockFailed": "屏蔽来源节点失败：${error}"
 		}
 	},
 	"easynew": {
@@ -5071,6 +5078,13 @@
 			"jumpToSource": "跳转到来源",
 			"sendToSocial": "复制到动态",
 			"copied": "已复制到剪贴板"
+		},
+		"sourceNode": {
+			"label": "来源节点",
+			"block": "屏蔽",
+			"blockConfirm": "确定屏蔽来源节点 ${node}？来自该节点的联邦结果将被过滤。",
+			"blocked": "已屏蔽来源节点",
+			"blockFailed": "屏蔽来源节点失败：${error}"
 		}
 	},
 	"cabinet": {
@@ -5398,7 +5412,10 @@
 		"search": {
 			"placeholder": "搜索标题、摘要或标签…",
 			"aria-label": "搜索文章",
-			"empty": "没有匹配的文章——换个关键词试试？"
+			"empty": "没有匹配的文章——换个关键词试试？",
+			"clear": {
+				"aria-label": "清除搜索"
+			}
 		},
 		"home": {
 			"title": "fount 主页",
@@ -6397,20 +6414,46 @@
 		"sessions": {
 			"new": "新会话",
 			"untitled": "未命名会话",
-			"yesterday": "昨天"
+			"yesterday": "昨天",
+			"delete": "删除对话",
+			"deleteConfirm": "确定删除对话「${title}」？此操作不可撤销。",
+			"deleted": "已删除对话"
 		},
 		"workspaces": {
 			"browse": "浏览…",
 			"remove": "移除当前工作区",
+			"removeConfirm": "确定移除工作区「${name}」？磁盘上的会话文件会保留。",
 			"none": "未选择工作区",
-			"overviewEmpty": "暂无会话"
+			"overviewEmpty": "暂无会话",
+			"search": {
+				"placeholder": "搜索工作区…",
+				"aria-label": "搜索工作区"
+			}
 		},
 		"home": {
-			"aria-label": "工作区与会话总览"
+			"aria-label": "工作区与会话总览",
+			"title": "工作区与会话",
+			"workspacesTitle": "工作区",
+			"sessionsTitle": "对话",
+			"emptyWorkspaces": "还没有工作区，点击「浏览…」添加。",
+			"search": {
+				"placeholder": "搜索工作区或对话…",
+				"aria-label": "搜索工作区或对话"
+			},
+			"noMatch": "没有匹配的结果"
 		},
 		"tabs": {
 			"aria-label": "会话标签",
-			"close": "关闭标签"
+			"close": "关闭标签",
+			"closeGenerating": "正在生成的标签无法关闭",
+			"rename": "重命名",
+			"closeMenu": {
+				"aria-label": "标签操作",
+				"others": "关闭其他标签",
+				"left": "关闭左侧标签",
+				"right": "关闭右侧标签",
+				"all": "关闭全部标签"
+			}
 		},
 		"newTab": {
 			"aria-label": "新建会话"
@@ -6444,7 +6487,10 @@
 			"placeholder": "输入命令，Ctrl/Cmd+Enter 执行（清空退出 shell 模式）",
 			"placeholderNormal": "输入消息开始…（@ 引用文件 · / 命令）",
 			"placeholderShell": "输入 shell 命令…（如 git status）",
-			"aria-label": "消息输入框"
+			"aria-label": "消息输入框",
+			"mentionSuggest": {
+				"aria-label": "提及建议"
+			}
 		},
 		"aiSource": {
 			"panelTitle": "管理 AI 源显示",
@@ -6505,12 +6551,22 @@
 			"done": "对话已完成"
 		},
 		"power": {
-			"label": "任务完成后关机",
-			"aria-label": "任务完成后关机设置",
-			"menuTitle": "所有任务生成完毕后关闭主机",
-			"armed": "所有任务完成后将关闭 ${host}",
-			"armedToast": "已设置：所有任务生成完毕后关闭主机",
-			"cancelled": "已取消任务完成后关机"
+			"settings": {
+				"button": "完成后自动操作设置",
+				"aria": "完成后自动操作设置",
+				"title": "任务完成后的自动操作",
+				"hint": "所有任务生成完毕后，对下列主机执行所选操作。"
+			},
+			"action": {
+				"none": "不操作",
+				"shutdown": "关机",
+				"sleep": "休眠",
+				"restart": "重启"
+			},
+			"armedCount": "任务完成后：${count} 台主机",
+			"armedAria": "已完成自动操作设置：${count} 台主机",
+			"armedToast": "已设置：所有任务生成完毕后执行所选操作",
+			"cancelled": "已取消自动操作"
 		},
 		"home_function_buttons": {
 			"code": {
@@ -6531,6 +6587,21 @@
 			"code": {
 				"title": "来自编码会话"
 			}
+		},
+		"tool": {
+			"userShell": "终端命令",
+			"readFile": "读取文件",
+			"findFiles": "查找文件",
+			"searchContent": "搜索内容",
+			"editFile": "编辑文件",
+			"writeFile": "写入文件",
+			"setWorkdir": "设置工作目录",
+			"listMachines": "列出机器",
+			"preload": "载入上下文",
+			"viewFiles": "查看文件",
+			"addFiles": "发送文件",
+			"callback": "工具回调",
+			"runShell": "运行 ${lang}"
 		}
 	},
 	"gist": {
@@ -6568,8 +6639,8 @@
 			},
 			"noResults": "没有匹配的 gist。",
 			"search": {
-				"placeholder": "搜索标题…",
-				"aria-label": "搜索 gist 标题"
+				"placeholder": "搜索 gist…",
+				"aria-label": "搜索 gist"
 			},
 			"sortLabel": "排序方式",
 			"sort": {
@@ -6581,7 +6652,25 @@
 				"titleDesc": "标题（Z→A）"
 			},
 			"select": "多选",
-			"exitSelection": "退出多选"
+			"exitSelection": "退出多选",
+			"view": {
+				"grid": {
+					"title": "网格视图",
+					"aria-label": "网格视图"
+				},
+				"list": {
+					"title": "列表视图",
+					"aria-label": "列表视图"
+				}
+			},
+			"filter": {
+				"all": "全部",
+				"security": "按安全等级筛选",
+				"source": "按来源筛选"
+			},
+			"clearSearch": "清除搜索",
+			"emptyHint": "也可以把 Markdown 文件拖进此页面",
+			"loading": "加载中…"
 		},
 		"source": {
 			"manual": "手动创建",
@@ -6610,7 +6699,6 @@
 		"edit": {
 			"save": "保存",
 			"cancel": "返回",
-			"title": "标题",
 			"editor": {
 				"placeholder": "输入 Markdown 内容…",
 				"aria-label": "Markdown 编辑器"

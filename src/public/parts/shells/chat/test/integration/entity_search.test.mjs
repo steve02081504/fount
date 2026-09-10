@@ -63,6 +63,7 @@ Deno.test('searchEntitiesNetwork finds local handle without network peers', asyn
 	const hit = entities.find(row => row.entityHash === operator)
 	assertEquals(hit.handle, 'steve_test')
 	assertEquals(hit.name, '史蒂夫')
+	assert(Array.isArray(hit.sourceNodes), 'local-only hit must carry a sourceNodes array')
 })
 
 Deno.test('searchEntitiesNetwork finds local agent by charPartName', async () => {

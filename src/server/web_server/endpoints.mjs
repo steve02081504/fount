@@ -6,7 +6,7 @@ import { debugLog } from '../../scripts/debug_log.mjs'
 import { console, getLocaleDataForUser, fountLocaleList } from '../../scripts/i18n/index.mjs'
 import { ms } from '../../scripts/ms.mjs'
 import { PART_PUBLIC_DIR, urlPartKeyToPartpath } from '../../scripts/part_paths.mjs'
-import { get_hosturl_in_local_ip, is_local_ip, is_local_ip_from_req, rateLimit } from '../../scripts/ratelimit.mjs'
+import { get_hosturl_in_local_ip, is_trusted_local_request, rateLimit } from '../../scripts/ratelimit.mjs'
 import { generateVerificationCode, verifyVerificationCode } from '../../scripts/verifycode.mjs'
 import { login, loginWithApiKey, register, logout, authenticate, getUserByReq, getUserDictionary, auth_request, generateApiKey, revokeApiKeyByJti, verifyApiKey, verifyPassword, ACCESS_TOKEN_EXPIRY_DURATION, REFRESH_TOKEN_EXPIRY_DURATION, getSecureCookieOptions, respondAuthResult } from '../auth/index.mjs'
 import { webauthnLoginBegin, webauthnLoginComplete } from '../auth/webauthn.mjs'
@@ -46,7 +46,7 @@ import { watchFrontendChanges } from './watcher.mjs'
  * @returns {Promise<boolean>} 通过校验或本机访问时为 true。
  */
 async function ensurePowTokenOr401(req, res) {
-	if (is_local_ip_from_req(req)) return true
+	if (is_trusted_local_request(req)) return true
 	const { powToken } = req.body
 	if (!powToken) {
 		res.status(401).json({ i18nKey: 'auth.error.powValidationFailed' })
@@ -96,12 +96,12 @@ export function registerEndpoints(router) {
 	})
 
 	router.ws('/ws/logs', (req, res, next) => {
-		if (is_local_ip_from_req(req)) return next()
+		if (is_trusted_local_request(req)) return next()
 		return authenticate(req, res, next)
 	}, logServiceWebSocketHandler)
 
 	router.ws('/ws/eval', (req, res, next) => {
-		if (is_local_ip_from_req(req)) return next()
+		if (is_trusted_local_request(req)) return next()
 		return authenticate(req, res, next)
 	}, evalServiceWebSocketHandler)
 
@@ -121,7 +121,7 @@ export function registerEndpoints(router) {
 		res.status(204).end()
 	})
 	router.get('/api/ping', cors(), async (req, res) => {
-		const is_local_ip = is_local_ip_from_req(req)
+		const is_local_ip = is_trusted_local_request(req)
 		let hosturl_in_local_ip
 		let ver
 		let branch
@@ -234,18 +234,15 @@ export function registerEndpoints(router) {
 	})
 
 	router.post('/api/register/generateverificationcode', async (req, res) => {
-		// get ip
-		const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress
-		generateVerificationCode(ip)
+		generateVerificationCode(req.ip)
 		res.status(200).json({ message: 'verification code generated' })
 	})
 	router.post('/api/register', rateLimit({ maxRequests: 5, windowMs: ms('1m') }), async (req, res) => {
 		const { username, password, verificationcode } = req.body
-		const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress
-		if (!is_local_ip(ip)) {
+		if (!is_trusted_local_request(req)) {
 			if (!await ensurePowTokenOr401(req, res)) return
 
-			if (verifyVerificationCode(verificationcode, ip) === false) {
+			if (verifyVerificationCode(verificationcode, req.ip) === false) {
 				res.status(401).json({ i18nKey: 'auth.error.verificationCode.error' })
 				return
 			}

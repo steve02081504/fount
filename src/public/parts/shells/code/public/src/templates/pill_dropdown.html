@@ -1,7 +1,7 @@
 <div class="dropdown dropdown-top${hidden ? ' hidden' : ''}" id="${name}-pill-wrap">
 	<button type="button" class="code-pill" id="${name}-pill" role="button" tabindex="0">
 		<span class="code-pill-label" id="${name}-pill-label"></span>
-		<span class="code-pill-chevron" aria-hidden="true">▾</span>
+		<img src="https://api.iconify.design/mdi/chevron-down.svg" class="code-pill-chevron text-icon" width="14" height="14" alt="" aria-hidden="true" />
 	</button>
-	<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 ${menuClass} p-2 shadow" id="${name}-menu">${footer || ''}</ul>
+	<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 ${menuClass} p-2 shadow" id="${name}-menu"></ul>
 </div>

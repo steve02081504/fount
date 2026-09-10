@@ -119,6 +119,7 @@ export default {
 				description: presentation.description,
 				tags: presentation.tags,
 				links: presentation.links,
+				sourceNodes: offer.sourceNodes || [],
 			}
 		})
 	},

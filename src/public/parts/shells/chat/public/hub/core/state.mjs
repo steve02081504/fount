@@ -2,10 +2,6 @@
 export const store = {
 	sidebar: {
 		groups: [],
-		/** 侧栏 Ctrl/Shift 多选中的群 ID */
-		selectedGroupIds: new Set(),
-		/** Shift 范围选择锚点群 ID */
-		selectionAnchorGroupId: null,
 		groupFoldersState: { folders: [] },
 		/** 侧栏可见群 ID 顺序（与 `renderServerBar` 一致，供 Shift 多选） */
 		sidebarGroupOrder: [],

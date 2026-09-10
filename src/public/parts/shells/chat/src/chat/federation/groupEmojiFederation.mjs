@@ -14,6 +14,7 @@ import {
 	readGroupEmojiBinary,
 	upsertGroupEmojiManifestEntry,
 } from '../../group/groupEmojis.mjs'
+import { isSafeGroupId } from '../lib/paths.mjs'
 
 import { bindFedSender } from './outbound.mjs'
 import { isFederationActionAllowedUnderLoad } from './roomLoadBudget.mjs'
@@ -32,6 +33,25 @@ const pendingFetches = new Map()
  */
 function consumeEmojiWant(bucketKey) {
 	return consumeWireRateBucket(bucketKey, { maxCount: EMOJI_WANT_MAX_PER_MIN })
+}
+
+/**
+ * 本机 replica 是否为该群活跃成员（node-scope user-room 入站写授权用，防非成员注入）。
+ * 动态 import 以避免与 materialize / access 的模块环。
+ * @param {string} username 用户名
+ * @param {string} groupId 群 ID
+ * @returns {Promise<boolean>} 是否为活跃成员
+ */
+async function isLocalActiveGroupMember(username, groupId) {
+	try {
+		const { getState } = await import('../dag/materialize.mjs')
+		const { resolveActiveMemberKeyForLocalUser } = await import('../../group/access.mjs')
+		const { state } = await getState(username, groupId)
+		return Boolean(await resolveActiveMemberKeyForLocalUser(username, groupId, state))
+	}
+	catch {
+		return false
+	}
 }
 
 /**
@@ -69,6 +89,7 @@ function resolvePayloadPackId(data, groupId) {
  * @returns {Promise<void>} 返回值
  */
 export async function handleFedEmojiWant(username, groupId, data, peerId, sendEmojiData, isBlockedPeer, peerToNode) {
+	if (!isSafeGroupId(groupId)) return
 	if (!isPlainObject(data)) return
 	if (!consumeEmojiWant(waitKey(username, groupId, EMOJI_WANT_BUCKET_KEY))) return
 	const remoteNode = peerToNode.get(peerId)
@@ -89,12 +110,17 @@ export async function handleFedEmojiWant(username, groupId, data, peerId, sendEm
 
 /**
  * 处理入站 `fed_emoji_data`：写入本地并兑现等待中的 Promise。
+ *
+ * `options.requireLocalMembership` 用于 node-scope user-room 入站（任何已连节点可达）：
+ * 仅接受「本机正在等待该表情」或「本机是该群活跃成员」的写入，阻断非成员注入任意群目录。
  * @param {string} username 用户名
  * @param {string} groupId 群 ID
  * @param {unknown} data 载荷
+ * @param {{ requireLocalMembership?: boolean }} [options] 入站授权选项
  * @returns {Promise<void>} 返回值
  */
-export async function handleFedEmojiData(username, groupId, data) {
+export async function handleFedEmojiData(username, groupId, data, options = {}) {
+	if (!isSafeGroupId(groupId)) return
 	if (!isPlainObject(data)) return
 	const emojiId = data.emojiId || ''
 	const dataUrl = data.dataUrl || ''
@@ -103,6 +129,7 @@ export async function handleFedEmojiData(username, groupId, data) {
 	if (!emojiId || !/^data:[^;]+;base64,.+$/u.test(dataUrl)) return
 	const key = waitKey(username, groupId, emojiId, packId)
 	const pending = pendingFetches.get(key)
+	if (options.requireLocalMembership && !pending && !await isLocalActiveGroupMember(username, groupId)) return
 	if (pending) {
 		clearTimeout(pending.timer)
 		pendingFetches.delete(key)
@@ -114,12 +141,16 @@ export async function handleFedEmojiData(username, groupId, data) {
 
 /**
  * 处理入站 `fed_emoji_manifest`：合并远端 manifest 条目。
+ *
+ * manifest 只含元数据，且非成员按设计需靠它发现群 pack（见 `resolveGroupEmojiContent` 的非成员就近复用），
+ * 故不按成员身份拦截；仅做 groupId 形校验防目录穿越。
  * @param {string} username 用户名
  * @param {string} groupId 群 ID
  * @param {unknown} data 载荷
  * @returns {Promise<void>} 返回值
  */
 export async function handleFedEmojiManifest(username, groupId, data) {
+	if (!isSafeGroupId(groupId)) return
 	if (!isPlainObject(data)) return
 	const emojiId = data.emojiId || ''
 	if (!emojiId) return
@@ -189,7 +220,8 @@ export function attachUserRoomEmojiHandlers(username, wire) {
 		if (!isPlainObject(data)) return
 		const groupId = data.groupId || ''
 		if (!groupId) return
-		void handleFedEmojiData(username, groupId, data)
+		// user-room 为 node scope：任何已连节点可达，写入须为待兑现请求或本机成员。
+		void handleFedEmojiData(username, groupId, data, { requireLocalMembership: true })
 			.catch(error => console.warn('federation: user-room fed_emoji_data failed', error))
 	})
 	wire.on('fed_emoji_manifest', data => {

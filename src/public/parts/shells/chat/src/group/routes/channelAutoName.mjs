@@ -78,19 +78,19 @@ function parseAutoNameResult(content) {
  * @returns {string} prompt 文本
  */
 function buildChannelPrompt(context, categoryNames) {
-	return [
-		'你是频道整理助手。下面是一个未命名频道的内容摘要，以及该群现有的频道分类列表。',
-		'请为该频道生成一个简短的频道名（<=20字）和合适的分类名。',
-		'分类名尽量复用下面现有的分类；若确实没有合适的现有分类，可以提出一个新的分类名（会自动创建）。',
-		`现有分类：${categoryNames.length ? categoryNames.join('、') : '（无）'}`,
-		'',
-		'## 未命名频道内容',
-		context,
-		'',
-		'请严格使用如下 XML 标签输出，不要输出多余内容：',
-		'<channel-name>新的频道名</channel-name>',
-		'<category-name>分类名</category-name>',
-	].join('\n')
+	return `\
+你是频道整理助手。下面是一个未命名频道的内容摘要，以及该群现有的频道分类列表。
+请为该频道生成一个简短的频道名（<=20字）和合适的分类名。
+分类名尽量复用下面现有的分类；若确实没有合适的现有分类，可以提出一个新的分类名（会自动创建）。
+现有分类：${categoryNames.length ? categoryNames.join('、') : '（无）'}
+
+## 未命名频道内容
+${context}
+
+请严格使用如下 XML 标签输出，不要输出多余内容：
+<channel-name>新的频道名</channel-name>
+<category-name>分类名</category-name>
+`
 }
 
 /**

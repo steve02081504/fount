@@ -15,6 +15,7 @@ import { in_container } from './env.mjs'
  * @returns {Promise<any>} 一个解析为通知程序响应的承诺。
  */
 export async function notify(title, message, options = {}) {
+	if (process.env.FOUNT_TEST) return
 	if (in_container) return console.log(`[Notify] ${title}\n${message}`)
 	// if linux, check notify-send for notifier workability
 	if (process.platform === 'linux' && !await where_command('notify-send'))

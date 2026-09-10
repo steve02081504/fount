@@ -14,7 +14,7 @@ const getElementById = id => document.getElementById(id)
 /** 静态 DOM 引用；pill 镀铬元素由 `mountPillChrome` 补全。 */
 export const elements = {
 	homeToggle: getElementById('home-toggle'),
-	homeMenu: getElementById('home-menu'),
+	tabMenu: getElementById('code-tab-menu'),
 	tabStrip: getElementById('tab-strip'),
 	messages: getElementById('messages'),
 	composerShell: document.querySelector('.code-composer-shell'),
@@ -24,9 +24,9 @@ export const elements = {
 	dropOverlay: getElementById('drop-overlay'),
 	attachButton: getElementById('attach-button'),
 	sendButton: getElementById('send-button'),
-	sendIcon: getElementById('send-icon'),
 	composerControlsMain: getElementById('composer-controls-main'),
 	composerTargets: getElementById('composer-targets'),
+	powerSettingsButton: getElementById('power-settings-button'),
 }
 
 /** 全局会话 / 选择状态 + 运行时单例（跨模块读写）。 */
@@ -43,6 +43,8 @@ export const store = {
 	lastConversationWorkspaceId: '',
 	profiles: [],
 	commands: [],
+	/** gist id → 显示标题（`@[gist:id]` chip 标签；补全时填充）。 */
+	gistTitles: new Map(),
 	aiHidden: [],
 	aiDefaults: [],
 	profile: 'build',
@@ -54,8 +56,8 @@ export const store = {
 	shell: '',
 	shellMode: false,
 	generating: false,
-	/** 待关机主机 id（所有任务生成完毕后关闭；null = 不关闭）。 */
-	shutdownMachine: null,
+	/** 待执行电源操作：主机 id → 操作（shutdown / sleep / restart）。 */
+	shutdownActions: {},
 	/** 进行中的 code 生成数（后端统计，跨页面）。 */
 	shutdownActive: 0,
 	/** 待发送附件（发送时并入用户消息 files）。 */
@@ -72,6 +74,8 @@ export const store = {
 	dirtyTabKey: '',
 	/** markdown 渲染缓存。 */
 	markdownCache: {},
+	/** 有未读通知的标签键集合（tabKey → true）。 */
+	tabUnread: new Set(),
 }
 
 /**
@@ -138,6 +142,21 @@ export function initComposer() {
 			 * @returns {string} chip 文本。
 			 */
 			resolveLabel: parsed => parsed.body,
+		}, {
+			kind: 'gist',
+			regex: /@\[gist:([^\]\n]+)\]/,
+			/**
+			 * 解析 gist token 原文。
+			 * @param {string} raw - 匹配的原文（`@[gist:…]`）。
+			 * @returns {{kind: string, body: string}} token 描述。
+			 */
+			parse: raw => ({ kind: 'gist', body: raw.slice('@[gist:'.length, -1) }),
+			/**
+			 * 解析 chip 显示名（已知标题时用标题，否则回退 id）。
+			 * @param {{kind: string, body: string}} parsed - token 描述。
+			 * @returns {string} chip 文本。
+			 */
+			resolveLabel: parsed => store.gistTitles.get(parsed.body) || parsed.body,
 		}],
 		useRegisteredInlineTokens: false,
 	})

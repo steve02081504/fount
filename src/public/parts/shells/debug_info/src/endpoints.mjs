@@ -2,7 +2,7 @@ import os from 'node:os'
 
 import { WebSocket } from 'npm:ws'
 
-import { is_local_ip_from_req } from '../../../../../scripts/ratelimit.mjs'
+import { is_trusted_local_request } from '../../../../../scripts/ratelimit.mjs'
 import { authenticate, getUserByReq } from '../../../../../server/auth/index.mjs'
 import { autoUpdateEnabled } from '../../../../../server/autoupdate.mjs'
 import { getPeerHealthTracker } from '../../../../../server/p2p_server/index.mjs'
@@ -142,7 +142,7 @@ export function setEndpoints(router) {
 	router.post('/api/parts/shells\\:debug_info/open_source', authenticate, async (req, res) => {
 		const user = getUserByReq(req)
 		if (!user) return res.status(401).json({ message: 'Unauthorized' })
-		if (!is_local_ip_from_req(req))
+		if (!is_trusted_local_request(req))
 			return res.status(403).json({ message: 'Forbidden on non-local request.' })
 		const { filePath, line, column } = req.body || {}
 		await openEditor(user.username, filePath, line, column)

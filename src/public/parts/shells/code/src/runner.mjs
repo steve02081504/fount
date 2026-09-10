@@ -16,11 +16,13 @@ export { availableShells, machineDefaultShell }
  * @property {string|undefined} stdout 标准输出
  * @property {string|undefined} stderr 标准错误
  * @property {string|undefined} stdall 合并输出
+ * @property {number|undefined} elapsedMs 耗时（毫秒）
  */
 
 /**
  * 在目标机器的工作目录执行 shell 命令。
  * 未指定工作区时经 execJs 取目标机器家目录兜底（避免以服务器进程 cwd 如 system32 执行）。
+ * 用户主动执行的命令不设超时（`timeoutMs: null`），但仍返回耗时。
  * @param {object} options - 执行参数。
  * @param {string} options.username - 用户名。
  * @param {string} [options.machine='0'] - 目标机器标识（"0" = 本机）。
@@ -33,13 +35,14 @@ export async function runShellCommand({ username, machine = '0', workdir, shell,
 	const probeExecutor = createTargetExecutor(username, { machine })
 	const resolvedWorkdir = workdir || await probeExecutor.execJs(async () => (await import('node:os')).homedir())
 	const executor = createTargetExecutor(username, { machine, workdir: resolvedWorkdir })
+	const start = Date.now()
 	try {
-		const result = await executor.execShell(shell || null, command)
+		const result = await executor.execShell(shell || null, command, { timeoutMs: null })
 		if (result instanceof Error)
-			return { code: -1, stdall: String(result.stack || result.message || result) }
-		return result
+			return { code: -1, stdall: String(result.stack || result.message || result), elapsedMs: Date.now() - start }
+		return { ...result, elapsedMs: result?.elapsedMs ?? Date.now() - start }
 	}
 	catch (err) {
-		return { code: -1, stdall: String(err?.stack || err) }
+		return { code: -1, stdall: String(err?.stack || err), elapsedMs: Date.now() - start }
 	}
 }

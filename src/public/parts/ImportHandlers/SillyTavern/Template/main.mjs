@@ -7,6 +7,7 @@ import { evaluateMacros } from 'fount/public/parts/ImportHandlers/SillyTavern/en
 import { promptBuilder } from 'fount/public/parts/ImportHandlers/SillyTavern/engine/prompt_builder.mjs'
 import { runRegex } from 'fount/public/parts/ImportHandlers/SillyTavern/engine/regex.mjs'
 import { buildPromptStruct } from 'fount/public/parts/shells/chat/src/prompt_struct/index.mjs'
+import { runReplyHandlers } from 'fount/public/parts/shells/chat/src/reply/handlerPipeline.mjs'
 import { saveJsonFile } from 'fount/scripts/json_loader.mjs'
 import { loadAnyPreferredDefaultPart, loadPart } from 'fount/server/parts_loader.mjs'
 
@@ -253,17 +254,15 @@ export default {
 				 */
 				args.generation_options.replyPreviewUpdater = r => replyPreviewUpdater(args, r)
 
+				const handlers = [
+					...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)
+				].filter(Boolean)
 				// 在重新生成循环中检查插件触发
 				regen: while (true) {
 					args.generation_options.base_result = result
 					await activeSource.StructCall(prompt_struct, args.generation_options)
-					let continue_regen = false
-					for (const replyHandler of [
-						...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)
-					].filter(Boolean))
-						if (await replyHandler(result, { ...args, prompt_struct, AddLongTimeLog }))
-							continue_regen = true
-					if (continue_regen) continue regen
+					if (await runReplyHandlers(result, { ...args, prompt_struct, AddLongTimeLog }, handlers))
+						continue regen
 					break
 				}
 

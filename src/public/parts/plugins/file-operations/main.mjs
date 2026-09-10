@@ -70,6 +70,19 @@ function renderOverrideFileBlock(content, args, meta) {
 }
 
 /**
+ * 渲染 <glob> / <grep> 待执行占位：标题为本地化“正在搜索…”，正文为标签内容。
+ * @param {string} content - 标签主体（glob 模式或 grep 正则）。
+ * @param {object} args - 预览更新参数。
+ * @returns {string} 渲染结果。
+ */
+function renderSearchBlock(content, args) {
+	const keyword = content.trim()
+	return renderMarkdownCodeBlock(keyword, {
+		title: getChatI18n(args, 'chat.message.view.tool.searchingContent', { content: keyword }),
+	})
+}
+
+/**
  * 文件操作插件主模块。
  * @returns {import('../../../../../src/decl/pluginAPI.ts').PluginAPI_t} 插件 API 对象。
  */
@@ -113,6 +126,16 @@ export default {
 					start: /<override-file[^>]*>/,
 					end: '</override-file>',
 					renderPending: renderOverrideFileBlock,
+				},
+				{
+					start: /<glob(?![^>]*\/>)[^>]*>/,
+					end: '</glob>',
+					renderPending: renderSearchBlock,
+				},
+				{
+					start: /<grep(?![^>]*\/>)[^>]*>/,
+					end: '</grep>',
+					renderPending: renderSearchBlock,
 				},
 			]),
 		},

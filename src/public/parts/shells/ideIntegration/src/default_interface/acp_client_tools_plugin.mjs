@@ -160,24 +160,28 @@ ${canRead ? `\
 	 * 处理 AI 回复中的 ACP 工具调用。
 	 * @param {object} reply - 回复对象。
 	 * @param {object} args - ReplyHandler 参数。
-	 * @returns {Promise<boolean>} 是否处理了工具调用。
+	 * @returns {Promise<boolean>} 是否建议发起下一轮生成。
 	 */
 	async function replyHandler(reply, args) {
-		const text = reply.content || ''
+		// 在独立工作副本上解析并掩除已处理调用段，不改写原始生成
+		const content = reply.content_for_handle
 		const acp = getACPContext(args)
 
 		// ── <thinking> → thought_message_chunk ──
-		const thinkingMatches = [...text.matchAll(/<thinking>([\S\s]*?)<\/thinking>/g)]
-		for (const match of thinkingMatches)
+		const thinkingMatches = [...content.matchAll(/<thinking>([\S\s]*?)<\/thinking>/g)]
+		for (const match of thinkingMatches) {
+			args.MaskHandledCall?.(match[0])
 			if (acp && match[1].trim())
 				sessionUpdate(acp.agentContext, {
 					sessionId: acp.sessionId,
 					update: { sessionUpdate: 'thought_message_chunk', content: { type: 'text', text: match[1].trim() } },
 				})
+		}
 
 		// ── <acp-plan> → plan notification ──
-		const planMatches = [...text.matchAll(/<acp-plan>([\S\s]*?)<\/acp-plan>/g)]
-		for (const match of planMatches)
+		const planMatches = [...content.matchAll(/<acp-plan>([\S\s]*?)<\/acp-plan>/g)]
+		for (const match of planMatches) {
+			args.MaskHandledCall?.(match[0])
 			if (acp) {
 				const entries = []
 				for (const line of match[1].split('\n')) {
@@ -195,16 +199,17 @@ ${canRead ? `\
 						update: { sessionUpdate: 'plan', entries },
 					})
 			}
+		}
 
 		// ── 工具标签匹配 ──
 		const readMatches = canRead
-			? [...text.matchAll(/<acp-read-file\s+path="([^"]+)"(?:\s+line="(\d+)")?(?:\s+limit="(\d+)")?\s*\/>/g)]
+			? [...content.matchAll(/<acp-read-file\s+path="([^"]+)"(?:\s+line="(\d+)")?(?:\s+limit="(\d+)")?\s*\/>/g)]
 			: []
 		const writeMatches = canWrite
-			? [...text.matchAll(/<acp-write-file\s+path="([^"]+)">([\S\s]*?)<\/acp-write-file>/g)]
+			? [...content.matchAll(/<acp-write-file\s+path="([^"]+)">([\S\s]*?)<\/acp-write-file>/g)]
 			: []
 		const terminalMatches = canTerminal
-			? [...text.matchAll(/<acp-terminal\s+command="([^"]+)"(?:\s+args="([^"]*)")?(?:\s+cwd="([^"]*)")?(?:\s+env="([^"]*)")?\s*\/>/g)]
+			? [...content.matchAll(/<acp-terminal\s+command="([^"]+)"(?:\s+args="([^"]*)")?(?:\s+cwd="([^"]*)")?(?:\s+env="([^"]*)")?\s*\/>/g)]
 			: []
 
 		const hasThinking = thinkingMatches.length > 0
@@ -216,24 +221,9 @@ ${canRead ? `\
 		// 仅有 thinking/plan 无需 re-generation
 		if (!hasTools) return false
 
-		const toolCallingLog = { name: reply.name, role: 'char', content: '', files: [] }
-		let logAdded = false
-
-		/**
-		 * 添加工具调用日志。
-		 * @param {string} fullMatch - 匹配的完整文本。
-		 */
-		function addCallLog(fullMatch) {
-			toolCallingLog.content += fullMatch + '\n'
-			if (!logAdded) {
-				args.AddLongTimeLog(toolCallingLog)
-				logAdded = true
-			}
-		}
-
 		// ── fs read ──
 		for (const match of readMatches) {
-			addCallLog(match[0])
+			args.MaskHandledCall?.(match[0])
 			const filePath = match[1]
 			const line = match[2] ? Number(match[2]) : undefined
 			const limit = match[3] ? Number(match[3]) : undefined
@@ -266,7 +256,7 @@ ${canRead ? `\
 
 		// ── fs write (with permission) ──
 		for (const match of writeMatches) {
-			addCallLog(match[0])
+			args.MaskHandledCall?.(match[0])
 			const filePath = match[1]
 			const body = match[2]
 			const callId = `acp_write_${++toolCallCounter}`
@@ -304,7 +294,7 @@ ${canRead ? `\
 
 		// ── terminal (with permission) ──
 		for (const match of terminalMatches) {
-			addCallLog(match[0])
+			args.MaskHandledCall?.(match[0])
 			const command = match[1]
 			const argsStr = match[2] || ''
 			const cwd = match[3] || undefined

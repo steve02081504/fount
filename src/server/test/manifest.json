@@ -18,6 +18,7 @@
 				"src/server/test/pure/**",
 				"src/server/registries.mjs",
 				"src/server/parts_loader.mjs",
+				"src/scripts/fs_walk.mjs",
 				"src/server/no_cors.mjs",
 				"src/server/web_server/preload_list.mjs",
 				"src/scripts/net_listen.mjs",
@@ -63,7 +64,9 @@
 				"src/server/auth/**",
 				"src/server/web_server/**",
 				"src/scripts/ms.mjs",
-				"src/scripts/WsAbleRouter.mjs"
+				"src/scripts/WsAbleRouter.mjs",
+				"src/scripts/sentrytunnel.mjs",
+				"src/scripts/sentry_state.mjs"
 			]
 		}
 	]

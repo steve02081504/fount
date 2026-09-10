@@ -3,6 +3,7 @@ import * as mime from 'npm:mime-types'
 
 import { escapeRegExp } from '../../../../../scripts/regex.mjs'
 import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../shells/chat/src/prompt_struct/index.mjs'
+import { buildSourceInfo } from '../proxy/src/sourceInfo.mjs'
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
@@ -61,12 +62,16 @@ const configTemplate = {
  * @param {() => (Promise<any> | any)} [extra.getClient] - 每次请求取客户端（可刷新 token）。
  * @param {object} [extra.clientOptions] - 合并进默认 Anthropic 构造参数。
  * @param {object} [extra.product_info] - 覆盖产品信息。
+ * @param {{url?: string, defaultUrl?: string}} [extra.providerUrl] - 覆盖 provider 推导所用的 URL；传 `{}` 禁用从 base_url 推导。
  * @returns {Promise<AIsource_t>} AI 源。
  */
 export async function GetSource(config, extra = {}) {
 	const { default: Anthropic } = await import('npm:@anthropic-ai/sdk')
 	const supportedImageTypes = config.allowed_mime_types ?? defaultSupportedImageTypes
 	const infoLocales = extra.product_info || product_info
+	const providerUrl = 'providerUrl' in extra
+		? extra.providerUrl
+		: { url: config.base_url, defaultUrl: configTemplate.base_url }
 
 	/**
 	 * 取得 Anthropic 客户端。
@@ -101,10 +106,7 @@ export async function GetSource(config, extra = {}) {
 	 */
 	const result = {
 		type: 'text-chat',
-		info: Object.fromEntries(Object.entries(structuredClone(infoLocales)).map(([k, v]) => {
-			v.name = config.name || config.model
-			return [k, v]
-		})),
+		info: buildSourceInfo(infoLocales, config, providerUrl),
 		is_paid: true,
 		extension: {},
 

@@ -1,5 +1,5 @@
 import { Buffer } from 'node:buffer'
-import { createCipheriv, createDecipheriv, createHash, hkdfSync, randomBytes } from 'node:crypto'
+import { createCipheriv, createDecipheriv, hkdfSync, randomBytes } from 'node:crypto'
 
 import { pubKeyHash, publicKeyFromSeed, sign, verify } from 'npm:@steve02081504/fount-p2p/crypto'
 
@@ -119,12 +119,4 @@ export function cabinetIdFromWritePub(writePublicKey) {
 export function writeIdentityFromSecret(writeSecretKey) {
 	const publicKey = publicKeyFromSeed(writeSecretKey)
 	return { publicKey, cabinetId: cabinetIdFromWritePub(publicKey) }
-}
-
-/**
- * @param {string} text 任意文本
- * @returns {string} sha256 hex
- */
-export function sha256Hex(text) {
-	return createHash('sha256').update(text).digest('hex')
 }

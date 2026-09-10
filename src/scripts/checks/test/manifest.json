@@ -298,6 +298,27 @@
 			]
 		},
 		{
+			"name": "no_manual_svg",
+			"expected": "1s",
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/checks/test/no_manual_svg.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/checks/no_manual_svg.mjs",
+				"src/scripts/checks/test/no_manual_svg.test.mjs",
+				"src/scripts/checks/{theme_radius.mjs,walk.mjs}",
+				"src/public/**/*.{html,mjs,js,ts,css}",
+				".github/pages/**/*.{html,mjs,js,ts,css}"
+			]
+		},
+		{
 			"name": "ms_literal",
 			"expected": "2s",
 			"run": [
@@ -315,6 +336,26 @@
 				"src/scripts/checks/test/ms_literal.test.mjs",
 				"src/scripts/checks/walk.mjs",
 				"src/scripts/ms.mjs",
+				"**/*.{mjs,js,ts}"
+			]
+		},
+		{
+			"name": "build_string",
+			"expected": "3s",
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/checks/test/build_string.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/checks/build_string.mjs",
+				"src/scripts/checks/test/build_string.test.mjs",
+				"src/scripts/checks/walk.mjs",
 				"**/*.{mjs,js,ts}"
 			]
 		}

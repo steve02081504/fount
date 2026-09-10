@@ -2,6 +2,7 @@
  * 【文件】public/hub/composerReply.mjs
  * 【职责】内联 quote-reply 目标状态与输入框上方横幅。
  */
+import { isDagEventId } from '../src/lib/eventId.mjs'
 
 /** @type {{ eventId: string, senderName: string, preview: string } | null} */
 let replyTarget = null
@@ -30,7 +31,7 @@ export function clearReplyTarget() {
  */
 export function setReplyTarget(target) {
 	const eventId = target?.eventId || ''
-	if (!/^[\da-f]{64}$/.test(eventId)) return
+	if (!isDagEventId(eventId)) return
 	replyTarget = {
 		eventId,
 		senderName: (target.senderName || '').slice(0, 100) || '…',

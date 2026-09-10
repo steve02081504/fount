@@ -5,6 +5,7 @@ import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { getShellPartpath } from 'npm:@steve02081504/fount-p2p/registries/part_path'
 import { queryNetwork } from 'npm:@steve02081504/fount-p2p/wire/part/query'
 
+import { isSourceNodeBlocked, sourceNodesOf } from '../../../../../../scripts/p2p/source_block.mjs'
 import { federatedPostQueryRow, federatedPostRowKey, sanitizeFederatedPostQueryRow } from '../federation/postQueryRow.mjs'
 import { isPublicDiscoverable } from '../lib/visibilitySpec.mjs'
 import { getTimelineMaterialized } from '../timeline/materialize.mjs'
@@ -52,16 +53,17 @@ export async function localPostDiscoverHandler(inboundContext, query) {
 export async function collectNearbyPostDiscover(username, options = {}) {
 	const limit = Math.min(Math.max(Number(options.limit) || 20, 1), 50)
 	const mediaOnly = options.mediaOnly === true
-	const rows = await queryNetwork(username, getShellPartpath('social'), POST_DISCOVER_KIND, {
+	const { rows, sources } = await queryNetwork(username, getShellPartpath('social'), POST_DISCOVER_KIND, {
 		limit,
 		mediaOnly,
 	}, {
 		ttl: Number(options.ttl) || 3,
 		maxHits: 64,
 		rowKey: federatedPostRowKey,
+		isSourceBlocked: isSourceNodeBlocked,
 	})
 
-	/** @type {{ entityHash: string, postId: string, event: object }[]} */
+	/** @type {{ entityHash: string, postId: string, event: object, sourceNodes: string[] }[]} */
 	const items = []
 	for (const raw of rows) {
 		const cleaned = sanitizeFederatedPostQueryRow(raw, { mediaOnly })
@@ -70,6 +72,7 @@ export async function collectNearbyPostDiscover(username, options = {}) {
 			entityHash: cleaned.entityHash,
 			postId: cleaned.postId,
 			event: cleaned.event,
+			sourceNodes: sourceNodesOf(sources, federatedPostRowKey(cleaned)),
 		})
 		if (items.length >= limit) break
 	}

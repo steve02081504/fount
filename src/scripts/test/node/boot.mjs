@@ -138,7 +138,8 @@ export function writeNodeConfig(dataPath, options) {
  */
 export async function initFountNode({ dataPath, restarter, starts, needsOutput, P2P }) {
 	process.env.FOUNT_DENO_START_TIME ??= new Date().toISOString()
-	set_sentry_enabled(false)
+	// 默认关闭 Sentry；FOUNT_TEST_SENTRY=1 时打开，用于覆盖 Sentry 代码路径（如 sentrytunnel 的 DSN 校验）。
+	set_sentry_enabled(process.env.FOUNT_TEST_SENTRY === '1')
 	set_start()
 	starts ??= defaultTestStarts()
 	return await init({

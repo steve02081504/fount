@@ -23,6 +23,7 @@
 </head>
 
 <body class="blog-shell bg-base-200 p-4">
+	<canvas id="blog-neural" class="blog-neural" aria-hidden="true"></canvas>
 	<header class="blog-header -mx-4 px-4">
 		<nav class="navbar min-h-14 gap-2 max-w-4xl mx-auto px-0">
 			<div class="flex items-center gap-2 min-w-0">
@@ -53,16 +54,24 @@
 	</header>
 
 	<main class="flex-1 w-full max-w-4xl mx-auto py-10">
-		<h1 class="text-4xl font-bold mb-3" data-i18n="blog.heading"></h1>
-		<p class="text-lg opacity-80 mb-6 max-w-3xl" data-i18n="blog.intro"></p>
-		<input type="text" id="article-search" class="input input-bordered w-full mb-8" data-i18n="blog.search" />
-		<div id="article-list" class="flex flex-col gap-10" user-content>
+		<section class="blog-hero">
+			<h1 class="blog-hero-title" data-i18n="blog.heading"></h1>
+			<p class="blog-hero-intro" data-i18n="blog.intro"></p>
+			<div class="blog-search">
+				<img class="blog-search-icon text-icon" src="https://api.iconify.design/heroicons/magnifying-glass.svg" alt="" />
+				<input type="text" id="article-search" class="blog-search-input" data-i18n="blog.search" />
+				<button type="button" id="article-search-clear" class="blog-search-clear" data-i18n="blog.search.clear" hidden>
+					<img class="text-icon" src="https://api.iconify.design/heroicons/x-mark.svg" alt="" />
+				</button>
+			</div>
+		</section>
+		<div id="article-list" class="blog-sections" user-content>
 			<div class="flex justify-center py-16">
 				<span class="loading loading-ring loading-lg"></span>
 			</div>
 		</div>
-		<div id="search-empty" class="alert alert-warning mt-10" role="status" hidden>
-			<img src="https://api.iconify.design/line-md/text-box.svg" class="text-icon h-6 w-6 flex-shrink-0" alt="" />
+		<div id="search-empty" class="blog-empty" role="status" hidden>
+			<img src="https://api.iconify.design/heroicons/magnifying-glass.svg" class="blog-empty-icon text-icon" alt="" />
 			<span data-i18n="blog.search.empty"></span>
 		</div>
 	</main>

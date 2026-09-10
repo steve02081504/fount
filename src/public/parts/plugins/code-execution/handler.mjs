@@ -7,6 +7,17 @@ import util from 'node:util'
 import { async_eval } from 'npm:@steve02081504/async-eval'
 import { available, shell_exec_map } from 'npm:@steve02081504/exec'
 
+import {
+	createCollectingConsole,
+	formatElapsed,
+	formatTimeoutNotice,
+	guardOutput,
+	JS_DEFAULT_TIMEOUT_MS,
+	parseRunLimits,
+	runJsWithTimeout,
+	SHELL_DEFAULT_TIMEOUT_MS,
+	OUTPUT_GUARD_LIMIT,
+} from '../../../../scripts/shell_guard.mjs'
 import { getChatI18n, renderMarkdownCodeBlock, renderMarkdownInlineCode, defineInlineToolUses, defineToolUseBlocks } from '../../shells/chat/src/streaming/index.mjs'
 import { createArgsExecutorResolver, parseTagAttrs, resolveTarget } from '../file-operations/src/target.mjs'
 
@@ -17,12 +28,15 @@ import { createArgsExecutorResolver, parseTagAttrs, resolveTarget } from '../fil
 const previewExecutorResolvers = new WeakMap()
 
 /**
- * 判断标签属性是否显式指定了目标（machine / workdir）。
- * @param {Record<string, string>} attrs - 标签属性表。
- * @returns {boolean} 是否显式指定。
+ * 构建内联工具执行卡（代码 + 结果，供人类 content_for_show）。
+ * @param {Array<{code: string, result?: string}>} items - 执行项。
+ * @param {string} lang - 语言标签。
+ * @returns {string} Markdown 卡片文本。
  */
-function hasExplicitTarget(attrs) {
-	return 'machine' in attrs || 'workdir' in attrs
+function buildInlineToolCard(items, lang) {
+	return items.map(({ code, result }) =>
+		renderMarkdownCodeBlock(code, { lang }) + '\n\n结果：\n\n' + renderMarkdownCodeBlock(result ?? '')
+	).join('\n\n')
 }
 
 /**
@@ -178,9 +192,10 @@ export async function codeExecutionReplyHandler(result, args) {
 	/**
 	 * 获取 JS 代码执行的上下文。
 	 * @param {string} code - 要执行的代码。
+	 * @param {object} [evalConsole] - 收集型 console（超时后回读部分输出）。
 	 * @returns {Promise<object>} - 返回 JS 代码执行的上下文。
 	 */
-	async function get_js_eval_context(code) {
+	async function get_js_eval_context(code, evalConsole) {
 		if (!args.chat_scoped_char_memory) args.chat_scoped_char_memory = {}
 		if (!args.chat_scoped_char_memory.coderunner_workspace) args.chat_scoped_char_memory.coderunner_workspace = {}
 		const js_eval_context = {
@@ -270,146 +285,118 @@ export async function codeExecutionReplyHandler(result, args) {
 				)
 			)
 		).filter(Boolean)
-		return Object.assign(js_eval_context, ...pluginContexts)
+		Object.assign(js_eval_context, ...pluginContexts)
+		if (evalConsole) js_eval_context.console = evalConsole
+		return js_eval_context
 	}
 
 	/**
 	 * 为 AI 运行 JS 代码。
 	 * @param {string} code - 要运行的代码。
+	 * @param {object} [evalConsole] - 收集型 console。
 	 * @returns {Promise<any>} - 返回代码执行的结果。
 	 */
-	async function run_jscode_for_AI(code) {
-		return async_eval(code, await get_js_eval_context(code))
+	async function run_jscode_for_AI(code, evalConsole) {
+		return async_eval(code, await get_js_eval_context(code, evalConsole))
 	}
 
-	const { content } = result
+	// 在独立工作副本上解析并掩除已处理调用段，不改写原始生成
+	/**
+	 * 取当前解析用的工作副本。
+	 * @returns {string} 优先 content_for_handle，缺失时回退原始生成。
+	 */
+	const getContent = () => result.content_for_handle
 	// 将 run-* 作为步骤，按在 content 中的出现顺序排列
 	const steps = []
-	for (const m of content.matchAll(/<run-js(?<attrs>[^>]*)>(?<code>[^]*?)<\/run-js>/g))
+	for (const m of getContent().matchAll(/<run-js(?<attrs>[^>]*)>(?<code>[^]*?)<\/run-js>/g))
 		steps.push({ index: m.index, type: 'run', runType: 'js', code: m.groups.code, attrs: m.groups.attrs, fullText: m[0] })
 	for (const shell_name in shell_exec_map) {
 		if (!available[shell_name]) continue
 		const re = new RegExp(`<run-${shell_name}(?<attrs>[^>]*)>(?<code>[^]*?)<\\/run-${shell_name}>`, 'g')
-		for (const m of content.matchAll(re))
+		for (const m of getContent().matchAll(re))
 			steps.push({ index: m.index, type: 'run', runType: shell_name, code: m.groups.code, attrs: m.groups.attrs, fullText: m[0] })
 	}
 	steps.sort((a, b) => a.index - b.index)
+	for (const step of steps) args.MaskHandledCall?.(step.fullText)
 
 	let processed = false
-	if (steps.length > 0)
-		AddLongTimeLog({
-			name: args.Charname,
-			role: 'char',
-			content: steps.map(s => s.fullText).join('\n'),
-			files: []
-		})
 
 	// 按步骤顺序执行代码
 	for (const step of steps) {
 		const toolEntry = {
-			name: 'code-execution',
+			name: `code-execution.run-${step.runType}`,
 			role: 'tool',
 			content: '',
 			files: []
 		}
+		const attrs = parseTagAttrs(step.attrs)
+		const target = resolveTarget(args, attrs)
+		const remote = Boolean(target.remote)
 		if (step.runType === 'js') {
 			await logCode(`${args.Charname} running JS code:`, step.code, 'js')
-			// 显式指定目标或请求级目标为远程机器时走执行器（无本地聊天上下文）
-			const attrs = parseTagAttrs(step.attrs)
-			const target = resolveTarget(args, attrs)
-			const coderesult = target.remote || hasExplicitTarget(attrs)
-				? await executorFor(attrs).execJs(step.code)
-				: await run_jscode_for_AI(step.code)
-			console.info(`${args.Charname} JS result:`, coderesult)
-			toolEntry.content = '执行结果：\n' + util.inspect(coderesult, { depth: 4 })
-			result.extension.execed_codes[step.code] = coderesult
+			const limits = parseRunLimits(attrs, JS_DEFAULT_TIMEOUT_MS)
+			// 显式指定目标或请求级目标为远程机器时走执行器（无本地聊天上下文）；本地注入收集型 console 以回读超时前输出
+			const collecting = createCollectingConsole()
+			const { evalResult, timedOut, elapsedMs } = remote
+				? await runJsWithTimeout(() => executorFor(attrs).execJsWithTimeout(step.code, limits.timeoutMs), limits.timeoutMs)
+				: await runJsWithTimeout(() => run_jscode_for_AI(step.code, collecting.console), limits.timeoutMs)
+			console.info(`${args.Charname} JS result:`, evalResult, timedOut ? '(timed out)' : '')
+			result.extension.execed_codes[step.code] = evalResult ?? { timedOut: true }
+			const elapsedText = formatElapsed(elapsedMs)
+			let fullOutput
+			if (timedOut) {
+				fullOutput = `执行超时（耗时 ${elapsedText}）：JS 无法强制终止，代码可能仍在后台运行。`
+				const partial = collecting.text()
+				if (partial) fullOutput += `\n超时前捕获的输出：\n${partial}`
+			}
+			else if (evalResult?.error)
+				fullOutput = '执行出错：\n' + (evalResult.error.stack || String(evalResult.error))
+			else
+				fullOutput = '执行结果：\n' + util.inspect(evalResult, { depth: 4 }) + (elapsedText ? `\n（耗时 ${elapsedText}）` : '')
+			fullOutput += formatTimeoutNotice({ timedOut, elapsedMs, waitForever: limits.waitForever, expectMs: limits.expectMs, toleranceMs: limits.toleranceMs, kind: 'js' })
+			const guarded = await guardOutput(fullOutput, { name: 'run-js', label: 'JS 结果' })
+			toolEntry.content = '执行结果：\n' + guarded.text
+			toolEntry.content_for_show = renderMarkdownCodeBlock(step.code, { lang: 'js' }) + '\n\n执行结果：\n' + fullOutput
 		}
 		else {
 			const shell_name = step.runType
 			await logCode(`${args.Charname} running ${shell_name} code:`, step.code, shell_name)
+			const limits = parseRunLimits(attrs, SHELL_DEFAULT_TIMEOUT_MS)
 			let shell_result
-			try { shell_result = await executorFor(step.attrs).execShell(shell_name, step.code) } catch (err) { shell_result = err }
+			try { shell_result = await executorFor(step.attrs).execShell(shell_name, step.code, { timeoutMs: limits.timeoutMs }) } catch (err) { shell_result = err }
 			result.extension.execed_codes[step.code] = shell_result
-			if (shell_result.stdall)
-				for (const key of ['stdout', 'stderr'])
-					delete shell_result[key]
 			console.info(`${args.Charname} ${shell_name} result:`, shell_result)
-			toolEntry.content = '执行结果：\n' + util.inspect(shell_result)
+			const elapsedText = shell_result?.elapsedMs ? formatElapsed(shell_result.elapsedMs) : ''
+			const timedOut = Boolean(shell_result?.timedOut)
+			let fullOutput
+			if (shell_result instanceof Error)
+				fullOutput = '执行出错：\n' + (shell_result.stack || String(shell_result))
+			else {
+				const output = shell_result?.stdall ?? [shell_result?.stdout, shell_result?.stderr].filter(Boolean).join('\n') ?? ''
+				const header = `退出码 ${shell_result?.code ?? '(无)'}${shell_result?.signal ? `，信号 ${shell_result.signal}` : ''}${timedOut ? '（超时）' : ''}${elapsedText ? `，耗时 ${elapsedText}` : ''}：`
+				fullOutput = header + '\n' + output
+			}
+			fullOutput += formatTimeoutNotice({
+				timedOut, elapsedMs: shell_result?.elapsedMs ?? 0, waitForever: limits.waitForever,
+				expectMs: limits.expectMs, toleranceMs: limits.toleranceMs, kind: 'shell',
+				killed: shell_result?.killed, remote,
+			})
+			const guarded = await guardOutput(fullOutput, { name: `shell-${shell_name}`, label: 'shell 输出' })
+			toolEntry.content = '执行结果：\n' + guarded.text
+			toolEntry.content_for_show = renderMarkdownCodeBlock(step.code, { lang: shell_name }) + '\n\n执行结果：\n' + fullOutput
 		}
 		AddLongTimeLog(toolEntry)
 		processed = true
 	}
 
 	// inline js code
-	// 这个和其他的不一样，我们需要执行js代码并将结果以string替换代码块
-	if (content.match(/<inline-js[^>]*>[^]*?<\/inline-js>/)) try {
-		const original = result.content
-		const cachedResults = args.extension?.streamInlineToolsResults?.['inline-js']
-
-		let replacements
-		if (cachedResults?.length)
-			replacements = await Promise.all(cachedResults.map(res => {
-				if (res instanceof Error) throw res
-				return res
-			}))
-		else
-			// 古法计算
-			replacements = await Promise.all(
-				Array.from(content.matchAll(/<inline-js(?<attrs>[^>]*)>(?<code>[^]*?)<\/inline-js>/g))
-					.map(async match => {
-						const jsrunner = match.groups.code
-						await logCode(`${args.Charname} running inline JS code:`, jsrunner, 'js')
-						const attrs = parseTagAttrs(match.groups.attrs)
-						const target = resolveTarget(args, attrs)
-						const coderesult = target.remote || hasExplicitTarget(attrs)
-							? await executorFor(attrs).execJs(jsrunner)
-							: await run_jscode_for_AI(jsrunner)
-						console.info(`${args.Charname} inline JS result:`, coderesult)
-						if (coderesult.error) throw coderesult.error
-						return coderesult.result + ''
-					})
-			)
-
-		let i = 0
-		result.logContextBefore ??= []
-		result.logContextBefore.push({
-			name: args.Charname,
-			role: 'char',
-			content: original,
-			files: result.files,
-			charVisibility: [args.char_id],
-		}, {
-			name: 'code-execution',
-			role: 'tool',
-			content: '内联js代码执行和替换完毕\n',
-			files: [],
-			charVisibility: [args.char_id],
-		})
-		result.content = result.content.replace(/<inline-js[^>]*>(?<code>[^]*?)<\/inline-js>/g, () => replacements[i++])
-	}
-	catch (error) {
-		console.error('内联js代码执行失败：', error)
-		AddLongTimeLog({
-			name: args.Charname,
-			role: 'char',
-			content: result.content,
-			files: result.files,
-		})
-		AddLongTimeLog({
-			name: 'code-execution',
-			role: 'tool',
-			content: '内联js代码执行失败：\n' + error.stack,
-			files: []
-		})
-		processed = true
-	}
-
-	for (const shell_name in shell_exec_map) {
-		if (!available[shell_name]) continue
-		const runner_regex = new RegExp(`<inline-${shell_name}[^>]*>[^]*?<\\/inline-${shell_name}>`)
-		if (content.match(runner_regex)) try {
-			const original = result.content
-			const cachedResults = args.extension?.streamInlineToolsResults?.[`inline-${shell_name}`]
+	// 这个和其他的不一样，我们需要执行js代码并将结果写入人类展示层（不改写原始生成）
+	const inline_js_regex = /<inline-js[^>]*>(?<code>[^]*?)<\/inline-js>/g
+	if (getContent().match(/<inline-js[^>]*>[^]*?<\/inline-js>/)) {
+		const inlineMatches = Array.from(getContent().matchAll(inline_js_regex))
+		for (const inline_match of inlineMatches) args.MaskHandledCall?.(inline_match[0])
+		try {
+			const cachedResults = args.extension?.streamInlineToolsResults?.['inline-js']
 
 			let replacements
 			if (cachedResults?.length)
@@ -417,64 +404,122 @@ export async function codeExecutionReplyHandler(result, args) {
 					if (res instanceof Error) throw res
 					return res
 				}))
-			else {
+			else
 				// 古法计算
-				const runner_regex_g = new RegExp(`<inline-${shell_name}(?<attrs>[^>]*)>(?<code>[^]*?)<\\/inline-${shell_name}>`, 'g')
 				replacements = await Promise.all(
-					Array.from(content.matchAll(runner_regex_g))
-						.map(async match => {
+					inlineMatches.map(async match => {
+						const jsrunner = match.groups.code
+						await logCode(`${args.Charname} running inline JS code:`, jsrunner, 'js')
+						const attrs = parseTagAttrs(match.groups.attrs)
+						const target = resolveTarget(args, attrs)
+						const limits = parseRunLimits(attrs, JS_DEFAULT_TIMEOUT_MS)
+						const remote = Boolean(target.remote)
+						const collecting = createCollectingConsole()
+						const { evalResult, timedOut } = remote
+							? await runJsWithTimeout(() => executorFor(attrs).execJsWithTimeout(jsrunner, limits.timeoutMs), limits.timeoutMs)
+							: await runJsWithTimeout(() => run_jscode_for_AI(jsrunner, collecting.console), limits.timeoutMs)
+						console.info(`${args.Charname} inline JS result:`, evalResult, timedOut ? '(timed out)' : '')
+						if (timedOut) throw new Error('内联 JS 执行超时；JS 无法强制终止，代码可能仍在运行。' + (collecting.text() ? `\n超时前输出：\n${collecting.text()}` : ''))
+						if (evalResult?.error) throw evalResult.error
+						if (remote) return String(evalResult ?? '')
+						return evalResult.result + ''
+					})
+				)
+
+			// 人类展示层兜底：上游未设 content_for_show 时以原始生成为底再替换内联结果
+			result.content_for_show ??= result.content
+			let j = 0
+			result.content_for_show = result.content_for_show.replace(inline_js_regex, () => replacements[j++])
+			AddLongTimeLog({
+				name: 'code-execution.inline-js',
+				role: 'tool',
+				content: '内联js代码执行和替换完毕\n',
+				content_for_show: buildInlineToolCard(inlineMatches.map((m, index) => ({ code: m.groups.code, result: replacements[index] })), 'js'),
+				files: [],
+				charVisibility: [args.char_id],
+			})
+		}
+		catch (error) {
+			console.error('内联js代码执行失败：', error)
+			AddLongTimeLog({
+				name: 'code-execution.inline-js',
+				role: 'tool',
+				content: '内联js代码执行失败：\n' + error.stack,
+				files: []
+			})
+			processed = true
+		}
+	}
+
+	for (const shell_name in shell_exec_map) {
+		if (!available[shell_name]) continue
+		const runner_regex = new RegExp(`<inline-${shell_name}[^>]*>[^]*?<\\/inline-${shell_name}>`)
+		if (getContent().match(runner_regex)) {
+			const runner_regex_g = new RegExp(`<inline-${shell_name}(?<attrs>[^>]*)>(?<code>[^]*?)<\\/inline-${shell_name}>`, 'g')
+			const inlineMatches = Array.from(getContent().matchAll(runner_regex_g))
+			for (const inline_match of inlineMatches) args.MaskHandledCall?.(inline_match[0])
+			try {
+				const cachedResults = args.extension?.streamInlineToolsResults?.[`inline-${shell_name}`]
+
+				let replacements
+				if (cachedResults?.length)
+					replacements = await Promise.all(cachedResults.map(res => {
+						if (res instanceof Error) throw res
+						return res
+					}))
+				else
+					// 古法计算
+					replacements = await Promise.all(
+						inlineMatches.map(async match => {
 							const runner = match.groups.code
 							await logCode(`${args.Charname} running inline ${shell_name} code:`, runner, shell_name)
+							const limits = parseRunLimits(parseTagAttrs(match.groups.attrs), SHELL_DEFAULT_TIMEOUT_MS)
 							let shell_result
 							try {
-								shell_result = await executorFor(match.groups.attrs).execShell(shell_name, runner)
+								shell_result = await executorFor(match.groups.attrs).execShell(shell_name, runner, { timeoutMs: limits.timeoutMs })
 							} catch (err) {
 								shell_result = err
 							}
 
 							if (shell_result instanceof Error) throw shell_result
 
+							if (shell_result.timedOut)
+								throw new Error(`${shell_name} inline execution timed out; the process tree was terminated. Use <run-${shell_name}> for long commands.`)
+
 							if (shell_result.code)
 								throw new Error(`${shell_name} execution of code '${runner}' failed with exit code ${shell_result.code}:\n${util.inspect(shell_result)}`)
 
-							return shell_result.stdout.trim()
-						})
-				)
-			}
+							const stdout = String(shell_result.stdout ?? '')
+							if (stdout.length > OUTPUT_GUARD_LIMIT)
+								throw new Error(`内联 ${shell_name} 输出过大（${stdout.length} 字符）；内联结果会直接插入消息，请改用 <run-${shell_name}>，其大输出会自动落盘。`)
 
-			let i = 0
-			result.logContextBefore ??= []
-			result.logContextBefore.push({
-				name: args.Charname,
-				role: 'char',
-				content: original,
-				files: result.files,
-				charVisibility: [args.char_id],
-			}, {
-				name: 'code-execution',
-				role: 'tool',
-				content: `内联${shell_name}代码执行和替换完毕\n`,
-				files: [],
-				charVisibility: [args.char_id],
-			})
-			const runner_regex_g = new RegExp(`<inline-${shell_name}[^>]*>(?<code>[^]*?)<\\/inline-${shell_name}>`, 'g')
-			result.content = result.content.replace(runner_regex_g, () => replacements[i++])
-		}
-		catch (error) {
-			console.error(`内联${shell_name}代码执行失败：`, error)
-			AddLongTimeLog({
-				name: args.Charname,
-				role: 'char',
-				content: result.content,
-				files: result.files,
-			})
-			AddLongTimeLog({
-				name: 'code-execution',
-				role: 'tool',
-				content: `内联${shell_name}代码执行失败：\n` + error.stack,
-				files: []
-			})
-			processed = true
+							return stdout.trim()
+						})
+					)
+
+				// 人类展示层兜底：上游未设 content_for_show 时以原始生成为底再替换内联结果
+				result.content_for_show ??= result.content
+				let j = 0
+				result.content_for_show = result.content_for_show.replace(runner_regex_g, () => replacements[j++])
+				AddLongTimeLog({
+					name: `code-execution.inline-${shell_name}`,
+					role: 'tool',
+					content: `内联${shell_name}代码执行和替换完毕\n`,
+					content_for_show: buildInlineToolCard(inlineMatches.map((m, index) => ({ code: m.groups.code, result: replacements[index] })), shell_name),
+					files: [],
+					charVisibility: [args.char_id],
+				})
+			}
+			catch (error) {
+				console.error(`内联${shell_name}代码执行失败：`, error)
+				AddLongTimeLog({
+					name: `code-execution.inline-${shell_name}`,
+					role: 'tool',
+					content: `内联${shell_name}代码执行失败：\n` + error.stack,
+					files: []
+				})
+				processed = true
+			}
 		}
 	}
 
@@ -517,14 +562,20 @@ export function GetCodeExecutionPreviewUpdater(next) {
 		['inline-js', /<inline-js(?<attrs>[^>]*)>/, '</inline-js>', async (code, previewArgs, meta) => {
 			const attrs = parseTagAttrs(meta?.match?.groups?.attrs)
 			const target = resolveTarget(previewArgs, attrs)
-			let coderesult
-			if (target.remote || hasExplicitTarget(attrs)) {
+			const limits = parseRunLimits(attrs, JS_DEFAULT_TIMEOUT_MS)
+			const remote = Boolean(target.remote)
+			const collecting = createCollectingConsole()
+			let outcome
+			if (remote) {
 				const resolver = previewExecutorResolvers.get(previewArgs) ?? previewExecutorResolvers.set(previewArgs, createArgsExecutorResolver(previewArgs)).get(previewArgs)
-				coderesult = await resolver(attrs).execJs(code)
+				outcome = await runJsWithTimeout(() => resolver(attrs).execJsWithTimeout(code, limits.timeoutMs), limits.timeoutMs)
 			}
 			else
-				coderesult = await async_eval(code, {})
-			if (coderesult.error) throw coderesult.error
+				outcome = await runJsWithTimeout(() => async_eval(code, { console: collecting.console }), limits.timeoutMs)
+			if (outcome.timedOut) throw new Error('内联 JS 执行超时；JS 无法强制终止，代码可能仍在运行。')
+			const coderesult = outcome.evalResult
+			if (coderesult?.error) throw coderesult.error
+			if (remote) return String(coderesult ?? '')
 			return coderesult.result + ''
 		}, renderInlineJsPending]
 	]
@@ -573,20 +624,28 @@ export function GetCodeExecutionPreviewUpdater(next) {
 			`</inline-${shell_name}>`,
 			async (code, previewArgs, meta) => {
 				const attrs = parseTagAttrs(meta?.match?.groups?.attrs)
+				const limits = parseRunLimits(attrs, SHELL_DEFAULT_TIMEOUT_MS)
 				const resolver = previewExecutorResolvers.get(previewArgs) ?? previewExecutorResolvers.set(previewArgs, createArgsExecutorResolver(previewArgs)).get(previewArgs)
 				let shell_result
 				try {
-					shell_result = await resolver(attrs).execShell(shell_name, code)
+					shell_result = await resolver(attrs).execShell(shell_name, code, { timeoutMs: limits.timeoutMs })
 				} catch (err) {
 					shell_result = err
 				}
 
 				if (shell_result instanceof Error) throw shell_result
 
+				if (shell_result.timedOut)
+					throw new Error(`${shell_name} inline execution timed out; the process tree was terminated. Use <run-${shell_name}> for long commands.`)
+
 				if (shell_result.code)
 					throw new Error(`${shell_name} execution of code '${code}' failed with exit code ${shell_result.code}`)
 
-				return shell_result.stdout.trim()
+				const stdout = String(shell_result.stdout ?? '')
+				if (stdout.length > OUTPUT_GUARD_LIMIT)
+					throw new Error(`内联 ${shell_name} 输出过大（${stdout.length} 字符）；内联结果会直接插入消息，请改用 <run-${shell_name}>，其大输出会自动落盘。`)
+
+				return stdout.trim()
 			},
 			renderInlineShellPending
 		])

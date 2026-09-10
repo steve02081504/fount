@@ -639,6 +639,75 @@ const RECONNECT_DELAY = 5000 // 5 seconds
 const WAKE_GRACE_MS = 3 * 60 * 1000 // 3 minutes
 let lastWakeRequestAt = 0
 
+// --- User activity state from pages ---
+
+/** 用户活跃时间窗口（毫秒）。 @type {number} */
+const ACTIVITY_WINDOW_MS = 4000
+
+/**
+ * 各 page client 上报的活跃状态。
+ * key = client id，value = { lastInteractionAt, hasFocus }
+ * @type {Map<string, { lastInteractionAt: number, hasFocus: boolean }>}
+ */
+const clientActivityStates = new Map()
+
+/**
+ * 判断页面 client 是否处于活跃期（有焦点且 4s 内有过交互）。
+ * @param {Client} client 页面 client
+ * @returns {boolean} 是否活跃
+ */
+function isClientActive(client) {
+	if (!client.focused) return false
+	const activity = clientActivityStates.get(client.id)
+	if (!activity?.hasFocus) return false
+	return Date.now() - activity.lastInteractionAt <= ACTIVITY_WINDOW_MS
+}
+
+/**
+ * 路由通知：
+ * - 所有同一 shell 页面（pathname 一致）的 client 都收到 `notification` 消息以更新页内角标（通知驱动，始终更新）。
+ * - 若其中有活跃 client（有焦点且 4s 内交互过）则该 client 负责页内提示并抑制系统通知；否则弹系统通知。
+ * 不比较 search/hash：同一 shell 内不同会话/群组由页面侧角标定位。
+ * @param {object} data 通知载荷（title, options, targetUrl）
+ * @returns {Promise<void>}
+ */
+async function routeNotification(data) {
+	const { title, options, targetUrl } = data
+	if (!title) return
+	if (Notification.permission !== 'granted') return
+
+	const notificationTargetUrl = targetUrl ? new URL(targetUrl, self.location.origin) : null
+	const windowClients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true })
+	let suppressed = false
+	for (const client of windowClients) {
+		if (!notificationTargetUrl) continue
+		const clientUrl = new URL(client.url)
+		if (clientUrl.pathname !== notificationTargetUrl.pathname) continue
+		const active = isClientActive(client)
+		if (active) suppressed = true
+		client.postMessage({ type: 'notification', data, suppressed: active })
+	}
+	if (!suppressed) await self.registration.showNotification(title, options)
+}
+
+// --- Service Worker message handlers ---
+
+self.addEventListener('message', event => {
+	const { type, data } = event.data || {}
+	if (type === 'USER_ACTIVITY_UPDATE') {
+		if (event.source?.id && data)
+			clientActivityStates.set(event.source.id, {
+				lastInteractionAt: Number(data.lastInteractionAt) || Date.now(),
+				hasFocus: !!data.hasFocus,
+			})
+	}
+	else if (type === 'SHOW_NOTIFICATION_FALLBACK') {
+		const payload = data || {}
+		if (payload.title && Notification.permission === 'granted')
+			self.registration.showNotification(payload.title, payload.options || {})
+	}
+})
+
 const wsMessageHandlers = {
 	/**
 	 * 处理通知消息。
@@ -646,24 +715,7 @@ const wsMessageHandlers = {
 	 * @returns {void}
 	 */
 	notification: data => {
-		const { title, options, targetUrl } = data
-		if (!title) return
-
-		if (Notification.permission !== 'granted') return
-		if (!targetUrl) self.registration.showNotification(title, options)
-		else self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
-			let shouldShowNotification = true
-			for (const client of windowClients) {
-				const clientUrl = new URL(client.url)
-				const notificationTargetUrl = new URL(targetUrl, self.location.origin)
-				if (clientUrl.pathname === notificationTargetUrl.pathname && clientUrl.search === notificationTargetUrl.search && client.focused) {
-					shouldShowNotification = false
-					break
-				}
-			}
-			if (shouldShowNotification)
-				self.registration.showNotification(title, options)
-		})
+		void routeNotification(data)
 	},
 	/**
 	 * 默认消息处理程序。
@@ -802,7 +854,7 @@ self.addEventListener('push', event => {
 			icon: '/favicon.ico',
 			data: { url: payload.url || '/' },
 		}
-		await self.registration.showNotification(title, options)
+		await routeNotification({ title, options, targetUrl: payload.url || '/' })
 	})())
 })
 

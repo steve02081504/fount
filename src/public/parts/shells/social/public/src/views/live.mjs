@@ -4,6 +4,7 @@ import { getLiveFeed, inviteLiveLink, startLive, stopLive } from '../endpoints/l
 import { entityAvatarUrl, renderAvatarHtml } from '../lib/display.mjs'
 import { playHeartAnim } from '../lib/heartAnim.mjs'
 import { createSnapCursorFeed } from '../lib/snapCursorFeed.mjs'
+import { renderSourceNodesHtml } from '../lib/sourceNodes.mjs'
 import { bindVerticalSnap } from '../lib/verticalSnap.mjs'
 import { activateView } from '../viewChrome.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
@@ -326,6 +327,8 @@ function renderLiveHallGrid(container, items) {
 	const grid = document.createElement('div')
 	grid.className = 'live-hall-grid'
 	for (const item of items) {
+		const entry = document.createElement('div')
+		entry.className = 'live-hall-entry'
 		const card = document.createElement('button')
 		card.type = 'button'
 		card.className = 'live-hall-card'
@@ -352,7 +355,15 @@ function renderLiveHallGrid(container, items) {
 			container.appendChild(slide)
 			ensureLiveConnected(slide, 'full')
 		})
-		grid.appendChild(card)
+		entry.appendChild(card)
+		if (item.sourceNodes?.length) {
+			const holder = document.createElement('div')
+			holder.innerHTML = renderSourceNodesHtml(item.sourceNodes)
+			const strip = holder.firstElementChild
+			if (strip) entry.appendChild(strip)
+			entry.dataset.sourceNodeItem = '1'
+		}
+		grid.appendChild(entry)
 	}
 	container.appendChild(grid)
 }
@@ -414,7 +425,7 @@ function buildLiveSlide(item) {
 
 	let lastTap = 0
 	slide.addEventListener('pointerup', async event => {
-		if (event.target.closest('.live-danmaku-input') || event.target.closest('.live-actions')) return
+		if (event.target.closest('.live-danmaku-input') || event.target.closest('.live-actions') || event.target.closest('.source-nodes')) return
 		const now = Date.now()
 		if (now - lastTap < 350) {
 			lastTap = 0
@@ -427,6 +438,14 @@ function buildLiveSlide(item) {
 		event.stopPropagation()
 		await sendLiveLike(slide)
 	})
+
+	if (item.sourceNodes?.length) {
+		const holder = document.createElement('div')
+		holder.innerHTML = renderSourceNodesHtml(item.sourceNodes)
+		const strip = holder.firstElementChild
+		if (strip) slide.appendChild(strip)
+		slide.dataset.sourceNodeItem = '1'
+	}
 
 	return slide
 }

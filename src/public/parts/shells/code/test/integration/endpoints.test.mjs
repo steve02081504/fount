@@ -5,6 +5,7 @@
 import fs from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 import { assert, assertEquals } from 'jsr:@std/assert'
 
@@ -378,23 +379,30 @@ Deno.test({
 })
 
 Deno.test({
-	name: 'shutdown schedule/cancel roundtrip',
+	name: 'power action schedule/cancel roundtrip',
 	sanitizeOps: false,
 	sanitizeResources: false,
 }, async () => {
 	const node = await launchCodeNode()
 	try {
 		// 初始未预定、无进行中生成
-		assertEquals(await (await codeFetch(node, 'GET', '/shutdown')).json(), { machine: null, active: 0 })
-		// 预定本机
-		const armed = await (await codeFetch(node, 'PUT', '/shutdown', { machine: '0' })).json()
-		assertEquals(armed.machine, '0')
+		assertEquals(await (await codeFetch(node, 'GET', '/shutdown')).json(), { actions: {}, active: 0 })
+		// 预定本机（关机）
+		const armed = await (await codeFetch(node, 'PUT', '/shutdown', { machine: '0', action: 'shutdown' })).json()
+		assertEquals(armed.actions, { 0: 'shutdown' })
 		assertEquals(armed.active, 0)
-		assertEquals((await (await codeFetch(node, 'GET', '/shutdown')).json()).machine, '0')
+		assertEquals((await (await codeFetch(node, 'GET', '/shutdown')).json()).actions, { 0: 'shutdown' })
+		// 覆盖本机操作为休眠
+		assertEquals((await (await codeFetch(node, 'PUT', '/shutdown', { machine: '0', action: 'sleep' })).json()).actions, { 0: 'sleep' })
+		// 非法操作被拒绝
+		assertEquals((await codeFetch(node, 'PUT', '/shutdown', { machine: '0', action: 'boom' })).status, 400)
 		// 不存在的主机被拒绝
-		assertEquals((await codeFetch(node, 'PUT', '/shutdown', { machine: '999' })).status, 400)
-		// 取消预定
-		assertEquals((await (await codeFetch(node, 'PUT', '/shutdown', { machine: null })).json()).machine, null)
+		assertEquals((await codeFetch(node, 'PUT', '/shutdown', { machine: '999', action: 'shutdown' })).status, 400)
+		// 取消本机（action 为空）
+		assertEquals((await (await codeFetch(node, 'PUT', '/shutdown', { machine: '0', action: null })).json()).actions, {})
+		// 再预定后用 machine:null 取消全部
+		await codeFetch(node, 'PUT', '/shutdown', { machine: '0', action: 'restart' })
+		assertEquals((await (await codeFetch(node, 'PUT', '/shutdown', { machine: null })).json()).actions, {})
 	}
 	finally {
 		await stopNode(node)
@@ -513,6 +521,88 @@ Deno.test({
 	}
 	finally {
 		await fs.rm(root, { recursive: true, force: true })
+		await stopNode(node)
+	}
+})
+
+Deno.test({
+	name: 'session WS send dedupes optimistic user entry by clientEntryId',
+	timeout: 120_000,
+}, async () => {
+	const fixtureDir = path.join(path.dirname(fileURLToPath(import.meta.url)), 'fixtures', 'wsEchoChar')
+	const node = await launchCodeNode({
+		fixtureCopies: [{ from: fixtureDir, to: 'chars/wsEchoChar' }],
+	})
+	try {
+		const wsUrl = `${node.baseUrl.replace(/^http/, 'ws')}/ws/parts/shells:code/session?fount-apikey=${encodeURIComponent(node.apiKey)}`
+		/**
+		 * 建立会话 WS，发送一个请求并等待 done/error。
+		 * @param {object} payload - 发送负载。
+		 * @returns {Promise<object>} done/error 帧。
+		 */
+		const sendOnce = payload => new Promise((resolve, reject) => {
+			const ws = new WebSocket(wsUrl)
+			const timer = setTimeout(() => { ws.close(); reject(new Error('ws timeout')) }, 60_000)
+			/**
+			 * 连接建立后发送负载。
+			 * @returns {void}
+			 */
+			ws.onopen = () => ws.send(JSON.stringify(payload))
+			/**
+			 * 收到 done/error 帧后结束等待。
+			 * @param {MessageEvent} event - 入站消息事件。
+			 * @returns {void}
+			 */
+			ws.onmessage = event => {
+				const frame = JSON.parse(String(event.data))
+				if (frame.type === 'done' || frame.type === 'error') {
+					clearTimeout(timer)
+					ws.close()
+					resolve(frame)
+				}
+			}
+			/**
+			 * 连接错误时拒绝。
+			 * @returns {void}
+			 */
+			ws.onerror = () => { clearTimeout(timer); reject(new Error('ws error')) }
+		})
+		/**
+		 * 构造带单个乐观用户条目的会话。
+		 * @param {string} id - 会话 id。
+		 * @param {string} entryId - 乐观用户条目 id。
+		 * @returns {object} 会话对象。
+		 */
+		const makeSession = (id, entryId) => ({
+			id,
+			title: '',
+			charname: 'wsEchoChar',
+			profile: '',
+			ai_source: '',
+			created: new Date().toISOString(),
+			updated: new Date().toISOString(),
+			memory: {},
+			entries: [{ id: entryId, uid: 'user', role: 'user', name: node.username, content: 'hello-echo', time: new Date().toISOString(), files: [] }],
+		})
+
+		const clientEntryId = 'optimistic-1'
+		const withId = await sendOnce({
+			type: 'send', session: makeSession('wsEcho01', clientEntryId), machine: '0', workdir: '',
+			ai_source: '', profile: '', content: 'hello-echo', files: [], clientEntryId,
+		})
+		assertEquals(withId.type, 'done', `expected done, got ${JSON.stringify(withId).slice(0, 300)}`)
+		assert(!withId.entries.some(entry => entry.id === clientEntryId), '已乐观插入的用户条目不应再次回传')
+		assert(withId.entries.some(entry => entry.role === 'char'), '应包含角色回复')
+
+		// 不带 clientEntryId 时保持旧行为：服务端追加并回传用户条目
+		const withoutId = await sendOnce({
+			type: 'send', session: makeSession('wsEcho02', 'legacy-1'), machine: '0', workdir: '',
+			ai_source: '', profile: '', content: 'hello-legacy', files: [],
+		})
+		assertEquals(withoutId.type, 'done', `expected done, got ${JSON.stringify(withoutId).slice(0, 300)}`)
+		assert(withoutId.entries.some(entry => entry.role === 'user' && entry.content === 'hello-legacy'), '无 clientEntryId 时用户条目应被回传')
+	}
+	finally {
 		await stopNode(node)
 	}
 })

@@ -27,7 +27,6 @@ export default async function (dataTransfer, handlerConfig) {
 	const markdown = await file.text()
 	const { id } = await createGist({
 		markdown,
-		title: file.name.replace(/\.(md|markdown)$/i, ''),
 		securityLevel: 'secure',
 		source: { type: 'md-drop', ref: { name: file.name }, exportedAt: Date.now() },
 		dedupe: true,

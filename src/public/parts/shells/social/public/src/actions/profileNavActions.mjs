@@ -11,6 +11,7 @@ import {
 	restoreRemovedPosts,
 	runWrite,
 } from '../lib/socialWrite.mjs'
+import { handleSourceNodeBlockClick } from '../lib/sourceNodes.mjs'
 import { state } from '../state.mjs'
 import { loadExplore } from '../views/explore.mjs'
 import {
@@ -137,6 +138,12 @@ export async function handleProfileNavClick(target) {
 			if (state.profileEntityHash === entityHash)
 				await loadProfileFor(entityHash)
 		}
+	}
+
+	const sourceBlockButton = target.closest('[data-block-source-node]')
+	if (sourceBlockButton instanceof HTMLElement) {
+		await handleSourceNodeBlockClick(sourceBlockButton)
+		return
 	}
 
 	const blockButton = target.closest('[data-block], [data-hide], [data-mute]')

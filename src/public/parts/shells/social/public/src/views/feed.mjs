@@ -4,6 +4,7 @@ import { getExploreAccounts, getFeed, getTrendingHashtags } from '../endpoints/f
 import { entityHandle } from '../lib/display.mjs'
 import { mountEmptyState } from '../lib/emptyState.mjs'
 import { appendFeedItemsWithThreads } from '../lib/feedThreads.mjs'
+import { renderSourceNodesHtml } from '../lib/sourceNodes.mjs'
 import { renderSuggestedAccountRows } from '../lib/suggestedAccounts.mjs'
 import { buildPostCard } from '../postCard.mjs'
 import { state } from '../state.mjs'
@@ -16,11 +17,11 @@ import { handleError } from '/scripts/features/errorHandlers.mjs'
 let unbindDwell = null
 
 /** 会话内按 scope 分别缓存的原始趋势列表（失败时回退，勿用合并结果） */
-/** @type {{ nearby: { tag: string, count: number }[] | null, local: { tag: string, count: number }[] | null }} */
+/** @type {{ nearby: { tag: string, count: number, sourceNodes?: string[] }[] | null, local: { tag: string, count: number, sourceNodes?: string[] }[] | null }} */
 const trendingCacheByScope = { nearby: null, local: null }
 
 /** 在途趋势请求（去重） */
-/** @type {Promise<{ tag: string, count: number }[] | null> | null} */
+/** @type {Promise<{ tag: string, count: number, sourceNodes?: string[] }[] | null> | null} */
 let trendingInFlight = null
 
 /**
@@ -178,17 +179,20 @@ export async function loadSuggestedAccounts() {
 }
 
 /**
- * 合并多路热门话题：同 tag 取较大 count，再按 count 降序。
- * @param {...{ tag: string, count: number }[]} lists 话题列表
- * @returns {{ tag: string, count: number }[]} 合并结果
+ * 合并多路热门话题：同 tag 取较大 count、并集来源，再按 count 降序。
+ * @param {...{ tag: string, count: number, sourceNodes?: string[] }[]} lists 话题列表
+ * @returns {{ tag: string, count: number, sourceNodes: string[] }[]} 合并结果
  */
 function mergeTrendingTags(...lists) {
 	const byTag = new Map()
 	for (const list of lists)
 		for (const row of list) {
 			const prev = byTag.get(row.tag)
+			const sources = new Set([...prev?.sourceNodes || [], ...row.sourceNodes || []])
 			if (!prev || row.count > prev.count)
-				byTag.set(row.tag, { tag: row.tag, count: row.count })
+				byTag.set(row.tag, { tag: row.tag, count: row.count, sourceNodes: [...sources] })
+			else
+				prev.sourceNodes = [...sources]
 		}
 	return [...byTag.values()].sort((a, b) => b.count - a.count)
 }
@@ -203,7 +207,7 @@ export async function loadTrendingHashtags(containerId = 'feedTrending') {
 	if (!aside) return
 
 	/**
-	 * @param {{ tag: string, count: number }[]} tags 话题行
+	 * @param {{ tag: string, count: number, sourceNodes?: string[] }[]} tags 话题行
 	 * @returns {Promise<void>}
 	 */
 	async function paint(tags) {
@@ -216,6 +220,8 @@ export async function loadTrendingHashtags(containerId = 'feedTrending') {
 			await mountEmptyState(list, { titleKey: 'social.feed.trending.empty', modClass: ' empty-state--hint' })
 		else
 			for (const row of tags) {
+				const entry = document.createElement('div')
+				entry.className = 'trending-tag-row'
 				const link = document.createElement('a')
 				link.className = 'trending-tag link-btn'
 				link.href = formatSocialTopicHref(row.tag)
@@ -225,7 +231,15 @@ export async function loadTrendingHashtags(containerId = 'feedTrending') {
 				count.dataset.n = String(row.count)
 				count.dataset.i18n = 'social.feed.trending.postCount'
 				link.appendChild(count)
-				list.appendChild(link)
+				entry.appendChild(link)
+				if (row.sourceNodes?.length) {
+					const holder = document.createElement('div')
+					holder.innerHTML = renderSourceNodesHtml(row.sourceNodes)
+					const strip = holder.firstElementChild
+					if (strip) entry.appendChild(strip)
+					entry.dataset.sourceNodeItem = '1'
+				}
+				list.appendChild(entry)
 			}
 		aside.appendChild(list)
 	}
@@ -448,7 +462,7 @@ export async function loadFeed(append = false) {
 export async function buildEntitySearchCard(entity) {
 	const handle = entityHandle(entity.entityHash, entity)
 	const label = entity.alias || entity.name || handle
-	return renderTemplate('feed_entity_search', {
+	const card = await renderTemplate('feed_entity_search', {
 		profileHref: escapeHtml(formatSocialProfileHref(entity.entityHash)),
 		label: escapeHtml(label),
 		handle: escapeHtml(handle),
@@ -457,4 +471,12 @@ export async function buildEntitySearchCard(entity) {
 		isFollowing: entity.following ? 'true' : 'false',
 		followI18n: entity.following ? 'social.actions.following' : 'social.actions.follow',
 	})
+	if (entity.sourceNodes?.length) {
+		const holder = document.createElement('div')
+		holder.innerHTML = renderSourceNodesHtml(entity.sourceNodes)
+		const strip = holder.firstElementChild
+		if (strip) card.appendChild(strip)
+		card.dataset.sourceNodeItem = '1'
+	}
+	return card
 }

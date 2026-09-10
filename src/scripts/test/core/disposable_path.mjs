@@ -31,8 +31,8 @@ export function assertDisposableDataPath(dataPath) {
 	const resolved = resolve(dataPath)
 	if (isUnderRoot(resolved, tmpdir()) || isUnderRoot(resolved, testDataRoot(REPO_ROOT)))
 		return
-	throw new Error(
-		`refusing destructive test I/O outside disposable roots: ${resolved}\n`
-		+ `allowed: tmpdir (${resolve(tmpdir())}) or ${testDataRoot(REPO_ROOT)}`,
-	)
+	throw new Error(`\
+refusing destructive test I/O outside disposable roots: ${resolved}
+allowed: tmpdir (${resolve(tmpdir())}) or ${testDataRoot(REPO_ROOT)}
+`)
 }

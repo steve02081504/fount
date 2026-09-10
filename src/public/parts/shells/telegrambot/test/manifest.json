@@ -25,7 +25,7 @@
 	"suites": [
 		{
 			"name": "pure",
-			"expected": "53s",
+			"expected": "4m20s",
 			"trigger": [
 				"shellPureTests",
 				"testFramework"

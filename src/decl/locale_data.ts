@@ -3585,6 +3585,13 @@ export type LocaleData = {
 			sendToChat: string
 			copied: string
 		}
+		sourceNode: {
+			label: string
+			block: string
+			blockConfirm: string
+			blocked: string
+			blockFailed: string
+		}
 	}
 	easynew: {
 		title: string
@@ -5034,6 +5041,13 @@ export type LocaleData = {
 			sendToSocial: string
 			copied: string
 		}
+		sourceNode: {
+			label: string
+			block: string
+			blockConfirm: string
+			blocked: string
+			blockFailed: string
+		}
 	}
 	cabinet: {
 		title: string
@@ -5361,6 +5375,9 @@ export type LocaleData = {
 			placeholder: string
 			'aria-label': string
 			empty: string
+			clear: {
+				'aria-label': string
+			}
 		}
 		home: {
 			title: string
@@ -6360,19 +6377,45 @@ export type LocaleData = {
 			new: string
 			untitled: string
 			yesterday: string
+			delete: string
+			deleteConfirm: string
+			deleted: string
 		}
 		workspaces: {
 			browse: string
 			remove: string
+			removeConfirm: string
 			none: string
 			overviewEmpty: string
+			search: {
+				placeholder: string
+				'aria-label': string
+			}
 		}
 		home: {
 			'aria-label': string
+			title: string
+			workspacesTitle: string
+			sessionsTitle: string
+			emptyWorkspaces: string
+			search: {
+				placeholder: string
+				'aria-label': string
+			}
+			noMatch: string
 		}
 		tabs: {
 			'aria-label': string
 			close: string
+			closeGenerating: string
+			rename: string
+			closeMenu: {
+				'aria-label': string
+				others: string
+				left: string
+				right: string
+				all: string
+			}
 		}
 		newTab: {
 			'aria-label': string
@@ -6407,6 +6450,9 @@ export type LocaleData = {
 			placeholderNormal: string
 			placeholderShell: string
 			'aria-label': string
+			mentionSuggest: {
+				'aria-label': string
+			}
 		}
 		aiSource: {
 			panelTitle: string
@@ -6467,10 +6513,20 @@ export type LocaleData = {
 			done: string
 		}
 		power: {
-			label: string
-			'aria-label': string
-			menuTitle: string
-			armed: string
+			settings: {
+				button: string
+				aria: string
+				title: string
+				hint: string
+			}
+			action: {
+				none: string
+				shutdown: string
+				sleep: string
+				restart: string
+			}
+			armedCount: string
+			armedAria: string
 			armedToast: string
 			cancelled: string
 		}
@@ -6493,6 +6549,21 @@ export type LocaleData = {
 			code: {
 				title: string
 			}
+		}
+		tool: {
+			userShell: string
+			readFile: string
+			findFiles: string
+			searchContent: string
+			editFile: string
+			writeFile: string
+			setWorkdir: string
+			listMachines: string
+			preload: string
+			viewFiles: string
+			addFiles: string
+			callback: string
+			runShell: string
 		}
 	}
 	gist: {
@@ -6544,6 +6615,24 @@ export type LocaleData = {
 			}
 			select: string
 			exitSelection: string
+			view: {
+				grid: {
+					title: string
+					'aria-label': string
+				}
+				list: {
+					title: string
+					'aria-label': string
+				}
+			}
+			filter: {
+				all: string
+				security: string
+				source: string
+			}
+			clearSearch: string
+			emptyHint: string
+			loading: string
 		}
 		source: {
 			manual: string
@@ -6572,7 +6661,6 @@ export type LocaleData = {
 		edit: {
 			save: string
 			cancel: string
-			title: string
 			editor: {
 				placeholder: string
 				'aria-label': string
@@ -6888,6 +6976,8 @@ export type LocaleKeyParams = {
 	'chat.profile.owner.confirm.cooldown': { seconds: string | number }
 	'chat.profile.owner.saveFailed': { error: string | number }
 	'chat.sessionSettings.subtitleRoles': { count: string | number }
+	'chat.sourceNode.blockConfirm': { node: string | number }
+	'chat.sourceNode.blockFailed': { error: string | number }
 	'chat.stickers.authorLabel': { author: string | number }
 	'chat.stickers.sticker.count': { count: string | number }
 	'chat.typingIndicator.isTyping': { names: string | number }
@@ -6897,7 +6987,11 @@ export type LocaleKeyParams = {
 	'code.char.recommend.main': { charname: string | number }
 	'code.composer.modeSwitched': { mode: string | number }
 	'code.error.generic': { error: string | number }
-	'code.power.armed': { host: string | number }
+	'code.power.armedAria': { count: string | number }
+	'code.power.armedCount': { count: string | number }
+	'code.sessions.deleteConfirm': { title: string | number }
+	'code.tool.runShell': { lang: string | number }
+	'code.workspaces.removeConfirm': { name: string | number }
 	'debug_info.linksCount': { count: string | number }
 	'deskpet.toasts.start_failed': { charname: string | number; message: string | number }
 	'deskpet.toasts.started': { charname: string | number }
@@ -7199,6 +7293,8 @@ export type LocaleKeyParams = {
 	'social.search.trustScore': { score: string | number }
 	'social.settings.loadFailed': { error: string | number }
 	'social.settings.taste.weight': { weight: string | number }
+	'social.sourceNode.blockConfirm': { node: string | number }
+	'social.sourceNode.blockFailed': { error: string | number }
 	'social.time.hoursAgo': { n: string | number }
 	'social.time.minutesAgo': { n: string | number }
 	'social.video.loadFailed': { error: string | number }

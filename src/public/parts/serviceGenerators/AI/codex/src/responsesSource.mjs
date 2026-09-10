@@ -1,6 +1,7 @@
 import { identityTokenizer } from '../../proxy/src/identityTokenizer.mjs'
 import { buildMessagesFromPromptStruct } from '../../proxy/src/messageBuilder.mjs'
 import { clearFormat } from '../../proxy/src/responseFormat.mjs'
+import { buildSourceInfo } from '../../proxy/src/sourceInfo.mjs'
 
 import { fetchResponses, messagesToResponsesBody } from './responsesClient.mjs'
 
@@ -12,6 +13,7 @@ import { fetchResponses, messagesToResponsesBody } from './responsesClient.mjs'
  * @param {object} args.product_info - 产品信息。
  * @param {boolean} [args.is_paid=true] - 是否付费源。
  * @param {() => Promise<{url: string, headers: Record<string, string>}>} args.resolveRequest - 每次请求解析 URL/头。
+ * @param {{url: string, defaultUrl: string}} [args.providerUrl] - 用户可覆写的 API URL 及其模板默认值。
  * @returns {Promise<import('../../../../../../decl/AIsource.ts').AIsource_t>} AI 源。
  */
 export async function createResponsesSource({
@@ -20,6 +22,7 @@ export async function createResponsesSource({
 	product_info,
 	is_paid = true,
 	resolveRequest,
+	providerUrl,
 }) {
 	config.convert_config = { ...configTemplate.convert_config, ...config.convert_config }
 	config.use_stream ??= true
@@ -48,10 +51,7 @@ export async function createResponsesSource({
 
 	return {
 		type: 'text-chat',
-		info: Object.fromEntries(Object.entries(structuredClone(product_info)).map(([locale, localeInfo]) => {
-			localeInfo.name = config.name || config.model
-			return [locale, localeInfo]
-		})),
+		info: buildSourceInfo(product_info, config, providerUrl),
 		is_paid,
 		extension: {},
 		/**

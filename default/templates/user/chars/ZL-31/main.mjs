@@ -6,7 +6,9 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import { buildPromptStruct } from '../../../../../src/public/parts/shells/chat/src/prompt_struct/index.mjs'
+import { runReplyHandlers } from '../../../../../src/public/parts/shells/chat/src/reply/handlerPipeline.mjs'
 import { defineToolUseBlocks } from '../../../../../src/public/parts/shells/chat/src/streaming/toolBlocks.mjs'
+import { getPartInfo } from '../../../../../src/scripts/locale.mjs'
 import { __dirname } from '../../../../../src/server/base.mjs'
 import { loadPart, loadAnyPreferredDefaultPart } from '../../../../../src/server/parts_loader.mjs'
 
@@ -52,16 +54,12 @@ let username = ''
  * @type {import("../../../../../src/decl/pluginAPI.ts").ReplyHandler_t}
  */
 function getToolInfo(reply, args) {
-	const { AddLongTimeLog } = args
-	const match_get_tool_info = reply.content.match(/<get-tool-info>(?<toolname>[^<]+)<\/get-tool-info>/)
+	const { AddLongTimeLog, MaskHandledCall } = args
+	const match_get_tool_info = reply.content_for_handle.match(/<get-tool-info>(?<toolname>[^<]+)<\/get-tool-info>/)
 	if (match_get_tool_info) try {
 		let { toolname } = match_get_tool_info.groups
 		toolname = toolname.trim()
-		AddLongTimeLog({
-			name: 'ZL-31',
-			role: 'tool',
-			content: `<get-tool-info>${toolname}</get-tool-info>`,
-		})
+		MaskHandledCall?.(match_get_tool_info[0])
 		let info_prompt = ''
 		switch (toolname) {
 			case 'character-generator':
@@ -82,6 +80,7 @@ fount角色以mjs文件语法所书写，其可以自由导入任何npm或jsr包
 
 import { loadPart, loadAnyPreferredDefaultPart } from '../../../../../src/server/parts_loader.mjs'
 import { buildPromptStruct } from '../../../../../src/public/parts/shells/chat/src/prompt_struct/index.mjs'
+import { runReplyHandlers } from '../../../../../src/public/parts/shells/chat/src/reply/handlerPipeline.mjs'
 
 /**
  * AI源的实例
@@ -263,17 +262,15 @@ export default {
 
 				args.generation_options.replyPreviewUpdater = r => replyPreviewUpdater(args, r)
 
+				const handlers = [
+					...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)
+				].filter(Boolean)
 				// 在重新生成循环中检查插件触发
 				regen: while (true) {
 					args.generation_options.base_result = result
 					await AIsource.StructCall(prompt_struct, args.generation_options)
-					let continue_regen = false
-					for (const replyHandler of [
-						...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)
-					].filter(Boolean))
-						if (await replyHandler(result, { ...args, prompt_struct, AddLongTimeLog }))
-							continue_regen = true
-					if (continue_regen) continue regen
+					if (await runReplyHandlers(result, { ...args, prompt_struct, AddLongTimeLog }, handlers))
+						continue regen
 					break
 				}
 				// 返回构建好的回复
@@ -287,25 +284,18 @@ export default {
 \`\`\`\`js
 import fs from 'node:fs'
 import path from 'node:path'
+import { runReplyHandlers } from '../../../../../src/public/parts/shells/chat/src/reply/handlerPipeline.mjs'
 
 /**
  * 处理 generate-char 工具调用。
  * @type {import("../../../../../src/decl/pluginAPI.ts").ReplyHandler_t}
  */
-function CharGenerator(reply, { AddLongTimeLog }) {
-	const match_generator_tool = reply.content.match(/<generate-char\\s+name="(?<charname>[^"]+)">\\s*(?<code>[^]*?)\\s*<\\/generate-char>/)
+function CharGenerator(reply, { AddLongTimeLog, MaskHandledCall }) {
+	const match_generator_tool = reply.content_for_handle.match(/<generate-char\\s+name="(?<charname>[^"]+)">\\s*(?<code>[^]*?)\\s*<\\/generate-char>/)
 	if (match_generator_tool) try {
 		let { charname, code } = match_generator_tool.groups
 		charname = charname.trim()
-		AddLongTimeLog({
-			name: 'ZL-31',
-			role: 'char',
-			content: \`\\
-<generate-char name="\${charname}">
-\${code}
-</generate-char>
-\`,
-		})
+		MaskHandledCall?.(match_generator_tool[0])
 		const dir = path.join(import.meta.dirname, '..', charname)
 		const file = path.join(dir, 'main.mjs')
 		if (fs.existsSync(file))
@@ -380,18 +370,16 @@ function CharGenerator(reply, { AddLongTimeLog }) {
 
 				args.generation_options.replyPreviewUpdater = r => replyPreviewUpdater(args, r)
 
+				const handlers = [
+					CharGenerator,
+					...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)
+				].filter(Boolean)
 				// 在重新生成循环中检查插件触发
 				regen: while (true) {
 					args.generation_options.base_result = result
 					await AIsource.StructCall(prompt_struct, args.generation_options)
-					let continue_regen = false
-					for (const replyHandler of [
-						CharGenerator,
-						...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)
-					].filter(Boolean))
-						if (await replyHandler(result, { ...args, prompt_struct, AddLongTimeLog }))
-							continue_regen = true
-					if (continue_regen) continue regen
+					if (await runReplyHandlers(result, { ...args, prompt_struct, AddLongTimeLog }, handlers))
+						continue regen
 					break
 				}
 				// 返回构建好的回复
@@ -568,20 +556,12 @@ export default {
  * 处理 generate-char 工具调用。
  * @type {import("../../../../../src/decl/pluginAPI.ts").ReplyHandler_t}
  */
-function CharGenerator(reply, { AddLongTimeLog }) {
-	const match_generator_tool = reply.content.match(/<generate-char\s+name="(?<charname>[^"]+)">\s*(?<code>[^]*?)\s*<\/generate-char>/)
+function CharGenerator(reply, { AddLongTimeLog, MaskHandledCall }) {
+	const match_generator_tool = reply.content_for_handle.match(/<generate-char\s+name="(?<charname>[^"]+)">\s*(?<code>[^]*?)\s*<\/generate-char>/)
 	if (match_generator_tool) try {
 		let { charname, code } = match_generator_tool.groups
 		charname = charname.trim()
-		AddLongTimeLog({
-			name: 'ZL-31',
-			role: 'char',
-			content: `\
-<generate-char name="${charname}">
-${code}
-</generate-char>
-`,
-		})
+		MaskHandledCall?.(match_generator_tool[0])
 		const dir = path.join(import.meta.dirname, '..', charname)
 		const file = path.join(dir, 'main.mjs')
 		if (fs.existsSync(file))
@@ -617,20 +597,12 @@ ${code}
  * 处理 generate-persona 工具调用。
  * @type {import("../../../../../src/decl/pluginAPI.ts").ReplyHandler_t}
  */
-function PersonaGenerator(reply, { AddLongTimeLog }) {
-	const match_generator_tool = reply.content.match(/<generate-persona\s+name="(?<charname>[^"]+)">\s*(?<code>[^]*?)\s*<\/generate-persona>/)
+function PersonaGenerator(reply, { AddLongTimeLog, MaskHandledCall }) {
+	const match_generator_tool = reply.content_for_handle.match(/<generate-persona\s+name="(?<charname>[^"]+)">\s*(?<code>[^]*?)\s*<\/generate-persona>/)
 	if (match_generator_tool) try {
 		let { charname, code } = match_generator_tool.groups
 		charname = charname.trim()
-		AddLongTimeLog({
-			name: 'ZL-31',
-			role: 'char',
-			content: `\
-<generate-persona name="${charname}">
-${code}
-</generate-persona>
-`,
-		})
+		MaskHandledCall?.(match_generator_tool[0])
 		const dir = path.join(import.meta.dirname, '..', '..', 'personas', charname)
 		const file = path.join(dir, 'main.mjs')
 		if (fs.existsSync(file))
@@ -759,6 +731,12 @@ export default {
 			 * @returns {Promise<object>} - 包含提示词结构的对象。
 			 */
 			GetPrompt: async (args) => {
+				// 请求级 AI 源覆盖（code shell 等会传入实例）；据此告知角色自己由哪个来源/模型驱动
+				const aiSource = args.ai_source ?? AIsource
+				const sourceInfo = aiSource ? await getPartInfo(aiSource, args.locales) : null
+				const sourceLine = sourceInfo
+					? `\n关于你自己：你当前使用的 AI 来源是「${sourceInfo.name}」（由 ${sourceInfo.provider} 提供）。模型名称不属于人设信息，用户问起时可以如实告知。\n`
+					: ''
 				return {
 					text: [{
 						content: `\
@@ -775,7 +753,7 @@ fount有[Telegram群组](https://t.me/GentianAphrodite)，可以在那里找到�
 <get-tool-info>character-generator</get-tool-info>
 你还可以帮助用户创建用户人设，返回以下格式来得知如何使用，或获取有关用户人设的信息以回答用户问题：
 <get-tool-info>persona-generator</get-tool-info>
-`,
+${sourceLine}`,
 						important: 0
 					}],
 					additional_chat_log: [],
@@ -803,8 +781,10 @@ fount有[Telegram群组](https://t.me/GentianAphrodite)，可以在那里找到�
 			 * @returns {Promise<object>} - 包含回复内容的对象。
 			 */
 			GetReply: async args => {
+				// 请求级 AI 源覆盖优先（code shell 等会传入实例），否则用角色自带 AI 源
+				const aiSource = args.ai_source ?? AIsource
 				// 如果没有设置AI源，返回默认回复
-				if (!AIsource)
+				if (!aiSource)
 					return { content: getLocale(args.locales, 'noAISourceFeedback') }
 				// 注入角色插件
 				args.plugins = Object.assign({}, plugins, args.plugins)
@@ -873,20 +853,18 @@ fount有[Telegram群组](https://t.me/GentianAphrodite)，可以在那里找到�
 				 */
 				args.generation_options.replyPreviewUpdater = r => replyPreviewUpdater(args, r)
 
+				const handlers = [
+					getToolInfo,
+					CharGenerator,
+					PersonaGenerator,
+					...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)
+				].filter(Boolean)
 				// 在重新生成循环中检查插件触发
 				regen: while (true) {
 					args.generation_options.base_result = result
-					await AIsource.StructCall(prompt_struct, args.generation_options)
-					let continue_regen = false
-					for (const replyHandler of [
-						getToolInfo,
-						CharGenerator,
-						PersonaGenerator,
-						...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)
-					].filter(Boolean))
-						if (await replyHandler(result, { ...args, prompt_struct, AddLongTimeLog }))
-							continue_regen = true
-					if (continue_regen) continue regen
+					await aiSource.StructCall(prompt_struct, args.generation_options)
+					if (await runReplyHandlers(result, { ...args, prompt_struct, AddLongTimeLog }, handlers))
+						continue regen
 					break
 				}
 				// 返回构建好的回复

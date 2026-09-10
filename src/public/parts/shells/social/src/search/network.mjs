@@ -5,6 +5,7 @@ import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { getShellPartpath } from 'npm:@steve02081504/fount-p2p/registries/part_path'
 import { queryNetwork } from 'npm:@steve02081504/fount-p2p/wire/part/query'
 
+import { isSourceNodeBlocked, sourceNodesOf } from '../../../../../../scripts/p2p/source_block.mjs'
 import { federatedPostQueryRow, federatedPostRowKey, sanitizeFederatedPostQueryRow } from '../federation/postQueryRow.mjs'
 import { searchPosts } from '../search.mjs'
 
@@ -47,7 +48,7 @@ export async function buildNearbyPostSearch(username, options = {}) {
 	const q = String(options.q || '').trim()
 	const limit = Math.min(Math.max(Number(options.limit) || 30, 1), 100)
 	const partpath = getShellPartpath('social')
-	const rows = await queryNetwork(username, partpath, POST_SEARCH_KIND, {
+	const { rows, sources } = await queryNetwork(username, partpath, POST_SEARCH_KIND, {
 		q,
 		limit,
 		author: options.author,
@@ -56,6 +57,7 @@ export async function buildNearbyPostSearch(username, options = {}) {
 	}, {
 		maxHits: 64,
 		rowKey: federatedPostRowKey,
+		isSourceBlocked: isSourceNodeBlocked,
 	})
 
 	/** @type {object[]} */
@@ -70,6 +72,7 @@ export async function buildNearbyPostSearch(username, options = {}) {
 			post: cleaned.event,
 			federated: true,
 			nodeHash: cleaned.nodeHash,
+			sourceNodes: sourceNodesOf(sources, federatedPostRowKey(cleaned)),
 		})
 		if (items.length >= limit) break
 	}

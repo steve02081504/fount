@@ -4,6 +4,7 @@
 import { uploadToCatbox } from '/scripts/host/catbox.mjs'
 import { confirmAction } from '/scripts/features/promptDialog.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
+import { decorateHeadings, scrollToHash, watchHash } from '/scripts/features/headingAnchors.mjs'
 import { initTranslations, setElementI18n } from '/scripts/i18n/index.mjs'
 import { applyTheme } from '/scripts/theme/index.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
@@ -11,6 +12,7 @@ import { showToastI18n } from '/scripts/features/toast.mjs'
 import { deleteGists, getGist, getSourcePlugins, updateGist } from './src/endpoints.mjs'
 import { renderGistContent } from './src/render.mjs'
 import { fileNameFromHtmlTitle, renderMarkdownAsStandaloneDocument, downloadHtmlDocument } from './src/standaloneDocument.mjs'
+import { deriveTitleFromMarkdown } from './src/title.mjs'
 
 const LIST_URL = '/parts/shells:gist/'
 const EDIT_URL = '/parts/shells:gist/edit.html'
@@ -34,9 +36,42 @@ function renderSecurityToggle() {
  * @returns {Promise<void>} 渲染完成。
  */
 async function renderGist() {
-	document.getElementById('view-title').textContent = gist.title || ''
+	document.getElementById('view-title').textContent = deriveTitleFromMarkdown(gist.markdown)
 	renderSecurityToggle()
-	await renderGistContent(document.getElementById('content'), gist)
+	const content = document.getElementById('content')
+	await renderGistContent(content, gist)
+	decorateHeadings(content, { anchorClassName: 'gist-heading-anchor' })
+	scrollToHash(content)
+}
+
+/**
+ * 渲染后按 URL hash 滚动到标题。gist 正文在 Tailwind 工具类异步生效前可能尚不可滚动，
+ * 故在随后的动画帧里重试，直到目标标题接近容器顶部或重试用尽。
+ * @param {HTMLElement} content 正文容器
+ * @returns {void}
+ */
+function scrollToHashWhenSettled(content) {
+	const raw = location.hash.slice(1)
+	if (!raw) return
+	let id = raw
+	try {
+		id = decodeURIComponent(raw)
+	}
+	catch {
+		id = raw
+	}
+	/**
+	 * 逐帧尝试滚动到目标标题，最多 60 帧（约 1 秒）。
+	 * @param {number} attempt 已尝试次数
+	 * @returns {void}
+	 */
+	const tryScroll = attempt => {
+		if (!scrollToHash(content)) return
+		const target = document.getElementById(id)
+		if (target && target.getBoundingClientRect().top > 120 && attempt < 60)
+			requestAnimationFrame(() => tryScroll(attempt + 1))
+	}
+	requestAnimationFrame(() => tryScroll(0))
 }
 
 /**
@@ -56,7 +91,7 @@ async function toggleSecurity() {
  */
 async function downloadGist() {
 	const html = await renderMarkdownAsStandaloneDocument(gist.markdown)
-	downloadHtmlDocument(html, fileNameFromHtmlTitle(html, gist.title || 'gist'))
+	downloadHtmlDocument(html, fileNameFromHtmlTitle(html, deriveTitleFromMarkdown(gist.markdown)))
 }
 
 /**
@@ -65,7 +100,7 @@ async function downloadGist() {
  */
 async function shareGist() {
 	const html = await renderMarkdownAsStandaloneDocument(gist.markdown)
-	const fileName = fileNameFromHtmlTitle(html, gist.title || 'gist')
+	const fileName = fileNameFromHtmlTitle(html, deriveTitleFromMarkdown(gist.markdown))
 	const fileId = await uploadToCatbox(html, '1h', fileName)
 	await navigator.clipboard.writeText(`https://litter.catbox.moe/${fileId}`)
 	showToastI18n('success', 'gist.view.shareCopied')
@@ -177,6 +212,7 @@ async function boot() {
 	document.getElementById('delete-button').addEventListener('click', () => { void deleteGistAction().catch(handleError('gist.error.generic')) })
 	document.addEventListener('dragover', event => { event.preventDefault() })
 	document.addEventListener('drop', onDocumentDrop)
+	watchHash(document.getElementById('content'))
 	if (!id) {
 		showNotFound()
 		return
