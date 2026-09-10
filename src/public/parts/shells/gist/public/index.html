@@ -23,9 +23,37 @@
 </head>
 <body>
 	<div class="gist-page flex h-dvh w-full flex-col bg-base-100 text-base-content">
-		<header class="gist-topbar flex items-center justify-between gap-2 px-4 py-2 border-b border-base-content/10">
-			<h1 class="gist-page-title text-lg font-bold" data-i18n="gist.title"></h1>
-			<button class="btn btn-primary btn-sm" id="new-gist-button" type="button" data-i18n="gist.list.new"></button>
+		<header class="gist-topbar flex flex-col border-b border-base-content/10">
+			<div class="gist-appbar flex items-center justify-between gap-2 px-4 py-2">
+				<h1 class="gist-page-title text-lg font-bold" data-i18n="gist.title"></h1>
+				<div class="flex items-center gap-2">
+					<button class="btn btn-ghost btn-sm" id="select-mode-button" type="button" hidden data-i18n="gist.list.select"></button>
+					<button class="btn btn-primary btn-sm" id="new-gist-button" type="button" data-i18n="gist.list.new"></button>
+				</div>
+			</div>
+			<div class="gist-controls flex items-center gap-2 flex-wrap px-4 py-2 border-t border-base-content/10" id="gist-controls" hidden>
+				<input type="search" id="gist-search-input" class="input input-sm input-bordered flex-1 min-w-0" data-i18n="gist.list.search" />
+				<label class="sr-only" for="gist-sort-select" data-i18n="gist.list.sortLabel"></label>
+				<select id="gist-sort-select" class="select select-sm select-bordered">
+					<option value="updated-desc" data-i18n="gist.list.sort.updatedDesc"></option>
+					<option value="updated-asc" data-i18n="gist.list.sort.updatedAsc"></option>
+					<option value="created-desc" data-i18n="gist.list.sort.createdDesc"></option>
+					<option value="created-asc" data-i18n="gist.list.sort.createdAsc"></option>
+					<option value="title-asc" data-i18n="gist.list.sort.titleAsc"></option>
+					<option value="title-desc" data-i18n="gist.list.sort.titleDesc"></option>
+				</select>
+			</div>
+			<div class="gist-selection-bar flex items-center gap-2 flex-wrap px-4 py-2 border-t border-base-content/10" id="gist-selection-bar" hidden>
+				<button class="btn btn-ghost btn-sm" id="exit-selection-button" type="button" data-i18n="gist.list.exitSelection"></button>
+				<span class="text-sm font-medium" id="selection-count" data-i18n="gist.list.noneSelected"></span>
+				<div class="flex-1"></div>
+				<label class="gist-select-all flex items-center gap-1.5 cursor-pointer">
+					<input class="checkbox checkbox-sm" type="checkbox" id="select-all-checkbox" />
+					<span class="text-sm" data-i18n="gist.list.selectAll"></span>
+				</label>
+				<button class="btn btn-ghost btn-sm" id="batch-download-button" type="button" disabled data-i18n="gist.list.batch.download"></button>
+				<button class="btn btn-error btn-sm" id="batch-delete-button" type="button" disabled data-i18n="gist.list.batch.delete"></button>
+			</div>
 		</header>
 		<main class="gist-main flex-1 overflow-y-auto" id="gist-list"></main>
 	</div>

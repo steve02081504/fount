@@ -33,8 +33,8 @@ function sendJson(url, body, method = 'POST') {
 }
 
 /**
- * 列出全部 gist（不含 markdown），按创建时间降序。
- * @returns {Promise<Array<{id: string, title: string, securityLevel: 'secure'|'trusted', source: object|null, createdAt: number, updatedAt: number}>>} gist 列表。
+ * 列出全部 gist 摘要（不含 markdown，附纯文本 excerpt），按更新时间降序。
+ * @returns {Promise<Array<{id: string, title: string, excerpt: string, securityLevel: 'secure'|'trusted', source: object|null, createdAt: number, updatedAt: number}>>} gist 列表。
  */
 export async function listGists() {
 	return requestJson(`${API_BASE}/gists`)
@@ -42,7 +42,7 @@ export async function listGists() {
 
 /**
  * 新建 gist。
- * @param {{markdown: string, title?: string, securityLevel?: 'secure'|'trusted', source?: object|null}} payload - 创建参数。
+ * @param {{markdown: string, title?: string, securityLevel?: 'secure'|'trusted', source?: object|null, dedupe?: boolean}} payload - 创建参数；`dedupe` 为 true 时后端命中相同内容会返回既有 gist。
  * @returns {Promise<{id: string, title: string, securityLevel: string, source: object|null, createdAt: number, updatedAt: number, markdown: string}>} 新建的 gist。
  */
 export async function createGist(payload) {
@@ -72,12 +72,12 @@ export async function updateGist(id, payload) {
 }
 
 /**
- * 删除 gist。
- * @param {string} id - gist id。
- * @returns {Promise<{ok: boolean}>} 删除结果。
+ * 批量删除 gist。
+ * @param {string[]} ids - gist id 列表。
+ * @returns {Promise<{ deleted: string[], missing: string[] }>} 删除结果，`missing` 为不存在或非法的 id。
  */
-export async function deleteGist(id) {
-	return requestJson(`${API_BASE}/gists/${encodeURIComponent(id)}`, { method: 'DELETE' })
+export async function deleteGists(ids) {
+	return sendJson(`${API_BASE}/gists/batch-delete`, { ids })
 }
 
 /**

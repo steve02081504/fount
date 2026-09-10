@@ -8,7 +8,7 @@ import { initTranslations, setElementI18n } from '/scripts/i18n/index.mjs'
 import { applyTheme } from '/scripts/theme/index.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
 
-import { deleteGist, getGist, getSourcePlugins, updateGist } from './src/endpoints.mjs'
+import { deleteGists, getGist, getSourcePlugins, updateGist } from './src/endpoints.mjs'
 import { renderGistContent } from './src/render.mjs'
 import { fileNameFromHtmlTitle, renderMarkdownAsStandaloneDocument, downloadHtmlDocument } from './src/standaloneDocument.mjs'
 
@@ -77,7 +77,7 @@ async function shareGist() {
  */
 async function deleteGistAction() {
 	if (!await confirmAction('gist.view.deleteConfirm')) return
-	await deleteGist(gist.id)
+	await deleteGists([gist.id])
 	location.href = LIST_URL
 }
 

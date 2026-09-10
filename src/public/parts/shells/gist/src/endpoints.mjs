@@ -2,7 +2,7 @@ import { httpError } from '../../../../../scripts/http_error.mjs'
 import { authenticate, getUserByReq } from '../../../../../server/auth/index.mjs'
 import { loadRegistryJsonEntries } from '../../../../../server/registries.mjs'
 
-import { createGist, deleteGist, getGist, listGists, updateGist } from './manager.mjs'
+import { createGist, deleteGists, getGist, listGists, updateGist } from './manager.mjs'
 
 const SECURITY_LEVELS = ['secure', 'trusted']
 
@@ -28,13 +28,21 @@ export function setEndpoints(router) {
 
 	router.post('/api/parts/shells\\:gist/gists', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const { markdown, title, securityLevel, source } = req.body || {}
+		const { markdown, title, securityLevel, source, dedupe } = req.body || {}
 		if (!markdown) throw httpError(400, 'markdown is required.')
 		if (typeof markdown !== 'string') throw httpError(400, 'markdown must be a string.')
 		if (title !== undefined && typeof title !== 'string') throw httpError(400, 'title must be a string.')
+		if (dedupe !== undefined && typeof dedupe !== 'boolean') throw httpError(400, 'dedupe must be a boolean.')
 		assertSecurityLevel(securityLevel)
-		const gist = await createGist(username, { markdown, title, securityLevel, source })
+		const gist = await createGist(username, { markdown, title, securityLevel, source, dedupe })
 		res.status(201).json({ gist })
+	})
+
+	router.post('/api/parts/shells\\:gist/gists/batch-delete', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const { ids } = req.body || {}
+		if (!Array.isArray(ids) || ids.some(id => typeof id !== 'string')) throw httpError(400, 'ids must be an array of strings.')
+		res.json(await deleteGists(username, ids))
 	})
 
 	router.get('/api/parts/shells\\:gist/gists/:id', authenticate, async (req, res) => {
@@ -57,7 +65,8 @@ export function setEndpoints(router) {
 
 	router.delete('/api/parts/shells\\:gist/gists/:id', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		if (!await deleteGist(username, req.params.id)) throw httpError(404, 'gist not found.')
+		const { deleted } = await deleteGists(username, [req.params.id])
+		if (!deleted.length) throw httpError(404, 'gist not found.')
 		res.json({ ok: true })
 	})
 
