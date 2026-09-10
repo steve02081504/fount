@@ -42,6 +42,10 @@ test.describe('Home shell smoke', () => {
 			// 模拟真实 OS 文件拖动：Windows 等会在 text/plain 里带上文件路径
 			dataTransfer.setData('text/plain', 'C:\\Users\\test\\Desktop\\note.md')
 			document.body.dispatchEvent(new DragEvent('drop', { dataTransfer, bubbles: true, cancelable: true }))
+			// 真实浏览器在 drop 派发任务结束后清空 DataTransfer（files/getData 失效）。
+			// 处理器必须在 await 之前同步快照，否则此处读到空内容 → noHandler。
+			dataTransfer.items.clear()
+			dataTransfer.clearData()
 		})
 		try {
 			await page.waitForURL(/parts\/shells:gist\/view\/?\?id=/, { timeout: 20_000 })
