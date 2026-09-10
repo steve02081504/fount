@@ -1175,11 +1175,6 @@
 			"generateXFountPart": {
 				"description": "स्रोत घटक जानकारी उत्पन्न करें"
 			}
-		},
-		"home_drag_in_handlers": {
-			"handleMarkdownDrop": {
-				"description": "ड्रॉप किए गए Markdown दस्तावेज़ को बनाएँ या देखें"
-			}
 		}
 	},
 	"chat": {
@@ -6539,6 +6534,11 @@
 			},
 			"asset": {
 				"title": "संसाधन"
+			}
+		},
+		"home_drag_in_handlers": {
+			"handleMarkdownDrop": {
+				"description": "खींचे गए मार्कडाउन दस्तावेज़ को बनाएं या पूर्वावलोकन करें"
 			}
 		},
 		"list": {

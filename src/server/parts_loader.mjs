@@ -313,6 +313,27 @@ function scanPartTrees(username) {
 }
 
 /**
+ * 本次进程内已完成一次真实重扫、可信任内存缓存的用户集合。
+ * 持久化的 part 树缓存可能落后于源树（如 git 更新新增了 part 或 registry 声明后进程重启），
+ * 因此每个进程首次访问某用户时必须重扫，不能仅凭磁盘缓存提前返回。
+ * @type {Set<string>}
+ */
+const partTreeValidatedUsers = new Set()
+
+/**
+ * 判断是否可复用内存中的 part 树缓存。
+ * 未在本次进程内重扫过时一律重扫，避免持久化缓存掩盖源树更新。
+ * @param {{ nocache?: boolean }} [options] - 调用选项。
+ * @param {boolean} validatedThisProcess - 本次进程是否已对该用户重扫过。
+ * @param {object} branchCache - 分支缓存对象。
+ * @param {object} registryCache - registries 缓存对象。
+ * @returns {boolean} 可复用为 true。
+ */
+export function canReusePartTreeCache({ nocache = false } = {}, validatedThisProcess, branchCache, registryCache) {
+	return !nocache && validatedThisProcess && !!branchCache?.branches && !!registryCache?.registries
+}
+
+/**
  * @param {string} username - 用户名。
  * @param {{ nocache?: boolean }} [options] - 可选项。
  * @returns {void}
@@ -320,7 +341,7 @@ function scanPartTrees(username) {
 function ensurePartTreeCache(username, { nocache = false } = {}) {
 	const branchCache = loadData(username, PARTS_BRANCH_CACHE_NAME)
 	const registryCache = loadData(username, PARTS_REGISTRIES_CACHE_NAME)
-	if (!nocache && branchCache.branches && registryCache.registries) return
+	if (canReusePartTreeCache({ nocache }, partTreeValidatedUsers.has(username), branchCache, registryCache)) return
 
 	const { branches, registries } = scanPartTrees(username)
 	branchCache.branches = branches
@@ -329,6 +350,7 @@ function ensurePartTreeCache(username, { nocache = false } = {}) {
 	registryCache.registries = registries
 	registryCache.updatedAt = Date.now()
 	saveData(username, PARTS_REGISTRIES_CACHE_NAME)
+	partTreeValidatedUsers.add(username)
 }
 
 /**
@@ -337,6 +359,7 @@ function ensurePartTreeCache(username, { nocache = false } = {}) {
  * @returns {void}
  */
 function invalidatePartTreeCache(username) {
+	partTreeValidatedUsers.delete(username)
 	const branchCache = loadData(username, PARTS_BRANCH_CACHE_NAME)
 	delete branchCache.branches
 	delete branchCache.updatedAt
@@ -345,6 +368,17 @@ function invalidatePartTreeCache(username) {
 	delete registryCache.registries
 	delete registryCache.updatedAt
 	saveData(username, PARTS_REGISTRIES_CACHE_NAME)
+}
+
+/**
+ * 使所有用户的 part 分支与 registries 缓存失效，强制下次访问时重扫。
+ * 用于代码更新（含不重启的 git reset）后立即发现新增的 part / registry 声明。
+ * @returns {void}
+ */
+export function invalidateAllPartTreeCaches() {
+	for (const username in getAllUsers())
+		invalidatePartTreeCache(username)
+	partTreeValidatedUsers.clear()
 }
 
 /**

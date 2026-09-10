@@ -1175,11 +1175,6 @@
 			"generateXFountPart": {
 				"description": "Tạo thông tin thành phần nguồn"
 			}
-		},
-		"home_drag_in_handlers": {
-			"handleMarkdownDrop": {
-				"description": "Tạo hoặc xem trước tài liệu Markdown được kéo thả"
-			}
 		}
 	},
 	"chat": {
@@ -6539,6 +6534,11 @@
 			},
 			"asset": {
 				"title": "Tài nguyên"
+			}
+		},
+		"home_drag_in_handlers": {
+			"handleMarkdownDrop": {
+				"description": "Tạo hoặc xem trước tài liệu Markdown được kéo"
 			}
 		},
 		"list": {

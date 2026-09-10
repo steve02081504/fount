@@ -3,16 +3,15 @@
  */
 
 import { getUserSetting } from '../../../scripts/endpoints/base.mjs'
-import { unlockAchievement, getAllDefaultParts, getPartBranches } from '../../../scripts/endpoints/parts.mjs'
+import { unlockAchievement, getAllDefaultParts } from '../../../scripts/endpoints/parts.mjs'
 import { showToast } from '../../../scripts/features/toast.mjs'
 import { applyUrlParamsTransferStrategy } from '../../../scripts/host/urlDataTransfer.mjs'
 import { initTranslations, console } from '../../../scripts/i18n/index.mjs'
 import { applyTheme, serializeCurrentTheme } from '../../../scripts/theme/index.mjs'
 
-import { preloadAllPartTypeDetails } from './data.mjs'
 import { getHomeRegistry } from './endpoints.mjs'
 import { setupDOMEventListeners, setupServerEventListeners } from './events.mjs'
-import { setHomeRegistry, setDefaultParts, setIsSfw, setPartBranches, homeRegistry, preloadDragGenerators } from './state.mjs'
+import { setHomeRegistry, setDefaultParts, setIsSfw, homeRegistry, preloadDragGenerators } from './state.mjs'
 import {
 	setupPartTypeUI,
 	displayFunctionButtons
@@ -27,13 +26,8 @@ import {
 export async function loadDataAndRender(initialPath) {
 	try {
 		setHomeRegistry(await getHomeRegistry())
-		setPartBranches(await getPartBranches(true))
 		await preloadDragGenerators(homeRegistry)
 		setDefaultParts(await getAllDefaultParts())
-		await preloadAllPartTypeDetails([
-			'', // root types
-			...homeRegistry.part_types?.map?.(pt => pt.name)
-		])
 		await setupPartTypeUI(homeRegistry.part_types, initialPath)
 		displayFunctionButtons()
 		setIsSfw(await getUserSetting('sfw').catch(() => false))

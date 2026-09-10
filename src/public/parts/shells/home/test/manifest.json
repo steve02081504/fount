@@ -21,7 +21,7 @@
 			"subtests": [
 				{
 					"name": "smoke",
-					"expected": "16s",
+					"expected": "1m15s",
 					"triggers": [
 						"src/public/parts/shells/home/test/frontend/smoke.spec.mjs",
 						"src/public/parts/shells/home/test/frontend/fixtures.mjs",

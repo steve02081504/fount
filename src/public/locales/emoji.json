@@ -1175,11 +1175,6 @@
 			"generateXFountPart": {
 				"description": "📥🧩📃"
 			}
-		},
-		"home_drag_in_handlers": {
-			"handleMarkdownDrop": {
-				"description": "📂📥📝✨👁️"
-			}
 		}
 	},
 	"chat": {
@@ -3218,10 +3213,10 @@
 				"title": "💬"
 			},
 			"frequent": {
-				"title": "常用"
+				"title": "⭐"
 			},
 			"network": {
-				"title": "互联"
+				"title": "🌐"
 			}
 		},
 		"profile": {
@@ -4130,7 +4125,7 @@
 				"title": "⚙️🚰"
 			},
 			"frequent": {
-				"title": "常用"
+				"title": "⭐"
 			}
 		}
 	},
@@ -4403,10 +4398,10 @@
 				"title": "🏛️"
 			},
 			"frequent": {
-				"title": "常用"
+				"title": "⭐"
 			},
 			"network": {
-				"title": "互联"
+				"title": "🌐"
 			}
 		},
 		"nav": {
@@ -5096,7 +5091,7 @@
 				"title": "🗄️"
 			},
 			"asset": {
-				"title": "资产"
+				"title": "📦"
 			}
 		},
 		"upload": "⬆️",
@@ -5282,10 +5277,10 @@
 				}
 			},
 			"dev": {
-				"title": "开发",
+				"title": "🛠️",
 				"sub_items": {
 					"terminalAssist": {
-						"title": "终端辅助"
+						"title": "🤖"
 					}
 				}
 			}
@@ -5812,10 +5807,10 @@
 				"title": "💻📱➡️⛲"
 			},
 			"frequent": {
-				"title": "常用"
+				"title": "⭐"
 			},
 			"network": {
-				"title": "互联"
+				"title": "🌐"
 			}
 		}
 	},
@@ -5937,10 +5932,10 @@
 		},
 		"home_function_buttons": {
 			"network": {
-				"title": "互联",
+				"title": "🌐",
 				"sub_items": {
 					"subfounts": {
-						"title": "子设备"
+						"title": "🧩"
 					}
 				}
 			}
@@ -6511,7 +6506,7 @@
 				"title": "💻"
 			},
 			"dev": {
-				"title": "开发"
+				"title": "🛠️"
 			}
 		},
 		"gist_source_plugins": {
@@ -6538,7 +6533,12 @@
 				"title": "📄📚"
 			},
 			"asset": {
-				"title": "资产"
+				"title": "📦"
+			}
+		},
+		"home_drag_in_handlers": {
+			"handleMarkdownDrop": {
+				"description": "📄📥📖"
 			}
 		},
 		"list": {

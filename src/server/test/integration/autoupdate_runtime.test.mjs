@@ -5,7 +5,7 @@ import { join } from 'node:path'
 
 import { autoUpdateEnabled, disableAutoUpdate, enableAutoUpdate } from '../../autoupdate.mjs'
 
-import { idleHandlers, updateFixture } from './fixtures/autoupdate.mjs'
+import { idleHandlers, gitScript, updateFixture } from './fixtures/autoupdate.mjs'
 
 const executablePath = '/opt/User Deno/bin/deno'
 const updateDenoScript = join('/autoupdate-fixture', 'path/src', 'update-deno.sh')
@@ -135,4 +135,34 @@ Deno.test('idle update on Windows delegates through powershell_exec to the PS sc
 
 Deno.test('idle update on Windows restarts when the PATH deno version changes', async () => {
 	assert.equal((await checkUpdate({ os: 'windows', nextVersion: '2.9.7' })).restarts, 1)
+})
+
+Deno.test('non-restart upstream update invalidates part-tree caches', async () => {
+	Object.assign(updateFixture, {
+		hasGitRepo: true,
+		cacheInvalidations: 0,
+		gitCalls: [],
+		calls: [],
+		restarts: 0,
+		nextVersion: Deno.version.deno,
+	})
+	gitScript.set('rev-parse --abbrev-ref --symbolic-full-name @{u}', 'origin/master')
+	gitScript.set('rev-parse @{u}', 'remote-sha')
+	gitScript.set('merge-base HEAD @{u}', null)
+	gitScript.set('diff --name-only HEAD @{u}', 'src/locales/zh-CN.json')
+	gitScript.set('rev-parse HEAD', 'remote-sha')
+	gitScript.set('rev-parse --abbrev-ref HEAD', 'master')
+	try {
+		enableAutoUpdate()
+		assert.equal(autoUpdateEnabled, true)
+		for (const handler of idleHandlers) await handler()
+		assert.equal(updateFixture.cacheInvalidations, 1)
+		assert.equal(updateFixture.restarts, 0)
+	}
+	finally {
+		disableAutoUpdate()
+		gitScript.clear()
+		updateFixture.hasGitRepo = false
+		updateFixture.cacheInvalidations = 0
+	}
 })

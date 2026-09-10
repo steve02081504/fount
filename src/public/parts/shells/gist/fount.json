@@ -2,6 +2,13 @@
 	"type": "shells",
 	"dirname": "gist",
 	"registries": {
+		"home_drag_in_handlers": [
+			{
+				"id": "drag_in_handlers",
+				"level": 0,
+				"path": "home_registry.json"
+			}
+		],
 		"home_function_buttons": [
 			{
 				"id": "function_buttons",

@@ -9,7 +9,13 @@ export const updateFixture = {
 	restarts: 0,
 	realpaths: [],
 	warnings: [],
+	cacheInvalidations: 0,
+	gitCalls: [],
+	hasGitRepo: false,
 }
+
+/** 脚本化的 git 子命令结果；未命中的子命令返回 null。 */
+export const gitScript = new Map()
 
 /** 真实自动更新模块注册的空闲回调。 */
 export const idleHandlers = new Set()
@@ -50,10 +56,15 @@ export async function exec(command) {
 }
 
 /**
- * 初始 Git 引用查询不访问实际仓库。
- * @returns {Promise<null>} 表示没有可用的仓库引用。
+ * 脚本化回答 git 子命令；未命中的子命令返回 null（模拟没有仓库引用）。
+ * @param {...string} args - git 子命令与参数。
+ * @returns {Promise<string|null>} 脚本命中的标准输出，否则 null。
  */
-export async function git() { return null }
+export async function git(...args) {
+	const key = args.join(' ')
+	updateFixture.gitCalls.push(key)
+	return gitScript.has(key) ? gitScript.get(key) : null
+}
 
 /** 不向外部错误跟踪服务发送标签。 */
 export function setTag() {}
@@ -76,6 +87,12 @@ export function offIdle(handler) { idleHandlers.delete(handler) }
  */
 export async function restartor() { updateFixture.restarts++ }
 
+/**
+ * 记录 part 树缓存失效请求，不触碰真实缓存。
+ * @returns {void}
+ */
+export function invalidateAllPartTreeCaches() { updateFixture.cacheInvalidations++ }
+
 /** 不向客户端发送实际事件。 */
 export function sendEventToAll() {}
 
@@ -93,11 +110,15 @@ export const console = {
 /** 限定自动更新模块使用的文件系统替身。 */
 export default {
 	/**
-	 * 只模拟 Termux 标志目录，不触发 Git 更新路径。
+	 * 只模拟 Termux 标志目录与脚本指定的 Git 仓库根，不访问真实文件系统。
 	 * @param {string} path 要检查的目录。
-	 * @returns {boolean} 是否存在模拟的 Termux 目录。
+	 * @returns {boolean} 是否存在模拟的目录。
 	 */
-	existsSync(path) { return path === '/data/data/com.termux' && updateFixture.termux },
+	existsSync(path) {
+		if (path === '/data/data/com.termux') return updateFixture.termux
+		if (path === '/autoupdate-fixture/.git') return updateFixture.hasGitRepo
+		return false
+	},
 	/**
 	 * 记录并解析当前运行时路径，不访问真实文件系统。
 	 * @param {string} path 运行时报告的可执行文件路径。

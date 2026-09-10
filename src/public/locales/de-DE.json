@@ -1175,11 +1175,6 @@
 			"generateXFountPart": {
 				"description": "Informationen zur Quellkomponente generieren"
 			}
-		},
-		"home_drag_in_handlers": {
-			"handleMarkdownDrop": {
-				"description": "Abgelegtes Markdown-Dokument erstellen oder ansehen"
-			}
 		}
 	},
 	"chat": {
@@ -6539,6 +6534,11 @@
 			},
 			"asset": {
 				"title": "Ressourcen"
+			}
+		},
+		"home_drag_in_handlers": {
+			"handleMarkdownDrop": {
+				"description": "Erstellen Sie ein gezogenes Markdown-Dokument oder zeigen Sie es in der Vorschau an"
 			}
 		},
 		"list": {

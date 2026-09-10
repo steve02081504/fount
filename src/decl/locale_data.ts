@@ -1138,11 +1138,6 @@ export type LocaleData = {
 				description: string
 			}
 		}
-		home_drag_in_handlers: {
-			handleMarkdownDrop: {
-				description: string
-			}
-		}
 	}
 	chat: {
 		title: string
@@ -6501,6 +6496,11 @@ export type LocaleData = {
 			}
 			asset: {
 				title: string
+			}
+		}
+		home_drag_in_handlers: {
+			handleMarkdownDrop: {
+				description: string
 			}
 		}
 		list: {

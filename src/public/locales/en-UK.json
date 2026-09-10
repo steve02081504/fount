@@ -1175,11 +1175,6 @@
 			"generateXFountPart": {
 				"description": "Generate fount part info"
 			}
-		},
-		"home_drag_in_handlers": {
-			"handleMarkdownDrop": {
-				"description": "Create or preview a dropped Markdown document"
-			}
 		}
 	},
 	"chat": {
@@ -6539,6 +6534,11 @@
 			},
 			"asset": {
 				"title": "Assets"
+			}
+		},
+		"home_drag_in_handlers": {
+			"handleMarkdownDrop": {
+				"description": "Create or preview a dragged Markdown document"
 			}
 		},
 		"list": {
