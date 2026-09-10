@@ -3224,10 +3224,10 @@
 				"title": "Chat"
 			},
 			"frequent": {
-				"title": "Couramment utilisé"
+				"title": "Fréquents"
 			},
 			"network": {
-				"title": "interconnecté"
+				"title": "Réseau"
 			}
 		},
 		"profile": {
@@ -4136,7 +4136,7 @@
 				"title": "Gérer la source de service"
 			},
 			"frequent": {
-				"title": "Couramment utilisé"
+				"title": "Fréquents"
 			}
 		}
 	},
@@ -4409,10 +4409,10 @@
 				"title": "Social"
 			},
 			"frequent": {
-				"title": "Couramment utilisé"
+				"title": "Fréquents"
 			},
 			"network": {
-				"title": "interconnecté"
+				"title": "Réseau"
 			}
 		},
 		"nav": {
@@ -5102,7 +5102,7 @@
 				"title": "Armoire"
 			},
 			"asset": {
-				"title": "actifs"
+				"title": "Ressources"
 			}
 		},
 		"upload": "Téléverser",
@@ -5288,10 +5288,10 @@
 				}
 			},
 			"dev": {
-				"title": "développer",
+				"title": "Développement",
 				"sub_items": {
 					"terminalAssist": {
-						"title": "assistance aux terminaux"
+						"title": "Assistant de terminal"
 					}
 				}
 			}
@@ -5818,10 +5818,10 @@
 				"title": "Accès sur d'autres appareils"
 			},
 			"frequent": {
-				"title": "Couramment utilisé"
+				"title": "Fréquents"
 			},
 			"network": {
-				"title": "interconnecté"
+				"title": "Réseau"
 			}
 		}
 	},
@@ -5943,7 +5943,7 @@
 		},
 		"home_function_buttons": {
 			"network": {
-				"title": "interconnecté",
+				"title": "Réseau",
 				"sub_items": {
 					"subfounts": {
 						"title": "sous-appareil"
@@ -6517,7 +6517,7 @@
 				"title": "Code"
 			},
 			"dev": {
-				"title": "développer"
+				"title": "Développement"
 			}
 		},
 		"gist_source_plugins": {
@@ -6544,7 +6544,7 @@
 				"title": "Bibliothèque de gist"
 			},
 			"asset": {
-				"title": "actifs"
+				"title": "Ressources"
 			}
 		},
 		"list": {

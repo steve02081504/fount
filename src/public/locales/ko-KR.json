@@ -3218,10 +3218,10 @@
 				"title": "채팅"
 			},
 			"frequent": {
-				"title": "일반적으로 사용되는"
+				"title": "자주 사용"
 			},
 			"network": {
-				"title": "상호 연결됨"
+				"title": "네트워크"
 			}
 		},
 		"profile": {
@@ -4130,7 +4130,7 @@
 				"title": "서비스 소스 관리"
 			},
 			"frequent": {
-				"title": "일반적으로 사용되는"
+				"title": "자주 사용"
 			}
 		}
 	},
@@ -4403,10 +4403,10 @@
 				"title": "정사각형"
 			},
 			"frequent": {
-				"title": "일반적으로 사용되는"
+				"title": "자주 사용"
 			},
 			"network": {
-				"title": "상호 연결됨"
+				"title": "네트워크"
 			}
 		},
 		"nav": {
@@ -5282,7 +5282,7 @@
 				}
 			},
 			"dev": {
-				"title": "개발하다",
+				"title": "개발",
 				"sub_items": {
 					"terminalAssist": {
 						"title": "터미널 지원"
@@ -5812,10 +5812,10 @@
 				"title": "다른 디바이스에서 접속"
 			},
 			"frequent": {
-				"title": "일반적으로 사용되는"
+				"title": "자주 사용"
 			},
 			"network": {
-				"title": "상호 연결됨"
+				"title": "네트워크"
 			}
 		}
 	},
@@ -5937,7 +5937,7 @@
 		},
 		"home_function_buttons": {
 			"network": {
-				"title": "상호 연결됨",
+				"title": "네트워크",
 				"sub_items": {
 					"subfounts": {
 						"title": "하위 장치"
@@ -6511,7 +6511,7 @@
 				"title": "Code"
 			},
 			"dev": {
-				"title": "개발하다"
+				"title": "개발"
 			}
 		},
 		"gist_source_plugins": {

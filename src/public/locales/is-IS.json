@@ -3218,10 +3218,10 @@
 				"title": "Spjall"
 			},
 			"frequent": {
-				"title": "Algengt notað"
+				"title": "Algengir"
 			},
 			"network": {
-				"title": "samtengd"
+				"title": "Net"
 			}
 		},
 		"profile": {
@@ -4130,7 +4130,7 @@
 				"title": "Stjórna þjónustuveitu"
 			},
 			"frequent": {
-				"title": "Algengt notað"
+				"title": "Algengir"
 			}
 		}
 	},
@@ -4403,10 +4403,10 @@
 				"title": "Torg"
 			},
 			"frequent": {
-				"title": "Algengt notað"
+				"title": "Algengir"
 			},
 			"network": {
-				"title": "samtengd"
+				"title": "Net"
 			}
 		},
 		"nav": {
@@ -5096,7 +5096,7 @@
 				"title": "Skjalaskápur"
 			},
 			"asset": {
-				"title": "eignir"
+				"title": "Eignir"
 			}
 		},
 		"upload": "Hlaða upp",
@@ -5282,10 +5282,10 @@
 				}
 			},
 			"dev": {
-				"title": "þróast",
+				"title": "Þróun",
 				"sub_items": {
 					"terminalAssist": {
-						"title": "flugstöðvaraðstoð"
+						"title": "Terminal Assistance"
 					}
 				}
 			}
@@ -5812,10 +5812,10 @@
 				"title": "Aðgangur að öðrum tækjum"
 			},
 			"frequent": {
-				"title": "Algengt notað"
+				"title": "Algengir"
 			},
 			"network": {
-				"title": "samtengd"
+				"title": "Net"
 			}
 		}
 	},
@@ -5937,7 +5937,7 @@
 		},
 		"home_function_buttons": {
 			"network": {
-				"title": "samtengd",
+				"title": "Net",
 				"sub_items": {
 					"subfounts": {
 						"title": "undirtæki"
@@ -6511,7 +6511,7 @@
 				"title": "Code"
 			},
 			"dev": {
-				"title": "þróast"
+				"title": "Þróun"
 			}
 		},
 		"gist_source_plugins": {
@@ -6538,7 +6538,7 @@
 				"title": "Gist-safn"
 			},
 			"asset": {
-				"title": "eignir"
+				"title": "Eignir"
 			}
 		},
 		"list": {

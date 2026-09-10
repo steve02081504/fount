@@ -3224,10 +3224,10 @@
 				"title": "charlar"
 			},
 			"frequent": {
-				"title": "de uso común"
+				"title": "Frecuentes"
 			},
 			"network": {
-				"title": "interconectado"
+				"title": "Red"
 			}
 		},
 		"profile": {
@@ -4136,7 +4136,7 @@
 				"title": "Administrar fount de servicio"
 			},
 			"frequent": {
-				"title": "de uso común"
+				"title": "Frecuentes"
 			}
 		}
 	},
@@ -4409,10 +4409,10 @@
 				"title": "Plaza"
 			},
 			"frequent": {
-				"title": "de uso común"
+				"title": "Frecuentes"
 			},
 			"network": {
-				"title": "interconectado"
+				"title": "Red"
 			}
 		},
 		"nav": {
@@ -5102,7 +5102,7 @@
 				"title": "archivo"
 			},
 			"asset": {
-				"title": "activos"
+				"title": "Recursos"
 			}
 		},
 		"upload": "subir",
@@ -5288,10 +5288,10 @@
 				}
 			},
 			"dev": {
-				"title": "desarrollar",
+				"title": "Desarrollo",
 				"sub_items": {
 					"terminalAssist": {
-						"title": "asistencia terminal"
+						"title": "Asistencia de Terminal"
 					}
 				}
 			}
@@ -5818,10 +5818,10 @@
 				"title": "Acceso en otros dispositivos"
 			},
 			"frequent": {
-				"title": "de uso común"
+				"title": "Frecuentes"
 			},
 			"network": {
-				"title": "interconectado"
+				"title": "Red"
 			}
 		}
 	},
@@ -5943,7 +5943,7 @@
 		},
 		"home_function_buttons": {
 			"network": {
-				"title": "interconectado",
+				"title": "Red",
 				"sub_items": {
 					"subfounts": {
 						"title": "subdispositivo"
@@ -6517,7 +6517,7 @@
 				"title": "Code"
 			},
 			"dev": {
-				"title": "desarrollar"
+				"title": "Desarrollo"
 			}
 		},
 		"gist_source_plugins": {
@@ -6544,7 +6544,7 @@
 				"title": "Biblioteca de gist"
 			},
 			"asset": {
-				"title": "activos"
+				"title": "Recursos"
 			}
 		},
 		"list": {

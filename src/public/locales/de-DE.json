@@ -3218,10 +3218,10 @@
 				"title": "Chat"
 			},
 			"frequent": {
-				"title": "Häufig verwendet"
+				"title": "Häufige"
 			},
 			"network": {
-				"title": "verbunden"
+				"title": "Netzwerk"
 			}
 		},
 		"profile": {
@@ -4130,7 +4130,7 @@
 				"title": "Servicequelle verwalten"
 			},
 			"frequent": {
-				"title": "Häufig verwendet"
+				"title": "Häufige"
 			}
 		}
 	},
@@ -4403,10 +4403,10 @@
 				"title": "Plaza"
 			},
 			"frequent": {
-				"title": "Häufig verwendet"
+				"title": "Häufige"
 			},
 			"network": {
-				"title": "verbunden"
+				"title": "Netzwerk"
 			}
 		},
 		"nav": {
@@ -5096,7 +5096,7 @@
 				"title": "Cabinet"
 			},
 			"asset": {
-				"title": "Vermögenswerte"
+				"title": "Ressourcen"
 			}
 		},
 		"upload": "Hochladen",
@@ -5282,10 +5282,10 @@
 				}
 			},
 			"dev": {
-				"title": "entwickeln",
+				"title": "Entwicklung",
 				"sub_items": {
 					"terminalAssist": {
-						"title": "Terminalunterstützung"
+						"title": "Terminal-Assistenz"
 					}
 				}
 			}
@@ -5812,10 +5812,10 @@
 				"title": "Zugriff auf anderen Geräten"
 			},
 			"frequent": {
-				"title": "Häufig verwendet"
+				"title": "Häufige"
 			},
 			"network": {
-				"title": "verbunden"
+				"title": "Netzwerk"
 			}
 		}
 	},
@@ -5937,7 +5937,7 @@
 		},
 		"home_function_buttons": {
 			"network": {
-				"title": "verbunden",
+				"title": "Netzwerk",
 				"sub_items": {
 					"subfounts": {
 						"title": "Untergerät"
@@ -6511,7 +6511,7 @@
 				"title": "Code"
 			},
 			"dev": {
-				"title": "entwickeln"
+				"title": "Entwicklung"
 			}
 		},
 		"gist_source_plugins": {
@@ -6538,7 +6538,7 @@
 				"title": "Gist-Bibliothek"
 			},
 			"asset": {
-				"title": "Vermögenswerte"
+				"title": "Ressourcen"
 			}
 		},
 		"list": {

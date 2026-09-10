@@ -3224,10 +3224,10 @@
 				"title": "Chiacchierata"
 			},
 			"frequent": {
-				"title": "Comunemente usato"
+				"title": "Frequenti"
 			},
 			"network": {
-				"title": "interconnesso"
+				"title": "Rete"
 			}
 		},
 		"profile": {
@@ -4136,7 +4136,7 @@
 				"title": "Gestisci l'origine del servizio"
 			},
 			"frequent": {
-				"title": "Comunemente usato"
+				"title": "Frequenti"
 			}
 		}
 	},
@@ -4409,10 +4409,10 @@
 				"title": "piazza"
 			},
 			"frequent": {
-				"title": "Comunemente usato"
+				"title": "Frequenti"
 			},
 			"network": {
-				"title": "interconnesso"
+				"title": "Rete"
 			}
 		},
 		"nav": {
@@ -5102,7 +5102,7 @@
 				"title": "Mobiletto"
 			},
 			"asset": {
-				"title": "attività"
+				"title": "Risorse"
 			}
 		},
 		"upload": "Caricamento",
@@ -5288,10 +5288,10 @@
 				}
 			},
 			"dev": {
-				"title": "sviluppare",
+				"title": "Sviluppo",
 				"sub_items": {
 					"terminalAssist": {
-						"title": "assistenza terminale"
+						"title": "Assistenza Terminale"
 					}
 				}
 			}
@@ -5818,10 +5818,10 @@
 				"title": "Accesso su altri dispositivi"
 			},
 			"frequent": {
-				"title": "Comunemente usato"
+				"title": "Frequenti"
 			},
 			"network": {
-				"title": "interconnesso"
+				"title": "Rete"
 			}
 		}
 	},
@@ -5943,7 +5943,7 @@
 		},
 		"home_function_buttons": {
 			"network": {
-				"title": "interconnesso",
+				"title": "Rete",
 				"sub_items": {
 					"subfounts": {
 						"title": "sottodispositivo"
@@ -6517,7 +6517,7 @@
 				"title": "Code"
 			},
 			"dev": {
-				"title": "sviluppare"
+				"title": "Sviluppo"
 			}
 		},
 		"gist_source_plugins": {
@@ -6544,7 +6544,7 @@
 				"title": "Libreria di gist"
 			},
 			"asset": {
-				"title": "attività"
+				"title": "Risorse"
 			}
 		},
 		"list": {

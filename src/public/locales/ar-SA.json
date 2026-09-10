@@ -3218,10 +3218,10 @@
 				"title": "محادثة"
 			},
 			"frequent": {
-				"title": "شائعة الاستخدام"
+				"title": "شائعة"
 			},
 			"network": {
-				"title": "مترابطة"
+				"title": "الشبكة"
 			}
 		},
 		"profile": {
@@ -4140,7 +4140,7 @@
 				"title": "إدارة مصدر الخدمة"
 			},
 			"frequent": {
-				"title": "شائعة الاستخدام"
+				"title": "شائعة"
 			}
 		}
 	},
@@ -4413,10 +4413,10 @@
 				"title": "الساحة"
 			},
 			"frequent": {
-				"title": "شائعة الاستخدام"
+				"title": "شائعة"
 			},
 			"network": {
-				"title": "مترابطة"
+				"title": "الشبكة"
 			}
 		},
 		"nav": {
@@ -5106,7 +5106,7 @@
 				"title": "خزانة الملفات"
 			},
 			"asset": {
-				"title": "أصول"
+				"title": "الموارد"
 			}
 		},
 		"upload": "رفع",
@@ -5292,10 +5292,10 @@
 				}
 			},
 			"dev": {
-				"title": "يطور",
+				"title": "التطوير",
 				"sub_items": {
 					"terminalAssist": {
-						"title": "المساعدة النهائية"
+						"title": "المساعدة الطرفية"
 					}
 				}
 			}
@@ -5822,10 +5822,10 @@
 				"title": "الوصول من أجهزة أخرى"
 			},
 			"frequent": {
-				"title": "شائعة الاستخدام"
+				"title": "شائعة"
 			},
 			"network": {
-				"title": "مترابطة"
+				"title": "الشبكة"
 			}
 		}
 	},
@@ -5947,7 +5947,7 @@
 		},
 		"home_function_buttons": {
 			"network": {
-				"title": "مترابطة",
+				"title": "الشبكة",
 				"sub_items": {
 					"subfounts": {
 						"title": "جهاز فرعي"
@@ -6521,7 +6521,7 @@
 				"title": "Code"
 			},
 			"dev": {
-				"title": "يطور"
+				"title": "التطوير"
 			}
 		},
 		"gist_source_plugins": {
@@ -6548,7 +6548,7 @@
 				"title": "مكتبة gist"
 			},
 			"asset": {
-				"title": "أصول"
+				"title": "الموارد"
 			}
 		},
 		"list": {
