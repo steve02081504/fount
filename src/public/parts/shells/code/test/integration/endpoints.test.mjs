@@ -378,6 +378,30 @@ Deno.test({
 })
 
 Deno.test({
+	name: 'shutdown schedule/cancel roundtrip',
+	sanitizeOps: false,
+	sanitizeResources: false,
+}, async () => {
+	const node = await launchCodeNode()
+	try {
+		// 初始未预定、无进行中生成
+		assertEquals(await (await codeFetch(node, 'GET', '/shutdown')).json(), { machine: null, active: 0 })
+		// 预定本机
+		const armed = await (await codeFetch(node, 'PUT', '/shutdown', { machine: '0' })).json()
+		assertEquals(armed.machine, '0')
+		assertEquals(armed.active, 0)
+		assertEquals((await (await codeFetch(node, 'GET', '/shutdown')).json()).machine, '0')
+		// 不存在的主机被拒绝
+		assertEquals((await codeFetch(node, 'PUT', '/shutdown', { machine: '999' })).status, 400)
+		// 取消预定
+		assertEquals((await (await codeFetch(node, 'PUT', '/shutdown', { machine: null })).json()).machine, null)
+	}
+	finally {
+		await stopNode(node)
+	}
+})
+
+Deno.test({
 	name: 'tabs list and draft content roundtrip via backend shell data',
 	sanitizeOps: false,
 	sanitizeResources: false,

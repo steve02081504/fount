@@ -9,7 +9,7 @@ import { geti18n } from '/scripts/i18n/index.mjs'
 import { appendLocalHistory, removeGhost, renderAttachmentPreview } from './composer.mjs'
 import * as api from './endpoints.mjs'
 import { appendEntryBubble, backToBottom, nearBottom, renderMessages, scrollMessagesBottom, updateRegenButtons, updateEmptyMode } from './messages.mjs'
-import { openFolderBrowser, renderAiSourcePillLabel, renderModePillLabel, selectWorkspace, updateCharMenu } from './pills.mjs'
+import { openFolderBrowser, refreshShutdownState, renderAiSourcePillLabel, renderModePillLabel, selectWorkspace, updateCharMenu } from './pills.mjs'
 import { elements, richInput, store, TAB_SAVE_DEBOUNCE, target } from './store.mjs'
 
 /** 标签页保存防抖定时器句柄。 */
@@ -681,6 +681,7 @@ async function finishGeneration(entries, memory, aborted = false) {
 	await markSessionDirty(session)
 	renderTabs()
 	void refreshAllSessions()
+	void refreshShutdownState()
 }
 
 /** 更新发送按钮（生成中变停止图标）。 */

@@ -29,6 +29,7 @@ const PILL_SPECS = [
 	{ name: 'machine', menuClass: 'w-64' },
 	{ name: 'workspace', menuClass: 'w-64' },
 	{ name: 'char', menuClass: 'w-64', footer: CHAR_MENU_FOOTER },
+	{ name: 'power', menuClass: 'w-64' },
 ]
 
 /** 挂载全部 pill 下拉（模板渲染）并补全元素引用。 */
@@ -36,7 +37,7 @@ export async function mountPillChrome() {
 	// hidden / footer 必须始终传入：模板 ${} 表达式引用未定义变量会让 async_eval 抛 ReferenceError
 	const pills = await Promise.all(PILL_SPECS.map(spec => renderTemplate('pill_dropdown', { hidden: false, footer: '', ...spec })))
 	elements.composerControlsMain.append(pills[0], pills[1], pills[2])
-	elements.composerTargets.append(pills[3], pills[4], pills[5])
+	elements.composerTargets.append(pills[3], pills[4], pills[5], pills[6])
 	/**
 	 * 按 id 取元素。
 	 * @param {string} id - 元素 id。
@@ -93,13 +94,22 @@ function menuSeparator() {
 
 /* ---------------- 机器 / shell ---------------- */
 
+/**
+ * 机器展示名（本机走 i18n，远程用描述 / 主机名，离线附标记）。
+ * @param {object} machine - 机器条目。
+ * @returns {string} 展示名。
+ */
+function machineDisplayName(machine) {
+	if (!machine) return ''
+	if (String(machine.id) === '0') return geti18n('code.machine.local')
+	const name = machine.description || machine.deviceInfo?.hostname || `#${machine.id}`
+	return machine.isConnected === false ? `${name} (${geti18n('code.machine.offline')})` : name
+}
+
 /** 渲染机器 pill 下拉。 */
 export function renderMachineMenu() {
-	elements.machineMenu.replaceChildren(...store.machines.map(machine => {
-		const text = machine.id === '0'
-			? geti18n('code.machine.local')
-			: `${machine.description || machine.deviceInfo?.hostname || `#${machine.id}`}${machine.isConnected ? '' : ' (' + geti18n('code.machine.offline') + ')'}`
-		return menuItem(text, {
+	elements.machineMenu.replaceChildren(...store.machines.map(machine =>
+		menuItem(machineDisplayName(machine), {
 			active: String(machine.id) === store.machine,
 			disabled: machine.id !== '0' && !machine.isConnected,
 			/**
@@ -108,15 +118,14 @@ export function renderMachineMenu() {
 			 */
 			onClick: () => void selectMachine(String(machine.id)),
 		})
-	}))
+	))
 }
 
 /** 更新机器 pill 标签。 */
 export function renderMachinePillLabel() {
 	const machine = store.machines.find(m => String(m.id) === store.machine)
-	elements.machinePillLabel.textContent = machine?.id === '0'
-		? geti18n('code.machine.local')
-		: (machine?.description || machine?.deviceInfo?.hostname || `#${store.machine}`) + (machine?.isConnected === false ? ` (${geti18n('code.machine.offline')})` : '')
+	// 机器列表未就绪时保留 `#id` 兜底，避免标签空置（按钮无可访问名称）
+	elements.machinePillLabel.textContent = machine ? machineDisplayName(machine) : `#${store.machine}`
 }
 
 /**
@@ -143,6 +152,97 @@ export async function loadShellOptions(machine) {
 	const data = await api.getMachineShells(machine).catch(() => ({ shells: [], default: '' }))
 	store.shells = data.shells || []
 	store.shell = data.default || store.shells[0] || ''
+}
+
+/* ---------------- 任务完成后关机 ---------------- */
+
+/** 从后端刷新待关机状态并更新 pill。 */
+export async function refreshShutdownState() {
+	try {
+		const data = await api.getShutdown()
+		store.shutdownMachine = data.machine ?? null
+		store.shutdownActive = data.active || 0
+	}
+	catch {
+		store.shutdownMachine = null
+		store.shutdownActive = 0
+	}
+	renderPowerPillLabel()
+	renderPowerMenu()
+}
+
+/** 渲染“任务完成后关机”菜单：主机勾选（无 subfount 仅本机）。 */
+export function renderPowerMenu() {
+	const menu = elements.powerMenu
+	menu.replaceChildren()
+	const titleLi = document.createElement('li')
+	const title = document.createElement('div')
+	title.className = 'menu-title'
+	title.textContent = geti18n('code.power.menuTitle')
+	titleLi.appendChild(title)
+	menu.appendChild(titleLi)
+	for (const machine of store.machines) {
+		const id = String(machine.id)
+		const disabled = id !== '0' && !machine.isConnected
+		const listItem = document.createElement('li')
+		const label = document.createElement('label')
+		label.className = 'code-power-item flex items-center gap-2 px-2 py-1.5 cursor-pointer' + (disabled ? ' opacity-50' : '')
+		const checkbox = document.createElement('input')
+		checkbox.type = 'checkbox'
+		checkbox.className = 'checkbox checkbox-sm'
+		checkbox.checked = String(store.shutdownMachine) === id
+		checkbox.disabled = disabled
+		checkbox.dataset.machineId = id
+		const text = document.createElement('span')
+		text.className = 'code-menu-item-title'
+		// 机器名称为用户动态数据，跳过语种扫描
+		text.setAttribute('user-content', '')
+		text.textContent = machineDisplayName(machine)
+		label.append(checkbox, text)
+		checkbox.addEventListener('change', () => void toggleShutdown(id, checkbox.checked))
+		listItem.appendChild(label)
+		menu.appendChild(listItem)
+	}
+}
+
+/** 更新关机 pill 标签。 */
+export function renderPowerPillLabel() {
+	const id = store.shutdownMachine
+	const machine = id != null ? store.machines.find(m => String(m.id) === String(id)) : null
+	elements.powerPill.setAttribute('aria-label', geti18n('code.power.aria-label'))
+	elements.powerPillLabel.textContent = id != null
+		? geti18n('code.power.armed', { host: machine ? machineDisplayName(machine) : `#${id}` })
+		: geti18n('code.power.label')
+}
+
+/** 将菜单内复选框勾选态同步为当前待关机主机（不重建 DOM，避免抢焦点）。 */
+function syncPowerCheckboxes() {
+	for (const checkbox of elements.powerMenu.querySelectorAll('input[data-machine-id]'))
+		checkbox.checked = String(store.shutdownMachine) === checkbox.dataset.machineId
+}
+
+/**
+ * 勾选 / 取消：预定所有任务生成完毕后关闭该主机。
+ * @param {string} id - 主机 id。
+ * @param {boolean} checked - 是否勾选。
+ * @returns {Promise<void>}
+ */
+async function toggleShutdown(id, checked) {
+	try {
+		const data = checked ? await api.setShutdown(id) : await api.setShutdown(null)
+		store.shutdownMachine = data.machine ?? null
+		store.shutdownActive = data.active || 0
+		if (store.shutdownMachine != null)
+			// 不使用主机名插值：toast 的 params 在语种切换时不会重解析，会把原语种主机名漏到他语种
+			showToastI18n('info', 'code.power.armedToast')
+		else
+			showToastI18n('info', 'code.power.cancelled')
+	}
+	catch (error) {
+		showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
+	}
+	syncPowerCheckboxes()
+	renderPowerPillLabel()
 }
 
 /* ---------------- 工作区 ---------------- */

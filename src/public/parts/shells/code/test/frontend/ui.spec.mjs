@@ -757,3 +757,34 @@ test.describe('code shell message actions & layout', () => {
 		}
 	})
 })
+
+test.describe('code shell shutdown menu', () => {
+	test('power menu lists the local host and toggles the after-tasks shutdown state', async ({ page, baseUrl }) => {
+		await openCode(page, baseUrl)
+		await holdLocale(page)
+		try {
+			await page.locator('#power-pill').click()
+			const menu = page.locator('#power-menu')
+			await expect(menu).toBeVisible()
+			// 无 subfount 时仅有本机可选
+			await expect(menu.locator('input[type="checkbox"][data-machine-id]')).toHaveCount(1)
+			await expect(menu).toContainText('本机')
+			await menu.locator('input[type="checkbox"][data-machine-id="0"]').check()
+			await expect(page.locator('#power-pill-label')).toContainText('本机')
+			await expect(async () => {
+				const data = await (await page.request.get(`${baseUrl}${API_BASE}/shutdown`)).json()
+				expect(data.machine).toBe('0')
+			}).toPass()
+			// 取消勾选（菜单保持打开，不重建 DOM）
+			await menu.locator('input[type="checkbox"][data-machine-id="0"]').uncheck()
+			await expect(page.locator('#power-pill-label')).toHaveText('任务完成后关机')
+			await expect(async () => {
+				const data = await (await page.request.get(`${baseUrl}${API_BASE}/shutdown`)).json()
+				expect(data.machine).toBeNull()
+			}).toPass()
+		}
+		finally {
+			await releaseLocale(page)
+		}
+	})
+})

@@ -19,6 +19,7 @@ import {
 	refreshAiSources,
 	refreshChars,
 	refreshProfiles,
+	refreshShutdownState,
 	renderAiSourceMenu,
 	renderAiSourcePillLabel,
 	renderCharRecommendation,
@@ -26,6 +27,8 @@ import {
 	renderMachinePillLabel,
 	renderModeMenu,
 	renderModePillLabel,
+	renderPowerMenu,
+	renderPowerPillLabel,
 	renderShellMenu,
 	renderShellPillLabel,
 	renderWorkspaceMenu,
@@ -69,6 +72,8 @@ function rerenderDynamicText() {
 	updateComposerPlaceholder()
 	updateEmptyMode()
 	renderCharRecommendation()
+	renderPowerPillLabel()
+	renderPowerMenu()
 	backToBottom.setAttribute('aria-label', geti18n('code.messages.backToBottom'))
 }
 
@@ -116,7 +121,7 @@ export async function boot() {
 	store.profile = getPref('profile', 'build')
 	store.aiSource = getPref('aiSource', '')
 	await loadShellOptions(store.machine)
-	await Promise.all([refreshProfiles(), refreshAiSources(), refreshAllSessions(), refreshChars()])
+	await Promise.all([refreshProfiles(), refreshAiSources(), refreshAllSessions(), refreshChars(), refreshShutdownState()])
 	// `fount run` 打开的页面经 ?workspace= 直达目标工作区
 	const urlWorkspace = new URLSearchParams(location.search).get('workspace')
 	const savedWorkspace = urlWorkspace || getPref('workspace')
@@ -171,6 +176,7 @@ function wireGlobalEvents() {
 	elements.modePill.addEventListener('click', () => renderModeMenu())
 	elements.aiSourcePill.addEventListener('click', () => renderAiSourceMenu())
 	elements.shellPill.addEventListener('click', () => renderShellMenu())
+	elements.powerPill.addEventListener('click', () => renderPowerMenu())
 	// charPill 无 click 绑定：daisyUI dropdown 依赖焦点行为展开
 	elements.charSwitchButton.addEventListener('click', () => {
 		void openCharSwitchDialog()
