@@ -140,10 +140,26 @@ export function setupDOMEventListeners() {
 		const { dataTransfer } = event
 		if (!dataTransfer) return
 
+		// 浏览器在 drop 派发任务结束后清空 DataTransfer（files/getData 全部失效），
+		// 而处理器要等动态 import 后才能运行，因此必须先同步快照拖放内容。
+		const capturedData = Object.fromEntries(
+			Array.from(dataTransfer.types || [], type => [type, dataTransfer.getData(type)])
+		)
+		const dropped = {
+			files: Array.from(dataTransfer.files || []),
+			types: Array.from(dataTransfer.types || []),
+			/**
+			 * 读取拖放时同步捕获的文本内容。
+			 * @param {string} type - 数据类型（MIME）。
+			 * @returns {string} 捕获到的文本，没有则为空字符串。
+			 */
+			getData: type => capturedData[type] ?? '',
+		}
+
 		const handlers = homeRegistry.home_drag_in_handlers || []
 		for (const handlerConfig of handlers) try {
 			const handlerModule = await import(handlerConfig.path)
-			const handled = await handlerModule.default?.(dataTransfer, handlerConfig)
+			const handled = await handlerModule.default?.(dropped, handlerConfig)
 			if (handled) return showToastI18n('success', 'home.dragAndDrop.dropSuccess')
 		} catch (error) {
 			console.error(`Error importing or executing drag-in handler from ${handlerConfig.path}:`, error)
