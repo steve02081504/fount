@@ -1,6 +1,7 @@
 /**
  * fount Agent 研究院文章页：拉取 markdown → fount 全量渲染 → 站内链接改写 → 语言切换 / 上下篇导航。
  */
+import { decorateHeadings, scrollToHash, watchHash } from '../../scripts/features/headingAnchors.mjs'
 import { geti18n, initTranslations, pickLocalizedSlice, setElementI18n, setLanguage } from '../../scripts/i18n/index.mjs'
 import {
 	articleMarkdownUrl,
@@ -10,6 +11,7 @@ import {
 	getArticleEntry,
 	loadIndex,
 	mountLanguageMenu,
+	mountNeuralBackground,
 	mountThemeMenu,
 	resolveArticleLang,
 	rewriteArticleLinks,
@@ -28,6 +30,23 @@ const articleSidebar = document.getElementById('article-sidebar')
 const tocSection = document.getElementById('article-toc-section')
 const tocList = document.getElementById('article-toc')
 const articleNav = document.getElementById('article-nav')
+const neuralCanvas = /** @type {HTMLCanvasElement | null} */ document.getElementById('blog-neural')
+const progressBar = document.getElementById('blog-progress')
+
+if (neuralCanvas) mountNeuralBackground(neuralCanvas)
+watchHash(articleBody)
+
+/**
+ * 依文档滚动进度更新顶部阅读进度条。
+ * @returns {void}
+ */
+function updateProgress() {
+	const doc = document.documentElement
+	const max = doc.scrollHeight - doc.clientHeight
+	progressBar.style.setProperty('--progress', max > 0 ? String(Math.min(1, doc.scrollTop / max)) : '0')
+}
+window.addEventListener('scroll', updateProgress, { passive: true })
+window.addEventListener('resize', updateProgress, { passive: true })
 
 /** 当前博客索引。 @type {import('../blog.mjs').blogIndex | null} */
 let index = null
@@ -123,37 +142,17 @@ function renderPager() {
 }
 
 /**
- * 为标题生成 GitHub 风格锚点 id（保留 CJK，标点去除，空白转连字符），保证唯一。
- * @param {string} text 标题文本
- * @param {Set<string>} used 已占用的 id 集合
- * @returns {string} 唯一锚点 id
- */
-function headingSlug(text, used) {
-	const base = text.trim().toLowerCase()
-		.replace(/[^\p{L}\p{N}\s-]/gu, '')
-		.replace(/[\s_]+/g, '-')
-		.replace(/-+/g, '-')
-		.replace(/^-|-$/g, '') || 'section'
-	let slug = base
-	for (let i = 1; used.has(slug); i++) slug = `${base}-${i}`
-	used.add(slug)
-	return slug
-}
-
-/**
- * 从渲染后的文章片段提取 h2/h3 构建侧边栏目录，并为标题补锚点 id。
+ * 从渲染后的文章片段提取 h2/h3 构建侧边栏目录，并为标题补锚点 id 与可点击锚点链接。
  * 无小节（无 h2/h3）时隐藏目录区块。
  * @param {DocumentFragment} fragment 渲染后的文章片段
  * @returns {void}
  */
 function buildToc(fragment) {
-	const headings = fragment.querySelectorAll('h2, h3')
+	const headings = decorateHeadings(fragment, { selector: 'h2, h3', anchorClassName: 'blog-heading-anchor' })
 	tocList.replaceChildren()
 	tocSection.hidden = !headings.length
 	if (!headings.length) return
-	const used = new Set()
 	for (const heading of headings) {
-		if (!heading.id) heading.id = headingSlug(heading.textContent, used)
 		const li = document.createElement('li')
 		const link = document.createElement('a')
 		link.href = `#${heading.id}`
@@ -275,10 +274,13 @@ async function showArticle() {
 
 		mountLanguageMenu(languageMenu, entryLangs(entry), currentLang, selectedLang => {
 			currentLang = selectedLang
+			history.replaceState(null, '', `${location.pathname}${location.search}`)
 			window.scrollTo({ top: 0 })
 			setLanguage([selectedLang]).then(() => showArticle()).catch(console.error)
 		})
 		renderPager()
+		updateProgress()
+		scrollToHash(articleBody)
 	}
 	catch (error) {
 		console.error('Failed to load article:', error)

@@ -2,14 +2,21 @@
  * 会话生命周期：标签条 / 工作区会话 / WebSocket 流式生成 / 落盘 flush / 发送与重新生成。
  */
 import { StreamRenderer } from '/parts/shells:chat/src/ui/StreamRenderer.mjs'
+import { getGist } from '/parts/shells:gist/src/endpoints.mjs'
 
+import { bindDismissOnDocumentInteraction } from '/scripts/components/contextMenuDismiss.mjs'
+import { positionContextMenu } from '/scripts/components/positionContextMenu.mjs'
+import { confirmAction, promptText } from '/scripts/features/promptDialog.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
+import { arrayBufferToBase64 } from '/scripts/lib/base64.mjs'
+import { svgInliner } from '/scripts/lib/svgInliner.mjs'
 
 import { appendLocalHistory, removeGhost, renderAttachmentPreview } from './composer.mjs'
 import * as api from './endpoints.mjs'
+import { iconElement, icons } from './icons.mjs'
 import { appendEntryBubble, backToBottom, nearBottom, renderMessages, scrollMessagesBottom, updateRegenButtons, updateEmptyMode } from './messages.mjs'
-import { openFolderBrowser, refreshShutdownState, renderAiSourcePillLabel, renderModePillLabel, selectWorkspace, updateCharMenu } from './pills.mjs'
+import { refreshShutdownState, renderAiSourcePillLabel, renderModePillLabel, selectWorkspace, updateCharMenu } from './pills.mjs'
 import { elements, richInput, store, TAB_SAVE_DEBOUNCE, target } from './store.mjs'
 
 /** 标签页保存防抖定时器句柄。 */
@@ -152,13 +159,30 @@ function tabTitle(tab) {
 	return cached?.title || summary?.title || geti18n('code.sessions.untitled')
 }
 
+/**
+ * 同步地址栏为当前标签页（不带历史记录）。
+ * 仅 session 标签写入 ?workspace=&session=；草稿清空查询参数，
+ * 以免 reload 被 boot 当成 `fount run` 的 ?workspace= 语义而多建草稿。
+ * @param {object} tab - 当前标签页。
+ * @returns {void}
+ */
+function syncCodeUrl(tab) {
+	const url = new URL(location.href)
+	url.search = ''
+	if (tab?.type === 'session' && tab.id) {
+		if (tab.workspaceId) url.searchParams.set('workspace', tab.workspaceId)
+		url.searchParams.set('session', tab.id)
+	}
+	history.replaceState(null, '', url.toString())
+}
+
 /** 新建标签按钮（由 renderTabs 渲染在最后一个标签右侧，随标签条滚动）。 */
 const newTabButton = (() => {
 	const button = document.createElement('button')
 	button.type = 'button'
 	button.id = 'new-tab-button'
 	button.className = 'btn btn-ghost btn-square btn-sm'
-	button.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>'
+	button.appendChild(iconElement(icons.plus, { size: 16 }))
 	button.addEventListener('click', () => void startNewSession())
 	return button
 })()
@@ -178,7 +202,7 @@ export function renderTabs() {
 		if (tab.type === 'draft') {
 			const icon = document.createElement('span')
 			icon.className = 'code-tab-avatar code-tab-avatar-draft'
-			icon.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>'
+			icon.appendChild(iconElement(icons.edit, { size: 12 }))
 			main.appendChild(icon)
 		}
 		else {
@@ -197,6 +221,12 @@ export function renderTabs() {
 		title.setAttribute('user-content', '')
 		title.textContent = tabTitle(tab)
 		main.appendChild(title)
+		if (store.tabUnread.has(key)) {
+			const badge = document.createElement('span')
+			badge.className = 'code-tab-unread'
+			badge.setAttribute('aria-hidden', 'true')
+			main.appendChild(badge)
+		}
 		main.addEventListener('click', () => void activateTab(tab))
 		main.addEventListener('auxclick', event => {
 			if (event.button === 1) {
@@ -208,73 +238,212 @@ export function renderTabs() {
 		close.type = 'button'
 		close.className = 'code-tab-close'
 		close.setAttribute('aria-label', geti18n('code.tabs.close'))
-		close.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>'
+		close.appendChild(iconElement(icons.close, { size: 12 }))
 		close.addEventListener('click', event => {
 			event.stopPropagation()
 			void closeTab(tab)
 		})
+		wrap.addEventListener('contextmenu', event => showTabContextMenu(event, tab))
 		wrap.append(main, close)
 		return wrap
 	}), newTabButton)
+	void svgInliner(elements.tabStrip)
 }
 
-/** 渲染左上角总览菜单（工作区分组会话一览 + 浏览工作区）。 */
-export function renderHomeMenu() {
-	const menu = elements.homeMenu
-	menu.replaceChildren()
-	for (const workspace of store.workspaces) {
-		const headerLi = document.createElement('li')
-		const header = document.createElement('div')
-		header.className = 'menu-title'
-		header.textContent = workspace.name || workspace.path
-		headerLi.appendChild(header)
-		menu.appendChild(headerLi)
-		const sessions = store.allSessions.filter(session => session.workspaceId === workspace.id).slice(0, 8)
-		if (!sessions.length) {
-			const emptyLi = document.createElement('li')
-			const empty = document.createElement('div')
-			empty.className = 'opacity-60 text-xs px-4 py-1'
-			empty.textContent = geti18n('code.workspaces.overviewEmpty')
-			emptyLi.appendChild(empty)
-			menu.appendChild(emptyLi)
-		}
-		else for (const session of sessions) {
-			const listItem = document.createElement('li')
-			const button = document.createElement('button')
-			button.type = 'button'
-			button.className = 'menu-item' + (session.id === store.session?.id && session.workspaceId === store.workspace?.id ? ' active' : '')
-			const title = document.createElement('span')
-			title.className = 'menu-item-title'
-			title.setAttribute('user-content', '')
-			title.textContent = session.title || geti18n('code.sessions.untitled')
-			const time = document.createElement('span')
-			time.className = 'opacity-60 text-xs'
-			time.textContent = formatSessionTime(session.updated || session.created)
-			button.append(title, time)
-			button.addEventListener('click', () => {
-				document.activeElement?.blur()
-				void openSessionTab(session)
-			})
-			listItem.appendChild(button)
-			menu.appendChild(listItem)
-		}
+/* ---------------- 标签右键菜单 ---------------- */
+
+/** 标签右键菜单的关闭绑定。 */
+let tabMenuDismiss = null
+
+/** 隐藏标签右键菜单。 */
+export function hideTabContextMenu() {
+	tabMenuDismiss?.unbind?.()
+	tabMenuDismiss = null
+	elements.tabMenu.classList.add('hidden')
+}
+
+/**
+ * 批量关闭标签：活动标签被移除时落到相邻标签（无标签则新建草稿）。
+ * 正在生成的标签会被跳过（避免回复落到已移除标签）。
+ * @param {object[]} targets - 待关闭标签。
+ * @returns {Promise<void>}
+ */
+async function closeTabs(targets) {
+	const keys = new Set(targets.map(tabKeyOf))
+	if (!keys.size) return
+	const generatingKey = store.generating && store.generatingSession ? tabKeyOfSession(store.generatingSession) : ''
+	const skipped = generatingKey && keys.delete(generatingKey)
+	if (!keys.size) {
+		if (skipped) showToastI18n('info', 'code.tabs.closeGenerating')
+		return
 	}
-	const separatorLi = document.createElement('li')
-	const separator = document.createElement('div')
-	separator.className = 'divider my-1'
-	separatorLi.appendChild(separator)
-	menu.appendChild(separatorLi)
-	const browseLi = document.createElement('li')
-	const browseBtn = document.createElement('button')
-	browseBtn.type = 'button'
-	browseBtn.className = 'menu-item'
-	browseBtn.textContent = geti18n('code.workspaces.browse')
-	browseBtn.addEventListener('click', () => {
-		document.activeElement?.blur()
-		void openFolderBrowser()
-	})
-	browseLi.appendChild(browseBtn)
-	menu.appendChild(browseLi)
+	// 关闭前先落盘待写会话，避免丢失生成外的未保存内容
+	if (store.dirtyTabKey && keys.has(store.dirtyTabKey)) await flushSession()
+	const activeRemoved = keys.has(store.activeTabKey)
+	const activeIndex = store.tabs.findIndex(tab => tabKeyOf(tab) === store.activeTabKey)
+	store.tabs = store.tabs.filter(tab => !keys.has(tabKeyOf(tab)))
+	for (const key of keys) store.sessionCache.delete(key)
+	renderTabs()
+	saveTabPrefs()
+	if (activeRemoved) {
+		store.activeTabKey = ''
+		store.session = null
+		const next = store.tabs[Math.min(activeIndex, store.tabs.length - 1)] || null
+		if (next) await activateTab(next)
+		else await startNewSession()
+	}
+	if (skipped) showToastI18n('info', 'code.tabs.closeGenerating')
+}
+
+/**
+ * 关闭除目标外的全部标签（目标成为活动标签）。
+ * @param {object} tab - 保留的标签。
+ * @returns {Promise<void>}
+ */
+async function closeOtherTabs(tab) {
+	if (tabKeyOf(tab) !== store.activeTabKey) await activateTab(tab)
+	await closeTabs(store.tabs.filter(item => tabKeyOf(item) !== tabKeyOf(tab)))
+}
+
+/**
+ * 关闭目标左侧的全部标签。
+ * @param {object} tab - 基准标签。
+ * @returns {Promise<void>}
+ */
+async function closeTabsToLeft(tab) {
+	const index = store.tabs.indexOf(tab)
+	if (index <= 0) return
+	await closeTabs(store.tabs.slice(0, index))
+}
+
+/**
+ * 关闭目标右侧的全部标签。
+ * @param {object} tab - 基准标签。
+ * @returns {Promise<void>}
+ */
+async function closeTabsToRight(tab) {
+	const index = store.tabs.indexOf(tab)
+	if (index === -1) return
+	await closeTabs(store.tabs.slice(index + 1))
+}
+
+/**
+ * 重命名会话标签（草稿标签无标题，跳过）。
+ * 未缓存的会话按标签自身的工作区加载，避免误用当前活动工作区。
+ * @param {object} tab - 目标标签页。
+ * @returns {Promise<void>}
+ */
+async function renameTab(tab) {
+	if (tab.type !== 'session') return
+	const workspace = store.workspaces.find(w => w.id === tab.workspaceId)
+	if (!workspace) return
+	const key = tabKeyOf(tab)
+	let session = store.sessionCache.get(key) || (key === store.activeTabKey ? store.session : null)
+	if (!session)
+		try {
+			session = await api.loadSession({ machine: String(workspace.machine ?? store.machine), workdir: workspace.path }, tab.id)
+		}
+		catch {
+			return
+		}
+	if (!session) return
+	const title = await promptText('code.tabs.rename', session.title || '')
+	if (!title || title === session.title) return
+	session.title = title
+	store.sessionCache.set(key, session)
+	const summary = store.allSessions.find(item => item.id === tab.id && item.workspaceId === tab.workspaceId)
+	if (summary) summary.title = title
+	renderTabs()
+	await api.putSession({ machine: String(workspace.machine ?? store.machine), workdir: workspace.path }, session)
+		.catch(error => showToastI18n('error', 'code.error.generic', { error: String(error.message || error) }))
+}
+
+/**
+ * 显示标签右键菜单（重命名 / 删除对话 / 关闭 / 关闭其他 / 关闭左侧 / 关闭右侧 / 关闭全部）。
+ * @param {MouseEvent} event - contextmenu 事件。
+ * @param {object} tab - 右击的标签。
+ * @returns {void}
+ */
+export function showTabContextMenu(event, tab) {
+	event.preventDefault()
+	hideTabContextMenu()
+	const index = store.tabs.indexOf(tab)
+	const actions = [
+		tab.type === 'session' ? {
+			i18n: 'code.tabs.rename',
+			/** @returns {Promise<void>} 重命名该标签。 */
+			run: () => renameTab(tab),
+		} : null,
+		tab.type === 'session' ? {
+			i18n: 'code.sessions.delete',
+			danger: true,
+			/** @returns {Promise<void>} 永久删除该会话（确认后关闭标签并删除磁盘文件）。 */
+			run: async () => { await deleteSessionPermanently({ id: tab.id, workspaceId: tab.workspaceId, title: tabTitle(tab) }) },
+		} : null,
+		{
+			i18n: 'code.tabs.close',
+			/** @returns {Promise<void>} 关闭该标签。 */
+			run: () => closeTab(tab),
+		},
+		{
+			i18n: 'code.tabs.closeMenu.others',
+			/** @returns {Promise<void>} 关闭其他标签。 */
+			run: () => closeOtherTabs(tab),
+		},
+		index > 0 ? {
+			i18n: 'code.tabs.closeMenu.left',
+			/** @returns {Promise<void>} 关闭左侧标签。 */
+			run: () => closeTabsToLeft(tab),
+		} : null,
+		index !== -1 && index < store.tabs.length - 1 ? {
+			i18n: 'code.tabs.closeMenu.right',
+			/** @returns {Promise<void>} 关闭右侧标签。 */
+			run: () => closeTabsToRight(tab),
+		} : null,
+		{
+			i18n: 'code.tabs.closeMenu.all',
+			danger: true,
+			/** @returns {Promise<void>} 关闭全部标签。 */
+			run: () => closeTabs([...store.tabs]),
+		},
+	].filter(Boolean)
+	const menu = elements.tabMenu
+	menu.replaceChildren(...actions.map(action => {
+		const button = document.createElement('button')
+		button.type = 'button'
+		button.className = 'code-tab-menu-item'
+		button.setAttribute('role', 'menuitem')
+		if (action.danger) button.classList.add('text-error')
+		const label = document.createElement('span')
+		label.dataset.i18n = action.i18n
+		button.appendChild(label)
+		button.addEventListener('click', () => {
+			hideTabContextMenu()
+			void action.run()
+		})
+		return button
+	}))
+	menu.setAttribute('aria-label', geti18n('code.tabs.closeMenu.aria-label'))
+	menu.classList.remove('hidden')
+	positionContextMenu(menu, { x: event.clientX, y: event.clientY, minWidth: '11rem' })
+	tabMenuDismiss = bindDismissOnDocumentInteraction(hideTabContextMenu)
+}
+
+/**
+ * 会话相对时间展示。
+ * @param {string} iso - ISO 时间串。
+ * @returns {string} 展示文案。
+ */
+export function formatSessionTime(iso) {
+	if (!iso) return ''
+	const date = new Date(iso)
+	if (isNaN(date.getTime())) return ''
+	const now = new Date()
+	if (date.toDateString() === now.toDateString()) return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+	const yesterday = new Date(now)
+	yesterday.setDate(now.getDate() - 1)
+	if (date.toDateString() === yesterday.toDateString()) return geti18n('code.sessions.yesterday')
+	return date.toLocaleDateString([], { month: '2-digit', day: '2-digit' })
 }
 
 /**
@@ -298,24 +467,7 @@ export function newSessionObject(id = crypto.randomUUID().slice(0, 8)) {
 	}
 }
 
-/**
- * 会话相对时间展示。
- * @param {string} iso - ISO 时间串。
- * @returns {string} 展示文案。
- */
-function formatSessionTime(iso) {
-	if (!iso) return ''
-	const date = new Date(iso)
-	if (isNaN(date.getTime())) return ''
-	const now = new Date()
-	if (date.toDateString() === now.toDateString()) return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-	const yesterday = new Date(now)
-	yesterday.setDate(now.getDate() - 1)
-	if (date.toDateString() === yesterday.toDateString()) return geti18n('code.sessions.yesterday')
-	return date.toLocaleDateString([], { month: '2-digit', day: '2-digit' })
-}
-
-/** 刷新跨工作区会话聚合（总览菜单 / 标签标题）。 */
+/** 刷新跨工作区会话聚合（总览弹窗 / 标签标题）。 */
 export async function refreshAllSessions() {
 	try {
 		store.allSessions = (await api.listAllSessions()).sessions
@@ -326,11 +478,41 @@ export async function refreshAllSessions() {
 }
 
 /**
+ * 永久删除会话（确认后关闭其标签并删除磁盘文件）。
+ * @param {object} session - 聚合会话摘要（含 id / workspaceId / title）。
+ * @returns {Promise<boolean>} 是否已删除。
+ */
+export async function deleteSessionPermanently(session) {
+	const title = session.title || geti18n('code.sessions.untitled')
+	if (!await confirmAction('code.sessions.deleteConfirm', { title })) return false
+	const tab = store.tabs.find(item => item.type === 'session' && item.id === session.id && item.workspaceId === session.workspaceId)
+	if (tab) {
+		if (store.generating && store.generatingSession && tabKeyOfSession(store.generatingSession) === tabKeyOf(tab)) {
+			showToastI18n('info', 'code.tabs.closeGenerating')
+			return false
+		}
+		await closeTab(tab, { discard: true })
+	}
+	const workspace = store.workspaces.find(w => w.id === session.workspaceId)
+	if (workspace)
+		try {
+			await api.deleteSession({ machine: String(workspace.machine ?? store.machine), workdir: workspace.path }, session.id)
+		}
+		catch (error) {
+			showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
+			return false
+		}
+	await refreshAllSessions()
+	showToastI18n('success', 'code.sessions.deleted')
+	return true
+}
+
+/**
  * 打开（或聚焦）一个会话标签。
  * @param {object} summary - 聚合会话摘要（含 workspaceId）。
  * @returns {Promise<void>}
  */
-async function openSessionTab(summary) {
+export async function openSessionTab(summary) {
 	let tab = store.tabs.find(item => item.type === 'session' && item.id === summary.id && item.workspaceId === summary.workspaceId)
 	if (!tab) {
 		tab = { type: 'session', id: summary.id, workspaceId: summary.workspaceId }
@@ -348,11 +530,18 @@ export async function startNewSession() {
 
 /**
  * 关闭标签页（脏会话先落盘，活动标签关闭后切相邻 / 回落草稿）。
+ * 生成中的标签不可关闭；`discard` 用于「删除对话」——跳过落盘，避免把已删文件写回。
  * @param {object} tab - 目标标签页。
+ * @param {{discard?: boolean}} [options] - 关闭选项。
  * @returns {Promise<void>}
  */
-export async function closeTab(tab) {
+export async function closeTab(tab, { discard = false } = {}) {
 	const key = tabKeyOf(tab)
+	if (store.generating && store.generatingSession && tabKeyOfSession(store.generatingSession) === key) {
+		showToastI18n('info', 'code.tabs.closeGenerating')
+		return
+	}
+	if (discard && store.dirtyTabKey === key) store.dirtyTabKey = ''
 	if (key === store.activeTabKey) {
 		const index = store.tabs.indexOf(tab)
 		const next = store.tabs[index + 1] || store.tabs[index - 1]
@@ -408,10 +597,12 @@ export async function activateTab(tab) {
 		store.lastConversationWorkspaceId = store.workspace?.id
 	}
 	store.activeTabKey = key
+	store.tabUnread.delete(key)
 	store.charname = store.session?.charname || store.charname
 	store.aiSource = store.session?.ai_source ?? ''
 	store.profile = store.session?.profile || store.profile
 	restoreTabDraft(tab)
+	syncCodeUrl(tab)
 	renderTabs()
 	renderMessages()
 	updateCharMenu()
@@ -493,6 +684,7 @@ export function markSessionDirty(session = store.session) {
 	if (!workspace) return
 	if (tab.type === 'draft') {
 		tab.type = 'session'
+		if (key === store.activeTabKey) syncCodeUrl(tab)
 		renderTabs()
 		saveTabPrefs()
 	}
@@ -621,9 +813,12 @@ function onSocketMessage(event) {
 		updateSendButton()
 		const fallback = geti18n('code.error.generate')
 		const text = `${fallback}\n\`\`\`\n${msg.error}\n\`\`\``
-		session?.entries.push(...msg.entries || [], { id: crypto.randomUUID().slice(0, 8), uid: 'system', role: 'system', name: 'error', content: text, time: new Date().toISOString() })
+		const knownIds = new Set((session?.entries || []).map(entry => String(entry.id)))
+		const freshEntries = (msg.entries || []).filter(entry => !knownIds.has(String(entry.id)))
+		const errorEntry = { id: crypto.randomUUID().slice(0, 8), uid: 'system', role: 'system', name: 'error', content: text, time: new Date().toISOString() }
+		session?.entries.push(...freshEntries, errorEntry)
 		if (session === store.session)
-			for (const entry of session.entries.slice(-((msg.entries || []).length + 1))) appendEntryBubble(entry)
+			for (const entry of [...freshEntries, errorEntry]) appendEntryBubble(entry)
 		markSessionDirty(session)
 	}
 }
@@ -667,15 +862,18 @@ async function finishGeneration(entries, memory, aborted = false) {
 	store.generatingSession = null
 	if (!session) return
 	const isActive = session === store.session
-	session.entries.push(...entries)
+	// 乐观回显的用户条目 id 可能与服务端回传重复，按 id 去重
+	const knownIds = new Set(session.entries.map(entry => String(entry.id)))
+	const freshEntries = entries.filter(entry => !knownIds.has(String(entry.id)))
+	session.entries.push(...freshEntries)
 	if (memory) session.memory = memory
 	session.updated = new Date().toISOString()
-	if (!session.title && entries.length)
-		session.title = (entries.find(e => e.role === 'user')?.content || '').slice(0, 40) || session.title
+	if (!session.title && session.entries.length)
+		session.title = (session.entries.find(e => e.role === 'user')?.content || '').slice(0, 40) || session.title
 	store.generating = false
 	updateSendButton()
 	if (isActive) {
-		for (const entry of entries) appendEntryBubble(entry)
+		for (const entry of freshEntries) appendEntryBubble(entry)
 		if (aborted) showToastI18n('info', 'code.error.aborted')
 	}
 	await markSessionDirty(session)
@@ -690,9 +888,8 @@ export function updateSendButton() {
 	elements.sendButton.classList.toggle('btn-error', stop)
 	elements.sendButton.classList.toggle('btn-primary', !stop)
 	elements.sendButton.setAttribute('aria-label', geti18n(stop ? 'code.composer.stopAria' : 'code.composer.sendAria'))
-	elements.sendIcon.innerHTML = stop
-		? '<rect x="5" y="5" width="14" height="14" rx="2" fill="currentColor" stroke="none"></rect>'
-		: '<path d="M12 19V5"></path><path d="M5 12l7-7 7 7"></path>'
+	document.getElementById('send-icon')?.replaceWith(iconElement(stop ? icons.stop : icons.send, { size: 16, id: 'send-icon' }))
+	void svgInliner(elements.sendButton)
 	updateRegenButtons()
 }
 
@@ -743,6 +940,31 @@ export async function regenerateLastReply() {
 	}
 }
 
+/** 消息中的 `@[gist:id]` token。 */
+const GIST_TOKEN_RE = /@\[gist:([^\]\n]+)\]/g
+
+/**
+ * 展开消息中的 gist token：拉取正文并构造附件（发送时随用户消息送给角色）。
+ * @param {string} content - 消息原文。
+ * @returns {Promise<Array<{name: string, mime_type: string, buffer: string, description: string}>>} 附件列表。
+ */
+async function resolveGistAttachments(content) {
+	const ids = [...new Set([...content.matchAll(GIST_TOKEN_RE)].map(match => match[1]))]
+	const files = []
+	for (const id of ids) {
+		const gist = await getGist(id).catch(() => null)
+		if (!gist) continue
+		const name = `${String(gist.title || gist.id).replace(/[\r\n]+/g, ' ').trim().slice(0, 80)}.md`
+		files.push({
+			name,
+			mime_type: 'text/markdown',
+			buffer: arrayBufferToBase64(new TextEncoder().encode(gist.markdown || '')),
+			description: '',
+		})
+	}
+	return files
+}
+
 /**
  * 发送消息（AI 会话）。
  * @param {string} content - 消息内容。
@@ -760,10 +982,27 @@ export async function sendMessage(content) {
 	store.session.ai_source = store.aiSource
 	store.generatingSession = store.session
 	appendLocalHistory('message', content)
-	store.generating = true
-	updateSendButton()
-	startGeneratingBubble()
 	try {
+		const gistFiles = await resolveGistAttachments(content)
+		const files = [...store.pendingFiles, ...gistFiles]
+		// 乐观插入用户条目并立即回显；WS 带 clientEntryId，服务端据此去重、不再回传用户消息
+		const userEntry = {
+			id: crypto.randomUUID().slice(0, 8),
+			uid: 'user',
+			role: 'user',
+			name: store.username,
+			content,
+			time: new Date().toISOString(),
+			files: files.map(file => ({ ...file })),
+		}
+		store.session.entries.push(userEntry)
+		appendEntryBubble(userEntry)
+		store.pendingFiles = []
+		renderAttachmentPreview()
+		store.generating = true
+		updateSendButton()
+		startGeneratingBubble()
+		markSessionDirty(store.session)
 		const ws = await getSocket()
 		ws.send(JSON.stringify({
 			type: 'send',
@@ -772,11 +1011,9 @@ export async function sendMessage(content) {
 			ai_source: store.aiSource || '',
 			profile: store.profile,
 			content,
-			files: store.pendingFiles.slice(),
+			files,
+			clientEntryId: userEntry.id,
 		}))
-		// 已随消息发出（后端并入用户条目）
-		store.pendingFiles = []
-		renderAttachmentPreview()
 	}
 	catch (error) {
 		store.generating = false
@@ -807,12 +1044,13 @@ export async function execShellMode(command) {
 	appendEntryBubble(userEntry)
 	const result = await api.execShell({ ...target(), shell: store.shell || undefined, command })
 	const output = result.stdall ?? [result.stdout, result.stderr].filter(Boolean).join('\n')
+	const elapsedText = Number(result.elapsedMs) > 0 ? `（耗时 ${(result.elapsedMs / 1000).toFixed(2)}s）` : ''
 	const toolEntry = {
 		id: crypto.randomUUID().slice(0, 8),
 		uid: 'system',
 		role: 'tool',
 		name: 'shell',
-		content: '```' + (store.shell || '') + '\n' + command + '\n```\n```\n' + output + '\n```',
+		content: '```' + (store.shell || '') + '\n' + command + '\n```\n```\n' + output + '\n```' + elapsedText,
 		time: new Date().toISOString(),
 	}
 	store.session.entries.push(toolEntry)
@@ -821,4 +1059,23 @@ export async function execShellMode(command) {
 	// 先等会话落盘完成再刷新聚合，避免总览/标签标题读到旧状态
 	await markSessionDirty()
 	void refreshAllSessions()
+}
+
+/**
+ * 将 suppressed 通知对应到 code session tab 的角标。
+ * @param {object} payload 通知载荷（含 tag，格式 code:<sessionId>）
+ * @returns {void}
+ */
+export function bumpCodeSessionNotification(payload) {
+	const tag = payload?.options?.tag || payload?.tag
+	if (!tag || !tag.startsWith('code:')) return
+	const sessionId = tag.slice('code:'.length)
+	if (!sessionId) return
+	const tab = store.tabs.find(t => t.type === 'session' && t.id === sessionId)
+	if (!tab) return
+	const key = tabKeyOf(tab)
+	// 若当前正在看这个 tab，则无需角标
+	if (key === store.activeTabKey) return
+	store.tabUnread.add(key)
+	renderTabs()
 }

@@ -1,0 +1,40 @@
+{
+	"id": "server_pages",
+	"suites": [
+		{
+			"name": "frontend",
+			"expected": "1m",
+			"dependsOn": [
+				"server:live"
+			],
+			"triggers": [
+				"src/public/pages/test/frontend/**",
+				"src/public/pages/login/**",
+				"src/public/pages/scripts/endpoints/base.mjs",
+				"src/public/pages/scripts/components/passwordStrength.mjs"
+			],
+			"subtests": [
+				{
+					"name": "login",
+					"expected": "40s",
+					"triggers": [
+						"src/public/pages/test/frontend/login.spec.mjs",
+						"src/public/pages/test/frontend/fixtures.mjs",
+						"src/public/pages/login/**",
+						"src/public/pages/scripts/endpoints/base.mjs",
+						"src/public/pages/scripts/components/passwordStrength.mjs"
+					]
+				}
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/pages/test/frontend/run.mjs"
+			]
+		}
+	]
+}

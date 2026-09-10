@@ -15,6 +15,7 @@
 			"src/public/parts/shells/social/public/shared/fountUserSend.mjs",
 			"deno.json",
 			"src/server/p2p_server/**",
+			"src/scripts/p2p/**",
 			"src/scripts/search/**",
 			"src/server/registries.mjs",
 			"src/public/pages/scripts/endpoints/registries.mjs",
@@ -28,6 +29,7 @@
 			"src/server/p2p_server/**",
 			"src/scripts/search/**",
 			"src/server/registries.mjs",
+			"src/server/web_server/notify/**",
 			"src/public/pages/scripts/endpoints/registries.mjs",
 			"src/public/pages/scripts/components/emojiPicker.mjs",
 			"src/public/pages/scripts/features/markdown/extensions.mjs"
@@ -105,7 +107,7 @@
 		},
 		{
 			"name": "integration",
-			"expected": "7m10s",
+			"expected": "14m41s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -128,7 +130,7 @@
 		},
 		{
 			"name": "smoke_social",
-			"expected": "1m45s",
+			"expected": "5m8s",
 			"dependsOn": [
 				"server:live"
 			],

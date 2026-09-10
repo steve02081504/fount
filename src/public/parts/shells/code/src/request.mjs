@@ -9,9 +9,29 @@ import { Buffer } from 'node:buffer'
 
 import { localhostLocales } from '../../../../../scripts/i18n/bare.mjs'
 import { getPartInfo } from '../../../../../scripts/locale.mjs'
+import { guardOutput } from '../../../../../scripts/shell_guard.mjs'
 import { getAnyPreferredDefaultPart, loadPart } from '../../../../../server/parts_loader.mjs'
 
 import { codeWorld } from './world.mjs'
+
+/** `!` 用户命令 prompt 层截断结果的缓存（键：entry.id + 内容长度）。 */
+const shellLogGuardCache = new Map()
+
+/**
+ * 对 `!` 用户命令日志做 prompt 层截断（页面条目不受影响），带缓存避免重复落盘。
+ * @param {object} entry - 会话条目。
+ * @returns {Promise<string>} 供 AI 使用的内容。
+ */
+async function guardShellLogContent(entry) {
+	const content = String(entry.content ?? '')
+	const key = `${entry.id}:${content.length}`
+	const cached = shellLogGuardCache.get(key)
+	if (cached !== undefined) return cached
+	const guarded = await guardOutput(content, { name: 'shell-command', label: 'shell 输出' })
+	shellLogGuardCache.set(key, guarded.text)
+	if (shellLogGuardCache.size > 200) shellLogGuardCache.delete(shellLogGuardCache.keys().next().value)
+	return guarded.text
+}
 
 /**
  * 解码条目附件 buffer（前端经 WS 存 base64 字符串；服务端转回 Buffer 供 AI 源读取）。
@@ -26,20 +46,21 @@ function decodeFileBuffer(value) {
 
 /**
  * 会话条目转 chatLogEntry_t。
+ * `!` 用户命令的 tool 日志在 prompt 层做头尾截断（完整内容仍保留在页面条目中）。
  * @param {codeSession_t['entries']} entries - 会话条目。
- * @returns {chatLogEntry_t[]} 聊天日志条目。
+ * @returns {Promise<chatLogEntry_t[]>} 聊天日志条目。
  */
-function sessionToChatLog(entries) {
-	return entries.map(entry => ({
+async function sessionToChatLog(entries) {
+	return await Promise.all(entries.map(async entry => ({
 		id: entry.id,
 		uid: entry.uid || (entry.role === 'char' ? 'char' : entry.role === 'user' ? 'user' : 'system'),
 		role: entry.role,
 		name: entry.name,
-		content: entry.content,
+		content: entry.role === 'tool' && entry.name === 'shell' ? await guardShellLogContent(entry) : entry.content,
 		time_stamp: entry.time,
 		files: (entry.files || []).map(file => ({ name: file.name, mime_type: file.mime_type, buffer: decodeFileBuffer(file.buffer), description: file.description || '' })),
 		extension: entry.extension ?? {},
-	}))
+	})))
 }
 
 /**
@@ -89,7 +110,7 @@ async function buildCodeChatRequest({ username, session, machine, workdir, ai_so
 		CharUid: 'char',
 		locales: localhostLocales,
 		time: new Date(),
-		chat_log: sessionToChatLog(session.entries),
+		chat_log: await sessionToChatLog(session.entries),
 		timelines: [],
 		world: codeWorld,
 		user,

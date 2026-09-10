@@ -2,7 +2,7 @@
  * code shell 前端 UI 测试：placeholder 回归、pill 下拉（mode / AI 源 / 角色）、shell 模式（! 移除/历史/影子补全）、
  * 消息发送、工作区选择、工作区角色覆盖/推荐、顶部会话选择器。
  */
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { basename, dirname, join } from 'node:path'
 
@@ -129,8 +129,8 @@ test.describe('code shell composer & placeholders', () => {
 		const composer = page.locator('#composer-input')
 		const placeholder = composer.locator('.fount-markdown-rich-input-placeholder')
 		await expect(placeholder).toContainText('输入消息开始')
-		// 点外部可聚焦元素（home 总览按钮）再点回输入框：占位符不应被旧 i18n 文案（输入命令，Enter 执行…）覆盖
-		await page.locator('#home-toggle').click()
+		// 点外部可聚焦元素（发送按钮）再点回输入框：占位符不应被旧 i18n 文案（输入命令，Enter 执行…）覆盖
+		await page.locator('#send-button').click()
 		await expect(composer).not.toBeFocused()
 		await composer.click()
 		await expect(placeholder).toContainText('输入消息开始')
@@ -226,6 +226,19 @@ test.describe('code shell composer & placeholders', () => {
 		await page.keyboard.press('Control+Enter')
 		await expect(page.locator('.code-message.role-user')).toContainText('你好', { timeout: 60_000 })
 		await expect(page.locator('.code-message.role-char')).toContainText('测试回复。', { timeout: 60_000 })
+	})
+
+	test('user message echoes immediately while generation is still streaming', async ({ page, baseUrl }) => {
+		await page.addInitScript(pref => localStorage.setItem(pref + 'charname', 'streamAgent'), PREF_PREFIX)
+		await openCode(page, baseUrl)
+		const composer = page.locator('#composer-input')
+		await composer.click()
+		await page.keyboard.type('立即回显')
+		await page.keyboard.press('Control+Enter')
+		// streamAgent 每片 800ms；生成中气泡仍在时用户消息已可见 → 乐观回显（未等 done 回传）
+		await expect(page.locator('.code-message.role-user')).toContainText('立即回显', { timeout: 5_000 })
+		await expect(page.locator('.code-message.generating')).toBeVisible()
+		await expect(page.locator('.code-message.role-char:not(.generating)')).toContainText('流式第一段。流式第二段。', { timeout: 60_000 })
 	})
 
 	test('streaming preview fills the generating bubble progressively, then final entry replaces it', async ({ page, baseUrl }) => {
@@ -356,15 +369,94 @@ test.describe('code shell sessions & workspace', () => {
 			await selectWorkspaceViaBrowser(page, dir)
 			// 无会话条目 → 保持空态（wordmark 居中）
 			await expect(page.locator('.code-main')).toHaveClass(/empty-mode/)
-			// home 总览菜单按工作区分组
+			// home 总览弹窗：左栏工作区列表含该目录，右栏显示空态
 			await page.locator('#home-toggle').click()
-			await expect(page.locator('#home-menu')).toContainText(basename(dir))
-			await expect(page.locator('#home-menu')).toContainText('暂无会话')
-			await page.mouse.click(10, 300)
+			await expect(page.locator('#home-workspace-list')).toContainText(basename(dir))
+			await expect(page.locator('#home-session-list')).toContainText('暂无会话')
+			await page.keyboard.press('Escape')
 			// 清理：移除工作区，避免污染同相位后续测试
 			await removeAllWorkspacesViaApi(page, baseUrl)
 		}
 		finally {
+			await rmDirRetry(dir)
+		}
+	})
+
+	test('home picker deletes a conversation (file + tab)', async ({ page, baseUrl }) => {
+		const dir = makeWorkspace('fe-home-delconv', {})
+		try {
+			await openCode(page, baseUrl)
+			await selectWorkspaceViaBrowser(page, dir)
+			await page.locator('#composer-input').click()
+			await page.keyboard.type('！echo home-delete')
+			await page.locator('#send-button').click()
+			await expect(page.locator('.code-message.role-tool')).toContainText('home-delete')
+			await expect(page.locator('#tab-strip .code-tab[data-active="true"] .code-tab-title')).toContainText('未命名会话')
+			const sessionsDir = join(dir, '.fount', 'code', 'sessions')
+			/**
+			 * 磁盘上该工作区的会话文件。
+			 * @returns {string[]} 会话文件名列表。
+			 */
+			const sessionFiles = () => readdirSync(sessionsDir).filter(name => name.endsWith('.json'))
+			await expect(async () => {
+				expect(sessionFiles()).toHaveLength(1)
+			}).toPass()
+			await holdLocale(page)
+			try {
+				await page.locator('#home-toggle').click()
+				await page.locator('#home-session-list .code-home-row', { hasText: '未命名会话' }).locator('.code-home-row-delete').click()
+				await page.locator('dialog[open] [data-dialog-resolve="ok"]').click()
+				await expect(page.locator('#home-session-list .code-home-row')).toHaveCount(0)
+				// 会话标签被关闭 → 回落为单个新草稿
+				await expect(page.locator('#tab-strip .code-tab')).toHaveCount(1)
+				await expect(page.locator('#tab-strip .code-tab[data-active="true"] .code-tab-title')).toContainText('新会话')
+			}
+			finally {
+				await releaseLocale(page)
+			}
+			await expect(async () => {
+				expect(sessionFiles()).toHaveLength(0)
+			}).toPass()
+		}
+		finally {
+			await removeAllWorkspacesViaApi(page, baseUrl)
+			await rmDirRetry(dir)
+		}
+	})
+
+	test('home picker removes a workspace but keeps its session files on disk', async ({ page, baseUrl }) => {
+		const dir = makeWorkspace('fe-home-rmws', {})
+		try {
+			await openCode(page, baseUrl)
+			await selectWorkspaceViaBrowser(page, dir)
+			await page.locator('#composer-input').click()
+			await page.keyboard.type('！echo keep-me')
+			await page.locator('#send-button').click()
+			await expect(page.locator('.code-message.role-tool')).toContainText('keep-me')
+			const sessionsDir = join(dir, '.fount', 'code', 'sessions')
+			/**
+			 * 磁盘上该工作区的会话文件。
+			 * @returns {string[]} 会话文件名列表。
+			 */
+			const sessionFiles = () => readdirSync(sessionsDir).filter(name => name.endsWith('.json'))
+			await expect(async () => {
+				expect(sessionFiles()).toHaveLength(1)
+			}).toPass()
+			await holdLocale(page)
+			try {
+				await page.locator('#home-toggle').click()
+				await page.locator('#home-workspace-list .code-home-row', { hasText: basename(dir) }).first().locator('.code-home-row-delete').click()
+				await page.locator('dialog[open] [data-dialog-resolve="ok"]').click()
+				await expect(page.locator('#home-workspace-list .code-home-row')).toHaveCount(0)
+			}
+			finally {
+				await releaseLocale(page)
+			}
+			// 仅移除保存条目 → 磁盘会话文件保留
+			expect(sessionFiles()).toHaveLength(1)
+		}
+		finally {
+			await removeAllWorkspacesViaApi(page, baseUrl)
 			await rmDirRetry(dir)
 		}
 	})
@@ -541,11 +633,11 @@ test.describe('code shell tabs', () => {
 			await page.locator('#tab-strip .code-tab', { hasText: '未命名会话' }).click()
 			await expect(page.locator('.code-message.role-tool')).toContainText('tab-lifecycle')
 			await expect(page.locator('.code-main')).not.toHaveClass(/empty-mode/)
-			// home 总览菜单列出该会话，点击打开（已开 → 聚焦）
+			// home 总览弹窗右栏列出该会话，点击打开（已开 → 聚焦）
 			await page.locator('#home-toggle').click()
-			const menuItem = page.locator('#home-menu').locator('.menu-item', { hasText: '未命名会话' })
-			await expect(menuItem).toBeVisible()
-			await menuItem.click()
+			const homeSession = page.locator('#home-session-list .code-home-row', { hasText: '未命名会话' })
+			await expect(homeSession).toBeVisible()
+			await homeSession.locator('.code-home-row-main').click()
 			await expect(page.locator('#tab-strip .code-tab')).toHaveCount(2)
 			// 关闭当前活动草稿标签 → 切回相邻会话标签
 			await page.locator('#tab-strip .code-tab', { hasText: '新会话' }).locator('.code-tab-close').click()
@@ -556,11 +648,59 @@ test.describe('code shell tabs', () => {
 			await expect(page.locator('#tab-strip .code-tab')).toHaveCount(2)
 			await page.keyboard.press('Alt+1')
 			await expect(page.locator('#tab-strip .code-tab[data-active="true"] .code-tab-title')).toContainText('未命名会话')
+			// 右键会话标签 → 删除对话（确认后关闭标签并从磁盘移除）
+			await holdLocale(page)
+			try {
+				await page.locator('#tab-strip .code-tab', { hasText: '未命名会话' }).click({ button: 'right' })
+				await page.locator('#code-tab-menu [data-i18n="code.sessions.delete"]').click()
+				await page.locator('[data-dialog-resolve="ok"]').click()
+			}
+			finally {
+				await releaseLocale(page)
+			}
+			await expect(page.locator('#tab-strip .code-tab', { hasText: '未命名会话' })).toHaveCount(0)
 			// 清理：移除工作区，避免污染同相位后续测试
 			await removeAllWorkspacesViaApi(page, baseUrl)
 		}
 		finally {
 			await rmDirRetry(dir)
+		}
+	})
+
+	test('tab right-click menu closes the tab and batches (left / others / all)', async ({ page, baseUrl }) => {
+		const dir = mkdtempSync(join(tmpdir(), 'fount-code-fe-tabmenu-'))
+		try {
+			await openCode(page, baseUrl)
+			await selectWorkspaceViaBrowser(page, dir)
+			// 建 4 个草稿标签
+			for (let i = 0; i < 3; i++) await page.locator('#new-tab-button').click()
+			await expect(page.locator('#tab-strip .code-tab')).toHaveCount(4)
+			await holdLocale(page)
+			try {
+				const tabs = page.locator('#tab-strip .code-tab')
+				// 右键第 2 个标签 → 菜单出现
+				await tabs.nth(1).click({ button: 'right' })
+				await expect(page.locator('#code-tab-menu')).toBeVisible()
+				// 关闭左侧 → 3 个
+				await page.locator('#code-tab-menu [data-i18n="code.tabs.closeMenu.left"]').click()
+				await expect(page.locator('#tab-strip .code-tab')).toHaveCount(3)
+				// 关闭其他（右键首个）→ 1 个
+				await page.locator('#tab-strip .code-tab').first().click({ button: 'right' })
+				await page.locator('#code-tab-menu [data-i18n="code.tabs.closeMenu.others"]').click()
+				await expect(page.locator('#tab-strip .code-tab')).toHaveCount(1)
+				// 关闭全部 → 回落为一个新草稿（草稿图标，语言无关）
+				await page.locator('#tab-strip .code-tab').first().click({ button: 'right' })
+				await page.locator('#code-tab-menu [data-i18n="code.tabs.closeMenu.all"]').click()
+				await expect(page.locator('#tab-strip .code-tab')).toHaveCount(1)
+				await expect(page.locator('#tab-strip .code-tab[data-active="true"] .code-tab-avatar-draft')).toBeVisible()
+			}
+			finally {
+				await releaseLocale(page)
+			}
+		}
+		finally {
+			await rmDirRetry(dir)
+			await removeAllWorkspacesViaApi(page, baseUrl)
 		}
 	})
 
@@ -623,6 +763,105 @@ test.describe('code shell message actions & layout', () => {
 		expect(Math.abs(shellBox.width - (colRight - colLeft))).toBeLessThanOrEqual(2)
 	})
 
+	test('overflow: long code lines scroll inside the code block, not the message flow', async ({ page, baseUrl }) => {
+		const dir = makeWorkspace('fe-overflow', {})
+		leftoverWorkspaceDirs.add(dir)
+		const longLine = 'x'.repeat(300)
+		const codeLines = Array.from({ length: 20 }, (_, index) => index === 0 ? longLine : `line ${index}`)
+		const sessionId = 'overflow-session'
+		try {
+			// 保存工作区并把含超长代码块的 file-operations 工具条目直接落盘，Deep link 打开
+			const workspaceData = await (await page.request.post(`${baseUrl}${API_BASE}/workspaces`, { data: { name: 'overflow', machine: '0', path: dir } })).json()
+			const workspaceId = workspaceData.list.find(workspace => workspace.path === dir).id
+			const session = {
+				id: sessionId,
+				title: 'overflow',
+				charname: 'codeBuddy',
+				profile: 'build',
+				created: new Date().toISOString(),
+				updated: new Date().toISOString(),
+				memory: {},
+				entries: [{
+					id: 'tool-1',
+					uid: 'system',
+					role: 'tool',
+					name: 'file-operations',
+					content: '在 . 下搜索 xxx，命中 20 处：\n\n```text\n' + codeLines.join('\n') + '\n```\n',
+					time: new Date().toISOString(),
+				}],
+			}
+			expect((await page.request.post(`${baseUrl}${API_BASE}/sessions`, { data: { machine: '0', workdir: dir, session } })).ok()).toBeTruthy()
+			await page.goto(`${baseUrl}${BASE}?workspace=${workspaceId}&session=${sessionId}`, { waitUntil: 'domcontentloaded' })
+			await page.waitForFunction(() => document.activeElement?.id === 'composer-input')
+			const tool = page.locator('.code-message.role-tool')
+			await expect(tool).toContainText('命中 20 处')
+			// 代码块自身横向滚动（scrollWidth > clientWidth），说明超长行被收在代码块内部
+			const pre = await tool.locator('pre').first().evaluate(element => ({
+				scrollWidth: element.scrollWidth,
+				clientWidth: element.clientWidth,
+				overflowX: getComputedStyle(element).overflowX,
+			}))
+			expect(pre.overflowX).toBe('auto')
+			expect(pre.scrollWidth).toBeGreaterThan(pre.clientWidth)
+			// 整个消息流不产生横向溢出
+			const flow = await page.locator('#messages').evaluate(element => ({
+				scrollWidth: element.scrollWidth,
+				clientWidth: element.clientWidth,
+			}))
+			expect(flow.scrollWidth).toBeLessThanOrEqual(flow.clientWidth + 1)
+		}
+		finally {
+			await removeAllWorkspacesViaApi(page, baseUrl)
+		}
+	})
+
+	test('tool logs use distinct localized labels; empty char tool generations render no bubble', async ({ page, baseUrl }) => {
+		const dir = makeWorkspace('fe-tool-labels', {})
+		leftoverWorkspaceDirs.add(dir)
+		const sessionId = 'tool-labels-session'
+		try {
+			const workspaceData = await (await page.request.post(`${baseUrl}${API_BASE}/workspaces`, { data: { name: 'tool-labels', machine: '0', path: dir } })).json()
+			const workspaceId = workspaceData.list.find(workspace => workspace.path === dir).id
+			const now = new Date().toISOString()
+			const session = {
+				id: sessionId,
+				title: 'tool-labels',
+				charname: 'codeBuddy',
+				profile: 'build',
+				created: now,
+				updated: now,
+				memory: {},
+				entries: [
+					// 纯工具调用生成的原始条目：人类展示层被管线清空 → 不应渲染空气泡
+					{ id: 'raw-1', uid: 'char', role: 'char', name: 'codeBuddy', content: '<view-file>\nsrc/a.mjs\n</view-file>', content_for_show: '', time: now },
+					{ id: 'tool-1', uid: 'system', role: 'tool', name: 'file-operations.view-file', content: '文件内容', time: now },
+					{ id: 'tool-2', uid: 'system', role: 'tool', name: 'file-operations.replace-file', content: '已修改', time: now },
+					{ id: 'tool-3', uid: 'system', role: 'tool', name: 'code-execution.run-pwsh', content: 'echo hi', time: now },
+					// 未知第三方工具：无 i18n 映射，后备从调用卡解析触发标签名
+					{ id: 'tool-4', uid: 'system', role: 'tool', name: 'timer', content: '定时器已设置', content_for_show: '```\n<set-timer duration="5s">\n```\n\n定时器已设置', time: now },
+					{ id: 'answer', uid: 'char', role: 'char', name: 'codeBuddy', content: '最终回答。', time: now },
+				],
+			}
+			expect((await page.request.post(`${baseUrl}${API_BASE}/sessions`, { data: { machine: '0', workdir: dir, session } })).ok()).toBeTruthy()
+			await page.goto(`${baseUrl}${BASE}?workspace=${workspaceId}&session=${sessionId}`, { waitUntil: 'domcontentloaded' })
+			await page.waitForFunction(() => document.activeElement?.id === 'composer-input')
+			await holdLocale(page)
+			await expect(page.locator('.code-message.role-char')).toHaveCount(1)
+			await expect(page.locator('.code-message.role-char')).toContainText('最终回答。')
+			await expect(page.locator('.code-message.role-tool')).toHaveCount(4)
+			const labels = await page.locator('.code-tool-log-name').allTextContents()
+			expect(labels).toHaveLength(4)
+			expect(new Set(labels).size).toBe(4)
+			// 标签必须本地化到人类名，而非原始插件名
+			for (const label of labels) expect(label).not.toContain('file-operations')
+			// 未知工具用触发标签名兜底
+			expect(labels).toContain('set-timer')
+		}
+		finally {
+			await removeAllWorkspacesViaApi(page, baseUrl)
+		}
+	})
+
 	test('message actions: hover bar, inline edit, 👍/👎 feedback, drag export, save as HTML', async ({ page, baseUrl }) => {
 		await page.addInitScript(pref => localStorage.setItem(pref + 'charname', 'codeBuddy'), PREF_PREFIX)
 		await openCode(page, baseUrl)
@@ -634,6 +873,9 @@ test.describe('code shell message actions & layout', () => {
 		// 编辑 user 消息（仅改文本，不重发）
 		const userBubble = page.locator('.code-message.role-user')
 		await userBubble.hover()
+		await expect(userBubble.locator('.code-message-edit')).toBeVisible()
+		// 保存为 HTML 只属于角色消息
+		await expect(userBubble.locator('.code-message-save-html')).toHaveCount(0)
 		await userBubble.locator('.code-message-edit').click()
 		await page.locator('.code-message-editor textarea').fill('你好（已编辑）')
 		await page.locator('.code-message-editor .btn-primary').click()
@@ -647,6 +889,8 @@ test.describe('code shell message actions & layout', () => {
 		await expect(charBubble.locator('.code-message-feedback-up')).not.toHaveClass(/active/)
 		// 👎 弹原因区（可取消）→ 提交记录
 		await charBubble.locator('.code-message-feedback-down').click()
+		// 原因区展开时操作栏须让位（否则会压住原因区右下角的提交/取消按钮）
+		await expect(charBubble.locator('.code-message-actions')).toBeHidden()
 		await page.locator('.code-message-feedback-reason textarea').fill('答非所问')
 		await page.locator('.code-message-feedback-reason .btn-primary').click()
 		await expect(charBubble.locator('.code-message-feedback-down')).toHaveClass(/active/)
@@ -665,6 +909,74 @@ test.describe('code shell message actions & layout', () => {
 		await charBubble.locator('.code-message-save-html').click()
 		await page.waitForURL(/parts\/shells:gist\/view\/?\?id=/, { timeout: 30_000 })
 		await expect(page.locator('#view-title')).toBeVisible({ timeout: 30_000 })
+	})
+
+	test('copy action copies the hovered entry own text, not a neighbour entry', async ({ page, baseUrl }) => {
+		await page.context().grantPermissions(['clipboard-read', 'clipboard-write'])
+		await page.addInitScript(pref => localStorage.setItem(pref + 'charname', 'codeBuddy'), PREF_PREFIX)
+		await openCode(page, baseUrl)
+		const composer = page.locator('#composer-input')
+		await composer.click()
+		await page.keyboard.type('复制我自己的消息')
+		await page.keyboard.press('Control+Enter')
+		await expect(page.locator('.code-message.role-char')).toContainText('测试回复。', { timeout: 60_000 })
+		const userBubble = page.locator('.code-message.role-user')
+		await userBubble.hover()
+		await userBubble.locator('.code-message-copy').click()
+		await expect(async () => {
+			const text = await page.evaluate(() => navigator.clipboard.readText())
+			expect(text).toBe('复制我自己的消息')
+		}).toPass()
+		// 第二轮：用户消息上方有角色消息，验证 hover 操作栏不会复制到相邻气泡
+		await composer.click()
+		await page.keyboard.type('第二条用户消息')
+		await page.keyboard.press('Control+Enter')
+		await expect(page.locator('.code-message.role-char')).toHaveCount(2, { timeout: 60_000 })
+		const secondUserBubble = page.locator('.code-message.role-user').last()
+		await secondUserBubble.hover()
+		await secondUserBubble.locator('.code-message-copy').click()
+		await expect(async () => {
+			const text = await page.evaluate(() => navigator.clipboard.readText())
+			expect(text).toBe('第二条用户消息')
+		}).toPass()
+	})
+
+	test('copy action works while the reply is still streaming', async ({ page, baseUrl }) => {
+		await page.context().grantPermissions(['clipboard-read', 'clipboard-write'])
+		await page.addInitScript(pref => localStorage.setItem(pref + 'charname', 'streamAgent'), PREF_PREFIX)
+		await openCode(page, baseUrl)
+		const composer = page.locator('#composer-input')
+		await composer.click()
+		await page.keyboard.type('流式期间复制')
+		await page.keyboard.press('Control+Enter')
+		await expect(page.locator('.code-message.generating')).toBeVisible({ timeout: 30_000 })
+		const userBubble = page.locator('.code-message.role-user').last()
+		await userBubble.hover()
+		await userBubble.locator('.code-message-copy').click()
+		await expect(async () => {
+			const text = await page.evaluate(() => navigator.clipboard.readText())
+			expect(text).toBe('流式期间复制')
+		}).toPass()
+	})
+
+	test('message action bar is anchored below its own message', async ({ page, baseUrl }) => {
+		await page.addInitScript(pref => localStorage.setItem(pref + 'charname', 'codeBuddy'), PREF_PREFIX)
+		await openCode(page, baseUrl)
+		const composer = page.locator('#composer-input')
+		await composer.click()
+		await page.keyboard.type('悬停归属测试')
+		await page.keyboard.press('Control+Enter')
+		await expect(page.locator('.code-message.role-char')).toContainText('测试回复。', { timeout: 60_000 })
+		const userBubble = page.locator('.code-message.role-user')
+		await userBubble.hover()
+		const shape = await userBubble.evaluate(bubble => {
+			const box = bubble.getBoundingClientRect()
+			const bar = bubble.querySelector('.code-message-actions').getBoundingClientRect()
+			return { messageTop: box.top, messageBottom: box.bottom, barTop: bar.top, barBottom: bar.bottom }
+		})
+		// 操作栏必须落在本条消息的下缘（不得浮到消息上方，否则会看起来属于上一条消息）
+		expect(shape.barTop).toBeGreaterThan(shape.messageTop)
+		expect(shape.barTop).toBeLessThan(shape.messageBottom)
 	})
 
 	test('regen: refresh button on the last char message regenerates it in place', async ({ page, baseUrl }) => {
@@ -758,33 +1070,268 @@ test.describe('code shell message actions & layout', () => {
 	})
 })
 
-test.describe('code shell shutdown menu', () => {
-	test('power menu lists the local host and toggles the after-tasks shutdown state', async ({ page, baseUrl }) => {
+test.describe('code shell @ gist mention', () => {
+	test('@ autocompletes gists, inserts a token, and attaches the gist body on send', async ({ page, baseUrl }) => {
+		const gistTitle = `gist-mention-${Date.now()}`
+		const gistBody = `# ${gistTitle}\n\ngist-body-marker`
+		const created = await (await page.request.post(`${baseUrl}/api/parts/shells:gist/gists`, {
+			data: { markdown: gistBody, title: gistTitle, securityLevel: 'trusted' },
+		})).json()
+		const gistId = created.gist.id
+		try {
+			await page.addInitScript(pref => localStorage.setItem(pref + 'charname', 'codeBuddy'), PREF_PREFIX)
+			await openCode(page, baseUrl)
+			const composer = page.locator('#composer-input')
+			await composer.click()
+			await holdLocale(page)
+			try {
+				await page.keyboard.type('@' + gistTitle)
+				const option = page.locator('.mention-panel .mention-option', { hasText: gistTitle })
+				await expect(option).toBeVisible()
+				await option.click()
+			}
+			finally {
+				await releaseLocale(page)
+			}
+			// chip 显示 gist 标题，底层原文为 @[gist:id]
+			await expect(composer).toContainText(gistTitle)
+			const rawToken = await composer.locator('.fount-markdown-rich-input-chip').first().getAttribute('data-raw')
+			expect(rawToken).toBe(`@[gist:${gistId}]`)
+			await page.keyboard.press('Control+Enter')
+			// 正文作为附件并入用户消息（气泡渲染附件 chip）；不依赖后续角色生成链
+			const userBubble = page.locator('.code-message.role-user')
+			await expect(userBubble).toContainText(gistTitle, { timeout: 60_000 })
+			await expect(userBubble).toContainText(`📎 ${gistTitle}.md`)
+		}
+		finally {
+			await page.request.post(`${baseUrl}/api/parts/shells:gist/gists/batch-delete`, { data: { ids: [gistId] } })
+		}
+	})
+})
+
+test.describe('code shell power actions', () => {
+	test('settings dialog configures per-host power action', async ({ page, baseUrl }) => {
 		await openCode(page, baseUrl)
 		await holdLocale(page)
 		try {
-			await page.locator('#power-pill').click()
-			const menu = page.locator('#power-menu')
-			await expect(menu).toBeVisible()
-			// 无 subfount 时仅有本机可选
-			await expect(menu.locator('input[type="checkbox"][data-machine-id]')).toHaveCount(1)
-			await expect(menu).toContainText('本机')
-			await menu.locator('input[type="checkbox"][data-machine-id="0"]').check()
-			await expect(page.locator('#power-pill-label')).toContainText('本机')
+			const button = page.locator('#power-settings-button')
+			await expect(button).toHaveText('完成后自动操作设置')
+			await button.click()
+			const dialog = page.locator('dialog.modal', { has: page.locator('#power-settings-list') })
+			await expect(dialog).toBeVisible()
+			// 无 subfount 时仅有本机可选，四个操作项（不操作/关机/休眠/重启）
+			await expect(dialog.locator('select[data-machine-id]')).toHaveCount(1)
+			const select = dialog.locator('select[data-machine-id="0"]')
+			await expect(select).toBeVisible()
+			await expect(select.locator('option')).toHaveCount(4)
+			// 选择关机 → 按钮显示已武装
+			await select.selectOption('shutdown')
+			await expect(button).toHaveText('任务完成后：1 台主机')
 			await expect(async () => {
 				const data = await (await page.request.get(`${baseUrl}${API_BASE}/shutdown`)).json()
-				expect(data.machine).toBe('0')
+				expect(data.actions).toEqual({ 0: 'shutdown' })
 			}).toPass()
-			// 取消勾选（菜单保持打开，不重建 DOM）
-			await menu.locator('input[type="checkbox"][data-machine-id="0"]').uncheck()
-			await expect(page.locator('#power-pill-label')).toHaveText('任务完成后关机')
+			// 改为休眠
+			await select.selectOption('sleep')
 			await expect(async () => {
 				const data = await (await page.request.get(`${baseUrl}${API_BASE}/shutdown`)).json()
-				expect(data.machine).toBeNull()
+				expect(data.actions).toEqual({ 0: 'sleep' })
+			}).toPass()
+			// 恢复不操作 → 按钮回到默认
+			await select.selectOption('')
+			await expect(button).toHaveText('完成后自动操作设置')
+			await expect(async () => {
+				const data = await (await page.request.get(`${baseUrl}${API_BASE}/shutdown`)).json()
+				expect(data.actions).toEqual({})
 			}).toPass()
 		}
 		finally {
 			await releaseLocale(page)
+		}
+	})
+})
+
+test.describe('code shell composer keyboard handling', () => {
+	test('slash command panel lists workspace commands right after boot into a saved workspace', async ({ page, baseUrl }) => {
+		const dir = makeWorkspace('fe-slash', { '.agents/commands/test-cmd.md': '---\ndescription: 测试命令\n---\n渲染内容' })
+		try {
+			// 先保存工作区：boot 会把它选为当前工作区，草稿标签落在其上（不触发工作区切换）
+			await page.request.post(`${baseUrl}${API_BASE}/workspaces`, { data: { name: 'slash', machine: '0', path: dir } })
+			await openCode(page, baseUrl)
+			const composer = page.locator('#composer-input')
+			await composer.click()
+			await page.keyboard.type('/test')
+			const panel = page.locator('.code-slash-panel')
+			await expect(panel).toBeVisible()
+			await expect(panel.locator('.code-slash-item')).toHaveCount(1)
+			await expect(panel).toContainText('test-cmd')
+		}
+		finally {
+			await removeAllWorkspacesViaApi(page, baseUrl)
+			await rmDirRetry(dir)
+		}
+	})
+
+	test('one Enter press after typing a sentence inserts exactly one newline', async ({ page, baseUrl }) => {
+		await openCode(page, baseUrl)
+		const composer = page.locator('#composer-input')
+		await composer.click()
+		await page.keyboard.type('hello world')
+		await page.keyboard.press('Enter')
+		expect(await composer.evaluate(el => el.value)).toBe('hello world\n')
+		// 再按一次回车 → 两个换行（第二次不该吞掉）
+		await page.keyboard.press('Enter')
+		expect(await composer.evaluate(el => el.value)).toBe('hello world\n\n')
+	})
+})
+
+test.describe('code shell home picker search', () => {
+	test('home picker filters workspaces and sessions by search term', async ({ page, baseUrl }) => {
+		const alphaDir = makeWorkspace('fe-search-alpha', {})
+		const betaDir = makeWorkspace('fe-search-beta', {})
+		leftoverWorkspaceDirs.add(alphaDir)
+		leftoverWorkspaceDirs.add(betaDir)
+		try {
+			await page.request.post(`${baseUrl}${API_BASE}/workspaces`, { data: { name: 'alpha', machine: '0', path: alphaDir } })
+			await page.request.post(`${baseUrl}${API_BASE}/workspaces`, { data: { name: 'beta', machine: '0', path: betaDir } })
+			const now = new Date().toISOString()
+			await page.request.post(`${baseUrl}${API_BASE}/sessions`, { data: { machine: '0', workdir: alphaDir, session: { id: 'alpha-session', title: 'alpha 会话', charname: 'codeBuddy', profile: 'build', created: now, updated: now, memory: {}, entries: [] } } })
+			await openCode(page, baseUrl)
+			await page.locator('#home-toggle').click()
+			const search = page.locator('#home-search')
+			await expect(page.locator('#home-workspace-list .code-home-row')).toHaveCount(2)
+			await expect(page.locator('#home-session-list .code-home-row')).toHaveCount(1)
+			// 搜索工作区名 beta → 左栏仅剩匹配项，右栏自动切到该工作区（无会话 → 空态）
+			await search.fill('beta')
+			await expect(page.locator('#home-workspace-list .code-home-row')).toHaveCount(1)
+			await expect(page.locator('#home-workspace-list')).toContainText('beta')
+			await expect(page.locator('#home-session-list .code-home-row')).toHaveCount(0)
+			// 搜索工作区名 alpha → 右栏列出其会话
+			await search.fill('alpha')
+			await expect(page.locator('#home-workspace-list .code-home-row')).toHaveCount(1)
+			await expect(page.locator('#home-session-list .code-home-row')).toHaveCount(1)
+			await expect(page.locator('#home-session-list')).toContainText('alpha 会话')
+			// 清空搜索 → 全部恢复
+			await search.fill('')
+			await expect(page.locator('#home-workspace-list .code-home-row')).toHaveCount(2)
+			await expect(page.locator('#home-session-list .code-home-row')).toHaveCount(1)
+			await page.keyboard.press('Escape')
+		}
+		finally {
+			await removeAllWorkspacesViaApi(page, baseUrl)
+			await rmDirRetry(alphaDir)
+			await rmDirRetry(betaDir)
+		}
+	})
+})
+
+test.describe('code shell workspace pill search & usage order', () => {
+	test('workspace dropdown sorts by recent usage and filters by search', async ({ page, baseUrl }) => {
+		const alphaDir = makeWorkspace('fe-use-alpha', {})
+		const betaDir = makeWorkspace('fe-use-beta', {})
+		const gammaDir = makeWorkspace('fe-use-gamma', {})
+		leftoverWorkspaceDirs.add(alphaDir)
+		leftoverWorkspaceDirs.add(betaDir)
+		leftoverWorkspaceDirs.add(gammaDir)
+		try {
+			await page.request.post(`${baseUrl}${API_BASE}/workspaces`, { data: { name: 'alpha', machine: '0', path: alphaDir } })
+			await page.request.post(`${baseUrl}${API_BASE}/workspaces`, { data: { name: 'beta', machine: '0', path: betaDir } })
+			await page.request.post(`${baseUrl}${API_BASE}/workspaces`, { data: { name: 'gamma', machine: '0', path: gammaDir } })
+			// 按使用时间标记：gamma 最近、beta 次之、alpha 最久（间隔拉开毫秒级保证顺序稳定）
+			for (const name of ['alpha', 'beta', 'gamma']) {
+				const { list } = await (await page.request.get(`${baseUrl}${API_BASE}/workspaces`)).json()
+				const id = list.find(workspace => workspace.name === name).id
+				await page.request.put(`${baseUrl}${API_BASE}/workspaces/${id}/use`)
+				await new Promise(resolve => setTimeout(resolve, 40))
+			}
+			await openCode(page, baseUrl)
+			await holdLocale(page)
+			try {
+				await page.locator('#workspace-pill').click()
+				const items = page.locator('#workspace-menu .menu-item', { hasText: /alpha|beta|gamma/ })
+				await expect(items).toHaveCount(3)
+				// 常用程度排序：gamma（最近）→ beta → alpha
+				const order = await items.allTextContents()
+				expect(order[0]).toContain('gamma')
+				expect(order[1]).toContain('beta')
+				expect(order[2]).toContain('alpha')
+				// 搜索过滤：仅剩 beta
+				await page.locator('#workspace-menu input').fill('beta')
+				await expect(page.locator('#workspace-menu .menu-item', { hasText: /alpha|beta|gamma/ })).toHaveCount(1)
+				await expect(page.locator('#workspace-menu .menu-item', { hasText: 'beta' })).toBeVisible()
+			}
+			finally {
+				await releaseLocale(page)
+			}
+		}
+		finally {
+			await removeAllWorkspacesViaApi(page, baseUrl)
+			await rmDirRetry(alphaDir)
+			await rmDirRetry(betaDir)
+			await rmDirRetry(gammaDir)
+		}
+	})
+})
+
+test.describe('code shell notification suppression', () => {
+	test('notification marks an inactive session tab, activating clears it, and ?session= restores the session', async ({ page, baseUrl }) => {
+		const dir = mkdtempSync(join(tmpdir(), 'fount-code-fe-notify-'))
+		leftoverWorkspaceDirs.add(dir)
+		await page.addInitScript(pref => localStorage.setItem(pref + 'charname', 'codeBuddy'), PREF_PREFIX)
+		try {
+			await openCode(page, baseUrl)
+			await selectWorkspaceViaBrowser(page, dir)
+			const composer = page.locator('#composer-input')
+			await composer.click()
+			await page.keyboard.type('通知抑制测试')
+			await page.keyboard.press('Control+Enter')
+			await expect(page.locator('.code-message.role-char')).toContainText('测试回复。', { timeout: 60_000 })
+			// 会话标签地址栏带 session 参数
+			await expect(async () => {
+				expect(new URL(page.url()).searchParams.get('session')).toBeTruthy()
+			}).toPass()
+			const sessionId = new URL(page.url()).searchParams.get('session')
+			/**
+			 * 模拟 Service Worker 通知事件。
+			 * @param {string} id session id
+			 * @returns {Promise<void>} 事件派发完成
+			 */
+			const dispatchNotification = id => page.evaluate(session => {
+				window.dispatchEvent(new CustomEvent('fount-notification', {
+					detail: { title: 'x', options: { tag: `code:${session}` }, targetUrl: `/parts/shells:code/?session=${session}`, suppressed: true },
+				}))
+			}, id)
+			// 当前活动标签即通知来源：不显示角标
+			await dispatchNotification(sessionId)
+			await expect(page.locator('.code-tab-unread')).toHaveCount(0)
+			// 新建草稿标签 → 会话标签转为非活动，且地址栏不再带 session
+			await page.locator('#new-tab-button').click()
+			await expect(page.locator('#tab-strip .code-tab')).toHaveCount(2)
+			await expect(async () => {
+				expect(new URL(page.url()).searchParams.get('session')).toBeNull()
+			}).toPass()
+			// 非活动会话收到被抑制的通知 → 出现未读红点
+			await dispatchNotification(sessionId)
+			await expect(page.locator('.code-tab-unread')).toHaveCount(1)
+			// 点击该会话标签：角标清除，地址栏切回该会话
+			await page.locator('#tab-strip .code-tab', { has: page.locator('.code-tab-unread') }).click()
+			await expect(page.locator('.code-tab-unread')).toHaveCount(0)
+			await expect(async () => {
+				expect(new URL(page.url()).searchParams.get('session')).toBe(sessionId)
+			}).toPass()
+			// 通知点击深链：关闭会话标签后以 ?session= 重开，应从磁盘恢复会话（而非仅命中已开标签）
+			const workspaceId = new URL(page.url()).searchParams.get('workspace')
+			await page.locator('#tab-strip .code-tab:not(:has(.code-tab-avatar-draft)) .code-tab-close').click()
+			await expect(page.locator('#tab-strip .code-tab:not(:has(.code-tab-avatar-draft))')).toHaveCount(0)
+			await page.goto(`${baseUrl}${BASE}?workspace=${workspaceId}&session=${sessionId}`, { waitUntil: 'domcontentloaded' })
+			await page.waitForFunction(() => document.querySelector('#composer-input')?.contentEditable === 'true')
+			await page.waitForFunction(() => document.activeElement?.id === 'composer-input')
+			await expect(page.locator('#tab-strip .code-tab[data-active="true"]')).toHaveCount(1)
+			await expect(page.locator('.code-message.role-user')).toContainText('通知抑制测试')
+			await expect(page.locator('.code-tab-unread')).toHaveCount(0)
+		}
+		finally {
+			await removeAllWorkspacesViaApi(page, baseUrl)
 		}
 	})
 })

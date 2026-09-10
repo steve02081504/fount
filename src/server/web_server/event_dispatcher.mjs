@@ -86,15 +86,3 @@ export function sendEventToAll(type, data) {
 	for (const connections of userConnections.values())
 		sendMessageToConnections(connections, type, data)
 }
-
-/**
- * 向特定用户的所有连接客户端发送通知。
- * @param {string} username - 要通知的用户名。
- * @param {string} title - 通知标题。
- * @param {NotificationOptions} options - 通知选项。
- * @param {string | null} targetUrl - 点击通知时打开的 URL。
- * @returns {boolean} 如果通知已发送则为 true，否则为 false。
- */
-export function sendNotification(username, title, options, targetUrl = null) {
-	return sendEventToUser(username, 'notification', { title, options, targetUrl })
-}

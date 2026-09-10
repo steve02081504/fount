@@ -16,6 +16,12 @@ export class chatReply_t {
 	content: string
 	content_for_show?: string
 	content_for_edit?: string
+	/**
+	 * RPH 解析用的一次性工作副本：由回复管线在每轮生成开始时从 `content` 派生，
+	 * handler 在其上解析并掩除已处理的调用段（避免工具 A 的参数触发工具 B 的调用）。
+	 * 不持久化、不展示、不发送给 AI；管线结束后删除。
+	 */
+	content_for_handle?: string
 	locale?: string
 	content_warning?: string
 	sensitive_media?: boolean

@@ -7,6 +7,7 @@ import { buildContentForShowFromLogprobs } from '../proxy/src/logprobsRenderer.m
 import { buildMessagesFromPromptStruct } from '../proxy/src/messageBuilder.mjs'
 import { buildReasoningDetailsMarkdown } from '../proxy/src/reasoningRenderer.mjs'
 import { clearFormat } from '../proxy/src/responseFormat.mjs'
+import { buildSourceInfo } from '../proxy/src/sourceInfo.mjs'
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
@@ -94,12 +95,10 @@ function normalizeConfig(config = {}) {
  * @returns {Record<string, any>} 本地化元数据。
  */
 function buildProductInfo(config) {
-	return Object.fromEntries(Object.entries(structuredClone(product_info)).map(([locale, localeInfo]) => {
-		localeInfo.name = config.name || config.model
-		localeInfo.provider = 'Evolink'
+	const locales = buildSourceInfo(product_info, config, { url: config.url, defaultUrl: configTemplate.url })
+	for (const localeInfo of Object.values(locales))
 		localeInfo.home_page = evolinkHomepage
-		return [locale, localeInfo]
-	}))
+	return locales
 }
 
 /**

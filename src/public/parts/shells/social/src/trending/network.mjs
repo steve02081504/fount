@@ -5,6 +5,8 @@ import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { getShellPartpath } from 'npm:@steve02081504/fount-p2p/registries/part_path'
 import { queryNetwork } from 'npm:@steve02081504/fount-p2p/wire/part/query'
 
+import { isSourceNodeBlocked, sourceNodesOf } from '../../../../../../scripts/p2p/source_block.mjs'
+
 import { buildTrendingHashtags } from './hashtags.mjs'
 
 /** part_query 话题热度 kind 常量。 */
@@ -49,39 +51,48 @@ export async function localTrendingHashtagsHandler(inboundContext, query) {
 }
 
 /**
+ * 话题行去重键：同 tag 不同节点保留为不同行。
+ * @param {unknown} row 行
+ * @returns {string} 去重键
+ */
+function trendingRowKey(row) {
+	const cleaned = sanitizeTrendingRow(row)
+	if (!cleaned) return ''
+	return `${cleaned.nodeHash || 'anon'}:${cleaned.tag}`
+}
+
+/**
  * 聚合本机与邻居话题热度。
  * @param {string} username 用户
  * @param {{ limit?: number, viewerEntityHash?: string }} [options] 选项
- * @returns {Promise<{ tags: { tag: string, count: number }[], scope: 'nearby' }>} 附近热搜
+ * @returns {Promise<{ tags: { tag: string, count: number, sourceNodes: string[] }[], scope: 'nearby' }>} 附近热搜
  */
 export async function buildNearbyTrendingHashtags(username, options = {}) {
 	const limit = Math.min(Math.max(Number(options.limit) || 12, 1), 32)
 	const partpath = getShellPartpath('social')
-	const rows = await queryNetwork(username, partpath, TRENDING_HASHTAGS_KIND, { limit }, {
+	const { rows, sources } = await queryNetwork(username, partpath, TRENDING_HASHTAGS_KIND, { limit }, {
 		maxHits: 128,
-		/**
-		 * @param {unknown} row 行
-		 * @returns {string} 去重键（同 tag 不同节点保留）
-		 */
-		rowKey: row => {
-			const cleaned = sanitizeTrendingRow(row)
-			if (!cleaned) return ''
-			return `${cleaned.nodeHash || 'anon'}:${cleaned.tag}`
-		},
+		rowKey: trendingRowKey,
+		isSourceBlocked: isSourceNodeBlocked,
 	})
 
 	/** @type {Map<string, number>} */
 	const counts = new Map()
+	/** @type {Map<string, Set<string>>} */
+	const tagSources = new Map()
 	for (const raw of rows) {
 		const row = sanitizeTrendingRow(raw)
 		if (!row) continue
 		counts.set(row.tag, (counts.get(row.tag) || 0) + row.count)
+		const set = tagSources.get(row.tag) || new Set()
+		for (const nodeHash of sourceNodesOf(sources, trendingRowKey(raw))) set.add(nodeHash)
+		if (set.size) tagSources.set(row.tag, set)
 	}
 
 	const tags = [...counts.entries()]
 		.sort((left, right) => right[1] - left[1] || left[0].localeCompare(right[0]))
 		.slice(0, limit)
-		.map(([tag, count]) => ({ tag, count }))
+		.map(([tag, count]) => ({ tag, count, sourceNodes: [...tagSources.get(tag) || []] }))
 
 	return { tags, scope: 'nearby' }
 }

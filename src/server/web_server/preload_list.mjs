@@ -7,6 +7,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
+import { canonicalPath, readDirEntries } from '../../scripts/fs_walk.mjs'
 import { getUserDictionary } from '../auth/index.mjs'
 import { __dirname } from '../base.mjs'
 import { events } from '../events.mjs'
@@ -200,50 +201,58 @@ function extractTypedUrls(filePath, content) {
 }
 
 /**
- * 递归收集目录下指定的扩展名文件
+ * 递归收集目录下指定的扩展名文件，跟随符号链接/junction 并做环守卫。
  * @param {string} dir - 根目录
  * @param {string[]} exts - 扩展名列表 (包含点，如 ['.mjs'])
  * @returns {string[]} 文件绝对路径数组
  */
 function collectFiles(dir, exts) {
 	const out = []
+	const seen = new Set()
+	const rootReal = canonicalPath(dir)
+	if (rootReal) seen.add(rootReal)
 	/**
-	 * @param {string} dir - 目录路径
+	 * @param {string} current - 目录路径
 	 * @returns {void}
 	 */
-	const walk = (dir) => {
-		try {
-			for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-				const full = path.join(dir, entry.name)
-				if (entry.isDirectory()) walk(full)
-				else if (exts.includes(path.extname(entry.name).toLowerCase())) out.push(full)
+	const walk = current => {
+		for (const entry of readDirEntries(current))
+			if (entry.isDirectory) {
+				const real = canonicalPath(entry.fullPath)
+				if (real && seen.has(real)) continue
+				if (real) seen.add(real)
+				walk(entry.fullPath)
 			}
-		} catch { /* ignore */ }
+			else if (entry.isFile && exts.includes(path.extname(entry.name).toLowerCase()))
+				out.push(entry.fullPath)
 	}
 	walk(dir)
 	return out
 }
 
 /**
- * 递归寻找名为 public 的目录 (一旦找到就不再进入其内部寻找)
+ * 递归寻找名为 public 的目录 (一旦找到就不再进入其内部寻找)，跟随符号链接/junction 并做环守卫。
  * @param {string} root - 根目录
  * @returns {string[]} public 目录绝对路径数组
  */
-function collectPublicDirs(root) {
+export function collectPublicDirs(root) {
 	const out = []
+	const seen = new Set()
+	const rootReal = canonicalPath(root)
+	if (rootReal) seen.add(rootReal)
 	/**
-	 * @param {string} dir - 目录路径
+	 * @param {string} current - 目录路径
 	 * @returns {void}
 	 */
-	const walk = (dir) => {
-		try {
-			for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-				if (!entry.isDirectory()) continue
-				const full = path.join(dir, entry.name)
-				if (entry.name === 'public') out.push(full)
-				else walk(full)
-			}
-		} catch { /* ignore */ }
+	const walk = current => {
+		for (const entry of readDirEntries(current)) {
+			if (!entry.isDirectory) continue
+			const real = canonicalPath(entry.fullPath)
+			if (real && seen.has(real)) continue
+			if (real) seen.add(real)
+			if (entry.name === 'public') out.push(entry.fullPath)
+			else walk(entry.fullPath)
+		}
 	}
 	walk(root)
 	return out

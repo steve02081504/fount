@@ -3,6 +3,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import { getUserDictionary } from '../../../../../server/auth/index.mjs'
+import { deriveTitleFromMarkdown, removeTitleHeadingLine } from '../public/src/title.mjs'
 
 const GIST_ID_RE = /^[\w-]{1,64}$/
 
@@ -87,26 +88,17 @@ async function getContentIndex(username) {
 	return loading
 }
 
-/**
- * 从 markdown 首个非空行生成标题（截断到 60 字符）。
- * @param {string} markdown - markdown 内容。
- * @returns {string} 生成的标题。
- */
-function titleFromMarkdown(markdown) {
-	const line = String(markdown ?? '').split('\n').find(line => line.trim())
-	return (line?.trim() || 'Untitled').slice(0, 60)
-}
-
 /** 列表摘要最大字符数。 */
 const EXCERPT_MAX = 180
 
 /**
- * 从 markdown 提取纯文本摘要：去除代码块 / 图片 / 链接语法与常见行首标记后压平截断。
+ * 从 markdown 提取纯文本摘要：先移除作为标题来源的标题行（避免与卡片标题重复），
+ * 再去除代码块 / 图片 / 链接语法与常见行首标记后压平截断。
  * @param {string} markdown - markdown 内容。
  * @returns {string} 截断后的纯文本摘要。
  */
 function excerptFromMarkdown(markdown) {
-	return String(markdown ?? '')
+	return removeTitleHeadingLine(String(markdown ?? ''))
 		.replace(/```[\s\S]*?```/g, ' ')
 		.replace(/~~~[\s\S]*?~~~/g, ' ')
 		.replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
@@ -139,7 +131,7 @@ export async function createGist(username, { markdown, title, securityLevel = 't
 	const now = Date.now()
 	const gist = {
 		id: crypto.randomUUID().slice(0, 8),
-		title: title ?? titleFromMarkdown(markdown),
+		title: title ?? deriveTitleFromMarkdown(markdown),
 		markdown,
 		securityLevel,
 		source,
@@ -194,7 +186,16 @@ export async function listGists(username) {
 		})))
 		.filter(Boolean)
 	return gists
-		.map(({ markdown, ...gist }) => ({ ...gist, excerpt: excerptFromMarkdown(markdown) }))
+		.map(gist => {
+			const summary = {
+				...gist,
+				displayTitle: deriveTitleFromMarkdown(gist.markdown),
+				excerpt: excerptFromMarkdown(gist.markdown),
+			}
+			delete summary.markdown
+			delete summary.title
+			return summary
+		})
 		.sort((a, b) => (b.updatedAt ?? b.createdAt ?? 0) - (a.updatedAt ?? a.createdAt ?? 0))
 }
 
@@ -214,6 +215,7 @@ export async function updateGist(username, id, data = {}) {
 		if (contentIndex.get(oldHash) === id) contentIndex.delete(oldHash)
 		gist.markdown = data.markdown
 		contentIndex.set(hashMarkdown(gist.markdown), id)
+		gist.title = deriveTitleFromMarkdown(gist.markdown)
 	}
 	if (data.securityLevel !== undefined) gist.securityLevel = data.securityLevel
 	if (data.title !== undefined) gist.title = data.title

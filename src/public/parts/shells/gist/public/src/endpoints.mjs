@@ -33,8 +33,8 @@ function sendJson(url, body, method = 'POST') {
 }
 
 /**
- * 列出全部 gist 摘要（不含 markdown，附纯文本 excerpt），按更新时间降序。
- * @returns {Promise<Array<{id: string, title: string, excerpt: string, securityLevel: 'secure'|'trusted', source: object|null, createdAt: number, updatedAt: number}>>} gist 列表。
+ * 列出全部 gist 摘要（不含 markdown，附由 markdown 推导的 displayTitle 与纯文本 excerpt），按更新时间降序。
+ * @returns {Promise<Array<{id: string, displayTitle: string, excerpt: string, securityLevel: 'secure'|'trusted', source: object|null, createdAt: number, updatedAt: number}>>} gist 列表。
  */
 export async function listGists() {
 	return requestJson(`${API_BASE}/gists`)

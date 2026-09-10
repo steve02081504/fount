@@ -3,6 +3,7 @@
 	"suites": [
 		{
 			"name": "integration",
+			"expected": "22s",
 			"triggers": [
 				"src/public/parts/serviceGenerators/AI/vertex/**",
 				"src/public/parts/serviceGenerators/AI/gemini/main.mjs"

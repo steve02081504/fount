@@ -26,16 +26,16 @@ AI 编码会话 shell：与任意角色就工作区对话，在本机或已连�
 - `POST /commands/render {machine, workdir, name, argv}` → `{ content }`（渲染命令模板；缺必填参数 400）
 - `GET /aisources` → `{ sources: string[], defaults: string[], hidden: string[] }`
 - `PUT /aisources/visibility {hidden: string[]}` → 保存 AI 源可见性
-- `GET /shutdown` → `{ machine: string|null, active: number }`（`machine` 为待关机主机 id，"0" = 本机；`active` 为进行中的生成数）
-- `PUT /shutdown {machine}` → 预定「所有任务生成完毕后关闭该主机」（machine 为空/null 则取消）；主机关闭后 `machine` 复位为 null
+- `GET /shutdown` → `{ actions: { [machine]: action }, active: number }`（`action` 为 `shutdown` / `sleep` / `restart`，"0" = 本机；`active` 为进行中的生成数）
+- `PUT /shutdown {machine, action}` → 预定「所有任务生成完毕后对指定主机执行该电源操作」（`action` 为空则取消该主机，`machine` 为空/null 则取消全部；未知 action 或主机不可用 400）
 - `GET /sessions?machine&workdir=` → `{ sessions: [{ id, title, charname, profile, ai_source, created, updated }] }`
 - `POST /sessions {machine, workdir, session}` / `GET /sessions/:id?machine&workdir=` / `PUT /sessions/:id {machine, workdir, session}` / `DELETE /sessions/:id?machine&workdir=` → 会话存取（写目标机器工作区）
 
 ## WS API
 
 - `WS /ws/parts/shells:code/session`（登录后连接）
-  - 客户端 → `{ type: 'send', session, machine, workdir, ai_source?, profile?, content, files? }`：触发角色回复。`files`（可选）为附件数组 `{ name, mime_type, buffer: base64, description }`，并入用户消息条目（sessionToChatLog 解码后随 chat_log 供角色读取）。服务端流式回 `{ type: 'preview', content }`；结束回 `{ type: 'done', entries, memory }`（entries = 用户消息 + tool 日志 + 角色回复）。
+  - 客户端 → `{ type: 'send', session, machine, workdir, ai_source?, profile?, content, files?, clientEntryId? }`：触发角色回复。`files`（可选）为附件数组 `{ name, mime_type, buffer: base64, description }`，并入用户消息条目（sessionToChatLog 解码后随 chat_log 供角色读取）。`clientEntryId`（可选）为前端已乐观插入 `session.entries` 的用户条目 id；服务端若在该 session 中找到同 id 条目则不再追加/回传用户消息（避免重复）。服务端流式回 `{ type: 'preview', content }`；结束回 `{ type: 'done', entries, memory }`（entries = 用户消息（未带 clientEntryId 时）+ tool 日志 + 角色回复）。会话条目同时保留 agent 层 `content` 与展示层 `content_for_show`/`content_for_edit`、`charVisibility`，重载时据此完整还原。
   - 客户端 → `{ type: 'regen', session, machine, workdir, ai_source?, profile? }`：以现有 entries 重新生成最后一条角色回复（前端应先弹出旧回复）。服务端同样先流式 `preview`，结束回 `{ type: 'done', entries, memory }`（entries 仅含 tool 日志 + 新角色回复；中断回 `{ type: 'aborted', entries }`，此时旧回复已被弹出、会话暂无该回复）。
   - 客户端 → `{ type: 'abort' }`：中断当前生成；服务端回 `{ type: 'aborted', entries }`。
   - 出错回 `{ type: 'error', entries, error }`。
-  - 每次 `done` 后服务端向用户发送「对话已完成」通知：浏览器在线经 `/ws/notify`，离线回退 Web Push。
+  - 每次 `done` 后服务端向用户发送「对话已完成」通知：浏览器在线经 `/ws/notify`，其次 Web Push，均不可达时回退桌面通知（点击打开对应页面）。

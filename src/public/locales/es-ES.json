@@ -3628,6 +3628,13 @@
 			"jumpToSource": "Ir al origen",
 			"sendToChat": "Copiar al chat",
 			"copied": "Copiado al portapapeles"
+		},
+		"sourceNode": {
+			"label": "Nodo de origen",
+			"block": "Bloquear",
+			"blockConfirm": "¿Bloquear el nodo de origen ${node}? Se filtrarán los resultados de la federación que provengan de él.",
+			"blocked": "Nodo de origen bloqueado",
+			"blockFailed": "No se pudo bloquear el nodo de origen: ${error}"
 		}
 	},
 	"easynew": {
@@ -5077,6 +5084,13 @@
 			"jumpToSource": "Ir al origen",
 			"sendToSocial": "Copiar a la publicación",
 			"copied": "Copiado al portapapeles"
+		},
+		"sourceNode": {
+			"label": "Nodo de origen",
+			"block": "Bloquear",
+			"blockConfirm": "¿Bloquear el nodo de origen ${node}? Se filtrarán los resultados de la federación que provengan de él.",
+			"blocked": "Nodo de origen bloqueado",
+			"blockFailed": "No se pudo bloquear el nodo de origen: ${error}"
 		}
 	},
 	"cabinet": {
@@ -5404,7 +5418,10 @@
 		"search": {
 			"placeholder": "Buscar títulos, resúmenes o etiquetas…",
 			"aria-label": "Buscar artículos",
-			"empty": "No hay artículos que coincidan: ¿pruebas con otra palabra clave?"
+			"empty": "No hay artículos que coincidan: ¿pruebas con otra palabra clave?",
+			"clear": {
+				"aria-label": "Borrar búsqueda"
+			}
 		},
 		"home": {
 			"title": "Inicio de fount",
@@ -6403,20 +6420,46 @@
 		"sessions": {
 			"new": "Nueva sesión",
 			"untitled": "Sesión sin título",
-			"yesterday": "ayer"
+			"yesterday": "ayer",
+			"delete": "Eliminar conversación",
+			"deleteConfirm": "¿Estás seguro de que deseas eliminar la conversación \"${title}\"? Esta acción no se puede deshacer.",
+			"deleted": "Conversación eliminada"
 		},
 		"workspaces": {
 			"browse": "Explorar…",
 			"remove": "Quitar el espacio de trabajo actual",
+			"removeConfirm": "¿Estás seguro de que deseas quitar el espacio de trabajo \"${name}\"? Los archivos de sesión en el disco se conservarán.",
 			"none": "Ningún espacio de trabajo seleccionado",
-			"overviewEmpty": "Aún no hay conversaciones"
+			"overviewEmpty": "Aún no hay conversaciones",
+			"search": {
+				"placeholder": "Buscar espacios de trabajo…",
+				"aria-label": "Buscar espacios de trabajo"
+			}
 		},
 		"home": {
-			"aria-label": "Espacios de trabajo y sesiones"
+			"aria-label": "Espacios de trabajo y sesiones",
+			"title": "Espacios de trabajo y conversaciones",
+			"workspacesTitle": "Espacios de trabajo",
+			"sessionsTitle": "Conversaciones",
+			"emptyWorkspaces": "Aún no hay espacios de trabajo. Haz clic en \"Explorar…\" para añadir uno.",
+			"search": {
+				"placeholder": "Buscar espacios de trabajo o conversaciones…",
+				"aria-label": "Buscar espacios de trabajo o conversaciones"
+			},
+			"noMatch": "Sin resultados"
 		},
 		"tabs": {
 			"aria-label": "Pestañas de sesión",
-			"close": "Cerrar pestaña"
+			"close": "Cerrar pestaña",
+			"closeGenerating": "Una pestaña que aún se está generando no se puede cerrar",
+			"rename": "Rebautizar",
+			"closeMenu": {
+				"aria-label": "Acciones de pestaña",
+				"others": "Cerrar las demás pestañas",
+				"left": "Cerrar las pestañas a la izquierda",
+				"right": "Cerrar las pestañas a la derecha",
+				"all": "Cerrar todas las pestañas"
+			}
 		},
 		"newTab": {
 			"aria-label": "Nueva sesión"
@@ -6450,7 +6493,10 @@
 			"placeholder": "Escribe un comando; Ctrl/Cmd+Enter lo ejecuta (vacía para salir del modo shell)",
 			"placeholderNormal": "Escribe tu mensaje… (@ para referenciar archivos, / para comandos)",
 			"placeholderShell": "Escribe un comando shell… (p. ej. git status)",
-			"aria-label": "Entrada de mensaje"
+			"aria-label": "Entrada de mensaje",
+			"mentionSuggest": {
+				"aria-label": "Sugerencias de mención"
+			}
 		},
 		"aiSource": {
 			"panelTitle": "Gestionar la visibilidad de las fuentes de IA",
@@ -6508,7 +6554,25 @@
 			"noChar": "Selecciona primero un personaje"
 		},
 		"notify": {
-			"done": null
+			"done": "La conversación ha finalizado"
+		},
+		"power": {
+			"settings": {
+				"button": "Ajustes de acciones al finalizar",
+				"aria": "Ajustes de acciones al finalizar",
+				"title": "Acción automática al finalizar las tareas",
+				"hint": "Cuando todas las tareas terminen de generarse, se ejecutará la acción seleccionada en los hosts siguientes."
+			},
+			"action": {
+				"none": "Sin acción",
+				"shutdown": "Apagar",
+				"sleep": "Suspender",
+				"restart": "Reiniciar"
+			},
+			"armedCount": "Al finalizar las tareas: ${count} hosts",
+			"armedAria": "Ajustes de acciones al finalizar: ${count} hosts",
+			"armedToast": "Configurado: se ejecutará la acción seleccionada al finalizar todas las tareas",
+			"cancelled": "Acción al finalizar cancelada"
 		},
 		"home_function_buttons": {
 			"code": {
@@ -6529,6 +6593,21 @@
 			"code": {
 				"title": "De la sesión de programación"
 			}
+		},
+		"tool": {
+			"userShell": "Comando de terminal",
+			"readFile": "Leer archivo",
+			"findFiles": "Buscar archivos",
+			"searchContent": "Buscar en el contenido",
+			"editFile": "Editar archivo",
+			"writeFile": "Escribir archivo",
+			"setWorkdir": "Establecer directorio de trabajo",
+			"listMachines": "Listar equipos",
+			"preload": "Cargar contexto",
+			"viewFiles": "Ver archivos",
+			"addFiles": "Enviar archivos",
+			"callback": "Devolución de llamada de herramienta",
+			"runShell": "Ejecutar ${lang}"
 		}
 	},
 	"gist": {
@@ -6553,7 +6632,51 @@
 		"list": {
 			"new": "Nuevo gist",
 			"empty": "Aún no hay ningún gist. Haz clic en «Nuevo gist» arriba a la derecha para crear uno.",
-			"updatedAt": "Actualizado"
+			"updatedAt": "Actualizado",
+			"selectAll": "Seleccionar todo",
+			"noneSelected": "Nada seleccionado",
+			"selectedCount": "${count} seleccionados",
+			"batch": {
+				"download": "Descargar seleccionados",
+				"delete": "Eliminar seleccionados",
+				"deleteConfirm": "¿Eliminar los ${count} gists seleccionados? Esta acción no se puede deshacer.",
+				"deleted": "Se eliminaron ${count} gists",
+				"downloaded": "Se descargaron ${count} gists"
+			},
+			"noResults": "No hay gists que coincidan.",
+			"search": {
+				"placeholder": "Buscar gists…",
+				"aria-label": "Buscar gists"
+			},
+			"sortLabel": "Ordenar por",
+			"sort": {
+				"updatedDesc": "Actualización (más reciente primero)",
+				"updatedAsc": "Actualización (más antiguo primero)",
+				"createdDesc": "Creación (más reciente primero)",
+				"createdAsc": "Creación (más antiguo primero)",
+				"titleAsc": "Título (A–Z)",
+				"titleDesc": "Título (Z–A)"
+			},
+			"select": "Seleccionar",
+			"exitSelection": "Salir de la selección",
+			"view": {
+				"grid": {
+					"title": "Vista de cuadrícula",
+					"aria-label": "Vista de cuadrícula"
+				},
+				"list": {
+					"title": "Vista de lista",
+					"aria-label": "Vista de lista"
+				}
+			},
+			"filter": {
+				"all": "Todo",
+				"security": "Filtrar por nivel de seguridad",
+				"source": "Filtrar por fuente"
+			},
+			"clearSearch": "Borrar búsqueda",
+			"emptyHint": "También puedes arrastrar el archivo Markdown a esta página.",
+			"loading": "Cargando…"
 		},
 		"source": {
 			"manual": "Manual",
@@ -6582,7 +6705,6 @@
 		"edit": {
 			"save": "Guardar",
 			"cancel": "Atrás",
-			"title": "Título",
 			"editor": {
 				"placeholder": "Introduce Markdown…",
 				"aria-label": "Editor de Markdown"

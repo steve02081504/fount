@@ -1,20 +1,26 @@
-import { chatReplyRequest_t, CharReplyPreviewUpdater_t } from '../public/parts/shells/chat/decl/chatLog.ts'
+import { chatReply_t, chatReplyRequest_t, CharReplyPreviewUpdater_t } from '../public/parts/shells/chat/decl/chatLog.ts'
 
 import { locale_t, info_t } from './basedefs.ts'
 import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from './prompt_struct.ts'
 
 /**
  * 定义了回复处理程序的类型。
- * @param {chatLogEntry_t} reply - 聊天回复条目。
+ *
+ * 处理时解析 `reply.content_for_handle`（由回复管线从原始生成派生的独立工作副本），
+ * 命中调用段后用 `args.MaskHandledCall` 掩除，避免工具 A 的参数触发工具 B 的调用；
+ * 不要改写原始 `reply.content`。
+ * @param {chatReply_t} reply - 当前这轮 AI 回复（原始生成保留于 `content`）。
  * @param {chatReplyRequest_t & {
  * 	prompt_struct: prompt_struct_t
  * 	AddLongTimeLog?: (entry: chatLogEntry_t) => void
+ * 	MaskHandledCall?: (segment: string, replacement?: string) => void
  * }} args - 参数对象。
- * @returns {Promise<boolean>} - 如果处理成功则返回 true，否则返回 false。
+ * @returns {Promise<boolean>} - 返回 true 表示建议发起下一轮生成；false 表示不发起（本轮生成即可作为最终结果）。
  */
-export type ReplyHandler_t = (reply: chatLogEntry_t, args: chatReplyRequest_t & {
+export type ReplyHandler_t = (reply: chatReply_t, args: chatReplyRequest_t & {
 	prompt_struct: prompt_struct_t
 	AddLongTimeLog?: (entry: chatLogEntry_t) => void
+	MaskHandledCall?: (segment: string, replacement?: string) => void
 }) => Promise<boolean>
 
 /**

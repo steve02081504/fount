@@ -3622,6 +3622,13 @@
 			"jumpToSource": "往其源",
 			"sendToChat": "錄入清談",
 			"copied": "已錄入剪貼板"
+		},
+		"sourceNode": {
+			"label": "來源節點",
+			"block": "屏蔽",
+			"blockConfirm": "確定屏蔽來源節點 ${node}？來自該節點的聯邦結果將被過濾。",
+			"blocked": "已屏蔽來源節點",
+			"blockFailed": "屏蔽來源節點失敗：${error}"
 		}
 	},
 	"easynew": {
@@ -5071,6 +5078,13 @@
 			"jumpToSource": "往其源",
 			"sendToSocial": "錄入帖",
 			"copied": "已錄入剪貼板"
+		},
+		"sourceNode": {
+			"label": "來源節點",
+			"block": "屏蔽",
+			"blockConfirm": "確定屏蔽來源節點 ${node}？來自該節點的聯邦結果將被過濾。",
+			"blocked": "已屏蔽來源節點",
+			"blockFailed": "屏蔽來源節點失敗：${error}"
 		}
 	},
 	"cabinet": {
@@ -5398,7 +5412,10 @@
 		"search": {
 			"placeholder": "尋題、摘要或標籤…",
 			"aria-label": "尋文",
-			"empty": "無相合之文——試易其詞？"
+			"empty": "無相合之文——試易其詞？",
+			"clear": {
+				"aria-label": "清所尋"
+			}
 		},
 		"home": {
 			"title": "fount 首頁",
@@ -6397,20 +6414,46 @@
 		"sessions": {
 			"new": "新會話",
 			"untitled": "無名會話",
-			"yesterday": "昨日"
+			"yesterday": "昨日",
+			"delete": "刪會話",
+			"deleteConfirm": "定欲刪會話「${title}」？此舉不可復。",
+			"deleted": "會話已刪"
 		},
 		"workspaces": {
 			"browse": "瀏覽…",
 			"remove": "去當前作業區",
+			"removeConfirm": "定欲去作業區「${name}」？磁碟中之會話文牘仍存。",
 			"none": "未擇作業區",
-			"overviewEmpty": "尚無會話"
+			"overviewEmpty": "尚無會話",
+			"search": {
+				"placeholder": "尋作業區…",
+				"aria-label": "尋作業區"
+			}
 		},
 		"home": {
-			"aria-label": "作業區與會話總覽"
+			"aria-label": "作業區與會話總覽",
+			"title": "作業區與會話",
+			"workspacesTitle": "作業區",
+			"sessionsTitle": "會話",
+			"emptyWorkspaces": "尚無作業區，可按「瀏覽…」以增之。",
+			"search": {
+				"placeholder": "尋作業區或會話…",
+				"aria-label": "尋作業區或會話"
+			},
+			"noMatch": "無相合者"
 		},
 		"tabs": {
 			"aria-label": "會話標籤",
-			"close": "閉標籤"
+			"close": "閉標籤",
+			"closeGenerating": "方生之標籤不可閉也",
+			"rename": "更名",
+			"closeMenu": {
+				"aria-label": "標籤操作",
+				"others": "閉其餘標籤",
+				"left": "閉左側標籤",
+				"right": "閉右側標籤",
+				"all": "盡閉標籤"
+			}
 		},
 		"newTab": {
 			"aria-label": "新立會話"
@@ -6444,7 +6487,10 @@
 			"placeholder": "鍵令，Ctrl/Cmd+Enter 以行之（清空則退 shell 模式）",
 			"placeholderNormal": "鍵訊以始…（@ 引檔 · / 施令）",
 			"placeholderShell": "鍵 shell 令…（如 git status）",
-			"aria-label": "訊框"
+			"aria-label": "訊框",
+			"mentionSuggest": {
+				"aria-label": "呼名候選"
+			}
 		},
 		"aiSource": {
 			"panelTitle": "理 AI 源顯示",
@@ -6502,15 +6548,25 @@
 			"noChar": "請先擇角色"
 		},
 		"notify": {
-			"done": "对话已完成"
+			"done": "對話已畢"
 		},
 		"power": {
-			"label": "任务完成后关机",
-			"aria-label": "任务完成后关机设置",
-			"menuTitle": "所有任务生成完毕后关闭主机",
-			"armed": "所有任务完成后将关闭 ${host}",
-			"armedToast": "已设置：所有任务生成完毕后关闭主机",
-			"cancelled": "已取消任务完成后关机"
+			"settings": {
+				"button": "事畢自動操作之設",
+				"aria": "事畢自動操作之設",
+				"title": "事畢自動操作",
+				"hint": "諸務生畢，則於下列主機行所擇之操。"
+			},
+			"action": {
+				"none": "不操作",
+				"shutdown": "關機",
+				"sleep": "休眠",
+				"restart": "重啟"
+			},
+			"armedCount": "事畢後：${count} 主機",
+			"armedAria": "已設自動操作：${count} 主機",
+			"armedToast": "已設：諸務生畢則行所擇之操",
+			"cancelled": "已罷事畢自動操作"
 		},
 		"home_function_buttons": {
 			"code": {
@@ -6531,6 +6587,21 @@
 			"code": {
 				"title": "自編程會話"
 			}
+		},
+		"tool": {
+			"userShell": "終端之令",
+			"readFile": "讀檔",
+			"findFiles": "尋檔",
+			"searchContent": "索文",
+			"editFile": "修檔",
+			"writeFile": "寫檔",
+			"setWorkdir": "定作業目錄",
+			"listMachines": "列機器",
+			"preload": "載文脈",
+			"viewFiles": "觀檔",
+			"addFiles": "呈檔",
+			"callback": "工具回覆",
+			"runShell": "行 ${lang}"
 		}
 	},
 	"gist": {
@@ -6556,32 +6627,50 @@
 			"new": "新作 gist",
 			"empty": "尚無 gist，可點右上「新作 gist」以建其首。",
 			"updatedAt": "更新於",
-			"selectAll": "全选",
-			"noneSelected": "未选择",
-			"selectedCount": "已选择 ${count} 个",
+			"selectAll": "盡選",
+			"noneSelected": "未選",
+			"selectedCount": "已選 ${count} 者",
 			"batch": {
-				"download": "批量下载",
-				"delete": "批量删除",
-				"deleteConfirm": "确定删除选中的 ${count} 个 gist？此操作不可撤销。",
-				"deleted": "已删除 ${count} 个 gist",
-				"downloaded": "已下载 ${count} 个 gist"
+				"download": "併取",
+				"delete": "併刪",
+				"deleteConfirm": "確刪所選 ${count} 之 gist 乎？事不可復。",
+				"deleted": "已刪 ${count} 之 gist",
+				"downloaded": "已取 ${count} 之 gist"
 			},
-			"noResults": "没有匹配的 gist。",
+			"noResults": "無合之 gist。",
 			"search": {
-				"placeholder": "搜索标题…",
-				"aria-label": "搜索 gist 标题"
+				"placeholder": "索 gist…",
+				"aria-label": "索 gist"
 			},
-			"sortLabel": "排序方式",
+			"sortLabel": "排序之法",
 			"sort": {
-				"updatedDesc": "更新时间（新→旧）",
-				"updatedAsc": "更新时间（旧→新）",
-				"createdDesc": "创建时间（新→旧）",
-				"createdAsc": "创建时间（旧→新）",
-				"titleAsc": "标题（A→Z）",
-				"titleDesc": "标题（Z→A）"
+				"updatedDesc": "更新（新先）",
+				"updatedAsc": "更新（舊先）",
+				"createdDesc": "初立（新先）",
+				"createdAsc": "初立（舊先）",
+				"titleAsc": "標題（A→Z）",
+				"titleDesc": "標題（Z→A）"
 			},
-			"select": "多选",
-			"exitSelection": "退出多选"
+			"select": "多選",
+			"exitSelection": "退出多選",
+			"view": {
+				"grid": {
+					"title": "網格之覽",
+					"aria-label": "網格之覽"
+				},
+				"list": {
+					"title": "列表之覽",
+					"aria-label": "列表之覽"
+				}
+			},
+			"filter": {
+				"all": "皆",
+				"security": "依防之等級而擇",
+				"source": "依源而擇"
+			},
+			"clearSearch": "清所尋",
+			"emptyHint": "亦可拖 Markdown 之文入此頁",
+			"loading": "載入中…"
 		},
 		"source": {
 			"manual": "手建",
@@ -6610,7 +6699,6 @@
 		"edit": {
 			"save": "存",
 			"cancel": "還",
-			"title": "標題",
 			"editor": {
 				"placeholder": "書 Markdown 於此…",
 				"aria-label": "Markdown 編輯之器"

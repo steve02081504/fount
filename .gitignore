@@ -54,3 +54,7 @@ __pycache__/
 
 # blog 索引（tools/generate_index.py 产物）
 /.github/pages/blog/index.json
+
+# 本机code shell（fount自举开发）开发数据
+/.agents/fount
+/.fount

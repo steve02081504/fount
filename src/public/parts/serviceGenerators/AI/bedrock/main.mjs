@@ -6,6 +6,7 @@ import { defaultConvertConfig } from '../proxy/src/convertConfig.mjs'
 import { identityTokenizer } from '../proxy/src/identityTokenizer.mjs'
 import { buildMessagesFromPromptStruct } from '../proxy/src/messageBuilder.mjs'
 import { clearFormat } from '../proxy/src/responseFormat.mjs'
+import { buildSourceInfo } from '../proxy/src/sourceInfo.mjs'
 
 import { converseStreamDeltaText, messagesToConverse } from './src/converse.mjs'
 
@@ -122,10 +123,7 @@ async function GetSource(config) {
 
 	return {
 		type: 'text-chat',
-		info: Object.fromEntries(Object.entries(structuredClone(product_info)).map(([locale, localeInfo]) => {
-			localeInfo.name = config.name || config.model
-			return [locale, localeInfo]
-		})),
+		info: buildSourceInfo(product_info, config),
 		is_paid: true,
 		extension: {},
 		/**

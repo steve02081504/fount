@@ -1,14 +1,10 @@
 /**
  * Chat 群 DAG 事件入库 canonicalize（形状规范化，非权限校验）。
  */
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { canonicalizeRowContent, canonicalizeSignedRow } from 'npm:@steve02081504/fount-p2p/dag/canonicalize_row'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 import { validateRemoteEventShape } from 'npm:@steve02081504/fount-p2p/schemas/remote_event'
-
-/**
- * 群成员键：仅 64-hex pubKeyHash。
- */
-export const MEMBER_KEY_RE = /^[\da-f]{64}$/u
 
 /** Chat content 内 hex64 字段名（bindingSig 为 128-hex 签名，勿列入） */
 export const CHAT_CONTENT_HEX_KEYS = new Set([
@@ -45,7 +41,7 @@ export function canonicalizeChatContent(content) {
 		out.bindingSig = String(out.bindingSig).trim().replace(/^0x/iu, '')
 	if (out?.targetMemberKey) {
 		const key = String(out.targetMemberKey).trim()
-		if (!MEMBER_KEY_RE.test(key))
+		if (!isHex64(key))
 			throw new Error('targetMemberKey must be 64 hex characters')
 		out.targetMemberKey = key
 	}

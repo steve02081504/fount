@@ -4,6 +4,7 @@ import { buildContentForShowFromLogprobs } from './logprobsRenderer.mjs'
 import { buildMessagesFromPromptStruct } from './messageBuilder.mjs'
 import { buildReasoningDetailsMarkdown } from './reasoningRenderer.mjs'
 import { clearFormat } from './responseFormat.mjs'
+import { buildSourceInfo } from './sourceInfo.mjs'
 
 /**
  * 组装 OpenAI 兼容 AI 源（proxy / Copilot / Cloudflare 等）。
@@ -14,6 +15,7 @@ import { clearFormat } from './responseFormat.mjs'
  * @param {() => Promise<void>} args.SaveConfig - 持久化。
  * @param {boolean} [args.is_paid=true] - 是否付费源。
  * @param {(config: object) => Promise<void> | void} [args.prepare] - 每次请求前刷新凭证 / URL。
+ * @param {{url: string, defaultUrl: string}} [args.providerUrl] - 用户可覆写的 API URL 及其模板默认值。
  * @returns {Promise<import('../../../../../../decl/AIsource.ts').AIsource_t>} AI 源。
  */
 export async function createOpenAICompatibleSource({
@@ -23,6 +25,7 @@ export async function createOpenAICompatibleSource({
 	SaveConfig,
 	is_paid = true,
 	prepare,
+	providerUrl,
 }) {
 	config.convert_config = { ...configTemplate.convert_config, ...config.convert_config }
 	config.use_stream ??= true
@@ -41,10 +44,7 @@ export async function createOpenAICompatibleSource({
 
 	return {
 		type: 'text-chat',
-		info: Object.fromEntries(Object.entries(structuredClone(product_info)).map(([locale, localeInfo]) => {
-			localeInfo.name = config.name || config.model
-			return [locale, localeInfo]
-		})),
+		info: buildSourceInfo(product_info, config, providerUrl),
 		is_paid,
 		extension: {},
 		/**

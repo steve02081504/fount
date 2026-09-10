@@ -27,7 +27,7 @@ function ensureWorkspace(username, cwd) {
 	data.list ??= []
 	let workspace = data.list.find(w => w.machine === '0' && w.path === cwd)
 	if (!workspace) {
-		workspace = { id: randomUUID().slice(0, 8), name: basename(cwd) || cwd, machine: '0', path: cwd }
+		workspace = { id: randomUUID().slice(0, 8), name: basename(cwd) || cwd, machine: '0', path: cwd, lastUsedAt: new Date().toISOString() }
 		data.list.push(workspace)
 		saveShellData(username, 'code', 'workspaces', data)
 	}
@@ -51,7 +51,7 @@ async function openCodePage(username, _args, context = {}) {
 }
 
 /**
- * code shell 入口：AI 编码会话（opencode 风格 web 界面）。
+ * code shell 入口：AI 编码会话。
  */
 export default {
 	/**

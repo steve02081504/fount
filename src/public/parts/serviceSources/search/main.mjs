@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 
+import { readDirEntries } from '../../../../scripts/fs_walk.mjs'
 import { getUserDictionary } from '../../../../server/auth/index.mjs'
 import { loadPartBase, unloadPartBase } from '../../../../server/parts_loader.mjs'
 
@@ -85,11 +86,10 @@ export default {
 				const names = new Set()
 				for (const base of my_paths) {
 					if (!fs.existsSync(base) || !fs.statSync(base).isDirectory()) continue
-					for (const dirent of fs.readdirSync(base, { withFileTypes: true })) {
-						if (!dirent.isDirectory()) continue
-						const subPath = base + '/' + dirent.name
-						if (fs.existsSync(subPath + '/main.mjs') && fs.existsSync(subPath + '/fount.json'))
-							names.add(dirent.name)
+					for (const entry of readDirEntries(base)) {
+						if (!entry.isDirectory) continue
+						if (fs.existsSync(entry.fullPath + '/main.mjs') && fs.existsSync(entry.fullPath + '/fount.json'))
+							names.add(entry.name)
 					}
 				}
 				return [...names]

@@ -9,6 +9,8 @@ import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { renderMarkdownAsStandAloneHtmlString } from '/scripts/features/markdown/index.mjs'
 
+import { deriveTitleFromMarkdown } from './title.mjs'
+
 /**
  * @typedef {{ name?: string, mime_type?: string, mimeType?: string, dataUrl?: string, buffer?: string, _blob?: Blob }} StandaloneAttachment
  */
@@ -22,7 +24,7 @@ function deriveMeta(html) {
 	tempDiv.innerHTML = html
 	const rawText = tempDiv.textContent || ''
 	const cleanText = rawText.replace(/\s+/g, ' ').trim()
-	// 帖子/长文常用 ## 作标题 → h2；旧导出认任意标题，不能只认 h1
+	// 标题优先级与列表/查看页统一：h1–h6，再退到正文截断
 	const heading = tempDiv.querySelector('h1, h2, h3, h4, h5, h6')
 	const title = heading?.textContent?.trim()
 		|| (cleanText ? `${cleanText.slice(0, 30)}${cleanText.length > 30 ? '...' : ''}` : 'Chat Message')
@@ -77,11 +79,12 @@ function renderAttachmentsHtml(files, downloadLabel) {
 /**
  * 将已渲染的 Markdown HTML 包装为完整独立文档。
  * @param {string} messageHtml 正文 HTML 片段
- * @param {{ files?: StandaloneAttachment[], locale?: string, downloadLabel?: string }} [options] 选项
+ * @param {{ files?: StandaloneAttachment[], locale?: string, downloadLabel?: string, title?: string }} [options] 选项
  * @returns {string} 完整 HTML 文档
  */
 export function wrapStandaloneMarkdownDocument(messageHtml, options = {}) {
 	const { title, description } = deriveMeta(messageHtml)
+	const documentTitle = options.title?.trim() || title
 	const hasKatex = messageHtml.includes('katex-mathml')
 	const hasCodeBlock = messageHtml.includes('markdown-code-block')
 	const hasFigure = messageHtml.includes('figure')
@@ -90,7 +93,7 @@ export function wrapStandaloneMarkdownDocument(messageHtml, options = {}) {
 		options.downloadLabel || geti18n('chat.attachment.buttons.download.title') || 'Download',
 	)
 	const ogDescription = escapeHtml(description)
-	const ogTitle = escapeHtml(title)
+	const ogTitle = escapeHtml(documentTitle)
 
 	return `<!DOCTYPE html>
 <html lang="${escapeHtml(options.locale || primaryLocale())}">
@@ -231,7 +234,10 @@ ${attachmentsHtml ? `
  */
 export async function renderMarkdownAsStandaloneDocument(markdown, options = {}) {
 	const messageHtml = await renderMarkdownAsStandAloneHtmlString(markdown, options.cache)
-	return wrapStandaloneMarkdownDocument(messageHtml, options)
+	return wrapStandaloneMarkdownDocument(messageHtml, {
+		...options,
+		title: options.title || deriveTitleFromMarkdown(markdown),
+	})
 }
 
 /**

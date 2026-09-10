@@ -1,6 +1,8 @@
 /**
  * 柜导航：hash、开柜、列表、面包屑、boot。
  */
+import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
+
 import { confirmAction, promptText } from '/scripts/features/promptDialog.mjs'
 
 import { listCabinets, listEntries, listRemoteCabinets, listRemoteEntries, deleteCabinet, patchCabinet, unlockHeaders } from './endpoints.mjs'
@@ -31,7 +33,7 @@ export function locationHashFor(cabinetId, parentId = null) {
 		return parentId ? `${base}/${parentId}` : base
 	}
 	const cabinet = cabinets.find(row => row.cabinet_id === cabinetId) || currentCabinet
-	const shared = cabinet?.type === 'shared' || (/^[\da-f]{64}$/i.test(cabinetId) && !cabinetId.includes(':'))
+	const shared = cabinet?.type === 'shared' || isHex64(cabinetId)
 	const base = shared ? `shared:${cabinetId}` : `cabinet:${cabinetId}`
 	return parentId ? `${base}/${parentId}` : base
 }

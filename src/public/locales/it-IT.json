@@ -3628,6 +3628,13 @@
 			"jumpToSource": "Vai alla fonte",
 			"sendToChat": "Copia nella chat",
 			"copied": "Copiato negli appunti"
+		},
+		"sourceNode": {
+			"label": "Nodo sorgente",
+			"block": "Blocca",
+			"blockConfirm": "Bloccare il nodo sorgente ${node}? I risultati della federazione provenienti da esso verranno filtrati.",
+			"blocked": "Nodo sorgente bloccato",
+			"blockFailed": "Impossibile bloccare il nodo sorgente: ${error}"
 		}
 	},
 	"easynew": {
@@ -5077,6 +5084,13 @@
 			"jumpToSource": "Vai alla fonte",
 			"sendToSocial": "Copia nel post",
 			"copied": "Copiato negli appunti"
+		},
+		"sourceNode": {
+			"label": "Nodo sorgente",
+			"block": "Blocca",
+			"blockConfirm": "Bloccare il nodo sorgente ${node}? I risultati della federazione provenienti da esso verranno filtrati.",
+			"blocked": "Nodo sorgente bloccato",
+			"blockFailed": "Impossibile bloccare il nodo sorgente: ${error}"
 		}
 	},
 	"cabinet": {
@@ -5404,7 +5418,10 @@
 		"search": {
 			"placeholder": "Cerca titoli, riassunti o tag…",
 			"aria-label": "Cerca articoli",
-			"empty": "Nessun articolo trovato: prova con un'altra parola chiave?"
+			"empty": "Nessun articolo trovato: prova con un'altra parola chiave?",
+			"clear": {
+				"aria-label": "Cancella ricerca"
+			}
 		},
 		"home": {
 			"title": "Home di fount",
@@ -6403,20 +6420,46 @@
 		"sessions": {
 			"new": "Nuova sessione",
 			"untitled": "Sessione senza titolo",
-			"yesterday": "ieri"
+			"yesterday": "ieri",
+			"delete": "Elimina conversazione",
+			"deleteConfirm": "Sei sicuro di voler eliminare la conversazione \"${title}\"? Questa azione non può essere annullata.",
+			"deleted": "Conversazione eliminata"
 		},
 		"workspaces": {
 			"browse": "Sfoglia…",
 			"remove": "Rimuovi l'area di lavoro corrente",
+			"removeConfirm": "Sei sicuro di voler rimuovere l'area di lavoro \"${name}\"? I file di sessione sul disco verranno conservati.",
 			"none": "Nessuna area di lavoro selezionata",
-			"overviewEmpty": "Ancora nessuna conversazione"
+			"overviewEmpty": "Ancora nessuna conversazione",
+			"search": {
+				"placeholder": "Cerca aree di lavoro…",
+				"aria-label": "Cerca aree di lavoro"
+			}
 		},
 		"home": {
-			"aria-label": "Aree di lavoro e sessioni"
+			"aria-label": "Aree di lavoro e sessioni",
+			"title": "Aree di lavoro e conversazioni",
+			"workspacesTitle": "Aree di lavoro",
+			"sessionsTitle": "Conversazioni",
+			"emptyWorkspaces": "Nessuna area di lavoro. Fai clic su \"Sfoglia…\" per aggiungerne una.",
+			"search": {
+				"placeholder": "Cerca aree di lavoro o conversazioni…",
+				"aria-label": "Cerca aree di lavoro o conversazioni"
+			},
+			"noMatch": "Nessun risultato"
 		},
 		"tabs": {
 			"aria-label": "Schede della sessione",
-			"close": "Chiudi scheda"
+			"close": "Chiudi scheda",
+			"closeGenerating": "Una scheda ancora in fase di generazione non può essere chiusa",
+			"rename": "Rinominare",
+			"closeMenu": {
+				"aria-label": "Azioni scheda",
+				"others": "Chiudi le altre schede",
+				"left": "Chiudi le schede a sinistra",
+				"right": "Chiudi le schede a destra",
+				"all": "Chiudi tutte le schede"
+			}
 		},
 		"newTab": {
 			"aria-label": "Nuova sessione"
@@ -6450,7 +6493,10 @@
 			"placeholder": "Digita un comando; Ctrl/Cmd+Invio lo esegue (svuota per uscire dalla modalità shell)",
 			"placeholderNormal": "Scrivi un messaggio… (@ per citare file, / per i comandi)",
 			"placeholderShell": "Digita un comando shell… (es. git status)",
-			"aria-label": "Inserimento messaggio"
+			"aria-label": "Inserimento messaggio",
+			"mentionSuggest": {
+				"aria-label": "Suggerimenti menzione"
+			}
 		},
 		"aiSource": {
 			"panelTitle": "Gestisci la visualizzazione delle fonti AI",
@@ -6508,7 +6554,25 @@
 			"noChar": "Seleziona prima un personaggio"
 		},
 		"notify": {
-			"done": null
+			"done": "La conversazione è terminata"
+		},
+		"power": {
+			"settings": {
+				"button": "Impostazioni azioni a fine attività",
+				"aria": "Impostazioni azioni a fine attività",
+				"title": "Azione automatica al termine delle attività",
+				"hint": "Una volta generate tutte le attività, l'azione selezionata verrà eseguita sugli host seguenti."
+			},
+			"action": {
+				"none": "Nessuna azione",
+				"shutdown": "Spegni",
+				"sleep": "Sospendi",
+				"restart": "Riavvia"
+			},
+			"armedCount": "Al termine delle attività: ${count} host",
+			"armedAria": "Impostazioni azioni a fine attività: ${count} host",
+			"armedToast": "Impostato: l'azione selezionata verrà eseguita al termine di tutte le attività",
+			"cancelled": "Azione a fine attività annullata"
 		},
 		"home_function_buttons": {
 			"code": {
@@ -6529,6 +6593,21 @@
 			"code": {
 				"title": "Dalla sessione di programmazione"
 			}
+		},
+		"tool": {
+			"userShell": "Comando del terminale",
+			"readFile": "Leggi file",
+			"findFiles": "Trova file",
+			"searchContent": "Cerca nel contenuto",
+			"editFile": "Modifica file",
+			"writeFile": "Scrivi file",
+			"setWorkdir": "Imposta cartella di lavoro",
+			"listMachines": "Elenca macchine",
+			"preload": "Carica contesto",
+			"viewFiles": "Visualizza file",
+			"addFiles": "Invia file",
+			"callback": "Callback dello strumento",
+			"runShell": "Esegui ${lang}"
 		}
 	},
 	"gist": {
@@ -6553,7 +6632,51 @@
 		"list": {
 			"new": "Nuovo gist",
 			"empty": "Non ci sono ancora gist. Fai clic su «Nuovo gist» in alto a destra per crearne uno.",
-			"updatedAt": "Aggiornato"
+			"updatedAt": "Aggiornato",
+			"selectAll": "Seleziona tutto",
+			"noneSelected": "Nessuna selezione",
+			"selectedCount": "${count} selezionati",
+			"batch": {
+				"download": "Scarica selezionati",
+				"delete": "Elimina selezionati",
+				"deleteConfirm": "Eliminare i ${count} gist selezionati? L'operazione non può essere annullata.",
+				"deleted": "${count} gist eliminati",
+				"downloaded": "${count} gist scaricati"
+			},
+			"noResults": "Nessun gist corrispondente.",
+			"search": {
+				"placeholder": "Cerca nei gist…",
+				"aria-label": "Cerca nei gist"
+			},
+			"sortLabel": "Ordina per",
+			"sort": {
+				"updatedDesc": "Aggiornamento (più recenti prima)",
+				"updatedAsc": "Aggiornamento (più vecchi prima)",
+				"createdDesc": "Creazione (più recenti prima)",
+				"createdAsc": "Creazione (più vecchi prima)",
+				"titleAsc": "Titolo (A–Z)",
+				"titleDesc": "Titolo (Z–A)"
+			},
+			"select": "Seleziona",
+			"exitSelection": "Esci dalla selezione",
+			"view": {
+				"grid": {
+					"title": "Visualizzazione griglia",
+					"aria-label": "Visualizzazione griglia"
+				},
+				"list": {
+					"title": "Visualizzazione elenco",
+					"aria-label": "Visualizzazione elenco"
+				}
+			},
+			"filter": {
+				"all": "Tutti",
+				"security": "Filtra per livello di sicurezza",
+				"source": "Filtra per fonte"
+			},
+			"clearSearch": "Cancella ricerca",
+			"emptyHint": "Puoi anche trascinare il file Markdown in questa pagina",
+			"loading": "Caricamento…"
 		},
 		"source": {
 			"manual": "Manuale",
@@ -6582,7 +6705,6 @@
 		"edit": {
 			"save": "Salva",
 			"cancel": "Indietro",
-			"title": "Titolo",
 			"editor": {
 				"placeholder": "Inserisci Markdown…",
 				"aria-label": "Editor Markdown"

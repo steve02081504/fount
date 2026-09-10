@@ -13,6 +13,7 @@ import { bootHeadlessDataRoot } from 'fount/scripts/test/node/boot.mjs'
 
 import {
 	handleFedEmojiData,
+	handleFedEmojiManifest,
 	requestGroupEmojiFromPeers,
 } from '../../src/chat/federation/groupEmojiFederation.mjs'
 import { groupDir } from '../../src/chat/lib/paths.mjs'
@@ -86,6 +87,28 @@ Deno.test('bufferToDataUrl strips mime parameters before encoding', () => {
 	assertEquals(dataUrl.includes('charset'), false)
 })
 
+Deno.test('user-room fed emoji data writes require local membership', async () => {
+	await withEmojiFedContext(async ({ username, groupId }) => {
+		const bytes = Buffer.from('injected')
+		const dataUrl = bufferToDataUrl(bytes, 'image/png')
+		// 非成员 + 无待兑现请求：node-scope user-room 的 fed_emoji_data 不得落盘
+		await handleFedEmojiData(username, groupId, { emojiId: 'injected', dataUrl, mimeType: 'image/png' }, { requireLocalMembership: true })
+		assertEquals(await resolveGroupEmojiBinaryPath(username, groupId, 'injected'), null)
+	})
+})
+
+Deno.test('fed emoji handlers reject unsafe groupId (path traversal)', async () => {
+	await withEmojiFedContext(async ({ username, groupId }) => {
+		const badGroupId = `../../evil-${groupId}`
+		// packId 用安全值，避免被 packId 校验挡住而掩盖 groupId 的穿越。
+		const packId = 'safe-pack'
+		const dataUrl = bufferToDataUrl(Buffer.from('traversal'), 'image/png')
+		await handleFedEmojiData(username, badGroupId, { emojiId: 't', dataUrl, mimeType: 'image/png', packId })
+		await handleFedEmojiManifest(username, badGroupId, { emojiId: 't', name: 'x', mimeType: 'image/png', packId })
+		assertEquals(await resolveGroupEmojiBinaryPath(username, badGroupId, 't', packId), null)
+	})
+})
+
 Deno.test('handleFedEmojiData resolves pending peer fetch', async () => {
 	await withEmojiFedContext(async ({ username, groupId }) => {
 		const emojiId = 'pending-emoji'
@@ -108,5 +131,25 @@ Deno.test('handleFedEmojiData resolves pending peer fetch', async () => {
 		const local = await readGroupEmojiBinary(username, groupId, emojiId)
 		assert(local)
 		assertEquals(Buffer.compare(local.buffer, bytes), 0)
+	})
+})
+
+Deno.test('membership-gated data still resolves an outstanding non-member fetch', async () => {
+	await withEmojiFedContext(async ({ username, groupId }) => {
+		const emojiId = 'nm-pending-emoji'
+		const dataUrl = bufferToDataUrl(Buffer.from('nm-fetch'), 'image/png')
+		const slot = {
+			/** @returns {{ peerId: string }[]} 在线 peer 列表 */
+			getRoster() {
+				return [{ peerId: 'peer-1' }]
+			},
+			/** @returns {void} 发送 want 请求 */
+			sendEmojiWant() { },
+		}
+		const pending = requestGroupEmojiFromPeers(username, groupId, emojiId, slot)
+		await handleFedEmojiData(username, groupId, { emojiId, dataUrl, mimeType: 'image/png' }, { requireLocalMembership: true })
+		const resolved = await pending
+		assert(resolved, 'pending local fetch must still be fulfilled for non-members')
+		assertEquals(resolved.dataUrl, dataUrl)
 	})
 })

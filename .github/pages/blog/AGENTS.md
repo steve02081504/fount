@@ -61,12 +61,12 @@ The flat reading order is the series order: `reading-guide` first, then the them
 The essays are written to sound like a person, not a model. When adding or editing articles:
 
 - **First person, real material.** Write as the builder of fount. Mine the repo for concrete anchors — real commit history, `docs/design/` + `docs/review/`, real plugin/part names, real incidents. Never invent anecdotes or numbers.
-- **Limit formulaic devices.** 「不是X，而是Y」/ "not X but Y" constructions: at most a couple per essay, reserved for the thesis. Vary openings — never open by recapping the previous chapter. Do not end with a next-chapter announcement that restates the next essay's thesis; connect organically or just stop.
+- **Limit formulaic devices.** The "not X but Y" construction (in either language): at most a couple per essay, reserved for the thesis. Vary openings — never open by recapping the previous chapter. Do not end with a next-chapter announcement that restates the next essay's thesis; connect organically or just stop.
 - **Break the template.** Not every essay needs a table, a mermaid diagram, and a limitations section. Safety essays are short and diagram-free; foundation essays are longer. Vary sentence and paragraph length.
 - **Summaries are teasers, not thesis restatements.** Frontmatter `title` stays in sync with the first `#` heading; `summary` sells the essay in one sentence with voice.
 - **Each language stands alone.** `en-UK.md` is idiomatic English prose, not a mirror translation of `zh-CN.md` — same argument, own rhythm.
-- **No bilingual doubling.** Never write the same keyword or sentence once in each language (`策略（policy）`, a quote plus its translation, `（English sentence）` glosses). Technical terms appear once, as loanwords, in whatever language the article is written in. Same rule for figures and tables: a Chinese article's mermaid labels and table cells are Chinese.
-- **Tags are a shared vocabulary.** zh-CN and en-UK tags map one to one onto the same canonical concepts (e.g. 安全/safety, 金丝雀/canary); don't let the two tag sets drift apart.
+- **No bilingual doubling.** Never write the same keyword or sentence once in each language (a native term with a parenthesized translation, a quote plus its translation, an English sentence added as a gloss). Technical terms appear once, as loanwords, in whatever language the article is written in. Same rule for figures and tables: a Chinese article's mermaid labels and table cells are Chinese.
+- **Tags are a shared vocabulary.** zh-CN and en-UK tags map one to one onto the same canonical concepts (e.g. the safety and canary tags); don't let the two tag sets drift apart.
 - **Real incidents are told first-person with specifics** — dates, names, what broke — and must be verifiable with the author or the repo.
 
 ## Language behavior
@@ -90,3 +90,4 @@ Mermaid diagrams inherit the markdown pipeline's theme (node fills = `--color-ba
 - Playwright (pages server): `deno run --allow-scripts --allow-all -c ./deno.json ./.github/pages/test/frontend/run.mjs blog` — spec at `.github/pages/test/frontend/blog.spec.mjs`. The server generates `index.json` on start; run `python3 tools/generate_index.py` manually to validate content without a server.
 - Affected repo checks: `html_meta` (full og meta set + `<main>` landmark in both HTML files, poetic og copy), `i18n_refs` / `i18n_keys` (locale keys), `theme_radius` / `theme_color`, `text_lf` (LF endings, single trailing newline — applies to article `.md` files too), `jsdoc_no_english` (Chinese JSDoc summaries in `.mjs`).
 - After editing locale JSONs, keep zh-CN/en-UK value kinds in sync (string vs `{ "aria-label": … }` objects).
+- New chrome `data-i18n` keys also need a **ja-JP** entry: the page-watch locale task cycles `zh-CN` → `ja-JP` → `en-UK`, and a key missing from ja-JP falls back to zh-CN, tripping `[test:locale] … forbidden-script` on any visible Han text (including `aria-label`). Remaining locales are synced by `update-locales.py` in CI.

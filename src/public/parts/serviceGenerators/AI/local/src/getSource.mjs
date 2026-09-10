@@ -6,6 +6,7 @@ import { GeneralChatWrapper, getLlama, LlamaChatSession } from 'npm:node-llama-c
 import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../../shells/chat/src/prompt_struct/index.mjs'
 import { buildContentForShowFromLogprobs } from '../../proxy/src/logprobsRenderer.mjs'
 import { clearFormat } from '../../proxy/src/responseFormat.mjs'
+import { buildSourceInfo } from '../../proxy/src/sourceInfo.mjs'
 
 import { splitLastUserPrompt } from './chatHistory.mjs'
 import { buildSamplingReplayOptions, collectLocalLogprobs, createStreamingLogprobsCollector } from './localLogprobs.mjs'
@@ -171,10 +172,7 @@ export async function GetSource(config) {
 	 */
 	const result = {
 		type: 'text-chat',
-		info: Object.fromEntries(Object.entries(structuredClone(product_info)).map(([k, v]) => {
-			v.name = config.name || path.basename(resolvedPath)
-			return [k, v]
-		})),
+		info: buildSourceInfo(product_info, config, { fallbackName: path.basename(resolvedPath) }),
 		is_paid: false,
 		extension: {},
 

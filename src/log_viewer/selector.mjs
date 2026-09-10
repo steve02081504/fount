@@ -100,13 +100,13 @@ export function selectLogEntries(entries, selector) {
  * @returns {string} 多行帮助文本。
  */
 export function logSelectorUsage() {
-	return [
-		'usage: fount log [selector]',
-		'  selector: [levels][:count] | count',
-		'  levels:   error|warn|info|log|debug (combine with +)',
-		'  examples: fount log error:5',
-		'            fount log error+warn:10',
-		'            fount log :20',
-		'            fount log 5',
-	].join('\n')
+	return `\
+usage: fount log [selector]
+  selector: [levels][:count] | count
+  levels:   error|warn|info|log|debug (combine with +)
+  examples: fount log error:5
+            fount log error+warn:10
+            fount log :20
+            fount log 5
+`
 }

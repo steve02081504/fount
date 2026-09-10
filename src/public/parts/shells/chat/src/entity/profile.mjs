@@ -1,6 +1,7 @@
 import { Buffer } from 'node:buffer'
 
 import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { publishPublicFile } from 'npm:@steve02081504/fount-p2p/files/manifest/public'
 import { isWritableLocalEntity } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { getEntityStore } from 'npm:@steve02081504/fount-p2p/node/instance'
@@ -186,7 +187,7 @@ function toStoredProfile(profileData) {
 		banner,
 		sfw_banner,
 		defaultEmojiPackId,
-		activePubKeyHex: /^[\da-f]{64}$/i.test(activePub) ? activePub : '',
+		activePubKeyHex: isHex64(activePub) || '',
 		keyGeneration: Number(profileData.keyGeneration ?? 0) || 0,
 		localized: normalizeLocalizedMap(profileData.localized),
 		status: profileData.status || 'online',

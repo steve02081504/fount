@@ -1,125 +1,13 @@
-/* global cache */
+/* global cache, parturl */
 const MODELS_DEV_API = 'https://models.dev/api.json'
-const SEARCH_RESULT_LIMIT = 60
 const SEARCH_DEBOUNCE_MS = 150
 
-/* global hosturl */
-const { escapeRegExp } = await import(`${hosturl}/scripts/lib/regex.mjs`)
-
-/**
- * 将 models.dev 的 provider API 基址转为 OpenAI 兼容的 chat completions URL。
- * @param {string} providerApi - 厂商 API 基址。
- * @returns {string} chat completions 端点 URL。
- */
-function providerApiToCompletionsUrl(providerApi) {
-	if (!providerApi?.trim()) return ''
-	try {
-		const urlObj = new URL(providerApi)
-		const path = urlObj.pathname.replace(/\/$/, '')
-		if (path.includes('/chat/completions')) return urlObj.toString()
-		if (path.endsWith('/v1')) urlObj.pathname = `${path}/chat/completions`
-		else urlObj.pathname = `${path}/v1/chat/completions`
-		return urlObj.toString()
-	}
-	catch {
-		return providerApi
-	}
-}
-
-/**
- * 规范化 API 基址以便比较 config.url 与 provider.api。
- * @param {string} url - 用户或目录中的 URL。
- * @returns {string} 规范化后的 origin + path 小写串。
- */
-function normalizeApiBase(url) {
-	if (!url?.trim()) return ''
-	try {
-		const urlObj = new URL(url.startsWith('http') ? url : `https://${url}`)
-		let path = urlObj.pathname.replace(/\/$/, '')
-		path = path.replace(/\/chat\/completions(?:\/.*)?$/, '')
-		path = path.replace(/\/models(?:\/.*)?$/, '')
-		return `${urlObj.origin}${path}`
-	}
-	catch {
-		return url.trim()
-	}
-}
-
-/**
- * 扁平化 models.dev API 响应为候选条目数组。
- * @param {Record<string, object>} apiData - models.dev API JSON。
- * @returns {object[]} 候选条目列表。
- */
-function flattenCatalog(apiData) {
-	/** @type {object[]} */
-	const entries = []
-	for (const provider of Object.values(apiData)) {
-		if (!provider?.models) continue
-		for (const model of Object.values(provider.models))
-			entries.push({
-				providerId: provider.id,
-				providerName: provider.name || provider.id,
-				providerApi: provider.api || '',
-				providerDoc: provider.doc || '',
-				modelId: model.id,
-				modelName: model.name || model.id,
-				family: model.family || '',
-				context: model.limit?.context,
-				outputLimit: model.limit?.output,
-				cost: model.cost || {},
-				modalities: model.modalities || {},
-				reasoning: !!model.reasoning,
-				toolCall: !!model.tool_call,
-				attachment: !!model.attachment,
-				openWeights: !!model.open_weights,
-				knowledge: model.knowledge || '',
-				releaseDate: model.release_date || model.last_updated || '',
-			})
-
-	}
-	return entries
-}
-
-/**
- * 在目录中查找与当前 config 匹配的条目。
- * @param {object[]} catalog - 扁平化目录。
- * @param {object} config - 当前配置。
- * @returns {object|null} 匹配条目。
- */
-function findCatalogEntry(catalog, config) {
-	const modelId = config?.model?.trim()
-	const configBase = normalizeApiBase(config?.url)
-	if (!modelId || !configBase) return null
-
-	const modelMatches = catalog.filter(entry => entry.modelId === modelId)
-	return modelMatches.find(entry => normalizeApiBase(entry.providerApi) === configBase) || null
-}
-
-/**
- * 按关键词搜索目录。
- * @param {object[]} catalog - 扁平化目录。
- * @param {string} query - 搜索词。
- * @param {number} [limit] - 结果上限。
- * @returns {object[]} 匹配的候选条目。
- */
-function searchCatalog(catalog, query, limit = SEARCH_RESULT_LIMIT) {
-	const terms = query.trim().split(/\s+/).filter(Boolean)
-	if (!terms.length) return []
-	const matchers = terms.map(term => new RegExp(escapeRegExp(term), 'i'))
-
-	return catalog.filter(entry => {
-		const haystack = [
-			entry.modelName,
-			entry.modelId,
-			entry.providerName,
-			entry.providerId,
-			entry.family,
-			...entry.modalities?.input || [],
-			...entry.modalities?.output || [],
-		].filter(Boolean).join(' ')
-		return matchers.every(re => re.test(haystack))
-	}).slice(0, limit)
-}
+const {
+	flattenCatalog,
+	findCatalogEntry,
+	searchCatalog,
+	providerApiToCompletionsUrl,
+} = await import(`${parturl}/catalogSearch.mjs`)
 
 /**
  * 格式化 token 价格显示。

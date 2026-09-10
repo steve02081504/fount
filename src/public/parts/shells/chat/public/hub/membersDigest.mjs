@@ -2,17 +2,9 @@
  * 【文件】public/hub/membersDigest.mjs
  * 【职责】成员列表 Merkle 摘要：为联邦成员同步计算活跃成员键根。
  */
+import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
+
 import { bytesToHex, hexToBytes, sha256Hex } from '../shared/digest.mjs'
-
-const MEMBER_KEY_RE = /^[\da-f]{64}$/u
-
-/**
- * @param {unknown} value 成员键
- * @returns {boolean} 是否为合法成员键
- */
-function isMemberKey(value) {
-	return MEMBER_KEY_RE.test(value || '')
-}
 
 /**
  * @param {Uint8Array} left 左子摘要
@@ -32,7 +24,7 @@ async function sha256Pair(left, right) {
  */
 export async function computeMembersMerkleRoot(ids) {
 	const sorted = [...new Set(ids
-		.filter(isMemberKey))]
+		.filter(isHex64))]
 		.sort()
 	if (!sorted.length)
 		return sha256Hex(new Uint8Array())
@@ -59,6 +51,6 @@ export async function computeMembersMerkleRoot(ids) {
 export function collectActiveMemberHashes(state) {
 	return [...new Set((state.members || [])
 		.map(member => member.memberKey || member.pubKeyHash || '')
-		.filter(isMemberKey))]
+		.filter(isHex64))]
 		.sort()
 }

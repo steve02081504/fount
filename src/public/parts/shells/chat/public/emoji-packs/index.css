@@ -95,3 +95,43 @@
 .emoji-packs-empty {
 	justify-content: center;
 }
+
+/* 联邦 part_query 来源节点 */
+.source-nodes {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 4px;
+	margin-top: 4px;
+	font-size: 12px;
+	color: color-mix(in srgb, var(--color-base-content) 60%, transparent);
+}
+
+.source-node-chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 2px;
+	padding: 0 6px;
+	border: var(--border) solid color-mix(in srgb, currentColor 25%, transparent);
+	border-radius: var(--radius-selector);
+}
+
+.source-node-hash {
+	font-family: monospace;
+	font-size: 11px;
+}
+
+.source-node-block {
+	display: inline-flex;
+	align-items: center;
+	border: none;
+	background: none;
+	padding: 0;
+	cursor: pointer;
+	line-height: 1;
+	opacity: .7;
+}
+
+.source-node-block:hover {
+	opacity: 1;
+}

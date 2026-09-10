@@ -57,6 +57,7 @@ async function GetSource(config) {
 		config,
 		configTemplate,
 		product_info,
+		providerUrl: { url: config.endpoint, defaultUrl: configTemplate.endpoint },
 		/**
 		 * 组装 Azure Responses 请求。
 		 * @returns {{url: string, headers: Record<string, string>}} 请求。

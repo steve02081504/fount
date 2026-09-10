@@ -9,6 +9,8 @@ import rehypeKatex from 'https://esm.sh/rehype-katex'
 import rehypePrettyCode from 'https://esm.sh/rehype-pretty-code'
 import rehypeStringify from 'https://esm.sh/rehype-stringify'
 import remarkBreaks from 'https://esm.sh/remark-breaks'
+import remarkCjkFriendly from 'https://esm.sh/remark-cjk-friendly'
+import remarkCjkFriendlyGfmStrikethrough from 'https://esm.sh/remark-cjk-friendly-gfm-strikethrough'
 import remarkGfm from 'https://esm.sh/remark-gfm'
 import remarkMath from 'https://esm.sh/remark-math'
 import remarkParse from 'https://esm.sh/remark-parse'
@@ -1200,6 +1202,11 @@ export async function GetMarkdownConvertor({
 		.use(remarkBreaks)
 		.use(remarkMath)
 		.use(remarkGfm, { singleTilde: false })
+		// CJK 友好强调：CommonMark 要求标记外侧为空白/标点，中文句内 `**自带（builtin）**来源`
+		// 会因全角括号被判为标点、后接非空白汉字而无法闭合；这两个扩展按 CJK 收录规则放宽 flanking。
+		// 顺序须在 remarkGfm 之后，使删除线扩展覆盖 GFM 默认的 `~~` 分词。
+		.use(remarkCjkFriendly)
+		.use(remarkCjkFriendlyGfmStrikethrough)
 	for (const plugin of [...registered.remarkPlugins, ...extraRemarkPlugins])
 		processor = processor.use(plugin)
 	processor = processor.use(remarkRehype, { allowDangerousHtml })

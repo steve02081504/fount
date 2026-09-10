@@ -8,11 +8,13 @@ alwaysApply: false
 
 OpenAI-compatible **API keys** (DeepSeek, OpenRouter, Groq, Azure Chat Completions, …) stay on [proxy](proxy/). Do not grow proxy to cover OAuth, Bedrock Converse, Vertex ADC, or Responses.
 
+**AI-source identity**: `buildSourceInfo` ([proxy/src/sourceInfo.mjs](proxy/src/sourceInfo.mjs)) sets each locale's `info.name = config.model || config.name` (model name wins) and, only when the generator's API URL is overridden from its template, `info.provider = hostname(url)`; there is no separate `info.model`. Generators with an overridable URL pass `{ url, defaultUrl }` (shared factories take a `providerUrl` arg). Chars read it via `getPartInfo(source, locales)` to tell the model what it is.
+
 Overly generic helpers live in the representative part; callers import from there. Provider-specific URL/route/UI stays in that generator.
 
 | Need | Home |
 | --- | --- |
-| OpenAI-compat source / `convert_config` / identity tokenizer | [proxy/src](proxy/src/) (`createOpenAICompatibleSource`, `defaultConvertConfig`, `identityTokenizer`) |
+| OpenAI-compat source / `convert_config` / identity tokenizer / `buildSourceInfo` | [proxy/src](proxy/src/) (`createOpenAICompatibleSource`, `defaultConvertConfig`, `identityTokenizer`, `sourceInfo`) |
 | Responses client + source | [codex/src](codex/src/) (`createResponsesSource`); Azure imports it |
 | OAuth login UI | [oauth_handler](../../shells/oauth_handler/AGENTS.md) `public/src/oauthDisplay.mjs`; each OAuth generator’s `display.mjs` calls `renderOauthPanel` |
 | Fetch doubles | [proxy/test/mockFetch.mjs](proxy/test/mockFetch.mjs) |

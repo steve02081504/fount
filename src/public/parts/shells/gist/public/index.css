@@ -17,7 +17,7 @@
 /* ---------------- 列表 ---------------- */
 
 .gist-main {
-	padding: 1rem;
+	padding: clamp(0.75rem, 2vw, 1.5rem) clamp(0.75rem, 4vw, 2.5rem);
 }
 
 .gist-controls,
@@ -31,21 +31,23 @@
 	display: none;
 }
 
-/* 瀑布流：随视口宽度自适应列数，卡片高度随内容变化 */
+/* 瀑布流：JS 按列分派卡片（见 index.mjs mountMasonry），卡片高度随内容变化，列数由视口宽度决定 */
 .gist-grid {
-	column-gap: 0.875rem;
-	columns: 1;
+	display: flex;
+	align-items: flex-start;
+	gap: clamp(0.75rem, 1.5vw, 1.25rem);
 }
 
-@media (min-width: 30rem) { .gist-grid { columns: 2; } }
-@media (min-width: 48rem) { .gist-grid { columns: 3; } }
-@media (min-width: 72rem) { .gist-grid { columns: 4; } }
-@media (min-width: 96rem) { .gist-grid { columns: 5; } }
+.gist-col {
+	display: flex;
+	flex-direction: column;
+	gap: clamp(0.75rem, 1.5vw, 1.25rem);
+	flex: 1 1 0;
+	min-width: 0;
+}
 
 .gist-card {
 	position: relative;
-	break-inside: avoid;
-	margin: 0 0 0.875rem;
 	border: var(--border) solid color-mix(in oklch, var(--color-base-content) 12%, transparent);
 	border-radius: var(--radius-box);
 	background: color-mix(in oklch, var(--color-base-200) 55%, transparent);
@@ -64,24 +66,77 @@
 	box-shadow: 0 0 0 2px color-mix(in oklch, var(--color-primary) 45%, transparent);
 }
 
-/* 封面：由 id 派生的双色渐变 + 首字水印；配色随主题自适应 */
+/* 封面：由 id 派生的双色渐变 + 底部渐变 + 图内标题；高度随标题文字行数变化 */
 .gist-card-cover {
+	position: relative;
 	display: flex;
 	align-items: flex-end;
-	height: 6rem;
-	padding: 0.5rem 0.75rem;
+	min-height: clamp(4rem, 9vw, 6.5rem);
+	padding: clamp(0.75rem, 3vw, 1.25rem);
 	background:
 		linear-gradient(135deg,
-			hsl(var(--gist-cover-h, 220) 72% 60% / 0.32),
-			hsl(calc(var(--gist-cover-h, 220) + 45) 72% 55% / 0.32)),
+			hsl(var(--gist-cover-h, 220) 72% 60% / 0.55),
+			hsl(calc(var(--gist-cover-h, 220) + 45) 72% 55% / 0.55)),
 		color-mix(in oklch, var(--color-base-300) 70%, transparent);
 }
 
-.gist-card-cover-glyph {
-	font-size: 2.5rem;
+/* 底部遮罩保证图内文字可读 */
+.gist-card-cover::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(to top,
+		color-mix(in oklch, var(--color-base-100) 78%, transparent) 0%,
+		transparent 60%);
+	pointer-events: none;
+}
+
+.gist-card-cover-title {
+	position: relative;
+	z-index: 1;
+	color: var(--color-base-content);
 	font-weight: 800;
-	line-height: 1;
-	opacity: 0.4;
+	font-size: clamp(0.95rem, 1vw + 0.6rem, 1.25rem);
+	line-height: 1.3;
+	letter-spacing: 0.01em;
+	text-shadow: 0 1px 4px color-mix(in oklch, var(--color-base-100) 70%, transparent);
+	display: -webkit-box;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	overflow-wrap: anywhere;
+}
+
+/* 首字大写 + 主色异色（非英文开头时作用于首字） */
+.gist-card-cover-title::first-letter {
+	text-transform: uppercase;
+	color: var(--color-primary);
+	font-size: 1.2em;
+}
+
+/* 英文开头时首词整体异色 */
+.gist-card-cover-lead {
+	color: var(--color-primary);
+}
+
+/* 未命名文档弱化显示，避免「Untitled」喧宾夺主 */
+.gist-card-cover-title.gist-untitled {
+	font-style: italic;
+	font-weight: 600;
+	opacity: 0.62;
+}
+
+.gist-card-cover-title.gist-untitled::first-letter {
+	color: inherit;
+	font-size: 1em;
+}
+
+/* 搜索关键词高亮 */
+.gist-hl {
+	background: color-mix(in oklch, var(--color-warning) 55%, transparent);
+	color: inherit;
+	border-radius: var(--radius-selector);
+	padding: 0 0.1em;
 }
 
 .gist-card-link {
@@ -94,33 +149,30 @@
 	display: flex;
 	flex-direction: column;
 	gap: 0.3rem;
-	padding: 0.65rem 0.75rem 0.35rem;
-}
-
-.gist-card-title {
-	font-weight: 700;
-	font-size: 0.9375rem;
-	line-height: 1.35;
-	display: -webkit-box;
-	-webkit-line-clamp: 2;
-	-webkit-box-orient: vertical;
-	overflow: hidden;
-	overflow-wrap: anywhere;
+	padding: clamp(0.55rem, 1.5vw, 0.8rem) clamp(0.75rem, 2vw, 1rem) 0.35rem;
 }
 
 .gist-card-excerpt {
 	font-size: 0.8125rem;
-	line-height: 1.5;
+	line-height: 1.55;
 	opacity: 0.72;
 	display: -webkit-box;
-	-webkit-line-clamp: 4;
+	-webkit-line-clamp: 3;
 	-webkit-box-orient: vertical;
 	overflow: hidden;
 	overflow-wrap: anywhere;
 }
 
 .gist-card-meta {
-	padding: 0 0.75rem 0.65rem;
+	padding: 0 clamp(0.75rem, 2vw, 1rem) clamp(0.55rem, 1.5vw, 0.8rem);
+}
+
+/* 「更新于 <相对时间>」始终同行，不随卡片宽度折行 */
+.gist-card-timegroup {
+	display: inline-flex;
+	align-items: baseline;
+	gap: 0.25rem;
+	white-space: nowrap;
 }
 
 .gist-card-time {
@@ -147,19 +199,109 @@
 	pointer-events: auto;
 }
 
+/* 悬停 / 聚焦时也露出选择框，省去先进入多选模式 */
+.gist-card:hover .gist-select-checkbox,
+.gist-card:focus-within .gist-select-checkbox {
+	visibility: visible;
+	opacity: 1;
+	pointer-events: auto;
+}
+
 .gist-selecting .gist-card-link {
 	cursor: pointer;
 }
 
 .gist-empty-state {
 	display: flex;
+	flex-direction: column;
 	align-items: center;
 	justify-content: center;
+	gap: 0.6rem;
 	padding: 3rem 1rem;
 	color: var(--color-base-content);
-	opacity: 0.55;
+	opacity: 0.75;
 	font-size: 0.9375rem;
 	text-align: center;
+}
+
+.gist-empty-hint {
+	font-size: 0.8125rem;
+	opacity: 0.7;
+}
+
+.gist-empty-actions {
+	display: flex;
+	gap: 0.5rem;
+	margin-top: 0.25rem;
+}
+
+/* 加载骨架屏 */
+.gist-skeleton {
+	pointer-events: none;
+}
+
+.gist-skeleton-cover {
+	height: clamp(4rem, 9vw, 6.5rem);
+	background: color-mix(in oklch, var(--color-base-content) 8%, transparent);
+}
+
+.gist-skeleton-body {
+	height: 4.5rem;
+	margin: 0.7rem 0.9rem;
+	border-radius: var(--radius-field);
+	background: color-mix(in oklch, var(--color-base-content) 8%, transparent);
+}
+
+.gist-skeleton .gist-skeleton-cover,
+.gist-skeleton .gist-skeleton-body {
+	animation: gist-skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes gist-skeleton-pulse {
+	0%, 100% { opacity: 0.55; }
+	50% { opacity: 1; }
+}
+
+/* 紧凑列表视图：封面内容并入正文流，隐去大面积渐变封面 */
+.gist-grid.gist-view-list {
+	display: flex;
+	flex-direction: column;
+	gap: clamp(0.4rem, 1vw, 0.6rem);
+}
+
+.gist-view-list .gist-card {
+	margin: 0;
+}
+
+.gist-view-list .gist-card-cover {
+	display: contents;
+}
+
+.gist-view-list .gist-card-link {
+	padding: clamp(0.6rem, 1.5vw, 0.85rem) clamp(0.85rem, 2vw, 1.15rem);
+}
+
+.gist-view-list .gist-card-cover-title {
+	font-size: 0.9375rem;
+	font-weight: 700;
+	-webkit-line-clamp: 1;
+	text-shadow: none;
+}
+
+.gist-view-list .gist-card-cover-title::first-letter {
+	font-size: 1em;
+}
+
+.gist-view-list .gist-card-body {
+	padding: 0.15rem 0 0;
+}
+
+.gist-view-list .gist-card-excerpt {
+	-webkit-line-clamp: 2;
+}
+
+.gist-view-list .gist-card-meta {
+	padding: 0.4rem 0 0;
 }
 
 /* ---------------- 徽标 ---------------- */
@@ -203,13 +345,37 @@
 .gist-preview {
 	max-width: 46rem;
 	margin-inline: auto;
-	padding: 1rem 0.5rem 2rem;
+	padding: clamp(1rem, 3vw, 2rem) clamp(0.75rem, 4vw, 2.5rem) clamp(2rem, 5vw, 3rem);
 	overflow-wrap: anywhere;
 }
 
 /* 正文渲染容器不接管拖放（body 级监听按 data-gist-drop-zone 判断落点） */
 [data-gist-drop-zone] {
 	pointer-events: auto;
+}
+
+/* 标题锚点：悬停 / 聚焦时露出 # 链接，点击由原生导航更新 URL hash */
+.gist-view-body :is(h1, h2, h3, h4, h5, h6) .gist-heading-anchor {
+	display: inline-block;
+	margin-inline-start: 0.45rem;
+	color: color-mix(in oklch, var(--color-base-content) 35%, transparent);
+	text-decoration: none;
+	opacity: 0;
+	transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+.gist-view-body :is(h1, h2, h3, h4, h5, h6) .gist-heading-anchor::before {
+	content: '#';
+	font-weight: 600;
+}
+
+.gist-view-body :is(h1, h2, h3, h4, h5, h6):hover .gist-heading-anchor,
+.gist-view-body .gist-heading-anchor:focus-visible {
+	opacity: 1;
+}
+
+.gist-view-body .gist-heading-anchor:hover {
+	color: var(--color-primary);
 }
 
 .gist-not-found {

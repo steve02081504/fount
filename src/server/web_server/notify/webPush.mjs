@@ -86,28 +86,30 @@ export async function removePushSubscription(username, endpoint) {
 /**
  * @param {string} username 用户
  * @param {{ title?: string, body?: string, url?: string, tag?: string }} payload 通知载荷
- * @returns {Promise<void>} 无
+ * @returns {Promise<boolean>} 是否至少向一个订阅投递成功（无订阅或全部失败为 false）
  */
 export async function sendWebPush(username, payload) {
 	await ensureVapidKeys()
 	const subscriptions = loadPushSubscriptions(username)
-	if (!subscriptions.length) return
+	if (!subscriptions.length) return false
 	const body = JSON.stringify({
 		title: payload.title || 'fount',
 		body: payload.body || '',
 		url: payload.url || '/',
 		tag: payload.tag,
 	})
+	let delivered = false
 	for (const subscription of [...subscriptions])
 		try {
 			await webpush.sendNotification(subscription, body)
+			delivered = true
 		}
 		catch (error) {
 			const status = error?.statusCode
 			if (status === 404 || status === 410)
 				await removePushSubscription(username, subscription.endpoint)
 		}
-
+	return delivered
 }
 
 /**

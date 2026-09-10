@@ -3622,6 +3622,13 @@
 			"jumpToSource": "Zur Quelle springen",
 			"sendToChat": "In Chat kopieren",
 			"copied": "In die Zwischenablage kopiert"
+		},
+		"sourceNode": {
+			"label": "Quellknoten",
+			"block": "Blockieren",
+			"blockConfirm": "Quellknoten ${node} blockieren? Verbundsergebnisse von ihm werden gefiltert.",
+			"blocked": "Quellknoten blockiert",
+			"blockFailed": "Quellknoten konnte nicht blockiert werden: ${error}"
 		}
 	},
 	"easynew": {
@@ -5071,6 +5078,13 @@
 			"jumpToSource": "Zur Quelle springen",
 			"sendToSocial": "In Beitrag kopieren",
 			"copied": "In die Zwischenablage kopiert"
+		},
+		"sourceNode": {
+			"label": "Quellknoten",
+			"block": "Blockieren",
+			"blockConfirm": "Quellknoten ${node} blockieren? Verbundsergebnisse von ihm werden gefiltert.",
+			"blocked": "Quellknoten blockiert",
+			"blockFailed": "Quellknoten konnte nicht blockiert werden: ${error}"
 		}
 	},
 	"cabinet": {
@@ -5398,7 +5412,10 @@
 		"search": {
 			"placeholder": "Titel, Zusammenfassungen oder Tags durchsuchen…",
 			"aria-label": "Artikel durchsuchen",
-			"empty": "Keine passenden Artikel — versuchen Sie es mit einem anderen Stichwort?"
+			"empty": "Keine passenden Artikel — versuchen Sie es mit einem anderen Stichwort?",
+			"clear": {
+				"aria-label": "Suche löschen"
+			}
 		},
 		"home": {
 			"title": "fount-Startseite",
@@ -6397,20 +6414,46 @@
 		"sessions": {
 			"new": "Neue Sitzung",
 			"untitled": "Unbenannte Sitzung",
-			"yesterday": "gestern"
+			"yesterday": "gestern",
+			"delete": "Unterhaltung löschen",
+			"deleteConfirm": "Sind Sie sicher, dass Sie die Unterhaltung „${title}“ löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+			"deleted": "Unterhaltung gelöscht"
 		},
 		"workspaces": {
 			"browse": "Durchsuchen…",
 			"remove": "Aktuellen Arbeitsbereich entfernen",
+			"removeConfirm": "Sind Sie sicher, dass Sie den Arbeitsbereich „${name}“ entfernen möchten? Die Sitzungsdateien auf dem Datenträger bleiben erhalten.",
 			"none": "Kein Arbeitsbereich ausgewählt",
-			"overviewEmpty": "Noch keine Unterhaltungen"
+			"overviewEmpty": "Noch keine Unterhaltungen",
+			"search": {
+				"placeholder": "Arbeitsbereiche durchsuchen…",
+				"aria-label": "Arbeitsbereiche durchsuchen"
+			}
 		},
 		"home": {
-			"aria-label": "Arbeitsbereiche und Sitzungen"
+			"aria-label": "Arbeitsbereiche und Sitzungen",
+			"title": "Arbeitsbereiche und Unterhaltungen",
+			"workspacesTitle": "Arbeitsbereiche",
+			"sessionsTitle": "Unterhaltungen",
+			"emptyWorkspaces": "Noch keine Arbeitsbereiche. Klicken Sie auf „Durchsuchen…“, um einen hinzuzufügen.",
+			"search": {
+				"placeholder": "Arbeitsbereiche oder Unterhaltungen durchsuchen…",
+				"aria-label": "Arbeitsbereiche oder Unterhaltungen durchsuchen"
+			},
+			"noMatch": "Keine passenden Ergebnisse"
 		},
 		"tabs": {
 			"aria-label": "Sitzungsregisterkarten",
-			"close": "Registerkarte schließen"
+			"close": "Registerkarte schließen",
+			"closeGenerating": "Eine Registerkarte, die noch generiert wird, kann nicht geschlossen werden",
+			"rename": "Umbenennen",
+			"closeMenu": {
+				"aria-label": "Registerkarten-Aktionen",
+				"others": "Andere Registerkarten schließen",
+				"left": "Registerkarten links schließen",
+				"right": "Registerkarten rechts schließen",
+				"all": "Alle Registerkarten schließen"
+			}
 		},
 		"newTab": {
 			"aria-label": "Neue Sitzung"
@@ -6444,7 +6487,10 @@
 			"placeholder": "Befehl eingeben, Ctrl/Cmd+Enter führt aus (leeren zum Verlassen des Shell-Modus)",
 			"placeholderNormal": "Nachricht eingeben… (@ für Dateiverweise, / für Befehle)",
 			"placeholderShell": "Shell-Befehl eingeben… (z. B. git status)",
-			"aria-label": "Nachrichteneingabe"
+			"aria-label": "Nachrichteneingabe",
+			"mentionSuggest": {
+				"aria-label": "Erwähnungsvorschläge"
+			}
 		},
 		"aiSource": {
 			"panelTitle": "Anzeige der KI-Quellen verwalten",
@@ -6502,7 +6548,25 @@
 			"noChar": "Wählen Sie zuerst einen Charakter"
 		},
 		"notify": {
-			"done": null
+			"done": "Die Konversation ist abgeschlossen"
+		},
+		"power": {
+			"settings": {
+				"button": "Einstellungen für Aktionen nach Abschluss",
+				"aria": "Einstellungen für Aktionen nach Abschluss",
+				"title": "Automatische Aktion nach Abschluss der Aufgaben",
+				"hint": "Sobald alle Aufgaben generiert wurden, wird die ausgewählte Aktion auf den unten aufgeführten Hosts ausgeführt."
+			},
+			"action": {
+				"none": "Keine Aktion",
+				"shutdown": "Herunterfahren",
+				"sleep": "Energie sparen",
+				"restart": "Neu starten"
+			},
+			"armedCount": "Nach Abschluss der Aufgaben: ${count} Hosts",
+			"armedAria": "Einstellungen für Aktionen nach Abschluss: ${count} Hosts",
+			"armedToast": "Festgelegt: Die ausgewählte Aktion wird nach Abschluss aller Aufgaben ausgeführt",
+			"cancelled": "Aktion nach Abschluss abgebrochen"
 		},
 		"home_function_buttons": {
 			"code": {
@@ -6523,6 +6587,21 @@
 			"code": {
 				"title": "Aus Coding-Sitzung"
 			}
+		},
+		"tool": {
+			"userShell": "Terminalbefehl",
+			"readFile": "Datei lesen",
+			"findFiles": "Dateien suchen",
+			"searchContent": "Inhalt durchsuchen",
+			"editFile": "Datei bearbeiten",
+			"writeFile": "Datei schreiben",
+			"setWorkdir": "Arbeitsverzeichnis festlegen",
+			"listMachines": "Rechner auflisten",
+			"preload": "Kontext laden",
+			"viewFiles": "Dateien anzeigen",
+			"addFiles": "Dateien senden",
+			"callback": "Werkzeug-Rückruf",
+			"runShell": "${lang} ausführen"
 		}
 	},
 	"gist": {
@@ -6547,7 +6626,51 @@
 		"list": {
 			"new": "Neues gist",
 			"empty": "Noch kein gist vorhanden. Klicke oben rechts auf „Neues gist“, um eins zu erstellen.",
-			"updatedAt": "Aktualisiert"
+			"updatedAt": "Aktualisiert",
+			"selectAll": "Alle auswählen",
+			"noneSelected": "Nichts ausgewählt",
+			"selectedCount": "${count} ausgewählt",
+			"batch": {
+				"download": "Ausgewählte herunterladen",
+				"delete": "Ausgewählte löschen",
+				"deleteConfirm": "Die ${count} ausgewählten gists löschen? Dies kann nicht rückgängig gemacht werden.",
+				"deleted": "${count} gists gelöscht",
+				"downloaded": "${count} gists heruntergeladen"
+			},
+			"noResults": "Keine passenden gists.",
+			"search": {
+				"placeholder": "gist durchsuchen…",
+				"aria-label": "gist durchsuchen"
+			},
+			"sortLabel": "Sortieren nach",
+			"sort": {
+				"updatedDesc": "Aktualisiert (neueste zuerst)",
+				"updatedAsc": "Aktualisiert (älteste zuerst)",
+				"createdDesc": "Erstellt (neueste zuerst)",
+				"createdAsc": "Erstellt (älteste zuerst)",
+				"titleAsc": "Titel (A–Z)",
+				"titleDesc": "Titel (Z–A)"
+			},
+			"select": "Auswählen",
+			"exitSelection": "Auswahl beenden",
+			"view": {
+				"grid": {
+					"title": "Rasteransicht",
+					"aria-label": "Rasteransicht"
+				},
+				"list": {
+					"title": "Listenansicht",
+					"aria-label": "Listenansicht"
+				}
+			},
+			"filter": {
+				"all": "Alle",
+				"security": "Nach Sicherheitsstufe filtern",
+				"source": "Nach Quelle filtern"
+			},
+			"clearSearch": "Suche löschen",
+			"emptyHint": "Sie können die Markdown-Datei auch auf diese Seite ziehen",
+			"loading": "Laden…"
 		},
 		"source": {
 			"manual": "Manuell",
@@ -6576,7 +6699,6 @@
 		"edit": {
 			"save": "Speichern",
 			"cancel": "Zurück",
-			"title": "Titel",
 			"editor": {
 				"placeholder": "Markdown eingeben…",
 				"aria-label": "Markdown-Editor"

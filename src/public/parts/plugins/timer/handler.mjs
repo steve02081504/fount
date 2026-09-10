@@ -65,34 +65,27 @@ function flattenChatLog(chatLog) {
  * @type {ReplyHandler_t} timer 插件的 ReplyHandler
  */
 export async function timerReplyHandler(result, args) {
-	const { AddLongTimeLog, username, char_id, chat_name, chat_log, Charname } = args
+	const { AddLongTimeLog, username, char_id, chat_name, chat_log } = args
 	// 仅注册支持追加消息的频道供定时器回调使用
 	if (args.supported_functions?.add_message) registerChannel(username, char_id, args)
 
 	// 尝试从 common_chat_* 格式提取 groupId（非聊天场景下为 undefined）
 	const groupId = chat_name?.match(/^common_chat_(.+)$/)?.[1]
 
+	// 在独立工作副本上解析并掩除已处理调用段，不改写原始生成
+	/**
+	 * 取当前解析用的工作副本。
+	 * @returns {string} 优先 content_for_handle，缺失时回退原始生成。
+	 */
+	const getContent = () => result.content_for_handle
+
 	let processed = false
 
-	const toolCallLog = { name: Charname, role: 'char', content: '', files: [] }
-	let logAdded = false
-
-	/**
-	 * 添加工具调用日志
-	 */
-	const addToolLog = () => {
-		if (!logAdded) {
-			AddLongTimeLog(toolCallLog)
-			logAdded = true
-		}
-	}
-
 	// ── <set-timer> ───────────────────────────────────────────────────────────
-	for (const match of [...result.content.matchAll(/<set-timer>(?<content>[\S\s]*?)<\/set-timer>/gis)]) {
+	for (const match of [...getContent().matchAll(/<set-timer>(?<content>[\S\s]*?)<\/set-timer>/gis)]) {
 		if (!match?.groups?.content) continue
 		processed = true
-		toolCallLog.content += match[0] + '\n'
-		addToolLog()
+		args.MaskHandledCall?.(match[0])
 
 		const timerContent = match.groups.content
 		let systemLog = ''
@@ -173,10 +166,10 @@ export async function timerReplyHandler(result, args) {
 	}
 
 	// ── <list-timers></list-timers> ───────────────────────────────────────────
-	if (result.content.match(/<list-timers>\s*<\/list-timers>/is)) {
+	const listMatch = getContent().match(/<list-timers>\s*<\/list-timers>/is)
+	if (listMatch) {
 		processed = true
-		toolCallLog.content += '<list-timers></list-timers>\n'
-		addToolLog()
+		args.MaskHandledCall?.(listMatch[0])
 
 		const charTimers = Object.values(getTimers(username, PLUGIN_PATH))
 			.filter(t => t.callbackdata?.char_id === char_id)
@@ -187,11 +180,10 @@ export async function timerReplyHandler(result, args) {
 	}
 
 	// ── <remove-timer> ────────────────────────────────────────────────────────
-	for (const match of [...result.content.matchAll(/<remove-timer>(?<reasons>[\S\s]*?)<\/remove-timer>/gis)]) {
+	for (const match of [...getContent().matchAll(/<remove-timer>(?<reasons>[\S\s]*?)<\/remove-timer>/gis)]) {
 		if (!match?.groups?.reasons) continue
 		processed = true
-		toolCallLog.content += match[0] + '\n'
-		addToolLog()
+		args.MaskHandledCall?.(match[0])
 
 		const reasons = match.groups.reasons.trim().split('\n').map(r => r.trim()).filter(Boolean)
 		let systemLog = ''
@@ -217,6 +209,5 @@ export async function timerReplyHandler(result, args) {
 		AddLongTimeLog({ name: 'timer', role: 'tool', content: systemLog, files: [] })
 	}
 
-	toolCallLog.content = toolCallLog.content.trim()
 	return processed
 }

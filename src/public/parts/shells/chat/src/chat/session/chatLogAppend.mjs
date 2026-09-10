@@ -1,6 +1,6 @@
 /**
  * 【文件】chatLogAppend.mjs — 聊天日志追加与 DAG 同步入口
- * 【职责】将 chatLogEntry 写入内存元数据、持久化 context sidecar；同步到 DAG；角色消息发系统通知。
+ * 【职责】将 chatLogEntry 写入内存元数据、持久化 context sidecar；同步到 DAG（角色消息通知由 messageFanout 负责）。
  * 【原理】appendLogCore 恒定 push 到 chatLog（内存 = hydration 缓存）；world AddChatLogEntry/AfterAddChatLogEntry 改由 messageCommit / broadcastAndPersist 唯一触发。
  * 【数据结构】chatMetadata.chatLog、`entry.extension.chat.channelId`、侧车 channelId。
  * 【关联】persistence、chatRequest、triggerReply、dag/chatLogMirror、broadcast（间接）、generation 再导出。
@@ -12,7 +12,6 @@
 /** @typedef {import('../../../../../../../decl/basedefs.ts').locale_t} locale_t */
 
 
-import { sendNotification } from '../../../../../../../server/web_server/event_dispatcher.mjs'
 import { unlockAchievement } from '../../../../achievements/src/api.mjs'
 import {
 	syncChatLogEntryToDag,
@@ -59,15 +58,6 @@ export async function addChatLogEntry(groupId, entry) {
 
 	const owner = groupMetadatas.get(groupId)?.username
 	await syncChatLogEntryToDag(groupId, entry, owner)
-
-	if (entry.role === 'char')
-		sendNotification(chatMetadata.username, entry.name ?? 'Character', {
-			body: entry.content,
-			icon: entry.avatar || '/favicon.svg',
-			data: {
-				url: `/parts/shells:chat/hub/#group:${groupId}:default`,
-			},
-		}, `/parts/shells:chat/hub/#group:${groupId}:default`)
 
 	return entry
 }

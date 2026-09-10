@@ -30,6 +30,9 @@ export async function viewTransition(update, options) {
 			await update()
 			throw err
 		}
+		// 过渡被并发过渡 / skipTransition 中止时 ready 与 finished 均会 reject；
+		// finished 由下方 catch 处理，ready 必须显式接住，否则成为未处理 rejection。
+		transition.ready.catch(() => { })
 		await transition.finished
 	} catch (err) {
 		if (!isExpectedViewTransitionError(err)) throw err

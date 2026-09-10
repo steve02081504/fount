@@ -1,7 +1,7 @@
 /**
  * Social poll 截止 watcher。
  */
-import { notifyUser } from '../../../../../../server/web_server/notify/notify.mjs'
+import { notifyUserI18n } from '../../../../../../server/web_server/notify/notify.mjs'
 import { createDeadlineScheduler } from '../../../chat/src/chat/lib/deadlineScheduler.mjs'
 import { getReplicaUsernamesProvider } from '../federation/follower/registry.mjs'
 import { resolveSocialEntity } from '../federation/hosting.mjs'
@@ -47,8 +47,8 @@ export async function firePollClosed(username, entityHash, postId) {
 	for (const recipient of recipients)
 		await appendPollClosedInboxRow(username, recipient, owner, postId, poll, tally)
 	const preview = String(content?.text || poll.options[0] || 'poll closed').slice(0, 120)
-	void notifyUser(username, {
-		title: '投票已结束',
+	void notifyUserI18n(username, {
+		titleKey: 'social.poll.closed',
 		body: preview,
 		url: `/parts/shells:social/#post:${encodeURIComponent(owner)}:${encodeURIComponent(postId)}`,
 		tag: `poll-closed:${postId}`,

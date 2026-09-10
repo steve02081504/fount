@@ -2,6 +2,7 @@ import process from 'node:process'
 
 import { available } from 'npm:@steve02081504/exec'
 
+import { OUTPUT_GUARD_LIMIT, SHELL_DEFAULT_TIMEOUT_MS } from '../../../../scripts/shell_guard.mjs'
 import { getConnectedSubfounts } from '../../shells/subfounts/src/api.mjs'
 
 /**
@@ -65,6 +66,12 @@ return Array.from({ length: 201 }, (_, i) => toEnglishWord(i)).join(', ')
 \`\`\`
 这样可以吗？
 ]
+运行限制（所有 <run-*> 标签均支持）：
+- 默认 ${Math.round(SHELL_DEFAULT_TIMEOUT_MS / 60000)} 分钟超时；超时会尽力终止（shell 杀进程树；js 在进程内无法强杀，会如实告知你“实际仍在运行”）。
+- expect="时长" 为预期时长，tolerance="时长" 为额外容错，有效超时 = expect + tolerance；只给 tolerance 时基于默认值累加。时长支持 30s / 5m / 1h 或纯秒数，如 <run-${defaultShell} expect="5m" tolerance="1m">。
+- wait="forever" 强制干等、不设超时；请仅在确实需要长时间挂起时使用。
+- 正常结束会在结果里标注耗时，便于你预估后续命令。
+- 单个输出过大时只保留开头与结尾，完整内容会写入临时文件并在结果中给出路径；你可以用 <view-file> 分页查看，或用 <grep> 搜索匹配行。超过约 ${Math.round(OUTPUT_GUARD_LIMIT / 1000)}KB 的输出请优先用 <run-*> 而不是 <inline-*>（内联结果会直接插入消息）。
 - 在解决简单问题时使用<inline-js>，并使用大数类型。
 - 在解决复杂数学相关问题时使用<run-js>。
 - 在操作电脑、查看文件、更改设置、播放音乐时使用<run-${defaultShell}>。

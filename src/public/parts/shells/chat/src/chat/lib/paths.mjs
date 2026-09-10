@@ -57,6 +57,19 @@ export function groupDir(username, groupId) {
 }
 
 /**
+ * groupId 形校验：拒绝空串、`.`/`..` 及含路径分隔符/NUL 的值，避免拼接 `groups/<groupId>` 时越出目录。
+ * @param {unknown} groupId 候选群 ID
+ * @returns {boolean} 是否可安全用作目录名
+ */
+export function isSafeGroupId(groupId) {
+	return typeof groupId === 'string'
+		&& groupId.length > 0
+		&& groupId !== '.'
+		&& groupId !== '..'
+		&& !/[/\\\0]/u.test(groupId)
+}
+
+/**
  * @param {string} username 本地账户名
  * @param {string} groupId 群 ID
  * @returns {Promise<boolean>} 本机是否仍有该群 replica 目录

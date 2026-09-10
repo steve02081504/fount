@@ -168,24 +168,20 @@ export async function buildMCPPlugin(server, { cwd } = {}) {
 	 * ReplyHandler 实现。
 	 * @param {object} reply - 回复对象。
 	 * @param {object} args - ReplyHandler 参数。
-	 * @returns {Promise<boolean>} 是否处理了工具调用。
+	 * @returns {Promise<boolean>} 是否建议发起下一轮生成。
 	 */
 	async function ReplyHandler(reply, args) {
-		if (!reply.content?.includes('<mcp-')) return false
-		const calls = parseCalls(reply.content, tools)
+		// 在独立工作副本上解析并掩除已处理调用段，不改写原始生成
+		const content = reply.content_for_handle
+		if (!content.includes('<mcp-')) return false
+		const calls = parseCalls(content, tools)
 		if (!calls.length) return false
 
 		const acp = args?.extension?.acp ?? null
-		const toolCallingLog = { name: reply.name, role: 'char', content: '', files: [] }
-		let logAdded = false
 		let callCounter = 0
 
 		for (const call of calls) {
-			toolCallingLog.content += call.fullMatch + '\n'
-			if (!logAdded) {
-				args.AddLongTimeLog(toolCallingLog)
-				logAdded = true
-			}
+			args.MaskHandledCall?.(call.fullMatch)
 
 			const toolCallId = `mcp_${server.name}_${++callCounter}`
 			const displayName = call.name || call.uri

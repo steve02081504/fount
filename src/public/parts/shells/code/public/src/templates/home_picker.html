@@ -1,0 +1,23 @@
+<div class="modal-box max-w-3xl">
+	<h2 class="text-lg font-bold" data-i18n="code.home.title"></h2>
+	<div class="code-home-picker">
+		<div class="code-home-search">
+			<input id="home-search" type="search" class="input input-sm input-bordered w-full" data-i18n="code.home.search" />
+		</div>
+		<div class="code-home-cols">
+			<div class="code-home-col">
+				<div class="code-home-col-title" data-i18n="code.home.workspacesTitle"></div>
+				<ul id="home-workspace-list" class="code-home-list"></ul>
+			</div>
+			<div class="code-home-col">
+				<div class="code-home-col-title" data-i18n="code.home.sessionsTitle"></div>
+				<ul id="home-session-list" class="code-home-list"></ul>
+			</div>
+		</div>
+	</div>
+	<div class="modal-action">
+		<button type="button" class="btn btn-sm btn-ghost" id="home-browse-button" data-i18n="code.workspaces.browse"></button>
+		<form method="dialog"><button type="submit" class="btn btn-sm" data-i18n="util.common.close"></button></form>
+	</div>
+</div>
+<form method="dialog" class="modal-backdrop"><button type="submit" data-i18n="util.common.close"></button></form>

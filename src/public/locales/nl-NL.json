@@ -3628,6 +3628,13 @@
 			"jumpToSource": "Ga naar bron",
 			"sendToChat": "Kopiëren naar chat",
 			"copied": "Naar het klembord gekopieerd"
+		},
+		"sourceNode": {
+			"label": "Bronknooppunt",
+			"block": "Blokkeren",
+			"blockConfirm": "Bronknooppunt ${node} blokkeren? Federatieresultaten ervan worden gefilterd.",
+			"blocked": "Bronknooppunt geblokkeerd",
+			"blockFailed": "Bronknooppunt kon niet worden geblokkeerd: ${error}"
 		}
 	},
 	"easynew": {
@@ -5077,6 +5084,13 @@
 			"jumpToSource": "Ga naar bron",
 			"sendToSocial": "Kopiëren naar bericht",
 			"copied": "Naar het klembord gekopieerd"
+		},
+		"sourceNode": {
+			"label": "Bronknooppunt",
+			"block": "Blokkeren",
+			"blockConfirm": "Bronknooppunt ${node} blokkeren? Federatieresultaten ervan worden gefilterd.",
+			"blocked": "Bronknooppunt geblokkeerd",
+			"blockFailed": "Bronknooppunt kon niet worden geblokkeerd: ${error}"
 		}
 	},
 	"cabinet": {
@@ -5404,7 +5418,10 @@
 		"search": {
 			"placeholder": "Zoek op titel, samenvatting of tags…",
 			"aria-label": "Artikelen doorzoeken",
-			"empty": "Geen overeenkomende artikelen. Probeer een ander zoekwoord?"
+			"empty": "Geen overeenkomende artikelen. Probeer een ander zoekwoord?",
+			"clear": {
+				"aria-label": "Zoekopdracht wissen"
+			}
 		},
 		"home": {
 			"title": "fount-startpagina",
@@ -6403,20 +6420,46 @@
 		"sessions": {
 			"new": "Nieuwe sessie",
 			"untitled": "Naamloze sessie",
-			"yesterday": "gisteren"
+			"yesterday": "gisteren",
+			"delete": "Gesprek verwijderen",
+			"deleteConfirm": "Weet je zeker dat je het gesprek \"${title}\" wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
+			"deleted": "Gesprek verwijderd"
 		},
 		"workspaces": {
 			"browse": "Bladeren…",
 			"remove": "Huidige werkruimte verwijderen",
+			"removeConfirm": "Weet je zeker dat je de werkruimte \"${name}\" wilt verwijderen? De sessiebestanden op schijf blijven behouden.",
 			"none": "Geen werkruimte geselecteerd",
-			"overviewEmpty": "Nog geen gesprekken"
+			"overviewEmpty": "Nog geen gesprekken",
+			"search": {
+				"placeholder": "Werkruimten zoeken…",
+				"aria-label": "Werkruimten zoeken"
+			}
 		},
 		"home": {
-			"aria-label": "Werkruimten en sessies"
+			"aria-label": "Werkruimten en sessies",
+			"title": "Werkruimten en gesprekken",
+			"workspacesTitle": "Werkruimten",
+			"sessionsTitle": "Gesprekken",
+			"emptyWorkspaces": "Nog geen werkruimten. Klik op \"Bladeren…\" om er een toe te voegen.",
+			"search": {
+				"placeholder": "Werkruimten of gesprekken zoeken…",
+				"aria-label": "Werkruimten of gesprekken zoeken"
+			},
+			"noMatch": "Geen resultaten"
 		},
 		"tabs": {
 			"aria-label": "Sessietabbladen",
-			"close": "Tabblad sluiten"
+			"close": "Tabblad sluiten",
+			"closeGenerating": "Een tabblad dat nog wordt gegenereerd, kan niet worden gesloten",
+			"rename": "Hernoemen",
+			"closeMenu": {
+				"aria-label": "Tabbladacties",
+				"others": "Andere tabbladen sluiten",
+				"left": "Tabbladen links sluiten",
+				"right": "Tabbladen rechts sluiten",
+				"all": "Alle tabbladen sluiten"
+			}
 		},
 		"newTab": {
 			"aria-label": "Nieuwe sessie"
@@ -6450,7 +6493,10 @@
 			"placeholder": "Typ een opdracht; Ctrl/Cmd+Enter voert uit (leegmaken om de shellmodus te verlaten)",
 			"placeholderNormal": "Typ je bericht… (@ om bestanden te verwijzen, / voor opdrachten)",
 			"placeholderShell": "Typ een shellopdracht… (bijv. git status)",
-			"aria-label": "Berichtinvoer"
+			"aria-label": "Berichtinvoer",
+			"mentionSuggest": {
+				"aria-label": "Vermeldingssuggesties"
+			}
 		},
 		"aiSource": {
 			"panelTitle": "Zichtbaarheid van AI-bronnen beheren",
@@ -6508,7 +6554,25 @@
 			"noChar": "Selecteer eerst een personage"
 		},
 		"notify": {
-			"done": null
+			"done": "Het gesprek is voltooid"
+		},
+		"power": {
+			"settings": {
+				"button": "Actie-instellingen na taken",
+				"aria": "Actie-instellingen na taken",
+				"title": "Automatische actie na taken",
+				"hint": "Zodra alle taken zijn gegenereerd, wordt de gekozen actie uitgevoerd op de onderstaande hosts."
+			},
+			"action": {
+				"none": "Geen actie",
+				"shutdown": "Afsluiten",
+				"sleep": "Slaapstand",
+				"restart": "Opnieuw opstarten"
+			},
+			"armedCount": "Na taken: ${count} hosts",
+			"armedAria": "Actie-instellingen na taken: ${count} hosts",
+			"armedToast": "Ingesteld: de gekozen actie wordt uitgevoerd zodra alle taken zijn gegenereerd",
+			"cancelled": "Actie na taken geannuleerd"
 		},
 		"home_function_buttons": {
 			"code": {
@@ -6529,6 +6593,21 @@
 			"code": {
 				"title": "Uit codeersessie"
 			}
+		},
+		"tool": {
+			"userShell": "Terminalopdracht",
+			"readFile": "Bestand lezen",
+			"findFiles": "Bestanden zoeken",
+			"searchContent": "Inhoud doorzoeken",
+			"editFile": "Bestand bewerken",
+			"writeFile": "Bestand schrijven",
+			"setWorkdir": "Werkmap instellen",
+			"listMachines": "Machines weergeven",
+			"preload": "Context laden",
+			"viewFiles": "Bestanden bekijken",
+			"addFiles": "Bestanden verzenden",
+			"callback": "Tool-callback",
+			"runShell": "${lang} uitvoeren"
 		}
 	},
 	"gist": {
@@ -6553,7 +6632,51 @@
 		"list": {
 			"new": "Nieuw gist",
 			"empty": "Nog geen gist. Klik rechtsboven op “Nieuw gist” om er een te maken.",
-			"updatedAt": "Bijgewerkt"
+			"updatedAt": "Bijgewerkt",
+			"selectAll": "Alles selecteren",
+			"noneSelected": "Niets geselecteerd",
+			"selectedCount": "${count} geselecteerd",
+			"batch": {
+				"download": "Geselecteerde downloaden",
+				"delete": "Geselecteerde verwijderen",
+				"deleteConfirm": "De ${count} geselecteerde gists verwijderen? Dit kan niet ongedaan worden gemaakt.",
+				"deleted": "${count} gists verwijderd",
+				"downloaded": "${count} gists gedownload"
+			},
+			"noResults": "Geen overeenkomende gists.",
+			"search": {
+				"placeholder": "gists doorzoeken…",
+				"aria-label": "gists doorzoeken"
+			},
+			"sortLabel": "Sorteren op",
+			"sort": {
+				"updatedDesc": "Bijgewerkt (nieuwste eerst)",
+				"updatedAsc": "Bijgewerkt (oudste eerst)",
+				"createdDesc": "Aangemaakt (nieuwste eerst)",
+				"createdAsc": "Aangemaakt (oudste eerst)",
+				"titleAsc": "Titel (A–Z)",
+				"titleDesc": "Titel (Z–A)"
+			},
+			"select": "Selecteren",
+			"exitSelection": "Selectie beëindigen",
+			"view": {
+				"grid": {
+					"title": "Rasterweergave",
+					"aria-label": "Rasterweergave"
+				},
+				"list": {
+					"title": "Lijstweergave",
+					"aria-label": "Lijstweergave"
+				}
+			},
+			"filter": {
+				"all": "Alle",
+				"security": "Filter op beveiligingsniveau",
+				"source": "Filter op bron"
+			},
+			"clearSearch": "Zoekopdracht wissen",
+			"emptyHint": "U kunt het Markdown-bestand ook naar deze pagina slepen",
+			"loading": "Laden…"
 		},
 		"source": {
 			"manual": "Handmatig",
@@ -6582,7 +6705,6 @@
 		"edit": {
 			"save": "Opslaan",
 			"cancel": "Terug",
-			"title": "Titel",
 			"editor": {
 				"placeholder": "Voer Markdown in…",
 				"aria-label": "Markdown-editor"

@@ -3622,6 +3622,13 @@
 			"jumpToSource": "↪️",
 			"sendToChat": "📋💬",
 			"copied": "📋✅"
+		},
+		"sourceNode": {
+			"label": "📡",
+			"block": "🚫",
+			"blockConfirm": "🚫 ${node} ❓",
+			"blocked": "🚫📡✅",
+			"blockFailed": "🚫📡❌: ${error}"
 		}
 	},
 	"easynew": {
@@ -5071,6 +5078,13 @@
 			"jumpToSource": "↪️",
 			"sendToSocial": "📋📣",
 			"copied": "📋✅"
+		},
+		"sourceNode": {
+			"label": "📡",
+			"block": "🚫",
+			"blockConfirm": "🚫 ${node} ❓",
+			"blocked": "🚫📡✅",
+			"blockFailed": "🚫📡❌: ${error}"
 		}
 	},
 	"cabinet": {
@@ -5398,7 +5412,10 @@
 		"search": {
 			"placeholder": "🔍📝🏷️",
 			"aria-label": "🔍📚",
-			"empty": "🔍📄🚫 😢🔁"
+			"empty": "🔍📄🚫 😢🔁",
+			"clear": {
+				"aria-label": "🔍❌"
+			}
 		},
 		"home": {
 			"title": "🐟",
@@ -6397,20 +6414,46 @@
 		"sessions": {
 			"new": "➕",
 			"untitled": "📝",
-			"yesterday": "🕐"
+			"yesterday": "🕐",
+			"delete": "🗑️💬",
+			"deleteConfirm": "🗑️💬「${title}」❓🚫↩️",
+			"deleted": "🗑️💬✅"
 		},
 		"workspaces": {
 			"browse": "🔍",
 			"remove": "🗑️",
+			"removeConfirm": "🗑️🗂️「${name}」❓💬💾✅",
 			"none": "🚫",
-			"overviewEmpty": "📭"
+			"overviewEmpty": "📭",
+			"search": {
+				"placeholder": "🔍🗂️…",
+				"aria-label": "🔍🗂️"
+			}
 		},
 		"home": {
-			"aria-label": "🗂️💬"
+			"aria-label": "🗂️💬",
+			"title": "🗂️💬",
+			"workspacesTitle": "🗂️",
+			"sessionsTitle": "💬",
+			"emptyWorkspaces": "🚫🗂️ · 🔍➕…",
+			"search": {
+				"placeholder": "🔍🗂️💬…",
+				"aria-label": "🔍🗂️💬"
+			},
+			"noMatch": "🔍📭"
 		},
 		"tabs": {
 			"aria-label": "📑",
-			"close": "❌"
+			"close": "❌",
+			"closeGenerating": "⚙️📑🚫❌",
+			"rename": "✏️📑",
+			"closeMenu": {
+				"aria-label": "📑🛠️",
+				"others": "❌📑🔀",
+				"left": "❌📑⬅️",
+				"right": "❌📑➡️",
+				"all": "❌📑🌐"
+			}
 		},
 		"newTab": {
 			"aria-label": "➕"
@@ -6444,7 +6487,10 @@
 			"placeholder": "⌨️ ⏎",
 			"placeholderNormal": "@ 📎 · / ⌨️",
 			"placeholderShell": "⌨️ (git status)",
-			"aria-label": "💬"
+			"aria-label": "💬",
+			"mentionSuggest": {
+				"aria-label": "@️⃣💡"
+			}
 		},
 		"aiSource": {
 			"panelTitle": "⚙️ AI 🔌",
@@ -6502,15 +6548,25 @@
 			"noChar": "🎭❓"
 		},
 		"notify": {
-			"done": "对话已完成"
+			"done": "💬✅"
 		},
 		"power": {
-			"label": "任务完成后关机",
-			"aria-label": "任务完成后关机设置",
-			"menuTitle": "所有任务生成完毕后关闭主机",
-			"armed": "所有任务完成后将关闭 ${host}",
-			"armedToast": "已设置：所有任务生成完毕后关闭主机",
-			"cancelled": "已取消任务完成后关机"
+			"settings": {
+				"button": "⏻🕒⚙️",
+				"aria": "⏻🕒⚙️",
+				"title": "⏻🖥️🕒",
+				"hint": "⏻🖥️🕒👉"
+			},
+			"action": {
+				"none": "🚫",
+				"shutdown": "⏻",
+				"sleep": "💤",
+				"restart": "🔄"
+			},
+			"armedCount": "⏻🕒 ${count}🖥️",
+			"armedAria": "⏻🕒⚙️ ${count}🖥️",
+			"armedToast": "⏻🕒✅",
+			"cancelled": "⏻🕒❌"
 		},
 		"home_function_buttons": {
 			"code": {
@@ -6531,6 +6587,21 @@
 			"code": {
 				"title": "👨💻"
 			}
+		},
+		"tool": {
+			"userShell": "⌨️",
+			"readFile": "📄📖",
+			"findFiles": "🔍📄",
+			"searchContent": "🔎📝",
+			"editFile": "✏️📄",
+			"writeFile": "💾📄",
+			"setWorkdir": "📂📍",
+			"listMachines": "🖥️📋",
+			"preload": "📚",
+			"viewFiles": "👁️📄",
+			"addFiles": "📤📄",
+			"callback": "↩️",
+			"runShell": "▶️ ${lang}"
 		}
 	},
 	"gist": {
@@ -6556,32 +6627,50 @@
 			"new": "🆕📄",
 			"empty": "🈳…↗️🆕📄",
 			"updatedAt": "🕒",
-			"selectAll": "全选",
-			"noneSelected": "未选择",
-			"selectedCount": "已选择 ${count} 个",
+			"selectAll": "☑️",
+			"noneSelected": "🔲",
+			"selectedCount": "☑️ ${count}",
 			"batch": {
-				"download": "批量下载",
-				"delete": "批量删除",
-				"deleteConfirm": "确定删除选中的 ${count} 个 gist？此操作不可撤销。",
-				"deleted": "已删除 ${count} 个 gist",
-				"downloaded": "已下载 ${count} 个 gist"
+				"download": "📦⬇️",
+				"delete": "📦🗑️",
+				"deleteConfirm": "🗑️ ${count} ❓↩️🚫",
+				"deleted": "🗑️✅ ${count}",
+				"downloaded": "⬇️✅ ${count}"
 			},
-			"noResults": "没有匹配的 gist。",
+			"noResults": "🔍🈳",
 			"search": {
-				"placeholder": "搜索标题…",
-				"aria-label": "搜索 gist 标题"
+				"placeholder": "🔍…",
+				"aria-label": "🔍📄"
 			},
-			"sortLabel": "排序方式",
+			"sortLabel": "🔀",
 			"sort": {
-				"updatedDesc": "更新时间（新→旧）",
-				"updatedAsc": "更新时间（旧→新）",
-				"createdDesc": "创建时间（新→旧）",
-				"createdAsc": "创建时间（旧→新）",
-				"titleAsc": "标题（A→Z）",
-				"titleDesc": "标题（Z→A）"
+				"updatedDesc": "🕒↓",
+				"updatedAsc": "🕒↑",
+				"createdDesc": "🆕↓",
+				"createdAsc": "🆕↑",
+				"titleAsc": "🔤↑",
+				"titleDesc": "🔤↓"
 			},
-			"select": "多选",
-			"exitSelection": "退出多选"
+			"select": "☑️",
+			"exitSelection": "☑️❌",
+			"view": {
+				"grid": {
+					"title": "▦",
+					"aria-label": "▦"
+				},
+				"list": {
+					"title": "☰",
+					"aria-label": "☰"
+				}
+			},
+			"filter": {
+				"all": "🌐",
+				"security": "🛡️",
+				"source": "📂"
+			},
+			"clearSearch": "🔍❌",
+			"emptyHint": "📂📥",
+			"loading": "⏳"
 		},
 		"source": {
 			"manual": "✋",
@@ -6610,7 +6699,6 @@
 		"edit": {
 			"save": "💾",
 			"cancel": "🔙",
-			"title": "📌",
 			"editor": {
 				"placeholder": "⌨️📝…",
 				"aria-label": "📝✏️"

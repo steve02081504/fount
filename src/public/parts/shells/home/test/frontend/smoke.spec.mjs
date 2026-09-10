@@ -1,6 +1,8 @@
 /**
  * Home shell 前端 smoke：页面可加载、核心控件可见。
  */
+import { deriveTitleFromMarkdown } from 'fount/public/parts/shells/gist/public/src/title.mjs'
+
 import { test, expect } from './fixtures.mjs'
 
 test.describe('Home shell smoke', () => {
@@ -20,6 +22,8 @@ test.describe('Home shell smoke', () => {
 	test('dropping a markdown file creates a gist and navigates to its view page', async ({ page, baseUrl }) => {
 		const errors = []
 		page.on('pageerror', err => errors.push(`pageerror: ${err.message}`))
+		const markdown = '# 拖放标题\n\n正文'
+		const expectedTitle = deriveTitleFromMarkdown(markdown)
 		await page.goto(`${baseUrl}/parts/shells:home/`, { waitUntil: 'domcontentloaded' })
 		/**
 		 * loadDataAndRender 的最后一次 await 是 getUserSetting('sfw')，
@@ -36,9 +40,9 @@ test.describe('Home shell smoke', () => {
 			return list && list.childElementCount > 0
 		}, null, { timeout: 20_000 })
 		await dropListenersReady
-		await page.evaluate(() => {
+		await page.evaluate(markdown => {
 			const dataTransfer = new DataTransfer()
-			dataTransfer.items.add(new File(['# 拖放标题\n\n正文'], 'note.md', { type: 'text/markdown' }))
+			dataTransfer.items.add(new File([markdown], 'note.md', { type: 'text/markdown' }))
 			// 模拟真实 OS 文件拖动：Windows 等会在 text/plain 里带上文件路径
 			dataTransfer.setData('text/plain', 'C:\\Users\\test\\Desktop\\note.md')
 			document.body.dispatchEvent(new DragEvent('drop', { dataTransfer, bubbles: true, cancelable: true }))
@@ -46,14 +50,14 @@ test.describe('Home shell smoke', () => {
 			// 处理器必须在 await 之前同步快照，否则此处读到空内容 → noHandler。
 			dataTransfer.items.clear()
 			dataTransfer.clearData()
-		})
+		}, markdown)
 		try {
 			await page.waitForURL(/parts\/shells:gist\/view\/?\?id=/, { timeout: 20_000 })
 		}
 		catch {
 			throw new Error(`md drop did not navigate. page errors:\n${errors.join('\n') || '(none)'}`)
 		}
-		await expect(page.locator('#view-title')).toContainText('note')
-		await expect(page.locator('#content h1')).toHaveText('拖放标题')
+		await expect(page.locator('#view-title')).toHaveText(expectedTitle)
+		await expect(page.locator('#content h1')).toHaveText(expectedTitle)
 	})
 })

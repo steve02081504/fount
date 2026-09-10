@@ -1,3 +1,4 @@
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { parsePartpath } from 'npm:@steve02081504/fount-p2p/core/partpath'
 import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { registerDeliveryInboundHandler } from 'npm:@steve02081504/fount-p2p/registries/inbound'
@@ -46,7 +47,7 @@ export async function broadcastSharedOperation(username, cabinetId, operation) {
 export async function handleIncomingSharedOperation(username, payload) {
 	const cabinetId = String(payload.cabinetId || '')
 	const { operation } = payload
-	if (!cabinetId || !operation) return 'unknown'
+	if (!isHex64(cabinetId) || !operation) return 'unknown'
 	const keys = await loadSharedKeys(username, cabinetId)
 	if (!keys?.write_pubkey) return 'unknown'
 	const knownOperationIds = await getKnownOperationIds(username, cabinetId)
@@ -66,6 +67,10 @@ export async function handleIncomingSharedOperation(username, payload) {
  * @returns {Promise<object[]>} 缺失操作列表。
  */
 export async function exportMissingSharedOperations(username, cabinetId, haveOperationIds = []) {
+	// 入站拉取无可信来源校验：只对「本机持有该共享柜密钥（即参与者）」返回操作；
+	// 否则任意已连节点凭 cabinetId 即可读取操作日志（且 cabinetId 会拼进路径）。
+	if (!isHex64(cabinetId)) return []
+	if (!(await loadSharedKeys(username, cabinetId))?.write_pubkey) return []
 	const have = new Set(haveOperationIds)
 	return (await loadSharedOperations(username, cabinetId))
 		.filter(operation => !have.has(operation.operation_id))

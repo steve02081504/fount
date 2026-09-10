@@ -12,9 +12,31 @@ import path from 'node:path'
 import process from 'node:process'
 
 import { async_eval } from 'npm:@steve02081504/async-eval'
-import { available, exec, shell_exec_map } from 'npm:@steve02081504/exec'
+import { available, shell_exec_map } from 'npm:@steve02081504/exec'
 
+import { execShellWithTimeout, KILL_GRACE_MS, SHELL_DEFAULT_TIMEOUT_MS } from '../../../../../scripts/shell_guard.mjs'
 import { executeCodeOnSubfount, executeShellOnSubfount, getAllSubfounts } from '../../../shells/subfounts/src/api.mjs'
+
+/**
+ * 每路径写锁：串行化同一目标路径上的并发写入，避免交叉覆盖或读到半截文件。
+ * @type {Map<string, Promise<void>>}
+ */
+const writeLocks = new Map()
+
+/**
+ * 在指定键的排他锁下执行函数（前序任务无论成败都继续排队）。
+ * @param {string} key - 锁键。
+ * @param {() => Promise<any>} fn - 待执行的写入函数。
+ * @returns {Promise<any>} 函数结果。
+ */
+function withWriteLock(key, fn) {
+	const previous = writeLocks.get(key) || Promise.resolve()
+	const run = previous.then(fn, fn)
+	const settled = run.catch(() => { })
+	writeLocks.set(key, settled)
+	settled.finally(() => { if (writeLocks.get(key) === settled) writeLocks.delete(key) })
+	return run
+}
 
 /**
  * 目标描述。
@@ -33,8 +55,10 @@ import { executeCodeOnSubfount, executeShellOnSubfount, getAllSubfounts } from '
 /**
  * 统一目标执行器。
  * @typedef {object} targetExecutor_t
- * @property {(shell: string|null, code: string) => Promise<any>} execShell - 执行 shell（shell 为 null 时按目标机器默认 shell）。
+ * @property {(shell: string|null, code: string, options?: {timeoutMs?: number|null}) => Promise<any>} execShell - 执行 shell（shell 为 null 时按目标机器默认 shell）；`options.timeoutMs` 覆盖默认超时（null 表示不限时），结果附 `timedOut` / `elapsedMs`。
  * @property {(codeOrFn: string|Function, ...args: any[]) => Promise<any>} execJs - 执行 JS（返回 EvalResult.result）；函数经参数注入序列化，字符串原样执行。
+ * @property {(code: string, timeoutMs: number|null) => Promise<any>} [execJsWithTimeout] - 远程执行 JS 并放宽请求超时（仅远程执行器实现）。
+ * @property {(p: string) => Promise<string>} resolvePath - 将路径解析为目标机器上的绝对路径（相对路径基于工作目录，支持 `~`）。
  * @property {(p: string) => Promise<string>} readTextFile - 读文本文件。
  * @property {(p: string) => Promise<Buffer>} readFileBuffer - 读二进制文件。
  * @property {(p: string, content: string) => Promise<void>} writeTextFile - 写文本文件。
@@ -200,17 +224,18 @@ function createLocalExecutor(target) {
 		: resolveLocalPath(joinWorkdir(cwd, p))
 	return {
 		/**
-		 * 执行 shell 命令（shell 为 null 时用 exec 默认 shell）。
+		 * 执行 shell 命令（shell 为 null 时用 exec 默认 shell），支持超时杀进程树。
 		 * @param {string|null} shell - shell 名。
 		 * @param {string} code - 命令。
-		 * @returns {Promise<any>} 执行结果。
+		 * @param {{timeoutMs?: number|null}} [options] - 执行选项。
+		 * @returns {Promise<any>} 执行结果（附 `timedOut` / `elapsedMs`；出错时抛出并附带该二字段）。
 		 */
-		async execShell(shell, code) {
-			if (shell) {
-				if (!shell_exec_map[shell]) throw new Error(`Unsupported shell: ${shell}`)
-				return await shell_exec_map[shell](code, spawnOptions)
-			}
-			return await exec(code, spawnOptions)
+		async execShell(shell, code, options = {}) {
+			if (shell && !shell_exec_map[shell]) throw new Error(`Unsupported shell: ${shell}`)
+			const timeoutMs = options && 'timeoutMs' in options ? options.timeoutMs : SHELL_DEFAULT_TIMEOUT_MS
+			const { result, timedOut, elapsedMs } = await execShellWithTimeout(shell, code, spawnOptions, timeoutMs)
+			if (result instanceof Error) throw Object.assign(result, { timedOut, elapsedMs })
+			return { ...result, timedOut, elapsedMs }
 		},
 		/**
 		 * 执行 JS。
@@ -219,6 +244,12 @@ function createLocalExecutor(target) {
 		 * @returns {Promise<any>} EvalResult.result。
 		 */
 		execJs: async (codeOrFn, ...args) => unwrapEval(await async_eval(lambdaSource(codeOrFn, args), {})),
+		/**
+		 * 将路径解析为本机绝对路径（相对路径基于目标 workdir，支持 `~` 与 MSYS 路径）。
+		 * @param {string} p - 路径。
+		 * @returns {Promise<string>} 绝对路径。
+		 */
+		resolvePath: async p => abs(p),
 		/**
 		 * 读文本文件。
 		 * @param {string} p - 路径。
@@ -239,8 +270,19 @@ function createLocalExecutor(target) {
 		 */
 		writeTextFile: async (p, content) => {
 			const absPath = abs(p)
-			await fs.promises.mkdir(path.dirname(absPath), { recursive: true })
-			await fs.promises.writeFile(absPath, content, 'utf-8')
+			await withWriteLock('0|' + absPath, async () => {
+				await fs.promises.mkdir(path.dirname(absPath), { recursive: true })
+				// 原子写：先写同目录临时文件再 rename 覆盖，避免中断/崩溃留下半截文件。
+				const tmpPath = `${absPath}.fount-write-${process.pid}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}.tmp`
+				try {
+					await fs.promises.writeFile(tmpPath, content, 'utf-8')
+					await fs.promises.rename(tmpPath, absPath)
+				}
+				catch (err) {
+					await fs.promises.rm(tmpPath, { force: true }).catch(() => { })
+					throw err
+				}
+			})
 		},
 		/**
 		 * 列目录。
@@ -331,14 +373,17 @@ function createRemoteExecutor(username, target) {
 	const withPath = (bodyFactory, p) => run(remoteFsScript(bodyFactory(`path.resolve(${JSON.stringify(base || '.')}, ${JSON.stringify(p)})`)))
 	return {
 		/**
-		 * 执行 shell 命令（shell 为 null 时由目标机器 exec 决定默认）。
+		 * 执行 shell 命令（shell 为 null 时由目标机器 exec 决定默认），超时由主机经 pid + kill 控制。
 		 * @param {string|null} shell - shell 名。
 		 * @param {string} code - 命令。
-		 * @returns {Promise<any>} 执行结果。
+		 * @param {{timeoutMs?: number|null}} [options] - 执行选项。
+		 * @returns {Promise<any>} 执行结果（附 `timedOut` / `elapsedMs`）。
 		 */
-		execShell: async (shell, code) => await executeShellOnSubfount(username, machine, code, shell, {
+		execShell: async (shell, code, options = {}) => await executeShellOnSubfount(username, machine, code, shell, {
 			no_ansi_terminal_sequences: true,
 			...base ? { cwd: base } : {},
+		}, null, {
+			timeoutMs: options && 'timeoutMs' in options ? options.timeoutMs : SHELL_DEFAULT_TIMEOUT_MS,
 		}),
 		/**
 		 * 执行 JS。
@@ -347,6 +392,21 @@ function createRemoteExecutor(username, target) {
 		 * @returns {Promise<any>} EvalResult.result。
 		 */
 		execJs: async (codeOrFn, ...args) => await run(lambdaSource(codeOrFn, args)),
+		/**
+		 * 远程执行 JS 并放宽 P2P 请求超时，供主机侧 race 超时使用。
+		 * @param {string} code - 代码字符串。
+		 * @param {number|null} timeoutMs - 主机侧超时（null 表示不限时）。
+		 * @returns {Promise<any>} EvalResult.result（出错时抛出）。
+		 */
+		execJsWithTimeout: async (code, timeoutMs) => await unwrapEval(await executeCodeOnSubfount(username, machine, code, null, null, {
+			requestTimeoutMs: timeoutMs === null ? null : timeoutMs + KILL_GRACE_MS,
+		})),
+		/**
+		 * 将路径解析为目标机器上的绝对路径。
+		 * @param {string} p - 路径。
+		 * @returns {Promise<string>} 绝对路径。
+		 */
+		resolvePath: async p => await withPath(absExpr => `return ${absExpr}`, p),
 		/**
 		 * 读文本文件。
 		 * @param {string} p - 路径。
@@ -368,7 +428,8 @@ function createRemoteExecutor(username, target) {
 		 * @param {string} content - 内容。
 		 * @returns {Promise<void>}
 		 */
-		writeTextFile: async (p, content) => await withPath(absExpr => `await fs.mkdir(path.dirname(${absExpr}), { recursive: true });\nawait fs.writeFile(${absExpr}, ${JSON.stringify(content)}, 'utf8')`, p),
+		writeTextFile: async (p, content) => await withWriteLock(`${machine}|${base || '.'}|${p}`, async () =>
+			await withPath(absExpr => `{\n\tconst tmp = ${absExpr} + '.fount-write-' + process.pid + '-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2) + '.tmp';\n\tawait fs.mkdir(path.dirname(${absExpr}), { recursive: true });\n\ttry {\n\t\tawait fs.writeFile(tmp, ${JSON.stringify(content)}, 'utf8');\n\t\tawait fs.rename(tmp, ${absExpr});\n\t} catch (error) {\n\t\tawait fs.rm(tmp, { force: true }).catch(() => {});\n\t\tthrow error;\n\t}\n}`, p)),
 		/**
 		 * 列目录。
 		 * @param {string} p - 路径。

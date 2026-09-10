@@ -1,5 +1,6 @@
 import { escapeRegExp } from '../../../../../scripts/regex.mjs'
 import { structPromptToSingleNoChatLog } from '../../../shells/chat/src/prompt_struct/index.mjs'
+import { buildSourceInfo } from '../proxy/src/sourceInfo.mjs'
 
 import { ClaudeAPI } from './claude_api.mjs'
 
@@ -60,10 +61,7 @@ async function GetSource(config, { SaveConfig }) { // 接收 SaveConfig
 	 */
 	const result = {
 		type: 'text-chat',
-		info: Object.fromEntries(Object.entries(structuredClone(product_info)).map(([k, v]) => {
-			v.name = config.name || config.model
-			return [k, v]
-		})),
+		info: buildSourceInfo(product_info, config),
 		is_paid: false,
 		extension: {},
 

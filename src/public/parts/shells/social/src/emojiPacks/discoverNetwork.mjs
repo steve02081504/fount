@@ -5,6 +5,8 @@ import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { getShellPartpath } from 'npm:@steve02081504/fount-p2p/registries/part_path'
 import { queryNetwork } from 'npm:@steve02081504/fount-p2p/wire/part/query'
 
+import { isSourceNodeBlocked, sourceNodesOf } from '../../../../../../scripts/p2p/source_block.mjs'
+
 /** 联邦表情包容器发现查询种类。 */
 export const EMOJI_PACK_OFFERS_KIND = 'emoji_pack_offers'
 
@@ -94,6 +96,16 @@ export async function localAuthorPackOffersHandler(inboundContext, query) {
 }
 
 /**
+ * @param {unknown} row 行
+ * @returns {string} 去重键
+ */
+function authorPackRowKey(row) {
+	const cleaned = sanitizeAuthorPackOffer(row)
+	if (!cleaned) return ''
+	return `${cleaned.sourceId}:${cleaned.packId}`
+}
+
+/**
  * 聚合本机与邻居的公开作者包 offers。
  * @param {string} username 用户
  * @param {{ limit?: number }} [options] 选项
@@ -101,17 +113,10 @@ export async function localAuthorPackOffersHandler(inboundContext, query) {
  */
 export async function buildNearbyAuthorPackOffers(username, options = {}) {
 	const limit = Math.min(Math.max(Number(options.limit) || 48, 1), 96)
-	const rows = await queryNetwork(username, getShellPartpath('social'), EMOJI_PACK_OFFERS_KIND, { limit }, {
+	const { rows, sources } = await queryNetwork(username, getShellPartpath('social'), EMOJI_PACK_OFFERS_KIND, { limit }, {
 		maxHits: 128,
-		/**
-		 * @param {unknown} row 行
-		 * @returns {string} 去重键
-		 */
-		rowKey: row => {
-			const cleaned = sanitizeAuthorPackOffer(row)
-			if (!cleaned) return ''
-			return `${cleaned.sourceId}:${cleaned.packId}`
-		},
+		rowKey: authorPackRowKey,
+		isSourceBlocked: isSourceNodeBlocked,
 	})
 
 	/** @type {object[]} */
@@ -123,7 +128,7 @@ export async function buildNearbyAuthorPackOffers(username, options = {}) {
 		const key = `${offer.sourceId}:${offer.packId}`
 		if (seen.has(key)) continue
 		seen.add(key)
-		offers.push(offer)
+		offers.push({ ...offer, sourceNodes: sourceNodesOf(sources, authorPackRowKey(raw)) })
 		if (offers.length >= limit) break
 	}
 	return { offers, scope: 'nearby' }

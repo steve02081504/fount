@@ -129,7 +129,8 @@ export async function setEndpoints(router) {
 		if (!command) return res.status(400).json({ error: 'command is required.' })
 
 		const { peerId } = getConnectionCode(username)
-		const result = await executeShellOnSubfount(username, subfountId, command, shell || null, options || {}, peerId)
+		// UI 手动执行：不设主机侧超时（保留历史 30s 请求超时），需要超时由调用方自行控制。
+		const result = await executeShellOnSubfount(username, subfountId, command, shell || null, options || {}, peerId, { timeoutMs: null, requestTimeoutMs: 30_000 })
 		res.json({ result })
 	})
 

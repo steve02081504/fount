@@ -4,6 +4,8 @@
  */
 import path from 'node:path'
 
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+
 import { groupDir } from '../chat/lib/paths.mjs'
 import { listUserGroups } from '../chat/lib/userGroups.mjs'
 import * as store from '../emojiPacks/packStore.mjs'
@@ -289,7 +291,7 @@ export async function upsertGroupEmojiManifestEntry(username, groupId, entry) {
 	const ext = String(entry.ext || existing?.ext || store.extFromMime(mimeType))
 	const animated = entry.animated != null ? Boolean(entry.animated) : Boolean(existing?.animated ?? mimeType.includes('gif'))
 	const contentHashRaw = entry.contentHash || ''
-	const contentHash = /^[\da-f]{64}$/u.test(contentHashRaw) ? contentHashRaw : undefined
+	const contentHash = isHex64(contentHashRaw) || undefined
 	const merged = {
 		...existing || {
 			emojiId,

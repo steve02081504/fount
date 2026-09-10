@@ -49,6 +49,14 @@
 						"src/public/parts/shells/gist/public/src/dangerDetect.mjs",
 						"src/public/pages/scripts/components/markdownRichInput.mjs"
 					]
+				},
+				{
+					"name": "selection_controller",
+					"expected": "20s",
+					"triggers": [
+						"src/public/parts/shells/gist/test/frontend/selection_controller.spec.mjs",
+						"src/public/pages/scripts/components/selectionController.mjs"
+					]
 				}
 			],
 			"run": [

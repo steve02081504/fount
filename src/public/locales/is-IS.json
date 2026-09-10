@@ -3622,6 +3622,13 @@
 			"jumpToSource": "Fara í uppruna",
 			"sendToChat": "Afrita í spjall",
 			"copied": "Afritað á klippispjald"
+		},
+		"sourceNode": {
+			"label": "Upprunahnútur",
+			"block": "Loka",
+			"blockConfirm": "Loka upprunahnútnum ${node}? Sambandsniðurstöður frá honum verða síaðar.",
+			"blocked": "Upprunahnútur lokaður",
+			"blockFailed": "Mistókst að loka upprunahnút: ${error}"
 		}
 	},
 	"easynew": {
@@ -5071,6 +5078,13 @@
 			"jumpToSource": "Fara í uppruna",
 			"sendToSocial": "Afrita í færslu",
 			"copied": "Afritað á klippispjald"
+		},
+		"sourceNode": {
+			"label": "Upprunahnútur",
+			"block": "Loka",
+			"blockConfirm": "Loka upprunahnútnum ${node}? Sambandsniðurstöður frá honum verða síaðar.",
+			"blocked": "Upprunahnútur lokaður",
+			"blockFailed": "Mistókst að loka upprunahnút: ${error}"
 		}
 	},
 	"cabinet": {
@@ -5398,7 +5412,10 @@
 		"search": {
 			"placeholder": "Leita að titli, ágripi eða merkjum…",
 			"aria-label": "Leita að greinum",
-			"empty": "Engar greinar fundust — prófaðu annað leitarorð?"
+			"empty": "Engar greinar fundust — prófaðu annað leitarorð?",
+			"clear": {
+				"aria-label": "Hreinsa leit"
+			}
 		},
 		"home": {
 			"title": "Heimasíða fount",
@@ -6397,20 +6414,46 @@
 		"sessions": {
 			"new": "Ný lota",
 			"untitled": "Ónefnd lota",
-			"yesterday": "í gær"
+			"yesterday": "í gær",
+			"delete": "Eyða samtali",
+			"deleteConfirm": "Ertu viss um að þú viljir eyða samtalinu „${title}“? Ekki er hægt að afturkalla þessa aðgerð.",
+			"deleted": "Samtali eytt"
 		},
 		"workspaces": {
 			"browse": "Fletta…",
 			"remove": "Fjarlægja núverandi vinnusvæði",
+			"removeConfirm": "Ertu viss um að þú viljir fjarlægja vinnusvæðið „${name}“? Lotuskrárnar á disknum verða áfram.",
 			"none": "Ekkert vinnusvæði valið",
-			"overviewEmpty": "Engar samræður ennþá"
+			"overviewEmpty": "Engar samræður ennþá",
+			"search": {
+				"placeholder": "Leita að vinnusvæðum…",
+				"aria-label": "Leita að vinnusvæðum"
+			}
 		},
 		"home": {
-			"aria-label": "Vinnusvæði og lotur"
+			"aria-label": "Vinnusvæði og lotur",
+			"title": "Vinnusvæði og samtöl",
+			"workspacesTitle": "Vinnusvæði",
+			"sessionsTitle": "Samtöl",
+			"emptyWorkspaces": "Engin vinnusvæði ennþá. Smelltu á „Fletta…“ til að bæta við einu.",
+			"search": {
+				"placeholder": "Leita að vinnusvæðum eða samtölum…",
+				"aria-label": "Leita að vinnusvæðum eða samtölum"
+			},
+			"noMatch": "Engar niðurstöður"
 		},
 		"tabs": {
 			"aria-label": "Flipar lotunnar",
-			"close": "Loka flipa"
+			"close": "Loka flipa",
+			"closeGenerating": "Ekki er hægt að loka flipa sem er enn að búa til",
+			"rename": "Endurnefna",
+			"closeMenu": {
+				"aria-label": "Aðgerðir flipa",
+				"others": "Loka öðrum flipum",
+				"left": "Loka flipum til vinstri",
+				"right": "Loka flipum til hægri",
+				"all": "Loka öllum flipum"
+			}
 		},
 		"newTab": {
 			"aria-label": "Ný lota"
@@ -6444,7 +6487,10 @@
 			"placeholder": "Sláðu inn skipun; Ctrl/Cmd+Enter keyrir hana (hreinsaðu til að yfirgefa skelham)",
 			"placeholderNormal": "Skrifaðu skilaboð… (@ til að vísa í skrár, / fyrir skipanir)",
 			"placeholderShell": "Sláðu inn skelskipun… (t.d. git status)",
-			"aria-label": "Innsláttur skilaboða"
+			"aria-label": "Innsláttur skilaboða",
+			"mentionSuggest": {
+				"aria-label": "Tillögur að mentíunum"
+			}
 		},
 		"aiSource": {
 			"panelTitle": "Stjórna sýnileika gervigreindargjafa",
@@ -6502,7 +6548,25 @@
 			"noChar": "Veldu fyrst persónu"
 		},
 		"notify": {
-			"done": null
+			"done": "Samtalinu er lokið"
+		},
+		"power": {
+			"settings": {
+				"button": "Stillingar aðgerða eftir verk",
+				"aria": "Stillingar aðgerða eftir verk",
+				"title": "Sjálfvirk aðgerð eftir verk",
+				"hint": "Þegar öllum verkum hefur verið búið til verður valin aðgerð keyrð á hýslunum hér að neðan."
+			},
+			"action": {
+				"none": "Engin aðgerð",
+				"shutdown": "Slökkva",
+				"sleep": "Setja í dvala",
+				"restart": "Endurræsa"
+			},
+			"armedCount": "Eftir verk: ${count} hýslar",
+			"armedAria": "Stillingar aðgerða eftir verk: ${count} hýslar",
+			"armedToast": "Stillt: valin aðgerð verður keyrð þegar öllum verkum er lokið",
+			"cancelled": "Aðgerð eftir verk hætt við"
 		},
 		"home_function_buttons": {
 			"code": {
@@ -6523,6 +6587,21 @@
 			"code": {
 				"title": "Úr kóðunarfundi"
 			}
+		},
+		"tool": {
+			"userShell": "Skipun í flugstöð",
+			"readFile": "Lesa skrá",
+			"findFiles": "Finna skrár",
+			"searchContent": "Leita í efni",
+			"editFile": "Breyta skrá",
+			"writeFile": "Skrifa skrá",
+			"setWorkdir": "Stilla vinnumöppu",
+			"listMachines": "Lista vélar",
+			"preload": "Hlaða samhengi",
+			"viewFiles": "Skoða skrár",
+			"addFiles": "Senda skrár",
+			"callback": "Endurkall verkfæris",
+			"runShell": "Keyra ${lang}"
 		}
 	},
 	"gist": {
@@ -6547,7 +6626,51 @@
 		"list": {
 			"new": "Nýtt gist",
 			"empty": "Engin gist enn. Smelltu á „Nýtt gist“ efst til hægri til að búa til það fyrsta.",
-			"updatedAt": "Uppfært"
+			"updatedAt": "Uppfært",
+			"selectAll": "Velja allt",
+			"noneSelected": "Ekkert valið",
+			"selectedCount": "${count} valin",
+			"batch": {
+				"download": "Sækja valið",
+				"delete": "Eyða völdu",
+				"deleteConfirm": "Eyða ${count} völdum gist? Þetta verður ekki tekið aftur.",
+				"deleted": "Eytt ${count} gist",
+				"downloaded": "Sótt ${count} gist"
+			},
+			"noResults": "Engir gist fundust.",
+			"search": {
+				"placeholder": "Leita í gistum…",
+				"aria-label": "Leita í gistum"
+			},
+			"sortLabel": "Raða eftir",
+			"sort": {
+				"updatedDesc": "Uppfært (nýjast fyrst)",
+				"updatedAsc": "Uppfært (elst fyrst)",
+				"createdDesc": "Búið til (nýjast fyrst)",
+				"createdAsc": "Búið til (elst fyrst)",
+				"titleAsc": "Titill (A–Z)",
+				"titleDesc": "Titill (Z–A)"
+			},
+			"select": "Velja",
+			"exitSelection": "Hætta vali",
+			"view": {
+				"grid": {
+					"title": "Ristarsýn",
+					"aria-label": "Ristarsýn"
+				},
+				"list": {
+					"title": "Listasýn",
+					"aria-label": "Listasýn"
+				}
+			},
+			"filter": {
+				"all": "Allt",
+				"security": "Sía eftir öryggisstigi",
+				"source": "Sía eftir uppruna"
+			},
+			"clearSearch": "Hreinsa leit",
+			"emptyHint": "Þú getur líka dregið Markdown skrána inn á þessa síðu",
+			"loading": "Hleður…"
 		},
 		"source": {
 			"manual": "Handvirkt",
@@ -6576,7 +6699,6 @@
 		"edit": {
 			"save": "Vista",
 			"cancel": "Til baka",
-			"title": "Titill",
 			"editor": {
 				"placeholder": "Sláðu inn Markdown…",
 				"aria-label": "Markdown ritill"

@@ -33,6 +33,21 @@
 			</div>
 			<div class="gist-controls flex items-center gap-2 flex-wrap px-4 py-2 border-t border-base-content/10" id="gist-controls" hidden>
 				<input type="search" id="gist-search-input" class="input input-sm input-bordered flex-1 min-w-0" data-i18n="gist.list.search" />
+				<label class="sr-only" for="gist-security-filter" data-i18n="gist.list.filter.security"></label>
+				<select id="gist-security-filter" class="select select-sm select-bordered">
+					<option value="all" data-i18n="gist.list.filter.all"></option>
+					<option value="secure" data-i18n="gist.security.secure"></option>
+					<option value="trusted" data-i18n="gist.security.trusted"></option>
+				</select>
+				<label class="sr-only" for="gist-source-filter" data-i18n="gist.list.filter.source"></label>
+				<select id="gist-source-filter" class="select select-sm select-bordered">
+					<option value="all" data-i18n="gist.list.filter.all"></option>
+					<option value="manual" data-i18n="gist.source.manual"></option>
+					<option value="chat" data-i18n="gist.source.chat"></option>
+					<option value="social" data-i18n="gist.source.social"></option>
+					<option value="code" data-i18n="gist.source.code"></option>
+					<option value="md-drop" data-i18n="gist.source.md-drop"></option>
+				</select>
 				<label class="sr-only" for="gist-sort-select" data-i18n="gist.list.sortLabel"></label>
 				<select id="gist-sort-select" class="select select-sm select-bordered">
 					<option value="updated-desc" data-i18n="gist.list.sort.updatedDesc"></option>
@@ -42,6 +57,14 @@
 					<option value="title-asc" data-i18n="gist.list.sort.titleAsc"></option>
 					<option value="title-desc" data-i18n="gist.list.sort.titleDesc"></option>
 				</select>
+				<div class="join" id="gist-view-toggle" role="group">
+					<button class="btn btn-sm join-item" id="gist-view-grid" type="button" data-i18n="gist.list.view.grid">
+						<img src="https://api.iconify.design/mdi/view-grid-outline.svg" class="text-icon" alt="" />
+					</button>
+					<button class="btn btn-sm join-item" id="gist-view-list" type="button" data-i18n="gist.list.view.list">
+						<img src="https://api.iconify.design/mdi/view-list-outline.svg" class="text-icon" alt="" />
+					</button>
+				</div>
 			</div>
 			<div class="gist-selection-bar flex items-center gap-2 flex-wrap px-4 py-2 border-t border-base-content/10" id="gist-selection-bar" hidden>
 				<button class="btn btn-ghost btn-sm" id="exit-selection-button" type="button" data-i18n="gist.list.exitSelection"></button>

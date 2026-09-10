@@ -12,21 +12,65 @@ import {
 	blogLangs,
 	loadIndex,
 	mountLanguageMenu,
+	mountNeuralBackground,
 	mountThemeMenu,
 	resolveBlogLang,
 } from './blog.mjs'
 
 const articleList = document.getElementById('article-list')
 const articleSearch = document.getElementById('article-search')
+const searchClear = document.getElementById('article-search-clear')
 const searchEmpty = document.getElementById('search-empty')
 const themeMenu = document.getElementById('theme-menu')
 const languageDropdown = document.getElementById('language-dropdown')
 const languageMenu = document.getElementById('language-menu')
+const neuralCanvas = /** @type {HTMLCanvasElement | null} */ document.getElementById('blog-neural')
 
 /** 当前博客索引。 @type {import('./blog.mjs').blogIndex | null} */
 let index = null
 /** 当前展示语言（全局状态）。 */
 let currentLang = ''
+/** 卡片入场观察器。 @type {IntersectionObserver | null} */
+let revealObserver = null
+
+if (neuralCanvas) mountNeuralBackground(neuralCanvas)
+
+/**
+ * 同步搜索框清除按钮的可见性。
+ * @returns {void}
+ */
+function syncSearchClear() {
+	searchClear.hidden = !articleSearch.value
+}
+
+searchClear.addEventListener('click', () => {
+	articleSearch.value = ''
+	articleSearch.dispatchEvent(new Event('input'))
+	articleSearch.focus()
+})
+articleSearch.addEventListener('input', syncSearchClear)
+syncSearchClear()
+
+/**
+ * 观察卡片进入视口后揭示（滚动入场动画；不支持时直接显示）。
+ * @param {Array<{ card: HTMLElement }>} cards 卡片包装列表
+ * @returns {void}
+ */
+function observeReveal(cards) {
+	revealObserver?.disconnect()
+	if (!('IntersectionObserver' in window)) {
+		for (const { card } of cards) card.classList.add('is-revealed')
+		return
+	}
+	revealObserver = new IntersectionObserver(entries => {
+		for (const entry of entries)
+			if (entry.isIntersecting) {
+				entry.target.classList.add('is-revealed')
+				revealObserver?.unobserve(entry.target)
+			}
+	}, { rootMargin: '0px 0px -6% 0px', threshold: 0.05 })
+	for (const { card } of cards) revealObserver.observe(card)
+}
 
 /**
  * 切换全局语言：写入 fount 偏好后重渲染列表与语言菜单选中态。
@@ -75,7 +119,12 @@ function buildTagBadges(meta) {
 function buildArticleCard(entry) {
 	const meta = articleMetaIn(entry, currentLang)
 	const card = document.createElement('article')
-	card.className = 'card bg-base-100 shadow blog-card'
+	card.className = 'card blog-card'
+	card.addEventListener('pointermove', event => {
+		const rect = card.getBoundingClientRect()
+		card.style.setProperty('--spot-x', `${event.clientX - rect.left}px`)
+		card.style.setProperty('--spot-y', `${event.clientY - rect.top}px`)
+	})
 
 	const body = document.createElement('div')
 	body.className = 'card-body gap-3'
@@ -124,10 +173,10 @@ function renderIndex() {
 		const articles = index.articles.filter(article => article.category === category.id)
 		if (!articles.length) continue
 		const section = document.createElement('section')
-		section.className = 'flex flex-col gap-6'
+		section.className = 'blog-section'
 
 		const heading = document.createElement('h2')
-		heading.className = 'text-2xl font-bold'
+		heading.className = 'blog-section-title'
 		heading.textContent = pickLocalizedSlice(category.name, [currentLang]) || category.id
 		heading.setAttribute('user-content', '')
 		section.appendChild(heading)
@@ -164,6 +213,7 @@ function renderIndex() {
 			searchEmpty.hidden = filtered.length > 0
 		},
 	})
+	observeReveal(cards)
 }
 
 await initTranslations('blog')

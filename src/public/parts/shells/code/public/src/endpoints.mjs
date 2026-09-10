@@ -93,6 +93,15 @@ export async function removeWorkspace(id) {
 }
 
 /**
+ * 标记工作区被使用（最近使用时间，供下拉按常用程度排序）。
+ * @param {string} id - 工作区 id。
+ * @returns {Promise<{list: Array<object>}>} 更新后的列表。
+ */
+export async function useWorkspace(id) {
+	return requestJson(`${API_BASE}/workspaces/${encodeURIComponent(id)}/use`, { method: 'PUT' })
+}
+
+/**
  * 读取打开的标签页列表与活动标签（含草稿与未发送草稿内容）。
  * @returns {Promise<{tabs: Array<{type: string, id: string, workspaceId: string, draft?: string}>, activeTab: string}>} 标签页数据。
  */
@@ -208,20 +217,21 @@ export async function getWorkspaceConfig(target) {
 }
 
 /**
- * 读取待关机状态（所有任务生成完毕后关闭选定主机）。
- * @returns {Promise<{machine: string|null, active: number}>} 状态。
+ * 读取待执行电源操作（所有任务生成完毕后对各主机执行关机/休眠/重启）。
+ * @returns {Promise<{actions: Record<string, string>, active: number}>} 状态（主机 id → 操作）。
  */
 export async function getShutdown() {
 	return requestJson(`${API_BASE}/shutdown`)
 }
 
 /**
- * 预定/取消：所有任务生成完毕后关闭指定主机（machine 为空则取消）。
+ * 预定/取消：所有任务生成完毕后对指定主机执行电源操作。
  * @param {string|null} machine - 主机 id（"0" = 本机）。
- * @returns {Promise<{machine: string|null, active: number}>} 状态。
+ * @param {'shutdown'|'sleep'|'restart'|null} [action=null] - 电源操作；为空则取消该主机。
+ * @returns {Promise<{actions: Record<string, string>, active: number}>} 状态。
  */
-export async function setShutdown(machine) {
-	return sendJson(`${API_BASE}/shutdown`, { machine }, 'PUT')
+export async function setShutdown(machine, action = null) {
+	return sendJson(`${API_BASE}/shutdown`, { machine, action }, 'PUT')
 }
 
 /**

@@ -143,6 +143,27 @@ test.describe('agent institute', () => {
 		await expect(page.locator('#article-nav .blog-nav-active')).toHaveText('为什么 fount 的 Agent 不是聊天机器人')
 	})
 
+	test('article deep-links to a heading from the URL hash and updates it on anchor click', async ({ page, baseUrl }) => {
+		await page.goto(`${baseUrl}/blog/article/?article=agents-are-not-chatbots`, { waitUntil: 'domcontentloaded' })
+		await expect(page.locator('#article-body h1')).toHaveText('为什么 fount 的 Agent 不是聊天机器人', { timeout: 30_000 })
+		const headings = page.locator('#article-body h2, #article-body h3')
+		const id = await headings.nth(1).getAttribute('id')
+		const nextId = await headings.nth(2).getAttribute('id')
+		expect(id).toBeTruthy()
+		expect(nextId).toBeTruthy()
+
+		// 带 hash 打开：异步渲染完成后滚动到对应标题
+		await page.goto(`${baseUrl}/blog/article/?article=agents-are-not-chatbots#${encodeURIComponent(id)}`, { waitUntil: 'domcontentloaded' })
+		await expect(page.locator('#article-body h1')).toHaveText('为什么 fount 的 Agent 不是聊天机器人', { timeout: 30_000 })
+		await expect.poll(() => page.evaluate(target => Math.round(document.getElementById(target).getBoundingClientRect().top), id)).toBeLessThan(160)
+
+		// 标题锚点链接指向自身 id，悬停标题后点击更新 URL hash
+		await expect(headings.nth(2).locator('.blog-heading-anchor')).toHaveAttribute('href', `#${nextId}`)
+		await headings.nth(2).hover()
+		await headings.nth(2).locator('.blog-heading-anchor').click()
+		await expect.poll(() => page.evaluate(() => decodeURIComponent(location.hash))).toBe(`#${nextId}`)
+	})
+
 	test('sidebar category names follow the article language', async ({ page, baseUrl }) => {
 		await page.goto(`${baseUrl}/blog/article/?article=agents-are-not-chatbots`, { waitUntil: 'domcontentloaded' })
 		await expect(page.locator('#article-body h1')).toHaveText('为什么 fount 的 Agent 不是聊天机器人', { timeout: 30_000 })

@@ -424,12 +424,25 @@ async function handleFormSubmit(event) {
 }
 
 /**
+ * 表单内按下 Ctrl/⌘+Enter 时提交表单。
+ * @param {KeyboardEvent} event - 键盘事件。
+ * @returns {void}
+ */
+function handleFormKeydown(event) {
+	if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+		event.preventDefault()
+		form.requestSubmit()
+	}
+}
+
+/**
  * 设置事件侦听器。
  * @returns {void}
  */
 function setupEventListeners() {
 	toggleLink.addEventListener('click', handleToggleClick)
 	form.addEventListener('submit', handleFormSubmit)
+	form.addEventListener('keydown', handleFormKeydown)
 	sendVerificationCodeButton.addEventListener('click', handleSendVerificationCode)
 	webauthnLoginButton.addEventListener('click', handleWebAuthnLogin)
 	usernameInput.addEventListener('input', () => passwordCharFeedback?.refresh())

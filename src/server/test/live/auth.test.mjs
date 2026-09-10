@@ -274,3 +274,44 @@ Deno.test({
 		await stopNode(node)
 	}
 })
+
+Deno.test({
+	name: 'registration non-local gate ignores spoofed X-Forwarded-For',
+	sanitizeOps: false,
+	sanitizeResources: false,
+}, async () => {
+	const node = await launchNode({
+		username: 'auth-xff-user',
+		apiKey: `fount-auth-xff-${Date.now().toString(36)}`,
+	})
+	const { baseUrl } = node
+	try {
+		// 本机地址（loopback）访问 /api/ping 可拿到服务器眼中的「局域网 URL」，用它模拟非本机来源。
+		const ping = await (await fetch(`${baseUrl}/api/ping`)).json()
+		const remoteBase = ping.hosturl_in_local_ip
+		if (typeof remoteBase !== 'string' || !/^https?:\/\//.test(remoteBase) || remoteBase.includes('undefined')) {
+			// 无可用非 loopback 网卡（极简容器/CI）时无法模拟远程来源，跳过。
+			console.warn('[auth] no non-loopback interface available; skipping X-Forwarded-For spoof regression')
+			return
+		}
+
+		const username = `xff-attacker-${Date.now().toString(36)}`
+		const password = 'Atk-passw0rd'
+		const res = await fetch(`${remoteBase}/api/register`, {
+			method: 'POST',
+			headers: {
+				'content-type': 'application/json',
+				'x-forwarded-for': '127.0.0.1',
+			},
+			body: JSON.stringify({ username, password }),
+		})
+		assertEquals(
+			res.status, 401,
+			'a spoofed X-Forwarded-For: 127.0.0.1 must not bypass the non-local registration PoW gate',
+		)
+		assertEquals((await res.json()).i18nKey, 'auth.error.powValidationFailed')
+	}
+	finally {
+		await stopNode(node)
+	}
+})

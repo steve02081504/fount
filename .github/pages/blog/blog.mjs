@@ -263,3 +263,136 @@ export function rewriteArticleLinks(fragment, index) {
 		a.href = articlePageUrl(entry.id) + (match[2] || '')
 	}
 }
+
+/**
+ * 读取主题变量经浏览器解析后的颜色字符串（canvas 可用的 `rgb(...)` 等形态）。
+ * @param {string} varName 主题变量名（含 `--`）
+ * @returns {string} 解析后的颜色
+ */
+function resolvedThemeColor(varName) {
+	const probe = document.createElement('span')
+	probe.style.cssText = 'position:absolute;opacity:0;pointer-events:none'
+	probe.style.color = `var(${varName})`
+	document.body.appendChild(probe)
+	const color = getComputedStyle(probe).color
+	probe.remove()
+	return color
+}
+
+/**
+ * 在画布上绘制「Agent 神经网络」氛围背景：缓慢漂浮的节点与近邻连线，
+ * 颜色取自主题变量并在切换主题时重读；`prefers-reduced-motion` 下只绘制静态一帧。
+ * @param {HTMLCanvasElement} canvas 背景画布
+ * @returns {void}
+ */
+export function mountNeuralBackground(canvas) {
+	const ctx = canvas.getContext('2d')
+	if (!ctx) return
+	const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches
+	let width = 0
+	let height = 0
+	let nodeColor = resolvedThemeColor('--color-primary')
+	let linkColor = resolvedThemeColor('--color-secondary')
+	/** @type {{ x: number, y: number, vx: number, vy: number }[]} */
+	let nodes = []
+	const pointer = { x: -1, y: -1 }
+
+	/**
+	 * 按容器尺寸重建画布与粒子（含 DPR 缩放）。
+	 * @returns {void}
+	 */
+	function resize() {
+		const dpr = Math.min(window.devicePixelRatio || 1, 2)
+		width = canvas.clientWidth || window.innerWidth
+		height = canvas.clientHeight || window.innerHeight
+		canvas.width = Math.round(width * dpr)
+		canvas.height = Math.round(height * dpr)
+		ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+		const count = Math.max(18, Math.min(90, Math.round(width * height / 26000)))
+		nodes = Array.from({ length: count }, () => ({
+			x: Math.random() * width,
+			y: Math.random() * height,
+			vx: (Math.random() - 0.5) * 0.28,
+			vy: (Math.random() - 0.5) * 0.28,
+		}))
+	}
+
+	/**
+	 * 绘制一帧（可选推进粒子位置）。
+	 * @param {boolean} advance 是否推进粒子
+	 * @returns {void}
+	 */
+	function draw(advance) {
+		ctx.clearRect(0, 0, width, height)
+		const linkDist = Math.min(180, Math.max(110, width / 12))
+		for (const node of nodes) {
+			if (!advance) continue
+			node.x += node.vx
+			node.y += node.vy
+			if (node.x < 0 || node.x > width) node.vx *= -1
+			if (node.y < 0 || node.y > height) node.vy *= -1
+		}
+		ctx.lineWidth = 1
+		for (let i = 0; i < nodes.length; i++)
+			for (let j = i + 1; j < nodes.length; j++) {
+				const dist = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y)
+				if (dist > linkDist) continue
+				ctx.globalAlpha = (1 - dist / linkDist) * 0.22
+				ctx.strokeStyle = linkColor
+				ctx.beginPath()
+				ctx.moveTo(nodes[i].x, nodes[i].y)
+				ctx.lineTo(nodes[j].x, nodes[j].y)
+				ctx.stroke()
+			}
+		for (const node of nodes) {
+			let radius = 1.4
+			if (pointer.x >= 0) {
+				const dist = Math.hypot(node.x - pointer.x, node.y - pointer.y)
+				if (dist < 160) radius += (1 - dist / 160) * 1.6
+			}
+			ctx.globalAlpha = 0.6
+			ctx.fillStyle = nodeColor
+			ctx.beginPath()
+			ctx.arc(node.x, node.y, radius, 0, Math.PI * 2)
+			ctx.fill()
+		}
+		ctx.globalAlpha = 1
+	}
+
+	/**
+	 * 动画循环。
+	 * @returns {void}
+	 */
+	function frame() {
+		draw(true)
+		requestAnimationFrame(frame)
+	}
+
+	resize()
+	draw(false)
+	if (!reduceMotion) requestAnimationFrame(frame)
+
+	let resizeQueued = false
+	window.addEventListener('resize', () => {
+		if (resizeQueued) return
+		resizeQueued = true
+		requestAnimationFrame(() => {
+			resizeQueued = false
+			resize()
+			draw(false)
+		})
+	}, { passive: true })
+	window.addEventListener('pointermove', event => {
+		pointer.x = event.clientX
+		pointer.y = event.clientY
+	}, { passive: true })
+	document.addEventListener('pointerleave', () => {
+		pointer.x = -1
+		pointer.y = -1
+	})
+	new MutationObserver(() => {
+		nodeColor = resolvedThemeColor('--color-primary')
+		linkColor = resolvedThemeColor('--color-secondary')
+		if (reduceMotion) draw(false)
+	}).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+}

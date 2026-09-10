@@ -3,6 +3,8 @@
  * @typedef {import('../../../../../decl/AIsource.ts').AIsource_t} AIsource_t
  */
 
+import { buildSourceInfo } from '../proxy/src/sourceInfo.mjs'
+
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /**
@@ -45,10 +47,7 @@ async function GetSource(config) {
 	 */
 	const result = {
 		type: 'text-chat',
-		info: Object.fromEntries(Object.entries(structuredClone(product_info)).map(([k, v]) => {
-			v.name = config?.name || 'Empty'
-			return [k, v]
-		})),
+		info: buildSourceInfo(product_info, config, { fallbackName: 'Empty' }),
 		is_paid: false,
 		extension: {},
 

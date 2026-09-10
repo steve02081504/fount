@@ -12,6 +12,7 @@ import {
 	setReputationExportAllowlist,
 } from 'npm:@steve02081504/fount-p2p'
 
+import { KILL_GRACE_MS, SHELL_DEFAULT_TIMEOUT_MS } from '../../../../../scripts/shell_guard.mjs'
 import { events } from '../../../../../server/events.mjs'
 import { loadPart } from '../../../../../server/parts_loader.mjs'
 import { loadShellData, saveShellData } from '../../../../../server/setting_loader.mjs'
@@ -207,27 +208,64 @@ class RemoteSubfountExecutor extends SubfountExecutor {
 
 	/**
 	 * 执行命令（代码或 shell）。
+	 * 支持按请求放宽 P2P 请求超时；shell 请求可带 `hostTimeoutMs`，到点用 `shell_spawned` 回传的 pid 发 `kill`。
 	 * @param {object} command - 命令对象。
 	 * @returns {Promise<any>} - 执行结果。
 	 */
 	execute(command) {
 		return new Promise((resolve, reject) => {
 			const requestId = `${this.subfountId}-${randomUUID()}`
-			this.manager.pendingRequests.set(requestId, { resolve, reject })
+			const start = Date.now()
+			const entry = {
+				resolve, reject, start,
+				pid: null,
+				timedOut: false,
+				requestTimer: null,
+				hostTimer: null,
+				killDeadline: null,
+			}
+			this.manager.pendingRequests.set(requestId, entry)
 
-			setTimeout(() => {
-				if (this.manager.pendingRequests.has(requestId)) {
-					this.manager.pendingRequests.delete(requestId)
-					reject(new Error('Request timed out after 30 seconds.'))
-				}
-			}, 30000)
+			// 默认沿用历史 30s；显式 null 表示不设请求超时（由主机侧 race/kill 控制）。
+			const requestTimeoutMs = command.requestTimeoutMs === undefined ? 30_000 : command.requestTimeoutMs
+			if (requestTimeoutMs != null && requestTimeoutMs > 0)
+				entry.requestTimer = setTimeout(() => {
+					if (!this.manager.pendingRequests.has(requestId)) return
+					this.manager.clearPending(requestId)
+					reject(new Error(`Request timed out after ${Math.round(requestTimeoutMs / 1000)} seconds.`))
+				}, requestTimeoutMs)
 
 			const actionName = command.type === 'shell_exec' ? 'shell_exec' : 'run_code'
 			const [sendAction] = this.manager.actions.get(actionName)
-			sendAction({ ...command, requestId }, this.peerId).catch((error) => {
-				this.manager.pendingRequests.delete(requestId)
+			sendAction({ ...command, requestId }, this.peerId).catch(error => {
+				this.manager.clearPending(requestId)
 				reject(new Error(`Failed to send request: ${error.message}`))
 			})
+
+			// 主机侧超时（shell）：用回传的 pid 发 kill，宽限后无论远端是否回包都返回超时结果。
+			const hostTimeoutMs = command.hostTimeoutMs
+			if (hostTimeoutMs != null)
+				entry.hostTimer = setTimeout(async () => {
+					if (!this.manager.pendingRequests.has(requestId)) return
+					entry.timedOut = true
+					if (entry.pid) {
+						try {
+							const [sendKill] = this.manager.actions.get('kill') || []
+							await sendKill?.({ requestId, pid: entry.pid }, this.peerId)
+						}
+						catch { /* 忽略 kill 发送失败 */ }
+						entry.killDeadline = setTimeout(() => {
+							if (!this.manager.pendingRequests.has(requestId)) return
+							this.manager.clearPending(requestId)
+							resolve({ code: null, signal: 'SIGKILL', stdout: '', stderr: '', stdall: '', timedOut: true, killed: true, elapsedMs: Date.now() - start })
+						}, KILL_GRACE_MS)
+					}
+					else {
+						// 未拿到 pid（旧客户端或未及回传）：放弃等待，如实告知远端可能仍在运行。
+						this.manager.clearPending(requestId)
+						resolve({ code: null, signal: null, stdout: '', stderr: '', stdall: '', timedOut: true, killed: false, noPid: true, elapsedMs: Date.now() - start })
+					}
+				}, Math.max(0, hostTimeoutMs))
 		})
 	}
 }
@@ -349,7 +387,7 @@ class UserSubfountManager {
 			await this.room.start()
 			this.repSyncDispose = attachReputationSyncWire()
 
-			const actionNames = ['authenticate', 'device_info', 'response', 'run_code', 'callback', 'shell_exec', 'infra']
+			const actionNames = ['authenticate', 'device_info', 'response', 'run_code', 'callback', 'shell_exec', 'shell_spawned', 'kill', 'infra']
 			for (const name of actionNames)
 				this.actions.set(name, this.room.makeAction(name))
 
@@ -426,17 +464,35 @@ class UserSubfountManager {
 				if (!this.authenticatedPeers.has(peerId) || !data.requestId) return
 				const pending = this.pendingRequests.get(data.requestId)
 				if (pending) {
-					this.pendingRequests.delete(data.requestId)
-					if (data.isError)
-						pending.reject(new Error(data.payload?.error || data.payload || 'Unknown error'))
+					this.clearPending(data.requestId)
+					if (data.isError) {
+						const error = new Error(data.payload?.error || data.payload || 'Unknown error')
+						if (pending.timedOut) { error.timedOut = true; error.killed = Boolean(pending.pid); error.elapsedMs = Date.now() - pending.start }
+						pending.reject(error)
+					}
 					else
-						pending.resolve(data.payload)
+						pending.resolve(pending.timedOut
+							? { ...data.payload, timedOut: true, killed: Boolean(pending.pid), elapsedMs: Date.now() - pending.start }
+							: data.payload)
 				}
+			}
+
+			/**
+			 * 处理分机回传的已 spawn 进程 pid（供主机超时 kill）。
+			 * @param {object} data - `{ requestId, pid }`。
+			 * @param {string} peerId - 对等端 ID。
+			 */
+			const handleShellSpawned = (data, peerId) => {
+				if (!this.authenticatedPeers.has(peerId) || !data?.requestId) return
+				const pending = this.pendingRequests.get(data.requestId)
+				if (pending) pending.pid = data.pid ?? null
 			}
 
 			// 处理响应和 shell 执行消息
 			getResponse(handleResponse)
 			getShellExec(handleResponse)
+			const getShellSpawned = this.actions.get('shell_spawned')[1]
+			getShellSpawned(handleShellSpawned)
 
 			// 处理回调消息
 			getCallback((data, peerId) => {
@@ -723,6 +779,21 @@ class UserSubfountManager {
 
 		return subfount.executor.execute(command)
 	}
+
+	/**
+	 * 清理挂起请求及其所有定时器。
+	 * @param {string} requestId - 请求 ID。
+	 * @returns {object|undefined} 被清理的挂起项。
+	 */
+	clearPending(requestId) {
+		const pending = this.pendingRequests.get(requestId)
+		if (!pending) return undefined
+		this.pendingRequests.delete(requestId)
+		if (pending.requestTimer) clearTimeout(pending.requestTimer)
+		if (pending.hostTimer) clearTimeout(pending.hostTimer)
+		if (pending.killDeadline) clearTimeout(pending.killDeadline)
+		return pending
+	}
 }
 
 // --- 全局状态 ---
@@ -807,6 +878,7 @@ export function getUserManager(username, hostPeerId = null) {
  * @param {string|Function} script - 要执行的 JavaScript 代码或独立的函数/无外界引用的闭包。
  * @param {object} callbackInfo - 回调信息。
  * @param {string|null} hostPeerId - 主机对等端 ID（可选）。
+ * @param {{requestTimeoutMs?: number|null}} [hostOptions] - 主机侧选项；`requestTimeoutMs` 覆盖 P2P 请求超时（null 表示不限时）。
  * @returns {Promise<any>} - 执行结果。
  * @example
  * // 推荐做法，便于lint检查
@@ -820,14 +892,15 @@ export function getUserManager(username, hostPeerId = null) {
  * return { width: screen.width(), height: screen.height() }
  * `)
  */
-export async function executeCodeOnSubfount(username, subfountId, script, callbackInfo = null, hostPeerId = null) {
+export async function executeCodeOnSubfount(username, subfountId, script, callbackInfo = null, hostPeerId = null, hostOptions = {}) {
 	const manager = hostPeerId ? getUserManager(username, hostPeerId) : userManagers.get(username)
 	if (!manager) throw new Error(`No manager found for user ${username}`)
 	if (script instanceof Function) script = `(${script})()`
 
 	return await manager.sendRequest(subfountId, {
 		type: 'run_code',
-		payload: { script, callbackInfo }
+		payload: { script, callbackInfo },
+		requestTimeoutMs: hostOptions.requestTimeoutMs,
 	})
 }
 
@@ -861,16 +934,23 @@ export function getConnectedSubfounts(username) {
  * @param {string|null} shell - Shell 类型（'pwsh'、'powershell'、'bash'、'sh' 或 null 表示默认）。
  * @param {object} options - 执行选项。
  * @param {string|null} hostPeerId - 主机对等端 ID（可选）。
- * @returns {Promise<any>} - 执行结果。
+ * @param {{timeoutMs?: number|null, requestTimeoutMs?: number|null}} [hostOptions] - 主机侧选项；`timeoutMs` 为主机到点发 kill 的超时（null 表示不限时），`requestTimeoutMs` 覆盖 P2P 请求超时。
+ * @returns {Promise<any>} - 执行结果（超时附 `timedOut` / `killed` / `elapsedMs`）。
  */
-export async function executeShellOnSubfount(username, subfountId, command, shell = null, options = {}, hostPeerId = null) {
+export async function executeShellOnSubfount(username, subfountId, command, shell = null, options = {}, hostPeerId = null, hostOptions = {}) {
 	const manager = hostPeerId ? getUserManager(username, hostPeerId) : userManagers.get(username)
 	if (!manager)
 		throw new Error(`No manager found for user ${username}`)
 
+	const timeoutMs = 'timeoutMs' in hostOptions ? hostOptions.timeoutMs : SHELL_DEFAULT_TIMEOUT_MS
+	const requestTimeoutMs = 'requestTimeoutMs' in hostOptions
+		? hostOptions.requestTimeoutMs
+		: timeoutMs === null ? null : timeoutMs + KILL_GRACE_MS + 5000
 	return await manager.sendRequest(subfountId, {
 		type: 'shell_exec',
-		payload: { command, shell, options }
+		payload: { command, shell, options },
+		hostTimeoutMs: timeoutMs,
+		requestTimeoutMs,
 	})
 }
 

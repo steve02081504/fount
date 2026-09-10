@@ -1,12 +1,16 @@
 /**
  * Composer：输入历史 / 影子补全 / `/` 命令面板 / 附件，与 shell 模式切换。
  */
+import { listGists } from '/parts/shells:gist/src/endpoints.mjs'
 import { attachMentionAutocomplete } from '/scripts/components/mentionAutocomplete.mjs'
 import { blobToBase64 } from '/scripts/lib/base64.mjs'
+import { memoizePromise } from '/scripts/lib/memo.mjs'
+import { svgInliner } from '/scripts/lib/svgInliner.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
 
 import * as api from './endpoints.mjs'
+import { iconElement, icons } from './icons.mjs'
 import { cycleMode } from './pills.mjs'
 import { sendMessage, syncActiveTabDraft } from './session.mjs'
 import { ATTACHMENT_MAX_BYTES, elements, getPref, richInput, setPref, store, target } from './store.mjs'
@@ -43,6 +47,49 @@ const fileProvider = async (_ctx, query, limit) => {
 	catch {
 		return []
 	}
+}
+
+/** gist 摘要缓存（30s TTL，`@` 补全每次按键都会查询）。 */
+const loadGistSummaries = memoizePromise(() => 'all', () => listGists(), { ttlMs: 30_000 })
+
+/**
+ * `@` gist 补全 provider：按标题/摘要子串匹配用户 gist。
+ * 选中插入 `@[gist:id]`，发送时（session.mjs）再展开为附件正文。
+ * @param {object} _ctx - 补全上下文（未使用）。
+ * @param {string} query - 查询子串。
+ * @param {number} limit - 结果上限。
+ * @returns {Promise<Array<{kind: string, rawToken: string, displayName: string}>>} 候选行。
+ */
+const gistProvider = async (_ctx, query, limit) => {
+	try {
+		const gists = await loadGistSummaries()
+		const needle = query.trim().toLowerCase()
+		return gists
+			.filter(gist => !needle
+				|| (gist.displayTitle || '').toLowerCase().includes(needle)
+				|| (gist.excerpt || '').toLowerCase().includes(needle))
+			.slice(0, limit)
+			.map(gist => {
+				const title = gist.displayTitle || gist.id
+				store.gistTitles.set(gist.id, title)
+				return { kind: 'gist', rawToken: `@[gist:${gist.id}]`, displayName: title }
+			})
+	}
+	catch {
+		return []
+	}
+}
+
+/**
+ * `@` 补全 provider：gist 与当前工作区文件并行匹配后合并（gist 优先）。
+ * @param {object} ctx - 补全上下文。
+ * @param {string} query - 查询子串。
+ * @param {number} limit - 结果上限。
+ * @returns {Promise<Array<object>>} 候选行。
+ */
+const mentionProvider = async (ctx, query, limit) => {
+	const [gists, files] = await Promise.all([gistProvider(ctx, query, limit), fileProvider(ctx, query, limit)])
+	return [...gists, ...files].slice(0, limit)
 }
 
 /* ---------------- 输入历史 / 影子补全 ---------------- */
@@ -243,9 +290,12 @@ function renderSlashItems() {
 		button.className = 'code-slash-item' + (index === slashActive ? ' active' : '')
 		const name = document.createElement('strong')
 		name.className = 'code-slash-item-name'
+		// 命令名来自用户目录（.agents/commands），跳过语种轮换扫描
+		name.setAttribute('user-content', '')
 		name.textContent = '/' + cmd.name
 		const desc = document.createElement('span')
 		desc.className = 'code-slash-item-desc'
+		desc.setAttribute('user-content', '')
 		desc.textContent = cmd.description || ''
 		button.append(name, desc)
 		button.addEventListener('click', () => void applySlashCommand(cmd))
@@ -374,7 +424,7 @@ export function renderAttachmentPreview() {
 		remove.type = 'button'
 		remove.className = 'code-attachment-chip-remove'
 		remove.dataset.i18n = 'code.attach.remove'
-		remove.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>'
+		remove.appendChild(iconElement(icons.close, { size: 10 }))
 		remove.addEventListener('click', () => {
 			store.pendingFiles.splice(index, 1)
 			renderAttachmentPreview()
@@ -382,6 +432,7 @@ export function renderAttachmentPreview() {
 		chip.append(name, remove)
 		return chip
 	}))
+	void svgInliner(strip)
 	strip.hidden = !store.pendingFiles.length
 }
 
@@ -552,9 +603,10 @@ export function wireComposerEvents() {
 	})
 }
 
-// 早期附加：文件补全 provider 常驻 composerInput
+// 早期附加：gist / 文件补全 provider 常驻 composerInput
 attachMentionAutocomplete(elements.composerInput, {
-	providers: [fileProvider],
+	providers: [mentionProvider],
 	trailingSpace: false,
-	listboxPrefix: 'code-file',
+	listboxPrefix: 'code-mention',
+	accessibleLabelI18n: 'code.composer.mentionSuggest',
 })

@@ -3622,6 +3622,13 @@
 			"jumpToSource": "元へ移動",
 			"sendToChat": "チャットへコピー",
 			"copied": "クリップボードにコピーしました"
+		},
+		"sourceNode": {
+			"label": "送信元ノード",
+			"block": "ブロック",
+			"blockConfirm": "送信元ノード ${node} をブロックしますか？このノードからのフェデレーション結果はフィルタリングされます。",
+			"blocked": "送信元ノードをブロックしました",
+			"blockFailed": "送信元ノードをブロックできませんでした: ${error}"
 		}
 	},
 	"easynew": {
@@ -5071,6 +5078,13 @@
 			"jumpToSource": "元へ移動",
 			"sendToSocial": "投稿へコピー",
 			"copied": "クリップボードにコピーしました"
+		},
+		"sourceNode": {
+			"label": "送信元ノード",
+			"block": "ブロック",
+			"blockConfirm": "送信元ノード ${node} をブロックしますか？このノードからのフェデレーション結果はフィルタリングされます。",
+			"blocked": "送信元ノードをブロックしました",
+			"blockFailed": "送信元ノードをブロックできませんでした: ${error}"
 		}
 	},
 	"cabinet": {
@@ -5398,7 +5412,10 @@
 		"search": {
 			"placeholder": "タイトル・要約・タグで検索…",
 			"aria-label": "記事を検索",
-			"empty": "一致する記事がありません。別のキーワードをお試しください。"
+			"empty": "一致する記事がありません。別のキーワードをお試しください。",
+			"clear": {
+				"aria-label": "検索をクリア"
+			}
 		},
 		"home": {
 			"title": "fount ホーム",
@@ -6397,20 +6414,46 @@
 		"sessions": {
 			"new": "新規セッション",
 			"untitled": "無題のセッション",
-			"yesterday": "昨日"
+			"yesterday": "昨日",
+			"delete": "会話を削除",
+			"deleteConfirm": "会話「${title}」を削除しますか？この操作は取り消せません。",
+			"deleted": "会話を削除しました"
 		},
 		"workspaces": {
 			"browse": "参照…",
 			"remove": "現在のワークスペースを削除",
+			"removeConfirm": "ワークスペース「${name}」を削除しますか？ディスク上のセッションファイルは保持されます。",
 			"none": "ワークスペース未選択",
-			"overviewEmpty": "会話はまだありません"
+			"overviewEmpty": "会話はまだありません",
+			"search": {
+				"placeholder": "ワークスペースを検索…",
+				"aria-label": "ワークスペースを検索"
+			}
 		},
 		"home": {
-			"aria-label": "ワークスペースとセッション一覧"
+			"aria-label": "ワークスペースとセッション一覧",
+			"title": "ワークスペースと会話",
+			"workspacesTitle": "ワークスペース",
+			"sessionsTitle": "会話",
+			"emptyWorkspaces": "ワークスペースがありません。「参照…」から追加してください。",
+			"search": {
+				"placeholder": "ワークスペースまたは会話を検索…",
+				"aria-label": "ワークスペースまたは会話を検索"
+			},
+			"noMatch": "一致する結果がありません"
 		},
 		"tabs": {
 			"aria-label": "セッションタブ",
-			"close": "タブを閉じる"
+			"close": "タブを閉じる",
+			"closeGenerating": "生成中のタブは閉じられません",
+			"rename": "名前を変更",
+			"closeMenu": {
+				"aria-label": "タブ操作",
+				"others": "他のタブを閉じる",
+				"left": "左側のタブを閉じる",
+				"right": "右側のタブを閉じる",
+				"all": "すべてのタブを閉じる"
+			}
 		},
 		"newTab": {
 			"aria-label": "新規セッション"
@@ -6444,7 +6487,10 @@
 			"placeholder": "コマンドを入力、Ctrl/Cmd+Enter で実行（空にするとシェルモードを終了）",
 			"placeholderNormal": "メッセージを入力…（@ でファイル参照、/ でコマンド）",
 			"placeholderShell": "シェルコマンドを入力…（例: git status）",
-			"aria-label": "メッセージ入力"
+			"aria-label": "メッセージ入力",
+			"mentionSuggest": {
+				"aria-label": "メンション候補"
+			}
 		},
 		"aiSource": {
 			"panelTitle": "AI ソース表示管理",
@@ -6505,12 +6551,22 @@
 			"done": "会話が完了しました"
 		},
 		"power": {
-			"label": "タスク完了後にシャットダウン",
-			"aria-label": "タスク完了後のシャットダウン設定",
-			"menuTitle": "すべてのタスク生成後にホストをシャットダウン",
-			"armed": "すべてのタスク完了後に ${host} をシャットダウンします",
-			"armedToast": "設定しました：すべてのタスク生成後にホストをシャットダウンします",
-			"cancelled": "タスク完了後のシャットダウンをキャンセルしました"
+			"settings": {
+				"button": "完了後の自動操作設定",
+				"aria": "完了後の自動操作設定",
+				"title": "タスク完了後の自動操作",
+				"hint": "すべてのタスクの生成が完了したら、以下のホストで選択した操作を実行します。"
+			},
+			"action": {
+				"none": "操作しない",
+				"shutdown": "シャットダウン",
+				"sleep": "スリープ",
+				"restart": "再起動"
+			},
+			"armedCount": "タスク完了後：${count} 台のホスト",
+			"armedAria": "完了後の自動操作設定：${count} 台のホスト",
+			"armedToast": "設定しました：すべてのタスク生成完了後に選択した操作を実行します",
+			"cancelled": "自動操作をキャンセルしました"
 		},
 		"home_function_buttons": {
 			"code": {
@@ -6531,6 +6587,21 @@
 			"code": {
 				"title": "コーディングから"
 			}
+		},
+		"tool": {
+			"userShell": "ターミナルコマンド",
+			"readFile": "ファイル読み込み",
+			"findFiles": "ファイル検索",
+			"searchContent": "内容検索",
+			"editFile": "ファイル編集",
+			"writeFile": "ファイル書き込み",
+			"setWorkdir": "作業ディレクトリ設定",
+			"listMachines": "マシン一覧",
+			"preload": "コンテキスト読み込み",
+			"viewFiles": "ファイル表示",
+			"addFiles": "ファイル送信",
+			"callback": "ツールコールバック",
+			"runShell": "${lang} を実行"
 		}
 	},
 	"gist": {
@@ -6568,8 +6639,8 @@
 			},
 			"noResults": "一致する gist がありません。",
 			"search": {
-				"placeholder": "タイトルを検索…",
-				"aria-label": "gist のタイトルを検索"
+				"placeholder": "gist を検索…",
+				"aria-label": "gist を検索"
 			},
 			"sortLabel": "並び替え",
 			"sort": {
@@ -6581,7 +6652,25 @@
 				"titleDesc": "タイトル（Z→A）"
 			},
 			"select": "選択",
-			"exitSelection": "選択解除"
+			"exitSelection": "選択解除",
+			"view": {
+				"grid": {
+					"title": "グリッドビュー",
+					"aria-label": "グリッドビュー"
+				},
+				"list": {
+					"title": "リストビュー",
+					"aria-label": "リストビュー"
+				}
+			},
+			"filter": {
+				"all": "全て",
+				"security": "セキュリティレベルで絞り込み",
+				"source": "ソースで絞り込み"
+			},
+			"clearSearch": "検索をクリア",
+			"emptyHint": "Markdown ファイルをこのページにドラッグすることもできます",
+			"loading": "読み込み中…"
 		},
 		"source": {
 			"manual": "手動",
@@ -6610,7 +6699,6 @@
 		"edit": {
 			"save": "保存",
 			"cancel": "戻る",
-			"title": "タイトル",
 			"editor": {
 				"placeholder": "Markdown を入力…",
 				"aria-label": "Markdown エディタ"

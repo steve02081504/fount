@@ -5,6 +5,8 @@ import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { getShellPartpath } from 'npm:@steve02081504/fount-p2p/registries/part_path'
 import { queryNetwork } from 'npm:@steve02081504/fount-p2p/wire/part/query'
 
+import { isSourceNodeBlocked, sourceNodesOf } from '../../../../../../scripts/p2p/source_block.mjs'
+
 import { buildLiveFeed } from './feed.mjs'
 
 /** 联邦直播 Feed 查询种类。 */
@@ -40,24 +42,27 @@ export async function localLiveFeedHandler(inboundContext, query) {
 }
 
 /**
+ * @param {object} row 网络行
+ * @returns {string} 去重键
+ */
+function liveRowKey(row) {
+	if (!row || typeof row !== 'object') return ''
+	const entityHash = String(/** @type {{ entityHash?: unknown }} */row.entityHash || '')
+	const liveId = String(/** @type {{ liveId?: unknown }} */row.liveId || '')
+	return entityHash && liveId ? `${entityHash}:${liveId}` : ''
+}
+
+/**
  * @param {string} username replica
  * @param {{ limit?: number }} [options] 选项
  * @returns {Promise<{ items: object[], nextCursor: null, scope: 'nearby' }>} 附近在播
  */
 export async function buildNearbyLiveFeed(username, options = {}) {
 	const limit = Math.min(Math.max(Number(options.limit) || 20, 1), 50)
-	const rows = await queryNetwork(username, getShellPartpath('social'), LIVE_FEED_KIND, { limit }, {
+	const { rows, sources } = await queryNetwork(username, getShellPartpath('social'), LIVE_FEED_KIND, { limit }, {
 		maxHits: 64,
-		/**
-		 * @param {object} row 网络行
-		 * @returns {string} 去重键
-		 */
-		rowKey: row => {
-			if (!row || typeof row !== 'object') return ''
-			const entityHash = String(/** @type {{ entityHash?: unknown }} */row.entityHash || '')
-			const liveId = String(/** @type {{ liveId?: unknown }} */row.liveId || '')
-			return entityHash && liveId ? `${entityHash}:${liveId}` : ''
-		},
+		rowKey: liveRowKey,
+		isSourceBlocked: isSourceNodeBlocked,
 	})
 	const items = []
 	for (const raw of rows) {
@@ -79,6 +84,7 @@ export async function buildNearbyLiveFeed(username, options = {}) {
 			status: 'live',
 			federated: true,
 			nodeHash: String(/** @type {{ nodeHash?: unknown }} */raw.nodeHash || ''),
+			sourceNodes: sourceNodesOf(sources, liveRowKey(raw)),
 		})
 		if (items.length >= limit) break
 	}

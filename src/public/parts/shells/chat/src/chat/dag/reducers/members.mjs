@@ -9,8 +9,6 @@ import { recordFileMasterKeyRotation } from './files.mjs'
 import { clampRepEdge } from './governance.mjs'
 import { createEmptySessionState, withGroupId } from './state.mjs'
 
-const MEMBER_KEY_RE = /^[\da-f]{64}$/u
-
 /**
  * 活跃成员 map 键 Merkle 根（64 hex pubKeyHash）。
  * @param {string[]} ids 成员键
@@ -19,7 +17,7 @@ const MEMBER_KEY_RE = /^[\da-f]{64}$/u
 function memberKeysMerkleRoot(ids) {
 	const sorted = [...new Set(ids
 		.map(id => id || '')
-		.filter(id => MEMBER_KEY_RE.test(id)))]
+		.filter(isHex64))]
 		.sort()
 	if (!sorted.length)
 		return createHash('sha256').update('', 'utf8').digest('hex')
@@ -73,7 +71,7 @@ function isJoinBanned(state, sender, joinContent = {}) {
  */
 export function resolveTargetMemberKey(content = {}) {
 	const key = String(content.targetMemberKey || content.targetPubKeyHash || '').trim()
-	return MEMBER_KEY_RE.test(key) ? key : null
+	return isHex64(key)
 }
 
 /**

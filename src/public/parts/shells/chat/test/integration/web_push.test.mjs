@@ -26,3 +26,16 @@ Deno.test('notifyUser falls back to web push when subscription exists', async ()
 	const endpoints = (data?.subscriptions || []).map(row => row.endpoint)
 	assertEquals(endpoints.includes(endpoint) || endpoints.length === 0, true)
 })
+
+Deno.test('sendWebPush reports no delivery and notifyUser falls through without subscriptions', async () => {
+	const username = `wp-${crypto.randomUUID().slice(0, 8)}`
+	const { ensureServer } = createIntegrationBoot({ username, minP2pNode: true })
+	await ensureServer()
+
+	const { sendWebPush } = await import('../../../../../../server/web_server/notify/webPush.mjs')
+	assertEquals(await sendWebPush(username, { title: 'test', body: 'body' }), false)
+
+	const { notifyUser } = await import('../../../../../../server/web_server/notify/notify.mjs')
+	// 无存活 WS、无订阅：回落到桌面通知（FOUNT_TEST 下 notify 为 no-op），不应抛出。
+	await notifyUser(username, { title: 'test', body: 'body', url: '/' })
+})

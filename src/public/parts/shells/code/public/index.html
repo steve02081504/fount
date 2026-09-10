@@ -27,18 +27,9 @@
 			<h1 class="sr-only" data-i18n="code.title"></h1>
 			<header class="code-topbar flex items-center gap-2 px-2 py-0.5 border-b border-base-content/10">
 				<div class="code-topbar-left flex items-center gap-1.5 shrink-0 min-w-0 flex-1">
-					<div class="dropdown" id="home-wrap">
-						<button class="btn btn-ghost btn-square btn-sm" id="home-toggle" type="button" data-i18n="code.home" aria-haspopup="true">
-							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-								<rect x="3" y="3" width="7" height="7" rx="1"></rect>
-								<rect x="14" y="3" width="7" height="7" rx="1"></rect>
-								<rect x="3" y="14" width="7" height="7" rx="1"></rect>
-								<path d="M17.5 14v7"></path>
-								<path d="M14 17.5h7"></path>
-							</svg>
-						</button>
-						<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 w-80 p-2 shadow" id="home-menu"></ul>
-					</div>
+					<button class="btn btn-ghost btn-square btn-sm" id="home-toggle" type="button" data-i18n="code.home" aria-haspopup="dialog">
+						<img src="https://api.iconify.design/mdi/view-dashboard-outline.svg" class="text-icon" width="16" height="16" alt="" aria-hidden="true" />
+					</button>
 					<div class="code-tab-strip" id="tab-strip" role="toolbar" data-i18n="code.tabs"></div>
 				</div>
 			</header>
@@ -53,20 +44,21 @@
 					<div class="code-composer-controls">
 						<div class="code-composer-controls-main" id="composer-controls-main">
 							<button class="btn btn-ghost btn-square btn-sm" id="attach-button" type="button" data-i18n="code.attach.add">
-								<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+								<img src="https://api.iconify.design/mdi/paperclip.svg" class="text-icon" width="15" height="15" alt="" aria-hidden="true" />
 							</button>
 						</div>
 						<button type="button" class="code-composer-send btn btn-square btn-primary shrink-0 w-8" id="send-button" data-i18n="code.composer.sendButton">
-							<svg id="send-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-								<path d="M12 19V5"></path>
-								<path d="M5 12l7-7 7 7"></path>
-							</svg>
+							<img id="send-icon" src="https://api.iconify.design/mdi/arrow-up.svg" class="text-icon" width="16" height="16" alt="" aria-hidden="true" />
 						</button>
 					</div>
 				</div>
 				<div class="code-composer-hint" id="composer-hint" data-i18n="code.composer.hint"></div>
 				<div class="code-composer-targets" id="composer-targets"></div>
+				<div class="code-composer-power-actions" id="composer-power-actions">
+					<button type="button" class="btn btn-sm btn-ghost" id="power-settings-button" data-i18n="code.power.settings.button"></button>
+				</div>
 			</div>
+			<div id="code-tab-menu" class="code-tab-menu fixed hidden z-50 min-w-44 rounded-box border border-base-300 bg-base-100 p-1 shadow-xl" role="menu"></div>
 		</main>
 	</div>
 	<script type="module" src="./index.mjs"></script>
