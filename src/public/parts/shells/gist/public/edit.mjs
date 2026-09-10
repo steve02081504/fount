@@ -66,7 +66,7 @@ async function renderPreview() {
  * @returns {void}
  */
 function insertPlainText(text) {
-	if (!text?.trim()) return
+	if (!text.trim()) return
 	richInput.focus()
 	document.execCommand('insertText', false, text)
 	richInput.element.dispatchEvent(new Event('input', { bubbles: true }))
