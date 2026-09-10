@@ -3216,6 +3216,12 @@
 		"home_function_buttons": {
 			"chatHub": {
 				"title": "チャット"
+			},
+			"frequent": {
+				"title": null
+			},
+			"network": {
+				"title": null
 			}
 		},
 		"profile": {
@@ -5930,19 +5936,6 @@
 			"generalError": "エラーが発生しました: ${message}"
 		},
 		"home_function_buttons": {
-			"in_dev": {
-				"title": "開発中",
-				"sub_items": {
-					"subfounts_related": {
-						"title": "サブデバイス",
-						"sub_items": {
-							"main": {
-								"title": "サブデバイスの管理"
-							}
-						}
-					}
-				}
-			},
 			"network": {
 				"title": "接続",
 				"sub_items": {

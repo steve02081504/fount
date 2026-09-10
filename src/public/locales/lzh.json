@@ -3216,6 +3216,12 @@
 		"home_function_buttons": {
 			"chatHub": {
 				"title": "聊天"
+			},
+			"frequent": {
+				"title": "常用"
+			},
+			"network": {
+				"title": "互联"
 			}
 		},
 		"profile": {
@@ -4122,6 +4128,9 @@
 		"home_function_buttons": {
 			"manage": {
 				"title": "掌理源流"
+			},
+			"frequent": {
+				"title": "常用"
 			}
 		}
 	},
@@ -4392,6 +4401,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "廣場"
+			},
+			"frequent": {
+				"title": "常用"
+			},
+			"network": {
+				"title": "互联"
 			}
 		},
 		"nav": {
@@ -5079,6 +5094,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "藏經閣"
+			},
+			"asset": {
+				"title": "资产"
 			}
 		},
 		"upload": "傳",
@@ -5260,6 +5278,14 @@
 				"sub_items": {
 					"terminalAssist": {
 						"title": "終端輔佐"
+					}
+				}
+			},
+			"dev": {
+				"title": "开发",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "终端辅助"
 					}
 				}
 			}
@@ -5784,6 +5810,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "從他器訪問"
+			},
+			"frequent": {
+				"title": "常用"
+			},
+			"network": {
+				"title": "互联"
 			}
 		}
 	},
@@ -5904,16 +5936,11 @@
 			"generalError": "有誤發生: ${message}"
 		},
 		"home_function_buttons": {
-			"in_dev": {
-				"title": "開發中",
+			"network": {
+				"title": "互联",
 				"sub_items": {
-					"subfounts_related": {
-						"title": "子器",
-						"sub_items": {
-							"main": {
-								"title": "治子器"
-							}
-						}
+					"subfounts": {
+						"title": "子设备"
 					}
 				}
 			}
@@ -6482,6 +6509,9 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
+			},
+			"dev": {
+				"title": "开发"
 			}
 		},
 		"gist_source_plugins": {
@@ -6506,6 +6536,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "gist 文庫"
+			},
+			"asset": {
+				"title": "资产"
 			}
 		},
 		"list": {

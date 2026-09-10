@@ -3216,6 +3216,12 @@
 		"home_function_buttons": {
 			"chatHub": {
 				"title": "💬"
+			},
+			"frequent": {
+				"title": "常用"
+			},
+			"network": {
+				"title": "互联"
 			}
 		},
 		"profile": {
@@ -4122,6 +4128,9 @@
 		"home_function_buttons": {
 			"manage": {
 				"title": "⚙️🚰"
+			},
+			"frequent": {
+				"title": "常用"
 			}
 		}
 	},
@@ -4392,6 +4401,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "🏛️"
+			},
+			"frequent": {
+				"title": "常用"
+			},
+			"network": {
+				"title": "互联"
 			}
 		},
 		"nav": {
@@ -5079,6 +5094,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "🗄️"
+			},
+			"asset": {
+				"title": "资产"
 			}
 		},
 		"upload": "⬆️",
@@ -5260,6 +5278,14 @@
 				"sub_items": {
 					"terminalAssist": {
 						"title": "💻🦾"
+					}
+				}
+			},
+			"dev": {
+				"title": "开发",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "终端辅助"
 					}
 				}
 			}
@@ -5784,6 +5810,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "💻📱➡️⛲"
+			},
+			"frequent": {
+				"title": "常用"
+			},
+			"network": {
+				"title": "互联"
 			}
 		}
 	},
@@ -5904,16 +5936,11 @@
 			"generalError": "💥: ${message}"
 		},
 		"home_function_buttons": {
-			"in_dev": {
-				"title": "🚧",
+			"network": {
+				"title": "互联",
 				"sub_items": {
-					"subfounts_related": {
-						"title": "📱👶",
-						"sub_items": {
-							"main": {
-								"title": "⚙️📱👶"
-							}
-						}
+					"subfounts": {
+						"title": "子设备"
 					}
 				}
 			}
@@ -6482,6 +6509,9 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "💻"
+			},
+			"dev": {
+				"title": "开发"
 			}
 		},
 		"gist_source_plugins": {
@@ -6506,6 +6536,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "📄📚"
+			},
+			"asset": {
+				"title": "资产"
 			}
 		},
 		"list": {

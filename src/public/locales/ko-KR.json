@@ -3216,6 +3216,12 @@
 		"home_function_buttons": {
 			"chatHub": {
 				"title": "채팅"
+			},
+			"frequent": {
+				"title": null
+			},
+			"network": {
+				"title": null
 			}
 		},
 		"profile": {
@@ -5903,21 +5909,7 @@
 			"saveSettingsFailed": "공익 설정을 저장하지 못했습니다: ${message}",
 			"generalError": "오류가 발생했습니다: ${message}"
 		},
-		"home_function_buttons": {
-			"in_dev": {
-				"title": "개발중",
-				"sub_items": {
-					"subfounts_related": {
-						"title": "하위 장치",
-						"sub_items": {
-							"main": {
-								"title": "하위 장치 관리"
-							}
-						}
-					}
-				}
-			}
-		}
+		"home_function_buttons": {}
 	},
 	"achievements": {
 		"title": "성취",

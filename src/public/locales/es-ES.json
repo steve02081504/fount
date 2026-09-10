@@ -3222,6 +3222,12 @@
 		"home_function_buttons": {
 			"chatHub": {
 				"title": "charlar"
+			},
+			"frequent": {
+				"title": null
+			},
+			"network": {
+				"title": null
 			}
 		},
 		"profile": {
@@ -5909,21 +5915,7 @@
 			"saveSettingsFailed": "No se pudo guardar la configuración de bien público: ${message}",
 			"generalError": "Se produjo un error: ${message}"
 		},
-		"home_function_buttons": {
-			"in_dev": {
-				"title": "En desarrollo",
-				"sub_items": {
-					"subfounts_related": {
-						"title": "subdispositivo",
-						"sub_items": {
-							"main": {
-								"title": "Administrar subdispositivos"
-							}
-						}
-					}
-				}
-			}
-		}
+		"home_function_buttons": {}
 	},
 	"achievements": {
 		"title": "Logro",

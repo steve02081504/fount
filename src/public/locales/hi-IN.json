@@ -3216,6 +3216,12 @@
 		"home_function_buttons": {
 			"chatHub": {
 				"title": "चैट"
+			},
+			"frequent": {
+				"title": null
+			},
+			"network": {
+				"title": null
 			}
 		},
 		"profile": {
@@ -5903,21 +5909,7 @@
 			"saveSettingsFailed": "सार्वजनिक-हित सेटिंग सहेजने में विफल: ${message}",
 			"generalError": "एक त्रुटि उत्पन्न हुई: ${message}"
 		},
-		"home_function_buttons": {
-			"in_dev": {
-				"title": "अल्प विकास",
-				"sub_items": {
-					"subfounts_related": {
-						"title": "उपयंत्र",
-						"sub_items": {
-							"main": {
-								"title": "उप-उपकरण प्रबंधित करें"
-							}
-						}
-					}
-				}
-			}
-		}
+		"home_function_buttons": {}
 	},
 	"achievements": {
 		"title": "उपलब्धि",

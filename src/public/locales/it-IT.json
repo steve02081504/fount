@@ -3222,6 +3222,12 @@
 		"home_function_buttons": {
 			"chatHub": {
 				"title": "Chiacchierata"
+			},
+			"frequent": {
+				"title": null
+			},
+			"network": {
+				"title": null
 			}
 		},
 		"profile": {
@@ -5909,21 +5915,7 @@
 			"saveSettingsFailed": "Impossibile salvare le impostazioni di bene pubblico: ${message}",
 			"generalError": "Si è verificato un errore: ${message}"
 		},
-		"home_function_buttons": {
-			"in_dev": {
-				"title": "In fase di sviluppo",
-				"sub_items": {
-					"subfounts_related": {
-						"title": "sottodispositivo",
-						"sub_items": {
-							"main": {
-								"title": "Gestisci i sotto-dispositivi"
-							}
-						}
-					}
-				}
-			}
-		}
+		"home_function_buttons": {}
 	},
 	"achievements": {
 		"title": "Risultato",

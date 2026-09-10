@@ -3216,6 +3216,12 @@
 		"home_function_buttons": {
 			"chatHub": {
 				"title": "trò chuyện"
+			},
+			"frequent": {
+				"title": null
+			},
+			"network": {
+				"title": null
 			}
 		},
 		"profile": {
@@ -5903,21 +5909,7 @@
 			"saveSettingsFailed": "Không lưu được cài đặt công ích: ${message}",
 			"generalError": "Đã xảy ra lỗi: ${message}"
 		},
-		"home_function_buttons": {
-			"in_dev": {
-				"title": "Đang được phát triển",
-				"sub_items": {
-					"subfounts_related": {
-						"title": "thiết bị phụ",
-						"sub_items": {
-							"main": {
-								"title": "Quản lý thiết bị phụ"
-							}
-						}
-					}
-				}
-			}
-		}
+		"home_function_buttons": {}
 	},
 	"achievements": {
 		"title": "Thành tích",

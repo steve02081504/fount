@@ -3222,6 +3222,9 @@
 		"home_function_buttons": {
 			"chatHub": {
 				"title": "Chatten"
+			},
+			"frequent": {
+				"title": null
 			}
 		},
 		"profile": {
@@ -5909,21 +5912,7 @@
 			"saveSettingsFailed": "Kan instellingen voor algemeen nut niet opslaan: ${message}",
 			"generalError": "Er is een fout opgetreden: ${message}"
 		},
-		"home_function_buttons": {
-			"in_dev": {
-				"title": "In ontwikkeling",
-				"sub_items": {
-					"subfounts_related": {
-						"title": "subapparaat",
-						"sub_items": {
-							"main": {
-								"title": "Beheer subapparaten"
-							}
-						}
-					}
-				}
-			}
-		}
+		"home_function_buttons": {}
 	},
 	"achievements": {
 		"title": "Prestatie",

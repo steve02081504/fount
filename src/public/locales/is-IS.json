@@ -3216,6 +3216,12 @@
 		"home_function_buttons": {
 			"chatHub": {
 				"title": "Spjall"
+			},
+			"frequent": {
+				"title": null
+			},
+			"network": {
+				"title": null
 			}
 		},
 		"profile": {
@@ -5903,21 +5909,7 @@
 			"saveSettingsFailed": "Mistókst að vista stillingar almannaheillar: ${message}",
 			"generalError": "Villa kom upp: ${message}"
 		},
-		"home_function_buttons": {
-			"in_dev": {
-				"title": "Undir þróun",
-				"sub_items": {
-					"subfounts_related": {
-						"title": "undirtæki",
-						"sub_items": {
-							"main": {
-								"title": "Stjórna undirtækjum"
-							}
-						}
-					}
-				}
-			}
-		}
+		"home_function_buttons": {}
 	},
 	"achievements": {
 		"title": "Afrek",

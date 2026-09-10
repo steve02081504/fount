@@ -3179,6 +3179,12 @@ export type LocaleData = {
 			chatHub: {
 				title: string
 			}
+			frequent: {
+				title: string
+			}
+			network: {
+				title: string
+			}
 		}
 		profile: {
 			title: string
@@ -4085,6 +4091,9 @@ export type LocaleData = {
 			manage: {
 				title: string
 			}
+			frequent: {
+				title: string
+			}
 		}
 	}
 	telegram_bots: {
@@ -4353,6 +4362,12 @@ export type LocaleData = {
 		dwellFailed: string
 		home_function_buttons: {
 			main: {
+				title: string
+			}
+			frequent: {
+				title: string
+			}
+			network: {
 				title: string
 			}
 		}
@@ -5042,6 +5057,9 @@ export type LocaleData = {
 			main: {
 				title: string
 			}
+			asset: {
+				title: string
+			}
 		}
 		upload: string
 		uploadFolder: string
@@ -5218,6 +5236,14 @@ export type LocaleData = {
 		}
 		home_function_buttons: {
 			integration_related: {
+				title: string
+				sub_items: {
+					terminalAssist: {
+						title: string
+					}
+				}
+			}
+			dev: {
 				title: string
 				sub_items: {
 					terminalAssist: {
@@ -5747,6 +5773,12 @@ export type LocaleData = {
 			main: {
 				title: string
 			}
+			frequent: {
+				title: string
+			}
+			network: {
+				title: string
+			}
 		}
 	}
 	proxy: {
@@ -5866,16 +5898,11 @@ export type LocaleData = {
 			generalError: string
 		}
 		home_function_buttons: {
-			in_dev: {
+			network: {
 				title: string
 				sub_items: {
-					subfounts_related: {
+					subfounts: {
 						title: string
-						sub_items: {
-							main: {
-								title: string
-							}
-						}
 					}
 				}
 			}
@@ -6445,6 +6472,9 @@ export type LocaleData = {
 			code: {
 				title: string
 			}
+			dev: {
+				title: string
+			}
 		}
 		gist_source_plugins: {
 			creating: string
@@ -6467,6 +6497,9 @@ export type LocaleData = {
 		}
 		home_function_buttons: {
 			main: {
+				title: string
+			}
+			asset: {
 				title: string
 			}
 		}

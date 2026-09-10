@@ -3216,6 +3216,12 @@
 		"home_function_buttons": {
 			"chatHub": {
 				"title": "محادثة"
+			},
+			"frequent": {
+				"title": null
+			},
+			"network": {
+				"title": null
 			}
 		},
 		"profile": {
@@ -5913,21 +5919,7 @@
 			"saveSettingsFailed": "فشل حفظ إعدادات المنفعة العامة: ${message}",
 			"generalError": "حدث خطأ: ${message}"
 		},
-		"home_function_buttons": {
-			"in_dev": {
-				"title": "قيد التطوير",
-				"sub_items": {
-					"subfounts_related": {
-						"title": "جهاز فرعي",
-						"sub_items": {
-							"main": {
-								"title": "إدارة الأجهزة الفرعية"
-							}
-						}
-					}
-				}
-			}
-		}
+		"home_function_buttons": {}
 	},
 	"achievements": {
 		"title": "إنجاز",

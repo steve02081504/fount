@@ -3222,6 +3222,12 @@
 		"home_function_buttons": {
 			"chatHub": {
 				"title": "Bater papo"
+			},
+			"frequent": {
+				"title": null
+			},
+			"network": {
+				"title": null
 			}
 		},
 		"profile": {
@@ -5909,21 +5915,7 @@
 			"saveSettingsFailed": "Falha ao guardar as definições de bem público: ${message}",
 			"generalError": "Ocorreu um erro: ${message}"
 		},
-		"home_function_buttons": {
-			"in_dev": {
-				"title": "Em desenvolvimento",
-				"sub_items": {
-					"subfounts_related": {
-						"title": "subdispositivo",
-						"sub_items": {
-							"main": {
-								"title": "Gerenciar subdispositivos"
-							}
-						}
-					}
-				}
-			}
-		}
+		"home_function_buttons": {}
 	},
 	"achievements": {
 		"title": "Conquista",

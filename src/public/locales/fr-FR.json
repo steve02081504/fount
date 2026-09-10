@@ -3222,6 +3222,12 @@
 		"home_function_buttons": {
 			"chatHub": {
 				"title": "Chat"
+			},
+			"frequent": {
+				"title": null
+			},
+			"network": {
+				"title": null
 			}
 		},
 		"profile": {
@@ -5909,21 +5915,7 @@
 			"saveSettingsFailed": "Échec de l’enregistrement des paramètres de bien public : ${message}",
 			"generalError": "Une erreur s'est produite : ${message}"
 		},
-		"home_function_buttons": {
-			"in_dev": {
-				"title": "En développement",
-				"sub_items": {
-					"subfounts_related": {
-						"title": "sous-appareil",
-						"sub_items": {
-							"main": {
-								"title": "Gérer les sous-appareils"
-							}
-						}
-					}
-				}
-			}
-		}
+		"home_function_buttons": {}
 	},
 	"achievements": {
 		"title": "Réalisation",

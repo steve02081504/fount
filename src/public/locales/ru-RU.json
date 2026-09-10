@@ -3216,6 +3216,9 @@
 		"home_function_buttons": {
 			"chatHub": {
 				"title": "Чат"
+			},
+			"frequent": {
+				"title": null
 			}
 		},
 		"profile": {
@@ -5911,21 +5914,7 @@
 			"saveSettingsFailed": "Не удалось сохранить настройки общественного блага: ${message}",
 			"generalError": "Произошла ошибка: `${message}"
 		},
-		"home_function_buttons": {
-			"in_dev": {
-				"title": "В разработке",
-				"sub_items": {
-					"subfounts_related": {
-						"title": "субустройство",
-						"sub_items": {
-							"main": {
-								"title": "Управление подустройствами"
-							}
-						}
-					}
-				}
-			}
-		}
+		"home_function_buttons": {}
 	},
 	"achievements": {
 		"title": "Достижение",

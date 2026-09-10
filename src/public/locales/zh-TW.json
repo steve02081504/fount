@@ -3215,6 +3215,9 @@
 		"home_function_buttons": {
 			"chatHub": {
 				"title": "聊天"
+			},
+			"frequent": {
+				"title": null
 			}
 		},
 		"profile": {
@@ -5902,21 +5905,7 @@
 			"saveSettingsFailed": "儲存公益設定失敗: ${message}",
 			"generalError": "發生錯誤: ${message}"
 		},
-		"home_function_buttons": {
-			"in_dev": {
-				"title": "正在開發",
-				"sub_items": {
-					"subfounts_related": {
-						"title": "子裝置",
-						"sub_items": {
-							"main": {
-								"title": "管理子裝置"
-							}
-						}
-					}
-				}
-			}
-		}
+		"home_function_buttons": {}
 	},
 	"achievements": {
 		"title": "成就",
