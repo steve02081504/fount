@@ -3218,10 +3218,10 @@
 				"title": "trò chuyện"
 			},
 			"frequent": {
-				"title": "Thường được sử dụng"
+				"title": "Thường dùng"
 			},
 			"network": {
-				"title": "liên kết với nhau"
+				"title": "Mạng"
 			}
 		},
 		"profile": {
@@ -4130,7 +4130,7 @@
 				"title": "Quản lý nguồn dịch vụ"
 			},
 			"frequent": {
-				"title": "Thường được sử dụng"
+				"title": "Thường dùng"
 			}
 		}
 	},
@@ -4403,10 +4403,10 @@
 				"title": "Quảng trường"
 			},
 			"frequent": {
-				"title": "Thường được sử dụng"
+				"title": "Thường dùng"
 			},
 			"network": {
-				"title": "liên kết với nhau"
+				"title": "Mạng"
 			}
 		},
 		"nav": {
@@ -5096,7 +5096,7 @@
 				"title": "Tủ hồ sơ"
 			},
 			"asset": {
-				"title": "tài sản"
+				"title": "Tài nguyên"
 			}
 		},
 		"upload": "tải lên",
@@ -5282,10 +5282,10 @@
 				}
 			},
 			"dev": {
-				"title": "phát triển",
+				"title": "Phát triển",
 				"sub_items": {
 					"terminalAssist": {
-						"title": "hỗ trợ thiết bị đầu cuối"
+						"title": "Hỗ trợ Terminal"
 					}
 				}
 			}
@@ -5812,10 +5812,10 @@
 				"title": "Truy cập trên thiết bị khác"
 			},
 			"frequent": {
-				"title": "Thường được sử dụng"
+				"title": "Thường dùng"
 			},
 			"network": {
-				"title": "liên kết với nhau"
+				"title": "Mạng"
 			}
 		}
 	},
@@ -5937,7 +5937,7 @@
 		},
 		"home_function_buttons": {
 			"network": {
-				"title": "liên kết với nhau",
+				"title": "Mạng",
 				"sub_items": {
 					"subfounts": {
 						"title": "thiết bị phụ"
@@ -6511,7 +6511,7 @@
 				"title": "Code"
 			},
 			"dev": {
-				"title": "phát triển"
+				"title": "Phát triển"
 			}
 		},
 		"gist_source_plugins": {
@@ -6538,7 +6538,7 @@
 				"title": "Thư viện gist"
 			},
 			"asset": {
-				"title": "tài sản"
+				"title": "Tài nguyên"
 			}
 		},
 		"list": {

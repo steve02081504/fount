@@ -3224,10 +3224,10 @@
 				"title": "Bater papo"
 			},
 			"frequent": {
-				"title": "Comumente usado"
+				"title": "Frequentes"
 			},
 			"network": {
-				"title": "interligados"
+				"title": "Rede"
 			}
 		},
 		"profile": {
@@ -4136,7 +4136,7 @@
 				"title": "Gerenciar fount de serviço"
 			},
 			"frequent": {
-				"title": "Comumente usado"
+				"title": "Frequentes"
 			}
 		}
 	},
@@ -4409,10 +4409,10 @@
 				"title": "Praça"
 			},
 			"frequent": {
-				"title": "Comumente usado"
+				"title": "Frequentes"
 			},
 			"network": {
-				"title": "interligados"
+				"title": "Rede"
 			}
 		},
 		"nav": {
@@ -5102,7 +5102,7 @@
 				"title": "Armário"
 			},
 			"asset": {
-				"title": "ativos"
+				"title": "Recursos"
 			}
 		},
 		"upload": "Carregar",
@@ -5288,10 +5288,10 @@
 				}
 			},
 			"dev": {
-				"title": "desenvolver",
+				"title": "Desenvolvimento",
 				"sub_items": {
 					"terminalAssist": {
-						"title": "assistência terminal"
+						"title": "Assistente de Terminal"
 					}
 				}
 			}
@@ -5818,10 +5818,10 @@
 				"title": "Acesso em outros dispositivos"
 			},
 			"frequent": {
-				"title": "Comumente usado"
+				"title": "Frequentes"
 			},
 			"network": {
-				"title": "interligados"
+				"title": "Rede"
 			}
 		}
 	},
@@ -5943,7 +5943,7 @@
 		},
 		"home_function_buttons": {
 			"network": {
-				"title": "interligados",
+				"title": "Rede",
 				"sub_items": {
 					"subfounts": {
 						"title": "subdispositivo"
@@ -6517,7 +6517,7 @@
 				"title": "Code"
 			},
 			"dev": {
-				"title": "desenvolver"
+				"title": "Desenvolvimento"
 			}
 		},
 		"gist_source_plugins": {
@@ -6544,7 +6544,7 @@
 				"title": "Biblioteca de gists"
 			},
 			"asset": {
-				"title": "ativos"
+				"title": "Recursos"
 			}
 		},
 		"list": {

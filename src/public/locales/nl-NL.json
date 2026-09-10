@@ -3227,7 +3227,7 @@
 				"title": "Vaak gebruikt"
 			},
 			"network": {
-				"title": "met elkaar verbonden"
+				"title": "Netwerk"
 			}
 		},
 		"profile": {
@@ -4412,7 +4412,7 @@
 				"title": "Vaak gebruikt"
 			},
 			"network": {
-				"title": "met elkaar verbonden"
+				"title": "Netwerk"
 			}
 		},
 		"nav": {
@@ -5102,7 +5102,7 @@
 				"title": "Cabinet"
 			},
 			"asset": {
-				"title": "activa"
+				"title": "Bronnen"
 			}
 		},
 		"upload": "Uploaden",
@@ -5288,10 +5288,10 @@
 				}
 			},
 			"dev": {
-				"title": "ontwikkelen",
+				"title": "Ontwikkeling",
 				"sub_items": {
 					"terminalAssist": {
-						"title": "terminale hulp"
+						"title": "Terminale hulp"
 					}
 				}
 			}
@@ -5821,7 +5821,7 @@
 				"title": "Vaak gebruikt"
 			},
 			"network": {
-				"title": "met elkaar verbonden"
+				"title": "Netwerk"
 			}
 		}
 	},
@@ -5943,7 +5943,7 @@
 		},
 		"home_function_buttons": {
 			"network": {
-				"title": "met elkaar verbonden",
+				"title": "Netwerk",
 				"sub_items": {
 					"subfounts": {
 						"title": "subapparaat"
@@ -6517,7 +6517,7 @@
 				"title": "Code"
 			},
 			"dev": {
-				"title": "ontwikkelen"
+				"title": "Ontwikkeling"
 			}
 		},
 		"gist_source_plugins": {
@@ -6544,7 +6544,7 @@
 				"title": "Gist-bibliotheek"
 			},
 			"asset": {
-				"title": "activa"
+				"title": "Bronnen"
 			}
 		},
 		"list": {
