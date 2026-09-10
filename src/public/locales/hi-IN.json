@@ -3218,10 +3218,10 @@
 				"title": "चैट"
 			},
 			"frequent": {
-				"title": null
+				"title": "आमतौर पर इस्तेमाल हुआ"
 			},
 			"network": {
-				"title": null
+				"title": "परस्पर"
 			}
 		},
 		"profile": {
@@ -4128,6 +4128,9 @@
 		"home_function_buttons": {
 			"manage": {
 				"title": "सेवा स्रोत प्रबंधित करें"
+			},
+			"frequent": {
+				"title": "आमतौर पर इस्तेमाल हुआ"
 			}
 		}
 	},
@@ -4398,6 +4401,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "फ़ीड"
+			},
+			"frequent": {
+				"title": "आमतौर पर इस्तेमाल हुआ"
+			},
+			"network": {
+				"title": "परस्पर"
 			}
 		},
 		"nav": {
@@ -5085,6 +5094,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "फ़ाइल कैबिनेट"
+			},
+			"asset": {
+				"title": "संपत्ति"
 			}
 		},
 		"upload": "अपलोड करें",
@@ -5266,6 +5278,14 @@
 				"sub_items": {
 					"terminalAssist": {
 						"title": "टर्मिनल असिस्ट"
+					}
+				}
+			},
+			"dev": {
+				"title": "विकास करना",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "टर्मिनल सहायता"
 					}
 				}
 			}
@@ -5790,6 +5810,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "अन्य डिवाइस पर पहुँचें"
+			},
+			"frequent": {
+				"title": "आमतौर पर इस्तेमाल हुआ"
+			},
+			"network": {
+				"title": "परस्पर"
 			}
 		}
 	},
@@ -5909,7 +5935,16 @@
 			"saveSettingsFailed": "सार्वजनिक-हित सेटिंग सहेजने में विफल: ${message}",
 			"generalError": "एक त्रुटि उत्पन्न हुई: ${message}"
 		},
-		"home_function_buttons": {}
+		"home_function_buttons": {
+			"network": {
+				"title": "परस्पर",
+				"sub_items": {
+					"subfounts": {
+						"title": "उपयंत्र"
+					}
+				}
+			}
+		}
 	},
 	"achievements": {
 		"title": "उपलब्धि",
@@ -6474,6 +6509,9 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
+			},
+			"dev": {
+				"title": "विकास करना"
 			}
 		},
 		"gist_source_plugins": {
@@ -6498,6 +6536,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "gist पुस्तकालय"
+			},
+			"asset": {
+				"title": "संपत्ति"
 			}
 		},
 		"list": {

@@ -3217,7 +3217,10 @@
 				"title": "聊天"
 			},
 			"frequent": {
-				"title": null
+				"title": "常用"
+			},
+			"network": {
+				"title": "互聯"
 			}
 		},
 		"profile": {
@@ -4124,6 +4127,9 @@
 		"home_function_buttons": {
 			"manage": {
 				"title": "管理服務來源"
+			},
+			"frequent": {
+				"title": "常用"
 			}
 		}
 	},
@@ -4394,6 +4400,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "廣場"
+			},
+			"frequent": {
+				"title": "常用"
+			},
+			"network": {
+				"title": "互聯"
 			}
 		},
 		"nav": {
@@ -5081,6 +5093,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "文件櫃"
+			},
+			"asset": {
+				"title": "資產"
 			}
 		},
 		"upload": "上傳",
@@ -5259,6 +5274,14 @@
 		"home_function_buttons": {
 			"integration_related": {
 				"title": "整合",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "終端輔助"
+					}
+				}
+			},
+			"dev": {
+				"title": "開發",
 				"sub_items": {
 					"terminalAssist": {
 						"title": "終端輔助"
@@ -5786,6 +5809,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "在其他設備訪問"
+			},
+			"frequent": {
+				"title": "常用"
+			},
+			"network": {
+				"title": "互聯"
 			}
 		}
 	},
@@ -5905,7 +5934,16 @@
 			"saveSettingsFailed": "儲存公益設定失敗: ${message}",
 			"generalError": "發生錯誤: ${message}"
 		},
-		"home_function_buttons": {}
+		"home_function_buttons": {
+			"network": {
+				"title": "互聯",
+				"sub_items": {
+					"subfounts": {
+						"title": "子裝置"
+					}
+				}
+			}
+		}
 	},
 	"achievements": {
 		"title": "成就",
@@ -6470,6 +6508,9 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
+			},
+			"dev": {
+				"title": "開發"
 			}
 		},
 		"gist_source_plugins": {
@@ -6494,6 +6535,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Gist 文件庫"
+			},
+			"asset": {
+				"title": "資產"
 			}
 		},
 		"list": {

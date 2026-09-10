@@ -3218,10 +3218,10 @@
 				"title": "Spjall"
 			},
 			"frequent": {
-				"title": null
+				"title": "Algengt notað"
 			},
 			"network": {
-				"title": null
+				"title": "samtengd"
 			}
 		},
 		"profile": {
@@ -4128,6 +4128,9 @@
 		"home_function_buttons": {
 			"manage": {
 				"title": "Stjórna þjónustuveitu"
+			},
+			"frequent": {
+				"title": "Algengt notað"
 			}
 		}
 	},
@@ -4398,6 +4401,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Torg"
+			},
+			"frequent": {
+				"title": "Algengt notað"
+			},
+			"network": {
+				"title": "samtengd"
 			}
 		},
 		"nav": {
@@ -5085,6 +5094,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Skjalaskápur"
+			},
+			"asset": {
+				"title": "eignir"
 			}
 		},
 		"upload": "Hlaða upp",
@@ -5266,6 +5278,14 @@
 				"sub_items": {
 					"terminalAssist": {
 						"title": "Terminal Assistance"
+					}
+				}
+			},
+			"dev": {
+				"title": "þróast",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "flugstöðvaraðstoð"
 					}
 				}
 			}
@@ -5790,6 +5810,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Aðgangur að öðrum tækjum"
+			},
+			"frequent": {
+				"title": "Algengt notað"
+			},
+			"network": {
+				"title": "samtengd"
 			}
 		}
 	},
@@ -5909,7 +5935,16 @@
 			"saveSettingsFailed": "Mistókst að vista stillingar almannaheillar: ${message}",
 			"generalError": "Villa kom upp: ${message}"
 		},
-		"home_function_buttons": {}
+		"home_function_buttons": {
+			"network": {
+				"title": "samtengd",
+				"sub_items": {
+					"subfounts": {
+						"title": "undirtæki"
+					}
+				}
+			}
+		}
 	},
 	"achievements": {
 		"title": "Afrek",
@@ -6474,6 +6509,9 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
+			},
+			"dev": {
+				"title": "þróast"
 			}
 		},
 		"gist_source_plugins": {
@@ -6498,6 +6536,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Gist-safn"
+			},
+			"asset": {
+				"title": "eignir"
 			}
 		},
 		"list": {

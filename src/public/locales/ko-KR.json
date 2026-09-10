@@ -3218,10 +3218,10 @@
 				"title": "채팅"
 			},
 			"frequent": {
-				"title": null
+				"title": "일반적으로 사용되는"
 			},
 			"network": {
-				"title": null
+				"title": "상호 연결됨"
 			}
 		},
 		"profile": {
@@ -4128,6 +4128,9 @@
 		"home_function_buttons": {
 			"manage": {
 				"title": "서비스 소스 관리"
+			},
+			"frequent": {
+				"title": "일반적으로 사용되는"
 			}
 		}
 	},
@@ -4398,6 +4401,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "정사각형"
+			},
+			"frequent": {
+				"title": "일반적으로 사용되는"
+			},
+			"network": {
+				"title": "상호 연결됨"
 			}
 		},
 		"nav": {
@@ -5085,6 +5094,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "서류 캐비넷"
+			},
+			"asset": {
+				"title": "자산"
 			}
 		},
 		"upload": "업로드",
@@ -5263,6 +5275,14 @@
 		"home_function_buttons": {
 			"integration_related": {
 				"title": "통합",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "터미널 지원"
+					}
+				}
+			},
+			"dev": {
+				"title": "개발하다",
 				"sub_items": {
 					"terminalAssist": {
 						"title": "터미널 지원"
@@ -5790,6 +5810,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "다른 디바이스에서 접속"
+			},
+			"frequent": {
+				"title": "일반적으로 사용되는"
+			},
+			"network": {
+				"title": "상호 연결됨"
 			}
 		}
 	},
@@ -5909,7 +5935,16 @@
 			"saveSettingsFailed": "공익 설정을 저장하지 못했습니다: ${message}",
 			"generalError": "오류가 발생했습니다: ${message}"
 		},
-		"home_function_buttons": {}
+		"home_function_buttons": {
+			"network": {
+				"title": "상호 연결됨",
+				"sub_items": {
+					"subfounts": {
+						"title": "하위 장치"
+					}
+				}
+			}
+		}
 	},
 	"achievements": {
 		"title": "성취",
@@ -6474,6 +6509,9 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
+			},
+			"dev": {
+				"title": "개발하다"
 			}
 		},
 		"gist_source_plugins": {
@@ -6498,6 +6536,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Gist 보관함"
+			},
+			"asset": {
+				"title": "자산"
 			}
 		},
 		"list": {

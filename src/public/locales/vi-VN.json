@@ -3218,10 +3218,10 @@
 				"title": "trò chuyện"
 			},
 			"frequent": {
-				"title": null
+				"title": "Thường được sử dụng"
 			},
 			"network": {
-				"title": null
+				"title": "liên kết với nhau"
 			}
 		},
 		"profile": {
@@ -4128,6 +4128,9 @@
 		"home_function_buttons": {
 			"manage": {
 				"title": "Quản lý nguồn dịch vụ"
+			},
+			"frequent": {
+				"title": "Thường được sử dụng"
 			}
 		}
 	},
@@ -4398,6 +4401,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Quảng trường"
+			},
+			"frequent": {
+				"title": "Thường được sử dụng"
+			},
+			"network": {
+				"title": "liên kết với nhau"
 			}
 		},
 		"nav": {
@@ -5085,6 +5094,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Tủ hồ sơ"
+			},
+			"asset": {
+				"title": "tài sản"
 			}
 		},
 		"upload": "tải lên",
@@ -5266,6 +5278,14 @@
 				"sub_items": {
 					"terminalAssist": {
 						"title": "Hỗ trợ Terminal"
+					}
+				}
+			},
+			"dev": {
+				"title": "phát triển",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "hỗ trợ thiết bị đầu cuối"
 					}
 				}
 			}
@@ -5790,6 +5810,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Truy cập trên thiết bị khác"
+			},
+			"frequent": {
+				"title": "Thường được sử dụng"
+			},
+			"network": {
+				"title": "liên kết với nhau"
 			}
 		}
 	},
@@ -5909,7 +5935,16 @@
 			"saveSettingsFailed": "Không lưu được cài đặt công ích: ${message}",
 			"generalError": "Đã xảy ra lỗi: ${message}"
 		},
-		"home_function_buttons": {}
+		"home_function_buttons": {
+			"network": {
+				"title": "liên kết với nhau",
+				"sub_items": {
+					"subfounts": {
+						"title": "thiết bị phụ"
+					}
+				}
+			}
+		}
 	},
 	"achievements": {
 		"title": "Thành tích",
@@ -6474,6 +6509,9 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
+			},
+			"dev": {
+				"title": "phát triển"
 			}
 		},
 		"gist_source_plugins": {
@@ -6498,6 +6536,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Thư viện gist"
+			},
+			"asset": {
+				"title": "tài sản"
 			}
 		},
 		"list": {

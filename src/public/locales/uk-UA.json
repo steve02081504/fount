@@ -3218,10 +3218,10 @@
 				"title": "Чат"
 			},
 			"frequent": {
-				"title": null
+				"title": "Зазвичай використовується"
 			},
 			"network": {
-				"title": null
+				"title": "взаємопов'язані"
 			}
 		},
 		"profile": {
@@ -4128,6 +4128,9 @@
 		"home_function_buttons": {
 			"manage": {
 				"title": "Керувати джерелом обслуговування"
+			},
+			"frequent": {
+				"title": "Зазвичай використовується"
 			}
 		}
 	},
@@ -4398,6 +4401,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Стрічка"
+			},
+			"frequent": {
+				"title": "Зазвичай використовується"
+			},
+			"network": {
+				"title": "взаємопов'язані"
 			}
 		},
 		"nav": {
@@ -5085,6 +5094,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Сховище"
+			},
+			"asset": {
+				"title": "активів"
 			}
 		},
 		"upload": "Завантажити",
@@ -5266,6 +5278,14 @@
 				"sub_items": {
 					"terminalAssist": {
 						"title": "Термінальна допомога"
+					}
+				}
+			},
+			"dev": {
+				"title": "розвивати",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "термінальна допомога"
 					}
 				}
 			}
@@ -5790,6 +5810,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Доступ на інші пристрої"
+			},
+			"frequent": {
+				"title": "Зазвичай використовується"
+			},
+			"network": {
+				"title": "взаємопов'язані"
 			}
 		}
 	},
@@ -5909,7 +5935,16 @@
 			"saveSettingsFailed": "Не вдалося зберегти налаштування суспільного блага: ${message}",
 			"generalError": "Сталася помилка: ${message}"
 		},
-		"home_function_buttons": {}
+		"home_function_buttons": {
+			"network": {
+				"title": "взаємопов'язані",
+				"sub_items": {
+					"subfounts": {
+						"title": "підпристрій"
+					}
+				}
+			}
+		}
 	},
 	"achievements": {
 		"title": "досягнення",
@@ -6474,6 +6509,9 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
+			},
+			"dev": {
+				"title": "розвивати"
 			}
 		},
 		"gist_source_plugins": {
@@ -6498,6 +6536,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Бібліотека гістів"
+			},
+			"asset": {
+				"title": "активів"
 			}
 		},
 		"list": {
