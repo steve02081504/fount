@@ -6596,10 +6596,12 @@
 		},
 		"securityToggle": {
 			"secure": {
+				"textContent": "محمي",
 				"title": "محمي",
 				"aria-label": "مستوى الأمان: محمي"
 			},
 			"trusted": {
+				"textContent": "غير محمي",
 				"title": "غير محمي",
 				"aria-label": "مستوى الأمان: غير محمي"
 			}

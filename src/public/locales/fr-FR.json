@@ -6592,10 +6592,12 @@
 		},
 		"securityToggle": {
 			"secure": {
+				"textContent": "Protégé",
 				"title": "Protégé",
 				"aria-label": "Niveau de sécurité : protégé"
 			},
 			"trusted": {
+				"textContent": "Non protégé",
 				"title": "Non protégé",
 				"aria-label": "Niveau de sécurité : non protégé"
 			}

@@ -6586,10 +6586,12 @@
 		},
 		"securityToggle": {
 			"secure": {
+				"textContent": "संरक्षित",
 				"title": "संरक्षित",
 				"aria-label": "सुरक्षा स्तर: संरक्षित"
 			},
 			"trusted": {
+				"textContent": "विश्वसनीय",
 				"title": "विश्वसनीय",
 				"aria-label": "सुरक्षा स्तर: विश्वसनीय"
 			}

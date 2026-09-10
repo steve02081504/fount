@@ -6501,6 +6501,17 @@
 			"aborted": "Generation aborted",
 			"noChar": "Select a character first"
 		},
+		"notify": {
+			"done": "The conversation has finished"
+		},
+		"power": {
+			"label": "Shut down when done",
+			"aria-label": "Shut down after tasks",
+			"menuTitle": "Shut down a host once all tasks finish",
+			"armed": "Will shut down ${host} after all tasks finish",
+			"armedToast": "Armed: shut down a host once all tasks finish",
+			"cancelled": "Cancelled shutting down after tasks"
+		},
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
@@ -6544,7 +6555,33 @@
 		"list": {
 			"new": "New gist",
 			"empty": "No gists yet. Click “New gist” in the top-right to create one.",
-			"updatedAt": "Updated"
+			"updatedAt": "Updated",
+			"selectAll": "Select all",
+			"noneSelected": "None selected",
+			"selectedCount": "Selected ${count}",
+			"batch": {
+				"download": "Download selected",
+				"delete": "Delete selected",
+				"deleteConfirm": "Delete the ${count} selected gists? This cannot be undone.",
+				"deleted": "Deleted ${count} gists",
+				"downloaded": "Downloaded ${count} gists"
+			},
+			"noResults": "No matching gists.",
+			"search": {
+				"placeholder": "Search titles…",
+				"aria-label": "Search gist titles"
+			},
+			"sortLabel": "Sort by",
+			"sort": {
+				"updatedDesc": "Updated (newest first)",
+				"updatedAsc": "Updated (oldest first)",
+				"createdDesc": "Created (newest first)",
+				"createdAsc": "Created (oldest first)",
+				"titleAsc": "Title (A–Z)",
+				"titleDesc": "Title (Z–A)"
+			},
+			"select": "Select",
+			"exitSelection": "Exit selection"
 		},
 		"source": {
 			"manual": "Manual",
@@ -6586,10 +6623,12 @@
 		},
 		"securityToggle": {
 			"secure": {
+				"textContent": "Protected",
 				"title": "Protected",
 				"aria-label": "Security level: protected"
 			},
 			"trusted": {
+				"textContent": "Unprotected",
 				"title": "Unprotected",
 				"aria-label": "Security level: unprotected"
 			}

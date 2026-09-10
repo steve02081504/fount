@@ -6586,10 +6586,12 @@
 		},
 		"securityToggle": {
 			"secure": {
+				"textContent": "보호됨",
 				"title": "보호됨",
 				"aria-label": "보안 수준: 보호됨"
 			},
 			"trusted": {
+				"textContent": "보호 안 됨",
 				"title": "보호 안 됨",
 				"aria-label": "보안 수준: 보호 안 됨"
 			}

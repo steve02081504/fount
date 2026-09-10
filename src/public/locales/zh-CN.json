@@ -6501,6 +6501,17 @@
 			"aborted": "已中止生成",
 			"noChar": "请先选择角色"
 		},
+		"notify": {
+			"done": "对话已完成"
+		},
+		"power": {
+			"label": "任务完成后关机",
+			"aria-label": "任务完成后关机设置",
+			"menuTitle": "所有任务生成完毕后关闭主机",
+			"armed": "所有任务完成后将关闭 ${host}",
+			"armedToast": "已设置：所有任务生成完毕后关闭主机",
+			"cancelled": "已取消任务完成后关机"
+		},
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
@@ -6544,7 +6555,33 @@
 		"list": {
 			"new": "新建 gist",
 			"empty": "还没有 gist，点击右上角「新建 gist」创建第一个。",
-			"updatedAt": "更新于"
+			"updatedAt": "更新于",
+			"selectAll": "全选",
+			"noneSelected": "未选择",
+			"selectedCount": "已选择 ${count} 个",
+			"batch": {
+				"download": "批量下载",
+				"delete": "批量删除",
+				"deleteConfirm": "确定删除选中的 ${count} 个 gist？此操作不可撤销。",
+				"deleted": "已删除 ${count} 个 gist",
+				"downloaded": "已下载 ${count} 个 gist"
+			},
+			"noResults": "没有匹配的 gist。",
+			"search": {
+				"placeholder": "搜索标题…",
+				"aria-label": "搜索 gist 标题"
+			},
+			"sortLabel": "排序方式",
+			"sort": {
+				"updatedDesc": "更新时间（新→旧）",
+				"updatedAsc": "更新时间（旧→新）",
+				"createdDesc": "创建时间（新→旧）",
+				"createdAsc": "创建时间（旧→新）",
+				"titleAsc": "标题（A→Z）",
+				"titleDesc": "标题（Z→A）"
+			},
+			"select": "多选",
+			"exitSelection": "退出多选"
 		},
 		"source": {
 			"manual": "手动创建",
@@ -6586,10 +6623,12 @@
 		},
 		"securityToggle": {
 			"secure": {
+				"textContent": "已防护",
 				"title": "已防护",
 				"aria-label": "安全等级：已防护"
 			},
 			"trusted": {
+				"textContent": "无防护",
 				"title": "无防护",
 				"aria-label": "安全等级：无防护"
 			}

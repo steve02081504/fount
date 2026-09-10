@@ -6592,10 +6592,12 @@
 		},
 		"securityToggle": {
 			"secure": {
+				"textContent": "Beschermd",
 				"title": "Beschermd",
 				"aria-label": "Beveiligingsniveau: beschermd"
 			},
 			"trusted": {
+				"textContent": "Onbeschermd",
 				"title": "Onbeschermd",
 				"aria-label": "Beveiligingsniveau: onbeschermd"
 			}
