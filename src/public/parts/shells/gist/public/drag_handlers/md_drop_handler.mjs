@@ -1,6 +1,7 @@
 /**
  * gist shell 的 Markdown 拖入处理器：读取拖入的 .md/.markdown 文件，
- * 以高安全等级创建 gist 文档并跳转查看页面
+ * 以高安全等级创建 gist 文档并跳转查看页面；
+ * 若已有内容一致的 gist（后端按内容哈希去重）则直接打开该 gist，不重复创建。
  */
 import { createGist } from '../src/endpoints.mjs'
 
@@ -29,6 +30,7 @@ export default async function (dataTransfer, handlerConfig) {
 		title: file.name.replace(/\.(md|markdown)$/i, ''),
 		securityLevel: 'secure',
 		source: { type: 'md-drop', ref: { name: file.name }, exportedAt: Date.now() },
+		dedupe: true,
 	})
 	location.href = `/parts/shells:gist/view?id=${encodeURIComponent(id)}`
 	return true

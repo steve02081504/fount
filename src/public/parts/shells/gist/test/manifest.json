@@ -6,6 +6,8 @@
 		],
 		"frontendShared": [
 			"src/public/parts/shells/gist/public/**",
+			"src/public/parts/shells/gist/src/**",
+			"src/public/parts/shells/gist/main.mjs",
 			"src/public/parts/shells/gist/test/frontend/**",
 			"src/public/pages/scripts/test/**"
 		]
@@ -21,7 +23,7 @@
 			"subtests": [
 				{
 					"name": "smoke",
-					"expected": "12s",
+					"expected": "1m51s",
 					"triggers": [
 						"src/public/parts/shells/gist/test/frontend/smoke.spec.mjs"
 					]

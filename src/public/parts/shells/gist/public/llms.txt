@@ -4,7 +4,7 @@
 
 - gist 数据存于用户目录 `shells/gist/gists/<id>.json`，每用户独立。
 - gist 字段：`id`（8 位随机 id）、`title`（未提供时取自 markdown 首个非空行，截断到 60 字符）、`markdown`、`securityLevel`（`secure` | `trusted`，默认 `trusted`）、`source`（来源元数据 `{ type, ref, exportedAt }` 或 null）、`createdAt`、`updatedAt`（毫秒时间戳）。
-- 列表接口不含 `markdown` 字段，按 `createdAt` 降序。
+- 列表接口不含 `markdown` 字段，改为返回 `excerpt`（去除代码块 / 图片 / 链接语法与行首标记后的纯文本摘要，最多 180 字符），按 `updatedAt` 降序。
 - 操作安全：来自未知/不可信来源的内容**必须**以 `securityLevel: "secure"` 保存（例如 web 抓取、他人分享、外部导入等一律视为不可信）。`secure` 档预览不激活脚本、不信任原始 HTML；`trusted` 档预览会激活脚本并信任原始 HTML（存在 XSS 风险），仅可对完全可信的内容使用。切换/降级需用户显式确认。
 
 ## HTTP API（均需登录；base = `/api/parts/shells:gist`）
@@ -14,19 +14,20 @@
 - 调用目的：列出当前用户全部 gist 摘要，供列表页展示。
 - 请求示例：
   - 请求：`GET /api/parts/shells:gist/gists`
-  - 响应 200：`[ { "id": "aB3dE9fG", "title": "My notes", "securityLevel": "secure", "source": null, "createdAt": 1760000000000, "updatedAt": 1760000000000 } ]`
-- 关键约束：无需参数。响应为数组，每条仅含 `{ id, title, securityLevel, source, createdAt, updatedAt }`，**不含** `markdown` 字段，按 `createdAt` 降序。`createdAt`/`updatedAt` 为毫秒时间戳数字。
+  - 响应 200：`[ { "id": "aB3dE9fG", "title": "My notes", "excerpt": "开头内容摘要…", "securityLevel": "secure", "source": null, "createdAt": 1760000000000, "updatedAt": 1760000000000 } ]`
+- 关键约束：无需参数。响应为数组，每条含 `{ id, title, excerpt, securityLevel, source, createdAt, updatedAt }`，**不含** `markdown` 字段，按 `updatedAt` 降序（缺失时回退 `createdAt`）。`excerpt` 为纯文本摘要（最多 180 字符）；`createdAt`/`updatedAt` 为毫秒时间戳数字。
 
 ### 新建 gist `POST /gists`
 
-- 调用目的：创建一个新 gist，返回含 `markdown` 的完整 gist 对象。
+- 调用目的：创建一个新 gist，返回含 `markdown` 的完整 gist 对象；可开启内容去重复用既有 gist。
 - 请求示例：
   - 请求：`POST /api/parts/shells:gist/gists`
   - 请求体：`{ "markdown": "# Hello", "title": "hello", "securityLevel": "secure", "source": { "type": "web", "ref": "https://example.com/a" } }`
   - 响应 201：`{ "gist": { "id": "aB3dE9fG", "title": "hello", "markdown": "# Hello", "securityLevel": "secure", "source": { "type": "web", "ref": "https://example.com/a" }, "createdAt": 1760000000000, "updatedAt": 1760000000000 } }`
 - 关键约束：
-  - 请求体字段：`markdown`（**必填**，非空字符串）、`title`（可选字符串，缺省时取 markdown 首个非空行并截断到 60 字符）、`securityLevel`（可选，仅 `secure` | `trusted`，缺省 `trusted`）、`source`（可选，对象或 null）。
-  - `markdown` 缺失/为空/非字符串 → 400；`securityLevel` 非法 → 400。
+  - 请求体字段：`markdown`（**必填**，非空字符串）、`title`（可选字符串，缺省时取 markdown 首个非空行并截断到 60 字符）、`securityLevel`（可选，仅 `secure` | `trusted`，缺省 `trusted`）、`source`（可选，对象或 null）、`dedupe`（可选布尔，缺省 false）。
+  - `dedupe: true` 时按 `markdown` 内容哈希查重：命中既有 gist 直接返回该 gist（不新建，忽略本次 `title`/`source`）。
+  - `markdown` 缺失/为空/非字符串 → 400；`securityLevel` 非法 → 400；`dedupe` 非布尔 → 400。
   - 成功 → 201 `{ gist }`。
 
 ### 读取单个 gist `GET /gists/:id`
@@ -56,6 +57,17 @@
   - 请求：`DELETE /api/parts/shells:gist/gists/aB3dE9fG`
   - 响应 200：`{ "ok": true }`
 - 关键约束：`id` 不存在 → 404。
+
+### 批量删除 gist `POST /gists/batch-delete`
+
+- 调用目的：一次删除多个 gist，用于列表页多选后的批量删除。
+- 请求示例：
+  - 请求：`POST /api/parts/shells:gist/gists/batch-delete`
+  - 请求体：`{ "ids": ["aB3dE9fG", "hJ4kL0mN"] }`
+  - 响应 200：`{ "deleted": ["aB3dE9fG"], "missing": ["hJ4kL0mN"] }`
+- 关键约束：
+  - 请求体 `ids` 必须为字符串数组（否则 400）。
+  - 逐个删除，返回 `deleted`（成功）与 `missing`（不存在 / id 非法）两个 id 数组；不因部分失败而整体报错。
 
 ### 获取来源插件 `GET /source-plugins`
 
