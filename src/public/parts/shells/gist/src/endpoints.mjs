@@ -31,6 +31,7 @@ export function setEndpoints(router) {
 		const { markdown, title, securityLevel, source } = req.body || {}
 		if (!markdown) throw httpError(400, 'markdown is required.')
 		if (typeof markdown !== 'string') throw httpError(400, 'markdown must be a string.')
+		if (title !== undefined && typeof title !== 'string') throw httpError(400, 'title must be a string.')
 		assertSecurityLevel(securityLevel)
 		const gist = await createGist(username, { markdown, title, securityLevel, source })
 		res.status(201).json({ gist })

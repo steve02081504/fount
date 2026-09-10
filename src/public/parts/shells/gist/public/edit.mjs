@@ -61,16 +61,24 @@ async function renderPreview() {
 }
 
 /**
+ * 以纯文本形式插入剪贴板文本（execCommand insertText 不解析 HTML）。
+ * @param {string} text 待插入文本。
+ * @returns {void}
+ */
+function insertPlainText(text) {
+	if (!text?.trim()) return
+	richInput.focus()
+	document.execCommand('insertText', false, text)
+	richInput.element.dispatchEvent(new Event('input', { bubbles: true }))
+}
+
+/**
  * 安全档兜底：以纯文本形式插入消杀后的剪贴板内容。
  * @param {string} html 剪贴板 text/html 原文。
  * @returns {void}
  */
 function insertSanitizedPaste(html) {
-	const text = scrubHtmlActivePayload(html)?.textContent ?? ''
-	if (!text.trim()) return
-	richInput.focus()
-	document.execCommand('insertText', false, text)
-	richInput.element.dispatchEvent(new Event('input', { bubbles: true }))
+	insertPlainText(scrubHtmlActivePayload(html)?.textContent ?? '')
 }
 
 /**
@@ -98,6 +106,7 @@ function handlePaste(event) {
 			return
 		}
 		setSecurityLevel('secure')
+		insertPlainText(plainText)
 		if (!plainText.trim()) insertSanitizedPaste(html)
 	})().catch(handleError('gist.error.generic'))
 }

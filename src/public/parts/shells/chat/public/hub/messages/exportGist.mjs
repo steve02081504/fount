@@ -25,7 +25,7 @@ export async function exportMessageToGist(message, row, context, eventId) {
 		const gist = await createGist({
 			markdown,
 			title: markdown.split('\n').find(Boolean)?.trim().slice(0, 40) || 'gist',
-			securityLevel: 'trusted',
+			securityLevel: 'secure',
 			source: {
 				type: 'chat',
 				ref: {

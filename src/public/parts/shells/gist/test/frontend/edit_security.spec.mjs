@@ -86,7 +86,8 @@ async function readEditorSecurityState(page) {
  * @returns {Promise<void>} 完成。
  */
 async function holdLocale(page) {
-	await page.evaluate(() => globalThis.fount?.test?.watch?.holdLocale?.())
+	await page.waitForFunction(() => globalThis.fount?.test?.watch?.started === true, undefined, { timeout: 30_000 })
+	await page.evaluate(() => globalThis.fount.test.watch.holdLocale())
 }
 
 /**
@@ -95,7 +96,7 @@ async function holdLocale(page) {
  * @returns {Promise<void>} 完成。
  */
 async function releaseLocale(page) {
-	await page.evaluate(() => globalThis.fount?.test?.watch?.releaseLocale?.())
+	await page.evaluate(() => globalThis.fount.test.watch.releaseLocale())
 }
 
 test.describe('gist edit paste security', () => {
@@ -135,6 +136,7 @@ test.describe('gist edit paste security', () => {
 		await expect(dialog).toBeVisible({ timeout: 15_000 })
 		await dialog.locator('[data-dialog-cancel]').click()
 		await expect(page.locator('input[name="securityLevel"][value="secure"]')).toBeChecked({ timeout: 10_000 })
+		await expect(editor).toContainText(SECURE_PASTE_MARKER)
 		await releaseLocale(page)
 		await page.waitForTimeout(500)
 		const state = await readEditorSecurityState(page)
