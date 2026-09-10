@@ -393,4 +393,27 @@ test.describe('install runner wait', () => {
 		await expect.poll(() => aliveHits.length).toBeGreaterThan(0)
 		await expect(page.locator('#eula-dialog')).toBeHidden({ timeout: 30_000 })
 	})
+
+	test('svg theme self-backed detection requires fully opaque paint', async ({ page, baseUrl }) => {
+		await page.goto(`${baseUrl}/wait/install/`, { waitUntil: 'domcontentloaded' })
+		await expect.poll(async () => page.evaluate(() => Boolean(globalThis.fount?.test?.watch?.started)), {
+			timeout: 15_000,
+		}).toBe(true)
+		const results = await page.evaluate(() => import('/fount/scripts/test/watch/svg_theme.mjs').then(({ isSelfBacked }) => {
+			const host = document.createElement('div')
+			host.style.cssText = 'position:absolute;width:40px;height:80px;overflow:hidden;bottom:0;left:0'
+			const svgs = [
+				'<svg id="ok-viewBox" viewBox="0 0 10 10"><rect width="10" height="10" fill="#ff00ff"></rect></svg>',
+				'<svg id="fill-opacity" viewBox="0 0 10 10"><rect width="10" height="10" fill="#ff00ff" fill-opacity="0.5"></rect></svg>',
+				'<svg id="group-opacity" viewBox="0 0 10 10"><g opacity="0.5"><rect width="10" height="10" fill="#ff00ff"></rect></g></svg>',
+				'<svg id="ok-no-viewBox" width="20" height="20"><rect width="20" height="20" fill="#ff00ff"></rect></svg>',
+			]
+			host.innerHTML = svgs.join('')
+			document.body.append(host)
+			const verdicts = [...host.querySelectorAll('svg')].map(svg => isSelfBacked(svg))
+			host.remove()
+			return verdicts
+		}))
+		expect(results).toEqual([true, false, false, true])
+	})
 })

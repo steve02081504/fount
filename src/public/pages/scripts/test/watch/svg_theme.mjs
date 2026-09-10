@@ -278,8 +278,7 @@ function isOpaqueFill(svg, fill) {
 	const reference = URL_FILL_REGEX.exec(fill)
 	if (!reference) return cssColorToRgb(fill) != null
 	const escaped = CSS.escape(reference[1])
-	const gradient = svg.querySelector(`linearGradient[id="${escaped}"], radialGradient[id="${escaped}"]`)
-	const stops = gradient ? [...gradient.querySelectorAll('stop')] : []
+	const stops = [...svg.querySelector(`linearGradient[id="${escaped}"], radialGradient[id="${escaped}"]`)?.querySelectorAll('stop') ?? []]
 	return stops.length > 0 && stops.every(stop => {
 		const style = getComputedStyle(stop)
 		return Number(style.stopOpacity) === 1 && cssColorToRgb(style.stopColor) != null
@@ -295,16 +294,16 @@ function isOpaqueFill(svg, fill) {
  */
 function coversRect(element, svg, viewBoxRect) {
 	if (viewBoxRect) {
-		let bbox
+		let boundingBox
 		try {
-			bbox = element.getBBox()
+			boundingBox = element.getBBox()
 		} catch {
 			return false
 		}
 		const epsilon = 1e-6
-		return bbox.x <= viewBoxRect.x + epsilon && bbox.y <= viewBoxRect.y + epsilon &&
-			bbox.x + bbox.width >= viewBoxRect.x + viewBoxRect.width - epsilon &&
-			bbox.y + bbox.height >= viewBoxRect.y + viewBoxRect.height - epsilon
+		return boundingBox.x <= viewBoxRect.x + epsilon && boundingBox.y <= viewBoxRect.y + epsilon &&
+			boundingBox.x + boundingBox.width >= viewBoxRect.x + viewBoxRect.width - epsilon &&
+			boundingBox.y + boundingBox.height >= viewBoxRect.y + viewBoxRect.height - epsilon
 	}
 	const outer = svg.getBoundingClientRect()
 	const rect = element.getBoundingClientRect()
@@ -313,14 +312,30 @@ function coversRect(element, svg, viewBoxRect) {
 }
 
 /**
+ * 元素到 svg 的祖先链（不含该元素自己，含 svg 自身）有效 opacity 是否全部为 1：
+ * 任一祖先半透明时页面背景会透入画面，SVG 不算自衬底。
+ * @param {Element} element 绘制元素
+ * @param {SVGSVGElement} svg 所属 SVG
+ * @returns {boolean} 全不透明则为 true
+ */
+function isAncestorOpacityOpaque(element, svg) {
+	for (let node = element; ; node = node.parentElement) {
+		if (node !== element && Number(getComputedStyle(node).opacity) !== 1) return false
+		if (node === svg) return true
+		if (!node.parentElement) return true
+	}
+}
+
+/**
  * SVG 是否自绘了不透明全幅背景（如品牌方形 logo）。
  * 判定：某个绘制元素（非 defs/mask 子树）完整覆盖 SVG 画面（viewBox，缺省用布局矩形），
- * 且其计算 fill 是不透明纯色或全不透明渐变——这类 SVG 的真实衬底是内部画面
+ * 且元素 fill-opacity 为 1、祖先链有效 opacity 全为 1，其计算 fill 是不透明纯色
+ * 或全不透明渐变——这类 SVG 的真实衬底是内部画面
  * 而非页面背景，沿祖先链测得的背景与前景毫无关系，测量不可靠，应整体跳过。
  * @param {SVGSVGElement} svg SVG 元素
  * @returns {boolean} 自衬底则为 true
  */
-function isSelfBacked(svg) {
+export function isSelfBacked(svg) {
 	const viewBox = svg.viewBox?.baseVal
 	const viewBoxRect = viewBox && viewBox.width > 0 && viewBox.height > 0 ?
 		{ x: viewBox.x, y: viewBox.y, width: viewBox.width, height: viewBox.height } : null
@@ -328,8 +343,22 @@ function isSelfBacked(svg) {
 		const tag = element.tagName.toLowerCase()
 		if (!DRAWING_TAGS.has(tag)) continue
 		if (element.closest(NON_DRAWING_SELECTOR)) continue
-		if (coversRect(element, svg, viewBoxRect) && isOpaqueFill(svg, getComputedStyle(element).fill)) return true
+		const style = getComputedStyle(element)
+		if (coversRect(element, svg, viewBoxRect) && isOpaqueFill(svg, style.fill) &&
+			Number(style.fillOpacity) === 1 && isAncestorOpacityOpaque(element, svg)) return true
 	}
+	return false
+}
+
+/**
+ * SVG 及其祖先链（不含采样根）的有效 opacity 是否全部为 1。
+ * 任一环节半透明时页面背景会透入合成结果，衬底测量不可靠。
+ * @param {SVGSVGElement} svg SVG 元素
+ * @returns {boolean} 存在半透明环节则为 true
+ */
+function isTranslucentChain(svg) {
+	for (let node = svg; node && node !== document.documentElement; node = node.parentElement)
+		if (Number(getComputedStyle(node).opacity) !== 1) return true
 	return false
 }
 
@@ -347,6 +376,8 @@ function findSvgContrastIssues(theme, svgs) {
 		if (!background) continue
 		// 浮层叠加在动态绘制内容上、祖先链只测到页面根背景时，衬底不可测，跳过以免误报。
 		if (isRootBackground(background) && isPositionedOverlay(svg)) continue
+		// 入场动画等半透明祖先让真实衬底=背景×透明度混合，测量不可靠，跳过（与定位浮层同一盲区）。
+		if (isTranslucentChain(svg)) continue
 		/** @type {Set<string>} */
 		const foregrounds = new Set()
 		for (const color of collectSvgForegroundColors(svg)) {
