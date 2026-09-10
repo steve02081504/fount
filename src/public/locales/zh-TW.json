@@ -6585,10 +6585,12 @@
 		},
 		"securityToggle": {
 			"secure": {
+				"textContent": "已防護",
 				"title": "已防護",
 				"aria-label": "安全等級：已防護"
 			},
 			"trusted": {
+				"textContent": "無防護",
 				"title": "無防護",
 				"aria-label": "安全等級：無防護"
 			}

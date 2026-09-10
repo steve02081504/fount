@@ -6463,6 +6463,17 @@ export type LocaleData = {
 			aborted: string
 			noChar: string
 		}
+		notify: {
+			done: string
+		}
+		power: {
+			label: string
+			'aria-label': string
+			menuTitle: string
+			armed: string
+			armedToast: string
+			cancelled: string
+		}
 		home_function_buttons: {
 			code: {
 				title: string
@@ -6507,6 +6518,32 @@ export type LocaleData = {
 			new: string
 			empty: string
 			updatedAt: string
+			selectAll: string
+			noneSelected: string
+			selectedCount: string
+			batch: {
+				download: string
+				delete: string
+				deleteConfirm: string
+				deleted: string
+				downloaded: string
+			}
+			noResults: string
+			search: {
+				placeholder: string
+				'aria-label': string
+			}
+			sortLabel: string
+			sort: {
+				updatedDesc: string
+				updatedAsc: string
+				createdDesc: string
+				createdAsc: string
+				titleAsc: string
+				titleDesc: string
+			}
+			select: string
+			exitSelection: string
 		}
 		source: {
 			manual: string
@@ -6548,10 +6585,12 @@ export type LocaleData = {
 		}
 		securityToggle: {
 			secure: {
+				textContent: string
 				title: string
 				'aria-label': string
 			}
 			trusted: {
+				textContent: string
 				title: string
 				'aria-label': string
 			}
@@ -6858,6 +6897,7 @@ export type LocaleKeyParams = {
 	'code.char.recommend.main': { charname: string | number }
 	'code.composer.modeSwitched': { mode: string | number }
 	'code.error.generic': { error: string | number }
+	'code.power.armed': { host: string | number }
 	'debug_info.linksCount': { count: string | number }
 	'deskpet.toasts.start_failed': { charname: string | number; message: string | number }
 	'deskpet.toasts.started': { charname: string | number }
@@ -7051,6 +7091,10 @@ export type LocaleKeyParams = {
 	'fountConsole.web.requestReceived': { method: string | number; url: string | number }
 	'gist.edit.pasteDangerPrompt': { secure: string | number; trust: string | number }
 	'gist.error.generic': { error: string | number }
+	'gist.list.batch.deleteConfirm': { count: string | number }
+	'gist.list.batch.deleted': { count: string | number }
+	'gist.list.batch.downloaded': { count: string | number }
+	'gist.list.selectedCount': { count: string | number }
 	'home.dragAndDrop.dropError': { error: string | number }
 	'home.emptyList.message': { newpartLink: string | number; telegramLink: string | number }
 	'ide_integration.apiKey.createError': { message: string | number }

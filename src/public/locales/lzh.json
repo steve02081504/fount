@@ -6586,10 +6586,12 @@
 		},
 		"securityToggle": {
 			"secure": {
+				"textContent": "有防",
 				"title": "有防",
 				"aria-label": "安全之級：有防"
 			},
 			"trusted": {
+				"textContent": "無防",
 				"title": "無防",
 				"aria-label": "安全之級：無防"
 			}

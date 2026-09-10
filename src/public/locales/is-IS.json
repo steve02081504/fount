@@ -6586,10 +6586,12 @@
 		},
 		"securityToggle": {
 			"secure": {
+				"textContent": "Varið",
 				"title": "Varið",
 				"aria-label": "Öryggisstig: varið"
 			},
 			"trusted": {
+				"textContent": "Óvarið",
 				"title": "Óvarið",
 				"aria-label": "Öryggisstig: óvarið"
 			}

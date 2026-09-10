@@ -6501,6 +6501,17 @@
 			"aborted": "生成を中止しました",
 			"noChar": "先にキャラクターを選択してください"
 		},
+		"notify": {
+			"done": "会話が完了しました"
+		},
+		"power": {
+			"label": "タスク完了後にシャットダウン",
+			"aria-label": "タスク完了後のシャットダウン設定",
+			"menuTitle": "すべてのタスク生成後にホストをシャットダウン",
+			"armed": "すべてのタスク完了後に ${host} をシャットダウンします",
+			"armedToast": "設定しました：すべてのタスク生成後にホストをシャットダウンします",
+			"cancelled": "タスク完了後のシャットダウンをキャンセルしました"
+		},
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
@@ -6544,7 +6555,33 @@
 		"list": {
 			"new": "新規 gist",
 			"empty": "まだ gist がありません。右上の「新規 gist」から作成してください。",
-			"updatedAt": "更新："
+			"updatedAt": "更新：",
+			"selectAll": "すべて選択",
+			"noneSelected": "未選択",
+			"selectedCount": "${count} 件選択中",
+			"batch": {
+				"download": "まとめてダウンロード",
+				"delete": "まとめて削除",
+				"deleteConfirm": "選択した ${count} 件の gist を削除しますか？この操作は取り消せません。",
+				"deleted": "${count} 件の gist を削除しました",
+				"downloaded": "${count} 件の gist をダウンロードしました"
+			},
+			"noResults": "一致する gist がありません。",
+			"search": {
+				"placeholder": "タイトルを検索…",
+				"aria-label": "gist のタイトルを検索"
+			},
+			"sortLabel": "並び替え",
+			"sort": {
+				"updatedDesc": "更新日時（新しい順）",
+				"updatedAsc": "更新日時（古い順）",
+				"createdDesc": "作成日時（新しい順）",
+				"createdAsc": "作成日時（古い順）",
+				"titleAsc": "タイトル（A→Z）",
+				"titleDesc": "タイトル（Z→A）"
+			},
+			"select": "選択",
+			"exitSelection": "選択解除"
 		},
 		"source": {
 			"manual": "手動",
@@ -6586,10 +6623,12 @@
 		},
 		"securityToggle": {
 			"secure": {
+				"textContent": "保護あり",
 				"title": "保護あり",
 				"aria-label": "セキュリティレベル：保護あり"
 			},
 			"trusted": {
+				"textContent": "保護なし",
 				"title": "保護なし",
 				"aria-label": "セキュリティレベル：保護なし"
 			}

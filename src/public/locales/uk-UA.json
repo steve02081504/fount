@@ -6586,10 +6586,12 @@
 		},
 		"securityToggle": {
 			"secure": {
+				"textContent": "Захищено",
 				"title": "Захищено",
 				"aria-label": "Рівень безпеки: захищено"
 			},
 			"trusted": {
+				"textContent": "Без захисту",
 				"title": "Без захисту",
 				"aria-label": "Рівень безпеки: без захисту"
 			}

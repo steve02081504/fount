@@ -6586,10 +6586,12 @@
 		},
 		"securityToggle": {
 			"secure": {
+				"textContent": "🛡️",
 				"title": "🛡️",
 				"aria-label": "🛡️🔒"
 			},
 			"trusted": {
+				"textContent": "⚠️",
 				"title": "⚠️",
 				"aria-label": "⚠️🔓"
 			}
