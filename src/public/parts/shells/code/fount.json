@@ -8,6 +8,13 @@
 				"level": 0,
 				"path": "home_registry.json"
 			}
+		],
+		"gist_source_plugins": [
+			{
+				"id": "codeSourcePlugin",
+				"level": 0,
+				"path": "gist_registry.json"
+			}
 		]
 	}
 }

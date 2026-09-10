@@ -31,6 +31,8 @@ import { REPO_ROOT } from '../core/repo_root.mjs'
 import { childEnv } from '../env.mjs'
 import { ModuleCheckMissedReadyError, moduleCheckTicketEnv, withDenoModuleCheckPreload, withModuleCheckTicket } from '../hub/clients/module_check.mjs'
 
+import { withNoDomShimPreload } from './no_dom_shim.mjs'
+
 const args = process.argv.slice(2)
 
 /**
@@ -221,7 +223,7 @@ async function runPool(files, { stopOnFailure }) {
 			const dataDirsOut = allocDataDirsOutPath()
 			try {
 				({ code, output, signal } = await withModuleCheckTicket(ticket =>
-					runCaptured(withDenoModuleCheckPreload(['deno', ...denoBase, file], ticket), {
+					runCaptured(withDenoModuleCheckPreload(withNoDomShimPreload(['deno', ...denoBase, file]), ticket), {
 						DENO_JOBS: '1',
 						FOUNT_TEST_DATA_DIRS_OUT: dataDirsOut,
 						...moduleCheckTicketEnv(ticket),

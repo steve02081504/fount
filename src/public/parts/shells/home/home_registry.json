@@ -1,4 +1,13 @@
 {
+	"home_drag_in_handlers": [
+		{
+			"id": "handleMarkdownDrop",
+			"level": 0,
+			"type": "md",
+			"path": "/parts/shells:home/drag_handlers/md_drop_handler.mjs",
+			"info": "home.home_drag_in_handlers.handleMarkdownDrop"
+		}
+	],
 	"home_drag_out_generators": [
 		{
 			"id": "generateXFountPart",

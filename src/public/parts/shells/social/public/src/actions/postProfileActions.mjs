@@ -1,6 +1,5 @@
 import { formatSocialShareHttpsUrl } from '../../shared/protocolUrl.mjs'
 import { addPostNote, deletePost, editPost, getPost, getPostNotes, votePostNote } from '../endpoints/posts.mjs'
-import { downloadPostHtml } from '../exportHtml.mjs'
 import { parseActionKey } from '../lib/actionKey.mjs'
 import { promptText, promptTextArea, showText } from '../lib/dialog.mjs'
 import { handlePollVoteClick } from '../lib/pollUi.mjs'
@@ -13,10 +12,12 @@ import {
 } from '../lib/socialWrite.mjs'
 import { refreshVisiblePosts } from '../navigation.mjs'
 import { state } from '../state.mjs'
+import { createGist } from '/parts/shells:gist/src/endpoints.mjs'
 
 import { closePostMoreMenus, copyTextToClipboard, flashCopiedLabel, shareOrCopyPostLink } from './shared.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
+import { showToastI18n } from '/scripts/features/toast.mjs'
 
 /**
  * @param {HTMLElement} target 点击目标元素
@@ -127,11 +128,26 @@ export async function handlePostProfileActionsClick(target) {
 				handleError('social.post.loadFailed', {}, error)
 				return true
 			}
+			showToastI18n('info', 'social.gist_source_plugins.creating')
+			const markdown = content?.text || ''
 			try {
-				await downloadPostHtml(content)
+				const gist = await createGist({
+					markdown,
+					securityLevel: 'secure',
+					source: {
+						type: 'social',
+						ref: {
+							entityHash: parsed.entityHash,
+							postId: parsed.postId,
+							author: downloadHtmlButton.closest('.post-card')?.dataset.authorEntity || parsed.entityHash,
+						},
+						exportedAt: Date.now(),
+					},
+				})
+				location.href = '/parts/shells:gist/view?id=' + encodeURIComponent(gist.id)
 			}
-			catch {
-				/* 媒体失败已在 exportHtml 内 handleError */
+			catch (error) {
+				handleError('social.post.gistCreateFailed', {}, error)
 			}
 		}
 		return true

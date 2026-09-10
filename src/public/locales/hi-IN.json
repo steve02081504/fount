@@ -1175,6 +1175,11 @@
 			"generateXFountPart": {
 				"description": "स्रोत घटक जानकारी उत्पन्न करें"
 			}
+		},
+		"home_drag_in_handlers": {
+			"handleMarkdownDrop": {
+				"description": "ड्रॉप किए गए Markdown दस्तावेज़ को बनाएँ या देखें"
+			}
 		}
 	},
 	"chat": {
@@ -3211,6 +3216,12 @@
 		"home_function_buttons": {
 			"chatHub": {
 				"title": "चैट"
+			},
+			"frequent": {
+				"title": null
+			},
+			"network": {
+				"title": null
 			}
 		},
 		"profile": {
@@ -3603,6 +3614,19 @@
 					"searchingContent": "${content} की खोज की जा रही है"
 				}
 			}
+		},
+		"gist_source_plugins": {
+			"chat": {
+				"title": "चैट से"
+			},
+			"creating": "gist बनाया जा रहा है…",
+			"fromGroup": "ग्रुप से",
+			"fromChannel": "चैनल से",
+			"author": "लेखक",
+			"exportedAt": "निर्यात समय",
+			"jumpToSource": "स्रोत पर जाएँ",
+			"sendToChat": "चैट में कॉपी करें",
+			"copied": "क्लिपबोर्ड पर कॉपी किया गया"
 		}
 	},
 	"easynew": {
@@ -4931,6 +4955,7 @@
 			"notFound": "पोस्ट मौजूद नहीं है या दिखाई नहीं दे रही है",
 			"loadFailed": "लोडिंग विफल रही, कृपया बाद में पुनः प्रयास करें",
 			"exportMediaFailed": "मीडिया निर्यात नहीं हो सका: ${error}",
+			"gistCreateFailed": "gist बनाना विफल रहा: ${error}",
 			"detailTitle": "पोस्ट",
 			"back": "वापस"
 		},
@@ -5030,6 +5055,18 @@
 			"follow": "सदस्यता लें",
 			"unfollow": "सदस्यता रद्द करें",
 			"empty": "इस विषय पर अभी तक कोई पोस्ट नहीं है"
+		},
+		"gist_source_plugins": {
+			"social": {
+				"title": "पोस्ट से"
+			},
+			"creating": "gist बनाया जा रहा है…",
+			"fromPost": "पोस्ट से",
+			"author": "लेखक",
+			"exportedAt": "निर्यात समय",
+			"jumpToSource": "स्रोत पर जाएँ",
+			"sendToSocial": "पोस्ट में कॉपी करें",
+			"copied": "क्लिपबोर्ड पर कॉपी किया गया"
 		}
 	},
 	"cabinet": {
@@ -5872,21 +5909,7 @@
 			"saveSettingsFailed": "सार्वजनिक-हित सेटिंग सहेजने में विफल: ${message}",
 			"generalError": "एक त्रुटि उत्पन्न हुई: ${message}"
 		},
-		"home_function_buttons": {
-			"in_dev": {
-				"title": "अल्प विकास",
-				"sub_items": {
-					"subfounts_related": {
-						"title": "उपयंत्र",
-						"sub_items": {
-							"main": {
-								"title": "उप-उपकरण प्रबंधित करें"
-							}
-						}
-					}
-				}
-			}
-		}
+		"home_function_buttons": {}
 	},
 	"achievements": {
 		"title": "उपलब्धि",
@@ -6451,6 +6474,83 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
+			}
+		},
+		"gist_source_plugins": {
+			"creating": "gist बनाया जा रहा है…",
+			"fromSession": "कोडिंग सत्र से",
+			"sessionId": "सत्र",
+			"exportedAt": "निर्यात समय",
+			"sendToWorkspace": "कार्यक्षेत्र में भेजें",
+			"copied": "क्लिपबोर्ड पर कॉपी किया गया",
+			"sent": "कार्यक्षेत्र में भेजा गया",
+			"code": {
+				"title": "कोडिंग सत्र से"
+			}
+		}
+	},
+	"gist": {
+		"title": "gist पुस्तकालय",
+		"description": "Markdown दस्तावेज़ सहेजें, देखें, संपादित करें और साझा करें, प्रत्येक gist के लिए सुरक्षा स्तर के साथ।",
+		"error": {
+			"generic": "कुछ गलत हो गया: ${error}"
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "gist पुस्तकालय"
+			}
+		},
+		"list": {
+			"new": "नया gist",
+			"empty": "अभी कोई gist नहीं है। पहला gist बनाने के लिए ऊपर दाईं ओर “नया gist” पर क्लिक करें।",
+			"updatedAt": "अपडेट किया गया"
+		},
+		"source": {
+			"manual": "मैन्युअल",
+			"chat": "चैट से",
+			"social": "पोस्ट से",
+			"code": "कोडिंग सत्र से",
+			"md-drop": "ड्रॉप किया गया Markdown"
+		},
+		"security": {
+			"secure": "संरक्षित",
+			"trusted": "विश्वसनीय"
+		},
+		"view": {
+			"back": "वापस",
+			"edit": "संपादित करें",
+			"download": "डाउनलोड करें",
+			"share": "साझा करें",
+			"delete": "हटाएँ",
+			"empty": "यह gist खाली है",
+			"dropRerender": "ड्रॉप किए गए Markdown के साथ फिर से रेंडर किया गया",
+			"downgradeConfirm": "“विश्वसनीय” पर स्विच करने पर पूर्वावलोकन में HTML स्क्रिप्ट चल सकेंगी, जिससे XSS का जोखिम है। फिर भी स्विच करें?",
+			"shareCopied": "शेयर लिंक क्लिपबोर्ड पर कॉपी कर दिया गया",
+			"deleteConfirm": "क्या यह gist हटाएँ? इसे पूर्ववत नहीं किया जा सकता।",
+			"notFound": "gist नहीं मिला — शायद इसे हटा दिया गया है।"
+		},
+		"edit": {
+			"save": "सहेजें",
+			"cancel": "वापस",
+			"title": "शीर्षक",
+			"editor": {
+				"placeholder": "Markdown दर्ज करें…",
+				"aria-label": "Markdown संपादक"
+			},
+			"previewToggle": "पूर्वावलोकन",
+			"editMode": "संपादित करें",
+			"pasteDangerPrompt": "क्लिपबोर्ड में खतरनाक सामग्री हो सकती है (स्क्रिप्ट / इवेंट एट्रिब्यूट / असुरक्षित लिंक)। ${trust}: बिना सुरक्षा के ज्यों-का-त्यों पेस्ट करें; ${secure}: पेस्ट करने से पहले संरक्षित पर स्विच करें।",
+			"pasteTrust": "भरोसा करें और पेस्ट करें",
+			"pasteSecure": "भरोसा न करें, संरक्षित करें"
+		},
+		"securityToggle": {
+			"secure": {
+				"title": "संरक्षित",
+				"aria-label": "सुरक्षा स्तर: संरक्षित"
+			},
+			"trusted": {
+				"title": "विश्वसनीय",
+				"aria-label": "सुरक्षा स्तर: विश्वसनीय"
 			}
 		}
 	}

@@ -8,6 +8,7 @@ import { installCdnResponseCache } from './cdn_cache.mjs'
 import { requireTestBaseUrl } from './env.mjs'
 import { assertAriaIgnoreIssues } from './github_issue.mjs'
 import { assertIsolatedFrontendTest } from './guards.mjs'
+import { openModulePage } from './module_page.mjs'
 
 /**
  * fount 前端 E2E 通用 fixture：`baseUrl` / `apiKey` / 已登录 `context` + `page`。
@@ -99,6 +100,16 @@ export function createFountFixtures(options = {}) {
 				expect(diagnostics.i18nMissingErrors, 'unexpected missing i18n keys').toEqual([])
 				expect(diagnostics.i18nClobberErrors, 'unexpected i18n child clobber (data-i18n replacing non-text subtree)').toEqual([])
 			})
+		},
+		/**
+		 * 模块逻辑页 fixture：首页就绪后直接在页面里跑浏览器模块逻辑（见 module_page.mjs）。
+		 * @param {object} dependencies - Playwright fixture 依赖
+		 * @param {import('npm:@playwright/test').Page} dependencies.page - 诊断包裹的页面
+		 * @param {string} dependencies.baseUrl - 测试根 URL
+		 * @param {(modulePage: import('./module_page.mjs').ModulePage) => Promise<void>} use - Playwright fixture use 回调
+		 */
+		modulePage: async ({ page, baseUrl }, use) => {
+			await use(await openModulePage(page, baseUrl))
 		},
 	})
 

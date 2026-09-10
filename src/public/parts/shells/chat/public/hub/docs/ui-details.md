@@ -28,7 +28,7 @@ Day-to-day rules: [AGENTS.md](../AGENTS.md).
 ## Message shortcuts / composer
 
 - Shift → action bar download/delete. Drag non-body → `messageDragExport.mjs`. Char timeline: bubble swipe/arrow (`chatGestures.mjs`).
-- HTML export (download / share / copy HTML / drag): `messages/exportHtml.mjs` → `scripts/features/markdown/standaloneDocument.mjs` (full offline document + group attachment data URLs); do not emit bare Markdown fragments alone. Download / drag-to-desktop filenames follow the exported document `<title>`.
+- HTML export (download / share / copy HTML / drag): copy HTML and drag produce a standalone offline document (`messages/exportHtml.mjs` / `messageDragExport.mjs` → `/parts/shells:gist/src/standaloneDocument.mjs`; full offline document + group attachment data URLs — do not emit bare Markdown fragments alone). Drag-to-desktop filenames follow the exported document `<title>`. Download / share instead call `messages/exportGist.mjs` (`exportMessageToGist` → `createGist`, carrying chat source metadata) and navigate to the gist viewing page `/parts/shells:gist/view?id=…`.
 - Composer disable: `disabled` only when surface CSS hides the input. Visible disabled: object-key `{ placeholder }` i18n — string keys write `innerHTML` into textarea.
 - Optimistic `pending:…`: no chain writes until `isDagEventId`. On WS confirm with `composerPendingId`, `applyIncomingMessage*` must `pipeline.refresh()`.
 

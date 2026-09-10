@@ -1175,6 +1175,11 @@
 			"generateXFountPart": {
 				"description": "Generate fount part info"
 			}
+		},
+		"home_drag_in_handlers": {
+			"handleMarkdownDrop": {
+				"description": "Create or preview a dropped Markdown document"
+			}
 		}
 	},
 	"chat": {
@@ -3211,6 +3216,12 @@
 		"home_function_buttons": {
 			"chatHub": {
 				"title": "Chat"
+			},
+			"frequent": {
+				"title": "Favorites"
+			},
+			"network": {
+				"title": "Interconnect"
 			}
 		},
 		"profile": {
@@ -3603,6 +3614,19 @@
 					"searchingContent": "Searching ${content}"
 				}
 			}
+		},
+		"gist_source_plugins": {
+			"chat": {
+				"title": "From chat"
+			},
+			"creating": "Creating gist…",
+			"fromGroup": "From group",
+			"fromChannel": "From channel",
+			"author": "Author",
+			"exportedAt": "Exported at",
+			"jumpToSource": "Jump to source",
+			"sendToChat": "Copy to chat",
+			"copied": "Copied to clipboard"
 		}
 	},
 	"easynew": {
@@ -4103,7 +4127,10 @@
 		},
 		"home_function_buttons": {
 			"manage": {
-				"title": "Manage service source"
+				"title": "Configure service sources"
+			},
+			"frequent": {
+				"title": "Favorites"
 			}
 		}
 	},
@@ -4374,6 +4401,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Square"
+			},
+			"frequent": {
+				"title": "Favorites"
+			},
+			"network": {
+				"title": "Interconnect"
 			}
 		},
 		"nav": {
@@ -4931,6 +4964,7 @@
 			"notFound": "Post not found or not visible",
 			"loadFailed": "Couldn't load — try again later",
 			"exportMediaFailed": "Couldn't export media: ${error}",
+			"gistCreateFailed": "Failed to create gist: ${error}",
 			"detailTitle": "Post",
 			"back": "Back"
 		},
@@ -5030,6 +5064,18 @@
 			"follow": "Subscribe",
 			"unfollow": "Unsubscribe",
 			"empty": "There are no posts for this topic yet"
+		},
+		"gist_source_plugins": {
+			"social": {
+				"title": "From post"
+			},
+			"creating": "Creating gist…",
+			"fromPost": "From post",
+			"author": "Author",
+			"exportedAt": "Exported at",
+			"jumpToSource": "Jump to source",
+			"sendToSocial": "Copy to post",
+			"copied": "Copied to clipboard"
 		}
 	},
 	"cabinet": {
@@ -5048,6 +5094,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Cabinet"
+			},
+			"asset": {
+				"title": "Assets"
 			}
 		},
 		"upload": "Upload",
@@ -5226,6 +5275,14 @@
 		"home_function_buttons": {
 			"integration_related": {
 				"title": "Integrations",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "Terminal Assist"
+					}
+				}
+			},
+			"dev": {
+				"title": "Development",
 				"sub_items": {
 					"terminalAssist": {
 						"title": "Terminal Assist"
@@ -5753,6 +5810,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Access on other devices"
+			},
+			"frequent": {
+				"title": "Favorites"
+			},
+			"network": {
+				"title": "Interconnect"
 			}
 		}
 	},
@@ -5873,16 +5936,11 @@
 			"generalError": "An error occurred: ${message}"
 		},
 		"home_function_buttons": {
-			"in_dev": {
-				"title": "under development",
+			"network": {
+				"title": "Interconnect",
 				"sub_items": {
-					"subfounts_related": {
-						"title": "subdevice",
-						"sub_items": {
-							"main": {
-								"title": "Manage sub-devices"
-							}
-						}
+					"subfounts": {
+						"title": "Sub-devices"
 					}
 				}
 			}
@@ -6451,6 +6509,89 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
+			},
+			"dev": {
+				"title": "Development"
+			}
+		},
+		"gist_source_plugins": {
+			"creating": "Creating gist…",
+			"fromSession": "From coding session",
+			"sessionId": "Session",
+			"exportedAt": "Exported at",
+			"sendToWorkspace": "Send to workspace",
+			"copied": "Copied to clipboard",
+			"sent": "Sent to workspace",
+			"code": {
+				"title": "From coding session"
+			}
+		}
+	},
+	"gist": {
+		"title": "Gist Library",
+		"description": "Save, view, edit and share Markdown documents, with a per-gist security level.",
+		"error": {
+			"generic": "Something went wrong: ${error}"
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "Gist Library"
+			},
+			"asset": {
+				"title": "Assets"
+			}
+		},
+		"list": {
+			"new": "New gist",
+			"empty": "No gists yet. Click “New gist” in the top-right to create one.",
+			"updatedAt": "Updated"
+		},
+		"source": {
+			"manual": "Manual",
+			"chat": "From chat",
+			"social": "From post",
+			"code": "From coding session",
+			"md-drop": "Dropped Markdown"
+		},
+		"security": {
+			"secure": "Protected",
+			"trusted": "Unprotected"
+		},
+		"view": {
+			"back": "Back",
+			"edit": "Edit",
+			"download": "Download",
+			"share": "Share",
+			"delete": "Delete",
+			"empty": "This gist is empty",
+			"dropRerender": "Re-rendered with the dropped Markdown",
+			"downgradeConfirm": "Switching to “Unprotected” will allow HTML scripts to execute in the preview, posing an XSS risk. Switch anyway?",
+			"shareCopied": "Share link copied to clipboard",
+			"deleteConfirm": "Delete this gist? This cannot be undone.",
+			"notFound": "Gist not found — it may have been deleted."
+		},
+		"edit": {
+			"save": "Save",
+			"cancel": "Back",
+			"title": "Title",
+			"editor": {
+				"placeholder": "Enter Markdown…",
+				"aria-label": "Markdown editor"
+			},
+			"previewToggle": "Preview",
+			"editMode": "Edit",
+			"pasteDangerPrompt": "The clipboard may contain dangerous content (scripts / event attributes / unsafe links). ${trust}: paste as-is with no protection; ${secure}: switch to protected before pasting.",
+			"pasteTrust": "Trust and paste",
+			"pasteSecure": "Don't trust, protect"
+		},
+		"securityToggle": {
+			"secure": {
+				"title": "Protected",
+				"aria-label": "Security level: protected"
+			},
+			"trusted": {
+				"title": "Unprotected",
+				"aria-label": "Security level: unprotected"
 			}
 		}
 	}

@@ -4,7 +4,7 @@
  * 【原理】对齐旧 chat：非正文区 mousedown 才 draggable；mousedown 预生成 HTML Blob；
  *   mouseup / mouseleave / dragend 取消 draggable；Blob 在拖拽结束或未拖拽松开时回收。
  */
-import { fileNameFromHtmlTitle } from '../../../../../scripts/features/markdown/standaloneDocument.mjs'
+import { fileNameFromHtmlTitle } from '/parts/shells:gist/src/standaloneDocument.mjs'
 
 import { generateMessageStandaloneHtml } from './exportHtml.mjs'
 import { findContextMessage, getChannelMessageActionsContext } from './messageActionsState.mjs'

@@ -1175,6 +1175,11 @@
 			"generateXFountPart": {
 				"description": "Informationen zur Quellkomponente generieren"
 			}
+		},
+		"home_drag_in_handlers": {
+			"handleMarkdownDrop": {
+				"description": "Abgelegtes Markdown-Dokument erstellen oder ansehen"
+			}
 		}
 	},
 	"chat": {
@@ -3211,6 +3216,12 @@
 		"home_function_buttons": {
 			"chatHub": {
 				"title": "Chat"
+			},
+			"frequent": {
+				"title": null
+			},
+			"network": {
+				"title": null
 			}
 		},
 		"profile": {
@@ -3603,6 +3614,19 @@
 					"searchingContent": "Suche ${content}"
 				}
 			}
+		},
+		"gist_source_plugins": {
+			"chat": {
+				"title": "Aus Chat"
+			},
+			"creating": "gist wird erstellt…",
+			"fromGroup": "Aus Gruppe",
+			"fromChannel": "Aus Kanal",
+			"author": "Autor",
+			"exportedAt": "Exportiert am",
+			"jumpToSource": "Zur Quelle springen",
+			"sendToChat": "In Chat kopieren",
+			"copied": "In die Zwischenablage kopiert"
 		}
 	},
 	"easynew": {
@@ -4931,6 +4955,7 @@
 			"notFound": "Beitrag existiert nicht oder ist nicht sichtbar",
 			"loadFailed": "Der Ladevorgang ist fehlgeschlagen. Bitte versuchen Sie es später noch einmal",
 			"exportMediaFailed": "Medien konnten nicht exportiert werden: ${error}",
+			"gistCreateFailed": "Erstellen des gist fehlgeschlagen: ${error}",
 			"detailTitle": "Post",
 			"back": "Zurück"
 		},
@@ -5030,6 +5055,18 @@
 			"follow": "Abonnieren",
 			"unfollow": "Abbestellen",
 			"empty": "Zu diesem Thema gibt es noch keine Beiträge"
+		},
+		"gist_source_plugins": {
+			"social": {
+				"title": "Aus Beitrag"
+			},
+			"creating": "gist wird erstellt…",
+			"fromPost": "Aus Beitrag",
+			"author": "Autor",
+			"exportedAt": "Exportiert am",
+			"jumpToSource": "Zur Quelle springen",
+			"sendToSocial": "In Beitrag kopieren",
+			"copied": "In die Zwischenablage kopiert"
 		}
 	},
 	"cabinet": {
@@ -5872,21 +5909,7 @@
 			"saveSettingsFailed": "Gemeinwohl-Einstellungen konnten nicht gespeichert werden: ${message}",
 			"generalError": "Es ist ein Fehler aufgetreten: ${message}"
 		},
-		"home_function_buttons": {
-			"in_dev": {
-				"title": "In Entwicklung",
-				"sub_items": {
-					"subfounts_related": {
-						"title": "Untergerät",
-						"sub_items": {
-							"main": {
-								"title": "Untergeräte verwalten"
-							}
-						}
-					}
-				}
-			}
-		}
+		"home_function_buttons": {}
 	},
 	"achievements": {
 		"title": "Leistung",
@@ -6451,6 +6474,83 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
+			}
+		},
+		"gist_source_plugins": {
+			"creating": "gist wird erstellt…",
+			"fromSession": "Aus Coding-Sitzung",
+			"sessionId": "Sitzung",
+			"exportedAt": "Exportiert am",
+			"sendToWorkspace": "An Arbeitsbereich senden",
+			"copied": "In die Zwischenablage kopiert",
+			"sent": "An Arbeitsbereich gesendet",
+			"code": {
+				"title": "Aus Coding-Sitzung"
+			}
+		}
+	},
+	"gist": {
+		"title": "Gist-Bibliothek",
+		"description": "Markdown-Dokumente speichern, ansehen, bearbeiten und teilen – Sicherheitsstufe pro gist.",
+		"error": {
+			"generic": "Etwas ist schiefgelaufen: ${error}"
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "Gist-Bibliothek"
+			}
+		},
+		"list": {
+			"new": "Neues gist",
+			"empty": "Noch kein gist vorhanden. Klicke oben rechts auf „Neues gist“, um eins zu erstellen.",
+			"updatedAt": "Aktualisiert"
+		},
+		"source": {
+			"manual": "Manuell",
+			"chat": "Aus Chat",
+			"social": "Aus Beitrag",
+			"code": "Aus Coding-Sitzung",
+			"md-drop": "Abgelegtes Markdown"
+		},
+		"security": {
+			"secure": "Geschützt",
+			"trusted": "Ungeschützt"
+		},
+		"view": {
+			"back": "Zurück",
+			"edit": "Bearbeiten",
+			"download": "Herunterladen",
+			"share": "Teilen",
+			"delete": "Löschen",
+			"empty": "Dieses gist ist leer",
+			"dropRerender": "Mit dem abgelegten Markdown neu gerendert",
+			"downgradeConfirm": "Beim Wechsel auf „Ungeschützt“ können HTML-Skripte in der Vorschau ausgeführt werden – XSS-Risiko. Trotzdem wechseln?",
+			"shareCopied": "Freigabelink in die Zwischenablage kopiert",
+			"deleteConfirm": "Dieses gist löschen? Dies kann nicht rückgängig gemacht werden.",
+			"notFound": "gist nicht gefunden – möglicherweise wurde es gelöscht."
+		},
+		"edit": {
+			"save": "Speichern",
+			"cancel": "Zurück",
+			"title": "Titel",
+			"editor": {
+				"placeholder": "Markdown eingeben…",
+				"aria-label": "Markdown-Editor"
+			},
+			"previewToggle": "Vorschau",
+			"editMode": "Bearbeiten",
+			"pasteDangerPrompt": "Die Zwischenablage kann gefährliche Inhalte enthalten (Skripte / Ereignisattribute / unsichere Links). ${trust}: ungeschützt lassen und unverändert einfügen; ${secure}: vor dem Einfügen auf geschützt umschalten.",
+			"pasteTrust": "Vertrauen und einfügen",
+			"pasteSecure": "Nicht vertrauen, schützen"
+		},
+		"securityToggle": {
+			"secure": {
+				"title": "Geschützt",
+				"aria-label": "Sicherheitsstufe: geschützt"
+			},
+			"trusted": {
+				"title": "Ungeschützt",
+				"aria-label": "Sicherheitsstufe: ungeschützt"
 			}
 		}
 	}

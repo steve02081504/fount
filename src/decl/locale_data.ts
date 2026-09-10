@@ -1138,6 +1138,11 @@ export type LocaleData = {
 				description: string
 			}
 		}
+		home_drag_in_handlers: {
+			handleMarkdownDrop: {
+				description: string
+			}
+		}
 	}
 	chat: {
 		title: string
@@ -3174,6 +3179,12 @@ export type LocaleData = {
 			chatHub: {
 				title: string
 			}
+			frequent: {
+				title: string
+			}
+			network: {
+				title: string
+			}
 		}
 		profile: {
 			title: string
@@ -3565,6 +3576,19 @@ export type LocaleData = {
 					searchingContent: string
 				}
 			}
+		}
+		gist_source_plugins: {
+			chat: {
+				title: string
+			}
+			creating: string
+			fromGroup: string
+			fromChannel: string
+			author: string
+			exportedAt: string
+			jumpToSource: string
+			sendToChat: string
+			copied: string
 		}
 	}
 	easynew: {
@@ -4067,6 +4091,9 @@ export type LocaleData = {
 			manage: {
 				title: string
 			}
+			frequent: {
+				title: string
+			}
 		}
 	}
 	telegram_bots: {
@@ -4335,6 +4362,12 @@ export type LocaleData = {
 		dwellFailed: string
 		home_function_buttons: {
 			main: {
+				title: string
+			}
+			frequent: {
+				title: string
+			}
+			network: {
 				title: string
 			}
 		}
@@ -4893,6 +4926,7 @@ export type LocaleData = {
 			notFound: string
 			loadFailed: string
 			exportMediaFailed: string
+			gistCreateFailed: string
 			detailTitle: string
 			back: string
 		}
@@ -4993,6 +5027,18 @@ export type LocaleData = {
 			unfollow: string
 			empty: string
 		}
+		gist_source_plugins: {
+			social: {
+				title: string
+			}
+			creating: string
+			fromPost: string
+			author: string
+			exportedAt: string
+			jumpToSource: string
+			sendToSocial: string
+			copied: string
+		}
 	}
 	cabinet: {
 		title: string
@@ -5009,6 +5055,9 @@ export type LocaleData = {
 		bootstrapFailed: string
 		home_function_buttons: {
 			main: {
+				title: string
+			}
+			asset: {
 				title: string
 			}
 		}
@@ -5187,6 +5236,14 @@ export type LocaleData = {
 		}
 		home_function_buttons: {
 			integration_related: {
+				title: string
+				sub_items: {
+					terminalAssist: {
+						title: string
+					}
+				}
+			}
+			dev: {
 				title: string
 				sub_items: {
 					terminalAssist: {
@@ -5716,6 +5773,12 @@ export type LocaleData = {
 			main: {
 				title: string
 			}
+			frequent: {
+				title: string
+			}
+			network: {
+				title: string
+			}
 		}
 	}
 	proxy: {
@@ -5835,16 +5898,11 @@ export type LocaleData = {
 			generalError: string
 		}
 		home_function_buttons: {
-			in_dev: {
+			network: {
 				title: string
 				sub_items: {
-					subfounts_related: {
+					subfounts: {
 						title: string
-						sub_items: {
-							main: {
-								title: string
-							}
-						}
 					}
 				}
 			}
@@ -6414,6 +6472,89 @@ export type LocaleData = {
 			code: {
 				title: string
 			}
+			dev: {
+				title: string
+			}
+		}
+		gist_source_plugins: {
+			creating: string
+			fromSession: string
+			sessionId: string
+			exportedAt: string
+			sendToWorkspace: string
+			copied: string
+			sent: string
+			code: {
+				title: string
+			}
+		}
+	}
+	gist: {
+		title: string
+		description: string
+		error: {
+			generic: string
+		}
+		home_function_buttons: {
+			main: {
+				title: string
+			}
+			asset: {
+				title: string
+			}
+		}
+		list: {
+			new: string
+			empty: string
+			updatedAt: string
+		}
+		source: {
+			manual: string
+			chat: string
+			social: string
+			code: string
+			'md-drop': string
+		}
+		security: {
+			secure: string
+			trusted: string
+		}
+		view: {
+			back: string
+			edit: string
+			download: string
+			share: string
+			delete: string
+			empty: string
+			dropRerender: string
+			downgradeConfirm: string
+			shareCopied: string
+			deleteConfirm: string
+			notFound: string
+		}
+		edit: {
+			save: string
+			cancel: string
+			title: string
+			editor: {
+				placeholder: string
+				'aria-label': string
+			}
+			previewToggle: string
+			editMode: string
+			pasteDangerPrompt: string
+			pasteTrust: string
+			pasteSecure: string
+		}
+		securityToggle: {
+			secure: {
+				title: string
+				'aria-label': string
+			}
+			trusted: {
+				title: string
+				'aria-label': string
+			}
 		}
 	}
 }
@@ -6908,6 +7049,8 @@ export type LocaleKeyParams = {
 	'fountConsole.verification.codeNotifyBody': { code: string | number }
 	'fountConsole.web.frontendFilesChanged': { path: string | number }
 	'fountConsole.web.requestReceived': { method: string | number; url: string | number }
+	'gist.edit.pasteDangerPrompt': { secure: string | number; trust: string | number }
+	'gist.error.generic': { error: string | number }
 	'home.dragAndDrop.dropError': { error: string | number }
 	'home.emptyList.message': { newpartLink: string | number; telegramLink: string | number }
 	'ide_integration.apiKey.createError': { message: string | number }
@@ -7002,6 +7145,7 @@ export type LocaleKeyParams = {
 	'social.notifications.repost': { author: string | number }
 	'social.poll.deadline': { deadline: string | number }
 	'social.post.exportMediaFailed': { error: string | number }
+	'social.post.gistCreateFailed': { error: string | number }
 	'social.profile.cabinetsFailed': { error: string | number }
 	'social.profile.loadFailed': { error: string | number }
 	'social.replies.loadFailed': { error: string | number }

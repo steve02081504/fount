@@ -213,7 +213,7 @@
 	padding: 1rem;
 	box-sizing: content-box;
 	fill: var(--color-base-content) !important;
-	background: color-mix(in oklab, var(--color-base-200) 88%, var(--color-base-content));
+	background: color-mix(in oklab, var(--color-base-200) 50%, var(--color-base-content));
 	border-radius: var(--radius-box);
 	border: var(--border) solid color-mix(in oklab, var(--color-base-content) 10%, transparent);
 }

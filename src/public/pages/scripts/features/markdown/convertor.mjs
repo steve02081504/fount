@@ -1070,8 +1070,9 @@ function rehypeCacheRead() {
 				const isMermaid = className.includes('language-mermaid')
 				const lang = className.find(c => c.startsWith('language-')) || 'text'
 
-				// 生成 Cache Key (包含内容和语言)
-				const hash = md5(content + lang)
+				// 生成 Cache Key（内容 + 语言 + fence meta：title 等 meta 影响成品 HTML，缺失会让
+				// 「同内容不同 title」的第二块复用第一块的成品（含标题））
+				const hash = md5(content + lang + (codeNode.data?.meta ?? ''))
 
 				// Mermaid 渲染结果在 standalone 和普通模式下相同，使用 common 缓存
 				// 普通代码块包含交互按钮，在两种模式下不同，使用 specific 缓存
@@ -1106,7 +1107,8 @@ function rehypeCacheRead() {
 			// Math 渲染结果在 standalone 和普通模式下相同，使用 common 缓存
 			if (node.properties?.className?.some(c => c === 'math-inline' || c === 'math-display')) {
 				const content = node.children?.[0]?.value || ''
-				const hash = md5(content)
+				// 生成 Cache Key（内容 + inline/display 档：两类节点成品 class 不同，不得互撞）
+				const hash = md5(content + (node.properties.className.includes('math-display') ? 'display' : 'inline'))
 				const cacheKey = `math-${hash}`
 				const cacheStore = cache.common
 

@@ -9,6 +9,7 @@ import { geti18n, initTranslations, onLanguageChange } from '/scripts/i18n/index
 
 import { ensureHistory, updateComposerPlaceholder, wireComposerEvents } from './composer.mjs'
 import * as api from './endpoints.mjs'
+import { registerFountUserApi } from './fountUser.mjs'
 import { backToBottom, updateEmptyMode } from './messages.mjs'
 import {
 	applyWorkspaceCharConfig,
@@ -99,6 +100,7 @@ export async function boot() {
 	initComposer()
 	wireComposerEvents()
 	wireGlobalEvents()
+	registerFountUserApi()
 	// 语言切换时重渲染动态文案（geti18n 的 textContent 不随 setLanguage 自动更新）；注册立即触发一次
 	onLanguageChange(rerenderDynamicText)
 	warmupMarkdownPipeline()

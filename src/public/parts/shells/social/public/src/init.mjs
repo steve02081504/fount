@@ -18,6 +18,7 @@ import {
 	syncGroupRefInComposer,
 } from './composer.mjs'
 import { getChatViewer } from './endpoints/chatBridge.mjs'
+import { registerFountUserApi } from './fountUser.mjs'
 import { SOCIAL_GATE } from './gate.mjs'
 import { renderAvatarHtml, rememberEntityHandle } from './lib/display.mjs'
 import { wireSocialProfileHover } from './lib/profileHover.mjs'
@@ -196,6 +197,7 @@ function connectFeedWebSocket(attempt = 0) {
 export async function bootstrap() {
 	socialGate.markPending()
 	try {
+		registerFountUserApi()
 		try {
 			await loadAliases()
 		}

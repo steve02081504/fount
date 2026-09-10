@@ -1,10 +1,19 @@
 {
 	"home_function_buttons": [
 		{
-			"info": "serviceSource_manager.home_function_buttons.manage",
-			"level": 1,
-			"url": "/parts/shells:serviceSourceManage/",
-			"button": "<img src=\"https://api.iconify.design/line-md/engine.svg\" class=\"text-icon\"/>"
+			"id": "frequent",
+			"open": true,
+			"info": "serviceSource_manager.home_function_buttons.frequent",
+			"level": 0,
+			"button": "<img src=\"https://api.iconify.design/mdi/star-outline.svg\" class=\"text-icon\"/>",
+			"sub_items": [
+				{
+					"info": "serviceSource_manager.home_function_buttons.manage",
+					"level": 1,
+					"url": "/parts/shells:serviceSourceManage/",
+					"button": "<img src=\"https://api.iconify.design/line-md/engine.svg\" class=\"text-icon\"/>"
+				}
+			]
 		}
 	]
 }

@@ -1,10 +1,33 @@
 {
 	"home_function_buttons": [
 		{
-			"info": "access.home_function_buttons.main",
-			"level": 99,
-			"url": "/parts/shells:access/",
-			"button": "<img src=\"https://api.iconify.design/line-md/cloud.svg\" class=\"text-icon\"/>"
+			"id": "network",
+			"info": "access.home_function_buttons.network",
+			"level": 2,
+			"button": "<img src=\"https://api.iconify.design/line-md/link.svg\" class=\"text-icon\"/>",
+			"sub_items": [
+				{
+					"info": "access.home_function_buttons.main",
+					"level": 4,
+					"url": "/parts/shells:access/",
+					"button": "<img src=\"https://api.iconify.design/line-md/cloud.svg\" class=\"text-icon\"/>"
+				}
+			]
+		},
+		{
+			"id": "frequent",
+			"open": true,
+			"info": "access.home_function_buttons.frequent",
+			"level": 0,
+			"button": "<img src=\"https://api.iconify.design/mdi/star-outline.svg\" class=\"text-icon\"/>",
+			"sub_items": [
+				{
+					"info": "access.home_function_buttons.main",
+					"level": 4,
+					"url": "/parts/shells:access/",
+					"button": "<img src=\"https://api.iconify.design/line-md/cloud.svg\" class=\"text-icon\"/>"
+				}
+			]
 		}
 	]
 }

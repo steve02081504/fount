@@ -620,7 +620,6 @@
 			],
 			"triggers": [
 				"src/scripts/test/selftest/locale_match.test.mjs",
-				"src/scripts/i18n/locale_match.mjs",
 				"src/public/pages/scripts/i18n/locale_match.mjs"
 			]
 		},

@@ -757,6 +757,7 @@ export async function displayFunctionButtons() {
 				.forEach(child => ul.appendChild(createButtonMenuItem(child)))
 
 			const details = document.createElement('details')
+			if (item.open) details.open = true
 			details.appendChild(summary)
 			details.appendChild(ul)
 			li.appendChild(details)
@@ -823,7 +824,14 @@ export async function displayFunctionButtons() {
 	searchInput.addEventListener('input', () => {
 		if (!searchInput.value) return renderMenu(allItems)
 		const filterFn = compileFilter(searchInput.value)
-		renderMenu(leafItems.filter(button => filterFn(geti18n(button.info))))
+		const seen = new Set()
+		renderMenu(leafItems.filter(button => {
+			if (!filterFn(geti18n(button.info))) return false
+			const target = button.url ?? button.action ?? button.info
+			if (seen.has(target)) return false
+			seen.add(target)
+			return true
+		}))
 	})
 
 	renderMenu(allItems)

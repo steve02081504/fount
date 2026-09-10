@@ -15,6 +15,7 @@ import {
 import { REPO_ROOT } from '../core/repo_root.mjs'
 import { suiteUsesSerialRunner } from '../core/resources.mjs'
 import { markTempDirOrigin } from '../core/temp_origin.mjs'
+import { withNoDomShimPreload } from '../deno/no_dom_shim.mjs'
 import { moduleCheckTicketEnv, withDenoModuleCheckPreload } from '../hub/clients/module_check.mjs'
 
 import { runCommand } from './run_command.mjs'
@@ -74,7 +75,7 @@ export function buildSuiteInvocation(suite, options, failuresOut, timingsOut, tr
 	if (suiteUsesSerialRunner(suite) && globalBudget)
 		applyBudgetToEnv(env, globalBudget)
 	return {
-		command: withDenoModuleCheckPreload(applyTestHeapCapToDenoRun([...suite.run]), moduleCheckTicket),
+		command: withDenoModuleCheckPreload(withNoDomShimPreload(applyTestHeapCapToDenoRun([...suite.run])), moduleCheckTicket),
 		env,
 	}
 }

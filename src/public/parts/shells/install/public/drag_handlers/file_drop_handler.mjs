@@ -10,9 +10,12 @@ import { importFiles } from '../src/endpoints.mjs'
 export default async function (dataTransfer, handlerConfig) {
 	if (!dataTransfer.files?.length) return false
 
+	const files = [...dataTransfer.files].filter(file => !/\.(md|markdown)$/i.test(file.name || ''))
+	if (!files.length) return false
+
 	const formData = new FormData()
-	for (let i = 0; i < dataTransfer.files.length; i++)
-		formData.append('files', dataTransfer.files[i])
+	for (const file of files)
+		formData.append('files', file)
 
 	const response = await importFiles(formData)
 	return response.ok

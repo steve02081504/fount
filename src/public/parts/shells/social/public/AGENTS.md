@@ -43,6 +43,7 @@ Timeline commit / OnMessage test traps: [test domain-harness](../../../../../../
 ## Agent integration
 
 New posts → `dispatchSocialMessage` → local agents `interfaces.social.OnMessage`; without it, @mention defaults to chat `GetReply` via `replyViaChat`. **Hard rule**: `User*` = operator, `Char*` = agent, `ReplyTo*` = post author — never put the post author in `User*`. Operator care → `care_post` inbox. Cross-node @ of non-local: `social_post_notify` RPC. Regression: `social_on_message`.
+- **`fount.user.send`**: bootstrap registers `globalThis.fount.user.send(string | chatLogEntry)` → replies to the **triggering** post's author (`.post-card` `data-author-entity`/`data-post-id`, fallback `[data-replies-for]` actionKey; locator in `shared/fountUserSend.mjs`, Deno-pure). Capture-phase click tracking identifies the trigger; no trigger → `console.error` + throw. Locale = triggering post's `content.locale` (fallback `primaryLocale`).
 
 ## Notifications
 

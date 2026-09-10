@@ -5,12 +5,12 @@ import { setInterval } from 'node:timers'
 import { console as baseConsole } from 'npm:@steve02081504/virtual-console'
 import supportsAnsi from 'npm:supports-ansi'
 
+import { FALLBACK_LOCALE, getBestLocale } from '../../public/pages/scripts/i18n/locale_match.mjs'
 import { __dirname } from '../../server/base.mjs'
 import { loadJsonFile } from '../json_loader.mjs'
 import { ms } from '../ms.mjs'
 import { escapeRegExp } from '../regex.mjs'
 
-import { FALLBACK_LOCALE, getBestLocale } from './locale_match.mjs'
 import { isSwitchValue, resolveSwitchCase } from './switch_value.mjs'
 
 /** 重导出 locale 匹配与回退常量。 */
@@ -19,7 +19,7 @@ export {
 	getBestLocale,
 	matchLocale,
 	pickLocalizedSlice,
-} from './locale_match.mjs'
+} from '../../public/pages/scripts/i18n/locale_match.mjs'
 
 /**
  * 区域设置数据

@@ -660,12 +660,11 @@ test.describe('code shell message actions & layout', () => {
 			return dt.getData('text/plain')
 		})
 		expect(dragText).toContain('测试回复。')
-		// 保存为 HTML（浏览器下载）
+		// 保存为 HTML：建 gist 并跳转查看页（下载/分享在查看页进行）
 		await charBubble.hover()
-		const downloadPromise = page.waitForEvent('download')
 		await charBubble.locator('.code-message-save-html').click()
-		const download = await downloadPromise
-		expect(download.suggestedFilename()).toMatch(/^fount-code-message-.+\.html$/)
+		await page.waitForURL(/parts\/shells:gist\/view\/?\?id=/, { timeout: 30_000 })
+		await expect(page.locator('#view-title')).toBeVisible({ timeout: 30_000 })
 	})
 
 	test('regen: refresh button on the last char message regenerates it in place', async ({ page, baseUrl }) => {

@@ -1175,6 +1175,11 @@
 			"generateXFountPart": {
 				"description": "Búðu til upplýsingar um leturíhluti"
 			}
+		},
+		"home_drag_in_handlers": {
+			"handleMarkdownDrop": {
+				"description": "Búa til eða forskoða Markdown skjal sem dregið er inn"
+			}
 		}
 	},
 	"chat": {
@@ -3211,6 +3216,12 @@
 		"home_function_buttons": {
 			"chatHub": {
 				"title": "Spjall"
+			},
+			"frequent": {
+				"title": null
+			},
+			"network": {
+				"title": null
 			}
 		},
 		"profile": {
@@ -3603,6 +3614,19 @@
 					"searchingContent": "Leitar að ${content}"
 				}
 			}
+		},
+		"gist_source_plugins": {
+			"chat": {
+				"title": "Úr spjalli"
+			},
+			"creating": "Bý til gist…",
+			"fromGroup": "Úr hópi",
+			"fromChannel": "Úr rás",
+			"author": "Höfundur",
+			"exportedAt": "Flutt út",
+			"jumpToSource": "Fara í uppruna",
+			"sendToChat": "Afrita í spjall",
+			"copied": "Afritað á klippispjald"
 		}
 	},
 	"easynew": {
@@ -4931,6 +4955,7 @@
 			"notFound": "Færsla er ekki til eða er ekki sýnileg",
 			"loadFailed": "Mistókst að hlaða, vinsamlegast reyndu aftur síðar",
 			"exportMediaFailed": "Ekki tókst að flytja út fjölmiðil: ${error}",
+			"gistCreateFailed": "Mistókst að búa til gist: ${error}",
 			"detailTitle": "Færsla",
 			"back": "Til baka"
 		},
@@ -5030,6 +5055,18 @@
 			"follow": "Áskrift",
 			"unfollow": "Hætta áskrift",
 			"empty": "Það eru engar færslur fyrir þetta efni ennþá"
+		},
+		"gist_source_plugins": {
+			"social": {
+				"title": "Úr færslu"
+			},
+			"creating": "Bý til gist…",
+			"fromPost": "Úr færslu",
+			"author": "Höfundur",
+			"exportedAt": "Flutt út",
+			"jumpToSource": "Fara í uppruna",
+			"sendToSocial": "Afrita í færslu",
+			"copied": "Afritað á klippispjald"
 		}
 	},
 	"cabinet": {
@@ -5872,21 +5909,7 @@
 			"saveSettingsFailed": "Mistókst að vista stillingar almannaheillar: ${message}",
 			"generalError": "Villa kom upp: ${message}"
 		},
-		"home_function_buttons": {
-			"in_dev": {
-				"title": "Undir þróun",
-				"sub_items": {
-					"subfounts_related": {
-						"title": "undirtæki",
-						"sub_items": {
-							"main": {
-								"title": "Stjórna undirtækjum"
-							}
-						}
-					}
-				}
-			}
-		}
+		"home_function_buttons": {}
 	},
 	"achievements": {
 		"title": "Afrek",
@@ -6451,6 +6474,83 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
+			}
+		},
+		"gist_source_plugins": {
+			"creating": "Bý til gist…",
+			"fromSession": "Úr kóðunarfundi",
+			"sessionId": "Fundur",
+			"exportedAt": "Flutt út",
+			"sendToWorkspace": "Senda í vinnusvæði",
+			"copied": "Afritað á klippispjald",
+			"sent": "Sent í vinnusvæði",
+			"code": {
+				"title": "Úr kóðunarfundi"
+			}
+		}
+	},
+	"gist": {
+		"title": "Gist-safn",
+		"description": "Vista, skoða, breyta og deila Markdown skjölum — með öryggisstigi fyrir hvert gist.",
+		"error": {
+			"generic": "Eitthvað fór úrskeiðis: ${error}"
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "Gist-safn"
+			}
+		},
+		"list": {
+			"new": "Nýtt gist",
+			"empty": "Engin gist enn. Smelltu á „Nýtt gist“ efst til hægri til að búa til það fyrsta.",
+			"updatedAt": "Uppfært"
+		},
+		"source": {
+			"manual": "Handvirkt",
+			"chat": "Úr spjalli",
+			"social": "Úr færslu",
+			"code": "Úr kóðunarfundi",
+			"md-drop": "Dregið Markdown"
+		},
+		"security": {
+			"secure": "Varið",
+			"trusted": "Óvarið"
+		},
+		"view": {
+			"back": "Til baka",
+			"edit": "Breyta",
+			"download": "Sækja",
+			"share": "Deila",
+			"delete": "Eyða",
+			"empty": "Þetta gist er tómt",
+			"dropRerender": "Endurbirt með dregna Markdown",
+			"downgradeConfirm": "Með því að skipta yfir í „Óvarið“ verða HTML skriftur keyrðar í forskoðun, sem er XSS-áhætta. Skipta samt?",
+			"shareCopied": "Deilingarhlekkur afritaður á klippispjald",
+			"deleteConfirm": "Eyða þessu gist? Þetta verður ekki tekið aftur.",
+			"notFound": "Gist finnst ekki — það kann að hafa verið eytt."
+		},
+		"edit": {
+			"save": "Vista",
+			"cancel": "Til baka",
+			"title": "Titill",
+			"editor": {
+				"placeholder": "Sláðu inn Markdown…",
+				"aria-label": "Markdown ritill"
+			},
+			"previewToggle": "Forskoðun",
+			"editMode": "Breyta",
+			"pasteDangerPrompt": "Klippispjaldið kann að innihalda hættulegt efni (skriftur / atvikaeiginleika / óörugga tengla). ${trust}: límdu óvarið eins og það er; ${secure}: skiptu yfir í varið áður en þú límir.",
+			"pasteTrust": "Treysta og líma",
+			"pasteSecure": "Treysta ekki — vernda"
+		},
+		"securityToggle": {
+			"secure": {
+				"title": "Varið",
+				"aria-label": "Öryggisstig: varið"
+			},
+			"trusted": {
+				"title": "Óvarið",
+				"aria-label": "Öryggisstig: óvarið"
 			}
 		}
 	}

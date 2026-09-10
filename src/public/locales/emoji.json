@@ -1175,6 +1175,11 @@
 			"generateXFountPart": {
 				"description": "📥🧩📃"
 			}
+		},
+		"home_drag_in_handlers": {
+			"handleMarkdownDrop": {
+				"description": "📂📥📝✨👁️"
+			}
 		}
 	},
 	"chat": {
@@ -3211,6 +3216,12 @@
 		"home_function_buttons": {
 			"chatHub": {
 				"title": "💬"
+			},
+			"frequent": {
+				"title": "常用"
+			},
+			"network": {
+				"title": "互联"
 			}
 		},
 		"profile": {
@@ -3603,6 +3614,19 @@
 					"searchingContent": "🔍 ${content}"
 				}
 			}
+		},
+		"gist_source_plugins": {
+			"chat": {
+				"title": "💬"
+			},
+			"creating": "⏳📄…",
+			"fromGroup": "👥",
+			"fromChannel": "📡",
+			"author": "✍️",
+			"exportedAt": "🕒",
+			"jumpToSource": "↪️",
+			"sendToChat": "📋💬",
+			"copied": "📋✅"
 		}
 	},
 	"easynew": {
@@ -4104,6 +4128,9 @@
 		"home_function_buttons": {
 			"manage": {
 				"title": "⚙️🚰"
+			},
+			"frequent": {
+				"title": "常用"
 			}
 		}
 	},
@@ -4374,6 +4401,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "🏛️"
+			},
+			"frequent": {
+				"title": "常用"
+			},
+			"network": {
+				"title": "互联"
 			}
 		},
 		"nav": {
@@ -4931,6 +4964,7 @@
 			"notFound": "📄🚫👀",
 			"loadFailed": "📥❌ · 🔁⏳",
 			"exportMediaFailed": "📤🖼️❌ · ${error}",
+			"gistCreateFailed": "🚫👎: ${error}",
 			"detailTitle": "📄",
 			"back": "🔙"
 		},
@@ -5030,6 +5064,18 @@
 			"follow": "🔔",
 			"unfollow": "🔕",
 			"empty": "#️⃣📭"
+		},
+		"gist_source_plugins": {
+			"social": {
+				"title": "📣"
+			},
+			"creating": "⏳📄…",
+			"fromPost": "📣",
+			"author": "✍️",
+			"exportedAt": "🕒",
+			"jumpToSource": "↪️",
+			"sendToSocial": "📋📣",
+			"copied": "📋✅"
 		}
 	},
 	"cabinet": {
@@ -5048,6 +5094,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "🗄️"
+			},
+			"asset": {
+				"title": "资产"
 			}
 		},
 		"upload": "⬆️",
@@ -5229,6 +5278,14 @@
 				"sub_items": {
 					"terminalAssist": {
 						"title": "💻🦾"
+					}
+				}
+			},
+			"dev": {
+				"title": "开发",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "终端辅助"
 					}
 				}
 			}
@@ -5753,6 +5810,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "💻📱➡️⛲"
+			},
+			"frequent": {
+				"title": "常用"
+			},
+			"network": {
+				"title": "互联"
 			}
 		}
 	},
@@ -5873,16 +5936,11 @@
 			"generalError": "💥: ${message}"
 		},
 		"home_function_buttons": {
-			"in_dev": {
-				"title": "🚧",
+			"network": {
+				"title": "互联",
 				"sub_items": {
-					"subfounts_related": {
-						"title": "📱👶",
-						"sub_items": {
-							"main": {
-								"title": "⚙️📱👶"
-							}
-						}
+					"subfounts": {
+						"title": "子设备"
 					}
 				}
 			}
@@ -6451,6 +6509,89 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "💻"
+			},
+			"dev": {
+				"title": "开发"
+			}
+		},
+		"gist_source_plugins": {
+			"creating": "⏳📄…",
+			"fromSession": "👨💻",
+			"sessionId": "🆔",
+			"exportedAt": "🕒",
+			"sendToWorkspace": "📤🖥️",
+			"copied": "📋✅",
+			"sent": "🖥️✅",
+			"code": {
+				"title": "👨💻"
+			}
+		}
+	},
+	"gist": {
+		"title": "📄📚",
+		"description": "💾👁️✏️🔗🛡️",
+		"error": {
+			"generic": "🚫👎: ${error}"
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "📄📚"
+			},
+			"asset": {
+				"title": "资产"
+			}
+		},
+		"list": {
+			"new": "🆕📄",
+			"empty": "🈳…↗️🆕📄",
+			"updatedAt": "🕒"
+		},
+		"source": {
+			"manual": "✋",
+			"chat": "💬",
+			"social": "📣",
+			"code": "👨💻",
+			"md-drop": "📂📥📝"
+		},
+		"security": {
+			"secure": "🛡️",
+			"trusted": "⚠️"
+		},
+		"view": {
+			"back": "🔙",
+			"edit": "✏️",
+			"download": "⬇️",
+			"share": "🔗",
+			"delete": "🗑️",
+			"empty": "📄🈳",
+			"dropRerender": "📂📥📝🔄",
+			"downgradeConfirm": "🛡️➡️⚠️💀…❓",
+			"shareCopied": "🔗📋✅",
+			"deleteConfirm": "🗑️📄❓↩️🚫",
+			"notFound": "📄🔍❓"
+		},
+		"edit": {
+			"save": "💾",
+			"cancel": "🔙",
+			"title": "📌",
+			"editor": {
+				"placeholder": "⌨️📝…",
+				"aria-label": "📝✏️"
+			},
+			"previewToggle": "👁️",
+			"editMode": "✏️",
+			"pasteDangerPrompt": "📋⚠️👻🧨… ${trust}: ⚠️📋➡️; ${secure}: 🛡️📋➡️",
+			"pasteTrust": "🤝📋",
+			"pasteSecure": "🙅🛡️📋"
+		},
+		"securityToggle": {
+			"secure": {
+				"title": "🛡️",
+				"aria-label": "🛡️🔒"
+			},
+			"trusted": {
+				"title": "⚠️",
+				"aria-label": "⚠️🔓"
 			}
 		}
 	}

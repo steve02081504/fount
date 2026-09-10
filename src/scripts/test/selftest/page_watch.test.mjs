@@ -4,6 +4,7 @@
 /* global Deno */
 import { assertEquals } from 'jsr:@std/assert'
 
+import { parseExternalDirectives } from '../../../public/pages/scripts/test/watch/cssvar.mjs'
 import {
 	holdLocale,
 	releaseLocale,
@@ -33,6 +34,13 @@ import { waitUntil } from '../core/wait.mjs'
 function task(name, delayMs, run, covered, beginDrain) {
 	return { name, delayMs, run, covered, beginDrain }
 }
+
+Deno.test('parseExternalDirectives extracts -- names from cssvar-external comments', () => {
+	assertEquals(parseExternalDirectives('/* cssvar-external: --btn-color --other */'), ['--btn-color', '--other'])
+	assertEquals(parseExternalDirectives('a{color:red} /* cssvar-external: --btn-color */ b{}'), ['--btn-color'])
+	assertEquals(parseExternalDirectives('.x { --btn-color: var(--color-neutral-content); }'), [])
+	assertEquals(parseExternalDirectives(''), [])
+})
 
 Deno.test('createReporter dedups by key', () => {
 	/** @type {unknown[][]} */
@@ -72,6 +80,9 @@ Deno.test('svg theme color distance flags near-identical pairs', async () => {
 	assertEquals(colorDistance([255, 255, 255], [34, 197, 94]) > MIN_COLOR_DISTANCE, true)
 	// 暗色主题下近白前景与暗底
 	assertEquals(colorDistance([29, 35, 42], [255, 255, 255]) > MIN_COLOR_DISTANCE, true)
+	// 深色端回归：light 主题 base-content vs neutral（wait/install 尾栏图标）同处近黑，
+	// base-content oklch(21% .006 285.885)→rgb(24,24,27)，bg-neutral oklch(14% .005 285.823)→rgb(9,9,11)
+	assertEquals(colorDistance([24, 24, 27], [9, 9, 11]) < MIN_COLOR_DISTANCE, true)
 })
 
 Deno.test('ariaIgnoreProblem covers missing / bad / closed', () => {

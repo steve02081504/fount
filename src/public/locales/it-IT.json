@@ -1175,6 +1175,11 @@
 			"generateXFountPart": {
 				"description": "Genera informazioni sui componenti del carattere"
 			}
+		},
+		"home_drag_in_handlers": {
+			"handleMarkdownDrop": {
+				"description": "Crea o mostra l'anteprima di un documento Markdown rilasciato"
+			}
 		}
 	},
 	"chat": {
@@ -3217,6 +3222,12 @@
 		"home_function_buttons": {
 			"chatHub": {
 				"title": "Chiacchierata"
+			},
+			"frequent": {
+				"title": null
+			},
+			"network": {
+				"title": null
 			}
 		},
 		"profile": {
@@ -3609,6 +3620,19 @@
 					"searchingContent": "Ricerca di ${content}"
 				}
 			}
+		},
+		"gist_source_plugins": {
+			"chat": {
+				"title": "Dalla chat"
+			},
+			"creating": "Creazione del gist…",
+			"fromGroup": "Dal gruppo",
+			"fromChannel": "Dal canale",
+			"author": "Autore",
+			"exportedAt": "Esportato il",
+			"jumpToSource": "Vai alla fonte",
+			"sendToChat": "Copia nella chat",
+			"copied": "Copiato negli appunti"
 		}
 	},
 	"easynew": {
@@ -4937,6 +4961,7 @@
 			"notFound": "Il post non esiste o non è visibile",
 			"loadFailed": "Caricamento non riuscito, riprova più tardi",
 			"exportMediaFailed": "Impossibile esportare i contenuti multimediali: ${error}",
+			"gistCreateFailed": "Impossibile creare il gist: ${error}",
 			"detailTitle": "Inviare",
 			"back": "Indietro"
 		},
@@ -5036,6 +5061,18 @@
 			"follow": "Iscriviti",
 			"unfollow": "Annulla l'iscrizione",
 			"empty": "Non ci sono ancora post per questo argomento"
+		},
+		"gist_source_plugins": {
+			"social": {
+				"title": "Dal post"
+			},
+			"creating": "Creazione del gist…",
+			"fromPost": "Dal post",
+			"author": "Autore",
+			"exportedAt": "Esportato il",
+			"jumpToSource": "Vai alla fonte",
+			"sendToSocial": "Copia nel post",
+			"copied": "Copiato negli appunti"
 		}
 	},
 	"cabinet": {
@@ -5878,21 +5915,7 @@
 			"saveSettingsFailed": "Impossibile salvare le impostazioni di bene pubblico: ${message}",
 			"generalError": "Si è verificato un errore: ${message}"
 		},
-		"home_function_buttons": {
-			"in_dev": {
-				"title": "In fase di sviluppo",
-				"sub_items": {
-					"subfounts_related": {
-						"title": "sottodispositivo",
-						"sub_items": {
-							"main": {
-								"title": "Gestisci i sotto-dispositivi"
-							}
-						}
-					}
-				}
-			}
-		}
+		"home_function_buttons": {}
 	},
 	"achievements": {
 		"title": "Risultato",
@@ -6457,6 +6480,83 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
+			}
+		},
+		"gist_source_plugins": {
+			"creating": "Creazione del gist…",
+			"fromSession": "Dalla sessione di programmazione",
+			"sessionId": "Sessione",
+			"exportedAt": "Esportato il",
+			"sendToWorkspace": "Invia nell'area di lavoro",
+			"copied": "Copiato negli appunti",
+			"sent": "Inviato nell'area di lavoro",
+			"code": {
+				"title": "Dalla sessione di programmazione"
+			}
+		}
+	},
+	"gist": {
+		"title": "Libreria di gist",
+		"description": "Salva, visualizza, modifica e condividi documenti Markdown, con un livello di sicurezza per ogni gist.",
+		"error": {
+			"generic": "Qualcosa è andato storto: ${error}"
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "Libreria di gist"
+			}
+		},
+		"list": {
+			"new": "Nuovo gist",
+			"empty": "Non ci sono ancora gist. Fai clic su «Nuovo gist» in alto a destra per crearne uno.",
+			"updatedAt": "Aggiornato"
+		},
+		"source": {
+			"manual": "Manuale",
+			"chat": "Dalla chat",
+			"social": "Dal post",
+			"code": "Dalla sessione di programmazione",
+			"md-drop": "Markdown rilasciato"
+		},
+		"security": {
+			"secure": "Protetto",
+			"trusted": "Non protetto"
+		},
+		"view": {
+			"back": "Indietro",
+			"edit": "Modifica",
+			"download": "Scarica",
+			"share": "Condividi",
+			"delete": "Elimina",
+			"empty": "Questo gist è vuoto",
+			"dropRerender": "Ri-renderizzato con il Markdown rilasciato",
+			"downgradeConfirm": "Passando a «Non protetto», gli script HTML potranno essere eseguiti nell'anteprima, con rischio di XSS. Passare comunque?",
+			"shareCopied": "Link di condivisione copiato negli appunti",
+			"deleteConfirm": "Eliminare questo gist? L'operazione non può essere annullata.",
+			"notFound": "gist non trovato: potrebbe essere stato eliminato."
+		},
+		"edit": {
+			"save": "Salva",
+			"cancel": "Indietro",
+			"title": "Titolo",
+			"editor": {
+				"placeholder": "Inserisci Markdown…",
+				"aria-label": "Editor Markdown"
+			},
+			"previewToggle": "Anteprima",
+			"editMode": "Modifica",
+			"pasteDangerPrompt": "Gli appunti potrebbero contenere contenuti pericolosi (script / attributi di evento / link non sicuri). ${trust}: resta non protetto e incolla così com'è; ${secure}: passa a protetto prima di incollare.",
+			"pasteTrust": "Fidati e incolla",
+			"pasteSecure": "Non fidarti, proteggi"
+		},
+		"securityToggle": {
+			"secure": {
+				"title": "Protetto",
+				"aria-label": "Livello di sicurezza: protetto"
+			},
+			"trusted": {
+				"title": "Non protetto",
+				"aria-label": "Livello di sicurezza: non protetto"
 			}
 		}
 	}

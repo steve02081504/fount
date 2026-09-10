@@ -2,6 +2,7 @@
  * SVG 主题对比检测：页面出现 `<svg>` 时，分别以 `data-theme=light` / `data-theme=dark`
  * 校验 SVG 前景色与其背后背景色不相近（感知色距 ≥ 阈值），防止图标在某一主题下隐身。
  * 元素带 `svg-theme-ignore` 属性（可写在会被 `svgInliner` 内联的 `<img>` 上，属性随内联复制）时跳过。
+ * 另跳过自绘不透明全幅背景的 SVG（如 fount 方形 logo）：真实衬底是 SVG 内部画面而非页面背景。
  */
 import { wake } from './loop.mjs'
 import { ignore } from './mutation_gate.mjs'
@@ -9,8 +10,10 @@ import { createReporter } from './reporter.mjs'
 
 const reporter = createReporter('[test:svg]')
 
-/** 判为"相近"的感知色距（OKLab ΔE）上限：低于该值即前景与背景几乎同色。 */
-export const MIN_COLOR_DISTANCE = 0.05
+/** 判为"相近"的感知色距（OKLab ΔE）上限：低于该值即前景与背景几乎同色。
+ *  0.05 曾放过 fg/bg 同处深色端的情况（如 light 主题 base-content 与 neutral 的 ΔE≈0.07，
+ *  两个近黑灰在图标尺度上仍不可辨），故取 0.10。 */
+export const MIN_COLOR_DISTANCE = 0.10
 
 /** 依次校验的主题。 */
 const THEMES = ['light', 'dark']
@@ -260,6 +263,105 @@ function isPositionedOverlay(svg) {
 	return false
 }
 
+/** fill 的 `url(#id)` 引用匹配（第 1 组为纯 id，不带 `#`）。 */
+const URL_FILL_REGEX = /^url\(["']?#?([^)"']+)[)"']?\)$/
+
+/**
+ * 计算的 fill 是否表现完全不透明：纯色可解析，或引用的渐变含至少一个
+ * 且所有 stop 均为显式不透明色（渐变作背景的 logo 属这一类）。
+ * @param {SVGSVGElement} svg SVG 元素（渐变 id 在其内查找）
+ * @param {string} fill 计算的 fill 值
+ * @returns {boolean} 完全不透明则为 true
+ */
+function isOpaqueFill(svg, fill) {
+	if (!fill || fill === 'none') return false
+	const reference = URL_FILL_REGEX.exec(fill)
+	if (!reference) return cssColorToRgb(fill) != null
+	const escaped = CSS.escape(reference[1])
+	const stops = [...svg.querySelector(`linearGradient[id="${escaped}"], radialGradient[id="${escaped}"]`)?.querySelectorAll('stop') ?? []]
+	return stops.length > 0 && stops.every(stop => {
+		const style = getComputedStyle(stop)
+		return Number(style.stopOpacity) === 1 && cssColorToRgb(style.stopColor) != null
+	})
+}
+
+/**
+ * 绘制元素是否完全覆盖参考矩形（坐标取 viewBox 空间或屏幕空间，各带容差）。
+ * @param {Element} element 绘制元素
+ * @param {SVGSVGElement} svg 所属 SVG
+ * @param {{ x: number, y: number, width: number, height: number } | null} viewBoxRect viewBox 矩形（无则 null）
+ * @returns {boolean} 覆盖则为 true
+ */
+function coversRect(element, svg, viewBoxRect) {
+	if (viewBoxRect) {
+		let boundingBox
+		try {
+			boundingBox = element.getBBox()
+		} catch {
+			return false
+		}
+		const epsilon = 1e-6
+		return boundingBox.x <= viewBoxRect.x + epsilon && boundingBox.y <= viewBoxRect.y + epsilon &&
+			boundingBox.x + boundingBox.width >= viewBoxRect.x + viewBoxRect.width - epsilon &&
+			boundingBox.y + boundingBox.height >= viewBoxRect.y + viewBoxRect.height - epsilon
+	}
+	const outer = svg.getBoundingClientRect()
+	const rect = element.getBoundingClientRect()
+	return rect.left <= outer.left && rect.top <= outer.top &&
+		rect.right >= outer.right && rect.bottom >= outer.bottom
+}
+
+/**
+ * 元素到 svg 的祖先链（不含该元素自己，含 svg 自身）有效 opacity 是否全部为 1：
+ * 任一祖先半透明时页面背景会透入画面，SVG 不算自衬底。
+ * @param {Element} element 绘制元素
+ * @param {SVGSVGElement} svg 所属 SVG
+ * @returns {boolean} 全不透明则为 true
+ */
+function isAncestorOpacityOpaque(element, svg) {
+	for (let node = element; ; node = node.parentElement) {
+		if (node !== element && Number(getComputedStyle(node).opacity) !== 1) return false
+		if (node === svg) return true
+		if (!node.parentElement) return true
+	}
+}
+
+/**
+ * SVG 是否自绘了不透明全幅背景（如品牌方形 logo）。
+ * 判定：某个绘制元素（非 defs/mask 子树）完整覆盖 SVG 画面（viewBox，缺省用布局矩形），
+ * 且元素 fill-opacity 为 1、祖先链有效 opacity 全为 1，其计算 fill 是不透明纯色
+ * 或全不透明渐变——这类 SVG 的真实衬底是内部画面
+ * 而非页面背景，沿祖先链测得的背景与前景毫无关系，测量不可靠，应整体跳过。
+ * @param {SVGSVGElement} svg SVG 元素
+ * @returns {boolean} 自衬底则为 true
+ */
+export function isSelfBacked(svg) {
+	const viewBox = svg.viewBox?.baseVal
+	const viewBoxRect = viewBox && viewBox.width > 0 && viewBox.height > 0 ?
+		{ x: viewBox.x, y: viewBox.y, width: viewBox.width, height: viewBox.height } : null
+	for (const element of svg.querySelectorAll('*')) {
+		const tag = element.tagName.toLowerCase()
+		if (!DRAWING_TAGS.has(tag)) continue
+		if (element.closest(NON_DRAWING_SELECTOR)) continue
+		const style = getComputedStyle(element)
+		if (Number(style.opacity) === 1 && coversRect(element, svg, viewBoxRect) && isOpaqueFill(svg, style.fill) &&
+			Number(style.fillOpacity) === 1 && isAncestorOpacityOpaque(element, svg)) return true
+	}
+	return false
+}
+
+/**
+ * SVG 及其祖先链（不含采样根）的有效 opacity 是否全部为 1。
+ * 任一环节半透明时页面背景会透入合成结果，衬底测量不可靠。
+ * @param {SVGSVGElement} svg SVG 元素
+ * @returns {boolean} 存在半透明环节则为 true
+ */
+function isTranslucentChain(svg) {
+	for (let node = svg; node && node !== document.documentElement; node = node.parentElement)
+		if (Number(getComputedStyle(node).opacity) !== 1) return true
+	return false
+}
+
 /**
  * 在指定主题下扫描 SVG 前景/背景色距问题。
  * @param {string} theme 主题名
@@ -274,6 +376,8 @@ function findSvgContrastIssues(theme, svgs) {
 		if (!background) continue
 		// 浮层叠加在动态绘制内容上、祖先链只测到页面根背景时，衬底不可测，跳过以免误报。
 		if (isRootBackground(background) && isPositionedOverlay(svg)) continue
+		// 入场动画等半透明祖先让真实衬底=背景×透明度混合，测量不可靠，跳过（与定位浮层同一盲区）。
+		if (isTranslucentChain(svg)) continue
 		/** @type {Set<string>} */
 		const foregrounds = new Set()
 		for (const color of collectSvgForegroundColors(svg)) {
@@ -300,7 +404,8 @@ function run({ draining }) {
 	if (!dirty && !(draining && !drainPassDone)) return true
 	dirty = false
 	try {
-		const svgs = [...document.querySelectorAll('svg')].filter(svg => isVisibleSvg(svg) && !svg.hasAttribute('svg-theme-ignore'))
+		const svgs = [...document.querySelectorAll('svg')]
+			.filter(svg => isVisibleSvg(svg) && !svg.hasAttribute('svg-theme-ignore') && !isSelfBacked(svg))
 		if (!svgs.length) return false
 		ignore(() => {
 			const measureStyle = document.createElement('style')

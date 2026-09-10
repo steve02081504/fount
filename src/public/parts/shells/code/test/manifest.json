@@ -19,6 +19,7 @@
 		],
 		"frontendShared": [
 			"src/public/parts/shells/code/public/**",
+			"src/public/parts/shells/gist/public/src/standaloneDocument.mjs",
 			"src/public/parts/shells/code/test/frontend/**",
 			"src/public/pages/scripts/test/**"
 		]
@@ -48,7 +49,7 @@
 		},
 		{
 			"name": "frontend",
-			"expected": "2m38s",
+			"expected": "5m37s",
 			"dependsOn": [
 				"server:live"
 			],

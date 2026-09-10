@@ -8,6 +8,34 @@ Day-to-day selectors / taxonomy: [AGENTS.md](../AGENTS.md). This file is fixture
 
 Single-config Pages driver (`.github/pages/test/frontend/run.mjs`) has no Playwright projects: it passes spec filenames from `playwrightArgsForSubtests` when `FOUNT_TEST_SUBTESTS` is set (`pages:frontend:wait` → `wait.spec.mjs`). Do not rely on argv slice alone or a named subtest still runs every `*.spec.mjs`.
 
+## Module logic page (`modulePage`)
+
+Testing a browser module's logic without booting a whole shell UI: every `createFountFixtures` frontend suite exposes a `modulePage` fixture (`src/scripts/test/playwright/module_page.mjs`). It fulfills a **same-origin minimal routed page** with `fount.test.watch.disabled` set (pages `base.mjs` skips the page-watch a11y/locale sweeps; `enabled` stays on to keep Sentry off) and loads the i18n bundle explicitly (`[i18n:missing]` safe), then `run` evaluates a closure-free function in the page. Assertions stay Node-side; rich objects survive the structured-clone boundary.
+
+```mjs
+import { expect, test } from './fixtures.mjs'
+
+test('secure render keeps spoiler onclick', async ({ modulePage }) => {
+	const html = await modulePage.run(async () => {
+		// 昂贵对象挂页面常驻 store，跨用例复用（processor 构建很贵）
+		const store = globalThis.__fountModulePage
+		store.convertor ??= await import('/scripts/features/markdown/index.mjs')
+		return store.convertor.renderMarkdownAsString('||secret||', undefined, { allowDangerousHtml: false, isStandalone: true })
+	})
+	expect(html).toContain('class="spoiler"')
+})
+```
+
+Rules:
+
+- The `run` callback must be **closure-free** (Playwright serializes it via `toString`); pass data via the second `run(fn, arg)` argument. Functions / class instances cannot cross back — return plain data (strings, numbers, plain objects) or do DOM work inside the callback and return counts/summaries.
+- Module URLs are browser-absolute: `/scripts/…` (pages scripts), `/parts/<partpath>/…` (part `public/`). URLs map into a part's `public/` dir — backend-only dirs (a part's `src/`, plugins) are **not served** — logic living there stays in Deno tests. (The `/parts/shells:gist/src/…` cross-shell imports resolve to the gist `public/src/` dir — see pages AGENTS.)
+- Prefer the browser's own cached entries (`features/markdown/index.mjs getConvertor`) over rebuilding processors per call.
+- Detached containers (`document.createElement('div')`, never appended) keep DOM assertions off the page-watch MutationObserver; append to `document.body` only when connection itself is the subject.
+- `StreamRenderer`-style classes work on detached elements via `finish()` (rAF loop short-circuits when not connected).
+
+This is the sanctioned replacement for the old happy-dom Deno tests: Deno test children explode on DOM-global assignment (`deno/no_dom_shim.mjs` preload) — see test [AGENTS.md](../AGENTS.md#writing-new-tests).
+
 ## Fixtures
 
 `createFountFixtures({ locale, isolated? })` — `isolated` registers `FOUNT_TEST_USERNAME` + `assertIsolatedFrontendTest` (Chat/Social/Cabinet). Locale `addInitScript` wraps `localStorage` in try/catch (`about:blank` / sandboxed frames throw `SecurityError`). When `FOUNT_TEST_HUB_URL` is set (parent hub `127.0.0.1:8903`), fixtures also inject `fount.test.hubUrl` for in-page hub clients / page `watch`.
@@ -53,10 +81,11 @@ API helpers in `playwright/api.mjs`: `withApiRequest`, `fetchViewerEntityHash`, 
 `watch` (`scripts/test/watch/`): mounts `fount.test.watch` (`kick` / `drain` / `holdLocale` / `releaseLocale` / `started`). Locale bootstrap then `loop.start()` — the only ready gate.
 
 - a11y: MutationObserver dirty → axe; `[aria-ignore]` via shared `test/aria_ignore.mjs` + hub probes.
-- svgTheme: when a visible `<svg>` is present, sweep `data-theme=light` / `data-theme=dark` and assert each SVG foreground (fill/stroke/currentColor) stays at OKLab ΔE >= threshold from its backing background; an icon that vanishes under one theme fails via `[test:svg]`. Measurement runs inside an `ignore()` block with transitions/animations disabled, then restores the theme. Two measurement blind spots are skipped as unreliable: (1) drawing elements inside non-drawing containers (`mask`/`defs`/`clipPath`/…) whose internal fill/stroke are mask templates, not visible foreground; (2) icons in positioned overlays whose only opaque ancestor background is the page root (`html`/`body`) — their true backing is sibling-painted content (hero animations etc.), not the root background.
-- cssvar: scan same-origin `<link>` stylesheets (skip injected Tailwind `<style>` / CDN daisyUI) for CSS variable health — (1) a bare `var(--x)` (no fallback) that no element can resolve → define it or remove the usage; (2) a declared `--x:` that is never referenced by any `var()` during the test → extend test coverage or drop the dead variable. References accumulate across DOM-mutation rescans (including fallback usages and nodes later removed), so unused detection reflects runtime tracking rather than a one-shot snapshot. Same-origin variables only; third-party libraries are ignored to avoid false positives.
+- svgTheme: when a visible `<svg>` is present, sweep `data-theme=light` / `data-theme=dark` and assert each SVG foreground (fill/stroke/currentColor) stays at OKLab ΔE >= threshold from its backing background; an icon that vanishes under one theme fails via `[test:svg]`. Measurement runs inside an `ignore()` block with transitions/animations disabled, then restores the theme. Two measurement blind spots are skipped as unreliable: (1) drawing elements inside non-drawing containers (`mask`/`defs`/`clipPath`/…) whose internal fill/stroke are mask templates, not visible foreground; (2) icons in positioned overlays whose only opaque ancestor background is the page root (`html`/`body`) — their true backing is sibling-painted content (hero animations etc.), not the root background; (3) self-backing SVGs that paint an opaque full-frame backdrop themselves (e.g. the square fount logo: an opaque solid or gradient behind a fully-covered drawing element — the element's own/fill opacity and the whole ancestor-chain effective opacity must be 1) — their true backing is the SVG's own interior artwork, not the page background, so no `svg-theme-ignore` is needed for them; (4) SVGs (or a chain up to the document root) whose effective `opacity` is not 1, including entrance animations mid-fade — the true backing is the background × transparency composite, so measurement is unreliable, skip.
+- cssvar: scan same-origin `<link>` stylesheets (skip injected Tailwind `<style>` / CDN daisyUI) for CSS variable health — (1) a bare `var(--x)` (no fallback) that no element can resolve → define it or remove the usage; (2) a declared `--x:` that is never referenced by any `var()` during the test → extend test coverage or drop the dead variable. References accumulate across DOM-mutation rescans (including fallback usages and nodes later removed), so unused detection reflects runtime tracking rather than a one-shot snapshot. Same-origin variables only; third-party libraries are ignored to avoid false positives. A variable that hands a value **into** an out-of-scope consumer (e.g. a daisyUI theme bridge like `--btn-color`, consumed by the CDN button sheet the scanner cannot read) is reported as unused — exempt it with a comment directive in the same stylesheet: `/* cssvar-external: --btn-color */` (space-separated `--` names). The scanner fetches same-origin `<link>` stylesheet text to read the directive (CSSOM strips comments) and reads inline `<style>` via `ownerNode.textContent`.
 - locale: zh-CN → ja-JP → en-UK (`holdLocale` skips); no `[data-i18n]` = textless page (skip rotation; axe also skips `html-has-lang`). Visible-text + **aria-label** scans (skip `[user-content=""]` / `[language-check-ignore]` / `[aria-hidden="true"]` / `[inert]` / `[hidden]` / `.hidden`; `user-content="aria-label"` skips only that element's own `aria-label`) require Han on zh-CN and Hira/Kata/Han on ja-JP; en-UK must not carry CJK. Use `data-i18n` object keys — never hardcode English `aria-label` as a fallback. `[user-content]` = user/dynamic text; `[language-check-ignore]` = intentional multilingual chrome (language names, EULA in a chosen locale).
-- Playwright teardown `waitForWatchDrain` → `watch.drain()`. Pause rotation during asserts with `holdLocale` / `releaseLocale` (see `json_editor.mjs`).
+- Playwright teardown `waitForWatchDrain` → `watch.drain()`.
+- Debug tip: to probe a `watch/*` check in isolation (e.g. the SVG `url(#grad)` handling above), a scratch script under Temp launching the system browser directly (`where.exe chrome`/`msedge` + `chromium.launch({ executablePath })`) with a `page.evaluate` replica of the check finds the fault without booting the pages server; `$env:TEMP\opencode` is pre-approved scratch space. Pause rotation during asserts with `holdLocale` / `releaseLocale` (see `json_editor.mjs`).
 - Hard-fail on `[test:a11y]` / `[test:cssvar]` / `[test:locale]` / `[test:watch]` except axe `color-contrast`, `link-in-text-block`, and `html-has-lang` when the document has no `[data-i18n]` (no chrome copy). Prefer `[data-i18n="…"]` selectors. UI chrome must use `data-i18n` / `setLocalizeLogic`.
 
 Icon-only controls need a visible glyph/SVG (or explicit size) — aria-label alone yields a 0×0 box and Playwright `toBeVisible` reports hidden. Incomplete UI must use `aria-hidden` / `inert` / `hidden` (not bare `opacity: 0`).
