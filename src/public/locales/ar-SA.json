@@ -3218,10 +3218,10 @@
 				"title": "محادثة"
 			},
 			"frequent": {
-				"title": null
+				"title": "شائعة الاستخدام"
 			},
 			"network": {
-				"title": null
+				"title": "مترابطة"
 			}
 		},
 		"profile": {
@@ -4138,6 +4138,9 @@
 		"home_function_buttons": {
 			"manage": {
 				"title": "إدارة مصدر الخدمة"
+			},
+			"frequent": {
+				"title": "شائعة الاستخدام"
 			}
 		}
 	},
@@ -4408,6 +4411,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "الساحة"
+			},
+			"frequent": {
+				"title": "شائعة الاستخدام"
+			},
+			"network": {
+				"title": "مترابطة"
 			}
 		},
 		"nav": {
@@ -5095,6 +5104,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "خزانة الملفات"
+			},
+			"asset": {
+				"title": "أصول"
 			}
 		},
 		"upload": "رفع",
@@ -5276,6 +5288,14 @@
 				"sub_items": {
 					"terminalAssist": {
 						"title": "المساعدة الطرفية"
+					}
+				}
+			},
+			"dev": {
+				"title": "يطور",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "المساعدة النهائية"
 					}
 				}
 			}
@@ -5800,6 +5820,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "الوصول من أجهزة أخرى"
+			},
+			"frequent": {
+				"title": "شائعة الاستخدام"
+			},
+			"network": {
+				"title": "مترابطة"
 			}
 		}
 	},
@@ -5919,7 +5945,16 @@
 			"saveSettingsFailed": "فشل حفظ إعدادات المنفعة العامة: ${message}",
 			"generalError": "حدث خطأ: ${message}"
 		},
-		"home_function_buttons": {}
+		"home_function_buttons": {
+			"network": {
+				"title": "مترابطة",
+				"sub_items": {
+					"subfounts": {
+						"title": "جهاز فرعي"
+					}
+				}
+			}
+		}
 	},
 	"achievements": {
 		"title": "إنجاز",
@@ -6484,6 +6519,9 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
+			},
+			"dev": {
+				"title": "يطور"
 			}
 		},
 		"gist_source_plugins": {
@@ -6508,6 +6546,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "مكتبة gist"
+			},
+			"asset": {
+				"title": "أصول"
 			}
 		},
 		"list": {

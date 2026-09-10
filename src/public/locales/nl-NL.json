@@ -3224,7 +3224,10 @@
 				"title": "Chatten"
 			},
 			"frequent": {
-				"title": null
+				"title": "Vaak gebruikt"
+			},
+			"network": {
+				"title": "met elkaar verbonden"
 			}
 		},
 		"profile": {
@@ -4131,6 +4134,9 @@
 		"home_function_buttons": {
 			"manage": {
 				"title": "Beheer servicebron"
+			},
+			"frequent": {
+				"title": "Vaak gebruikt"
 			}
 		}
 	},
@@ -4401,6 +4407,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Plein"
+			},
+			"frequent": {
+				"title": "Vaak gebruikt"
+			},
+			"network": {
+				"title": "met elkaar verbonden"
 			}
 		},
 		"nav": {
@@ -5088,6 +5100,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Cabinet"
+			},
+			"asset": {
+				"title": "activa"
 			}
 		},
 		"upload": "Uploaden",
@@ -5269,6 +5284,14 @@
 				"sub_items": {
 					"terminalAssist": {
 						"title": "Terminale hulp"
+					}
+				}
+			},
+			"dev": {
+				"title": "ontwikkelen",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "terminale hulp"
 					}
 				}
 			}
@@ -5793,6 +5816,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Toegang op andere apparaten"
+			},
+			"frequent": {
+				"title": "Vaak gebruikt"
+			},
+			"network": {
+				"title": "met elkaar verbonden"
 			}
 		}
 	},
@@ -5912,7 +5941,16 @@
 			"saveSettingsFailed": "Kan instellingen voor algemeen nut niet opslaan: ${message}",
 			"generalError": "Er is een fout opgetreden: ${message}"
 		},
-		"home_function_buttons": {}
+		"home_function_buttons": {
+			"network": {
+				"title": "met elkaar verbonden",
+				"sub_items": {
+					"subfounts": {
+						"title": "subapparaat"
+					}
+				}
+			}
+		}
 	},
 	"achievements": {
 		"title": "Prestatie",
@@ -6477,6 +6515,9 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
+			},
+			"dev": {
+				"title": "ontwikkelen"
 			}
 		},
 		"gist_source_plugins": {
@@ -6501,6 +6542,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Gist-bibliotheek"
+			},
+			"asset": {
+				"title": "activa"
 			}
 		},
 		"list": {

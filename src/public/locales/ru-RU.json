@@ -3218,7 +3218,10 @@
 				"title": "Чат"
 			},
 			"frequent": {
-				"title": null
+				"title": "Обычно используется"
+			},
+			"network": {
+				"title": "взаимосвязаны"
 			}
 		},
 		"profile": {
@@ -4133,6 +4136,9 @@
 		"home_function_buttons": {
 			"manage": {
 				"title": "Управление источником сервиса"
+			},
+			"frequent": {
+				"title": "Обычно используется"
 			}
 		}
 	},
@@ -4403,6 +4409,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Площадь"
+			},
+			"frequent": {
+				"title": "Обычно используется"
+			},
+			"network": {
+				"title": "взаимосвязаны"
 			}
 		},
 		"nav": {
@@ -5090,6 +5102,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Файловые шкафы"
+			},
+			"asset": {
+				"title": "ресурсы"
 			}
 		},
 		"upload": "Загрузить",
@@ -5271,6 +5286,14 @@
 				"sub_items": {
 					"terminalAssist": {
 						"title": "Терминал-Ассистент"
+					}
+				}
+			},
+			"dev": {
+				"title": "развивать",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "терминальная помощь"
 					}
 				}
 			}
@@ -5795,6 +5818,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Доступ на других устройствах"
+			},
+			"frequent": {
+				"title": "Обычно используется"
+			},
+			"network": {
+				"title": "взаимосвязаны"
 			}
 		}
 	},
@@ -5914,7 +5943,16 @@
 			"saveSettingsFailed": "Не удалось сохранить настройки общественного блага: ${message}",
 			"generalError": "Произошла ошибка: `${message}"
 		},
-		"home_function_buttons": {}
+		"home_function_buttons": {
+			"network": {
+				"title": "взаимосвязаны",
+				"sub_items": {
+					"subfounts": {
+						"title": "субустройство"
+					}
+				}
+			}
+		}
 	},
 	"achievements": {
 		"title": "Достижение",
@@ -6479,6 +6517,9 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
+			},
+			"dev": {
+				"title": "развивать"
 			}
 		},
 		"gist_source_plugins": {
@@ -6503,6 +6544,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Библиотека гистов"
+			},
+			"asset": {
+				"title": "ресурсы"
 			}
 		},
 		"list": {

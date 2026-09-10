@@ -3218,10 +3218,10 @@
 				"title": "チャット"
 			},
 			"frequent": {
-				"title": null
+				"title": "よく使われる"
 			},
 			"network": {
-				"title": null
+				"title": "相互接続された"
 			}
 		},
 		"profile": {

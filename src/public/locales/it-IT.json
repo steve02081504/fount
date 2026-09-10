@@ -3224,10 +3224,10 @@
 				"title": "Chiacchierata"
 			},
 			"frequent": {
-				"title": null
+				"title": "Comunemente usato"
 			},
 			"network": {
-				"title": null
+				"title": "interconnesso"
 			}
 		},
 		"profile": {
@@ -4134,6 +4134,9 @@
 		"home_function_buttons": {
 			"manage": {
 				"title": "Gestisci l'origine del servizio"
+			},
+			"frequent": {
+				"title": "Comunemente usato"
 			}
 		}
 	},
@@ -4404,6 +4407,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "piazza"
+			},
+			"frequent": {
+				"title": "Comunemente usato"
+			},
+			"network": {
+				"title": "interconnesso"
 			}
 		},
 		"nav": {
@@ -5091,6 +5100,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Mobiletto"
+			},
+			"asset": {
+				"title": "attività"
 			}
 		},
 		"upload": "Caricamento",
@@ -5272,6 +5284,14 @@
 				"sub_items": {
 					"terminalAssist": {
 						"title": "Assistenza Terminale"
+					}
+				}
+			},
+			"dev": {
+				"title": "sviluppare",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "assistenza terminale"
 					}
 				}
 			}
@@ -5796,6 +5816,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Accesso su altri dispositivi"
+			},
+			"frequent": {
+				"title": "Comunemente usato"
+			},
+			"network": {
+				"title": "interconnesso"
 			}
 		}
 	},
@@ -5915,7 +5941,16 @@
 			"saveSettingsFailed": "Impossibile salvare le impostazioni di bene pubblico: ${message}",
 			"generalError": "Si è verificato un errore: ${message}"
 		},
-		"home_function_buttons": {}
+		"home_function_buttons": {
+			"network": {
+				"title": "interconnesso",
+				"sub_items": {
+					"subfounts": {
+						"title": "sottodispositivo"
+					}
+				}
+			}
+		}
 	},
 	"achievements": {
 		"title": "Risultato",
@@ -6480,6 +6515,9 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
+			},
+			"dev": {
+				"title": "sviluppare"
 			}
 		},
 		"gist_source_plugins": {
@@ -6504,6 +6542,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Libreria di gist"
+			},
+			"asset": {
+				"title": "attività"
 			}
 		},
 		"list": {

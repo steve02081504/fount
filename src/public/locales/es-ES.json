@@ -3224,10 +3224,10 @@
 				"title": "charlar"
 			},
 			"frequent": {
-				"title": null
+				"title": "de uso común"
 			},
 			"network": {
-				"title": null
+				"title": "interconectado"
 			}
 		},
 		"profile": {
@@ -4134,6 +4134,9 @@
 		"home_function_buttons": {
 			"manage": {
 				"title": "Administrar fount de servicio"
+			},
+			"frequent": {
+				"title": "de uso común"
 			}
 		}
 	},
@@ -4404,6 +4407,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Plaza"
+			},
+			"frequent": {
+				"title": "de uso común"
+			},
+			"network": {
+				"title": "interconectado"
 			}
 		},
 		"nav": {
@@ -5091,6 +5100,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "archivo"
+			},
+			"asset": {
+				"title": "activos"
 			}
 		},
 		"upload": "subir",
@@ -5272,6 +5284,14 @@
 				"sub_items": {
 					"terminalAssist": {
 						"title": "Asistencia de Terminal"
+					}
+				}
+			},
+			"dev": {
+				"title": "desarrollar",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "asistencia terminal"
 					}
 				}
 			}
@@ -5796,6 +5816,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Acceso en otros dispositivos"
+			},
+			"frequent": {
+				"title": "de uso común"
+			},
+			"network": {
+				"title": "interconectado"
 			}
 		}
 	},
@@ -5915,7 +5941,16 @@
 			"saveSettingsFailed": "No se pudo guardar la configuración de bien público: ${message}",
 			"generalError": "Se produjo un error: ${message}"
 		},
-		"home_function_buttons": {}
+		"home_function_buttons": {
+			"network": {
+				"title": "interconectado",
+				"sub_items": {
+					"subfounts": {
+						"title": "subdispositivo"
+					}
+				}
+			}
+		}
 	},
 	"achievements": {
 		"title": "Logro",
@@ -6480,6 +6515,9 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
+			},
+			"dev": {
+				"title": "desarrollar"
 			}
 		},
 		"gist_source_plugins": {
@@ -6504,6 +6542,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Biblioteca de gist"
+			},
+			"asset": {
+				"title": "activos"
 			}
 		},
 		"list": {

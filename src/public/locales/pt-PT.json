@@ -3224,10 +3224,10 @@
 				"title": "Bater papo"
 			},
 			"frequent": {
-				"title": null
+				"title": "Comumente usado"
 			},
 			"network": {
-				"title": null
+				"title": "interligados"
 			}
 		},
 		"profile": {
@@ -4134,6 +4134,9 @@
 		"home_function_buttons": {
 			"manage": {
 				"title": "Gerenciar fount de serviço"
+			},
+			"frequent": {
+				"title": "Comumente usado"
 			}
 		}
 	},
@@ -4404,6 +4407,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Praça"
+			},
+			"frequent": {
+				"title": "Comumente usado"
+			},
+			"network": {
+				"title": "interligados"
 			}
 		},
 		"nav": {
@@ -5091,6 +5100,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Armário"
+			},
+			"asset": {
+				"title": "ativos"
 			}
 		},
 		"upload": "Carregar",
@@ -5272,6 +5284,14 @@
 				"sub_items": {
 					"terminalAssist": {
 						"title": "Assistente de Terminal"
+					}
+				}
+			},
+			"dev": {
+				"title": "desenvolver",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "assistência terminal"
 					}
 				}
 			}
@@ -5796,6 +5816,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Acesso em outros dispositivos"
+			},
+			"frequent": {
+				"title": "Comumente usado"
+			},
+			"network": {
+				"title": "interligados"
 			}
 		}
 	},
@@ -5915,7 +5941,16 @@
 			"saveSettingsFailed": "Falha ao guardar as definições de bem público: ${message}",
 			"generalError": "Ocorreu um erro: ${message}"
 		},
-		"home_function_buttons": {}
+		"home_function_buttons": {
+			"network": {
+				"title": "interligados",
+				"sub_items": {
+					"subfounts": {
+						"title": "subdispositivo"
+					}
+				}
+			}
+		}
 	},
 	"achievements": {
 		"title": "Conquista",
@@ -6480,6 +6515,9 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
+			},
+			"dev": {
+				"title": "desenvolver"
 			}
 		},
 		"gist_source_plugins": {
@@ -6504,6 +6542,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Biblioteca de gists"
+			},
+			"asset": {
+				"title": "ativos"
 			}
 		},
 		"list": {

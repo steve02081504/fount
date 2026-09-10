@@ -3224,10 +3224,10 @@
 				"title": "Chat"
 			},
 			"frequent": {
-				"title": null
+				"title": "Couramment utilisé"
 			},
 			"network": {
-				"title": null
+				"title": "interconnecté"
 			}
 		},
 		"profile": {
@@ -4134,6 +4134,9 @@
 		"home_function_buttons": {
 			"manage": {
 				"title": "Gérer la source de service"
+			},
+			"frequent": {
+				"title": "Couramment utilisé"
 			}
 		}
 	},
@@ -4404,6 +4407,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Social"
+			},
+			"frequent": {
+				"title": "Couramment utilisé"
+			},
+			"network": {
+				"title": "interconnecté"
 			}
 		},
 		"nav": {
@@ -5091,6 +5100,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Armoire"
+			},
+			"asset": {
+				"title": "actifs"
 			}
 		},
 		"upload": "Téléverser",
@@ -5272,6 +5284,14 @@
 				"sub_items": {
 					"terminalAssist": {
 						"title": "Assistant Terminal"
+					}
+				}
+			},
+			"dev": {
+				"title": "développer",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "assistance aux terminaux"
 					}
 				}
 			}
@@ -5796,6 +5816,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Accès sur d'autres appareils"
+			},
+			"frequent": {
+				"title": "Couramment utilisé"
+			},
+			"network": {
+				"title": "interconnecté"
 			}
 		}
 	},
@@ -5915,7 +5941,16 @@
 			"saveSettingsFailed": "Échec de l’enregistrement des paramètres de bien public : ${message}",
 			"generalError": "Une erreur s'est produite : ${message}"
 		},
-		"home_function_buttons": {}
+		"home_function_buttons": {
+			"network": {
+				"title": "interconnecté",
+				"sub_items": {
+					"subfounts": {
+						"title": "sous-appareil"
+					}
+				}
+			}
+		}
 	},
 	"achievements": {
 		"title": "Réalisation",
@@ -6480,6 +6515,9 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
+			},
+			"dev": {
+				"title": "développer"
 			}
 		},
 		"gist_source_plugins": {
@@ -6504,6 +6542,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Bibliothèque de gist"
+			},
+			"asset": {
+				"title": "actifs"
 			}
 		},
 		"list": {

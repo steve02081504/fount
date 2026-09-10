@@ -3218,10 +3218,10 @@
 				"title": "Chat"
 			},
 			"frequent": {
-				"title": null
+				"title": "Häufig verwendet"
 			},
 			"network": {
-				"title": null
+				"title": "verbunden"
 			}
 		},
 		"profile": {
@@ -4128,6 +4128,9 @@
 		"home_function_buttons": {
 			"manage": {
 				"title": "Servicequelle verwalten"
+			},
+			"frequent": {
+				"title": "Häufig verwendet"
 			}
 		}
 	},
@@ -4398,6 +4401,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Plaza"
+			},
+			"frequent": {
+				"title": "Häufig verwendet"
+			},
+			"network": {
+				"title": "verbunden"
 			}
 		},
 		"nav": {
@@ -5085,6 +5094,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Cabinet"
+			},
+			"asset": {
+				"title": "Vermögenswerte"
 			}
 		},
 		"upload": "Hochladen",
@@ -5266,6 +5278,14 @@
 				"sub_items": {
 					"terminalAssist": {
 						"title": "Terminal-Assistenz"
+					}
+				}
+			},
+			"dev": {
+				"title": "entwickeln",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "Terminalunterstützung"
 					}
 				}
 			}
@@ -5790,6 +5810,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Zugriff auf anderen Geräten"
+			},
+			"frequent": {
+				"title": "Häufig verwendet"
+			},
+			"network": {
+				"title": "verbunden"
 			}
 		}
 	},
@@ -5909,7 +5935,16 @@
 			"saveSettingsFailed": "Gemeinwohl-Einstellungen konnten nicht gespeichert werden: ${message}",
 			"generalError": "Es ist ein Fehler aufgetreten: ${message}"
 		},
-		"home_function_buttons": {}
+		"home_function_buttons": {
+			"network": {
+				"title": "verbunden",
+				"sub_items": {
+					"subfounts": {
+						"title": "Untergerät"
+					}
+				}
+			}
+		}
 	},
 	"achievements": {
 		"title": "Leistung",
@@ -6474,6 +6509,9 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
+			},
+			"dev": {
+				"title": "entwickeln"
 			}
 		},
 		"gist_source_plugins": {
@@ -6498,6 +6536,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Gist-Bibliothek"
+			},
+			"asset": {
+				"title": "Vermögenswerte"
 			}
 		},
 		"list": {
