@@ -208,6 +208,23 @@ export async function getWorkspaceConfig(target) {
 }
 
 /**
+ * 读取待关机状态（所有任务生成完毕后关闭选定主机）。
+ * @returns {Promise<{machine: string|null, active: number}>} 状态。
+ */
+export async function getShutdown() {
+	return requestJson(`${API_BASE}/shutdown`)
+}
+
+/**
+ * 预定/取消：所有任务生成完毕后关闭指定主机（machine 为空则取消）。
+ * @param {string|null} machine - 主机 id（"0" = 本机）。
+ * @returns {Promise<{machine: string|null, active: number}>} 状态。
+ */
+export async function setShutdown(machine) {
+	return sendJson(`${API_BASE}/shutdown`, { machine }, 'PUT')
+}
+
+/**
  * 跨工作区聚合会话（顶部对话选择器 / 工作区一览）。
  * @returns {Promise<{sessions: Array<object>}>} 聚合会话（含 workspaceId/workspaceName）。
  */

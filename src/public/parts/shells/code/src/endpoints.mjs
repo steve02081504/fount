@@ -23,6 +23,14 @@ import {
 } from './context.mjs'
 import { collectEditorSources } from './editor_sources.mjs'
 import { appendOwnHistory, getHistory } from './history.mjs'
+import {
+	beginCodeGeneration,
+	cancelShutdown,
+	finishCodeGeneration,
+	getShutdownState,
+	notifyCodeCompletion,
+	scheduleShutdown,
+} from './lifecycle.mjs'
 import { triggerCodeReply } from './request.mjs'
 import { availableShells, machineDefaultShell, runShellCommand } from './runner.mjs'
 import { deleteSession, listSessions, loadSession, saveSession } from './sessions.mjs'
@@ -503,6 +511,25 @@ export function setEndpoints(router) {
 		res.json({ hidden })
 	})
 
+	// 待关机状态：所有任务生成完毕后关闭选定主机
+	router.get('/api/parts/shells\\:code/shutdown', authenticate, (req, res) => {
+		const { username } = getUserByReq(req)
+		res.json(getShutdownState(username))
+	})
+
+	router.put('/api/parts/shells\\:code/shutdown', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const raw = req.body?.machine
+		if (raw == null || raw === '') {
+			res.json(cancelShutdown(username))
+			return
+		}
+		const machine = String(raw)
+		const target = (await listMachines(username)).find(m => String(m.id) === machine)
+		if (!target || (machine !== '0' && !target.isConnected)) throw httpError(400, 'machine not available.')
+		res.json(scheduleShutdown(username, machine))
+	})
+
 	// 会话存取（前端为唯一写入方；存于工作区 .fount/code/sessions）
 	router.get('/api/parts/shells\\:code/sessions', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
@@ -580,6 +607,7 @@ export function setEndpoints(router) {
 				entries.push(userEntry)
 				requestSession.entries.push({ ...userEntry, time: userEntry.time })
 			}
+			beginCodeGeneration(username)
 			try {
 				const { reply, memory } = await triggerCodeReply({
 					username,
@@ -603,6 +631,7 @@ export function setEndpoints(router) {
 				if (reply)
 					entries.push(sanitizeEntry({ ...reply, role: 'char', uid: 'char', name: reply.name || session.charname, time_stamp: new Date() }))
 				ws.send(JSON.stringify({ type: 'done', entries, memory }))
+				void notifyCodeCompletion(username, session)
 			}
 			catch (error) {
 				if (thisRequestController.signal.aborted)
@@ -612,6 +641,7 @@ export function setEndpoints(router) {
 			}
 			finally {
 				if (controller === thisRequestController) controller = null
+				finishCodeGeneration(username)
 			}
 		})
 	})

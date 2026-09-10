@@ -54,6 +54,10 @@ export const store = {
 	shell: '',
 	shellMode: false,
 	generating: false,
+	/** 待关机主机 id（所有任务生成完毕后关闭；null = 不关闭）。 */
+	shutdownMachine: null,
+	/** 进行中的 code 生成数（后端统计，跨页面）。 */
+	shutdownActive: 0,
 	/** 待发送附件（发送时并入用户消息 files）。 */
 	pendingFiles: [],
 	/** 输入历史状态（普通消息 / shell 各自独立）。 */

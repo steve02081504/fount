@@ -26,6 +26,8 @@ AI 编码会话 shell：与任意角色就工作区对话，在本机或已连�
 - `POST /commands/render {machine, workdir, name, argv}` → `{ content }`（渲染命令模板；缺必填参数 400）
 - `GET /aisources` → `{ sources: string[], defaults: string[], hidden: string[] }`
 - `PUT /aisources/visibility {hidden: string[]}` → 保存 AI 源可见性
+- `GET /shutdown` → `{ machine: string|null, active: number }`（`machine` 为待关机主机 id，"0" = 本机；`active` 为进行中的生成数）
+- `PUT /shutdown {machine}` → 预定「所有任务生成完毕后关闭该主机」（machine 为空/null 则取消）；主机关闭后 `machine` 复位为 null
 - `GET /sessions?machine&workdir=` → `{ sessions: [{ id, title, charname, profile, ai_source, created, updated }] }`
 - `POST /sessions {machine, workdir, session}` / `GET /sessions/:id?machine&workdir=` / `PUT /sessions/:id {machine, workdir, session}` / `DELETE /sessions/:id?machine&workdir=` → 会话存取（写目标机器工作区）
 
@@ -36,3 +38,4 @@ AI 编码会话 shell：与任意角色就工作区对话，在本机或已连�
   - 客户端 → `{ type: 'regen', session, machine, workdir, ai_source?, profile? }`：以现有 entries 重新生成最后一条角色回复（前端应先弹出旧回复）。服务端同样先流式 `preview`，结束回 `{ type: 'done', entries, memory }`（entries 仅含 tool 日志 + 新角色回复；中断回 `{ type: 'aborted', entries }`，此时旧回复已被弹出、会话暂无该回复）。
   - 客户端 → `{ type: 'abort' }`：中断当前生成；服务端回 `{ type: 'aborted', entries }`。
   - 出错回 `{ type: 'error', entries, error }`。
+  - 每次 `done` 后服务端向用户发送「对话已完成」通知：浏览器在线经 `/ws/notify`，离线回退 Web Push。
