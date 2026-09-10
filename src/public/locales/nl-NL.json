@@ -1175,11 +1175,6 @@
 			"generateXFountPart": {
 				"description": "Genereer informatie over lettertypecomponenten"
 			}
-		},
-		"home_drag_in_handlers": {
-			"handleMarkdownDrop": {
-				"description": "Maak of bekijk een neergezet Markdown-document"
-			}
 		}
 	},
 	"chat": {
@@ -6545,6 +6540,11 @@
 			},
 			"asset": {
 				"title": "Bronnen"
+			}
+		},
+		"home_drag_in_handlers": {
+			"handleMarkdownDrop": {
+				"description": "Maak een gesleept Markdown-document of bekijk een voorbeeld ervan"
 			}
 		},
 		"list": {

@@ -1,4 +1,13 @@
 {
+	"home_drag_in_handlers": [
+		{
+			"id": "handleMarkdownDrop",
+			"level": 0,
+			"type": "md",
+			"path": "/parts/shells:gist/drag_handlers/md_drop_handler.mjs",
+			"info": "gist.home_drag_in_handlers.handleMarkdownDrop"
+		}
+	],
 	"home_function_buttons": [
 		{
 			"id": "asset",
@@ -16,4 +25,3 @@
 		}
 	]
 }
-

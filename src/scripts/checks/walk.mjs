@@ -60,21 +60,25 @@ function matchesSuffixes(relativePath, suffixes) {
  */
 async function listViaGit(repoRoot, under = '') {
 	const scope = under ? ['--', under] : []
-	const [tracked, untracked] = await Promise.all([
+	const [tracked, deleted, untracked] = await Promise.all([
 		execFile('git', ['ls-files', '-z', ...scope], { cwd: repoRoot }),
+		execFile('git', ['ls-files', '-z', '--deleted', ...scope], { cwd: repoRoot }),
 		execFile('git', ['ls-files', '-z', '--others', '--exclude-standard', ...scope], { cwd: repoRoot }),
 	])
 	if (tracked.code !== 0)
 		throw new Error(tracked.stderr || `git ls-files failed (${tracked.code})`)
+	if (deleted.code !== 0)
+		throw new Error(deleted.stderr || `git ls-files --deleted failed (${deleted.code})`)
 	if (untracked.code !== 0)
 		throw new Error(untracked.stderr || `git ls-files --others failed (${untracked.code})`)
+	const deletedSet = new Set(String(deleted.stdout).split('\0').map(path => path.trim()).filter(Boolean))
 	/** @type {string[]} */
 	const files = []
 	for (const chunk of [tracked.stdout, untracked.stdout]) {
 		if (!chunk) continue
 		for (const path of String(chunk).split('\0')) {
 			const normalized = path.trim().replaceAll('\\', '/')
-			if (normalized) files.push(normalized)
+			if (normalized && !deletedSet.has(path.trim())) files.push(normalized)
 		}
 	}
 	return [...new Set(files)]

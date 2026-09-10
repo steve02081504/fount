@@ -1175,11 +1175,6 @@
 			"generateXFountPart": {
 				"description": "Generar información del componente fount"
 			}
-		},
-		"home_drag_in_handlers": {
-			"handleMarkdownDrop": {
-				"description": "Crear o previsualizar un documento de Markdown soltado"
-			}
 		}
 	},
 	"chat": {
@@ -6545,6 +6540,11 @@
 			},
 			"asset": {
 				"title": "Recursos"
+			}
+		},
+		"home_drag_in_handlers": {
+			"handleMarkdownDrop": {
+				"description": "Crear o obtener una vista previa de un documento Markdown arrastrado"
 			}
 		},
 		"list": {

@@ -1175,11 +1175,6 @@
 			"generateXFountPart": {
 				"description": "توليد معلومات مكون fount"
 			}
-		},
-		"home_drag_in_handlers": {
-			"handleMarkdownDrop": {
-				"description": "إنشاء مستند Markdown مُسقط أو معاينته"
-			}
 		}
 	},
 	"chat": {
@@ -6549,6 +6544,11 @@
 			},
 			"asset": {
 				"title": "الموارد"
+			}
+		},
+		"home_drag_in_handlers": {
+			"handleMarkdownDrop": {
+				"description": "قم بإنشاء أو معاينه مستند Markdown مسحب"
 			}
 		},
 		"list": {

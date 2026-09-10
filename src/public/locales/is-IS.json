@@ -1175,11 +1175,6 @@
 			"generateXFountPart": {
 				"description": "Búðu til upplýsingar um leturíhluti"
 			}
-		},
-		"home_drag_in_handlers": {
-			"handleMarkdownDrop": {
-				"description": "Búa til eða forskoða Markdown skjal sem dregið er inn"
-			}
 		}
 	},
 	"chat": {
@@ -6539,6 +6534,11 @@
 			},
 			"asset": {
 				"title": "Eignir"
+			}
+		},
+		"home_drag_in_handlers": {
+			"handleMarkdownDrop": {
+				"description": "Búðu til eða forskoðaðu dreginn Markdown skjal"
 			}
 		},
 		"list": {

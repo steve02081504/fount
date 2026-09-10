@@ -8,6 +8,7 @@ import { importText } from '../src/endpoints.mjs'
  * @returns {Promise<boolean>} 已处理返回 true，否则返回 false。
  */
 export default async function (dataTransfer, handlerConfig) {
+	if (dataTransfer.files?.length) return false
 	const text = dataTransfer.getData('text/plain')
 	if (!text) return false
 	const response = await importText(text)

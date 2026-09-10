@@ -1175,11 +1175,6 @@
 			"generateXFountPart": {
 				"description": "fount 컴포넌트 정보 생성"
 			}
-		},
-		"home_drag_in_handlers": {
-			"handleMarkdownDrop": {
-				"description": "드롭한 Markdown 문서를 만들거나 미리 봅니다"
-			}
 		}
 	},
 	"chat": {
@@ -6539,6 +6534,11 @@
 			},
 			"asset": {
 				"title": "자산"
+			}
+		},
+		"home_drag_in_handlers": {
+			"handleMarkdownDrop": {
+				"description": "드래그된 Markdown 문서 만들기 또는 미리 보기"
 			}
 		},
 		"list": {

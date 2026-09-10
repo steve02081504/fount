@@ -1175,11 +1175,6 @@
 			"generateXFountPart": {
 				"description": "Genera informazioni sui componenti del carattere"
 			}
-		},
-		"home_drag_in_handlers": {
-			"handleMarkdownDrop": {
-				"description": "Crea o mostra l'anteprima di un documento Markdown rilasciato"
-			}
 		}
 	},
 	"chat": {
@@ -6545,6 +6540,11 @@
 			},
 			"asset": {
 				"title": "Risorse"
+			}
+		},
+		"home_drag_in_handlers": {
+			"handleMarkdownDrop": {
+				"description": "Crea o visualizza in anteprima un documento Markdown trascinato"
 			}
 		},
 		"list": {

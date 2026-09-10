@@ -1175,11 +1175,6 @@
 			"generateXFountPart": {
 				"description": "Создать информацию о компоненте фонда"
 			}
-		},
-		"home_drag_in_handlers": {
-			"handleMarkdownDrop": {
-				"description": "Создать или просмотреть перетащенный документ Markdown"
-			}
 		}
 	},
 	"chat": {
@@ -6547,6 +6542,11 @@
 			},
 			"asset": {
 				"title": "Ресурсы"
+			}
+		},
+		"home_drag_in_handlers": {
+			"handleMarkdownDrop": {
+				"description": "Создание или предварительный просмотр перетаскиваемого документа Markdown"
 			}
 		},
 		"list": {

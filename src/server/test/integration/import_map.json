@@ -8,6 +8,7 @@
 			"../../../scripts/i18n/index.mjs": "./fixtures/autoupdate.mjs",
 			"../../base.mjs": "./fixtures/autoupdate.mjs",
 			"../../idle.mjs": "./fixtures/autoupdate.mjs",
+			"../../parts_loader.mjs": "./fixtures/autoupdate.mjs",
 			"../../server.mjs": "./fixtures/autoupdate.mjs",
 			"../../web_server/event_dispatcher.mjs": "./fixtures/autoupdate.mjs"
 		}

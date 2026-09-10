@@ -55,12 +55,3 @@ export async function getAllpartNames(partRoot) {
 
 	return allNames.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
 }
-
-/**
- * 用 /api/getallcacheddetails/:path 批量预填各部件类型下的详情缓存，减少后续逐条 getdetails 请求。
- * @param {string[]} partRoots - 部件类型根路径列表（例如 ['chars', 'shells', 'worlds']）。
- * @returns {Promise<void>}
- */
-export async function preloadAllPartTypeDetails(partRoots) {
-	await Promise.all(partRoots?.map?.(getAllpartNames))
-}

@@ -1175,11 +1175,6 @@
 			"generateXFountPart": {
 				"description": "生成 fount 组件信息"
 			}
-		},
-		"home_drag_in_handlers": {
-			"handleMarkdownDrop": {
-				"description": "创建或预览拖入的 Markdown 文档"
-			}
 		}
 	},
 	"chat": {
@@ -6539,6 +6534,11 @@
 			},
 			"asset": {
 				"title": "资产"
+			}
+		},
+		"home_drag_in_handlers": {
+			"handleMarkdownDrop": {
+				"description": "创建或预览拖入的 Markdown 文档"
 			}
 		},
 		"list": {

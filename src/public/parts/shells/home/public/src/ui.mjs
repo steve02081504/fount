@@ -1,7 +1,7 @@
 import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 
 import { getFiltersFromString, compileFilter, makeSearchable } from '../../../scripts/components/search.mjs'
-import { unlockAchievement, setDefaultPart, unsetDefaultPart, getAllDefaultParts } from '../../../scripts/endpoints/parts.mjs'
+import { getPartBranches, unlockAchievement, setDefaultPart, unsetDefaultPart, getAllDefaultParts } from '../../../scripts/endpoints/parts.mjs'
 import { renderMarkdown } from '../../../scripts/features/markdown/index.mjs'
 import { geti18n, console } from '../../../scripts/i18n/index.mjs'
 import { onElementRemoved } from '../../../scripts/lib/onElementRemoved.mjs'
@@ -11,7 +11,7 @@ import { viewTransition } from '../../../scripts/lib/viewTransition.mjs'
 import { defaultIcons, genericDefaultIcon } from './constants.mjs'
 import { partDetailsCache, getpartDetails, clearCache, getAllpartNames } from './data.mjs'
 import { getHomeRegistry } from './endpoints.mjs'
-import { setHomeRegistry, setDefaultParts, setCurrentPartType, setCurrentPartPath, homeRegistry, defaultParts, currentPartType, preloadDragGenerators, currentPartPath, partBranches } from './state.mjs'
+import { setHomeRegistry, setDefaultParts, setCurrentPartType, setCurrentPartPath, setPartBranches, homeRegistry, defaultParts, currentPartType, preloadDragGenerators, currentPartPath, partBranches } from './state.mjs'
 import { mountTemplate, renderTemplate } from './templates.mjs'
 import { createActionButtons, showItemModal } from './ui/itemModal.mjs'
 
@@ -538,16 +538,28 @@ async function shouldBeFolderStyle(path, branches) {
 	for (const child of children)
 		if (partDetailsCache[buildChildPath(path, child)]?.supportedInterfaces?.includes('parts')) return true
 
-	// 3. 深度检查：加载未缓存的子项详情
+	// 3. 深度检查：限并发探测未缓存的子项详情，命中 parts 接口即停
 	const uncachedPaths = children
 		.map(c => buildChildPath(path, c))
 		.filter(path => !partDetailsCache[path])
 
-	return await Promise.any(uncachedPaths.map(async (p) => {
-		const details = await getpartDetails(p, true)
-		if (details?.supportedInterfaces?.includes?.('parts')) return true
-		throw new Error('not matched')
-	})).catch(() => false)
+	const CONCURRENCY = 5
+	let nextIndex = 0
+	let found = false
+	const workers = Array.from({ length: Math.min(CONCURRENCY, uncachedPaths.length) }, async () => {
+		while (!found && nextIndex < uncachedPaths.length) {
+			const p = uncachedPaths[nextIndex++]
+			try {
+				const details = await getpartDetails(p, true)
+				if (details?.supportedInterfaces?.includes?.('parts')) {
+					found = true
+					return true
+				}
+			} catch { /* 单个失败继续探测 */ }
+		}
+		return false
+	})
+	return (await Promise.all(workers)).some(Boolean)
 }
 
 /**
@@ -674,20 +686,84 @@ export async function setupPartTypeUI(partTypes, initialPath) {
 		return hasPartsInterface(path)
 	}
 
+	// 先同步创建全部内容容器，使初始内容可以立即渲染
 	for (const pt of partTypes) {
 		const partType = pt.name
-		// 创建根菜单项
-		const menuItem = await createMenuItem(partType, partType, partBranches, filterPath)
-		partTypesTabsContainer.appendChild(menuItem)
-
-		// 创建内容容器
 		const container = document.createElement('div')
 		container.classList.add('grid', 'gap-4', 'hidden', 'part-items-grid')
 		container.id = `${partType}-container`
 		partTypesContainers.appendChild(container)
 	}
 
+	// 立即渲染初始内容（默认 char 列表），不被侧边栏构建阻塞
 	if (partTypes[0]) goToPath(initialPath || currentPartPath || partTypes[0].name)
+
+	// 侧边栏菜单延迟到下拉首次展开时并行构建，避免启动时获取所有 part 信息
+	deferBuildSidebarMenu(partTypes, filterPath)
+}
+
+/**
+ * 当前挂起的侧边栏菜单构建监听器（避免重复注册）。
+ * @type {Function|null}
+ */
+let pendingSidebarBuildListener = null
+
+/**
+ * 延迟构建侧边栏菜单：下拉首次展开时并行构建全部菜单项。
+ * @param {object[]} partTypes - 部件类型列表
+ * @param {Function} filterPath - 路径过滤函数
+ * @returns {void}
+ */
+function deferBuildSidebarMenu(partTypes, filterPath) {
+	const dropdown = partTypesTabsContainer.closest('.dropdown')
+	if (!dropdown) return buildSidebarMenu(partTypes, filterPath)
+
+	// 移除上一次未触发的监听器，避免重复构建
+	dropdown.removeEventListener('focusin', pendingSidebarBuildListener)
+	/**
+	 * 构建侧边栏菜单
+	 * @returns {void}
+	 */
+	const buildOnce = () => {
+		dropdown.removeEventListener('focusin', buildOnce)
+		if (pendingSidebarBuildListener === buildOnce) pendingSidebarBuildListener = null
+		buildSidebarMenu(partTypes, filterPath)
+	}
+	pendingSidebarBuildListener = buildOnce
+	if (dropdown.matches(':focus-within') || dropdown.contains(document.activeElement)) buildOnce()
+	else dropdown.addEventListener('focusin', buildOnce, { once: true })
+}
+
+/**
+ * 并行构建侧边栏菜单项，按原顺序渐进追加。
+ * @param {object[]} partTypes - 部件类型列表
+ * @param {Function} filterPath - 路径过滤函数
+ * @returns {Promise<void>}
+ */
+async function buildSidebarMenu(partTypes, filterPath) {
+	// 分支树仅侧边栏需要，延迟到此处获取
+	if (!partBranches) setPartBranches(await getPartBranches(true))
+	const promises = partTypes.map(pt => createMenuItem(pt.name, pt.name, partBranches, filterPath))
+	const placed = new Array(promises.length)
+	let nextIndex = 0
+	/**
+	 * 追加所有已就绪且连续的菜单项
+	 * @returns {void}
+	 */
+	const appendReady = () => {
+		while (nextIndex < placed.length && placed[nextIndex]) {
+			partTypesTabsContainer.appendChild(placed[nextIndex])
+			nextIndex++
+		}
+	}
+	await Promise.allSettled(promises.map(async (promise, index) => {
+		try {
+			placed[index] = await promise
+		} catch (error) {
+			console.error(`Failed to create menu item for ${partTypes[index].name}:`, error)
+		}
+		appendReady()
+	}))
 }
 
 // ==========================================

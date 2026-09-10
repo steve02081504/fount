@@ -1175,11 +1175,6 @@
 			"generateXFountPart": {
 				"description": "fountコンポーネント情報の生成"
 			}
-		},
-		"home_drag_in_handlers": {
-			"handleMarkdownDrop": {
-				"description": "ドロップした Markdown を gist として作成"
-			}
 		}
 	},
 	"chat": {
@@ -6539,6 +6534,11 @@
 			},
 			"asset": {
 				"title": "アセット"
+			}
+		},
+		"home_drag_in_handlers": {
+			"handleMarkdownDrop": {
+				"description": "ドラッグされた Markdown ドキュメントを作成またはプレビューする"
 			}
 		},
 		"list": {

@@ -1175,11 +1175,6 @@
 			"generateXFountPart": {
 				"description": "Генерувати інформацію про компонент шрифту"
 			}
-		},
-		"home_drag_in_handlers": {
-			"handleMarkdownDrop": {
-				"description": "Створити або переглянути перетягнутий документ Markdown"
-			}
 		}
 	},
 	"chat": {
@@ -6539,6 +6534,11 @@
 			},
 			"asset": {
 				"title": "Ресурси"
+			}
+		},
+		"home_drag_in_handlers": {
+			"handleMarkdownDrop": {
+				"description": "Створіть або перегляньте перетягнутий документ Markdown"
 			}
 		},
 		"list": {

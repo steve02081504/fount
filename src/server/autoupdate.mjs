@@ -9,6 +9,7 @@ import { console } from '../scripts/i18n/index.mjs'
 
 import { __dirname } from './base.mjs'
 import { onIdle, offIdle } from './idle.mjs'
+import { invalidateAllPartTreeCaches } from './parts_loader.mjs'
 import { restartor } from './server.mjs'
 import { sendEventToAll } from './web_server/event_dispatcher.mjs'
 
@@ -65,6 +66,7 @@ async function checkUpstream() {
 	}
 	else {
 		await git('reset', '--hard', '@{u}')
+		invalidateAllPartTreeCaches()
 		await refreshGitRef()
 		sendEventToAll?.('server-updated', { commitId: currentGitCommit })
 	}

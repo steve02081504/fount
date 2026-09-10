@@ -17,6 +17,7 @@
 			"triggers": [
 				"src/server/test/pure/**",
 				"src/server/registries.mjs",
+				"src/server/parts_loader.mjs",
 				"src/server/no_cors.mjs",
 				"src/server/web_server/preload_list.mjs",
 				"src/scripts/net_listen.mjs",
