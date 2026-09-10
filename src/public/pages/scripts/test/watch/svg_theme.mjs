@@ -263,8 +263,8 @@ function isPositionedOverlay(svg) {
 	return false
 }
 
-/** fill 的 `url(#id)` 引用匹配。 */
-const URL_FILL_REGEX = /^url\(["']?([^)"']+)[)"']?\)$/
+/** fill 的 `url(#id)` 引用匹配（第 1 组为纯 id，不带 `#`）。 */
+const URL_FILL_REGEX = /^url\(["']?#?([^)"']+)[)"']?\)$/
 
 /**
  * 计算的 fill 是否表现完全不透明：纯色可解析，或引用的渐变含至少一个
