@@ -3,8 +3,9 @@
  * 【职责】复制 / 下载 / 分享类消息操作。
  */
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
-import { createShareLink } from '../../../src/share.mjs'
-import { downloadMessageHtml, generateMessageStandaloneHtml } from '../exportHtml.mjs'
+import { store } from '../../core/state.mjs'
+import { exportMessageToGist } from '../exportGist.mjs'
+import { generateMessageStandaloneHtml } from '../exportHtml.mjs'
 import { getMessageText } from '../render/text.mjs'
 
 /**
@@ -68,26 +69,14 @@ export async function handleClipboardAction(button, row, channelMessage, action)
 		}
 		return true
 	}
-	if (action === 'download') {
+	if (action === 'download' || action === 'share') {
 		try {
-			await downloadMessageHtml(channelMessage, row)
-		}
-		catch (error) {
-			console.error(error)
-		}
-		return true
-	}
-	if (action === 'share') {
-		try {
-			showToastI18n('info', 'chat.message.view.share.uploading')
-			const html = await generateMessageStandaloneHtml(channelMessage, row)
-			const blob = new Blob([html], { type: 'text/html' })
-			const link = await createShareLink(blob, `message-${button.dataset.eventId || 'export'}.html`, button.dataset.time || '24h')
-			await navigator.clipboard.writeText(link)
-			showToastI18n('success', 'chat.message.view.share.success', {
-				provider: 'litterbox.moe',
-				sponsorLink: 'https://store.catbox.moe/',
-			})
+			const eventId = button.dataset.eventId?.trim() || String(channelMessage?.eventId || '')
+			showToastI18n('info', 'chat.gist_source_plugins.creating')
+			await exportMessageToGist(channelMessage, row, {
+				groupId: store.context.currentGroupId,
+				channelId: store.context.currentChannelId,
+			}, eventId)
 		}
 		catch (error) {
 			console.error(error)

@@ -1175,6 +1175,11 @@
 			"generateXFountPart": {
 				"description": "Генерувати інформацію про компонент шрифту"
 			}
+		},
+		"home_drag_in_handlers": {
+			"handleMarkdownDrop": {
+				"description": "Створити або переглянути перетягнутий документ Markdown"
+			}
 		}
 	},
 	"chat": {
@@ -3211,6 +3216,12 @@
 		"home_function_buttons": {
 			"chatHub": {
 				"title": "Чат"
+			},
+			"frequent": {
+				"title": null
+			},
+			"network": {
+				"title": null
 			}
 		},
 		"profile": {
@@ -3603,6 +3614,19 @@
 					"searchingContent": "Шукаю ${content}"
 				}
 			}
+		},
+		"gist_source_plugins": {
+			"chat": {
+				"title": "З чату"
+			},
+			"creating": "Створення гіста…",
+			"fromGroup": "З групи",
+			"fromChannel": "З каналу",
+			"author": "Автор",
+			"exportedAt": "Експортовано",
+			"jumpToSource": "До джерела",
+			"sendToChat": "Копіювати в чат",
+			"copied": "Скопійовано в буфер обміну"
 		}
 	},
 	"easynew": {
@@ -4931,6 +4955,7 @@
 			"notFound": "Публікація не існує або не відображається",
 			"loadFailed": "Помилка завантаження, спробуйте пізніше",
 			"exportMediaFailed": "Не вдалося експортувати медіа: ${error}",
+			"gistCreateFailed": "Не вдалося створити гіст: ${error}",
 			"detailTitle": "Опублікувати",
 			"back": "Назад"
 		},
@@ -5030,6 +5055,18 @@
 			"follow": "Підписка",
 			"unfollow": "Відписатися",
 			"empty": "На цю тему ще немає публікацій"
+		},
+		"gist_source_plugins": {
+			"social": {
+				"title": "З допису"
+			},
+			"creating": "Створення гіста…",
+			"fromPost": "З допису",
+			"author": "Автор",
+			"exportedAt": "Експортовано",
+			"jumpToSource": "До джерела",
+			"sendToSocial": "Копіювати в допис",
+			"copied": "Скопійовано в буфер обміну"
 		}
 	},
 	"cabinet": {
@@ -5872,21 +5909,7 @@
 			"saveSettingsFailed": "Не вдалося зберегти налаштування суспільного блага: ${message}",
 			"generalError": "Сталася помилка: ${message}"
 		},
-		"home_function_buttons": {
-			"in_dev": {
-				"title": "Розробляти",
-				"sub_items": {
-					"subfounts_related": {
-						"title": "підпристрій",
-						"sub_items": {
-							"main": {
-								"title": "Керуйте підпристроями"
-							}
-						}
-					}
-				}
-			}
-		}
+		"home_function_buttons": {}
 	},
 	"achievements": {
 		"title": "досягнення",
@@ -6451,6 +6474,83 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
+			}
+		},
+		"gist_source_plugins": {
+			"creating": "Створення гіста…",
+			"fromSession": "З сеансу програмування",
+			"sessionId": "Сеанс",
+			"exportedAt": "Експортовано",
+			"sendToWorkspace": "Надіслати в робочу область",
+			"copied": "Скопійовано в буфер обміну",
+			"sent": "Надіслано в робочу область",
+			"code": {
+				"title": "З сеансу програмування"
+			}
+		}
+	},
+	"gist": {
+		"title": "Бібліотека гістів",
+		"description": "Зберігайте, переглядайте, редагуйте й діліться документами Markdown; для кожного гіста — власний рівень захисту.",
+		"error": {
+			"generic": "Щось пішло не так: ${error}"
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "Бібліотека гістів"
+			}
+		},
+		"list": {
+			"new": "Новий гіст",
+			"empty": "Гістів ще немає. Натисніть «Новий гіст» у правому верхньому куті, щоб створити перший.",
+			"updatedAt": "Оновлено"
+		},
+		"source": {
+			"manual": "Вручну",
+			"chat": "З чату",
+			"social": "З допису",
+			"code": "З сеансу програмування",
+			"md-drop": "Перетягнутий Markdown"
+		},
+		"security": {
+			"secure": "Захищено",
+			"trusted": "Без захисту"
+		},
+		"view": {
+			"back": "Назад",
+			"edit": "Редагувати",
+			"download": "Завантажити",
+			"share": "Поділитися",
+			"delete": "Видалити",
+			"empty": "Цей гіст порожній",
+			"dropRerender": "Повторно відображено з перетягнутим Markdown",
+			"downgradeConfirm": "Перемикання на «Без захисту» дозволить HTML-скриптам виконуватися в попередньому перегляді, що створює ризик XSS. Усе одно перемкнути?",
+			"shareCopied": "Посилання для поширення скопійовано в буфер обміну",
+			"deleteConfirm": "Видалити цей гіст? Цю дію не можна скасувати.",
+			"notFound": "Гіст не знайдено — можливо, його видалено."
+		},
+		"edit": {
+			"save": "Зберегти",
+			"cancel": "Назад",
+			"title": "Назва",
+			"editor": {
+				"placeholder": "Введіть Markdown…",
+				"aria-label": "Редактор Markdown"
+			},
+			"previewToggle": "Попередній перегляд",
+			"editMode": "Редагувати",
+			"pasteDangerPrompt": "Буфер обміну може містити небезпечний вміст (скрипти / атрибути подій / небезпечні посилання). ${trust}: вставити як є, без захисту; ${secure}: спершу ввімкнути захист, а потім вставити.",
+			"pasteTrust": "Довіритися і вставити",
+			"pasteSecure": "Не довіряю — захистити"
+		},
+		"securityToggle": {
+			"secure": {
+				"title": "Захищено",
+				"aria-label": "Рівень безпеки: захищено"
+			},
+			"trusted": {
+				"title": "Без захисту",
+				"aria-label": "Рівень безпеки: без захисту"
 			}
 		}
 	}

@@ -1175,6 +1175,11 @@
 			"generateXFountPart": {
 				"description": "Générer des informations sur les composants de fount"
 			}
+		},
+		"home_drag_in_handlers": {
+			"handleMarkdownDrop": {
+				"description": "Créer ou prévisualiser un document Markdown déposé"
+			}
 		}
 	},
 	"chat": {
@@ -3217,6 +3222,12 @@
 		"home_function_buttons": {
 			"chatHub": {
 				"title": "Chat"
+			},
+			"frequent": {
+				"title": null
+			},
+			"network": {
+				"title": null
 			}
 		},
 		"profile": {
@@ -3609,6 +3620,19 @@
 					"searchingContent": "Recherche de ${content}"
 				}
 			}
+		},
+		"gist_source_plugins": {
+			"chat": {
+				"title": "Depuis le chat"
+			},
+			"creating": "Création du gist…",
+			"fromGroup": "Depuis le groupe",
+			"fromChannel": "Depuis le canal",
+			"author": "Auteur",
+			"exportedAt": "Exporté le",
+			"jumpToSource": "Aller à la source",
+			"sendToChat": "Copier dans le chat",
+			"copied": "Copié dans le presse-papiers"
 		}
 	},
 	"easynew": {
@@ -4937,6 +4961,7 @@
 			"notFound": "Le message n'existe pas ou n'est pas visible",
 			"loadFailed": "Échec du chargement, veuillez réessayer plus tard",
 			"exportMediaFailed": "Impossible d’exporter les médias : ${error}",
+			"gistCreateFailed": "Échec de la création du gist : ${error}",
 			"detailTitle": "Publication",
 			"back": "Retour"
 		},
@@ -5036,6 +5061,18 @@
 			"follow": "S'abonner",
 			"unfollow": "Se désabonner",
 			"empty": "Il n'y a pas encore de messages pour ce sujet"
+		},
+		"gist_source_plugins": {
+			"social": {
+				"title": "Depuis la publication"
+			},
+			"creating": "Création du gist…",
+			"fromPost": "Depuis la publication",
+			"author": "Auteur",
+			"exportedAt": "Exporté le",
+			"jumpToSource": "Aller à la source",
+			"sendToSocial": "Copier dans la publication",
+			"copied": "Copié dans le presse-papiers"
 		}
 	},
 	"cabinet": {
@@ -5878,21 +5915,7 @@
 			"saveSettingsFailed": "Échec de l’enregistrement des paramètres de bien public : ${message}",
 			"generalError": "Une erreur s'est produite : ${message}"
 		},
-		"home_function_buttons": {
-			"in_dev": {
-				"title": "En développement",
-				"sub_items": {
-					"subfounts_related": {
-						"title": "sous-appareil",
-						"sub_items": {
-							"main": {
-								"title": "Gérer les sous-appareils"
-							}
-						}
-					}
-				}
-			}
-		}
+		"home_function_buttons": {}
 	},
 	"achievements": {
 		"title": "Réalisation",
@@ -6457,6 +6480,83 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
+			}
+		},
+		"gist_source_plugins": {
+			"creating": "Création du gist…",
+			"fromSession": "Depuis la session de codage",
+			"sessionId": "Session",
+			"exportedAt": "Exporté le",
+			"sendToWorkspace": "Envoyer vers l'espace de travail",
+			"copied": "Copié dans le presse-papiers",
+			"sent": "Envoyé vers l'espace de travail",
+			"code": {
+				"title": "Depuis la session de codage"
+			}
+		}
+	},
+	"gist": {
+		"title": "Bibliothèque de gist",
+		"description": "Enregistrez, consultez, modifiez et partagez des documents Markdown, avec un niveau de sécurité par gist.",
+		"error": {
+			"generic": "Une erreur est survenue : ${error}"
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "Bibliothèque de gist"
+			}
+		},
+		"list": {
+			"new": "Nouveau gist",
+			"empty": "Aucun gist pour l'instant. Cliquez sur « Nouveau gist » en haut à droite pour en créer un.",
+			"updatedAt": "Mis à jour"
+		},
+		"source": {
+			"manual": "Manuel",
+			"chat": "Depuis le chat",
+			"social": "Depuis la publication",
+			"code": "Depuis la session de codage",
+			"md-drop": "Markdown déposé"
+		},
+		"security": {
+			"secure": "Protégé",
+			"trusted": "Non protégé"
+		},
+		"view": {
+			"back": "Retour",
+			"edit": "Modifier",
+			"download": "Télécharger",
+			"share": "Partager",
+			"delete": "Supprimer",
+			"empty": "Ce gist est vide",
+			"dropRerender": "Rendu à nouveau avec le Markdown déposé",
+			"downgradeConfirm": "Passer à « Non protégé » permettra aux scripts HTML de s'exécuter dans l'aperçu, ce qui présente un risque XSS. Passer quand même ?",
+			"shareCopied": "Lien de partage copié dans le presse-papiers",
+			"deleteConfirm": "Supprimer ce gist ? Cette action est irréversible.",
+			"notFound": "gist introuvable : il a peut-être été supprimé."
+		},
+		"edit": {
+			"save": "Enregistrer",
+			"cancel": "Retour",
+			"title": "Titre",
+			"editor": {
+				"placeholder": "Saisissez du Markdown…",
+				"aria-label": "Éditeur Markdown"
+			},
+			"previewToggle": "Aperçu",
+			"editMode": "Modifier",
+			"pasteDangerPrompt": "Le presse-papiers peut contenir du contenu dangereux (scripts / attributs d'événement / liens non sûrs). ${trust} : rester non protégé et coller tel quel ; ${secure} : passer en protégé avant de coller.",
+			"pasteTrust": "Faire confiance et coller",
+			"pasteSecure": "Ne pas faire confiance, protéger"
+		},
+		"securityToggle": {
+			"secure": {
+				"title": "Protégé",
+				"aria-label": "Niveau de sécurité : protégé"
+			},
+			"trusted": {
+				"title": "Non protégé",
+				"aria-label": "Niveau de sécurité : non protégé"
 			}
 		}
 	}

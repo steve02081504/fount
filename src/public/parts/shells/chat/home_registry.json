@@ -1,10 +1,33 @@
 {
 	"home_function_buttons": [
 		{
-			"info": "chat.home_function_buttons.chatHub",
-			"level": 1,
-			"url": "/parts/shells:chat/hub/",
-			"button": "<img src=\"https://api.iconify.design/mdi/view-dashboard-outline.svg\" class=\"text-icon\"/>"
+			"id": "network",
+			"info": "chat.home_function_buttons.network",
+			"level": 2,
+			"button": "<img src=\"https://api.iconify.design/line-md/link.svg\" class=\"text-icon\"/>",
+			"sub_items": [
+				{
+					"info": "chat.home_function_buttons.chatHub",
+					"level": 3,
+					"url": "/parts/shells:chat/hub/",
+					"button": "<img src=\"https://api.iconify.design/mdi/view-dashboard-outline.svg\" class=\"text-icon\"/>"
+				}
+			]
+		},
+		{
+			"id": "frequent",
+			"open": true,
+			"info": "chat.home_function_buttons.frequent",
+			"level": 0,
+			"button": "<img src=\"https://api.iconify.design/mdi/star-outline.svg\" class=\"text-icon\"/>",
+			"sub_items": [
+				{
+					"info": "chat.home_function_buttons.chatHub",
+					"level": 2,
+					"url": "/parts/shells:chat/hub/",
+					"button": "<img src=\"https://api.iconify.design/mdi/view-dashboard-outline.svg\" class=\"text-icon\"/>"
+				}
+			]
 		}
 	],
 	"home_interfaces": {
@@ -19,3 +42,4 @@
 		]
 	}
 }
+

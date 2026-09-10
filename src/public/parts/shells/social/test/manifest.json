@@ -12,6 +12,7 @@
 		"shellPureExtra": [
 			"src/public/parts/shells/chat/public/shared/**",
 			"src/public/parts/shells/chat/public/markdown_extensions/**",
+			"src/public/parts/shells/social/public/shared/fountUserSend.mjs",
 			"deno.json",
 			"src/server/p2p_server/**",
 			"src/scripts/search/**",
@@ -65,12 +66,14 @@
 		],
 		"frontendShared": [
 			"src/public/parts/shells/social/test/frontend/{fixtures.mjs,run.mjs,phases.mjs,playwright.config.mjs}",
+			"src/public/parts/shells/gist/public/src/standaloneDocument.mjs",
 			"src/public/parts/shells/social/test/node_bootstrap.mjs",
 			"src/public/parts/shells/social/public/index.html",
 			"src/public/parts/shells/social/public/styles.css",
 			"src/public/parts/shells/social/public/src/init.mjs",
 			"src/public/parts/shells/social/public/src/state.mjs",
 			"src/public/parts/shells/social/public/src/gate.mjs",
+			"src/public/parts/shells/social/public/src/fountUser.mjs",
 			"src/public/parts/shells/social/public/src/endpoints/**",
 			"src/public/parts/shells/social/public/src/lib/socialWrite.mjs",
 			"src/scripts/test/playwright/api.mjs",
@@ -252,6 +255,16 @@
 					"triggers": [
 						"src/public/parts/shells/social/test/frontend/replies.spec.mjs",
 						"src/public/parts/shells/social/public/src/views/replies.mjs"
+					]
+				},
+				{
+					"name": "fount_user_send",
+					"expected": "30s",
+					"triggers": [
+						"src/public/parts/shells/social/test/frontend/fount_user_send.spec.mjs",
+						"src/public/parts/shells/social/public/src/fountUser.mjs",
+						"src/public/parts/shells/social/public/shared/fountUserSend.mjs",
+						"src/public/parts/shells/chat/public/shared/fountUserSend.mjs"
 					]
 				},
 				{

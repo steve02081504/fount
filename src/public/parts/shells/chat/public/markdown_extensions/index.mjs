@@ -5,6 +5,7 @@ import { visit } from 'https://esm.sh/unist-util-visit'
 
 import { expandChannelLinksInText } from '../shared/expandChannelLinks.mjs'
 import { EMOJI_TOKEN_RE, LINK_TOKEN_RE, MENTION_TOKEN_RE } from '../shared/inlineTokenSyntax.mjs'
+import { resolvePackEmojiUrl } from '/scripts/features/emoji/packIndex.mjs'
 
 const EMOJI_CONTENT_API = '/api/parts/shells:chat/emoji-content'
 
@@ -97,10 +98,7 @@ function buildEmojiChip(match, { makeChip }) {
 	}
 	img.addEventListener('error', fallback)
 	chip.appendChild(img)
-	// 动态 import：保持本模块可被 Deno 纯测试顶层加载（`/scripts/*` 仅在浏览器可解析）。
-	void import('/scripts/features/emoji/packIndex.mjs').then(({ resolvePackEmojiUrl }) =>
-		resolvePackEmojiUrl(packId, emojiId)
-	).then(url => {
+	void resolvePackEmojiUrl(packId, emojiId).then(url => {
 		if (!chip.isConnected) return
 		if (url) img.src = url
 		else fallback()

@@ -16,6 +16,14 @@ body {
 	scroll-behavior: smooth;
 }
 
+/* 尾栏图标按钮：`.btn-ghost` 的 color 走 `--color-base-content`，light 主题下为深色，
+   与 `bg-neutral`（同为深色）糊在一起；改为跟随尾栏的 `neutral-content`（两主题均为浅色）。
+   `--btn-color` 由 daisyUI CDN 按钮表消费（page-watch 的 cssvar 扫描读不到跨域表，见下注释指令）。 */
+.footer .btn-ghost {
+	/* cssvar-external: --btn-color */
+	--btn-color: var(--color-neutral-content);
+}
+
 body.scroll-lock {
 	overflow: hidden;
 }

@@ -1,10 +1,34 @@
 {
 	"home_function_buttons": [
 		{
-			"info": "social.home_function_buttons.main",
+			"id": "network",
+			"info": "social.home_function_buttons.network",
 			"level": 2,
-			"url": "/parts/shells:social/",
-			"button": "<img src=\"https://api.iconify.design/mdi/forum-outline.svg\" class=\"text-icon\"/>"
+			"button": "<img src=\"https://api.iconify.design/line-md/link.svg\" class=\"text-icon\"/>",
+			"sub_items": [
+				{
+					"info": "social.home_function_buttons.main",
+					"level": 2,
+					"url": "/parts/shells:social/",
+					"button": "<img src=\"https://api.iconify.design/mdi/forum-outline.svg\" class=\"text-icon\"/>"
+				}
+			]
+		},
+		{
+			"id": "frequent",
+			"open": true,
+			"info": "social.home_function_buttons.frequent",
+			"level": 0,
+			"button": "<img src=\"https://api.iconify.design/mdi/star-outline.svg\" class=\"text-icon\"/>",
+			"sub_items": [
+				{
+					"info": "social.home_function_buttons.main",
+					"level": 3,
+					"url": "/parts/shells:social/",
+					"button": "<img src=\"https://api.iconify.design/mdi/forum-outline.svg\" class=\"text-icon\"/>"
+				}
+			]
 		}
 	]
 }
+

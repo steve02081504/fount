@@ -1,16 +1,10 @@
 /**
- * locale_match 前后端同构钉死：同一份用例表跑两份实现。
+ * locale_match 用例表：SSOT 实现在 pages/scripts/i18n（前后端共用）。
  */
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 import * as frontend from '../../../public/pages/scripts/i18n/locale_match.mjs'
-import * as backend from '../../i18n/locale_match.mjs'
-
-const impls = [
-	{ name: 'backend', mod: backend },
-	{ name: 'frontend', mod: frontend },
-]
 
 const cases = [
 	{
@@ -50,17 +44,16 @@ const cases = [
 	},
 ]
 
-for (const { name, mod } of impls)
-	Deno.test(`locale_match:${name}`, () => {
-		assertEquals(mod.FALLBACK_LOCALE, 'en-UK')
-		for (const c of cases) {
-			assertEquals(mod.matchLocale(c.preferred, c.available), c.match, `${c.name}.match`)
-			assertEquals(mod.getBestLocale(c.preferred, c.available), c.best, `${c.name}.best`)
-		}
+Deno.test('locale_match case table', () => {
+	assertEquals(frontend.FALLBACK_LOCALE, 'en-UK')
+	for (const testCase of cases) {
+		assertEquals(frontend.matchLocale(testCase.preferred, testCase.available), testCase.match, `${testCase.name}.match`)
+		assertEquals(frontend.getBestLocale(testCase.preferred, testCase.available), testCase.best, `${testCase.name}.best`)
+	}
 
-		const map = { 'zh-CN': { name: '中' }, 'en-UK': { name: 'En' }, zhuang: { name: 'wrong' } }
-		assertEquals(mod.pickLocalizedSlice(map, ['zh'])?.name, '中')
-		assertEquals(mod.pickLocalizedSlice(map, ['fr'])?.name, '中') // 首键
-		assertEquals(mod.pickLocalizedSlice({}, ['zh']), undefined)
-		assertEquals(mod.pickLocalizedSlice(undefined, ['zh']), undefined)
-	})
+	const map = { 'zh-CN': { name: '中' }, 'en-UK': { name: 'En' }, zhuang: { name: 'wrong' } }
+	assertEquals(frontend.pickLocalizedSlice(map, ['zh'])?.name, '中')
+	assertEquals(frontend.pickLocalizedSlice(map, ['fr'])?.name, '中') // 首键
+	assertEquals(frontend.pickLocalizedSlice({}, ['zh']), undefined)
+	assertEquals(frontend.pickLocalizedSlice(undefined, ['zh']), undefined)
+})

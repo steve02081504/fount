@@ -1,0 +1,251 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Gist",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "A centralized Markdown document storage and preview site.",
+			"description_markdown": "A centralized Markdown document storage and preview site: save notes, snippets and documentation as gists, preview them rendered, and manage their access level.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"markdown",
+				"docs",
+				"gist"
+			]
+		},
+		"zh-CN": {
+			"name": "Gist",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "一个集中式 Markdown 文档存储与预览站。",
+			"description_markdown": "一个集中式 Markdown 文档存储与预览站：将笔记、片段与文档保存为 gist，预览渲染效果并管理访问级别。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"markdown",
+				"文档",
+				"gist"
+			]
+		},
+		"ar-SA": {
+			"name": "جِست",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "موقع مركزي لتخزين ومعاينة مستندات ماركداون.",
+			"description_markdown": "موقع مركزي لتخزين ومعاينة مستندات ماركداون: احفظ الملاحظات والمقتطفات والمستندات كـ gist، واعرض النتيجة المعروضة وأدر مستوى الوصول.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"ماركداون",
+				"مستندات",
+				"gist"
+			]
+		},
+		"de-DE": {
+			"name": "Gist",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "Eine zentrale Plattform zum Speichern und Vorschauen von Markdown-Dokumenten.",
+			"description_markdown": "Eine zentrale Plattform zum Speichern und Vorschauen von Markdown-Dokumenten: Speichere Notizen, Snippets und Dokumentation als Gists, zeige die gerenderte Vorschau an und verwalte die Zugriffsstufe.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"Markdown",
+				"Dokumente",
+				"Gist"
+			]
+		},
+		"emoji": {
+			"name": "📋",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "📄📚👀",
+			"description_markdown": "📄📚👀💾",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"📄",
+				"📚",
+				"👀"
+			]
+		},
+		"es-ES": {
+			"name": "Gist",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "Un sitio centralizado de almacenamiento y vista previa de documentos Markdown.",
+			"description_markdown": "Un sitio centralizado de almacenamiento y vista previa de documentos Markdown: guarda notas, fragmentos y documentación como gists, previsualiza el renderizado y gestiona el nivel de acceso.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"markdown",
+				"documentos",
+				"gist"
+			]
+		},
+		"fr-FR": {
+			"name": "Gist",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "Un site centralisé de stockage et d'aperçu de documents Markdown.",
+			"description_markdown": "Un site centralisé de stockage et d'aperçu de documents Markdown : enregistrez notes, extraits et documentation en tant que gists, prévisualisez le rendu et gérez le niveau d'accès.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"markdown",
+				"documentation",
+				"gist"
+			]
+		},
+		"hi-IN": {
+			"name": "गिस्ट",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "मार्कडाउन दस्तावेज़ों के लिए एक केंद्रीकृत भंडारण और पूर्वावलोकन साइट।",
+			"description_markdown": "मार्कडाउन दस्तावेज़ों के लिए एक केंद्रीकृत भंडारण और पूर्वावलोकन साइट: नोट्स, स्निपेट और दस्तावेज़ को gist के रूप में सहेजें, रेंडर किया गया पूर्वावलोकन देखें और एक्सेस स्तर प्रबंधित करें।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"मार्कडाउन",
+				"दस्तावेज़",
+				"gist"
+			]
+		},
+		"is-IS": {
+			"name": "Gist",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "Miðlæg geymslu- og forskoðunarsíða fyrir Markdown-skjöl.",
+			"description_markdown": "Miðlæg geymslu- og forskoðunarsíða fyrir Markdown-skjöl: vistaðu glósur, brot og skjöl sem gist, skoðaðu birtu forskoðun og stjórnaðu aðgangsstigi.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"Markdown",
+				"skjöl",
+				"gist"
+			]
+		},
+		"it-IT": {
+			"name": "Gist",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "Un sito centralizzato per l'archiviazione e l'anteprima di documenti Markdown.",
+			"description_markdown": "Un sito centralizzato per l'archiviazione e l'anteprima di documenti Markdown: salva note, snippet e documentazione come gist, visualizza l'anteprima renderizzata e gestisci il livello di accesso.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"markdown",
+				"documenti",
+				"gist"
+			]
+		},
+		"ja-JP": {
+			"name": "ギスト",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "Markdown ドキュメントを集中的に保存・プレビューするサイト。",
+			"description_markdown": "Markdown ドキュメントを集中的に保存・プレビューするサイト：メモやスニペット、ドキュメントを gist として保存し、レンダリング結果をプレビューしてアクセスレベルを管理します。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"Markdown",
+				"ドキュメント",
+				"gist"
+			]
+		},
+		"ko-KR": {
+			"name": "지스트",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "Markdown 문서를 중앙에서 저장하고 미리 보는 사이트.",
+			"description_markdown": "Markdown 문서를 중앙에서 저장하고 미리 보는 사이트: 메모, 스니펫, 문서를 gist로 저장하고 렌더링 결과를 미리 보며 접근 수준을 관리합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"Markdown",
+				"문서",
+				"gist"
+			]
+		},
+		"lzh": {
+			"name": "要旨",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "集中儲存與預覽 Markdown 文檔之站。",
+			"description_markdown": "集中儲存與預覽 Markdown 文檔之站：以 gist 存儲札記、片段與文檔，預覽其渲染，並管理存取等級。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"Markdown",
+				"文檔",
+				"gist"
+			]
+		},
+		"nl-NL": {
+			"name": "Gist",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "Een gecentraliseerde site voor het opslaan en bekijken van Markdown-documenten.",
+			"description_markdown": "Een gecentraliseerde site voor het opslaan en bekijken van Markdown-documenten: bewaar notities, fragmenten en documentatie als gists, bekijk de gerenderde preview en beheer het toegangsniveau.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"Markdown",
+				"documenten",
+				"gist"
+			]
+		},
+		"pt-PT": {
+			"name": "Gist",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "Um site centralizado de armazenamento e pré-visualização de documentos Markdown.",
+			"description_markdown": "Um site centralizado de armazenamento e pré-visualização de documentos Markdown: guarde notas, excertos e documentação como gists, pré-visualize o renderizado e gestione o nível de acesso.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"markdown",
+				"documentos",
+				"gist"
+			]
+		},
+		"ru-RU": {
+			"name": "Гист",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "Централизованный сайт для хранения и предпросмотра Markdown-документов.",
+			"description_markdown": "Централизованный сайт для хранения и предпросмотра Markdown-документов: сохраняйте заметки, фрагменты и документацию как gist, просматривайте рендеринг и управляйте уровнем доступа.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"Markdown",
+				"документы",
+				"gist"
+			]
+		},
+		"uk-UA": {
+			"name": "Гіст",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "Централізований сайт для зберігання та попереднього перегляду Markdown-документів.",
+			"description_markdown": "Централізований сайт для зберігання та попереднього перегляду Markdown-документів: зберігайте нотатки, фрагменти та документацію як gist, переглядайте рендеринг і керуйте рівнем доступу.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"Markdown",
+				"документи",
+				"gist"
+			]
+		},
+		"vi-VN": {
+			"name": "Gist",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "Trang web tập trung để lưu trữ và xem trước tài liệu Markdown.",
+			"description_markdown": "Trang web tập trung để lưu trữ và xem trước tài liệu Markdown: lưu ghi chú, đoạn mã và tài liệu dưới dạng gist, xem trước bản render và quản lý mức truy cập.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"markdown",
+				"tài liệu",
+				"gist"
+			]
+		},
+		"zh-TW": {
+			"name": "Gist",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "一個集中式的 Markdown 文件儲存與預覽站。",
+			"description_markdown": "一個集中式的 Markdown 文件儲存與預覽站：將筆記、片段與文件儲存為 gist，預覽渲染效果並管理存取等級。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"markdown",
+				"文件",
+				"gist"
+			]
+		}
+	}
+}

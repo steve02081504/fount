@@ -1,0 +1,19 @@
+{
+	"home_function_buttons": [
+		{
+			"id": "asset",
+			"info": "gist.home_function_buttons.asset",
+			"level": 3,
+			"button": "<img src=\"https://api.iconify.design/mdi/package-variant-closed.svg\" class=\"text-icon\"/>",
+			"sub_items": [
+				{
+					"info": "gist.home_function_buttons.main",
+					"level": 3,
+					"url": "/parts/shells:gist/",
+					"button": "<img src=\"https://api.iconify.design/mdi/notebook-edit-outline.svg\" class=\"text-icon\"/>"
+				}
+			]
+		}
+	]
+}
+

@@ -1175,6 +1175,11 @@
 			"generateXFountPart": {
 				"description": "fountコンポーネント情報の生成"
 			}
+		},
+		"home_drag_in_handlers": {
+			"handleMarkdownDrop": {
+				"description": "ドロップした Markdown を gist として作成"
+			}
 		}
 	},
 	"chat": {
@@ -3211,6 +3216,12 @@
 		"home_function_buttons": {
 			"chatHub": {
 				"title": "チャット"
+			},
+			"frequent": {
+				"title": null
+			},
+			"network": {
+				"title": null
 			}
 		},
 		"profile": {
@@ -3603,6 +3614,19 @@
 					"searchingContent": "${content} を検索中"
 				}
 			}
+		},
+		"gist_source_plugins": {
+			"chat": {
+				"title": "チャットから"
+			},
+			"creating": "gist を作成中…",
+			"fromGroup": "グループから",
+			"fromChannel": "チャンネルから",
+			"author": "投稿者",
+			"exportedAt": "エクスポート日時",
+			"jumpToSource": "元へ移動",
+			"sendToChat": "チャットへコピー",
+			"copied": "クリップボードにコピーしました"
 		}
 	},
 	"easynew": {
@@ -4104,6 +4128,9 @@
 		"home_function_buttons": {
 			"manage": {
 				"title": "サービスソースの管理"
+			},
+			"frequent": {
+				"title": "よく使う"
 			}
 		}
 	},
@@ -4374,6 +4401,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "広場"
+			},
+			"frequent": {
+				"title": "よく使う"
+			},
+			"network": {
+				"title": "接続"
 			}
 		},
 		"nav": {
@@ -4931,6 +4964,7 @@
 			"notFound": "投稿が存在しないか、表示されません",
 			"loadFailed": "読み込みに失敗しました。後でもう一度お試しください",
 			"exportMediaFailed": "メディアの書き出しに失敗しました：${error}",
+			"gistCreateFailed": "gist の作成に失敗しました：${error}",
 			"detailTitle": "役職",
 			"back": "戻る"
 		},
@@ -5030,6 +5064,18 @@
 			"follow": "購読",
 			"unfollow": "購読を解除",
 			"empty": "このトピックにはまだ投稿がありません"
+		},
+		"gist_source_plugins": {
+			"social": {
+				"title": "投稿から"
+			},
+			"creating": "gist を作成中…",
+			"fromPost": "投稿から",
+			"author": "投稿者",
+			"exportedAt": "エクスポート日時",
+			"jumpToSource": "元へ移動",
+			"sendToSocial": "投稿へコピー",
+			"copied": "クリップボードにコピーしました"
 		}
 	},
 	"cabinet": {
@@ -5048,6 +5094,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "ファイルキャビネット"
+			},
+			"asset": {
+				"title": "アセット"
 			}
 		},
 		"upload": "アップロード",
@@ -5226,6 +5275,14 @@
 		"home_function_buttons": {
 			"integration_related": {
 				"title": "統合",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "ターミナルアシスト"
+					}
+				}
+			},
+			"dev": {
+				"title": "開発",
 				"sub_items": {
 					"terminalAssist": {
 						"title": "ターミナルアシスト"
@@ -5753,6 +5810,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "他のデバイスへのアクセス"
+			},
+			"frequent": {
+				"title": "よく使う"
+			},
+			"network": {
+				"title": "接続"
 			}
 		}
 	},
@@ -5873,16 +5936,11 @@
 			"generalError": "エラーが発生しました: ${message}"
 		},
 		"home_function_buttons": {
-			"in_dev": {
-				"title": "開発中",
+			"network": {
+				"title": "接続",
 				"sub_items": {
-					"subfounts_related": {
-						"title": "サブデバイス",
-						"sub_items": {
-							"main": {
-								"title": "サブデバイスの管理"
-							}
-						}
+					"subfounts": {
+						"title": "サブデバイス"
 					}
 				}
 			}
@@ -6451,6 +6509,89 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
+			},
+			"dev": {
+				"title": "開発"
+			}
+		},
+		"gist_source_plugins": {
+			"creating": "gist を作成中…",
+			"fromSession": "コーディングセッションから",
+			"sessionId": "セッション",
+			"exportedAt": "エクスポート日時",
+			"sendToWorkspace": "ワークスペースへ送信",
+			"copied": "クリップボードにコピーしました",
+			"sent": "ワークスペースへ送信しました",
+			"code": {
+				"title": "コーディングから"
+			}
+		}
+	},
+	"gist": {
+		"title": "Gist メモ帳",
+		"description": "Markdown メモの保存・閲覧・編集・共有。gist ごとにセキュリティレベルを設定。",
+		"error": {
+			"generic": "エラーが発生しました：${error}"
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "Gist メモ帳"
+			},
+			"asset": {
+				"title": "アセット"
+			}
+		},
+		"list": {
+			"new": "新規 gist",
+			"empty": "まだ gist がありません。右上の「新規 gist」から作成してください。",
+			"updatedAt": "更新："
+		},
+		"source": {
+			"manual": "手動",
+			"chat": "チャットから",
+			"social": "投稿から",
+			"code": "コーディングから",
+			"md-drop": "ドロップ"
+		},
+		"security": {
+			"secure": "保護あり",
+			"trusted": "保護なし"
+		},
+		"view": {
+			"back": "戻る",
+			"edit": "編集",
+			"download": "ダウンロード",
+			"share": "共有",
+			"delete": "削除",
+			"empty": "この gist は空です",
+			"dropRerender": "ドロップした Markdown で再描画しました",
+			"downgradeConfirm": "「保護なし」にすると、プレビューで HTML スクリプトが実行され、XSS の危険があります。切り替えますか？",
+			"shareCopied": "共有リンクをコピーしました",
+			"deleteConfirm": "この gist を削除しますか？取り消せません。",
+			"notFound": "gist が見つかりません。削除された可能性があります。"
+		},
+		"edit": {
+			"save": "保存",
+			"cancel": "戻る",
+			"title": "タイトル",
+			"editor": {
+				"placeholder": "Markdown を入力…",
+				"aria-label": "Markdown エディタ"
+			},
+			"previewToggle": "プレビュー",
+			"editMode": "編集",
+			"pasteDangerPrompt": "クリップボードに危険な内容（スクリプト / イベント属性 / 危険なリンク）が含まれています。${trust}：保護なしのまま貼り付け；${secure}：保護ありに切り替えてから貼り付け。",
+			"pasteTrust": "信頼して貼り付け",
+			"pasteSecure": "信頼しない、保護あり"
+		},
+		"securityToggle": {
+			"secure": {
+				"title": "保護あり",
+				"aria-label": "セキュリティレベル：保護あり"
+			},
+			"trusted": {
+				"title": "保護なし",
+				"aria-label": "セキュリティレベル：保護なし"
 			}
 		}
 	}

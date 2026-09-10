@@ -1175,6 +1175,11 @@
 			"generateXFountPart": {
 				"description": "Generar información del componente fount"
 			}
+		},
+		"home_drag_in_handlers": {
+			"handleMarkdownDrop": {
+				"description": "Crear o previsualizar un documento de Markdown soltado"
+			}
 		}
 	},
 	"chat": {
@@ -3217,6 +3222,12 @@
 		"home_function_buttons": {
 			"chatHub": {
 				"title": "charlar"
+			},
+			"frequent": {
+				"title": null
+			},
+			"network": {
+				"title": null
 			}
 		},
 		"profile": {
@@ -3609,6 +3620,19 @@
 					"searchingContent": "Buscando ${content}"
 				}
 			}
+		},
+		"gist_source_plugins": {
+			"chat": {
+				"title": "Del chat"
+			},
+			"creating": "Creando gist…",
+			"fromGroup": "Del grupo",
+			"fromChannel": "Del canal",
+			"author": "Autor",
+			"exportedAt": "Exportado el",
+			"jumpToSource": "Ir al origen",
+			"sendToChat": "Copiar al chat",
+			"copied": "Copiado al portapapeles"
 		}
 	},
 	"easynew": {
@@ -4937,6 +4961,7 @@
 			"notFound": "La publicación no existe o no es visible",
 			"loadFailed": "Error al cargar, inténtelo de nuevo más tarde",
 			"exportMediaFailed": "No se pudo exportar el contenido multimedia: ${error}",
+			"gistCreateFailed": "No se pudo crear el gist: ${error}",
 			"detailTitle": "Correo",
 			"back": "Volver"
 		},
@@ -5036,6 +5061,18 @@
 			"follow": "Suscribirse",
 			"unfollow": "Darse de baja",
 			"empty": "Aún no hay publicaciones para este tema."
+		},
+		"gist_source_plugins": {
+			"social": {
+				"title": "De la publicación"
+			},
+			"creating": "Creando gist…",
+			"fromPost": "De la publicación",
+			"author": "Autor",
+			"exportedAt": "Exportado el",
+			"jumpToSource": "Ir al origen",
+			"sendToSocial": "Copiar a la publicación",
+			"copied": "Copiado al portapapeles"
 		}
 	},
 	"cabinet": {
@@ -5878,21 +5915,7 @@
 			"saveSettingsFailed": "No se pudo guardar la configuración de bien público: ${message}",
 			"generalError": "Se produjo un error: ${message}"
 		},
-		"home_function_buttons": {
-			"in_dev": {
-				"title": "En desarrollo",
-				"sub_items": {
-					"subfounts_related": {
-						"title": "subdispositivo",
-						"sub_items": {
-							"main": {
-								"title": "Administrar subdispositivos"
-							}
-						}
-					}
-				}
-			}
-		}
+		"home_function_buttons": {}
 	},
 	"achievements": {
 		"title": "Logro",
@@ -6457,6 +6480,83 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
+			}
+		},
+		"gist_source_plugins": {
+			"creating": "Creando gist…",
+			"fromSession": "De la sesión de programación",
+			"sessionId": "Sesión",
+			"exportedAt": "Exportado el",
+			"sendToWorkspace": "Enviar al espacio de trabajo",
+			"copied": "Copiado al portapapeles",
+			"sent": "Enviado al espacio de trabajo",
+			"code": {
+				"title": "De la sesión de programación"
+			}
+		}
+	},
+	"gist": {
+		"title": "Biblioteca de gist",
+		"description": "Guarda, consulta, edita y comparte documentos de Markdown, con un nivel de seguridad por gist.",
+		"error": {
+			"generic": "Algo salió mal: ${error}"
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "Biblioteca de gist"
+			}
+		},
+		"list": {
+			"new": "Nuevo gist",
+			"empty": "Aún no hay ningún gist. Haz clic en «Nuevo gist» arriba a la derecha para crear uno.",
+			"updatedAt": "Actualizado"
+		},
+		"source": {
+			"manual": "Manual",
+			"chat": "Del chat",
+			"social": "De la publicación",
+			"code": "De la sesión de programación",
+			"md-drop": "Markdown soltado"
+		},
+		"security": {
+			"secure": "Protegido",
+			"trusted": "Desprotegido"
+		},
+		"view": {
+			"back": "Atrás",
+			"edit": "Editar",
+			"download": "Descargar",
+			"share": "Compartir",
+			"delete": "Eliminar",
+			"empty": "Este gist está vacío",
+			"dropRerender": "Re-renderizado con el Markdown soltado",
+			"downgradeConfirm": "Cambiar a «Desprotegido» permitirá que los scripts HTML se ejecuten en la vista previa, lo que supone un riesgo de XSS. ¿Cambiar de todos modos?",
+			"shareCopied": "Enlace para compartir copiado al portapapeles",
+			"deleteConfirm": "¿Eliminar este gist? Esta acción no se puede deshacer.",
+			"notFound": "No se encontró el gist; es posible que se haya eliminado."
+		},
+		"edit": {
+			"save": "Guardar",
+			"cancel": "Atrás",
+			"title": "Título",
+			"editor": {
+				"placeholder": "Introduce Markdown…",
+				"aria-label": "Editor de Markdown"
+			},
+			"previewToggle": "Vista previa",
+			"editMode": "Editar",
+			"pasteDangerPrompt": "El portapapeles puede contener contenido peligroso (scripts / atributos de eventos / enlaces no seguros). ${trust}: mantenerlo desprotegido y pegar tal cual; ${secure}: cambiar a protegido antes de pegar.",
+			"pasteTrust": "Confiar y pegar",
+			"pasteSecure": "No confiar, proteger"
+		},
+		"securityToggle": {
+			"secure": {
+				"title": "Protegido",
+				"aria-label": "Nivel de seguridad: protegido"
+			},
+			"trusted": {
+				"title": "Desprotegido",
+				"aria-label": "Nivel de seguridad: desprotegido"
 			}
 		}
 	}

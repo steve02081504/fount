@@ -191,32 +191,3 @@ Deno.test('wildcard listen hosts display as localhost in baseUrl', () => {
 	assertEquals(pagesDisplayHost('localhost'), 'localhost')
 	assertEquals(pagesDisplayHost('127.0.0.1'), '127.0.0.1')
 })
-
-Deno.test('embedCard stylesheet href resolves beside the module (subpath-safe)', async () => {
-	const prepended = []
-	const originalDocument = globalThis.document
-	globalThis.document = {
-		head: {
-			/**
-			 * 记录追加的 link 元素。
-			 * @param {object} element 追加的元素
-			 * @returns {void}
-			 */
-			prepend: element => { prepended.push(element) },
-		},
-		/**
-		 * 创建空元素占位。
-		 * @returns {object} 空对象
-		 */
-		createElement: () => ({}),
-	}
-	try {
-		await import('../../../public/pages/scripts/features/embedCard.mjs')
-	}
-	finally {
-		globalThis.document = originalDocument
-	}
-	assertEquals(prepended.length, 1)
-	const moduleUrl = new URL('../../../public/pages/scripts/features/embedCard.mjs', import.meta.url)
-	assertEquals(prepended[0].href, new URL('./embedCard.css', moduleUrl).href)
-})

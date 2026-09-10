@@ -8,7 +8,6 @@
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../../scripts/i18n/index.mjs'
 import { isDagEventId } from '../../src/lib/eventId.mjs'
-import { createShareLink } from '../../src/share.mjs'
 import { renderTemplate } from '../../src/templates.mjs'
 import { setReplyTarget } from '../composerReply.mjs'
 import { bindDismissOnDocumentInteraction } from '/scripts/components/contextMenuDismiss.mjs'
@@ -17,7 +16,7 @@ import { positionContextMenu } from '/scripts/components/positionContextMenu.mjs
 import { store } from '../core/state.mjs'
 import { openThread } from '../threadDrawer.mjs'
 
-import { downloadMessageHtml, generateMessageStandaloneHtml } from './exportHtml.mjs'
+import { exportMessageToGist } from './exportGist.mjs'
 import { findContextMessage, getChannelMessageActionsContext } from './messageActionsState.mjs'
 import { shouldConfirmDelete } from './messageActionsUi.mjs'
 import { getMessageText } from './render/text.mjs'
@@ -41,15 +40,6 @@ export function dismissMessageContextMenu() {
 async function copyMessageText(message, row) {
 	const text = getMessageText(message) || row?.querySelector('.message-content')?.textContent?.trim() || ''
 	await navigator.clipboard.writeText(text)
-}
-
-/**
- * @param {object} message 消息行
- * @param {HTMLElement | null} row 消息 DOM
- * @returns {Promise<void>}
- */
-async function exportMessageHtml(message, row) {
-	await downloadMessageHtml(message, row)
 }
 
 /**
@@ -96,19 +86,26 @@ export async function showMessageContextMenu(event, row) {
 		void copyMessageText(message, row).then(closeOnce)
 	})
 	menu.querySelector('[data-action="exportHtml"]')?.addEventListener('click', () => {
-		void exportMessageHtml(message, row).then(closeOnce)
+		(async () => {
+			try {
+				showToastI18n('info', 'chat.gist_source_plugins.creating')
+				await exportMessageToGist(message, row, actions, eventId)
+			}
+			catch (error) {
+				console.error(error)
+			}
+			closeOnce()
+		})()
 	})
 	menu.querySelector('[data-action="shareExternal"]')?.addEventListener('click', () => {
-		void (async () => {
-			showToastI18n('info', 'chat.message.view.share.uploading')
-			const html = await generateMessageStandaloneHtml(message, row)
-			const blob = new Blob([html], { type: 'text/html' })
-			const link = await createShareLink(blob, `message-${eventId || 'export'}.html`, '24h')
-			await navigator.clipboard.writeText(link)
-			showToastI18n('success', 'chat.message.view.share.success', {
-				provider: 'litterbox.moe',
-				sponsorLink: 'https://store.catbox.moe/',
-			})
+		(async () => {
+			try {
+				showToastI18n('info', 'chat.gist_source_plugins.creating')
+				await exportMessageToGist(message, row, actions, eventId)
+			}
+			catch (error) {
+				console.error(error)
+			}
 			closeOnce()
 		})()
 	})

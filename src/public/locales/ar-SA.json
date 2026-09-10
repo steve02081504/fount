@@ -1175,6 +1175,11 @@
 			"generateXFountPart": {
 				"description": "توليد معلومات مكون fount"
 			}
+		},
+		"home_drag_in_handlers": {
+			"handleMarkdownDrop": {
+				"description": "إنشاء مستند Markdown مُسقط أو معاينته"
+			}
 		}
 	},
 	"chat": {
@@ -3211,6 +3216,12 @@
 		"home_function_buttons": {
 			"chatHub": {
 				"title": "محادثة"
+			},
+			"frequent": {
+				"title": null
+			},
+			"network": {
+				"title": null
 			}
 		},
 		"profile": {
@@ -3613,6 +3624,19 @@
 					"searchingContent": "جارٍ البحث عن ${content}"
 				}
 			}
+		},
+		"gist_source_plugins": {
+			"chat": {
+				"title": "من الدردشة"
+			},
+			"creating": "جارٍ إنشاء gist…",
+			"fromGroup": "من المجموعة",
+			"fromChannel": "من القناة",
+			"author": "المؤلف",
+			"exportedAt": "وقت التصدير",
+			"jumpToSource": "الانتقال إلى المصدر",
+			"sendToChat": "نسخ إلى الدردشة",
+			"copied": "تم النسخ إلى الحافظة"
 		}
 	},
 	"easynew": {
@@ -4941,6 +4965,7 @@
 			"notFound": "المشاركة غير موجودة أو غير مرئية",
 			"loadFailed": "فشل التحميل، يرجى المحاولة مرة أخرى في وقت لاحق",
 			"exportMediaFailed": "تعذّر تصدير الوسائط: ${error}",
+			"gistCreateFailed": "فشل إنشاء gist: ${error}",
 			"detailTitle": "بريد",
 			"back": "رجوع"
 		},
@@ -5040,6 +5065,18 @@
 			"follow": "اشترك",
 			"unfollow": "إلغاء الاشتراك",
 			"empty": "لا توجد مشاركات لهذا الموضوع حتى الآن"
+		},
+		"gist_source_plugins": {
+			"social": {
+				"title": "من المنشور"
+			},
+			"creating": "جارٍ إنشاء gist…",
+			"fromPost": "من المنشور",
+			"author": "المؤلف",
+			"exportedAt": "وقت التصدير",
+			"jumpToSource": "الانتقال إلى المصدر",
+			"sendToSocial": "نسخ إلى المنشور",
+			"copied": "تم النسخ إلى الحافظة"
 		}
 	},
 	"cabinet": {
@@ -5882,21 +5919,7 @@
 			"saveSettingsFailed": "فشل حفظ إعدادات المنفعة العامة: ${message}",
 			"generalError": "حدث خطأ: ${message}"
 		},
-		"home_function_buttons": {
-			"in_dev": {
-				"title": "قيد التطوير",
-				"sub_items": {
-					"subfounts_related": {
-						"title": "جهاز فرعي",
-						"sub_items": {
-							"main": {
-								"title": "إدارة الأجهزة الفرعية"
-							}
-						}
-					}
-				}
-			}
-		}
+		"home_function_buttons": {}
 	},
 	"achievements": {
 		"title": "إنجاز",
@@ -6461,6 +6484,83 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
+			}
+		},
+		"gist_source_plugins": {
+			"creating": "جارٍ إنشاء gist…",
+			"fromSession": "من جلسة البرمجة",
+			"sessionId": "الجلسة",
+			"exportedAt": "وقت التصدير",
+			"sendToWorkspace": "إرسال إلى مساحة العمل",
+			"copied": "تم النسخ إلى الحافظة",
+			"sent": "تم الإرسال إلى مساحة العمل",
+			"code": {
+				"title": "من جلسة البرمجة"
+			}
+		}
+	},
+	"gist": {
+		"title": "مكتبة gist",
+		"description": "احفظ مستندات Markdown واعرضها وعدّلها وشاركها، مع مستوى أمان لكل gist.",
+		"error": {
+			"generic": "حدث خطأ ما: ${error}"
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "مكتبة gist"
+			}
+		},
+		"list": {
+			"new": "gist جديد",
+			"empty": "لا توجد أي gist بعد. انقر على «gist جديد» في الأعلى يمينًا لإنشاء أول gist.",
+			"updatedAt": "آخر تحديث"
+		},
+		"source": {
+			"manual": "يدوي",
+			"chat": "من الدردشة",
+			"social": "من المنشور",
+			"code": "من جلسة البرمجة",
+			"md-drop": "Markdown مُسقط"
+		},
+		"security": {
+			"secure": "محمي",
+			"trusted": "غير محمي"
+		},
+		"view": {
+			"back": "رجوع",
+			"edit": "تعديل",
+			"download": "تنزيل",
+			"share": "مشاركة",
+			"delete": "حذف",
+			"empty": "هذا الـgist فارغ",
+			"dropRerender": "تمت إعادة العرض باستخدام Markdown المُسقط",
+			"downgradeConfirm": "سيسمح التبديل إلى «غير محمي» بتنفيذ نصوص HTML في المعاينة، ما يشكّل خطر XSS. هل تريد التبديل على أي حال؟",
+			"shareCopied": "تم نسخ رابط المشاركة إلى الحافظة",
+			"deleteConfirm": "هل تريد حذف هذا الـgist؟ لا يمكن التراجع عن هذا الإجراء.",
+			"notFound": "لم يتم العثور على الـgist؛ ربما يكون قد حُذف."
+		},
+		"edit": {
+			"save": "حفظ",
+			"cancel": "رجوع",
+			"title": "العنوان",
+			"editor": {
+				"placeholder": "أدخل Markdown…",
+				"aria-label": "محرر Markdown"
+			},
+			"previewToggle": "معاينة",
+			"editMode": "تعديل",
+			"pasteDangerPrompt": "قد تحتوي الحافظة على محتوى خطر (نصوص برمجية / سمات أحداث / روابط غير آمنة). ${trust}: الإبقاء بدون حماية ولصق المحتوى كما هو؛ ${secure}: التبديل إلى الحماية قبل اللصق.",
+			"pasteTrust": "وثق والصق",
+			"pasteSecure": "لا تثق، وفعّل الحماية"
+		},
+		"securityToggle": {
+			"secure": {
+				"title": "محمي",
+				"aria-label": "مستوى الأمان: محمي"
+			},
+			"trusted": {
+				"title": "غير محمي",
+				"aria-label": "مستوى الأمان: غير محمي"
 			}
 		}
 	}

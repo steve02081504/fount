@@ -50,6 +50,13 @@
 				"level": 0,
 				"path": "achievements_registry.json"
 			}
+		],
+		"gist_source_plugins": [
+			{
+				"id": "chatSourcePlugin",
+				"level": 0,
+				"path": "gist_registry.json"
+			}
 		]
 	}
 }

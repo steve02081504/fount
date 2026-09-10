@@ -1175,6 +1175,11 @@
 			"generateXFountPart": {
 				"description": "Gerar informações do componente fount"
 			}
+		},
+		"home_drag_in_handlers": {
+			"handleMarkdownDrop": {
+				"description": "Criar ou pré-visualizar um documento Markdown largado"
+			}
 		}
 	},
 	"chat": {
@@ -3217,6 +3222,12 @@
 		"home_function_buttons": {
 			"chatHub": {
 				"title": "Bater papo"
+			},
+			"frequent": {
+				"title": null
+			},
+			"network": {
+				"title": null
 			}
 		},
 		"profile": {
@@ -3609,6 +3620,19 @@
 					"searchingContent": "A procurar ${content}"
 				}
 			}
+		},
+		"gist_source_plugins": {
+			"chat": {
+				"title": "Do chat"
+			},
+			"creating": "A criar gist…",
+			"fromGroup": "Do grupo",
+			"fromChannel": "Do canal",
+			"author": "Autor",
+			"exportedAt": "Exportado em",
+			"jumpToSource": "Saltar para a origem",
+			"sendToChat": "Copiar para o chat",
+			"copied": "Copiado para a área de transferência"
 		}
 	},
 	"easynew": {
@@ -4937,6 +4961,7 @@
 			"notFound": "A postagem não existe ou não está visível",
 			"loadFailed": "Falha ao carregar, tente novamente mais tarde",
 			"exportMediaFailed": "Não foi possível exportar os conteúdos multimédia: ${error}",
+			"gistCreateFailed": "Falha ao criar o gist: ${error}",
 			"detailTitle": "Publicação",
 			"back": "Voltar"
 		},
@@ -5036,6 +5061,18 @@
 			"follow": "Subscrição",
 			"unfollow": "Cancelar inscrição",
 			"empty": "Ainda não há postagens para este tópico"
+		},
+		"gist_source_plugins": {
+			"social": {
+				"title": "Da publicação"
+			},
+			"creating": "A criar gist…",
+			"fromPost": "Da publicação",
+			"author": "Autor",
+			"exportedAt": "Exportado em",
+			"jumpToSource": "Saltar para a origem",
+			"sendToSocial": "Copiar para a publicação",
+			"copied": "Copiado para a área de transferência"
 		}
 	},
 	"cabinet": {
@@ -5878,21 +5915,7 @@
 			"saveSettingsFailed": "Falha ao guardar as definições de bem público: ${message}",
 			"generalError": "Ocorreu um erro: ${message}"
 		},
-		"home_function_buttons": {
-			"in_dev": {
-				"title": "Em desenvolvimento",
-				"sub_items": {
-					"subfounts_related": {
-						"title": "subdispositivo",
-						"sub_items": {
-							"main": {
-								"title": "Gerenciar subdispositivos"
-							}
-						}
-					}
-				}
-			}
-		}
+		"home_function_buttons": {}
 	},
 	"achievements": {
 		"title": "Conquista",
@@ -6457,6 +6480,83 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
+			}
+		},
+		"gist_source_plugins": {
+			"creating": "A criar gist…",
+			"fromSession": "Da sessão de programação",
+			"sessionId": "Sessão",
+			"exportedAt": "Exportado em",
+			"sendToWorkspace": "Enviar para o espaço de trabalho",
+			"copied": "Copiado para a área de transferência",
+			"sent": "Enviado para o espaço de trabalho",
+			"code": {
+				"title": "Da sessão de programação"
+			}
+		}
+	},
+	"gist": {
+		"title": "Biblioteca de gists",
+		"description": "Guardar, ver, editar e partilhar documentos Markdown, com um nível de segurança para cada gist.",
+		"error": {
+			"generic": "Algo correu mal: ${error}"
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "Biblioteca de gists"
+			}
+		},
+		"list": {
+			"new": "Novo gist",
+			"empty": "Ainda não há gists. Clique em «Novo gist» no canto superior direito para criar o primeiro.",
+			"updatedAt": "Atualizado"
+		},
+		"source": {
+			"manual": "Manual",
+			"chat": "Do chat",
+			"social": "Da publicação",
+			"code": "Da sessão de programação",
+			"md-drop": "Markdown largado"
+		},
+		"security": {
+			"secure": "Protegido",
+			"trusted": "Desprotegido"
+		},
+		"view": {
+			"back": "Voltar",
+			"edit": "Editar",
+			"download": "Descarregar",
+			"share": "Partilhar",
+			"delete": "Eliminar",
+			"empty": "Este gist está vazio",
+			"dropRerender": "Re-renderizado com o Markdown largado",
+			"downgradeConfirm": "Mudar para «Desprotegido» permite que scripts HTML sejam executados na pré-visualização, o que representa um risco de XSS. Mudar na mesma?",
+			"shareCopied": "Ligação de partilha copiada para a área de transferência",
+			"deleteConfirm": "Eliminar este gist? Esta ação é irreversível.",
+			"notFound": "Gist não encontrado — pode ter sido eliminado."
+		},
+		"edit": {
+			"save": "Guardar",
+			"cancel": "Voltar",
+			"title": "Título",
+			"editor": {
+				"placeholder": "Introduza Markdown…",
+				"aria-label": "Editor de Markdown"
+			},
+			"previewToggle": "Pré-visualizar",
+			"editMode": "Editar",
+			"pasteDangerPrompt": "A área de transferência pode conter conteúdo perigoso (scripts / atributos de evento / ligações inseguras). ${trust}: colar sem proteção, tal como está; ${secure}: mudar para protegido antes de colar.",
+			"pasteTrust": "Confiar e colar",
+			"pasteSecure": "Não confiar — proteger"
+		},
+		"securityToggle": {
+			"secure": {
+				"title": "Protegido",
+				"aria-label": "Nível de segurança: protegido"
+			},
+			"trusted": {
+				"title": "Desprotegido",
+				"aria-label": "Nível de segurança: desprotegido"
 			}
 		}
 	}

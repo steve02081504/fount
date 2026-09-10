@@ -1,0 +1,66 @@
+# gist shell
+
+集中式 Markdown 文档存储与预览站：以 gist 为单位保存笔记、片段与文档。
+
+- gist 数据存于用户目录 `shells/gist/gists/<id>.json`，每用户独立。
+- gist 字段：`id`（8 位随机 id）、`title`（未提供时取自 markdown 首个非空行，截断到 60 字符）、`markdown`、`securityLevel`（`secure` | `trusted`，默认 `trusted`）、`source`（来源元数据 `{ type, ref, exportedAt }` 或 null）、`createdAt`、`updatedAt`（毫秒时间戳）。
+- 列表接口不含 `markdown` 字段，按 `createdAt` 降序。
+- 操作安全：来自未知/不可信来源的内容**必须**以 `securityLevel: "secure"` 保存（例如 web 抓取、他人分享、外部导入等一律视为不可信）。`secure` 档预览不激活脚本、不信任原始 HTML；`trusted` 档预览会激活脚本并信任原始 HTML（存在 XSS 风险），仅可对完全可信的内容使用。切换/降级需用户显式确认。
+
+## HTTP API（均需登录；base = `/api/parts/shells:gist`）
+
+### 获取 gist 列表 `GET /gists`
+
+- 调用目的：列出当前用户全部 gist 摘要，供列表页展示。
+- 请求示例：
+  - 请求：`GET /api/parts/shells:gist/gists`
+  - 响应 200：`[ { "id": "aB3dE9fG", "title": "My notes", "securityLevel": "secure", "source": null, "createdAt": 1760000000000, "updatedAt": 1760000000000 } ]`
+- 关键约束：无需参数。响应为数组，每条仅含 `{ id, title, securityLevel, source, createdAt, updatedAt }`，**不含** `markdown` 字段，按 `createdAt` 降序。`createdAt`/`updatedAt` 为毫秒时间戳数字。
+
+### 新建 gist `POST /gists`
+
+- 调用目的：创建一个新 gist，返回含 `markdown` 的完整 gist 对象。
+- 请求示例：
+  - 请求：`POST /api/parts/shells:gist/gists`
+  - 请求体：`{ "markdown": "# Hello", "title": "hello", "securityLevel": "secure", "source": { "type": "web", "ref": "https://example.com/a" } }`
+  - 响应 201：`{ "gist": { "id": "aB3dE9fG", "title": "hello", "markdown": "# Hello", "securityLevel": "secure", "source": { "type": "web", "ref": "https://example.com/a" }, "createdAt": 1760000000000, "updatedAt": 1760000000000 } }`
+- 关键约束：
+  - 请求体字段：`markdown`（**必填**，非空字符串）、`title`（可选字符串，缺省时取 markdown 首个非空行并截断到 60 字符）、`securityLevel`（可选，仅 `secure` | `trusted`，缺省 `trusted`）、`source`（可选，对象或 null）。
+  - `markdown` 缺失/为空/非字符串 → 400；`securityLevel` 非法 → 400。
+  - 成功 → 201 `{ gist }`。
+
+### 读取单个 gist `GET /gists/:id`
+
+- 调用目的：按 id 读取单个 gist 的完整内容（含 `markdown`），供查看页渲染正文。
+- 请求示例：
+  - 请求：`GET /api/parts/shells:gist/gists/aB3dE9fG`
+  - 响应 200：`{ "gist": { "id": "aB3dE9fG", "title": "My notes", "markdown": "# Hello", "securityLevel": "secure", "source": null, "createdAt": 1760000000000, "updatedAt": 1760000000000 } }`
+- 关键约束：`id` 不存在/非法 → 404。前端 wrapper：`getGist(id)`。
+
+### 更新 gist `PUT /gists/:id`
+
+- 调用目的：部分更新 gist 的可变字段（`markdown`、`title`、`securityLevel`），`updatedAt` 更新为当前毫秒时间戳。
+- 请求示例：
+  - 请求：`PUT /api/parts/shells:gist/gists/aB3dE9fG`
+  - 请求体：`{ "markdown": "updated content", "title": "new title" }`
+  - 响应 200：`{ "gist": { "id": "aB3dE9fG", "title": "new title", "markdown": "updated content", "securityLevel": "secure", "source": null, "createdAt": 1760000000000, "updatedAt": 1760005000000 } }`
+- 关键约束：
+  - 请求体字段均可选：`markdown`、`title`、`securityLevel`，至少传需变更的字段即可。
+  - `markdown`/`title` 若提供必须为字符串（否则 400）；`securityLevel` 若提供必须为 `secure` | `trusted`（否则 400）。
+  - `id` 不存在 → 404；成功 → 200 `{ gist }`。
+
+### 删除 gist `DELETE /gists/:id`
+
+- 调用目的：永久删除指定 gist。
+- 请求示例：
+  - 请求：`DELETE /api/parts/shells:gist/gists/aB3dE9fG`
+  - 响应 200：`{ "ok": true }`
+- 关键约束：`id` 不存在 → 404。
+
+### 获取来源插件 `GET /source-plugins`
+
+- 调用目的：获取 `gist_source_plugins` 注册表聚合条目，供查看页按 `source.type` 匹配来源插件并调用其渲染逻辑。
+- 请求示例：
+  - 请求：`GET /api/parts/shells:gist/source-plugins`
+  - 响应 200：`{ "plugins": [ { "partpath": "...", "id": "web", "level": 0, "...其他注册表条目字段": ... } ] }`
+- 关键约束：每条插件字段为 `{ partpath, id, level, ...该注册表条目其余字段 }`；`partpath`/`id`/`level` 在条目级缺省时回退到注册表条目级值。注册表尚未有任何条目时 `plugins` 为空数组。

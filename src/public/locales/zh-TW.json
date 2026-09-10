@@ -1174,6 +1174,11 @@
 			"generateXFountPart": {
 				"description": "產生 fount 組件資訊"
 			}
+		},
+		"home_drag_in_handlers": {
+			"handleMarkdownDrop": {
+				"description": "建立或預覽拖入的 Markdown 文件"
+			}
 		}
 	},
 	"chat": {
@@ -3210,6 +3215,9 @@
 		"home_function_buttons": {
 			"chatHub": {
 				"title": "聊天"
+			},
+			"frequent": {
+				"title": null
 			}
 		},
 		"profile": {
@@ -3602,6 +3610,19 @@
 					"searchingContent": "正在搜尋${content}"
 				}
 			}
+		},
+		"gist_source_plugins": {
+			"chat": {
+				"title": "來自聊天"
+			},
+			"creating": "正在建立 gist…",
+			"fromGroup": "來自群組",
+			"fromChannel": "來自頻道",
+			"author": "作者",
+			"exportedAt": "匯出時間",
+			"jumpToSource": "前往來源",
+			"sendToChat": "複製到聊天",
+			"copied": "已複製到剪貼簿"
 		}
 	},
 	"easynew": {
@@ -4930,6 +4951,7 @@
 			"notFound": "帖子不存在或不可見",
 			"loadFailed": "載入失敗，請稍後重試",
 			"exportMediaFailed": "匯出媒體失敗：${error}",
+			"gistCreateFailed": "建立 gist 失敗：${error}",
 			"detailTitle": "帖子",
 			"back": "返回"
 		},
@@ -5029,6 +5051,18 @@
 			"follow": "訂閱",
 			"unfollow": "取消訂閱",
 			"empty": "該話題暫無帖子"
+		},
+		"gist_source_plugins": {
+			"social": {
+				"title": "來自貼文"
+			},
+			"creating": "正在建立 gist…",
+			"fromPost": "來自貼文",
+			"author": "作者",
+			"exportedAt": "匯出時間",
+			"jumpToSource": "前往來源",
+			"sendToSocial": "複製到貼文",
+			"copied": "已複製到剪貼簿"
 		}
 	},
 	"cabinet": {
@@ -5871,21 +5905,7 @@
 			"saveSettingsFailed": "儲存公益設定失敗: ${message}",
 			"generalError": "發生錯誤: ${message}"
 		},
-		"home_function_buttons": {
-			"in_dev": {
-				"title": "正在開發",
-				"sub_items": {
-					"subfounts_related": {
-						"title": "子裝置",
-						"sub_items": {
-							"main": {
-								"title": "管理子裝置"
-							}
-						}
-					}
-				}
-			}
-		}
+		"home_function_buttons": {}
 	},
 	"achievements": {
 		"title": "成就",
@@ -6450,6 +6470,83 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
+			}
+		},
+		"gist_source_plugins": {
+			"creating": "正在建立 gist…",
+			"fromSession": "來自編程工作階段",
+			"sessionId": "工作階段",
+			"exportedAt": "匯出時間",
+			"sendToWorkspace": "傳送到工作區",
+			"copied": "已複製到剪貼簿",
+			"sent": "已傳送到工作區",
+			"code": {
+				"title": "來自編程工作階段"
+			}
+		}
+	},
+	"gist": {
+		"title": "Gist 文件庫",
+		"description": "儲存、檢視、編輯與分享 Markdown 文件，並可依 gist 設定安全等級。",
+		"error": {
+			"generic": "發生錯誤：${error}"
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "Gist 文件庫"
+			}
+		},
+		"list": {
+			"new": "新增 gist",
+			"empty": "還沒有 gist，按一下右上角的「新增 gist」建立第一個。",
+			"updatedAt": "更新於"
+		},
+		"source": {
+			"manual": "手動建立",
+			"chat": "來自聊天",
+			"social": "來自貼文",
+			"code": "來自編程工作階段",
+			"md-drop": "拖入的 Markdown"
+		},
+		"security": {
+			"secure": "已防護",
+			"trusted": "無防護"
+		},
+		"view": {
+			"back": "返回",
+			"edit": "編輯",
+			"download": "下載",
+			"share": "分享",
+			"delete": "刪除",
+			"empty": "此 gist 內容為空",
+			"dropRerender": "已用拖入的 Markdown 重新渲染",
+			"downgradeConfirm": "切換為「無防護」將允許 HTML 指令碼在預覽中執行，存在 XSS 風險。確認切換？",
+			"shareCopied": "分享連結已複製到剪貼簿",
+			"deleteConfirm": "確定刪除這個 gist？此操作無法復原。",
+			"notFound": "找不到這個 gist，它可能已被刪除。"
+		},
+		"edit": {
+			"save": "儲存",
+			"cancel": "返回",
+			"title": "標題",
+			"editor": {
+				"placeholder": "輸入 Markdown 內容…",
+				"aria-label": "Markdown 編輯器"
+			},
+			"previewToggle": "預覽",
+			"editMode": "編輯",
+			"pasteDangerPrompt": "偵測到剪貼簿含有可能危險的內容（指令碼 / 事件屬性 / 危險連結）。${trust}：保持無防護並原樣貼上；${secure}：切換為已防護後再貼上。",
+			"pasteTrust": "信任並貼上",
+			"pasteSecure": "不信任，改為有防護"
+		},
+		"securityToggle": {
+			"secure": {
+				"title": "已防護",
+				"aria-label": "安全等級：已防護"
+			},
+			"trusted": {
+				"title": "無防護",
+				"aria-label": "安全等級：無防護"
 			}
 		}
 	}
