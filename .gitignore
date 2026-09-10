@@ -36,6 +36,10 @@
 # 性能分析
 *.cpuprofile
 
+# Python 编译缓存
+__pycache__/
+*.pyc
+
 # 多语言构建
 /target
 /.gradle
