@@ -744,7 +744,7 @@
 			},
 			"aiSources": {
 				"title": "Свободная интеграция AI-источников",
-				"description": "fount предлагает непревзойденный выбор и гибкость. Подключайтесь к <i>любым</i> AI-fountм — OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), [Evolink](${evolinkLink}), OpenRouter, NovelAI и т.д. Логика общения будет формироваться силой кода в соответствии с <i>вашими</i> пожеланиями."
+				"description": "fount предлагает непревзойденный выбор и гибкость. Подключайтесь к <i>любым</i> AI-fountм — OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), OpenRouter, NovelAI и т.д. Логика общения будет формироваться силой кода в соответствии с <i>вашими</i> пожеланиями."
 			}
 		}
 	},
@@ -4055,6 +4055,12 @@
 			"loadModelsFailed": "Не удалось загрузить модель: `${message}",
 			"modelSearchTitle": "Каталог моделей",
 			"modelSearchHint": "При выборе результата URL и название модели заполнятся автоматически",
+			"promotedProviders": {
+				"title": "API-провайдеры, продвигающие fount",
+				"description": "Эти провайдеры продвигают fount; использование их API также поддерживает дальнейшую разработку fount.",
+				"apply": "[Я тоже хочу быть в этом списке](${url})",
+				"atlasCloud": "[Atlas Cloud](${url})"
+			},
 			"modelsDevLoading": "Загрузка каталога…",
 			"modelsDevLoadFailed": "Не удалось загрузить каталог: ${message}",
 			"noModelsMatched": "Подходящие модели не найдены",

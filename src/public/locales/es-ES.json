@@ -744,7 +744,7 @@
 			},
 			"aiSources": {
 				"title": "Integración sin límites con orígenes de IA",
-				"description": "fount ofrece una variedad y flexibilidad incomparables. Conéctate a <i>cualquier</i> origen de IA: OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), [Evolink](${evolinkLink}), OpenRouter, NovelAI, etc. La lógica de comunicación se moldeará con el poder del código según <i>tus</i> deseos."
+				"description": "fount ofrece una variedad y flexibilidad incomparables. Conéctate a <i>cualquier</i> origen de IA: OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), OpenRouter, NovelAI, etc. La lógica de comunicación se moldeará con el poder del código según <i>tus</i> deseos."
 			}
 		}
 	},
@@ -4053,6 +4053,12 @@
 			"loadModelsFailed": "No se pudo cargar el modelo: ${message}",
 			"modelSearchTitle": "Explorar catálogo de modelos",
 			"modelSearchHint": "Al seleccionar un resultado, se rellenarán automáticamente la URL y el nombre del modelo",
+			"promotedProviders": {
+				"title": "Proveedores de API que promocionan fount",
+				"description": "Estos proveedores promocionan fount; usar sus API también apoya el desarrollo continuo de fount.",
+				"apply": "[Yo también quiero aparecer aquí](${url})",
+				"atlasCloud": "[Atlas Cloud](${url})"
+			},
 			"modelsDevLoading": "Cargando catálogo…",
 			"modelsDevLoadFailed": "No se pudo cargar el catálogo: ${message}",
 			"noModelsMatched": "No se encontraron modelos coincidentes",

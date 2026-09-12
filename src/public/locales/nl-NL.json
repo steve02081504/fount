@@ -744,7 +744,7 @@
 			},
 			"aiSources": {
 				"title": "Onbeperkte AI-bronintegratie",
-				"description": "fount biedt een ongeëvenaarde keuze en flexibiliteit. Maak verbinding met <i>elke</i> AI-bron – OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), [Evolink](${evolinkLink}), OpenRouter, NovelAI en meer. De communicatielogica wordt gevormd naar <i>jouw</i> wil, door de kracht van code."
+				"description": "fount biedt een ongeëvenaarde keuze en flexibiliteit. Maak verbinding met <i>elke</i> AI-bron – OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), OpenRouter, NovelAI en meer. De communicatielogica wordt gevormd naar <i>jouw</i> wil, door de kracht van code."
 			}
 		}
 	},
@@ -4053,6 +4053,12 @@
 			"loadModelsFailed": "Kan model niet laden: ${message}",
 			"modelSearchTitle": "Modelcatalogus doorbladeren",
 			"modelSearchHint": "Door een resultaat te selecteren worden URL en modelnaam automatisch ingevuld",
+			"promotedProviders": {
+				"title": "API-aanbieders die fount promoten",
+				"description": "Deze aanbieders promoten fount; het gebruik van hun API's ondersteunt ook de voortdurende ontwikkeling van fount.",
+				"apply": "[Ik wil hier ook vermeld worden](${url})",
+				"atlasCloud": "[Atlas Cloud](${url})"
+			},
 			"modelsDevLoading": "Catalogus laden…",
 			"modelsDevLoadFailed": "Catalogus laden mislukt: ${message}",
 			"noModelsMatched": "Geen overeenkomende modellen gevonden",

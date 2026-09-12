@@ -744,7 +744,7 @@
 			},
 			"aiSources": {
 				"title": "Uneingeschränkte Integration von KI-fount",
-				"description": "fount bietet beispiellose Auswahl und Flexibilität. Verbinden Sie sich mit <i>jeder</i> KI-fount – OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), [Evolink](${evolinkLink}), OpenRouter, NovelAI usw. Die Kommunikationslogik wird nach <i>Ihrem</i> Willen durch die Macht des Codes geformt."
+				"description": "fount bietet beispiellose Auswahl und Flexibilität. Verbinden Sie sich mit <i>jeder</i> KI-fount – OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), OpenRouter, NovelAI usw. Die Kommunikationslogik wird nach <i>Ihrem</i> Willen durch die Macht des Codes geformt."
 			}
 		}
 	},
@@ -4047,6 +4047,12 @@
 			"loadModelsFailed": "Modell konnte nicht geladen werden: ${message}",
 			"modelSearchTitle": "Modellkatalog durchstöbern",
 			"modelSearchHint": "Ein Klick auf einen Eintrag füllt URL und Modellname automatisch aus",
+			"promotedProviders": {
+				"title": "API-Anbieter, die für fount werben",
+				"description": "Diese Anbieter werben für fount; die Nutzung ihrer APIs unterstützt zugleich die fortlaufende Entwicklung von fount.",
+				"apply": "[Ich möchte hier ebenfalls aufgeführt werden](${url})",
+				"atlasCloud": "[Atlas Cloud](${url})"
+			},
 			"modelsDevLoading": "Katalog wird geladen…",
 			"modelsDevLoadFailed": "Katalog konnte nicht geladen werden: ${message}",
 			"noModelsMatched": "Keine passenden Modelle gefunden",

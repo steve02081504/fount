@@ -744,7 +744,7 @@
 			},
 			"aiSources": {
 				"title": "Tích hợp Nguồn AI không giới hạn",
-				"description": "fount mang đến sự lựa chọn và linh hoạt vô song. Kết nối với <i>bất kỳ</i> nguồn AI nào – OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), [Evolink](${evolinkLink}), OpenRouter, NovelAI, v.v. Logic giao tiếp sẽ được định hình bởi sức mạnh của mã nguồn, theo ý muốn của <i>bạn</i>."
+				"description": "fount mang đến sự lựa chọn và linh hoạt vô song. Kết nối với <i>bất kỳ</i> nguồn AI nào – OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), OpenRouter, NovelAI, v.v. Logic giao tiếp sẽ được định hình bởi sức mạnh của mã nguồn, theo ý muốn của <i>bạn</i>."
 			}
 		}
 	},
@@ -4047,6 +4047,12 @@
 			"loadModelsFailed": "Không tải được mô hình: ${message}",
 			"modelSearchTitle": "Duyệt danh mục mô hình",
 			"modelSearchHint": "Nhấp vào kết quả để tự động điền URL và tên mô hình",
+			"promotedProviders": {
+				"title": "Các nhà cung cấp API quảng bá fount",
+				"description": "Các nhà cung cấp này đang quảng bá fount; việc sử dụng API của họ cũng góp phần hỗ trợ fount phát triển lâu dài.",
+				"apply": "[Tôi cũng muốn được liệt kê ở đây](${url})",
+				"atlasCloud": "[Atlas Cloud](${url})"
+			},
 			"modelsDevLoading": "Đang tải danh mục…",
 			"modelsDevLoadFailed": "Không tải được danh mục: ${message}",
 			"noModelsMatched": "Không tìm thấy mô hình phù hợp",

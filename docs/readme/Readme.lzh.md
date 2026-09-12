@@ -166,7 +166,7 @@ fount 之專案架構設計深慮匠人之習。
   fount 可於 Windows、macOS、Linux 乃至 Android 上無縫運行，以直置或 Docker 之變通以應君之不同所需。
 
 - **無拘無束之智源集成：擁抱無窮**
-  fount 於接智源方面，供無與倫比之*選*與*變通*。於智源造化器中，客製之 JavaScript 碼許君接*任意*智源——OpenAI、Claude、[Atlas Cloud](https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount)、[Evolink](https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount)、OpenRouter、NovelAI、Horde、Ooba、Tabby、Mistral……於流動之碼中，君可精心設複雜之正則表達，召浩如煙海之 API 庫，乃至嵌入多媒體之資。fount 亦原生支持創 API 池，以實現智之請路由。通靈之理，聽憑*君*之意，由碼之力來塑造。
+  fount 於接智源方面，供無與倫比之*選*與*變通*。於智源造化器中，客製之 JavaScript 碼許君接*任意*智源——OpenAI、Claude、[Atlas Cloud](https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount)、OpenRouter、NovelAI、Horde、Ooba、Tabby、Mistral……於流動之碼中，君可精心設複雜之正則表達，召浩如煙海之 API 庫，乃至嵌入多媒體之資。fount 亦原生支持創 API 池，以實現智之請路由。通靈之理，聽憑*君*之意，由碼之力來塑造。
   ![圖像](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
 
 倘若君感迷失於化身之海，或尋覓被遺忘之故事，吾[**充滿活力且友好之雅集**](https://t.me/GentianAphrodite)待君之至。那是志同道合者之港灣，匠人與創作者於此分享其智慧與創作。

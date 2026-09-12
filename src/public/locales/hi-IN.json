@@ -744,7 +744,7 @@
 			},
 			"aiSources": {
 				"title": "असीमित AI सोर्स इंटीग्रेशन",
-				"description": "fount अद्वितीय विकल्प और लचीलापन प्रदान करता है। <i>किसी भी</i> AI सोर्स से कनेक्ट करें - OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), [Evolink](${evolinkLink}), OpenRouter, NovelAI, आदि। संचार तर्क आपकी इच्छाओं के अनुसार कोड की शक्ति द्वारा आकार दिया जाएगा।"
+				"description": "fount अद्वितीय विकल्प और लचीलापन प्रदान करता है। <i>किसी भी</i> AI सोर्स से कनेक्ट करें - OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), OpenRouter, NovelAI, आदि। संचार तर्क आपकी इच्छाओं के अनुसार कोड की शक्ति द्वारा आकार दिया जाएगा।"
 			}
 		}
 	},
@@ -4047,6 +4047,12 @@
 			"loadModelsFailed": "मॉडल लोड करने में विफल: ${message}",
 			"modelSearchTitle": "मॉडल कैटलॉग देखें",
 			"modelSearchHint": "परिणाम चुनने पर URL और मॉडल नाम स्वतः भर जाएँगे",
+			"promotedProviders": {
+				"title": "fount का प्रचार करने वाले API प्रदाता",
+				"description": "ये प्रदाता fount का प्रचार करते हैं; उनके API का उपयोग भी fount के निरंतर विकास का समर्थन करता है।",
+				"apply": "[मैं भी यहाँ सूचीबद्ध होना चाहता हूँ](${url})",
+				"atlasCloud": "[Atlas Cloud](${url})"
+			},
 			"modelsDevLoading": "कैटलॉग लोड हो रहा है…",
 			"modelsDevLoadFailed": "कैटलॉग लोड करने में विफल: ${message}",
 			"noModelsMatched": "कोई मेल खाता मॉडल नहीं मिला",

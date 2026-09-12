@@ -166,7 +166,7 @@ npx the-fount
   ⛲ ➡️ Windows / macOS / Linux / Android 🕊️▶️, 📥 / Docker 🤸.
 
 - **🕊️ AI 🔌: 🤗♾️**
-  ⛲ AI 🔌 ➡️ _👉_ + _🤸_. AI 🔌🐣, 🎨 JavaScript ➡️ _❓_ AI — OpenAI, Claude, [Atlas Cloud](https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount), [Evolink](https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount), OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral…… 🌊0️⃣1️⃣ ➡️ 🔬 regex, 📞 API 📚, 📎🎬. ⛲ 🐣 API 🏊 ➡️ 🧠📨🗺️. 📨🧩 ➡️ _🫵_ 💭, 0️⃣1️⃣💪.
+  ⛲ AI 🔌 ➡️ _👉_ + _🤸_. AI 🔌🐣, 🎨 JavaScript ➡️ _❓_ AI — OpenAI, Claude, [Atlas Cloud](https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount), OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral…… 🌊0️⃣1️⃣ ➡️ 🔬 regex, 📞 API 📚, 📎🎬. ⛲ 🐣 API 🏊 ➡️ 🧠📨🗺️. 📨🧩 ➡️ _🫵_ 💭, 0️⃣1️⃣💪.
   ![🖼️](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
 
 🎭🌊 😵 / 🔍😴📖 ➡️ [**🌱😊👥**](https://t.me/GentianAphrodite) 🤗. 🧠👯 ⚓, 👨‍💻 + 🎨 🤝🧠 + 🎨.

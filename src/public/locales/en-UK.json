@@ -744,7 +744,7 @@
 			},
 			"aiSources": {
 				"title": "Unbound AI source integration",
-				"description": "fount offers unparalleled choice and flexibility. Connect to <i>any</i> AI sources—OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), [Evolink](${evolinkLink}), OpenRouter, NovelAI, etc. Communication logic will be shaped by the power of code according to your wishes."
+				"description": "fount offers unparalleled choice and flexibility. Connect to <i>any</i> AI sources—OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), OpenRouter, NovelAI, etc. Communication logic will be shaped by the power of code according to your wishes."
 			}
 		}
 	},
@@ -4047,6 +4047,12 @@
 			"loadModelsFailed": "Failed to load model: ${message}",
 			"modelSearchTitle": "Browse model catalog",
 			"modelSearchHint": "Clicking a result automatically fills in the URL and model name",
+			"promotedProviders": {
+				"title": "API providers that promote fount",
+				"description": "These providers promote fount; using their APIs also supports fount's ongoing development.",
+				"apply": "[I want to be listed here too](${url})",
+				"atlasCloud": "[Atlas Cloud](${url})"
+			},
 			"modelsDevLoading": "Loading catalog…",
 			"modelsDevLoadFailed": "Failed to load catalog: ${message}",
 			"noModelsMatched": "No matching models found",
