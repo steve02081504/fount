@@ -4002,8 +4002,10 @@
 		"description": "此乃調御源流之所。增刪裁度，悉聽君命。賦生機於伴，演符碼之妙。",
 		"fileList": {
 			"title": "源流名錄",
+			"empty": "未有源流",
 			"addButton": {
-				"title": "+"
+				"title": "增源流",
+				"aria-label": "增源流"
 			}
 		},
 		"configTitle": "源流樞機",
@@ -4012,6 +4014,7 @@
 		},
 		"needsConfigReminder": "源流既設，常需於用此源流之部件樞機中，填其名於相應之處。",
 		"needsConfigLink": "往設部件",
+		"modelRankHint": "不識當用何模型？且觀 fount 作者所定之品第！",
 		"subtypeSelect": {
 			"label": "化生器之類",
 			"placeholder": "請擇化生器之類"

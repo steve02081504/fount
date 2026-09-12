@@ -1,0 +1,7 @@
+{
+	"generator": "proxy",
+	"config": {
+		"model": "gpt-4o",
+		"url": "https://api.openai.com/v1/chat/completions"
+	}
+}

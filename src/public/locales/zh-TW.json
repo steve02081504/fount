@@ -4001,8 +4001,10 @@
 		"description": "在這裡，你將指揮 AI 聲音的交響樂。新增、雕琢或靜音源泉，為您的源泉夥伴賦予生命——程式碼和想像力的微妙舞蹈。",
 		"fileList": {
 			"title": "服務來源列表",
+			"empty": "暫無服務來源",
 			"addButton": {
-				"title": "+"
+				"title": "新增服務來源",
+				"aria-label": "新增服務來源"
 			}
 		},
 		"configTitle": "服務來源設定",
@@ -4011,6 +4013,7 @@
 		},
 		"needsConfigReminder": "服務來源設定好後，一般需要在使用此服務來源的元件的設定中的對應欄位填入服務來源名稱。",
 		"needsConfigLink": "前往組件設定",
+		"modelRankHint": "不知道用什麼模型？來看看 fount 作者的排序！",
 		"subtypeSelect": {
 			"label": "產生器子類別",
 			"placeholder": "請選擇產生器類別"

@@ -4008,8 +4008,10 @@
 		"description": "Aquí dirigirás una sinfonía de sonidos de inteligencia artificial. Añade, talla o silencia founts para darle vida a tus compañeros de founts: una sutil danza de código e imaginación.",
 		"fileList": {
 			"title": "Lista de founts de servicios",
+			"empty": "Aún no hay founts de servicio",
 			"addButton": {
-				"title": "+"
+				"title": "Añadir fount de servicio",
+				"aria-label": "Añadir fount de servicio"
 			}
 		},
 		"configTitle": "Configuración de la fuente de servicio",
@@ -4018,6 +4020,7 @@
 		},
 		"needsConfigReminder": "Una vez configurada la fuente de servicio, generalmente debe completar el nombre de la fuente de servicio en el campo correspondiente en la configuración del componente que utiliza esta fuente de servicio.",
 		"needsConfigLink": "Ir a configuración de widgets",
+		"modelRankHint": "¿No sabes qué modelo usar? ¡Échale un vistazo a la clasificación de modelos del autor de fount!",
 		"subtypeSelect": {
 			"label": "Subcategoría de generador",
 			"placeholder": "Por favor seleccione una categoría de generador"

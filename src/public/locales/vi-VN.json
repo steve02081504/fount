@@ -4002,8 +4002,10 @@
 		"description": "Tại đây, bạn sẽ chỉ huy một bản giao hưởng âm thanh của trí tuệ nhân tạo. Thêm, khắc hoặc tắt các nguồn để mang lại sức sống cho những nguồn đồng hành của bạn - một vũ điệu tinh tế của mã và trí tưởng tượng.",
 		"fileList": {
 			"title": "Danh sách nguồn dịch vụ",
+			"empty": "Chưa có nguồn dịch vụ",
 			"addButton": {
-				"title": "+"
+				"title": "Thêm nguồn dịch vụ",
+				"aria-label": "Thêm nguồn dịch vụ"
 			}
 		},
 		"configTitle": "Cấu hình nguồn dịch vụ",
@@ -4012,6 +4014,7 @@
 		},
 		"needsConfigReminder": "Sau khi định cấu hình nguồn dịch vụ, thông thường bạn cần điền tên nguồn dịch vụ vào trường tương ứng trong cấu hình của thành phần sử dụng nguồn dịch vụ này.",
 		"needsConfigLink": "Đi tới cấu hình tiện ích",
+		"modelRankHint": "Chưa biết dùng mô hình nào? Hãy xem bảng xếp hạng mô hình do tác giả fount tổng hợp nhé!",
 		"subtypeSelect": {
 			"label": "Danh mục con trình tạo",
 			"placeholder": "Vui lòng chọn danh mục trình tạo"

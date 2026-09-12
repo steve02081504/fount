@@ -4002,8 +4002,10 @@
 		"description": "🎶🤖🎻 ➕/✂️/🔇 ➡️ 🔋🤖",
 		"fileList": {
 			"title": "🚰📄",
+			"empty": "📭",
 			"addButton": {
-				"title": "+"
+				"title": "➕🚰",
+				"aria-label": "➕🚰"
 			}
 		},
 		"configTitle": "🚰⚙️",
@@ -4012,6 +4014,7 @@
 		},
 		"needsConfigReminder": "🚰✅ ➡️ 📝🚰📛 ➡️ 🧩⚙️",
 		"needsConfigLink": "➡️🧩⚙️",
+		"modelRankHint": "🤔🤖❓ ➡️ 👀✍️🏆❗",
 		"subtypeSelect": {
 			"label": "⚙️🗂️",
 			"placeholder": "❓⚙️🗂️"

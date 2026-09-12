@@ -4002,8 +4002,10 @@
 		"description": "Hier dirigieren Sie eine Symphonie aus Klängen künstlicher Intelligenz. Fügen Sie Quellen hinzu, schnitzen Sie sie heraus oder bringen Sie sie zum Schweigen, um Ihren Quellbegleitern Leben einzuhauchen – ein subtiler Tanz aus Code und Fantasie.",
 		"fileList": {
 			"title": "Liste der Dienstquellen",
+			"empty": "Noch keine Dienstquellen",
 			"addButton": {
-				"title": "+"
+				"title": "Dienstquelle hinzufügen",
+				"aria-label": "Dienstquelle hinzufügen"
 			}
 		},
 		"configTitle": "Konfiguration der Dienstquelle",
@@ -4012,6 +4014,7 @@
 		},
 		"needsConfigReminder": "Nachdem die Dienstquelle konfiguriert wurde, müssen Sie im Allgemeinen den Namen der Dienstquelle in das entsprechende Feld in der Konfiguration der Komponente eingeben, die diese Dienstquelle verwendet.",
 		"needsConfigLink": "Gehen Sie zur Widget-Konfiguration",
+		"modelRankHint": "Sie wissen nicht, welches Modell Sie verwenden sollen? Dann werfen Sie einen Blick auf die Rangliste des fount-Autors!",
 		"subtypeSelect": {
 			"label": "Unterkategorie „Generator“.",
 			"placeholder": "Bitte wählen Sie eine Generatorkategorie aus"

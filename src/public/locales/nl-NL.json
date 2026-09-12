@@ -4008,8 +4008,10 @@
 		"description": "Hier dirigeer je een symfonie van kunstmatige-intelligentiegeluiden. Voeg bronnen toe, snijd ze weg of zet ze stil om je brongenoten tot leven te brengen - een subtiele dans van code en verbeelding.",
 		"fileList": {
 			"title": "Lijst met servicebronnen",
+			"empty": "Nog geen servicebronnen",
 			"addButton": {
-				"title": "+"
+				"title": "Servicebron toevoegen",
+				"aria-label": "Servicebron toevoegen"
 			}
 		},
 		"configTitle": "Configuratie van de servicebron",
@@ -4018,6 +4020,7 @@
 		},
 		"needsConfigReminder": "Nadat de servicebron is geconfigureerd, moet u doorgaans de naam van de servicebron invullen in het overeenkomstige veld in de configuratie van het onderdeel dat deze servicebron gebruikt.",
 		"needsConfigLink": "Ga naar widgetconfiguratie",
+		"modelRankHint": "Weet u niet welk model u moet gebruiken? Bekijk dan de modellenranglijst van de maker van fount!",
 		"subtypeSelect": {
 			"label": "Subcategorie van generator",
 			"placeholder": "Selecteer een generatorcategorie"

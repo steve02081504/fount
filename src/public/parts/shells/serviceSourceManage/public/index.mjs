@@ -18,18 +18,21 @@ const generatorDisplayContainer = document.getElementById('generatorDisplay')
 const disabledIndicator = document.getElementById('disabledIndicator')
 
 const fileListContainer = document.getElementById('fileList')
+const emptyFileList = document.getElementById('emptyFileList')
 const generatorSubtypeSelect = document.getElementById('generatorSubtypeSelect')
 const generatorSelect = document.getElementById('generatorSelect')
 const saveButton = document.getElementById('saveButton')
 const saveStatusIcon = document.getElementById('saveStatusIcon')
 const deleteButton = document.getElementById('deleteButton')
 const addFileButton = document.getElementById('addFileButton')
+const modelRankHint = document.getElementById('modelRankHint')
 
 let activeFile = null
 let jsonEditor = null
 let fileList = []
 let generatorList = []
 let isDirty = false
+let isSaving = false
 let defaultParts = {}
 let currentServiceSourcePath = 'serviceSources/AI'
 let currentSubtype = 'AI'
@@ -172,6 +175,14 @@ function renderSubtypeSelect(selectedSubtype = currentSubtype) {
 }
 
 /**
+ * 根据当前子类型显示或隐藏模型排序提示。
+ * @returns {void} - 无返回值
+ */
+function updateModelRankHint() {
+	modelRankHint.classList.toggle('hidden', currentSubtype !== 'AI')
+}
+
+/**
  * 设置当前子类型并刷新依赖数据。
  * @param {string} nextSubtype - 希望切换的子类型
  * @returns {Promise<void>} - 刷新完成后的 Promise
@@ -185,6 +196,7 @@ async function setSubtype(nextSubtype) {
 	currentSubtype = resolved
 	currentServiceSourcePath = resolvePath(`serviceSources/${resolved}`, 'serviceSources')
 	renderSubtypeSelect(resolved)
+	updateModelRankHint()
 	generatorSelect.value = ''
 	desiredGeneratorName = ''
 	generatorDisplayContainer.innerHTML = ''
@@ -262,6 +274,7 @@ async function renderFileList() {
 		fileListContainer.appendChild(listItem)
 	}
 
+	emptyFileList?.classList.toggle('hidden', fileList.length > 0)
 	updateDefaultPartDisplay()
 }
 
@@ -331,7 +344,7 @@ async function loadGeneratorAddons(generatorName) {
 			const eval_result = await async_eval(displayScript, {
 				geti18n,
 				partpath,
-				parturl: '/parts/' + encodeURIComponent(partpath).replaceAll('%2F', ':'),
+				parturl: new URL('/parts/' + encodeURIComponent(partpath).replaceAll('%2F', ':'), location.href).href,
 				hosturl: location.origin,
 				sourceName: activeFile,
 				serviceSourcePath: currentServiceSourcePath,
@@ -365,11 +378,21 @@ function enableEditor() {
 }
 
 /**
- * 根据是否选中生成器同步编辑器启用状态。
+ * 同步保存与删除按钮的可用状态。
+ * @returns {void}
+ */
+function syncActionButtons() {
+	saveButton.disabled = isSaving || !generatorSelect.value
+	deleteButton.disabled = !activeFile
+}
+
+/**
+ * 根据是否选中生成器同步编辑器启用状态与操作按钮。
  */
 function syncEditorState() {
 	if (generatorSelect.value) enableEditor()
 	else disableEditor()
+	syncActionButtons()
 }
 
 /**
@@ -520,9 +543,10 @@ async function saveFile() {
 			await setDefaultIfFirstFile(newFileName)
 	}
 
+	isSaving = true
 	saveStatusIcon.src = 'https://api.iconify.design/line-md/loading-loop.svg'
 	saveStatusIcon.classList.remove('hidden')
-	saveButton.disabled = true
+	syncActionButtons()
 
 	try {
 		const config = jsonEditor.getJson()
@@ -550,7 +574,8 @@ async function saveFile() {
 
 	setTimeout(() => {
 		saveStatusIcon.classList.add('hidden')
-		saveButton.disabled = false
+		isSaving = false
+		syncActionButtons()
 	}, 2000)
 }
 
@@ -636,6 +661,7 @@ jsonEditor = createJsonEditor(jsonEditorContainer, {
 	onSave: saveFile
 })
 disableEditor()
+syncActionButtons()
 
 await loadPartBranches()
 
