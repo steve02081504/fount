@@ -743,7 +743,7 @@
 			},
 			"aiSources": {
 				"title": "不受束縛的 AI 來源整合",
-				"description": "fount 提供無與倫比的選擇和彈性。連接到<i>任何</i> AI 來源——OpenAI、Claude、[Atlas Cloud](${atlasCloudLink})、[Evolink](${evolinkLink})、OpenRouter、NovelAI 等。通訊邏輯將根據<i>您的</i>意願，透過程式碼的力量來塑造。"
+				"description": "fount 提供無與倫比的選擇和彈性。連接到<i>任何</i> AI 來源——OpenAI、Claude、[Atlas Cloud](${atlasCloudLink})、OpenRouter、NovelAI 等。通訊邏輯將根據<i>您的</i>意願，透過程式碼的力量來塑造。"
 			}
 		}
 	},
@@ -4046,6 +4046,12 @@
 			"loadModelsFailed": "載入模型失敗：${message}",
 			"modelSearchTitle": "瀏覽模型目錄",
 			"modelSearchHint": "點選結果後將自動填入 URL 與模型名稱",
+			"promotedProviders": {
+				"title": "推廣 fount 的 API 服務商",
+				"description": "下列服務商正在推廣 fount；透過它們接入模型，也是在支持 fount 的持續開發。",
+				"apply": "[我也想顯示在此](${url})",
+				"atlasCloud": "[Atlas Cloud](${url})"
+			},
 			"modelsDevLoading": "正在載入目錄…",
 			"modelsDevLoadFailed": "載入目錄失敗：${message}",
 			"noModelsMatched": "找不到符合的模型",

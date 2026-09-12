@@ -744,7 +744,7 @@
 			},
 			"aiSources": {
 				"title": "🔗🤖🌐",
-				"description": "⛲ ➡️ 🤖🌐∞ : OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), [Evolink](${evolinkLink}), OpenRouter, NovelAI… 💻⚙️🪄"
+				"description": "⛲ ➡️ 🤖🌐∞ : OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), OpenRouter, NovelAI… 💻⚙️🪄"
 			}
 		}
 	},
@@ -4047,6 +4047,12 @@
 			"loadModelsFailed": "🧠📥❌: ${message}",
 			"modelSearchTitle": "🔍🧠📚",
 			"modelSearchHint": "👆 ➡️ 🔗🧠",
+			"promotedProviders": {
+				"title": "📢🔌🤖",
+				"description": "🔌🤝⛲",
+				"apply": "[🙋📢](${url})",
+				"atlasCloud": "[🗺️☁️](${url})"
+			},
 			"modelsDevLoading": "⏳📚…",
 			"modelsDevLoadFailed": "📚📥❌: ${message}",
 			"noModelsMatched": "🤷‍♂️🧠❓",

@@ -744,7 +744,7 @@
 			},
 			"aiSources": {
 				"title": "海納百川，有容乃大",
-				"description": "fount 供無雙之選，無窮之變。可接<i>任意</i>智源——OpenAI、Claude、[Atlas Cloud](${atlasCloudLink})、[Evolink](${evolinkLink})、OpenRouter、NovelAI 等。通靈之法，皆由君之符碼之力隨心塑造。"
+				"description": "fount 供無雙之選，無窮之變。可接<i>任意</i>智源——OpenAI、Claude、[Atlas Cloud](${atlasCloudLink})、OpenRouter、NovelAI 等。通靈之法，皆由君之符碼之力隨心塑造。"
 			}
 		}
 	},
@@ -4047,6 +4047,12 @@
 			"loadModelsFailed": "載模組未遂：${message}",
 			"modelSearchTitle": "覽模冊",
 			"modelSearchHint": "點候選項，則自行填 URL 與模名",
+			"promotedProviders": {
+				"title": "為 fount 揚名之 API 廠商",
+				"description": "下列廠商，皆揚 fount 之名；藉其 API 而接模型，亦助 fount 之永續。",
+				"apply": "[吾亦欲列名於此](${url})",
+				"atlasCloud": "[Atlas Cloud](${url})"
+			},
 			"modelsDevLoading": "正載模冊…",
 			"modelsDevLoadFailed": "載模冊未遂：${message}",
 			"noModelsMatched": "無相符之模",

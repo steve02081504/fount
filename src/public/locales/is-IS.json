@@ -744,7 +744,7 @@
 			},
 			"aiSources": {
 				"title": "Óheft samþætting gervigreindarheimilda",
-				"description": "fount býður upp á óviðjafnanlegt val og sveigjanleika. Tengstu við <i>hvaða</i> gervigreindarheimild sem er - OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), [Evolink](${evolinkLink}), OpenRouter, NovelAI og fleiri. Samskiptarökfræðin mun mótast af <i>þínum</i> vilja, með krafti kóðans."
+				"description": "fount býður upp á óviðjafnanlegt val og sveigjanleika. Tengstu við <i>hvaða</i> gervigreindarheimild sem er - OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), OpenRouter, NovelAI og fleiri. Samskiptarökfræðin mun mótast af <i>þínum</i> vilja, með krafti kóðans."
 			}
 		}
 	},
@@ -4047,6 +4047,12 @@
 			"loadModelsFailed": "Mistókst að hlaða líkani: ${message}",
 			"modelSearchTitle": "Skoða líkanaskrá",
 			"modelSearchHint": "Með því að velja niðurstöðu fyllist slóð og heiti líkans sjálfkrafa út",
+			"promotedProviders": {
+				"title": "API-veitur sem auglýsa fount",
+				"description": "Þessar veitur auglýsa fount; notkun á API þeirra styður einnig við áframhaldandi þróun fount.",
+				"apply": "[Ég vil líka birtast hér](${url})",
+				"atlasCloud": "[Atlas Cloud](${url})"
+			},
 			"modelsDevLoading": "Hleður líkanaskrá…",
 			"modelsDevLoadFailed": "Mistókst að hlaða líkanaskrá: ${message}",
 			"noModelsMatched": "Engin samsvarandi líkan fundust",

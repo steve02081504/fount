@@ -4009,6 +4009,12 @@ export type LocaleData = {
 			loadModelsFailed: string
 			modelSearchTitle: string
 			modelSearchHint: string
+			promotedProviders: {
+				title: string
+				description: string
+				apply: string
+				atlasCloud: string
+			}
 			modelsDevLoading: string
 			modelsDevLoadFailed: string
 			noModelsMatched: string
@@ -7197,7 +7203,7 @@ export type LocaleKeyParams = {
 	'import.errors.fileImportFailed': { message: string | number }
 	'import.errors.textImportFailed': { message: string | number }
 	'installer_wait_screen.eula.continue_in': { seconds: string | number }
-	'installer_wait_screen.features.aiSources.description': { atlasCloudLink: string | number; evolinkLink: string | number }
+	'installer_wait_screen.features.aiSources.description': { atlasCloudLink: string | number }
 	'installer_wait_screen.footer.error_message': { error: string | number }
 	'installer_wait_screen.utm_welcome.message': { source: string | number }
 	'log_viewer.logs.openSourceFailed': { message: string | number }
@@ -7234,6 +7240,8 @@ export type LocaleKeyParams = {
 	'serviceSource_manager.common_config_interface.modelsDevLoadFailed': { message: string | number }
 	'serviceSource_manager.common_config_interface.oauth.deviceCode': { code: string | number; uri: string | number }
 	'serviceSource_manager.common_config_interface.oauth.failed': { message: string | number }
+	'serviceSource_manager.common_config_interface.promotedProviders.apply': { url: string | number }
+	'serviceSource_manager.common_config_interface.promotedProviders.atlasCloud': { url: string | number }
 	'serviceSource_manager.common_config_interface.providerDocLink': { url: string | number }
 	'serviceSource_manager.common_config_interface.providerLabel': { provider: string | number }
 	'social.actions.blockFailed': { error: string | number }

@@ -744,7 +744,7 @@
 			},
 			"aiSources": {
 				"title": "Integração Livre com founts de IA",
-				"description": "fount oferece escolha e flexibilidade incomparáveis. Conecte-se a <i>qualquer</i> fount de IA – OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), [Evolink](${evolinkLink}), OpenRouter, NovelAI, etc. A lógica de comunicação será moldada pelo poder do código, de acordo com os <i>seus</i> desejos."
+				"description": "fount oferece escolha e flexibilidade incomparáveis. Conecte-se a <i>qualquer</i> fount de IA – OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), OpenRouter, NovelAI, etc. A lógica de comunicação será moldada pelo poder do código, de acordo com os <i>seus</i> desejos."
 			}
 		}
 	},
@@ -4053,6 +4053,12 @@
 			"loadModelsFailed": "Falha ao carregar modelo: ${message}",
 			"modelSearchTitle": "Explorar catálogo de modelos",
 			"modelSearchHint": "Ao clicar num resultado, o URL e o nome do modelo são preenchidos automaticamente",
+			"promotedProviders": {
+				"title": "Fornecedores de API que promovem o fount",
+				"description": "Estes fornecedores promovem o fount; utilizar as suas API também apoia o desenvolvimento contínuo do fount.",
+				"apply": "[Também quero aparecer aqui](${url})",
+				"atlasCloud": "[Atlas Cloud](${url})"
+			},
 			"modelsDevLoading": "A carregar catálogo…",
 			"modelsDevLoadFailed": "Falha ao carregar o catálogo: ${message}",
 			"noModelsMatched": "Nenhum modelo correspondente encontrado",

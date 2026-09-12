@@ -744,7 +744,7 @@
 			},
 			"aiSources": {
 				"title": "تكامل غير مقيد لمصادر الذكاء الاصطناعي",
-				"description": "يوفر fount اختيارًا ومرونة لا مثيل لهما. اتصل بـ<i>أي</i> مصدر ذكاء اصطناعي - OpenAI، Claude، [Atlas Cloud](${atlasCloudLink})، [Evolink](${evolinkLink})، OpenRouter، NovelAI، وغيرها الكثير. سيتشكل منطق الاتصال وفقًا لإرادتك <i>أنت</i>، بقوة الكود."
+				"description": "يوفر fount اختيارًا ومرونة لا مثيل لهما. اتصل بـ<i>أي</i> مصدر ذكاء اصطناعي - OpenAI، Claude، [Atlas Cloud](${atlasCloudLink})، OpenRouter، NovelAI، وغيرها الكثير. سيتشكل منطق الاتصال وفقًا لإرادتك <i>أنت</i>، بقوة الكود."
 			}
 		}
 	},
@@ -4057,6 +4057,12 @@
 			"loadModelsFailed": "فشل تحميل النموذج: ${message}",
 			"modelSearchTitle": "تصفّح دليل النماذج",
 			"modelSearchHint": "عند اختيار نتيجة، يُملآن عنوان URL واسم النموذج تلقائيًا",
+			"promotedProviders": {
+				"title": "مزوّدو API الذين يروّجون لـ fount",
+				"description": "هؤلاء المزوّدون يروّجون لـ fount؛ كما أنّ استخدام واجهات API الخاصة بهم يدعم استمرار تطوير fount.",
+				"apply": "[أرغب في الظهور هنا أيضًا](${url})",
+				"atlasCloud": "[Atlas Cloud](${url})"
+			},
 			"modelsDevLoading": "جارٍ تحميل الدليل…",
 			"modelsDevLoadFailed": "تعذّر تحميل الدليل: ${message}",
 			"noModelsMatched": "لم يُعثر على نماذج مطابقة",

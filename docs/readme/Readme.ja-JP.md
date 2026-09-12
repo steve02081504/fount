@@ -166,7 +166,7 @@ fount のプロジェクトアーキテクチャ設計は、開発者の習慣�
   fount は Windows・macOS・Linux・さらには Android でシームレスに動作し、直接インストールまたは Docker の柔軟性を通じて、あなたの異なるニーズに応えます。
 
 - **制約のない AI ソース統合：無限を抱擁する**
-  fount は、AI ソースへの接続において、比類のない*選択*と*柔軟性*を提供します。AI ソースジェネレーター内のカスタム JavaScript コードにより、OpenAI・Claude・[Atlas Cloud](https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount)・[Evolink](https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount)・OpenRouter・NovelAI・Horde・Ooba・Tabby・Mistral...など、_あらゆる_ AI ソースに接続できます。コードの流れの中で、複雑な正規表現を慎重に設計したり、膨大な API ライブラリを呼び出したり、マルチメディアリソースを埋め込んだりできます。fount はまた、インテリジェントなリクエストルーティングを実現するために、API プールの作成をネイティブにサポートしています。通信のロジックは、*あなたの*意志に従い、コードの力によって形作られます。
+  fount は、AI ソースへの接続において、比類のない*選択*と*柔軟性*を提供します。AI ソースジェネレーター内のカスタム JavaScript コードにより、OpenAI・Claude・[Atlas Cloud](https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount)・OpenRouter・NovelAI・Horde・Ooba・Tabby・Mistral...など、_あらゆる_ AI ソースに接続できます。コードの流れの中で、複雑な正規表現を慎重に設計したり、膨大な API ライブラリを呼び出したり、マルチメディアリソースを埋め込んだりできます。fount はまた、インテリジェントなリクエストルーティングを実現するために、API プールの作成をネイティブにサポートしています。通信のロジックは、*あなたの*意志に従い、コードの力によって形作られます。
   ![画像](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
 
 もしキャラクターの海で迷子になったり、忘れられた物語を探しているなら、私たちの[**活気に満ちたフレンドリーなコミュニティ**](https://t.me/GentianAphrodite)があなたの到着を待っています。そこは志を同じくする人々の港であり、開発者とクリエイターが彼らの知恵と創造物を共有しています。

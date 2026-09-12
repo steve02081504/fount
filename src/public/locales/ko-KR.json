@@ -744,7 +744,7 @@
 			},
 			"aiSources": {
 				"title": "자유로운 AI 소스 연동",
-				"description": "fount는 비교할 수 없는 선택의 폭과 유연성을 제공합니다. OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), [Evolink](${evolinkLink}), OpenRouter, NovelAI 등 <i>모든</i> AI 소스에 연결하세요. 커뮤니케이션 로직은 당신의 의지에 따라 코드의 힘으로 만들어집니다."
+				"description": "fount는 비교할 수 없는 선택의 폭과 유연성을 제공합니다. OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), OpenRouter, NovelAI 등 <i>모든</i> AI 소스에 연결하세요. 커뮤니케이션 로직은 당신의 의지에 따라 코드의 힘으로 만들어집니다."
 			}
 		}
 	},
@@ -4047,6 +4047,12 @@
 			"loadModelsFailed": "모델 로드 실패: ${message}",
 			"modelSearchTitle": "모델 카탈로그 탐색",
 			"modelSearchHint": "항목을 클릭하면 URL과 모델명이 자동으로 입력됩니다",
+			"promotedProviders": {
+				"title": "fount를 홍보하는 API 제공업체",
+				"description": "이 제공업체들은 fount를 홍보하고 있습니다. 그들의 API를 사용하는 것 역시 fount의 지속적인 개발을 지원합니다.",
+				"apply": "[저도 여기에 등록하고 싶습니다](${url})",
+				"atlasCloud": "[Atlas Cloud](${url})"
+			},
 			"modelsDevLoading": "카탈로그 로딩 중…",
 			"modelsDevLoadFailed": "카탈로그를 불러오지 못했습니다: ${message}",
 			"noModelsMatched": "일치하는 모델이 없습니다",

@@ -1,6 +1,13 @@
 /* global cache, parturl */
 const MODELS_DEV_API = 'https://models.dev/api.json'
 const SEARCH_DEBOUNCE_MS = 150
+const PROMOTED_PROVIDERS_ISSUE_URL = 'https://github.com/steve02081504/fount/issues/333'
+const PROMOTED_PROVIDERS = [
+	{
+		i18n: 'serviceSource_manager.common_config_interface.promotedProviders.atlasCloud',
+		url: 'https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount',
+	},
+]
 
 const {
 	flattenCatalog,
@@ -65,6 +72,41 @@ function applyConfigFromEntry(editors, entry) {
 }
 
 /**
+ * 构建“推广 fount 的 API 服务商”友链区块。
+ * @returns {HTMLElement} 友链区块。
+ */
+function buildPromotedProvidersSection() {
+	const section = document.createElement('section')
+	section.className = 'rounded-box border border-base-300 bg-base-200 p-4 flex flex-col gap-2'
+
+	const title = document.createElement('h3')
+	title.className = 'text-base font-semibold'
+	title.dataset.i18n = 'serviceSource_manager.common_config_interface.promotedProviders.title'
+
+	const description = document.createElement('p')
+	description.className = 'text-sm opacity-70'
+	description.dataset.i18n = 'serviceSource_manager.common_config_interface.promotedProviders.description'
+
+	const list = document.createElement('div')
+	list.className = 'flex flex-wrap gap-3'
+	for (const provider of PROMOTED_PROVIDERS) {
+		const link = document.createElement('div')
+		link.className = 'text-sm'
+		link.dataset.i18n = provider.i18n
+		link.dataset.url = provider.url
+		list.appendChild(link)
+	}
+
+	const apply = document.createElement('div')
+	apply.className = 'text-sm'
+	apply.dataset.i18n = 'serviceSource_manager.common_config_interface.promotedProviders.apply'
+	apply.dataset.url = PROMOTED_PROVIDERS_ISSUE_URL
+
+	section.append(title, description, list, apply)
+	return section
+}
+
+/**
  * 确保搜索 UI 已挂载并返回各区域元素引用。
  * @param {HTMLElement} container - 展示容器。
  * @returns {{ root: HTMLElement, detailCard: HTMLElement, searchInput: HTMLInputElement, resultsList: HTMLElement, statusLine: HTMLElement }} UI 元素。
@@ -108,7 +150,7 @@ function ensureSearchUi(container) {
 	resultsList.dataset.resultsList = '1'
 	resultsList.className = 'flex flex-col gap-1 max-h-96 overflow-y-auto'
 
-	root.append(detailCard, searchTitle, searchInput, searchHint, statusLine, resultsList)
+	root.append(buildPromotedProvidersSection(), detailCard, searchTitle, searchInput, searchHint, statusLine, resultsList)
 	container.replaceChildren(root)
 
 	return { root, detailCard, searchInput, resultsList, statusLine }

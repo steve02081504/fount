@@ -744,7 +744,7 @@
 			},
 			"aiSources": {
 				"title": "AIソースとの自由な連携",
-				"description": "fountは、比類のない選択肢と柔軟性を提供します。OpenAI、Claude、[Atlas Cloud](${atlasCloudLink})、[Evolink](${evolinkLink})、OpenRouter、NovelAIなど、<i>あらゆる</i>AIソースに接続可能です。コミュニケーションのロジックは、あなたの意のままに、コードの力によって形作られます。"
+				"description": "fountは、比類のない選択肢と柔軟性を提供します。OpenAI、Claude、[Atlas Cloud](${atlasCloudLink})、OpenRouter、NovelAIなど、<i>あらゆる</i>AIソースに接続可能です。コミュニケーションのロジックは、あなたの意のままに、コードの力によって形作られます。"
 			}
 		}
 	},
@@ -4047,6 +4047,12 @@
 			"loadModelsFailed": "モデルの読み込みに失敗しました: ${message}",
 			"modelSearchTitle": "モデルカタログを閲覧",
 			"modelSearchHint": "結果をクリックすると、URL とモデル名が自動入力されます",
+			"promotedProviders": {
+				"title": "fount を宣伝する API プロバイダー",
+				"description": "これらのプロバイダーは fount を宣伝しています。彼らの API を利用することは、fount の継続的な開発を支援することにもつながります。",
+				"apply": "[ここへの掲載を希望する](${url})",
+				"atlasCloud": "[Atlas Cloud](${url})"
+			},
 			"modelsDevLoading": "カタログを読み込み中…",
 			"modelsDevLoadFailed": "カタログの読み込みに失敗しました: ${message}",
 			"noModelsMatched": "一致するモデルが見つかりません",
