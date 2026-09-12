@@ -4002,8 +4002,10 @@
 		"description": "在这里，你将指挥人工智能声音的交响乐。添加、雕琢或静默源泉，为您的源泉伙伴赋予生命——代码和想象力的微妙舞蹈。",
 		"fileList": {
 			"title": "服务源列表",
+			"empty": "暂无服务源",
 			"addButton": {
-				"title": "+"
+				"title": "添加服务源",
+				"aria-label": "添加服务源"
 			}
 		},
 		"configTitle": "服务源配置",
@@ -4012,6 +4014,7 @@
 		},
 		"needsConfigReminder": "服务源配置好后，一般需要在使用此服务源的组件的配置中的对应字段填写服务源名称。",
 		"needsConfigLink": "前往组件配置",
+		"modelRankHint": "不知道用什么模型？来看看 fount 作者的排序！",
 		"subtypeSelect": {
 			"label": "生成器子类别",
 			"placeholder": "请选择生成器类别"

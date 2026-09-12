@@ -4008,8 +4008,10 @@
 		"description": "Ici, vous dirigerez une symphonie de sons d’intelligence artificielle. Ajoutez, sculptez ou faites taire des sources pour donner vie à vos compagnons sources - une danse subtile de code et d'imagination.",
 		"fileList": {
 			"title": "Liste des sources de services",
+			"empty": "Aucune source de service pour l'instant",
 			"addButton": {
-				"title": "+"
+				"title": "Ajouter une source de service",
+				"aria-label": "Ajouter une source de service"
 			}
 		},
 		"configTitle": "Configuration des sources de services",
@@ -4018,6 +4020,7 @@
 		},
 		"needsConfigReminder": "Une fois la source de service configurée, vous devez généralement renseigner le nom de la source de service dans le champ correspondant dans la configuration du composant qui utilise cette source de service.",
 		"needsConfigLink": "Aller à la configuration des widgets",
+		"modelRankHint": "Vous ne savez pas quel modèle utiliser ? Jetez un coup d'œil au classement des modèles établi par l'auteur de fount !",
 		"subtypeSelect": {
 			"label": "Sous-catégorie Générateur",
 			"placeholder": "Veuillez sélectionner une catégorie de générateur"

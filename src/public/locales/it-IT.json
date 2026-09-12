@@ -4008,8 +4008,10 @@
 		"description": "Qui dirigerai una sinfonia di suoni dell'intelligenza artificiale. Aggiungi, scolpisci o silenzia fount per dare vita alle tue fonti associate: una sottile danza di codice e immaginazione.",
 		"fileList": {
 			"title": "Elenco delle fonti del servizio",
+			"empty": "Nessuna fonte del servizio",
 			"addButton": {
-				"title": "+"
+				"title": "Aggiungi fonte del servizio",
+				"aria-label": "Aggiungi fonte del servizio"
 			}
 		},
 		"configTitle": "Configurazione dell'origine del servizio",
@@ -4018,6 +4020,7 @@
 		},
 		"needsConfigReminder": "Dopo aver configurato l'origine del servizio, in genere è necessario inserire il nome dell'origine del servizio nel campo corrispondente nella configurazione del componente che utilizza questa origine del servizio.",
 		"needsConfigLink": "Vai alla configurazione del componente",
+		"modelRankHint": "Non sai quale modello utilizzare? Dai un'occhiata alla classifica dei modelli curata dall'autore di fount!",
 		"subtypeSelect": {
 			"label": "Sottocategoria del generatore",
 			"placeholder": "Seleziona una categoria di generatori"

@@ -4,4 +4,5 @@
  */
 export const phases = [
 	{ name: 'jsonEditor', testMatch: ['jsonEditor.spec.mjs'] },
+	{ name: 'generatorDisplay', testMatch: ['generatorDisplay.spec.mjs'] },
 ]

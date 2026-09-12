@@ -4002,8 +4002,10 @@
 		"description": "Hér munt þú stjórna sinfóníu gervigreindarhljóða. Bættu við, klipptu eða þagðu niður heimildir til að vekja líf til upprunafélaga þinna - lúmskur dans á kóða og ímyndunarafli.",
 		"fileList": {
 			"title": "Upprunalisti þjónustu",
+			"empty": "Engir þjónustugjafar ennþá",
 			"addButton": {
-				"title": "+"
+				"title": "Bæta við þjónustugjafa",
+				"aria-label": "Bæta við þjónustugjafa"
 			}
 		},
 		"configTitle": "Uppsetning þjónustugjafa",
@@ -4012,6 +4014,7 @@
 		},
 		"needsConfigReminder": "Eftir að þjónustugjafinn hefur verið stilltur þarftu almennt að fylla út heiti þjónustugjafans í samsvarandi reit í uppsetningu íhlutans sem notar þennan þjónustugjafa.",
 		"needsConfigLink": "Farðu í stillingar græju",
+		"modelRankHint": "Veistu ekki hvaða líkan á að nota? Kíktu á röðun líkana sem höfundur fount hefur tekið saman!",
 		"subtypeSelect": {
 			"label": "Rafall undirflokkur",
 			"placeholder": "Vinsamlegast veldu flokk rafala"

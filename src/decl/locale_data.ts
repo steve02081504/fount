@@ -3964,8 +3964,10 @@ export type LocaleData = {
 		description: string
 		fileList: {
 			title: string
+			empty: string
 			addButton: {
 				title: string
+				'aria-label': string
 			}
 		}
 		configTitle: string
@@ -3974,6 +3976,7 @@ export type LocaleData = {
 		}
 		needsConfigReminder: string
 		needsConfigLink: string
+		modelRankHint: string
 		subtypeSelect: {
 			label: string
 			placeholder: string

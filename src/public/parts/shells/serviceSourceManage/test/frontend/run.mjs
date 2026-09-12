@@ -15,4 +15,7 @@ process.exit(await runShellFrontendTests({
 	apiKeyPrefix: 'fount-ssrc-fe-key',
 	loadParts: ['shells/serviceSourceManage'],
 	bootstrapPath: join(testDir, '../node_bootstrap.mjs'),
+	fixtureCopies: [
+		{ from: join(testDir, '../fixtures/proxy_source'), to: 'serviceSources/AI/test-proxy-source' },
+	],
 }))
