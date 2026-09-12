@@ -4012,6 +4012,7 @@
 		},
 		"needsConfigReminder": "서비스 소스를 설정한 후, 일반적으로 이 서비스 소스를 사용하는 구성 요소 설정의 해당 필드에 서비스 소스 이름을 입력해야 합니다.",
 		"needsConfigLink": "위젯 구성으로 이동",
+		"modelRankHint": "어떤 모델을 써야 할지 모르시겠나요? fount 제작자의 모델 순위를 확인해 보세요!",
 		"subtypeSelect": {
 			"label": "생성기 하위 카테고리",
 			"placeholder": "생성기 카테고리를 선택해 주세요"

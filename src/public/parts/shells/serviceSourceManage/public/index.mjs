@@ -24,6 +24,7 @@ const saveButton = document.getElementById('saveButton')
 const saveStatusIcon = document.getElementById('saveStatusIcon')
 const deleteButton = document.getElementById('deleteButton')
 const addFileButton = document.getElementById('addFileButton')
+const modelRankHint = document.getElementById('modelRankHint')
 
 let activeFile = null
 let jsonEditor = null
@@ -172,6 +173,14 @@ function renderSubtypeSelect(selectedSubtype = currentSubtype) {
 }
 
 /**
+ * 根据当前子类型显示或隐藏模型排序提示。
+ * @returns {void} - 无返回值
+ */
+function updateModelRankHint() {
+	modelRankHint.classList.toggle('hidden', currentSubtype !== 'AI')
+}
+
+/**
  * 设置当前子类型并刷新依赖数据。
  * @param {string} nextSubtype - 希望切换的子类型
  * @returns {Promise<void>} - 刷新完成后的 Promise
@@ -185,6 +194,7 @@ async function setSubtype(nextSubtype) {
 	currentSubtype = resolved
 	currentServiceSourcePath = resolvePath(`serviceSources/${resolved}`, 'serviceSources')
 	renderSubtypeSelect(resolved)
+	updateModelRankHint()
 	generatorSelect.value = ''
 	desiredGeneratorName = ''
 	generatorDisplayContainer.innerHTML = ''

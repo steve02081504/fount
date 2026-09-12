@@ -4012,6 +4012,7 @@
 		},
 		"needsConfigReminder": "服务源配置好后，一般需要在使用此服务源的组件的配置中的对应字段填写服务源名称。",
 		"needsConfigLink": "前往组件配置",
+		"modelRankHint": "不知道用什么模型？来看看 fount 作者的排序！",
 		"subtypeSelect": {
 			"label": "生成器子类别",
 			"placeholder": "请选择生成器类别"

@@ -4018,6 +4018,7 @@
 		},
 		"needsConfigReminder": "Dopo aver configurato l'origine del servizio, in genere è necessario inserire il nome dell'origine del servizio nel campo corrispondente nella configurazione del componente che utilizza questa origine del servizio.",
 		"needsConfigLink": "Vai alla configurazione del componente",
+		"modelRankHint": "Non sai quale modello utilizzare? Dai un'occhiata alla classifica dei modelli curata dall'autore di fount!",
 		"subtypeSelect": {
 			"label": "Sottocategoria del generatore",
 			"placeholder": "Seleziona una categoria di generatori"

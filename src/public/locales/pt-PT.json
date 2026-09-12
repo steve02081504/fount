@@ -4018,6 +4018,7 @@
 		},
 		"needsConfigReminder": "Depois que a fonte de serviço for configurada, geralmente será necessário preencher o nome da fonte de serviço no campo correspondente na configuração do componente que usa essa fonte de serviço.",
 		"needsConfigLink": "Vá para a configuração do widget",
+		"modelRankHint": "Não sabe qual modelo usar? Dê uma olhada na classificação de modelos feita pelo autor do fount!",
 		"subtypeSelect": {
 			"label": "Subcategoria Gerador",
 			"placeholder": "Selecione uma categoria de gerador"

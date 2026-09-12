@@ -4018,6 +4018,7 @@
 		},
 		"needsConfigReminder": "Nadat de servicebron is geconfigureerd, moet u doorgaans de naam van de servicebron invullen in het overeenkomstige veld in de configuratie van het onderdeel dat deze servicebron gebruikt.",
 		"needsConfigLink": "Ga naar widgetconfiguratie",
+		"modelRankHint": "Weet u niet welk model u moet gebruiken? Bekijk dan de modellenranglijst van de maker van fount!",
 		"subtypeSelect": {
 			"label": "Subcategorie van generator",
 			"placeholder": "Selecteer een generatorcategorie"

@@ -3974,6 +3974,7 @@ export type LocaleData = {
 		}
 		needsConfigReminder: string
 		needsConfigLink: string
+		modelRankHint: string
 		subtypeSelect: {
 			label: string
 			placeholder: string

@@ -4012,6 +4012,7 @@
 		},
 		"needsConfigReminder": "源流既設，常需於用此源流之部件樞機中，填其名於相應之處。",
 		"needsConfigLink": "往設部件",
+		"modelRankHint": "不識當用何模型？且觀 fount 作者所定之品第！",
 		"subtypeSelect": {
 			"label": "化生器之類",
 			"placeholder": "請擇化生器之類"

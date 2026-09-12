@@ -4012,6 +4012,7 @@
 		},
 		"needsConfigReminder": "Nachdem die Dienstquelle konfiguriert wurde, müssen Sie im Allgemeinen den Namen der Dienstquelle in das entsprechende Feld in der Konfiguration der Komponente eingeben, die diese Dienstquelle verwendet.",
 		"needsConfigLink": "Gehen Sie zur Widget-Konfiguration",
+		"modelRankHint": "Sie wissen nicht, welches Modell Sie verwenden sollen? Dann werfen Sie einen Blick auf die Rangliste des fount-Autors!",
 		"subtypeSelect": {
 			"label": "Unterkategorie „Generator“.",
 			"placeholder": "Bitte wählen Sie eine Generatorkategorie aus"

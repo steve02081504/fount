@@ -4012,6 +4012,7 @@
 		},
 		"needsConfigReminder": "Eftir að þjónustugjafinn hefur verið stilltur þarftu almennt að fylla út heiti þjónustugjafans í samsvarandi reit í uppsetningu íhlutans sem notar þennan þjónustugjafa.",
 		"needsConfigLink": "Farðu í stillingar græju",
+		"modelRankHint": "Veistu ekki hvaða líkan á að nota? Kíktu á röðun líkana sem höfundur fount hefur tekið saman!",
 		"subtypeSelect": {
 			"label": "Rafall undirflokkur",
 			"placeholder": "Vinsamlegast veldu flokk rafala"
