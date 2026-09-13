@@ -18,3 +18,38 @@ export function codeFetch(node, method, path, body) {
 		body: body ? JSON.stringify(body) : undefined,
 	})
 }
+
+/**
+ * 经 exec WS 执行一条 shell 命令，收集流式输出帧并等待完成。
+ * @param {object} node - launchNode 句柄。
+ * @param {{machine: string, workdir?: string, shell?: string, command: string}} payload - 执行参数。
+ * @returns {Promise<{done: object, outputs: object[]}>} done 帧与 output 帧列表。
+ */
+export function execStream(node, payload) {
+	return new Promise((resolve, reject) => {
+		const ws = new WebSocket(`${node.baseUrl.replace(/^http/, 'ws')}/ws/parts/shells:code/exec?fount-apikey=${encodeURIComponent(node.apiKey)}`)
+		const outputs = []
+		const timer = setTimeout(() => { ws.close(); reject(new Error('exec ws timeout')) }, 60_000)
+		/**
+		 * 连接建立后发送命令。
+		 * @returns {void}
+		 */
+		ws.onopen = () => ws.send(JSON.stringify({ id: 'exec-test', ...payload }))
+		/**
+		 * 收集输出帧，done/error 时结束等待。
+		 * @param {MessageEvent} event - 入站消息事件。
+		 * @returns {void}
+		 */
+		ws.onmessage = event => {
+			const frame = JSON.parse(String(event.data))
+			if (frame.type === 'output') outputs.push(frame)
+			else if (frame.type === 'done') { clearTimeout(timer); ws.close(); resolve({ done: frame, outputs }) }
+			else if (frame.type === 'error') { clearTimeout(timer); ws.close(); reject(new Error(frame.error)) }
+		}
+		/**
+		 * 连接错误时拒绝。
+		 * @returns {void}
+		 */
+		ws.onerror = () => { clearTimeout(timer); reject(new Error('exec ws error')) }
+	})
+}

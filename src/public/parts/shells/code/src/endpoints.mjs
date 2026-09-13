@@ -425,13 +425,49 @@ export function setEndpoints(router) {
 		res.json(data)
 	})
 
-	// `!` 模式 shell 执行
-	router.post('/api/parts/shells\\:code/exec', authenticate, async (req, res) => {
+	// `!` 模式 shell 流式执行：客户端发一条命令，服务端逐块回显 stdout/stderr，最后 done/error
+	router.ws('/ws/parts/shells\\:code/exec', authenticate, (ws, req) => {
 		const { username } = getUserByReq(req)
-		const { command, shell } = req.body || {}
-		if (!command) throw httpError(400, 'command is required.')
-		const { machine, path: workdir } = parseWorkdir(req.body || {})
-		res.json(await runShellCommand({ username, machine, workdir, shell, command }))
+		let running = false
+		/**
+		 * 发送一帧（连接已关闭时忽略）。
+		 * @param {object} frame - 帧数据。
+		 * @returns {void}
+		 */
+		const send = frame => { try { ws.send(JSON.stringify(frame)) } catch { /* 连接已关闭 */ } }
+
+		ws.on('message', async raw => {
+			let msg
+			try { msg = JSON.parse(String(raw)) }
+			catch { return }
+			if (running) return
+			const { id, command, shell } = msg
+			if (!command) {
+				send({ type: 'error', id, error: 'command is required.' })
+				return
+			}
+			const { machine, path: workdir } = parseWorkdir(msg)
+			running = true
+			try {
+				const result = await runShellCommand({
+					username, machine, workdir, shell, command,
+					/**
+					 * 转发一块输出到前端。
+					 * @param {'stdout'|'stderr'} stream - 输出通道。
+					 * @param {string} data - 分片文本。
+					 * @returns {void}
+					 */
+					onOutput: (stream, data) => send({ type: 'output', id, stream, data }),
+				})
+				send({ type: 'done', id, ...result })
+			}
+			catch (error) {
+				send({ type: 'error', id, error: String(error?.stack || error) })
+			}
+			finally {
+				running = false
+			}
+		})
 	})
 
 	// 输入历史（自有 + 原生 shell 历史）
@@ -650,11 +686,21 @@ export function setEndpoints(router) {
 					profile,
 					signal: thisRequestController.signal,
 					/**
-					 * 转发流式预览到 WS。
+					 * 转发流式预览到 WS（优先展示层 `content_for_show`，含工具调用替换）。
 					 * @param {object} reply - 预览回复。
+					 * @returns {void}
 					 */
 					onPreview: reply => {
-						try { ws.send(JSON.stringify({ type: 'preview', content: reply.content || '' })) }
+						try { ws.send(JSON.stringify({ type: 'preview', content: reply.content_for_show ?? reply.content ?? '' })) }
+						catch { /* 连接已关闭 */ }
+					},
+					/**
+					 * 转发工具执行实时输出到 WS。
+					 * @param {object} event - 工具输出事件。
+					 * @returns {void}
+					 */
+					onToolOutput: event => {
+						try { ws.send(JSON.stringify({ type: 'tool-output', ...event })) }
 						catch { /* 连接已关闭 */ }
 					},
 				})

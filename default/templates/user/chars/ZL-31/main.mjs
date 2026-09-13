@@ -6,8 +6,9 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import { buildPromptStruct } from '../../../../../src/public/parts/shells/chat/src/prompt_struct/index.mjs'
+import { defineReplyHandler } from '../../../../../src/public/parts/shells/chat/src/reply/defineReplyHandler.mjs'
 import { runReplyHandlers } from '../../../../../src/public/parts/shells/chat/src/reply/handlerPipeline.mjs'
-import { defineToolUseBlocks } from '../../../../../src/public/parts/shells/chat/src/streaming/toolBlocks.mjs'
+import { defineReplyPreviews } from '../../../../../src/public/parts/shells/chat/src/streaming/index.mjs'
 import { getPartInfo } from '../../../../../src/scripts/locale.mjs'
 import { __dirname } from '../../../../../src/server/base.mjs'
 import { loadPart, loadAnyPreferredDefaultPart } from '../../../../../src/server/parts_loader.mjs'
@@ -51,15 +52,15 @@ let username = ''
 
 /**
  * 处理 get-tool-info 工具调用。
- * @type {import("../../../../../src/decl/pluginAPI.ts").ReplyHandler_t}
+ * @param {object} reply 回复对象
+ * @param {object} args 请求上下文
+ * @param {object} call 调用
+ * @returns {Promise<object>} 结果
  */
-function getToolInfo(reply, args) {
-	const { AddLongTimeLog, MaskHandledCall } = args
-	const match_get_tool_info = reply.content_for_handle.match(/<get-tool-info>(?<toolname>[^<]+)<\/get-tool-info>/)
-	if (match_get_tool_info) try {
-		let { toolname } = match_get_tool_info.groups
-		toolname = toolname.trim()
-		MaskHandledCall?.(match_get_tool_info[0])
+async function getToolInfoHandler(reply, args, call) {
+	const { AddLongTimeLog } = args
+	try {
+		const toolname = call.inner.trim()
 		let info_prompt = ''
 		switch (toolname) {
 			case 'character-generator':
@@ -284,47 +285,54 @@ export default {
 \`\`\`\`js
 import fs from 'node:fs'
 import path from 'node:path'
+import { defineReplyHandler } from '../../../../../src/public/parts/shells/chat/src/reply/defineReplyHandler.mjs'
 import { runReplyHandlers } from '../../../../../src/public/parts/shells/chat/src/reply/handlerPipeline.mjs'
 
 /**
  * 处理 generate-char 工具调用。
  * @type {import("../../../../../src/decl/pluginAPI.ts").ReplyHandler_t}
  */
-function CharGenerator(reply, { AddLongTimeLog, MaskHandledCall }) {
-	const match_generator_tool = reply.content_for_handle.match(/<generate-char\\s+name="(?<charname>[^"]+)">\\s*(?<code>[^]*?)\\s*<\\/generate-char>/)
-	if (match_generator_tool) try {
-		let { charname, code } = match_generator_tool.groups
-		charname = charname.trim()
-		MaskHandledCall?.(match_generator_tool[0])
-		const dir = path.join(import.meta.dirname, '..', charname)
-		const file = path.join(dir, 'main.mjs')
-		if (fs.existsSync(file))
-			throw new Error('无法覆盖已存在的角色')
-		fs.mkdirSync(dir, { recursive: true })
-		fs.writeFileSync(file, code)
-		fs.writeFileSync(path.join(dir, 'fount.json'), JSON.stringify({
-			type: 'chars',
-			dirname: charname
-		}, null, '\\t'))
+const CharGenerator = defineReplyHandler({
+	tag: 'generate-char',
+	params: { name: 'string' },
+	/**
+	 * 生成角色并落盘。
+	 * @param {object} reply 回复对象
+	 * @param {object} args 请求上下文
+	 * @param {object} call 调用
+	 * @returns {Promise<object>} 结果
+	 */
+	handle: async (reply, args, call) => {
+		const charname = call.params.name.trim()
+		try {
+			const dir = path.join(import.meta.dirname, '..', charname)
+			const file = path.join(dir, 'main.mjs')
+			if (fs.existsSync(file))
+				throw new Error('无法覆盖已存在的角色')
+			fs.mkdirSync(dir, { recursive: true })
+			fs.writeFileSync(file, call.inner)
+			fs.writeFileSync(path.join(dir, 'fount.json'), JSON.stringify({
+				type: 'chars',
+				dirname: charname
+			}, null, '\\t'))
 
-		AddLongTimeLog({
-			name: 'char-generator',
-			role: 'tool',
-			content: \`生成角色\${charname}成功！告知用户吧！\`,
-		})
+			args.AddLongTimeLog({
+				name: 'char-generator',
+				role: 'tool',
+				content: \`生成角色\${charname}成功！告知用户吧！\`,
+			})
 
-		return true
-	} catch (e) {
-		AddLongTimeLog({
-			name: 'char-generator',
-			role: 'tool',
-			content: \`生成失败！\\n原因：\${e.stack}\`,
-		})
-		return true
-	}
-
-	return false
-}
+			return { regen: true }
+		} catch (e) {
+			args.AddLongTimeLog({
+				name: 'char-generator',
+				role: 'tool',
+				content: \`生成失败！\\n原因：\${e.stack}\`,
+			})
+			return { regen: true }
+		}
+	},
+})
 
 //...
 // prompt的部分在这里跳过，它就是你的prompt。
@@ -546,22 +554,33 @@ export default {
 			content: info_prompt,
 		})
 
-		return true
+		return { regen: true }
 	} catch (error) { console.error(error) }
 
-	return false
+	return {}
 }
 
 /**
- * 处理 generate-char 工具调用。
+ * get-tool-info 工具调用处理器。
  * @type {import("../../../../../src/decl/pluginAPI.ts").ReplyHandler_t}
  */
-function CharGenerator(reply, { AddLongTimeLog, MaskHandledCall }) {
-	const match_generator_tool = reply.content_for_handle.match(/<generate-char\s+name="(?<charname>[^"]+)">\s*(?<code>[^]*?)\s*<\/generate-char>/)
-	if (match_generator_tool) try {
-		let { charname, code } = match_generator_tool.groups
-		charname = charname.trim()
-		MaskHandledCall?.(match_generator_tool[0])
+const getToolInfo = defineReplyHandler({
+	tag: 'get-tool-info',
+	handle: getToolInfoHandler,
+})
+
+/**
+ * 处理 generate-char 工具调用。
+ * @param {object} reply 回复对象
+ * @param {object} args 请求上下文
+ * @param {object} call 调用
+ * @returns {Promise<object>} 结果
+ */
+async function charGeneratorHandler(reply, args, call) {
+	const { AddLongTimeLog } = args
+	const charname = call.params.name.trim()
+	const code = call.inner
+	try {
 		const dir = path.join(import.meta.dirname, '..', charname)
 		const file = path.join(dir, 'main.mjs')
 		if (fs.existsSync(file))
@@ -579,7 +598,7 @@ function CharGenerator(reply, { AddLongTimeLog, MaskHandledCall }) {
 			content: `生成角色${charname}成功！告知用户吧！`,
 		})
 
-		return true
+		return { regen: true }
 	}
 	catch (e) {
 		AddLongTimeLog({
@@ -587,22 +606,32 @@ function CharGenerator(reply, { AddLongTimeLog, MaskHandledCall }) {
 			role: 'tool',
 			content: `生成失败！\n原因：${e.stack}`,
 		})
-		return true
+		return { regen: true }
 	}
-
-	return false
 }
 
 /**
- * 处理 generate-persona 工具调用。
+ * generate-char 工具调用处理器。
  * @type {import("../../../../../src/decl/pluginAPI.ts").ReplyHandler_t}
  */
-function PersonaGenerator(reply, { AddLongTimeLog, MaskHandledCall }) {
-	const match_generator_tool = reply.content_for_handle.match(/<generate-persona\s+name="(?<charname>[^"]+)">\s*(?<code>[^]*?)\s*<\/generate-persona>/)
-	if (match_generator_tool) try {
-		let { charname, code } = match_generator_tool.groups
-		charname = charname.trim()
-		MaskHandledCall?.(match_generator_tool[0])
+const CharGenerator = defineReplyHandler({
+	tag: 'generate-char',
+	params: { name: 'string' },
+	handle: charGeneratorHandler,
+})
+
+/**
+ * 处理 generate-persona 工具调用。
+ * @param {object} reply 回复对象
+ * @param {object} args 请求上下文
+ * @param {object} call 调用
+ * @returns {Promise<object>} 结果
+ */
+async function personaGeneratorHandler(reply, args, call) {
+	const { AddLongTimeLog } = args
+	const charname = call.params.name.trim()
+	const code = call.inner
+	try {
 		const dir = path.join(import.meta.dirname, '..', '..', 'personas', charname)
 		const file = path.join(dir, 'main.mjs')
 		if (fs.existsSync(file))
@@ -620,7 +649,7 @@ function PersonaGenerator(reply, { AddLongTimeLog, MaskHandledCall }) {
 			content: `生成用户人设${charname}成功！告知用户吧！`,
 		})
 
-		return true
+		return { regen: true }
 	}
 	catch (e) {
 		AddLongTimeLog({
@@ -628,11 +657,19 @@ function PersonaGenerator(reply, { AddLongTimeLog, MaskHandledCall }) {
 			role: 'tool',
 			content: `生成失败！\n原因：${e.stack}`,
 		})
-		return true
+		return { regen: true }
 	}
-
-	return false
 }
+
+/**
+ * generate-persona 工具调用处理器。
+ * @type {import("../../../../../src/decl/pluginAPI.ts").ReplyHandler_t}
+ */
+const PersonaGenerator = defineReplyHandler({
+	tag: 'generate-persona',
+	params: { name: 'string' },
+	handle: personaGeneratorHandler,
+})
 
 /**
  * 角色 API 导出类型。
@@ -837,11 +874,7 @@ ${sourceLine}`,
 				 */
 				let replyPreviewUpdater = (args, r) => oriReplyPreviewUpdater?.(r)
 				for (const GetReplyPreviewUpdater of [
-					defineToolUseBlocks([
-						{ start: '<get-tool-info>', end: '</get-tool-info>' },
-						{ start: /<generate-char[^>]*>/, end: '</generate-char>' },
-						{ start: /<generate-persona[^>]*>/, end: '</generate-persona>' },
-					]),
+					defineReplyPreviews([getToolInfo, CharGenerator, PersonaGenerator]),
 					...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.GetReplyPreviewUpdater)
 				].filter(Boolean))
 					replyPreviewUpdater = GetReplyPreviewUpdater(replyPreviewUpdater)

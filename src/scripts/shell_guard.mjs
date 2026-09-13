@@ -8,9 +8,9 @@ import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import process from 'node:process'
-import util from 'node:util'
 
 import { exec, execFile, shell_exec_map } from 'npm:@steve02081504/exec'
+import { VirtualConsole } from 'npm:@steve02081504/virtual-console'
 
 import { ms } from './ms.mjs'
 
@@ -246,47 +246,26 @@ export async function execShellWithTimeout(shell, code, options = {}, timeoutMs 
 }
 
 /**
- * 创建收集型 console：记录输出供超时后回读，同时经 `process.stdout/stderr` 转发真实输出（不经 console 代理，避免递归）。
- * @returns {{console: object, text: () => string}} 收集器与其文本读取函数。
+ * 创建收集型虚拟控制台：记录输出供超时后回读，转发真实 console，并可逐条回调实现流式回显。
+ * 直接返回 `VirtualConsole` 实例，`async_eval` 会原样复用（不走二次包裹）。
+ * @param {(channel: 'stdout'|'stderr', text: string) => void} [onOutput] - 每条输出后回调。
+ * @returns {{console: import('npm:@steve02081504/virtual-console').VirtualConsole, text: () => string}} 虚拟控制台与其文本读取函数。
  */
-export function createCollectingConsole() {
-	/** @type {string[]} */
-	const lines = []
-	/**
-	 * 记录一条日志并转发。
-	 * @param {'stdout'|'stderr'} channel - 输出通道。
-	 * @param {unknown[]} args - 参数。
-	 * @returns {void}
-	 */
-	const push = (channel, args) => {
-		const text = util.format(...args)
-		lines.push(text)
-		try { (channel === 'stderr' ? process.stderr : process.stdout).write(text + '\n') }
-		catch { /* ignore */ }
-	}
-	/** @type {Record<string, (...args: unknown[]) => void>} */
-	const consoleObj = {}
-	for (const level of ['log', 'info', 'debug', 'dir'])
-		/**
-		 * 将日志转发并记录为 stdout。
-		 * @param {...unknown} args - 参数。
-		 * @returns {void}
-		 */
-		consoleObj[level] = (...args) => push('stdout', args)
-	for (const level of ['warn', 'error', 'trace'])
-		/**
-		 * 将日志转发并记录为 stderr。
-		 * @param {...unknown} args - 参数。
-		 * @returns {void}
-		 */
-		consoleObj[level] = (...args) => push('stderr', args)
+export function createCollectingConsole(onOutput) {
+	const vc = new VirtualConsole({ realConsoleOutput: true })
+	if (onOutput)
+		vc.addLogEntryListener(entry => {
+			const stream = entry.level === 'error' || entry.level === 'warn' || entry.level === 'stderr' ? 'stderr' : 'stdout'
+			try { onOutput(stream, entry.toString()) }
+			catch { /* 流式回调失败不影响执行 */ }
+		})
 	return {
-		console: consoleObj,
+		console: vc,
 		/**
 		 * 读取已捕获的输出文本。
-		 * @returns {string} 已捕获输出的换行拼接。
+		 * @returns {string} 已捕获输出（各条 `toString()` 拼接）。
 		 */
-		text: () => lines.join('\n'),
+		text: () => vc.outputs,
 	}
 }
 

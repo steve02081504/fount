@@ -8,13 +8,7 @@ import path from 'node:path'
 
 import { assert, assertEquals } from 'jsr:@std/assert'
 
-import { createArgsExecutorResolver, createTargetExecutor, joinWorkdir, listMachines, parseTagAttrs, resolveTarget } from '../../../../plugins/file-operations/src/target.mjs'
-
-Deno.test('parseTagAttrs parses quoted attributes', () => {
-	assertEquals(parseTagAttrs('machine="1" workdir="D:\\proj"'), { machine: '1', workdir: 'D:\\proj' })
-	assertEquals(parseTagAttrs(''), {})
-	assertEquals(parseTagAttrs(undefined), {})
-})
+import { createArgsExecutorResolver, createTargetExecutor, joinWorkdir, listMachines, resolveTarget } from '../../../../plugins/file-operations/src/target.mjs'
 
 Deno.test('resolveTarget explicit overrides request defaults', () => {
 	const args = { username: 'u', workdir: { machine: '0', path: '/base' } }

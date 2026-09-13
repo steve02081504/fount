@@ -15,7 +15,7 @@ import { svgInliner } from '/scripts/lib/svgInliner.mjs'
 import { appendLocalHistory, removeGhost, renderAttachmentPreview } from './composer.mjs'
 import * as api from './endpoints.mjs'
 import { iconElement, icons } from './icons.mjs'
-import { appendEntryBubble, backToBottom, nearBottom, renderMessages, scrollMessagesBottom, updateRegenButtons, updateEmptyMode } from './messages.mjs'
+import { appendEntryBubble, backToBottom, nearBottom, renderMessages, scrollMessagesBottom, updateEntryBubble, updateRegenButtons, updateShellStreamBubble, updateEmptyMode } from './messages.mjs'
 import { refreshShutdownState, renderAiSourcePillLabel, renderModePillLabel, selectWorkspace, updateCharMenu } from './pills.mjs'
 import { elements, richInput, store, TAB_SAVE_DEBOUNCE, target } from './store.mjs'
 
@@ -796,6 +796,10 @@ function onSocketMessage(event) {
 		if (store.generatingSession === store.session && generatingBubble?.renderer) generatingBubble.renderer.setTarget(msg.content)
 		return
 	}
+	if (msg.type === 'tool-output') {
+		handleToolOutput(msg)
+		return
+	}
 	if (msg.type === 'done') {
 		void finishGeneration(msg.entries, msg.memory)
 		return
@@ -825,9 +829,62 @@ function onSocketMessage(event) {
 
 /** 生成中的气泡与流式渲染器。 */
 let generatingBubble = null
+/** 生成中气泡内的实时工具卡：callId → { root, output }。 */
+let liveToolCards = null
+
+/**
+ * 处理服务端转发的工具执行实时输出（AI `<run-*>` / `<inline-*>`）。
+ * `start` 建卡、`chunk` 追加输出、`end` 保留至生成气泡结束统一移除。
+ * @param {object} msg - `tool-output` 消息。
+ * @returns {void}
+ */
+function handleToolOutput(msg) {
+	if (!generatingBubble) return
+	liveToolCards ??= new Map()
+	if (msg.phase === 'start') {
+		const card = createLiveToolCard(msg)
+		liveToolCards.set(msg.callId, card)
+		generatingBubble.bubble.appendChild(card.root)
+		if (nearBottom()) scrollMessagesBottom()
+		return
+	}
+	const card = liveToolCards.get(msg.callId)
+	if (card && msg.phase === 'chunk' && msg.data)
+		card.output.textContent += msg.data
+}
+
+/**
+ * 创建实时工具卡（代码头 + 纯文本输出）。
+ * @param {object} msg - `tool-output` 的 start 事件。
+ * @returns {{root: HTMLElement, output: HTMLElement}} 卡片元素与输出节点。
+ */
+function createLiveToolCard(msg) {
+	const root = document.createElement('details')
+	root.className = 'code-tool-log code-tool-live'
+	root.open = true
+	const summary = document.createElement('summary')
+	const chevron = document.createElement('span')
+	chevron.className = 'code-tool-log-chevron'
+	chevron.textContent = '▸'
+	const name = document.createElement('span')
+	name.className = 'code-tool-log-name'
+	name.textContent = msg.lang ? geti18n('code.tool.runShell', { lang: msg.lang }) : geti18n('code.tool.userShell')
+	summary.append(chevron, name)
+	const content = document.createElement('div')
+	content.className = 'mt-1'
+	const code = document.createElement('pre')
+	code.className = 'code-shell-stream-command'
+	code.textContent = msg.code || ''
+	const output = document.createElement('pre')
+	output.className = 'code-shell-stream-output'
+	content.append(code, output)
+	root.append(summary, content)
+	return { root, output }
+}
 
 /** 创建生成中的流式气泡。 */
 export function startGeneratingBubble() {
+	liveToolCards = new Map()
 	const bubble = document.createElement('div')
 	bubble.className = 'code-message role-char generating'
 	bubble.setAttribute('user-content', '')
@@ -847,6 +904,7 @@ export function startGeneratingBubble() {
 export function endGeneratingBubble() {
 	generatingBubble?.bubble.remove()
 	generatingBubble = null
+	liveToolCards = null
 }
 
 /**
@@ -1042,19 +1100,50 @@ export async function execShellMode(command) {
 	}
 	store.session.entries.push(userEntry)
 	appendEntryBubble(userEntry)
-	const result = await api.execShell({ ...target(), shell: store.shell || undefined, command })
-	const output = result.stdall ?? [result.stdout, result.stderr].filter(Boolean).join('\n')
-	const elapsedText = Number(result.elapsedMs) > 0 ? `（耗时 ${(result.elapsedMs / 1000).toFixed(2)}s）` : ''
+	// 立即建工具条目并流式回显；结束后转正式 markdown（含耗时）再落盘
 	const toolEntry = {
 		id: crypto.randomUUID().slice(0, 8),
 		uid: 'system',
 		role: 'tool',
 		name: 'shell',
-		content: '```' + (store.shell || '') + '\n' + command + '\n```\n```\n' + output + '\n```' + elapsedText,
+		content: '',
 		time: new Date().toISOString(),
+		extension: { shellStream: { command, shell: store.shell || '', output: '' } },
 	}
 	store.session.entries.push(toolEntry)
 	appendEntryBubble(toolEntry)
+	let scheduled = false
+	/** 逐帧合并输出更新，避免每个数据块都触碰 DOM。 */
+	const scheduleUpdate = () => {
+		if (scheduled) return
+		scheduled = true
+		requestAnimationFrame(() => {
+			scheduled = false
+			updateShellStreamBubble(toolEntry)
+		})
+	}
+	const codeBlock = '```' + (store.shell || '') + '\n' + command + '\n```\n```\n'
+	try {
+		const result = await api.streamExec({ ...target(), shell: store.shell || undefined, command }, {
+			/**
+			 * 累积流式输出。
+			 * @param {'stdout'|'stderr'} stream - 输出通道（当前统一按文本累积）。
+			 * @param {string} data - 分片文本。
+			 * @returns {void}
+			 */
+			onOutput: (stream, data) => {
+				toolEntry.extension.shellStream.output += data
+				scheduleUpdate()
+			},
+		})
+		toolEntry.content = codeBlock + (result.stdall ?? [result.stdout, result.stderr].filter(Boolean).join('\n'))
+			+ '\n```' + (Number(result.elapsedMs) > 0 ? `（耗时 ${(result.elapsedMs / 1000).toFixed(2)}s）` : '')
+	}
+	catch (error) {
+		toolEntry.content = codeBlock + String(error?.message || error) + '\n```'
+	}
+	delete toolEntry.extension.shellStream
+	updateEntryBubble(toolEntry)
 	store.session.updated = new Date().toISOString()
 	// 先等会话落盘完成再刷新聚合，避免总览/标签标题读到旧状态
 	await markSessionDirty()

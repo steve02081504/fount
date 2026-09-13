@@ -5,7 +5,8 @@ AI 编码会话 shell：与任意角色就工作区对话，在本机或已连�
 - 工作区（workspace）= 一个目录（本机或某台 subfount），保存于用户 shell data；会话存于目标机器工作区 `.fount/code/sessions/<id>.json`。
 - 打开的标签页列表与各标签未发送草稿保存于用户 shell data（`code.tabs`）。
 - 机器 id `"0"` = 本机，其他为已连接 subfount；执行/文件读写默认使用请求的 `workdir`（`{ machine, path }`）。
-- `!` 模式：以 shell 命令执行用户输入，命令在目标机器工作目录执行，输出作为 tool 日志条目进入会话。
+- `!` 模式：以 shell 命令执行用户输入，命令在目标机器工作目录执行，输出作为 tool 日志条目进入会话；执行期间逐块实时回显（WS `/exec`），本机直连、远程经分机回调通道（未支持回调时结束一次性返回）。
+- AI 会话执行 `<run-js>` / `<run-<shell>>` / `<inline-*>` 时，服务端经会话 WS 的 `tool-output` 消息实时转发 stdout/stderr。
 
 ## HTTP API（均需登录；base = `/api/parts/shells:code`）
 
@@ -15,7 +16,6 @@ AI 编码会话 shell：与任意角色就工作区对话，在本机或已连�
 - `GET /workspaces` / `POST /workspaces {name?, machine, path}` / `PUT /workspaces/:id {name}` / `DELETE /workspaces/:id` → 保存的工作区 CRUD
 - `GET /tabs` → `{ tabs: [{ type: draft|session, id, workspaceId, draft? }], activeTab }`（打开的标签页列表与各标签未发送草稿）
 - `PUT /tabs {tabs, activeTab}` → 保存标签页列表与活动标签（id 须匹配 `[A-Za-z0-9_-]{1,64}`）
-- `POST /exec {machine, workdir, shell?, command}` → 执行 shell 命令；本机未指定 workdir 时在家目录执行；失败结果 `{ code: -1, stdall }`
 - `GET /history?machine&workdir&kind=shell|message&shell=` → `{ own: string[], native: string[] }`（own 为自有历史追加序；native 为原生 shell 历史 newest-first，仅 kind=shell）
 - `POST /history {machine, workdir, kind, command}` → 追加自有历史，返回 `{ own: string[] }`
 - `GET /workspace-config?machine&workdir=` → `.agents/fount/code.json` 解析对象（无则 `{}`）
@@ -33,8 +33,14 @@ AI 编码会话 shell：与任意角色就工作区对话，在本机或已连�
 
 ## WS API
 
+- `WS /ws/parts/shells:code/exec`（登录后连接）
+  - 客户端 → `{ id, machine, workdir, shell?, command }`：执行一条 shell 命令（`id` 为调用方自定的关联 id，同一连接一次只处理一条）。
+  - 服务端 → `{ type: 'output', id, stream: 'stdout'|'stderr', data }`：逐块实时输出。
+  - 结束 → `{ type: 'done', id, ...shellResult }`（含 `code`/`stdout`/`stderr`/`stdall`/`elapsedMs`）；出错 → `{ type: 'error', id, error }`。
+  - `ws.close()` 后不再回显（命令可能继续运行；本机进程不随之终止）。
+
 - `WS /ws/parts/shells:code/session`（登录后连接）
-  - 客户端 → `{ type: 'send', session, machine, workdir, ai_source?, profile?, content, files?, clientEntryId? }`：触发角色回复。`files`（可选）为附件数组 `{ name, mime_type, buffer: base64, description }`，并入用户消息条目（sessionToChatLog 解码后随 chat_log 供角色读取）。`clientEntryId`（可选）为前端已乐观插入 `session.entries` 的用户条目 id；服务端若在该 session 中找到同 id 条目则不再追加/回传用户消息（避免重复）。服务端流式回 `{ type: 'preview', content }`；结束回 `{ type: 'done', entries, memory }`（entries = 用户消息（未带 clientEntryId 时）+ tool 日志 + 角色回复）。会话条目同时保留 agent 层 `content` 与展示层 `content_for_show`/`content_for_edit`、`charVisibility`，重载时据此完整还原。
+  - 客户端 → `{ type: 'send', session, machine, workdir, ai_source?, profile?, content, files?, clientEntryId? }`：触发角色回复。`files`（可选）为附件数组 `{ name, mime_type, buffer: base64, description }`，并入用户消息条目（sessionToChatLog 解码后随 chat_log 供角色读取）。`clientEntryId`（可选）为前端已乐观插入 `session.entries` 的用户条目 id；服务端若在该 session 中找到同 id 条目则不再追加/回传用户消息（避免重复）。服务端流式回 `{ type: 'preview', content }`；执行工具（`<run-*>` / `<inline-*>`）时穿插回 `{ type: 'tool-output', callId, phase: 'start'|'chunk'|'end', name, lang?, code?, stream?, data? }` 实时转发工具输出；结束回 `{ type: 'done', entries, memory }`（entries = 用户消息（未带 clientEntryId 时）+ tool 日志 + 角色回复）。会话条目同时保留 agent 层 `content` 与展示层 `content_for_show`/`content_for_edit`、`charVisibility`，重载时据此完整还原。
   - 客户端 → `{ type: 'regen', session, machine, workdir, ai_source?, profile? }`：以现有 entries 重新生成最后一条角色回复（前端应先弹出旧回复）。服务端同样先流式 `preview`，结束回 `{ type: 'done', entries, memory }`（entries 仅含 tool 日志 + 新角色回复；中断回 `{ type: 'aborted', entries }`，此时旧回复已被弹出、会话暂无该回复）。
   - 客户端 → `{ type: 'abort' }`：中断当前生成；服务端回 `{ type: 'aborted', entries }`。
   - 出错回 `{ type: 'error', entries, error }`。

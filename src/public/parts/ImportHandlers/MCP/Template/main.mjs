@@ -2,13 +2,18 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import { createMCPClient } from 'fount/public/parts/ImportHandlers/MCP/engine/mcp_client.mjs'
-import { defineToolUseBlocks } from 'fount/public/parts/shells/chat/src/streaming/toolBlocks.mjs'
+import { defineReplyHandler, defineReplyHandlers } from 'fount/public/parts/shells/chat/src/reply/defineReplyHandler.mjs'
+import { defineReplyPreviews } from 'fount/public/parts/shells/chat/src/streaming/replyPreviews.mjs'
 import { saveJsonFile } from 'fount/scripts/json_loader.mjs'
 import { loadPart } from 'fount/server/parts_loader.mjs'
 
 /**
  * 插件 API 类型别名。
  * @typedef {import('../../../../../src/decl/pluginAPI.ts').pluginAPI_t} pluginAPI_t
+ */
+/**
+ * 回复处理器类型别名。
+ * @typedef {import('../../../../../src/decl/pluginAPI.ts').ReplyHandler_t} ReplyHandler_t
  */
 
 const pluginDir = import.meta.dirname
@@ -91,39 +96,119 @@ const fmtRes = (res) => res?.content?.map(i =>
 ).join('\n') || JSON.stringify(res, null, 2)
 
 /**
- * 解析 XML 调用
- * @param {string} content - 回复内容
- * @returns {Array<object>} 解析出的调用列表
+ * 把 MCP 调用的内层子标签解析为参数对象（按 Schema 类型转换）。
+ * @param {Array<{ tag: string, body: string }>} children - 子标签列表
+ * @param {Record<string, { type?: string }>} [schemaProps] - 参数 Schema
+ * @returns {object} 参数对象
  */
-async function parseCalls(content) {
-	const calls = []
-	/**
-	 * 解析参数
-	 * @param {string} body - XML 标签体
-	 * @param {object} [schemaProps] - 参数 Schema
-	 * @returns {object} 参数对象
-	 */
-	const parseParams = (body, schemaProps = {}) => {
-		const args = {}
-		const matches = [...body.matchAll(/<([\w-]+)(?:\s+[^>]*)?>([\S\s]*?)<\/\1>/g)]
-		for (const [, key, val] of matches) args[key] = parseVal(val, schemaProps[key]?.type)
-		return args
-	}
-
-	// 解析 Tool 和 Prompt
-	for (const type of ['tool', 'prompt']) {
-		const matches = [...content.matchAll(new RegExp(`<mcp-${type}\\s+name="([^"]+)">([\\s\\S]*?)<\\/mcp-${type}>`, 'g'))]
-		for (const [fullMatch, name, body] of matches) {
-			const toolDef = tools.find(t => t.name === name)
-			const schemaProps = toolDef?.inputSchema?.properties || {}
-			calls.push({ type, name, args: parseParams(body, schemaProps), fullMatch })
-		}
-	}
-	// 解析 Resource
-	for (const [fullMatch, uri] of content.matchAll(/<mcp-resource\s+uri="([^"]+)"\s*\/>/g))
-		calls.push({ type: 'resource', uri, fullMatch })
-	return calls
+function parseMcpArgs(children, schemaProps = {}) {
+	const args = {}
+	for (const child of children)
+		args[child.tag] = parseVal(child.body, schemaProps[child.tag]?.type)
+	return args
 }
+
+/**
+ * 执行一次 MCP 调用并把结果或错误写入长期日志。
+ * @param {object} args - 请求上下文
+ * @param {string} type - 调用类型（tool/prompt/resource）
+ * @param {string} name - 工具/提示名或资源 URI
+ * @param {() => Promise<object>} invoke - 实际调用
+ * @returns {Promise<void>} Promise
+ */
+async function runMcpCall(args, type, name, invoke) {
+	try {
+		const result = await invoke()
+		args.AddLongTimeLog({
+			role: 'tool',
+			name,
+			content: `${type} result for ${name}:\n\`\`\`\n${fmtRes(result)}\n\`\`\``,
+			files: []
+		})
+	} catch (err) {
+		console.error('MCP call error:', err)
+		args.AddLongTimeLog({
+			role: 'system',
+			name,
+			content: `Error calling ${type} "${name}": ${err.message}`,
+			files: []
+		})
+	}
+}
+
+/**
+ * `<mcp-tool name="...">`：调用 MCP 工具。
+ * @type {ReplyHandler_t}
+ */
+export const mcpToolReplyHandler = defineReplyHandler({
+	tag: 'mcp-tool',
+	body: 'children',
+	/**
+	 * 调用 MCP 工具。
+	 * @param {object} reply - 回复对象
+	 * @param {object} args - 请求上下文
+	 * @param {object} call - 调用
+	 * @returns {Promise<object>} 结果
+	 */
+	handle: async (reply, args, call) => {
+		const name = call.params.name
+		const schemaProps = tools.find(t => t.name === name)?.inputSchema?.properties || {}
+		await runMcpCall(args, 'tool', name, () => mcpClient.callTool(name, parseMcpArgs(call.body, schemaProps)))
+		return { regen: true }
+	},
+})
+
+/**
+ * `<mcp-prompt name="...">`：获取 MCP 提示。
+ * @type {ReplyHandler_t}
+ */
+export const mcpPromptReplyHandler = defineReplyHandler({
+	tag: 'mcp-prompt',
+	body: 'children',
+	/**
+	 * 获取 MCP 提示。
+	 * @param {object} reply - 回复对象
+	 * @param {object} args - 请求上下文
+	 * @param {object} call - 调用
+	 * @returns {Promise<object>} 结果
+	 */
+	handle: async (reply, args, call) => {
+		const name = call.params.name
+		const schemaProps = tools.find(t => t.name === name)?.inputSchema?.properties || {}
+		await runMcpCall(args, 'prompt', name, () => mcpClient.getPrompt(name, parseMcpArgs(call.body, schemaProps)))
+		return { regen: true }
+	},
+})
+
+/**
+ * `<mcp-resource uri="..."/>`：读取 MCP 资源。
+ * @type {ReplyHandler_t}
+ */
+export const mcpResourceReplyHandler = defineReplyHandler({
+	tag: 'mcp-resource',
+	/**
+	 * 读取 MCP 资源。
+	 * @param {object} reply - 回复对象
+	 * @param {object} args - 请求上下文
+	 * @param {object} call - 调用
+	 * @returns {Promise<object>} 结果
+	 */
+	handle: async (reply, args, call) => {
+		const uri = call.params.uri
+		await runMcpCall(args, 'resource', uri, () => mcpClient.readResource(uri))
+		return { regen: true }
+	},
+})
+
+/**
+ * MCP 插件的全部 ReplyHandler。
+ * @type {ReplyHandler_t[]}
+ */
+export const mcpReplyHandlers = [
+	mcpToolReplyHandler,
+	mcpPromptReplyHandler,
+	mcpResourceReplyHandler,
+]
 
 /**
  * 生成描述文本
@@ -240,60 +325,8 @@ export default {
 				text: [{ content: await getDesc(args), important: 0 }],
 				additional_chat_log: [], extension: {}
 			}),
-			GetReplyPreviewUpdater: defineToolUseBlocks([
-				{ start: /<mcp-tool[^>]*>/, end: '</mcp-tool>' },
-				{ start: /<mcp-prompt[^>]*>/, end: '</mcp-prompt>' },
-				{ start: /<mcp-resource[^>]*/, end: '\\>' }
-			]),
-			/**
-			 * 处理回复
-			 * @param {object} reply - 回复对象
-			 * @param {object} args - 处理参数
-			 * @returns {Promise<boolean>} 是否产生变更
-			 */
-			ReplyHandler: async (reply, args) => {
-				if (!reply.content || !reply.content.includes('<mcp-')) return false
-				const calls = await parseCalls(reply.content)
-				if (!calls.length) return false
-
-				const tool_calling_log = {
-					name: reply.name,
-					role: 'char',
-					content: '',
-					files: []
-				}
-				let log_content_added = false
-
-				for (const call of calls) {
-					tool_calling_log.content += call.fullMatch + '\n'
-					if (!log_content_added) args.AddLongTimeLog(tool_calling_log)
-					log_content_added = true
-
-					try {
-						let result
-						if (call.type === 'tool') result = await mcpClient.callTool(call.name, call.args)
-						else if (call.type === 'prompt') result = await mcpClient.getPrompt(call.name, call.args)
-						else result = await mcpClient.readResource(call.uri)
-
-						args.AddLongTimeLog({
-							role: 'tool',
-							name: call.name || call.uri,
-							content: `${call.type} result for ${call.name || call.uri}:\n\`\`\`\n${fmtRes(result)}\n\`\`\``,
-							files: []
-						})
-					} catch (err) {
-						console.error('MCP call error:', err)
-						args.AddLongTimeLog({
-							role: 'system',
-							name: call.name || call.uri,
-							content: `Error calling ${call.type} "${call.name || call.uri}": ${err.message}`,
-							files: []
-						})
-					}
-				}
-
-				return true
-			}
+			GetReplyPreviewUpdater: defineReplyPreviews(mcpReplyHandlers),
+			ReplyHandler: defineReplyHandlers(mcpReplyHandlers),
 		}
 	}
 }

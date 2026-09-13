@@ -73,10 +73,11 @@ async function sessionToChatLog(entries) {
  * @param {string} [options.ai_source] - 请求级 AI 源 partname（"shells/code 前端下拉值"；空 = 角色自带），构造时 loadPart 为实例。
  * @param {string} [options.profile] - 所选 profile（mode）名。
  * @param {(reply: chatReply_t) => void} [options.onPreview] - 流式预览回调。
+ * @param {(event: object) => void} [options.onToolOutput] - 工具执行实时输出回调（`generation_options.onToolOutput`）。
  * @param {AbortSignal} [options.signal] - 中断信号。
  * @returns {Promise<chatReplyRequest_t>} 构建好的请求。
  */
-async function buildCodeChatRequest({ username, session, machine, workdir, ai_source, profile, onPreview, signal }) {
+async function buildCodeChatRequest({ username, session, machine, workdir, ai_source, profile, onPreview, onToolOutput, signal }) {
 	const char = await loadPart(username, 'chars/' + session.charname)
 	const personaName = getAnyPreferredDefaultPart(username, 'personas')
 	const user = personaName ? await loadPart(username, 'personas/' + personaName) : null
@@ -132,6 +133,9 @@ async function buildCodeChatRequest({ username, session, machine, workdir, ai_so
 			 * @returns {void}
 			 */
 			replyPreviewUpdater: reply => onPreview?.(reply),
+			/** 工具执行实时输出（code-execution 插件回调），远程流式回显经 `shells/code` 的 RemoteCallBack。 */
+			onToolOutput,
+			remoteToolCallbackPartpath: onToolOutput ? 'shells/code' : undefined,
 			signal,
 		},
 	}

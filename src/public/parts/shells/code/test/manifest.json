@@ -11,7 +11,7 @@
 			"src/public/parts/plugins/code-execution/{handler.mjs,prompt.mjs}",
 			"src/public/parts/shells/subfounts/src/api.mjs",
 			"src/scripts/shell_guard.mjs",
-			"src/public/parts/shells/chat/src/streaming/toolBlocks.mjs",
+			"src/public/parts/shells/chat/src/{reply,streaming,tags}/**",
 			"src/public/parts/shells/easynew/parts/easychar/template/main.mjs",
 			"src/public/parts/ImportHandlers/SillyTavern/Template/main.mjs",
 			"src/server/web_server/notify/**",
