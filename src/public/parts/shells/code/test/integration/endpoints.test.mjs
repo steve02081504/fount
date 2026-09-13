@@ -13,7 +13,7 @@ import { launchNode, stopNode } from 'fount/scripts/test/node/launch.mjs'
 
 import { parseVolumeLabels } from '../../../../plugins/file-operations/src/target.mjs'
 
-import { codeFetch } from './helpers/code_http.mjs'
+import { codeFetch, execStream } from './helpers/code_http.mjs'
 
 /**
  * 启动仅加载 code shell 的测试节点。
@@ -333,8 +333,8 @@ Deno.test({
 	const node = await launchCodeNode()
 	const root = await makeWorkspace(node)
 	try {
-		const result = await (await codeFetch(node, 'POST', '/exec', { machine: '0', workdir: root, command: 'echo ok' })).json()
-		assert(String(result.stdall ?? result.stdout ?? '').includes('ok'), `输出包含 ok：${JSON.stringify(result)}`)
+		const { done } = await execStream(node, { machine: '0', workdir: root, command: 'echo ok' })
+		assert(String(done.stdall ?? done.stdout ?? '').includes('ok'), `输出包含 ok：${JSON.stringify(done)}`)
 		const session = {
 			id: 'sess01AB',
 			title: 't',
@@ -462,8 +462,8 @@ Deno.test({
 	try {
 		// Windows pwsh 下 `pwd` 的表格输出会被 $OutputEncoding 前缀吞掉，改用字符串输出
 		const cmd = os.platform() === 'win32' ? 'Write-Output $PWD.Path' : 'pwd'
-		const result = await (await codeFetch(node, 'POST', '/exec', { machine: '0', command: cmd })).json()
-		const out = String(result.stdout ?? '').trim().toLowerCase()
+		const { done } = await execStream(node, { machine: '0', command: cmd })
+		const out = String(done.stdout ?? '').trim().toLowerCase()
 		const home = os.homedir().toLowerCase()
 		assert(out.includes(home), `无工作区时应在家目录执行，输出：${out}`)
 	}
@@ -601,6 +601,22 @@ Deno.test({
 		})
 		assertEquals(withoutId.type, 'done', `expected done, got ${JSON.stringify(withoutId).slice(0, 300)}`)
 		assert(withoutId.entries.some(entry => entry.role === 'user' && entry.content === 'hello-legacy'), '无 clientEntryId 时用户条目应被回传')
+	}
+	finally {
+		await stopNode(node)
+	}
+})
+
+Deno.test({
+	name: 'exec WS streams output frames then done',
+	timeout: 120_000,
+}, async () => {
+	const node = await launchCodeNode()
+	try {
+		const { done, outputs } = await execStream(node, { machine: '0', workdir: '', command: 'echo fount-stream' })
+		assert(outputs.some(frame => String(frame.data).includes('fount-stream')), '应在 done 前流式收到 stdout')
+		assert(String(done.stdall).includes('fount-stream'), 'done 应携带完整输出')
+		assert(typeof done.elapsedMs === 'number', 'done 应携带 elapsedMs')
 	}
 	finally {
 		await stopNode(node)

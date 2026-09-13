@@ -12,7 +12,11 @@
  * - tool_call        → 每次工具调用报告 tool_call / tool_call_update 到 IDE
  * - permission       → 写文件/终端前请求用户授权
  */
-import { defineToolUseBlocks } from '../../../chat/src/streaming/index.mjs'
+/**
+ * @typedef {import('../../../../../../../src/decl/pluginAPI.ts').ReplyHandler_t} ReplyHandler_t
+ */
+import { defineReplyHandler, defineReplyHandlers } from '../../../chat/src/reply/defineReplyHandler.mjs'
+import { defineReplyPreviews } from '../../../chat/src/streaming/index.mjs'
 import {
 	createTerminal,
 	readTextFile,
@@ -146,228 +150,233 @@ ${canRead ? `\
 将推理/分析包装在 \`<thinking>...</thinking>\` 中，以在 IDE 中显示为思考气泡（不属于主要回复的一部分）。
 `
 
-	// ── Preview Updater 块 ────────────────────────────────────────────
-	const toolBlocks = [
-		{ start: /<thinking>/, end: '</thinking>' },
-		{ start: /<acp-plan>/, end: '</acp-plan>' },
-	]
-	if (canRead) toolBlocks.push({ start: /<acp-read-file[^>]*/, end: /\/>/ })
-	if (canWrite) toolBlocks.push({ start: /<acp-write-file[^>]*>/, end: '</acp-write-file>' })
-	if (canTerminal) toolBlocks.push({ start: /<acp-terminal[^>]*/, end: /\/>/ })
-
 	// ── ReplyHandler ──────────────────────────────────────────────────
 	/**
-	 * 处理 AI 回复中的 ACP 工具调用。
+	 * `<thinking>`：将思考内容上报为 ACP thought_message_chunk。
 	 * @param {object} reply - 回复对象。
-	 * @param {object} args - ReplyHandler 参数。
-	 * @returns {Promise<boolean>} 是否建议发起下一轮生成。
+	 * @param {object} args - 请求上下文。
+	 * @param {object} call - 调用对象。
+	 * @returns {Promise<object>} 处理结果。
 	 */
-	async function replyHandler(reply, args) {
-		// 在独立工作副本上解析并掩除已处理调用段，不改写原始生成
-		const content = reply.content_for_handle
+	async function thinkingReplyHandler(reply, args, call) {
 		const acp = getACPContext(args)
+		const text = call.body.trim()
+		if (acp && text)
+			sessionUpdate(acp.agentContext, {
+				sessionId: acp.sessionId,
+				update: { sessionUpdate: 'thought_message_chunk', content: { type: 'text', text } },
+			})
+		return {}
+	}
 
-		// ── <thinking> → thought_message_chunk ──
-		const thinkingMatches = [...content.matchAll(/<thinking>([\S\s]*?)<\/thinking>/g)]
-		for (const match of thinkingMatches) {
-			args.MaskHandledCall?.(match[0])
-			if (acp && match[1].trim())
-				sessionUpdate(acp.agentContext, {
-					sessionId: acp.sessionId,
-					update: { sessionUpdate: 'thought_message_chunk', content: { type: 'text', text: match[1].trim() } },
+	/**
+	 * `<acp-plan>`：解析计划条目并上报 ACP plan 通知。
+	 * @param {object} reply - 回复对象。
+	 * @param {object} args - 请求上下文。
+	 * @param {object} call - 调用对象。
+	 * @returns {Promise<object>} 处理结果。
+	 */
+	async function planReplyHandler(reply, args, call) {
+		const acp = getACPContext(args)
+		if (!acp) return {}
+		const entries = []
+		for (const line of call.body.split('\n')) {
+			const entryMatch = line.match(/^[*-]\s*\[(\w+)]\s*(\w+):\s*(.+)$/)
+			if (entryMatch)
+				entries.push({
+					content: entryMatch[3].trim(),
+					priority: entryMatch[1],
+					status: entryMatch[2],
 				})
 		}
+		if (entries.length)
+			sessionUpdate(acp.agentContext, {
+				sessionId: acp.sessionId,
+				update: { sessionUpdate: 'plan', entries },
+			})
+		return {}
+	}
 
-		// ── <acp-plan> → plan notification ──
-		const planMatches = [...content.matchAll(/<acp-plan>([\S\s]*?)<\/acp-plan>/g)]
-		for (const match of planMatches) {
-			args.MaskHandledCall?.(match[0])
-			if (acp) {
-				const entries = []
-				for (const line of match[1].split('\n')) {
-					const entryMatch = line.match(/^[*-]\s*\[(\w+)]\s*(\w+):\s*(.+)$/)
-					if (entryMatch)
-						entries.push({
-							content: entryMatch[3].trim(),
-							priority: entryMatch[1],
-							status: entryMatch[2],
-						})
-				}
-				if (entries.length)
-					sessionUpdate(acp.agentContext, {
-						sessionId: acp.sessionId,
-						update: { sessionUpdate: 'plan', entries },
-					})
-			}
+	/**
+	 * `<acp-read-file path="..." line="..." limit="..." />`：从 IDE 读取文本文件。
+	 * @param {object} reply - 回复对象。
+	 * @param {object} args - 请求上下文。
+	 * @param {object} call - 调用对象。
+	 * @returns {Promise<object>} 处理结果。
+	 */
+	async function readFileReplyHandler(reply, args, call) {
+		const acp = getACPContext(args)
+		const filePath = call.params.path
+		const line = call.params.line
+		const limit = call.params.limit
+		const callId = `acp_read_${++toolCallCounter}`
+
+		if (acp) reportToolCallStart(acp, callId, `Read ${filePath}`, 'read')
+		try {
+			const params = { sessionId, path: filePath }
+			if (line != null) params.line = line
+			if (limit != null) params.limit = limit
+			const result = await readTextFile(agentContext, params)
+			const content = result?.content ?? ''
+			const locations = [{ path: filePath }]
+			if (line != null) locations[0].line = line
+			if (acp) reportToolCallEnd(acp, callId, 'completed', content, locations)
+			args.AddLongTimeLog({
+				role: 'tool', name: 'acp-read-file',
+				content: `read_text_file ${filePath}:\n\`\`\`\n${content}\n\`\`\``,
+				files: [],
+			})
+		} catch (error) {
+			if (acp) reportToolCallEnd(acp, callId, 'failed', error.message)
+			args.AddLongTimeLog({
+				role: 'system', name: 'acp-read-file',
+				content: `Error readTextFile "${filePath}": ${error.message}`,
+				files: [],
+			})
 		}
+		return { regen: true }
+	}
 
-		// ── 工具标签匹配 ──
-		const readMatches = canRead
-			? [...content.matchAll(/<acp-read-file\s+path="([^"]+)"(?:\s+line="(\d+)")?(?:\s+limit="(\d+)")?\s*\/>/g)]
-			: []
-		const writeMatches = canWrite
-			? [...content.matchAll(/<acp-write-file\s+path="([^"]+)">([\S\s]*?)<\/acp-write-file>/g)]
-			: []
-		const terminalMatches = canTerminal
-			? [...content.matchAll(/<acp-terminal\s+command="([^"]+)"(?:\s+args="([^"]*)")?(?:\s+cwd="([^"]*)")?(?:\s+env="([^"]*)")?\s*\/>/g)]
-			: []
+	/**
+	 * `<acp-write-file path="...">内容</acp-write-file>`：经授权后在 IDE 中写入文本文件。
+	 * @param {object} reply - 回复对象。
+	 * @param {object} args - 请求上下文。
+	 * @param {object} call - 调用对象。
+	 * @returns {Promise<object>} 处理结果。
+	 */
+	async function writeFileReplyHandler(reply, args, call) {
+		const acp = getACPContext(args)
+		const filePath = call.params.path
+		const body = call.body
+		const callId = `acp_write_${++toolCallCounter}`
 
-		const hasThinking = thinkingMatches.length > 0
-		const hasPlan = planMatches.length > 0
-		const hasTools = readMatches.length || writeMatches.length || terminalMatches.length
-
-		if (!hasThinking && !hasPlan && !hasTools) return false
-
-		// 仅有 thinking/plan 无需 re-generation
-		if (!hasTools) return false
-
-		// ── fs read ──
-		for (const match of readMatches) {
-			args.MaskHandledCall?.(match[0])
-			const filePath = match[1]
-			const line = match[2] ? Number(match[2]) : undefined
-			const limit = match[3] ? Number(match[3]) : undefined
-			const callId = `acp_read_${++toolCallCounter}`
-
-			if (acp) reportToolCallStart(acp, callId, `Read ${filePath}`, 'read')
-			try {
-				const params = { sessionId, path: filePath }
-				if (line != null) params.line = line
-				if (limit != null) params.limit = limit
-				const result = await readTextFile(agentContext, params)
-				const content = result?.content ?? ''
-				const locations = [{ path: filePath }]
-				if (line != null) locations[0].line = line
-				if (acp) reportToolCallEnd(acp, callId, 'completed', content, locations)
-				args.AddLongTimeLog({
-					role: 'tool', name: 'acp-read-file',
-					content: `read_text_file ${filePath}:\n\`\`\`\n${content}\n\`\`\``,
-					files: [],
-				})
-			} catch (error) {
-				if (acp) reportToolCallEnd(acp, callId, 'failed', error.message)
-				args.AddLongTimeLog({
-					role: 'system', name: 'acp-read-file',
-					content: `Error readTextFile "${filePath}": ${error.message}`,
-					files: [],
-				})
-			}
-		}
-
-		// ── fs write (with permission) ──
-		for (const match of writeMatches) {
-			args.MaskHandledCall?.(match[0])
-			const filePath = match[1]
-			const body = match[2]
-			const callId = `acp_write_${++toolCallCounter}`
-
-			if (acp) {
-				const allowed = await requestPermission(acp, callId, `Write ${filePath}`, `Write ${body.length} chars to ${filePath}`)
-				if (!allowed) {
-					reportToolCallEnd(acp, callId, 'failed', 'User rejected')
-					args.AddLongTimeLog({
-						role: 'system', name: 'acp-write-file',
-						content: `writeTextFile "${filePath}": rejected by user`,
-						files: [],
-					})
-					continue
-				}
-				reportToolCallStart(acp, callId, `Write ${filePath}`, 'edit')
-			}
-			try {
-				await writeTextFile(agentContext, { sessionId, path: filePath, content: body })
-				if (acp) reportToolCallEnd(acp, callId, 'completed', `Wrote ${body.length} chars`, [{ path: filePath }])
-				args.AddLongTimeLog({
-					role: 'tool', name: 'acp-write-file',
-					content: `write_text_file ${filePath}: ok (${body.length} chars)`,
-					files: [],
-				})
-			} catch (error) {
-				if (acp) reportToolCallEnd(acp, callId, 'failed', error.message)
+		if (acp) {
+			const allowed = await requestPermission(acp, callId, `Write ${filePath}`, `Write ${body.length} chars to ${filePath}`)
+			if (!allowed) {
+				reportToolCallEnd(acp, callId, 'failed', 'User rejected')
 				args.AddLongTimeLog({
 					role: 'system', name: 'acp-write-file',
-					content: `Error writeTextFile "${filePath}": ${error.message}`,
+					content: `writeTextFile "${filePath}": rejected by user`,
 					files: [],
 				})
+				return { regen: true }
 			}
+			reportToolCallStart(acp, callId, `Write ${filePath}`, 'edit')
 		}
+		try {
+			await writeTextFile(agentContext, { sessionId, path: filePath, content: body })
+			if (acp) reportToolCallEnd(acp, callId, 'completed', `Wrote ${body.length} chars`, [{ path: filePath }])
+			args.AddLongTimeLog({
+				role: 'tool', name: 'acp-write-file',
+				content: `write_text_file ${filePath}: ok (${body.length} chars)`,
+				files: [],
+			})
+		} catch (error) {
+			if (acp) reportToolCallEnd(acp, callId, 'failed', error.message)
+			args.AddLongTimeLog({
+				role: 'system', name: 'acp-write-file',
+				content: `Error writeTextFile "${filePath}": ${error.message}`,
+				files: [],
+			})
+		}
+		return { regen: true }
+	}
 
-		// ── terminal (with permission) ──
-		for (const match of terminalMatches) {
-			args.MaskHandledCall?.(match[0])
-			const command = match[1]
-			const argsStr = match[2] || ''
-			const cwd = match[3] || undefined
-			const envStr = match[4] || ''
-			const callId = `acp_term_${++toolCallCounter}`
+	/**
+	 * `<acp-terminal command="..." args="..." cwd="..." env="..." />`：经授权后在 IDE 终端运行命令。
+	 * @param {object} reply - 回复对象。
+	 * @param {object} args - 请求上下文。
+	 * @param {object} call - 调用对象。
+	 * @returns {Promise<object>} 处理结果。
+	 */
+	async function terminalReplyHandler(reply, args, call) {
+		const acp = getACPContext(args)
+		const command = call.params.command
+		const argsStr = call.params.args || ''
+		const cwd = call.params.cwd || undefined
+		const envStr = call.params.env || ''
+		const callId = `acp_term_${++toolCallCounter}`
 
-			const termArgs = argsStr.split(/\s+/).filter(Boolean)
-			const envVars = envStr.split(',')
-				.map(pair => {
-					const idx = pair.indexOf('=')
-					return idx > 0 ? { name: pair.slice(0, idx).trim(), value: pair.slice(idx + 1).trim() } : null
-				})
-				.filter(Boolean)
+		const termArgs = argsStr.split(/\s+/).filter(Boolean)
+		const envVars = envStr.split(',')
+			.map(pair => {
+				const idx = pair.indexOf('=')
+				return idx > 0 ? { name: pair.slice(0, idx).trim(), value: pair.slice(idx + 1).trim() } : null
+			})
+			.filter(Boolean)
 
-			if (acp) {
-				const allowed = await requestPermission(acp, callId, `Run: ${command} ${argsStr}`, `Execute "${command} ${argsStr}" in terminal`)
-				if (!allowed) {
-					reportToolCallEnd(acp, callId, 'failed', 'User rejected')
-					args.AddLongTimeLog({
-						role: 'system', name: 'acp-terminal',
-						content: `terminal "${command} ${argsStr}": rejected by user`,
-						files: [],
-					})
-					continue
-				}
-			}
-
-			if (acp) reportToolCallStart(acp, callId, `$ ${command} ${argsStr}`, 'execute')
-			try {
-				const termParams = { sessionId, command, args: termArgs }
-				if (cwd) termParams.cwd = cwd
-				if (envVars.length) termParams.env = envVars
-				const terminal = await createTerminal(agentContext, termParams)
-				try {
-					// 将终端嵌入 tool_call 内容以获得实时输出
-					if (acp)
-						sessionUpdate(acp.agentContext, {
-							sessionId: acp.sessionId,
-							update: {
-								sessionUpdate: 'tool_call_update', toolCallId: callId,
-								content: [{ type: 'terminal', terminalId: terminal.id ?? callId }],
-							},
-						})
-
-					const exitStatus = await terminal.waitForExit()
-					const outputResult = await terminal.currentOutput()
-
-					const exitCode = exitStatus?.exitCode ?? exitStatus?.signal ?? 'unknown'
-					const output = outputResult?.output ?? ''
-					const truncated = outputResult?.truncated ? ' (truncated)' : ''
-
-					if (acp) reportToolCallEnd(acp, callId, exitCode === 0 ? 'completed' : 'failed', `exit ${exitCode}${truncated}`)
-					args.AddLongTimeLog({
-						role: 'tool', name: 'acp-terminal',
-						content: `$ ${command} ${argsStr}\nexit code: ${exitCode}${truncated}\n\`\`\`\n${output}\n\`\`\``,
-						files: [],
-					})
-				}
-				finally {
-					await terminal.release()
-				}
-			} catch (error) {
-				if (acp) reportToolCallEnd(acp, callId, 'failed', error.message)
+		if (acp) {
+			const allowed = await requestPermission(acp, callId, `Run: ${command} ${argsStr}`, `Execute "${command} ${argsStr}" in terminal`)
+			if (!allowed) {
+				reportToolCallEnd(acp, callId, 'failed', 'User rejected')
 				args.AddLongTimeLog({
 					role: 'system', name: 'acp-terminal',
-					content: `Error running "${command} ${argsStr}": ${error.message}`,
+					content: `terminal "${command} ${argsStr}": rejected by user`,
 					files: [],
 				})
+				return { regen: true }
 			}
 		}
 
-		return true
+		if (acp) reportToolCallStart(acp, callId, `$ ${command} ${argsStr}`, 'execute')
+		try {
+			const termParams = { sessionId, command, args: termArgs }
+			if (cwd) termParams.cwd = cwd
+			if (envVars.length) termParams.env = envVars
+			const terminal = await createTerminal(agentContext, termParams)
+			try {
+				// 将终端嵌入 tool_call 内容以获得实时输出
+				if (acp)
+					sessionUpdate(acp.agentContext, {
+						sessionId: acp.sessionId,
+						update: {
+							sessionUpdate: 'tool_call_update', toolCallId: callId,
+							content: [{ type: 'terminal', terminalId: terminal.id ?? callId }],
+						},
+					})
+
+				const exitStatus = await terminal.waitForExit()
+				const outputResult = await terminal.currentOutput()
+
+				const exitCode = exitStatus?.exitCode ?? exitStatus?.signal ?? 'unknown'
+				const output = outputResult?.output ?? ''
+				const truncated = outputResult?.truncated ? ' (truncated)' : ''
+
+				if (acp) reportToolCallEnd(acp, callId, exitCode === 0 ? 'completed' : 'failed', `exit ${exitCode}${truncated}`)
+				args.AddLongTimeLog({
+					role: 'tool', name: 'acp-terminal',
+					content: `$ ${command} ${argsStr}\nexit code: ${exitCode}${truncated}\n\`\`\`\n${output}\n\`\`\``,
+					files: [],
+				})
+			}
+			finally {
+				await terminal.release()
+			}
+		} catch (error) {
+			if (acp) reportToolCallEnd(acp, callId, 'failed', error.message)
+			args.AddLongTimeLog({
+				role: 'system', name: 'acp-terminal',
+				content: `Error running "${command} ${argsStr}": ${error.message}`,
+				files: [],
+			})
+		}
+		return { regen: true }
 	}
+
+	/**
+	 * ACP 标签的 ReplyHandler 组（按客户端能力条件性启用）。
+	 * @type {ReplyHandler_t[]}
+	 */
+	const replyHandlers = [
+		defineReplyHandler({ tag: 'thinking', handle: thinkingReplyHandler }),
+		defineReplyHandler({ tag: 'acp-plan', handle: planReplyHandler }),
+	]
+	if (canRead)
+		replyHandlers.push(defineReplyHandler({ tag: 'acp-read-file', params: { path: 'string', line: 'number', limit: 'number' }, handle: readFileReplyHandler }))
+	if (canWrite)
+		replyHandlers.push(defineReplyHandler({ tag: 'acp-write-file', params: { path: 'string' }, handle: writeFileReplyHandler }))
+	if (canTerminal)
+		replyHandlers.push(defineReplyHandler({ tag: 'acp-terminal', params: { command: 'string', args: 'string', cwd: 'string', env: 'string' }, handle: terminalReplyHandler }))
 
 	/**
 	 * GetPrompt 实现。
@@ -394,8 +403,8 @@ ${canRead ? `\
 		interfaces: {
 			chat: {
 				GetPrompt,
-				GetReplyPreviewUpdater: defineToolUseBlocks(toolBlocks),
-				ReplyHandler: replyHandler,
+				GetReplyPreviewUpdater: defineReplyPreviews(replyHandlers),
+				ReplyHandler: defineReplyHandlers(replyHandlers),
 			},
 		},
 	}

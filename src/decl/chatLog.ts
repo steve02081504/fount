@@ -16,12 +16,6 @@ export class chatReply_t {
 	content: string
 	content_for_show?: string
 	content_for_edit?: string
-	/**
-	 * RPH 解析用的一次性工作副本：由回复管线在每轮生成开始时从 `content` 派生，
-	 * handler 在其上解析并掩除已处理的调用段（避免工具 A 的参数触发工具 B 的调用）。
-	 * 不持久化、不展示、不发送给 AI；管线结束后删除。
-	 */
-	content_for_handle?: string
 	locale?: string
 	content_warning?: string
 	sensitive_media?: boolean
@@ -51,10 +45,40 @@ export type CharReplyPreviewUpdater_t = (
 ) => void
 
 /**
+ * 工具执行实时输出事件（`GenerationOptions_t.onToolOutput` 的载荷）。
+ *
+ * 一次 `<run-*>` / `<inline-*>` 调用产生一串事件：`start`（携带代码/语言）→ 若干 `chunk`（stdout/stderr 分片）→ `end`。
+ * `callId` 在一次调用内稳定，供前端把分片归并到同一张实时工具卡。
+ */
+export type ToolOutputEvent_t = {
+	/** 本次调用的稳定 id（同一调用的各分片一致）。 */
+	callId: string
+	/** 事件阶段。 */
+	phase: 'start' | 'chunk' | 'end'
+	/** 工具名（如 `code-execution.run-js`）。 */
+	name: string
+	/** 代码语言标签（`phase === 'start'` 时给出）。 */
+	lang?: string
+	/** 代码原文（`phase === 'start'` 时给出）。 */
+	code?: string
+	/** 输出通道（`phase === 'chunk'` 时给出）。 */
+	stream?: 'stdout' | 'stderr'
+	/** 输出分片文本（`phase === 'chunk'` 时给出）。 */
+	data?: string
+}
+
+/**
  * 生成选项中的回复预览钩子。
  */
 export type GenerationOptions_t = {
 	replyPreviewUpdater?: ReplyPreviewUpdater_t
+	/**
+	 * 工具执行实时输出钩子：code-execution 等插件在执行 `<run-*>` / `<inline-*>` 时逐块回调。
+	 * 缺省 undefined 时不流式；交互壳（如 code shell）设置后经自身通道转发到前端。
+	 */
+	onToolOutput?: (event: ToolOutputEvent_t) => void
+	/** 远程流式回显时，主机侧实现 `interfaces.subfount.RemoteCallBack` 的 partpath（仅在同时设置 `onToolOutput` 时使用）。 */
+	remoteToolCallbackPartpath?: string
 	signal?: AbortSignal
 	supported_functions?: {
 		markdown?: boolean

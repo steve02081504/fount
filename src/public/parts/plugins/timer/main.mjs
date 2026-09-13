@@ -1,6 +1,13 @@
+import { defineReplyHandlers } from '../../shells/chat/src/reply/defineReplyHandler.mjs'
 import { handleTimerGroupFallback, makeTimerSystemEntry } from '../../shells/chat/src/timerTrigger.mjs'
 
-import { timerReplyHandler, PLUGIN_PATH } from './handler.mjs'
+import {
+	listTimersReplyHandler,
+	PLUGIN_PATH,
+	registerChannelHandler,
+	removeTimerReplyHandler,
+	setTimerReplyHandler,
+} from './handler.mjs'
 import { getCharTimerPrompt } from './prompt.mjs'
 import { getChannels, setPendingNotification } from './state.mjs'
 
@@ -44,7 +51,12 @@ export default {
 	interfaces: {
 		chat: {
 			GetPrompt: getCharTimerPrompt,
-			ReplyHandler: timerReplyHandler,
+			ReplyHandler: defineReplyHandlers([
+				registerChannelHandler,
+				setTimerReplyHandler,
+				listTimersReplyHandler,
+				removeTimerReplyHandler,
+			]),
 		},
 		timers: {
 			/**

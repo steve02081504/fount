@@ -1,86 +1,13 @@
-import { getChatI18n, inferCodeLanguageFromPath, renderMarkdownCodeBlock, defineToolUseBlocks } from '../../shells/chat/src/streaming/index.mjs'
+import { defineReplyHandlers } from '../../shells/chat/src/reply/defineReplyHandler.mjs'
+import { defineReplyPreviews } from '../../shells/chat/src/streaming/index.mjs'
 
-import { fileOperationsReplyHandler } from './handler.mjs'
+import { fileOperationsReplyHandlers } from './handler.mjs'
 import { getFileOperationsPrompt } from './prompt.mjs'
 
 const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
-/**
- * 渲染“按目标文件高亮 + 标题”的代码块。
- * @param {object} args - 预览更新参数。
- * @param {string} filepath - 文件路径。
- * @param {string} content - 要展示的内容。
- * @param {'chat.message.view.tool.readingFilepath'|'chat.message.view.tool.replacingFilepath'|'chat.message.view.tool.overridingFilepath'} titleKey - 标题 i18n 键。
- * @returns {string} 渲染后的 Markdown 代码块。
- */
-function renderFileOperationCodeBlock(args, filepath, content, titleKey) {
-	const lang = inferCodeLanguageFromPath(filepath)
-	const title = getChatI18n(args, titleKey, { filepath })
-	return renderMarkdownCodeBlock(content, { lang, title })
-}
-
-/**
- * 将 <view-file> 中的路径列表渲染为单个代码块（正文为路径列表，不再逐行拆块）。
- * @param {string} content - 标签内容。
- * @param {object} args - 预览更新参数。
- * @returns {string} 渲染结果。
- */
-function renderViewFileBlock(content, args) {
-	const paths = content
-		.split('\n')
-		.map(x => x.trim())
-		.filter(Boolean)
-	if (!paths.length) return content
-	if (paths.length === 1)
-		return renderFileOperationCodeBlock(args, paths[0], paths[0], 'chat.message.view.tool.readingFilepath')
-	return renderMarkdownCodeBlock(paths.join('\n'), {
-		title: getChatI18n(args, 'chat.message.view.tool.readingFiles', { count: paths.length }),
-	})
-}
-
-/**
- * 渲染 <replace-file> 内容，按每个目标文件分段展示。
- * @param {string} content - 标签内主体（不含起止标签）。
- * @param {object} args - 预览更新参数。
- * @returns {string} 渲染结果。
- */
-function renderReplaceFileBlock(content, args) {
-	const fileBlocks = [...content.matchAll(/<file\s+path="(?<filepath>[^"]+)">(?<filecontent>[\S\s]*?)<\/file>/g)]
-	if (!fileBlocks.length) {
-		const filepath = content.match(/<file\s+path="([^"]+)"/)?.[1] || 'unknown'
-		return renderFileOperationCodeBlock(args, filepath, content, 'chat.message.view.tool.replacingFilepath')
-	}
-	return fileBlocks.map(match => {
-		const { filepath, filecontent } = match.groups
-		return renderFileOperationCodeBlock(args, filepath, filecontent, 'chat.message.view.tool.replacingFilepath')
-	}).join('\n\n')
-}
-
-/**
- * 渲染 <override-file> 内容。
- * @param {string} content - 标签内主体（不含起止标签）。
- * @param {object} args - 预览更新参数。
- * @param {{ groups: { fountToolStart: string } }} [meta] - `defineToolUseBlocks` 传入的具名组。
- * @returns {string} 渲染结果。
- */
-function renderOverrideFileBlock(content, args, meta) {
-	const startTag = meta?.groups?.fountToolStart ?? ''
-	const filepath = startTag.match(/path="([^"]+)"/)?.[1] || 'unknown'
-	return renderFileOperationCodeBlock(args, filepath, content, 'chat.message.view.tool.overridingFilepath')
-}
-
-/**
- * 渲染 <glob> / <grep> 待执行占位：标题为本地化“正在搜索…”，正文为标签内容。
- * @param {string} content - 标签主体（glob 模式或 grep 正则）。
- * @param {object} args - 预览更新参数。
- * @returns {string} 渲染结果。
- */
-function renderSearchBlock(content, args) {
-	const keyword = content.trim()
-	return renderMarkdownCodeBlock(keyword, {
-		title: getChatI18n(args, 'chat.message.view.tool.searchingContent', { content: keyword }),
-	})
-}
+/** 组合后的 file-operations ReplyHandler。 */
+const fileOperationsReplyHandler = defineReplyHandlers(fileOperationsReplyHandlers)
 
 /**
  * 文件操作插件主模块。
@@ -102,42 +29,7 @@ export default {
 		chat: {
 			GetPrompt: getFileOperationsPrompt,
 			ReplyHandler: fileOperationsReplyHandler,
-			GetReplyPreviewUpdater: defineToolUseBlocks([
-				{
-					start: /<list-machines[^>]*>/,
-					end: '</list-machines>',
-					/**
-					 * 渲染待执行的 `<list-machines>` 占位。
-					 * @returns {string} 占位文本。
-					 */
-					renderPending: () => '`list-machines`',
-				},
-				{
-					start: /<view-file[^>]*>/,
-					end: '</view-file>',
-					renderPending: renderViewFileBlock,
-				},
-				{
-					start: /<replace-file[^>]*>/,
-					end: '</replace-file>',
-					renderPending: renderReplaceFileBlock,
-				},
-				{
-					start: /<override-file[^>]*>/,
-					end: '</override-file>',
-					renderPending: renderOverrideFileBlock,
-				},
-				{
-					start: /<glob(?![^>]*\/>)[^>]*>/,
-					end: '</glob>',
-					renderPending: renderSearchBlock,
-				},
-				{
-					start: /<grep(?![^>]*\/>)[^>]*>/,
-					end: '</grep>',
-					renderPending: renderSearchBlock,
-				},
-			]),
+			GetReplyPreviewUpdater: defineReplyPreviews(fileOperationsReplyHandler),
 		},
 	},
 }

@@ -120,12 +120,48 @@ export async function putTabs(tabs, activeTab) {
 }
 
 /**
- * `!` 模式 shell 执行。
+ * `!` 模式 shell 流式执行（WS）：逐块回显 stdout/stderr，最后 resolve 完整结果。
  * @param {{machine: string, workdir: string, shell?: string, command: string}} options - 执行参数。
- * @returns {Promise<{code?: number, stdout?: string, stderr?: string, stdall?: string}>} 执行结果。
+ * @param {{onOutput?: (stream: 'stdout'|'stderr', data: string) => void, signal?: AbortSignal}} [callbacks] - 输出回调与中止信号。
+ * @returns {Promise<{code?: number, stdout?: string, stderr?: string, stdall?: string, elapsedMs?: number}>} 执行结果。
  */
-export async function execShell(options) {
-	return sendJson(`${API_BASE}/exec`, options)
+export function streamExec(options, { onOutput, signal } = {}) {
+	return new Promise((resolve, reject) => {
+		if (signal?.aborted) {
+			reject(new DOMException('aborted', 'AbortError'))
+			return
+		}
+		const protocol = location.protocol === 'https:' ? 'wss' : 'ws'
+		const ws = new WebSocket(`${protocol}://${location.host}/ws/parts/shells:code/exec`)
+		const id = crypto.randomUUID().slice(0, 8)
+		let settled = false
+		/**
+		 * 结束并清理连接。
+		 * @param {(value: any) => void} fn - resolve / reject。
+		 * @param {any} value - 结果或错误。
+		 * @returns {void}
+		 */
+		const finish = (fn, value) => {
+			if (settled) return
+			settled = true
+			try { ws.close() } catch { /* 已关闭 */ }
+			fn(value)
+		}
+		ws.addEventListener('open', () => {
+			try { ws.send(JSON.stringify({ id, ...options })) }
+			catch (error) { finish(reject, error) }
+		})
+		ws.addEventListener('message', event => {
+			const msg = JSON.parse(String(event.data))
+			if (msg.id && msg.id !== id) return
+			if (msg.type === 'output') onOutput?.(msg.stream, msg.data)
+			else if (msg.type === 'done') finish(resolve, msg)
+			else if (msg.type === 'error') finish(reject, new Error(msg.error || 'exec failed'))
+		})
+		ws.addEventListener('error', () => finish(reject, new Error('websocket failed')))
+		ws.addEventListener('close', () => finish(reject, new Error('websocket closed')))
+		signal?.addEventListener('abort', () => finish(reject, new DOMException('aborted', 'AbortError')), { once: true })
+	})
 }
 
 /**

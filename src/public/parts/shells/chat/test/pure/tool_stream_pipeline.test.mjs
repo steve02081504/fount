@@ -9,8 +9,9 @@ import { assertEquals, assertMatch, assertStringIncludes } from 'jsr:@std/assert
 
 import { formatUpwardContext } from '../../../../plugins/file-operations/src/context_files.mjs'
 import { applySlices } from '../../public/shared/streamSlices.mjs'
+import { defineReplyHandler } from '../../src/reply/defineReplyHandler.mjs'
 import { generateDiff } from '../../src/streaming/diff.mjs'
-import { defineToolUseBlocks, renderMarkdownCodeBlock } from '../../src/streaming/index.mjs'
+import { defineReplyPreviews, renderMarkdownCodeBlock } from '../../src/streaming/index.mjs'
 
 const fileOpsMain = (await import('../../../../plugins/file-operations/main.mjs')).default
 
@@ -239,8 +240,18 @@ Deno.test('向上上下文块也用安全围栏', () => {
 	assertEquals(fence?.length >= 4, true, `围栏应长于内容中的反引号串: ${JSON.stringify(text)}`)
 })
 
+/**
+ * 空处理器。
+ * @returns {Promise<object>} 结果
+ */
+async function noopReplyHandler() {
+	return {}
+}
+
 Deno.test('未闭合标签的占位卡补全行边界且为块级 HTML', () => {
-	const updater = defineToolUseBlocks([{ start: '<do-x>', end: '</do-x>' }])(() => { })
+	const updater = defineReplyPreviews([
+		defineReplyHandler({ tag: 'do-x', handle: noopReplyHandler }),
+	])(() => { })
 	const reply = { content: '我马上执行<do-x>' }
 	updater(previewArgs, reply)
 	// 占位卡是块级 HTML：可信作者渲染档（StreamRenderer 按 isTrustedMarkdownAuthor 升档）下才保留

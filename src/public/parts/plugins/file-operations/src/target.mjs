@@ -6,6 +6,7 @@
  * @typedef {import('../../../../../decl/chatLog.ts').chatReplyRequest_t} chatReplyRequest_t
  */
 import { Buffer } from 'node:buffer'
+import { randomUUID } from 'node:crypto'
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
@@ -15,7 +16,10 @@ import { async_eval } from 'npm:@steve02081504/async-eval'
 import { available, shell_exec_map } from 'npm:@steve02081504/exec'
 
 import { execShellWithTimeout, KILL_GRACE_MS, SHELL_DEFAULT_TIMEOUT_MS } from '../../../../../scripts/shell_guard.mjs'
+import { parseAttrs } from '../../../shells/chat/src/tags/index.mjs'
 import { executeCodeOnSubfount, executeShellOnSubfount, getAllSubfounts } from '../../../shells/subfounts/src/api.mjs'
+
+import { remoteJsStreamScript, remoteShellStreamScript, withRemoteStreamSink } from './remote_stream.mjs'
 
 /**
  * 每路径写锁：串行化同一目标路径上的并发写入，避免交叉覆盖或读到半截文件。
@@ -55,9 +59,9 @@ function withWriteLock(key, fn) {
 /**
  * 统一目标执行器。
  * @typedef {object} targetExecutor_t
- * @property {(shell: string|null, code: string, options?: {timeoutMs?: number|null}) => Promise<any>} execShell - 执行 shell（shell 为 null 时按目标机器默认 shell）；`options.timeoutMs` 覆盖默认超时（null 表示不限时），结果附 `timedOut` / `elapsedMs`。
+ * @property {(shell: string|null, code: string, options?: {timeoutMs?: number|null, onOutput?: (stream: 'stdout'|'stderr', data: string) => void, callbackPartpath?: string}) => Promise<any>} execShell - 执行 shell（shell 为 null 时按目标机器默认 shell）；`options.timeoutMs` 覆盖默认超时（null 表示不限时），结果附 `timedOut` / `elapsedMs`。本机 `onOutput` 直接流式回调；远程需同时给 `callbackPartpath`（主机侧实现 `interfaces.subfount.RemoteCallBack` 的 part）以经回调通道流式回显。
  * @property {(codeOrFn: string|Function, ...args: any[]) => Promise<any>} execJs - 执行 JS（返回 EvalResult.result）；函数经参数注入序列化，字符串原样执行。
- * @property {(code: string, timeoutMs: number|null) => Promise<any>} [execJsWithTimeout] - 远程执行 JS 并放宽请求超时（仅远程执行器实现）。
+ * @property {(code: string, timeoutMs: number|null, streamOptions?: {onOutput?: (stream: 'stdout'|'stderr', data: string) => void, callbackPartpath?: string}) => Promise<any>} [execJsWithTimeout] - 远程执行 JS 并放宽请求超时（仅远程执行器实现）；给 `onOutput` + `callbackPartpath` 时流式回显 console 输出。
  * @property {(p: string) => Promise<string>} resolvePath - 将路径解析为目标机器上的绝对路径（相对路径基于工作目录，支持 `~`）。
  * @property {(p: string) => Promise<string>} readTextFile - 读文本文件。
  * @property {(p: string) => Promise<Buffer>} readFileBuffer - 读二进制文件。
@@ -227,13 +231,27 @@ function createLocalExecutor(target) {
 		 * 执行 shell 命令（shell 为 null 时用 exec 默认 shell），支持超时杀进程树。
 		 * @param {string|null} shell - shell 名。
 		 * @param {string} code - 命令。
-		 * @param {{timeoutMs?: number|null}} [options] - 执行选项。
+		 * @param {{timeoutMs?: number|null, onOutput?: (stream: 'stdout'|'stderr', data: string) => void}} [options] - 执行选项；`onOutput` 逐块回显。
 		 * @returns {Promise<any>} 执行结果（附 `timedOut` / `elapsedMs`；出错时抛出并附带该二字段）。
 		 */
 		async execShell(shell, code, options = {}) {
 			if (shell && !shell_exec_map[shell]) throw new Error(`Unsupported shell: ${shell}`)
 			const timeoutMs = options && 'timeoutMs' in options ? options.timeoutMs : SHELL_DEFAULT_TIMEOUT_MS
-			const { result, timedOut, elapsedMs } = await execShellWithTimeout(shell, code, spawnOptions, timeoutMs)
+			const streamOptions = typeof options.onOutput === 'function' ? {
+				/**
+				 * 转发 stdout 分片。
+				 * @param {string} data - 分片文本。
+				 * @returns {void}
+				 */
+				on_stdout: data => options.onOutput('stdout', data),
+				/**
+				 * 转发 stderr 分片。
+				 * @param {string} data - 分片文本。
+				 * @returns {void}
+				 */
+				on_stderr: data => options.onOutput('stderr', data),
+			} : {}
+			const { result, timedOut, elapsedMs } = await execShellWithTimeout(shell, code, { ...spawnOptions, ...streamOptions }, timeoutMs)
 			if (result instanceof Error) throw Object.assign(result, { timedOut, elapsedMs })
 			return { ...result, timedOut, elapsedMs }
 		},
@@ -371,20 +389,40 @@ function createRemoteExecutor(username, target) {
 	 * @returns {Promise<any>} result 值。
 	 */
 	const withPath = (bodyFactory, p) => run(remoteFsScript(bodyFactory(`path.resolve(${JSON.stringify(base || '.')}, ${JSON.stringify(p)})`)))
+	/**
+	 * 经 `run_code` + 回调通道执行远程流式脚本（无需 P2P 协议支持）。
+	 * @param {(execId: string) => string} scriptFactory - 以流式分派 id 生成脚本。
+	 * @param {(stream: 'stdout'|'stderr', data: string) => void} onOutput - 逐块输出回调。
+	 * @param {string} callbackPartpath - 主机侧实现 `interfaces.subfount.RemoteCallBack` 的 partpath。
+	 * @param {number|null} timeoutMs - 超时毫秒（null = 不限时）。
+	 * @returns {Promise<any>} 解包后的 result 值。
+	 */
+	const runStreaming = async (scriptFactory, onOutput, callbackPartpath, timeoutMs) => {
+		const execId = randomUUID()
+		return await withRemoteStreamSink(execId, onOutput, async () =>
+			unwrapEval(await executeCodeOnSubfount(username, machine, scriptFactory(execId),
+				{ username, partpath: callbackPartpath }, null, {
+					requestTimeoutMs: timeoutMs === null ? null : timeoutMs + KILL_GRACE_MS + 5000,
+				})))
+	}
 	return {
 		/**
 		 * 执行 shell 命令（shell 为 null 时由目标机器 exec 决定默认），超时由主机经 pid + kill 控制。
+		 * 传入 `onOutput` + `callbackPartpath` 时经回调通道流式回显（分机侧自行超时杀进程树）。
 		 * @param {string|null} shell - shell 名。
 		 * @param {string} code - 命令。
-		 * @param {{timeoutMs?: number|null}} [options] - 执行选项。
+		 * @param {{timeoutMs?: number|null, onOutput?: (stream: 'stdout'|'stderr', data: string) => void, callbackPartpath?: string}} [options] - 执行选项。
 		 * @returns {Promise<any>} 执行结果（附 `timedOut` / `elapsedMs`）。
 		 */
-		execShell: async (shell, code, options = {}) => await executeShellOnSubfount(username, machine, code, shell, {
-			no_ansi_terminal_sequences: true,
-			...base ? { cwd: base } : {},
-		}, null, {
-			timeoutMs: options && 'timeoutMs' in options ? options.timeoutMs : SHELL_DEFAULT_TIMEOUT_MS,
-		}),
+		execShell: async (shell, code, options = {}) => {
+			const timeoutMs = options && 'timeoutMs' in options ? options.timeoutMs : SHELL_DEFAULT_TIMEOUT_MS
+			if (typeof options.onOutput === 'function' && options.callbackPartpath)
+				return await runStreaming(id => remoteShellStreamScript(shell, code, base, timeoutMs, id), options.onOutput, options.callbackPartpath, timeoutMs)
+			return await executeShellOnSubfount(username, machine, code, shell, {
+				no_ansi_terminal_sequences: true,
+				...base ? { cwd: base } : {},
+			}, null, { timeoutMs })
+		},
 		/**
 		 * 执行 JS。
 		 * @param {string|Function} codeOrFn - 函数或代码字符串。
@@ -394,13 +432,19 @@ function createRemoteExecutor(username, target) {
 		execJs: async (codeOrFn, ...args) => await run(lambdaSource(codeOrFn, args)),
 		/**
 		 * 远程执行 JS 并放宽 P2P 请求超时，供主机侧 race 超时使用。
+		 * 传入 `onOutput` + `callbackPartpath` 时经回调通道流式回显 console 输出。
 		 * @param {string} code - 代码字符串。
 		 * @param {number|null} timeoutMs - 主机侧超时（null 表示不限时）。
+		 * @param {{onOutput?: (stream: 'stdout'|'stderr', data: string) => void, callbackPartpath?: string}} [streamOptions] - 流式选项。
 		 * @returns {Promise<any>} EvalResult.result（出错时抛出）。
 		 */
-		execJsWithTimeout: async (code, timeoutMs) => await unwrapEval(await executeCodeOnSubfount(username, machine, code, null, null, {
-			requestTimeoutMs: timeoutMs === null ? null : timeoutMs + KILL_GRACE_MS,
-		})),
+		execJsWithTimeout: async (code, timeoutMs, streamOptions = {}) => {
+			if (typeof streamOptions.onOutput === 'function' && streamOptions.callbackPartpath)
+				return await runStreaming(id => remoteJsStreamScript(code, id), streamOptions.onOutput, streamOptions.callbackPartpath, timeoutMs)
+			return await unwrapEval(await executeCodeOnSubfount(username, machine, code, null, null, {
+				requestTimeoutMs: timeoutMs === null ? null : timeoutMs + KILL_GRACE_MS,
+			}))
+		},
 		/**
 		 * 将路径解析为目标机器上的绝对路径。
 		 * @param {string} p - 路径。
@@ -489,18 +533,6 @@ export function parseVolumeLabels(output) {
 }
 
 /**
- * 解析标签属性串（machine / workdir / path 等 `k="v"` 形式）。
- * @param {string} [attrs] - 属性串。
- * @returns {Record<string, string>} 属性表。
- */
-export function parseTagAttrs(attrs) {
-	const result = {}
-	for (const m of (attrs || '').matchAll(/([A-Za-z_][\w-]*)\s*=\s*"([^"]*)"/g))
-		result[m[1]] = m[2]
-	return result
-}
-
-/**
  * 创建基于 GetReply 请求的标签属性 → 执行器解析器（同一目标复用执行器实例）。
  * @param {chatReplyRequest_t} args - GetReply 请求（读 `args.workdir` 默认值与 `args.username`）。
  * @returns {(attrs?: string|Record<string, string>) => targetExecutor_t} 执行器获取函数。
@@ -514,7 +546,7 @@ export function createArgsExecutorResolver(args) {
 	 * @returns {targetExecutor_t} 执行器。
 	 */
 	return attrs => {
-		const explicit = typeof attrs === 'string' ? parseTagAttrs(attrs) : attrs || {}
+		const explicit = typeof attrs === 'string' ? parseAttrs(attrs) : attrs || {}
 		const target = resolveTarget(args, explicit)
 		const key = target.machine + '|' + (target.workdir || '')
 		if (!executors.has(key))

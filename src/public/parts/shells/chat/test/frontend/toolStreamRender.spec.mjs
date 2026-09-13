@@ -191,7 +191,7 @@ test.describe('tool stream render', () => {
 	})
 
 	test('未闭合标签的占位卡在行边界上完整渲染（可信档）', async ({ modulePage }) => {
-		// 镜像 defineToolUseBlocks renderToolCallingPlaceholder（html + fount_i18nkeys 关闭时的内联文案形态）
+		// 镜像 reply/display.mjs renderToolCallingPlaceholder（html + fount_i18nkeys 关闭时的内联文案形态）
 		const show = '我马上执行<div class="tool-call-placeholder card my-2 bg-base-100 text-sm shadow-xl">\n\t<div class="card-body">\n\t<span class="tool-call-placeholder-text">正在调用工具</span>\n\t</div>\n</div>\n'
 		const frames = await streamShow(modulePage, [show], { trusted: true })
 		const check = await modulePage.run(async arg => {

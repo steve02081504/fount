@@ -6,6 +6,7 @@ import open from 'npm:open'
 
 import { config } from '../../../../server/server.mjs'
 import { loadShellData, saveShellData } from '../../../../server/setting_loader.mjs'
+import { dispatchRemoteStreamOutput } from '../../plugins/file-operations/src/remote_stream.mjs'
 
 import { setEndpoints } from './src/endpoints.mjs'
 
@@ -69,6 +70,17 @@ export default {
 	},
 	interfaces: {
 		web: {},
+		/**
+		 * 分机回调：接收远程流式执行经 `callback` 回传的输出分片并按 execId 分派。
+		 */
+		subfount: {
+			/**
+			 * 处理分机经 `callback` 回传的流式输出。
+			 * @param {{data?: object}} payload - 回调载荷（`data` 为 `{ execId, stream, data }`）。
+			 * @returns {void}
+			 */
+			RemoteCallBack: ({ data }) => { dispatchRemoteStreamOutput(data) },
+		},
 		invokes: {
 			/**
 			 * 处理 CLI / IPC 参数：以 cwd 为工作区打开 code 页面。

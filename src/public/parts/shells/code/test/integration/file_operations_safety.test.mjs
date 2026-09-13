@@ -8,8 +8,19 @@ import path from 'node:path'
 
 import { assert, assertEquals } from 'jsr:@std/assert'
 
-import { fileOperationsReplyHandler } from '../../../../plugins/file-operations/handler.mjs'
+import { fileOperationsReplyHandlers } from '../../../../plugins/file-operations/handler.mjs'
 import { applyEol, applyReplacement, detectTextStyle, renderLineDiff, restoreBom, similarityRatio, stripBom, toLf } from '../../../../plugins/file-operations/src/edit_safety.mjs'
+import { runReplyHandlers } from '../../../chat/src/reply/handlerPipeline.mjs'
+
+/**
+ * 通过回复管线运行文件操作 handler。
+ * @param {string} content 原始生成
+ * @param {object} args 请求上下文
+ * @returns {Promise<boolean>} 是否建议重新生成
+ */
+async function runFileOps(content, args) {
+	return runReplyHandlers({ content, extension: {} }, args, fileOperationsReplyHandlers)
+}
 
 /**
  * 创建临时目录。
@@ -122,7 +133,7 @@ Deno.test('handler replace preserves CRLF file semantics', async () => {
 		await fs.writeFile(path.join(root, 'f.txt'), 'line1\r\nline2\r\n', 'utf8')
 		const run = createHandlerArgs(root)
 		const content = '<replace-file><file path="f.txt"><replacement><search>line1\nline2</search><replace>LINE1\nLINE2</replace></replacement></file></replace-file>'
-		assertEquals(await fileOperationsReplyHandler({ content, content_for_handle: content }, run.args), true)
+		assertEquals(await runFileOps(content, run.args), true)
 		const written = await fs.readFile(path.join(root, 'f.txt'), 'utf8')
 		assertEquals(written, 'LINE1\r\nLINE2\r\n')
 	}
@@ -140,7 +151,7 @@ Deno.test('handler rejects empty and multi-match replacements without writing', 
 			+ '<replacement><search>   </search><replace>x</replace></replacement>'
 			+ '<replacement><search>dup</search><replace>one</replace></replacement>'
 			+ '</file></replace-file>'
-		await fileOperationsReplyHandler({ content, content_for_handle: content }, run.args)
+		await runFileOps(content, run.args)
 		assertEquals(await fs.readFile(path.join(root, 'f.txt'), 'utf8'), 'dup\ndup\n', 'multi/empty must not modify file')
 		const text = logText(run.logs)
 		assert(text.includes('命中 2 处'), `log should mention multi-match: ${text}`)
@@ -156,7 +167,7 @@ Deno.test('handler replaceAll replaces every occurrence', async () => {
 		await fs.writeFile(path.join(root, 'f.txt'), 'dup\ndup\n', 'utf8')
 		const run = createHandlerArgs(root)
 		const content = '<replace-file><file path="f.txt"><replacement replaceAll="true"><search>dup</search><replace>one</replace></replacement></file></replace-file>'
-		await fileOperationsReplyHandler({ content, content_for_handle: content }, run.args)
+		await runFileOps(content, run.args)
 		assertEquals(await fs.readFile(path.join(root, 'f.txt'), 'utf8'), 'one\none\n')
 	}
 	finally {
@@ -169,12 +180,12 @@ Deno.test('handler blocks drastic override unless force', async () => {
 	try {
 		await fs.writeFile(path.join(root, 'f.txt'), 'alpha\nbeta\ngamma\ndelta\n', 'utf8')
 		const blocked = createHandlerArgs(root)
-		await fileOperationsReplyHandler({ content: '<override-file path="f.txt">omega</override-file>', content_for_handle: '<override-file path="f.txt">omega</override-file>' }, blocked.args)
+		await runFileOps('<override-file path="f.txt">omega</override-file>', blocked.args)
 		assertEquals(await fs.readFile(path.join(root, 'f.txt'), 'utf8'), 'alpha\nbeta\ngamma\ndelta\n')
 		assert(logText(blocked.logs).includes('被拒绝'), 'override should be rejected')
 
 		const forced = createHandlerArgs(root)
-		await fileOperationsReplyHandler({ content: '<override-file path="f.txt" force="true">omega</override-file>', content_for_handle: '<override-file path="f.txt" force="true">omega</override-file>' }, forced.args)
+		await runFileOps('<override-file path="f.txt" force="true">omega</override-file>', forced.args)
 		assertEquals(await fs.readFile(path.join(root, 'f.txt'), 'utf8'), 'omega\n')
 	}
 	finally {
@@ -186,7 +197,7 @@ Deno.test('handler override creates new files and leaves no temp residue', async
 	const root = await tempDir()
 	try {
 		const run = createHandlerArgs(root)
-		await fileOperationsReplyHandler({ content: '<override-file path="new/f.txt">hello</override-file>', content_for_handle: '<override-file path="new/f.txt">hello</override-file>' }, run.args)
+		await runFileOps('<override-file path="new/f.txt">hello</override-file>', run.args)
 		assertEquals(await fs.readFile(path.join(root, 'new', 'f.txt'), 'utf8'), 'hello\n')
 		const entries = await fs.readdir(path.join(root, 'new'))
 		assert(entries.every(name => !name.includes('.fount-write-')), `temp residue: ${entries.join(', ')}`)

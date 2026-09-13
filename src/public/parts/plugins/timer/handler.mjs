@@ -1,9 +1,12 @@
 /**
- * 回复处理器类型别名。
+ * timer 插件的 ReplyHandler 组：注册活跃频道、设置/列出/删除定时器。
+ */
+/**
  * @typedef {import('../../../../decl/pluginAPI.ts').ReplyHandler_t} ReplyHandler_t
  */
 
 import { getTimers, removeTimer, setTimer } from '../../../../server/timers.mjs'
+import { defineReplyHandler } from '../../shells/chat/src/reply/defineReplyHandler.mjs'
 
 import { registerChannel } from './state.mjs'
 
@@ -61,77 +64,93 @@ function flattenChatLog(chatLog) {
 }
 
 /**
- * timer 插件的 ReplyHandler：解析 AI 回复中的定时器 XML 指令，并注册活跃频道。
- * @type {ReplyHandler_t} timer 插件的 ReplyHandler
+ * 解析 `<set-timer>` 内容串中的定时器条目。
+ * @param {string} timerContent - `<set-timer>` 内层文本。
+ * @returns {{ itemsToSet: object[], systemLog: string }} 待设置条目与过程日志。
  */
-export async function timerReplyHandler(result, args) {
-	const { AddLongTimeLog, username, char_id, chat_name, chat_log } = args
-	// 仅注册支持追加消息的频道供定时器回调使用
-	if (args.supported_functions?.add_message) registerChannel(username, char_id, args)
+function parseTimerItems(timerContent) {
+	let systemLog = ''
+	const itemsToSet = []
+	const itemRegex = /<item>([\S\s]*?)<\/item>/gis
+	let itemMatch
+	while ((itemMatch = itemRegex.exec(timerContent)) !== null) {
+		const content = itemMatch[1]
+		const time = content.match(/<time>(.*?)<\/time>/is)?.[1]?.trim()
+		const trigger = content.match(/<trigger>(.*?)<\/trigger>/is)?.[1]?.trim()
+		const reason = content.match(/<reason>(.*?)<\/reason>/is)?.[1]?.trim()
+		const repeat = /^true$/i.test(content.match(/<repeat>(.*?)<\/repeat>/is)?.[1]?.trim() ?? '')
 
-	// 尝试从 common_chat_* 格式提取 groupId（非聊天场景下为 undefined）
-	const groupId = chat_name?.match(/^common_chat_(.+)$/)?.[1]
-
-	// 在独立工作副本上解析并掩除已处理调用段，不改写原始生成
-	/**
-	 * 取当前解析用的工作副本。
-	 * @returns {string} 优先 content_for_handle，缺失时回退原始生成。
-	 */
-	const getContent = () => result.content_for_handle
-
-	let processed = false
-
-	// ── <set-timer> ───────────────────────────────────────────────────────────
-	for (const match of [...getContent().matchAll(/<set-timer>(?<content>[\S\s]*?)<\/set-timer>/gis)]) {
-		if (!match?.groups?.content) continue
-		processed = true
-		args.MaskHandledCall?.(match[0])
-
-		const timerContent = match.groups.content
-		let systemLog = ''
-		const itemsToSet = []
-
-		const itemRegex = /<item>([\S\s]*?)<\/item>/gis
-		let itemMatch
-		while ((itemMatch = itemRegex.exec(timerContent)) !== null) {
-			const c = itemMatch[1]
-			const time = c.match(/<time>(.*?)<\/time>/is)?.[1]?.trim()
-			const trigger = c.match(/<trigger>(.*?)<\/trigger>/is)?.[1]?.trim()
-			const reason = c.match(/<reason>(.*?)<\/reason>/is)?.[1]?.trim()
-			const repeat = /^true$/i.test(c.match(/<repeat>(.*?)<\/repeat>/is)?.[1]?.trim() ?? '')
-
-			if (!reason) {
-				systemLog += '跳过无效条目：缺少 <reason>。\n'
-				console.warn('timer: 解析定时器时出错：缺少 <reason>', c)
-				continue
-			}
-			if (!time && !trigger) {
-				systemLog += `跳过"${reason}"：必须提供 <time> 或 <trigger>。\n`
-				console.warn('timer: 解析定时器时出错：缺少 <time> 或 <trigger>', c)
-				continue
-			}
-			if (time && trigger) {
-				systemLog += `跳过"${reason}"：不能同时提供 <time> 和 <trigger>。\n`
-				console.warn('timer: 解析定时器时出错：同时提供了 <time> 和 <trigger>', c)
-				continue
-			}
-
-			let finalTrigger = trigger
-			if (time)
-				try {
-					const ms = parseDuration(time)
-					finalTrigger = repeat
-						? `Date.now() - ${Date.now() + ms} % ${ms} <= 1000`
-						: `Date.now() >= ${Date.now() + ms}`
-				}
-				catch (e) {
-					systemLog += `跳过"${reason}"：时间解析失败——${e.message}\n`
-					console.warn('timer: 解析定时器时间时出错', time, e)
-					continue
-				}
-
-			itemsToSet.push({ trigger: finalTrigger, reason, repeat })
+		if (!reason) {
+			systemLog += '跳过无效条目：缺少 <reason>。\n'
+			console.warn('timer: 解析定时器时出错：缺少 <reason>', content)
+			continue
 		}
+		if (!time && !trigger) {
+			systemLog += `跳过"${reason}"：必须提供 <time> 或 <trigger>。\n`
+			console.warn('timer: 解析定时器时出错：缺少 <time> 或 <trigger>', content)
+			continue
+		}
+		if (time && trigger) {
+			systemLog += `跳过"${reason}"：不能同时提供 <time> 和 <trigger>。\n`
+			console.warn('timer: 解析定时器时出错：同时提供了 <time> 和 <trigger>', content)
+			continue
+		}
+
+		let finalTrigger = trigger
+		if (time)
+			try {
+				const ms = parseDuration(time)
+				finalTrigger = repeat
+					? `Date.now() - ${Date.now() + ms} % ${ms} <= 1000`
+					: `Date.now() >= ${Date.now() + ms}`
+			}
+			catch (e) {
+				systemLog += `跳过"${reason}"：时间解析失败——${e.message}\n`
+				console.warn('timer: 解析定时器时间时出错', time, e)
+				continue
+			}
+
+		itemsToSet.push({ trigger: finalTrigger, reason, repeat })
+	}
+	return { itemsToSet, systemLog }
+}
+
+/**
+ * 内容型 handler：注册支持追加消息的活跃频道，供定时器回调使用。
+ * @type {ReplyHandler_t}
+ */
+export const registerChannelHandler = defineReplyHandler({
+	/**
+	 * 注册活跃频道。
+	 * @param {object} reply 回复对象
+	 * @param {object} args 请求上下文
+	 * @returns {Promise<object>} 结果
+	 */
+	handle: async (reply, args) => {
+		if (args.supported_functions?.add_message)
+			registerChannel(args.username, args.char_id, args)
+		return {}
+	},
+})
+
+/**
+ * `<set-timer>`：解析并设置定时器。
+ * @type {ReplyHandler_t}
+ */
+export const setTimerReplyHandler = defineReplyHandler({
+	tag: 'set-timer',
+	/**
+	 * 设置定时器。
+	 * @param {object} reply 回复对象
+	 * @param {object} args 请求上下文
+	 * @param {object} call 调用
+	 * @returns {Promise<object>} 结果
+	 */
+	handle: async (reply, args, call) => {
+		const { AddLongTimeLog, username, char_id, chat_name, chat_log } = args
+		const groupId = chat_name?.match(/^common_chat_(.+)$/)?.[1]
+		const { itemsToSet, systemLog: parseLog } = parseTimerItems(call.body)
+		let systemLog = parseLog
 
 		const chatLogSnip = flattenChatLog(chat_log.slice(-5))
 		let successCount = 0
@@ -163,31 +182,52 @@ export async function timerReplyHandler(result, args) {
 
 		systemLog += `已设置 ${successCount} 个定时器。\n届时将触发新回复，现在你可以继续当前对话。\n`
 		AddLongTimeLog({ name: 'timer', role: 'tool', content: systemLog, files: [] })
-	}
+		return { regen: true }
+	},
+})
 
-	// ── <list-timers></list-timers> ───────────────────────────────────────────
-	const listMatch = getContent().match(/<list-timers>\s*<\/list-timers>/is)
-	if (listMatch) {
-		processed = true
-		args.MaskHandledCall?.(listMatch[0])
-
+/**
+ * `<list-timers>`：列出当前角色的定时器。
+ * @type {ReplyHandler_t}
+ */
+export const listTimersReplyHandler = defineReplyHandler({
+	tag: 'list-timers',
+	/**
+	 * 列出定时器。
+	 * @param {object} reply 回复对象
+	 * @param {object} args 请求上下文
+	 * @returns {Promise<object>} 结果
+	 */
+	handle: async (reply, args) => {
+		const { AddLongTimeLog, username, char_id } = args
 		const charTimers = Object.values(getTimers(username, PLUGIN_PATH))
 			.filter(t => t.callbackdata?.char_id === char_id)
 		const listText = charTimers.length
 			? charTimers.map(t => `- "${t.callbackdata.reason}"：${t.callbackdata.trigger}`).join('\n')
 			: '无'
 		AddLongTimeLog({ name: 'timer', role: 'tool', content: `当前定时器列表：\n${listText}`, files: [] })
-	}
+		return { regen: true }
+	},
+})
 
-	// ── <remove-timer> ────────────────────────────────────────────────────────
-	for (const match of [...getContent().matchAll(/<remove-timer>(?<reasons>[\S\s]*?)<\/remove-timer>/gis)]) {
-		if (!match?.groups?.reasons) continue
-		processed = true
-		args.MaskHandledCall?.(match[0])
-
-		const reasons = match.groups.reasons.trim().split('\n').map(r => r.trim()).filter(Boolean)
+/**
+ * `<remove-timer>`：按原因删除定时器。
+ * @type {ReplyHandler_t}
+ */
+export const removeTimerReplyHandler = defineReplyHandler({
+	tag: 'remove-timer',
+	body: 'lines',
+	/**
+	 * 删除定时器。
+	 * @param {object} reply 回复对象
+	 * @param {object} args 请求上下文
+	 * @param {object} call 调用
+	 * @returns {Promise<object>} 结果
+	 */
+	handle: async (reply, args, call) => {
+		const { AddLongTimeLog, username, char_id } = args
 		let systemLog = ''
-		for (const reason of reasons) {
+		for (const reason of call.body) {
 			const currentTimers = getTimers(username, PLUGIN_PATH)
 			const uid = Object.keys(currentTimers).find(k =>
 				currentTimers[k]?.callbackdata?.reason === reason &&
@@ -207,7 +247,6 @@ export async function timerReplyHandler(result, args) {
 				systemLog += `未找到定时器"${reason}"。\n`
 		}
 		AddLongTimeLog({ name: 'timer', role: 'tool', content: systemLog, files: [] })
-	}
-
-	return processed
-}
+		return { regen: true }
+	},
+})

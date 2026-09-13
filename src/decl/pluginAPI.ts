@@ -4,24 +4,46 @@ import { locale_t, info_t } from './basedefs.ts'
 import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from './prompt_struct.ts'
 
 /**
- * 定义了回复处理程序的类型。
+ * 叶子回复处理程序（ReplyHandler）的规范描述符。
  *
- * 处理时解析 `reply.content_for_handle`（由回复管线从原始生成派生的独立工作副本），
- * 命中调用段后用 `args.MaskHandledCall` 掩除，避免工具 A 的参数触发工具 B 的调用；
- * 不要改写原始 `reply.content`。
- * @param {chatReply_t} reply - 当前这轮 AI 回复（原始生成保留于 `content`）。
- * @param {chatReplyRequest_t & {
- * 	prompt_struct: prompt_struct_t
- * 	AddLongTimeLog?: (entry: chatLogEntry_t) => void
- * 	MaskHandledCall?: (segment: string, replacement?: string) => void
- * }} args - 参数对象。
- * @returns {Promise<boolean>} - 返回 true 表示建议发起下一轮生成；false 表示不发起（本轮生成即可作为最终结果）。
+ * 由 `defineReplyHandler` 生成，或按此形状手写。管线 `runReplyHandlers` 按 `level` 升序分组驱动：
+ * - 有 `pattern` 者解析并整段消耗一次调用（`call = { name, tag?, params, body, raw, start, end, occurrence, value?, error? }`）；
+ * - 省略 `pattern` 者为内容型 handler，`handle(reply, args, null)` 作用于整条 `reply.content`；
+ * - `evaluate` 在流式期提前求值并缓存于 `args.extension.evaluatedToolCalls`，`handle` 经 `call.value` 复用；
+ * - `display(call, state, args)` 决定该调用段在人类展示层的呈现（`state = { stage, open, value?, error? }`）；
+ * - `parallel` 声明与其他 handler 的并行兼容性：`true` = 与任何启用并行者兼容，`string[]` = 只与列出的 handler 名双向兼容；未声明即屏障（串行）；
+ * - `handle` 返回 `{ regen?, content?, stop? }`：`regen` 建议下一轮生成、`content` 整条替换 `reply.content`、`stop` 立即终止本轮。
  */
-export type ReplyHandler_t = (reply: chatReply_t, args: chatReplyRequest_t & {
-	prompt_struct: prompt_struct_t
-	AddLongTimeLog?: (entry: chatLogEntry_t) => void
-	MaskHandledCall?: (segment: string, replacement?: string) => void
-}) => Promise<boolean>
+export type ReplyHandlerLeaf_t = {
+	/** 可读标识（日志标签 / 求值缓存键）。 */
+	name: string
+	/** 识别与解析一次调用的模式；省略即内容型 handler。 */
+	pattern?: {
+		tag: string
+		params?: Record<string, string>
+		body?: 'text' | 'lines' | 'children' | ((inner: string, call: any) => any)
+	} | RegExp | { start: string | RegExp, end: string | RegExp } | ((content: string, args: any) => any[])
+	/** 执行顺序：越小越先，默认 0。 */
+	level: number
+	/** 提前求值（流式期即时算并缓存）。 */
+	evaluate?: (call: any, args: any) => Promise<any>
+	/** 展示层渲染。 */
+	display?: (call: any, state: any, args: any) => string
+	/** 并行兼容性：`true`=与任何启用并行者兼容；`string[]`=只与列出的 handler 名双向兼容；未声明即屏障（串行）。 */
+	parallel?: boolean | string[]
+	/** 处理器。返回 `{ regen?, content?, stop? }`。 */
+	handle: (
+		reply: chatReply_t,
+		args: chatReplyRequest_t & { prompt_struct: prompt_struct_t, AddLongTimeLog?: (entry: chatLogEntry_t) => void },
+		call: any | null,
+	) => Promise<{ regen?: boolean, content?: string, stop?: boolean } | void>
+}
+
+/**
+ * 回复处理程序：叶子描述符，或由 `defineReplyHandlers` 打包的组合节点。
+ * 组合节点自身不执行，管线/预览会递归展开其中的 `handlers`。
+ */
+export type ReplyHandler_t = ReplyHandlerLeaf_t | { handlers: ReplyHandler_t[] }
 
 /**
  * 插件API接口
@@ -108,7 +130,8 @@ export class PluginAPI_t {
 			 */
 			TweakPrompt?: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t, my_prompt: single_part_prompt_t, detail_level: number) => Promise<void>
 			/**
-			 * 处理角色的回复，返回 true 表示成功（需要重新生成），false 表示无命中。
+			 * 处理角色回复的回复处理器（单个叶子或 `defineReplyHandlers` 组合节点）。
+			 * @see ReplyHandler_t
 			 */
 			ReplyHandler?: ReplyHandler_t
 

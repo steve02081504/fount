@@ -29,15 +29,20 @@ export { availableShells, machineDefaultShell }
  * @param {string} [options.workdir] - 工作目录。
  * @param {string} [options.shell] - shell 类型（缺省按目标机器默认）。
  * @param {string} options.command - 命令。
+ * @param {(stream: 'stdout'|'stderr', data: string) => void} [options.onOutput] - 逐块输出回调（本机直连；远程经回调通道，需 `shells/code` 实现 `RemoteCallBack`）。
  * @returns {Promise<shellResult_t>} 执行结果（错误时捕获为 { code: -1, stdall }）。
  */
-export async function runShellCommand({ username, machine = '0', workdir, shell, command }) {
+export async function runShellCommand({ username, machine = '0', workdir, shell, command, onOutput }) {
 	const probeExecutor = createTargetExecutor(username, { machine })
 	const resolvedWorkdir = workdir || await probeExecutor.execJs(async () => (await import('node:os')).homedir())
 	const executor = createTargetExecutor(username, { machine, workdir: resolvedWorkdir })
 	const start = Date.now()
 	try {
-		const result = await executor.execShell(shell || null, command, { timeoutMs: null })
+		const result = await executor.execShell(shell || null, command, {
+			timeoutMs: null,
+			onOutput,
+			callbackPartpath: typeof onOutput === 'function' ? 'shells/code' : undefined,
+		})
 		if (result instanceof Error)
 			return { code: -1, stdall: String(result.stack || result.message || result), elapsedMs: Date.now() - start }
 		return { ...result, elapsedMs: result?.elapsedMs ?? Date.now() - start }

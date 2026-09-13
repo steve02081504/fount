@@ -4,6 +4,7 @@
 
 import { generateApiKey } from '../../../../server/auth/index.mjs'
 import { loadData, saveData } from '../../../../server/setting_loader.mjs'
+import { defineReplyHandler } from '../../shells/chat/src/reply/defineReplyHandler.mjs'
 
 const PLUGIN_PARTPATH = 'plugins/fount-api'
 
@@ -50,13 +51,18 @@ async function ensureApiKey(username, charId) {
 }
 
 /**
- * fount API ReplyHandler：检查是否需要自动申请 API key。
- * @type {import('../../../../../src/decl/PluginAPI.ts').ReplyHandler_t}
- * @returns {Promise<boolean>} 若处理了则返回 false（不需要重新生成）。
+ * fount API ReplyHandler：检查是否需要自动申请 API key（内容型 handler，无标签）。
+ * @type {import('../../../../decl/pluginAPI.ts').ReplyHandler_t}
  */
-export async function fountApiReplyHandler(reply, args) {
-	// 确保角色有 API key
-	await ensureApiKey(args.username, args.char_id)
-	// 不需要重新生成回复
-	return false
-}
+export const fountApiReplyHandler = defineReplyHandler({
+	/**
+	 * 确保角色有 API key。
+	 * @param {object} reply 回复对象
+	 * @param {object} args 请求上下文
+	 * @returns {Promise<object>} 结果
+	 */
+	handle: async (reply, args) => {
+		await ensureApiKey(args.username, args.char_id)
+		return {}
+	},
+})

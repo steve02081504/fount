@@ -8,9 +8,20 @@ import path from 'node:path'
 
 import { assert, assertEquals } from 'jsr:@std/assert'
 
-import { fileOperationsReplyHandler } from '../../../../plugins/file-operations/handler.mjs'
+import { fileOperationsReplyHandlers } from '../../../../plugins/file-operations/handler.mjs'
 import { runRipgrep } from '../../../../plugins/file-operations/src/search.mjs'
 import { createTargetExecutor } from '../../../../plugins/file-operations/src/target.mjs'
+import { runReplyHandlers } from '../../../chat/src/reply/handlerPipeline.mjs'
+
+/**
+ * 通过回复管线运行文件操作 handler。
+ * @param {string} content 原始生成
+ * @param {object} args 请求上下文
+ * @returns {Promise<boolean>} 是否建议重新生成
+ */
+async function runFileOps(content, args) {
+	return runReplyHandlers({ content, extension: {} }, args, fileOperationsReplyHandlers)
+}
 
 /**
  * 在临时工作区写入搜索用的测试文件。
@@ -142,18 +153,25 @@ Deno.test('runRipgrep reports invalid regex as an error result', async () => {
 	}
 })
 
-Deno.test('fileOperationsReplyHandler executes <glob> and <grep> tags', async () => {
+Deno.test('file-operations 只读 handler 声明可并行，写操作保持屏障', () => {
+	for (const name of ['list-machines', 'view-file', 'glob', 'grep'])
+		assertEquals(fileOperationsReplyHandlers.find(candidate => candidate.name === name)?.parallel, true, `${name} 应声明可并行`)
+	for (const name of ['set-workdir', 'replace-file', 'override-file'])
+		assertEquals(fileOperationsReplyHandlers.find(candidate => candidate.name === name)?.parallel, undefined, `${name} 不应并行`)
+})
+
+Deno.test('file-operations handler executes <glob> and <grep> tags', async () => {
 	const root = await tempDir()
 	try {
 		await seedWorkspace(root)
 
 		const globRun = createHandlerArgs(root)
-		assertEquals(await fileOperationsReplyHandler({ content: '<glob path=".">**/*.mjs</glob>', content_for_handle: '<glob path=".">**/*.mjs</glob>' }, globRun.args), true)
+		assertEquals(await runFileOps('<glob path=".">**/*.mjs</glob>', globRun.args), true)
 		const globContent = globRun.logs.map(entry => entry.content).join('\n')
 		assert(globContent.includes('a.mjs') && globContent.includes('sub/c.mjs'), `glob output: ${globContent}`)
 
 		const grepRun = createHandlerArgs(root)
-		assertEquals(await fileOperationsReplyHandler({ content: '<grep include="*.mjs">hello</grep>', content_for_handle: '<grep include="*.mjs">hello</grep>' }, grepRun.args), true)
+		assertEquals(await runFileOps('<grep include="*.mjs">hello</grep>', grepRun.args), true)
 		const grepContent = grepRun.logs.map(entry => entry.content).join('\n')
 		assert(grepContent.includes('a.mjs:') && grepContent.includes('1: hello world'), `grep output: ${grepContent}`)
 	}
@@ -162,13 +180,13 @@ Deno.test('fileOperationsReplyHandler executes <glob> and <grep> tags', async ()
 	}
 })
 
-Deno.test('fileOperationsReplyHandler gives grep/glob tool entries a human content_for_show layer', async () => {
+Deno.test('file-operations handler gives grep/glob tool entries a human content_for_show layer', async () => {
 	const root = await tempDir()
 	try {
 		await seedWorkspace(root)
 
 		const globRun = createHandlerArgs(root)
-		await fileOperationsReplyHandler({ content: '<glob path=".">**/*.mjs</glob>', content_for_handle: '<glob path=".">**/*.mjs</glob>' }, globRun.args)
+		await runFileOps('<glob path=".">**/*.mjs</glob>', globRun.args)
 		const globEntry = globRun.logs.find(entry => entry.role === 'tool' && entry.name === 'file-operations.glob')
 		assert(globEntry, 'glob tool entry should exist')
 		assert(globEntry.content_for_show, 'glob tool entry should have content_for_show')
@@ -177,7 +195,7 @@ Deno.test('fileOperationsReplyHandler gives grep/glob tool entries a human conte
 		assert(globEntry.content_for_show.includes('a.mjs'), `glob show layer should keep the result: ${globEntry.content_for_show}`)
 
 		const grepRun = createHandlerArgs(root)
-		await fileOperationsReplyHandler({ content: '<grep include="*.mjs">hello</grep>', content_for_handle: '<grep include="*.mjs">hello</grep>' }, grepRun.args)
+		await runFileOps('<grep include="*.mjs">hello</grep>', grepRun.args)
 		const grepEntry = grepRun.logs.find(entry => entry.role === 'tool' && entry.name === 'file-operations.grep')
 		assert(grepEntry, 'grep tool entry should exist')
 		assert(grepEntry.content_for_show, 'grep tool entry should have content_for_show')

@@ -188,6 +188,19 @@ test.describe('code shell composer & placeholders', () => {
 		await expect(page.locator('#shell-pill-wrap')).toBeVisible()
 	})
 
+	test('! shell command streams output progressively before completion', async ({ page, baseUrl }) => {
+		await openCode(page, baseUrl)
+		const composer = page.locator('#composer-input')
+		await composer.click()
+		// sleep 在 pwsh/powershell（Start-Sleep 别名）与 bash 下均可用
+		await page.keyboard.type('！echo first-live; sleep 1; echo second-live')
+		await page.locator('#send-button').click()
+		// 命令未结束时输出节点已含第一段（流式回显）
+		await expect(page.locator('.code-shell-stream-output')).toContainText('first-live', { timeout: 60_000 })
+		// 完成后转正式工具日志并含第二段
+		await expect(page.locator('.code-message.role-tool')).toContainText('second-live', { timeout: 60_000 })
+	})
+
 	test('shell history: ↑/↓ navigates own history, ghost suggestion accepts via Tab', async ({ page, baseUrl }) => {
 		await openCode(page, baseUrl)
 		const composer = page.locator('#composer-input')
@@ -279,6 +292,21 @@ test.describe('code shell composer & placeholders', () => {
 		await expect(generating).toBeVisible({ timeout: 60_000 })
 		await expect(generating).toContainText('stub 流式第一', { timeout: 60_000 })
 		await expect(page.locator('.code-message.role-char:not(.generating)')).toContainText('stub 流式第一段。stub 流式第二段。', { timeout: 60_000 })
+		await expect(page.locator('.code-message.generating')).toHaveCount(0)
+	})
+
+	test('AI tool output streams into the generating bubble before completion', async ({ page, baseUrl }) => {
+		await page.addInitScript(pref => localStorage.setItem(pref + 'charname', 'toolAgent'), PREF_PREFIX)
+		await openCode(page, baseUrl)
+		const composer = page.locator('#composer-input')
+		await composer.click()
+		await page.keyboard.type('运行工具')
+		await page.keyboard.press('Control+Enter')
+		// run-js 分段输出（约 2s）：生成中气泡内应出现实时工具卡并逐块回显
+		await expect(page.locator('.code-message.generating .code-tool-live')).toBeVisible({ timeout: 60_000 })
+		await expect(page.locator('.code-tool-live .code-shell-stream-output')).toContainText('live-tool-output', { timeout: 60_000 })
+		// 完成后转为正式工具日志
+		await expect(page.locator('.code-message.role-tool')).toContainText('live-tool-output', { timeout: 60_000 })
 		await expect(page.locator('.code-message.generating')).toHaveCount(0)
 	})
 })

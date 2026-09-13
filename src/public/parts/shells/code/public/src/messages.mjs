@@ -256,6 +256,30 @@ export function bubbleOfEntry(entry) {
 }
 
 /**
+ * 更新 `!` 流式执行气泡的纯文本输出（逐块调用，避免每片重渲 markdown）。
+ * @param {object} entry - 会话条目。
+ * @returns {void}
+ */
+export function updateShellStreamBubble(entry) {
+	const output = bubbleOfEntry(entry)?.querySelector('.code-shell-stream-output')
+	if (output) output.textContent = entry.extension?.shellStream?.output || ''
+}
+
+/**
+ * 重渲单条气泡（内容变更后使用，如流式执行结束转为正式 markdown）。
+ * @param {object} entry - 会话条目。
+ * @returns {void}
+ */
+export function updateEntryBubble(entry) {
+	const bubble = bubbleOfEntry(entry)
+	if (!bubble) return
+	const wasNearBottom = nearBottom()
+	bubble.replaceWith(renderEntryBubble(entry, { isLast: true }))
+	if (wasNearBottom) scrollMessagesBottom()
+	updateBackToBottom()
+}
+
+/**
  * 绑定消息拖出导出（拖到桌面/编辑器落成 .html；正文区与按钮除外，保证可正常选中与点击）。
  * @param {object} entry - 会话条目。
  * @param {HTMLElement} bubble - 所属气泡。
@@ -337,9 +361,21 @@ function renderEntryBubble(entry, { isLast = false } = {}) {
 		content.className = 'mt-1'
 		details.append(summary, content)
 		body.appendChild(details)
-		renderMarkdownAsString(messageMarkdown(entryShowText(entry)), store.markdownCache).then(html => {
-			content.innerHTML = html
-		})
+		if (entry.extension?.shellStream) {
+			// `!` 流式执行中：命令 + 纯文本输出（逐块更新，避免每片重渲 markdown）
+			const stream = entry.extension.shellStream
+			const command = document.createElement('pre')
+			command.className = 'code-shell-stream-command'
+			command.textContent = stream.shell ? `$ ${stream.command}` : stream.command
+			const output = document.createElement('pre')
+			output.className = 'code-shell-stream-output'
+			output.textContent = stream.output || ''
+			content.append(command, output)
+		}
+		else
+			renderMarkdownAsString(messageMarkdown(entryShowText(entry)), store.markdownCache).then(html => {
+				content.innerHTML = html
+			})
 	}
 	else {
 		const content = document.createElement('div')
