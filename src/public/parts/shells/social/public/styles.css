@@ -2550,8 +2550,8 @@
 .video-progress-fill {
 	height: 100%;
 	background: var(--accent);
+	/* motion-ignore: 视频进度条按播放位置改宽度，必须走布局动画 */
 	transition: width 0.1s linear;
-	will-change: width;
 }
 
 .video-pause-hint {

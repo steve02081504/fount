@@ -10,6 +10,7 @@ alwaysApply: false
 
 Markdown convertor traps (rehype order, `{:lang}`, trust tiers): [docs/markdown-notes.md](docs/markdown-notes.md).
 `data-i18n` params / placeholders / persistent chrome: [docs/i18n-notes.md](docs/i18n-notes.md).
+Motion / transition rules (perf constraints, timing, decision map): [docs/motion-notes.md](docs/motion-notes.md).
 
 ## API & Communication
 

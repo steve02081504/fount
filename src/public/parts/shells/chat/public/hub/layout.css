@@ -54,6 +54,7 @@
 	height: 0;
 	background: var(--on-accent);
 	border-radius: 0 var(--radius-field) var(--radius-field) 0;
+	/* motion-ignore: 服务器条目的悬停高亮条按高度生长 */
 	transition: height 0.15s ease;
 }
 

@@ -42,3 +42,19 @@
 		opacity: 0;
 	}
 }
+
+/*
+ * Reduced motion: keep the UI functional but drop the movement.
+ * Global on purpose — page-local animations rely on this single guard
+ * instead of each shipping its own copy (see pages/docs/motion-notes.md).
+ */
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}
