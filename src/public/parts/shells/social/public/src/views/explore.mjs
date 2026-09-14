@@ -5,10 +5,12 @@ import { getExplorePosts } from '../endpoints/explore.mjs'
 import { getExploreAccounts } from '../endpoints/feed.mjs'
 import { authorLabel, entityHandle, formatTimeHtml, mountMarkdown, rememberEntityHandle, renderAvatarHtml } from '../lib/display.mjs'
 import { mountEmptyState } from '../lib/emptyState.mjs'
+import { mountSkeleton } from '../lib/skeleton.mjs'
 import { renderSuggestedAccountRows } from '../lib/suggestedAccounts.mjs'
 import { state } from '../state.mjs'
 import { renderTemplate } from '../templates.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
+import { applyStagger } from '/scripts/motion/stagger.mjs'
 
 let exploreToolbarBound = false
 
@@ -59,6 +61,17 @@ export async function loadExplore() {
 	if (mediaInput instanceof HTMLInputElement)
 		mediaInput.checked = state.exploreMediaOnly
 
+	const skeletonAccountList = document.getElementById('exploreAccountList')
+	const skeletonPostList = document.getElementById('explorePostList')
+	await Promise.all([
+		skeletonAccountList && !skeletonAccountList.childElementCount
+			? mountSkeleton(skeletonAccountList, 'account', 4)
+			: null,
+		skeletonPostList && !skeletonPostList.childElementCount
+			? mountSkeleton(skeletonPostList, 'post', 3)
+			: null,
+	])
+
 	let accounts
 	let posts
 	try {
@@ -102,6 +115,7 @@ export async function loadExplore() {
 				await mountMarkdown(bioHost, account.bio, account.entityHash)
 			accountList.appendChild(row)
 		}
+	applyStagger(accountList.children)
 
 	const postRows = posts.posts || []
 	postList.replaceChildren()
@@ -141,6 +155,7 @@ export async function loadExplore() {
 			await mountMarkdown(snippetHost, post.textSnippet, post.entityHash)
 		postList.appendChild(row)
 	}
+	applyStagger(postList.children)
 
 	const exploreSuggestedHost = document.getElementById('exploreSuggested')
 	const exploreSuggestedList = document.getElementById('exploreSuggestedList')

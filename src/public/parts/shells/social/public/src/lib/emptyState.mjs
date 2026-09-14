@@ -15,7 +15,7 @@ export async function buildEmptyState({ titleKey, iconClass = '', hintKey = '', 
 		modClass,
 		titleKey,
 		iconHtml: iconClass
-			? `<span class="icon ${iconClass} empty-state-icon" aria-hidden="true"></span>`
+			? `<span class="empty-state-icon-disk" aria-hidden="true"><span class="icon ${iconClass} empty-state-icon"></span></span>`
 			: '',
 		hintHtml: hintKey
 			? `<p class="empty-state-hint" data-i18n="${hintKey}"></p>`

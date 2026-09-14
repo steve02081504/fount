@@ -69,6 +69,7 @@ Visual language & component standards — read before writing UI: [docs/design-s
 ## Components & Utilities
 
 - **`components/terminal.mjs`**: `setTerminal` — xterm + FitAddon. **`convertEol: true`** (TTY ONLCR: `\n` → start of next line). `stdin` / `stdout` / `stderr` match `process.std*`.
+- **`lib/cssValues.mjs`**: `setCssVariable(name, value)` writes root vars; `registerCssUpdater(func, { observe, observeOptions })` runs `func` immediately then re-runs it (rAF-batched) on window resize and on observed subtree DOM/size changes — returns a disposer. Pass `observeOptions: { attributeFilter: ['class'] }` when the updater writes `style` on a node inside the observed subtree, or it self-triggers every frame. Use for measured geometry consumed by CSS (sliding indicators).
 - **`lib/memo.mjs`**: `createLruMap` / `dedupeAsync` / `memoizePromise`. Cache hits still return `Promise.resolve(value)` — never the bare cached value.
 - **`lib/virtualList.mjs`**: Virtual scrolling. Optional `getItemKey` enables keyed reconcile on `refresh()`.
 - **`lib/infiniteScroll.mjs`**: `ensureScrollSentinel` / `insertBeforeScrollSentinel` / `bindInfiniteScroll` / `disconnectInfiniteScroll`. Rising-edge / replay traps: Social [ui-details.md](../parts/shells/social/public/docs/ui-details.md#feed-pagination--replay).

@@ -13,6 +13,8 @@ import {
 } from '/parts/shells:chat/shared/entityProfileCard.mjs'
 import { mountEmptyState } from '../lib/emptyState.mjs'
 import { appendFeedItemsWithThreads } from '../lib/feedThreads.mjs'
+import { refreshProfileTabIndicator } from '../lib/indicators.mjs'
+import { mountSkeleton } from '../lib/skeleton.mjs'
 import { bindFeedVideoAutoplay } from '../lib/videoAutoplay.mjs'
 import { buildPostCard } from '../postCard.mjs'
 import { state, viewerEntityHash } from '../state.mjs'
@@ -22,6 +24,7 @@ import {
 	renderTemplate,
 	renderTemplateAsHtmlString,
 } from '../templates.mjs'
+import { applyStagger } from '/scripts/motion/stagger.mjs'
 
 import { renderProfileAlbums } from './albums.mjs'
 
@@ -125,6 +128,8 @@ function bindProfilePostsInfiniteScroll(entityHash, container) {
  * @returns {Promise<void>}
  */
 export async function renderProfilePosts(entityHash, container, highlightPostId = null, append = false) {
+	if (!append && !container.childElementCount)
+		await mountSkeleton(container, 'post', 4)
 	const data = await getProfilePosts(entityHash, {
 		cursor: append ? state.profilePostsCursor : null,
 	})
@@ -144,6 +149,7 @@ export async function renderProfilePosts(entityHash, container, highlightPostId 
 		return card
 	})
 	if (state.profileEntityHash !== entityHash) return
+	applyStagger(container.children)
 	bindFeedVideoAutoplay(container)
 	bindProfilePostsInfiniteScroll(entityHash, container)
 	if (highlightPostId)
@@ -157,6 +163,8 @@ export async function renderProfilePosts(entityHash, container, highlightPostId 
  * @returns {Promise<void>}
  */
 export async function renderProfileLikes(entityHash, container) {
+	if (!container.childElementCount)
+		await mountSkeleton(container, 'post', 4)
 	const data = await getProfileLikes(entityHash)
 	container.replaceChildren()
 	const items = data.items || []
@@ -166,6 +174,7 @@ export async function renderProfileLikes(entityHash, container) {
 	}
 	for (const item of items)
 		container.appendChild(await buildPostCard(item))
+	applyStagger(container.children)
 	bindFeedVideoAutoplay(container)
 }
 
@@ -251,6 +260,7 @@ export async function activateProfileTab(tab, options = {}) {
 	}
 	for (const panel of document.querySelectorAll('[data-profile-panel]'))
 		panel.classList.toggle('hidden', panel.dataset.profilePanel !== tab)
+	refreshProfileTabIndicator()
 
 	const loaded = loadedTabsFor(entityHash)
 	if (!options.force && loaded.has(tab) && tab !== 'posts') return
@@ -374,6 +384,8 @@ export async function loadProfileFor(entityHash, highlightPostId = null) {
  */
 async function renderProfileCabinets(entityHash, container) {
 	if (!container) return
+	if (!container.childElementCount)
+		await mountSkeleton(container, 'account', 3)
 	container.replaceChildren()
 	try {
 		const data = await listRemoteCabinets(entityHash)

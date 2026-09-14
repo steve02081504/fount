@@ -139,11 +139,24 @@ export function initComposerVisibilityPicker() {
  * @returns {void}
  */
 export function setComposerAdvancedOpen(open) {
-	const panel = document.getElementById('composerAdvancedPanel')
-	if (!panel) return
-	const next = open ?? panel.classList.contains('hidden')
-	panel.classList.toggle('hidden', !next)
+	const reveal = document.getElementById('composerAdvancedReveal')
+	if (!reveal) return
+	const next = open ?? !reveal.classList.contains('is-open')
+	reveal.classList.toggle('is-open', next)
 	document.getElementById('composerAdvancedToggle')?.classList.toggle('btn-active', next)
+}
+
+/**
+ * 展开/收起投票面板并同步按钮状态。
+ * @param {boolean} [open] 指定目标状态；缺省为切换
+ * @returns {void}
+ */
+export function setComposerPollOpen(open) {
+	const reveal = document.getElementById('pollComposerReveal')
+	if (!reveal) return
+	const next = open ?? !reveal.classList.contains('is-open')
+	reveal.classList.toggle('is-open', next)
+	document.getElementById('pollComposerToggle')?.classList.toggle('btn-active', next)
 }
 
 /**
@@ -288,8 +301,7 @@ export async function clearComposer(options = {}) {
 	state.pendingPoll = null
 	if (!options.keepDraftId)
 		state.activeDraftId = null
-	document.getElementById('pollComposerToggle')?.classList.remove('btn-active')
-	document.getElementById('pollComposerPanel')?.classList.add('hidden')
+	setComposerPollOpen(false)
 	const pollOptions = document.getElementById('pollComposerOptions')
 	if (pollOptions instanceof HTMLTextAreaElement) pollOptions.value = ''
 	refreshMediaPreview()
@@ -386,7 +398,7 @@ export async function loadDraftIntoComposer(row) {
 
 	if (body.poll && Array.isArray(body.poll.options) && body.poll.options.length >= 2) {
 		state.pendingPoll = structuredClone(body.poll)
-		document.getElementById('pollComposerToggle')?.classList.add('btn-active')
+		setComposerPollOpen(true)
 		const pollOptions = document.getElementById('pollComposerOptions')
 		if (pollOptions instanceof HTMLTextAreaElement)
 			pollOptions.value = body.poll.options.join('\n')

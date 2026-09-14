@@ -3281,3 +3281,497 @@
 	flex-direction: column;
 	gap: 4px;
 }
+
+/* === Empty state branding === */
+.empty-state {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	gap: 0.45rem;
+	padding: 2rem 1.5rem;
+	color: var(--text-muted);
+	background: var(--surface);
+	border: var(--border) solid var(--border-color);
+	border-radius: var(--radius-box);
+	/* 空态是单个语义块，任何时候都不应被多列/分页拆开 */
+	break-inside: avoid;
+}
+
+.empty-state--hint,
+.empty-state--replies {
+	background: transparent;
+	border-color: transparent;
+	border-radius: 0;
+}
+
+.empty-state-icon-disk {
+	display: grid;
+	place-items: center;
+	width: 3.5rem;
+	height: 3.5rem;
+	margin-bottom: 0.35rem;
+	color: color-mix(in srgb, var(--color-primary) 72%, var(--color-base-content));
+	background:
+		radial-gradient(circle at 35% 28%, color-mix(in srgb, var(--color-primary) 30%, transparent), transparent 72%),
+		color-mix(in srgb, var(--color-primary) 12%, transparent);
+	border-radius: var(--radius-box);
+}
+
+.empty-state-icon {
+	width: 1.75rem;
+	height: 1.75rem;
+	margin: 0;
+	opacity: 0.9;
+}
+
+.empty-state--plain {
+	padding: 3rem 1.5rem;
+}
+
+.empty-state--hint {
+	padding: 0.75rem 0;
+	gap: 0;
+}
+
+.empty-state--replies {
+	gap: 0.3rem;
+	padding: 1.5rem 1rem;
+}
+
+.empty-state--replies .empty-state-icon-disk {
+	width: 2.5rem;
+	height: 2.5rem;
+}
+
+.empty-state--explore {
+	width: 100%;
+	box-sizing: border-box;
+	gap: 0.55rem;
+	padding: 1.75rem 1.5rem 2rem;
+	font-size: 0.9rem;
+}
+
+.empty-state--explore .empty-state-icon-disk {
+	width: 3rem;
+	height: 3rem;
+}
+
+.empty-state--saved {
+	flex: 1;
+	padding: 4rem 1.5rem;
+}
+
+.empty-state--saved .empty-state-icon-disk {
+	width: 4rem;
+	height: 4rem;
+	margin-bottom: 0.25rem;
+}
+
+.empty-state--compact {
+	padding: 2.5rem 1.5rem;
+}
+
+.empty-state--video {
+	width: min(22rem, 86vw);
+	padding: 2rem 1.25rem;
+	gap: 0.85rem;
+	color: #fff;
+	background: color-mix(in srgb, #000 45%, transparent);
+	border-color: color-mix(in srgb, #fff 22%, transparent);
+	backdrop-filter: blur(6px);
+}
+
+.empty-state--video .empty-state-icon-disk {
+	width: 3.5rem;
+	height: 3.5rem;
+	color: #fff;
+	background: color-mix(in srgb, #fff 18%, transparent);
+}
+
+.empty-state--video .empty-state-title {
+	color: #fff;
+}
+
+.empty-state--video .empty-state-hint {
+	color: color-mix(in srgb, #fff 72%, transparent);
+}
+
+/* === Skeleton === */
+.skeleton-host {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	animation: fade-in var(--duration-open) var(--ease-entrance);
+}
+
+.skeleton-list {
+	display: flex;
+	flex-direction: column;
+}
+
+.skeleton-card {
+	display: flex;
+	gap: 0.75rem;
+	padding: 0.85rem 1rem;
+	border-bottom: var(--border) solid var(--border-color);
+}
+
+.skeleton {
+	background: linear-gradient(
+		100deg,
+		color-mix(in srgb, var(--color-base-content) 7%, transparent) 30%,
+		color-mix(in srgb, var(--color-base-content) 14%, transparent) 50%,
+		color-mix(in srgb, var(--color-base-content) 7%, transparent) 70%
+	);
+	background-size: 200% 100%;
+	animation: skeleton-shimmer 1.4s var(--ease-standard) infinite;
+	border-radius: var(--radius-field);
+}
+
+.skeleton-avatar {
+	width: 40px;
+	height: 40px;
+	flex-shrink: 0;
+	border-radius: var(--radius-box);
+}
+
+.skeleton-avatar-sm {
+	width: 32px;
+	height: 32px;
+}
+
+.skeleton-post-body,
+.skeleton-account-body {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	min-width: 0;
+}
+
+.skeleton-line {
+	height: 0.8rem;
+	border-radius: var(--radius-field);
+}
+
+.skeleton-line-head {
+	width: 38%;
+}
+
+.skeleton-line-wide {
+	width: 92%;
+}
+
+.skeleton-line-short {
+	width: 58%;
+}
+
+.skeleton-media {
+	height: 9rem;
+	border-radius: var(--radius-box);
+}
+
+.skeleton-account-card {
+	align-items: center;
+	border-bottom: none;
+}
+
+.skeleton-list--account {
+	display: flex;
+	flex-direction: column;
+	gap: 0.65rem;
+	padding: 0 1rem 0.85rem;
+}
+
+.skeleton-list--account .skeleton-card {
+	border: var(--border) solid var(--border-color);
+	border-radius: var(--radius-box);
+	padding: 0.85rem;
+}
+
+@keyframes skeleton-shimmer {
+	from {
+		background-position: 200% 0;
+	}
+
+	to {
+		background-position: -200% 0;
+	}
+}
+
+/* === Feed entrance === */
+@keyframes fade-in-up {
+	from {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.post-card {
+	/* backwards（非 both）：入场后不留 transform，避免给每张卡片建立常驻层叠上下文而盖住下拉菜单 */
+	animation: fade-in-up var(--duration-open) var(--ease-entrance) backwards;
+	animation-delay: calc(var(--stagger-i, 0) * var(--duration-stagger));
+}
+
+/* === Nav sliding indicator === */
+.side-nav-links,
+.mobile-tabbar {
+	position: relative;
+}
+
+.nav-indicator {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: var(--ti-h, var(--nav-item-h));
+	transform: translateY(var(--ti-y, 0px));
+	background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+	box-shadow: inset 3px 0 0 0 var(--color-primary);
+	border-radius: var(--radius-box);
+	pointer-events: none;
+	transition: transform var(--duration-open) var(--ease-standard);
+}
+
+.dock-indicator {
+	position: absolute;
+	left: 0;
+	top: 0;
+	height: 100%;
+	width: var(--ti-w, 20%);
+	transform: translateX(var(--ti-x, 0px));
+	background: color-mix(in srgb, var(--color-primary) 14%, transparent);
+	box-shadow: inset 0 3px 0 0 var(--color-primary);
+	border-radius: var(--radius-box);
+	pointer-events: none;
+	transition: transform var(--duration-open) var(--ease-standard);
+}
+
+.side-nav .nav-btn,
+.mobile-tabbar .nav-btn {
+	position: relative;
+	z-index: 1;
+}
+
+.nav-btn.active,
+.mobile-tabbar .nav-btn.dock-active {
+	background: transparent;
+	color: var(--color-primary);
+}
+
+.view-header {
+	box-shadow: var(--shadow-sm);
+}
+
+.view-title {
+	letter-spacing: -0.01em;
+}
+
+/* === Profile immersive header === */
+.profile-entity-card-host .profile-popup-banner {
+	height: 200px;
+}
+
+.profile-entity-card-host .profile-popup-body {
+	margin-top: -64px;
+}
+
+.profile-entity-card-host .profile-popup-avatar {
+	width: 112px;
+	height: 112px;
+	border-color: var(--surface-elevated);
+	box-shadow: var(--shadow-md);
+}
+
+.profile-stats {
+	align-items: center;
+	gap: 0.35rem;
+	padding: 0.35rem;
+	margin: 0.25rem 0 0.5rem;
+	background: color-mix(in srgb, var(--color-base-100) 55%, transparent);
+	backdrop-filter: blur(8px);
+	border: var(--border) solid var(--border-color);
+	border-radius: var(--radius-box);
+	box-shadow: var(--shadow-sm);
+}
+
+.profile-tabs {
+	position: relative;
+}
+
+.profile-tab-indicator {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: 2px;
+	transform-origin: 0 50%;
+	transform: translateX(var(--ti-x, 0px)) scaleX(var(--ti-sx, 1));
+	background: var(--color-primary);
+	border-radius: var(--radius-box);
+	pointer-events: none;
+	transition: transform var(--duration-open) var(--ease-standard);
+}
+
+/* === Explore masonry === */
+#explorePostList {
+	display: block;
+	padding: 0 1rem 1.5rem;
+}
+
+#explorePostList .explore-post-card {
+	background: var(--surface);
+	border: var(--border) solid var(--border-color);
+	border-radius: var(--radius-box);
+	padding: 0.9rem;
+	margin: 0 0 0.85rem;
+	break-inside: avoid;
+	transition: transform var(--duration-hover) var(--ease-standard), box-shadow var(--duration-hover) var(--ease-standard);
+}
+
+#explorePostList .explore-post-card:hover {
+	transform: translateY(-2px);
+	box-shadow: var(--shadow-md);
+	background: var(--surface);
+}
+
+#explorePostList .explore-post-body {
+	margin-left: 0;
+}
+
+#explorePostList .explore-thumbs {
+	margin-top: 0.65rem;
+	max-width: none;
+}
+
+@media (min-width: 700px) {
+	#explorePostList {
+		columns: 2;
+		column-gap: 0.85rem;
+	}
+}
+
+/* 单个空态 / 骨架屏占满整行时不做多列，避免被拆成左右两半 */
+#explorePostList:has(.empty-state),
+#explorePostList:has(.skeleton-host) {
+	column-count: 1;
+}
+
+@media (min-width: 640px) {
+	#exploreAccountList {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr));
+		overflow: visible;
+		scroll-snap-type: none;
+	}
+
+	#exploreAccountList:has(.empty-state--explore) {
+		display: block;
+	}
+}
+
+.explore-thumb img {
+	transition: transform var(--duration-hover) var(--ease-standard);
+}
+
+.explore-thumb:hover img {
+	transform: scale(1.06);
+}
+
+/* === Video / live ambient === */
+.video-slide .video-ambient,
+.live-slide .live-ambient {
+	position: absolute;
+	inset: 0;
+	overflow: hidden;
+	z-index: 0;
+	background: radial-gradient(circle at 30% 20%, color-mix(in srgb, var(--color-primary) 22%, #0d1118) 0%, #07090d 70%);
+}
+
+.live-slide .live-ambient {
+	background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+.video-ambient-img,
+.live-ambient-img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	filter: blur(32px);
+	transform: scale(1.15);
+	opacity: 0.5;
+}
+
+.live-ambient-img {
+	filter: blur(40px);
+	transform: scale(1.2);
+	opacity: 0.45;
+}
+
+.video-slide .video-player {
+	position: relative;
+	z-index: 1;
+}
+
+.video-slide .video-media-fallback {
+	z-index: 1;
+}
+
+.video-slide .video-overlay {
+	z-index: 2;
+}
+
+.video-slide .video-pause-hint {
+	z-index: 3;
+}
+
+.video-slide .video-progress-bar {
+	z-index: 2;
+}
+
+.live-slide .live-av-wrap,
+.live-slide .live-placeholder {
+	z-index: 1;
+}
+
+.live-slide .live-overlay {
+	z-index: 2;
+}
+
+.live-badge {
+	background: var(--like);
+}
+
+/* === Composer panel reveal === */
+.composer-reveal {
+	display: grid;
+	grid-template-rows: 0fr;
+	/* motion-ignore: 折叠面板用 grid-template-rows 做高度显隐，不可动画布局属性中的受限做法 */
+	transition: grid-template-rows var(--duration-open) var(--ease-standard);
+}
+
+.composer-reveal > .composer-reveal-body {
+	min-height: 0;
+	overflow: hidden;
+}
+
+.composer-reveal:not(.is-open) > .composer-reveal-body {
+	visibility: hidden;
+	transition: visibility 0s linear var(--duration-open);
+}
+
+.composer-reveal.is-open {
+	grid-template-rows: 1fr;
+}
+
+/* === Notifications === */
+.notification-card.unread {
+	box-shadow: inset 3px 0 0 0 var(--color-primary);
+}

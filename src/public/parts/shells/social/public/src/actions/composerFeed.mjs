@@ -3,6 +3,7 @@ import {
 	refreshQuotePreview,
 	setComposerAdvancedOpen,
 	setComposerContentWarningOpen,
+	setComposerPollOpen,
 	syncGroupRefInComposer,
 } from '../composer.mjs'
 import { syncFeed } from '../endpoints/feed.mjs'
@@ -40,11 +41,8 @@ export async function handleComposerFeedClick(target) {
 	const rankingTab = target.closest('[data-feed-ranking]')
 	if (rankingTab instanceof HTMLElement && rankingTab.dataset.feedRanking)
 		await setFeedRanking(rankingTab.dataset.feedRanking)
-	if (target.closest('#pollComposerToggle')) {
-		const panel = document.getElementById('pollComposerPanel')
-		panel?.classList.toggle('hidden')
-		document.getElementById('pollComposerToggle')?.classList.toggle('btn-active', !panel?.classList.contains('hidden'))
-	}
+	if (target.closest('#pollComposerToggle'))
+		setComposerPollOpen()
 	if (target.closest('#composerCwToggle'))
 		setComposerContentWarningOpen()
 	if (target.closest('#composerAdvancedToggle'))
@@ -57,7 +55,7 @@ export async function handleComposerFeedClick(target) {
 		state.pendingPoll = options.length >= 2
 			? { options, multi, deadline: deadlineRaw ? new Date(deadlineRaw).toISOString() : null }
 			: null
-		document.getElementById('pollComposerPanel')?.classList.add('hidden')
+		setComposerPollOpen(false)
 		document.getElementById('pollComposerToggle')?.classList.toggle('btn-active', Boolean(state.pendingPoll))
 	}
 	if (target.closest('#notificationsMarkAllButton'))

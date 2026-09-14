@@ -4,6 +4,7 @@ import { getExploreAccounts, getFeed, getTrendingHashtags } from '../endpoints/f
 import { entityHandle } from '../lib/display.mjs'
 import { mountEmptyState } from '../lib/emptyState.mjs'
 import { appendFeedItemsWithThreads } from '../lib/feedThreads.mjs'
+import { mountSkeleton } from '../lib/skeleton.mjs'
 import { renderSourceNodesHtml } from '../lib/sourceNodes.mjs'
 import { renderSuggestedAccountRows } from '../lib/suggestedAccounts.mjs'
 import { buildPostCard } from '../postCard.mjs'
@@ -12,6 +13,7 @@ import { renderTemplate } from '../templates.mjs'
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel, insertBeforeScrollSentinel } from '/scripts/lib/infiniteScroll.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
+import { applyStagger } from '/scripts/motion/stagger.mjs'
 
 /** @type {(() => void) | null} */
 let unbindDwell = null
@@ -145,6 +147,8 @@ async function replayFeedItems() {
 		divider.dataset.i18n = 'social.feed.replayDivider'
 		insertBeforeScrollSentinel(list, divider)
 		await appendFeedItemsWithThreads(list, items, buildFeedCardUnlessSuppressed)
+		// 仅新插入的卡片会真正播放动画；对已播放项重设变量无副作用
+		applyStagger(list.children)
 	}
 	finally {
 		delete list.dataset.feedReplaying
@@ -310,6 +314,7 @@ export async function prependFeedItem(item, options = {}) {
 			`.post-card[data-post-id="${CSS.escape(postId)}"][data-author-entity="${CSS.escape(entityHash)}"]`,
 		))
 			return true
+		card.style.setProperty('--stagger-i', '0')
 		const empty = list.querySelector('.feed-empty')
 		if (empty) list.replaceChildren(card)
 		else list.prepend(card)
@@ -388,6 +393,9 @@ export async function loadFeed(append = false) {
 		return
 	}
 
+	if (!append && !list.childElementCount)
+		await mountSkeleton(list, 'post', 4)
+
 	const gen = ++feedGeneration
 	let items
 	let nextCursor
@@ -440,6 +448,7 @@ export async function loadFeed(append = false) {
 		list.replaceChildren()
 		await appendFeedItemsWithThreads(list, visibleItems, buildFeedCardUnlessSuppressed)
 		if (feedGeneration !== gen) return
+		applyStagger(list.children)
 		updateFeedRankingTabs()
 	}
 	else
