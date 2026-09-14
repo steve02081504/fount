@@ -5468,6 +5468,7 @@
 			"noResult": "Không tìm thấy chủ đề phù hợp."
 		},
 		"createButton": "+ Tạo chủ đề mới",
+		"fontScheme": "Phông chữ",
 		"preview": {
 			"editButton": {
 				"title": "Chỉnh sửa"

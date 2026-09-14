@@ -3,6 +3,7 @@
  */
 import { markDirty } from './a11y.mjs'
 import { markDirty as markCssvarDirty } from './cssvar.mjs'
+import { markDirty as markEmojiDirty } from './emoji_chrome.mjs'
 import { ignore, ignoreAsync, observe, setDirtyHandler } from './mutation_gate.mjs'
 import { markDirty as markSvgThemeDirty } from './svg_theme.mjs'
 
@@ -13,6 +14,7 @@ import { markDirty as markSvgThemeDirty } from './svg_theme.mjs'
 function markAllDirty() {
 	markDirty()
 	markCssvarDirty()
+	markEmojiDirty()
 	markSvgThemeDirty()
 }
 

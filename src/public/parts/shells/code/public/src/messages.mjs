@@ -387,8 +387,12 @@ function renderEntryBubble(entry, { isLast = false } = {}) {
 
 	for (const file of entry.files || []) {
 		const chip = document.createElement('div')
-		chip.className = 'text-xs opacity-70'
-		chip.textContent = `📎 ${file.name}`
+		chip.className = 'flex items-center gap-1 text-xs opacity-70'
+		const name = document.createElement('span')
+		name.setAttribute('user-content', '')
+		name.textContent = file.name
+		chip.append(iconElement(icons.attach, { size: 14 }), name)
+		void svgInliner(chip)
 		body.appendChild(chip)
 	}
 	bubble.appendChild(renderMessageActions(entry, bubble))

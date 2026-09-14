@@ -4,6 +4,7 @@
  */
 import { requestRefresh, task as a11yTask } from './a11y.mjs'
 import { task as cssvarTask } from './cssvar.mjs'
+import { task as emojiTask } from './emoji_chrome.mjs'
 import { bootstrap, task as localeTask } from './locale.mjs'
 import { holdLocale, releaseLocale } from './locale_hold.mjs'
 import { drain, register, start, started } from './loop.mjs'
@@ -15,6 +16,7 @@ globalThis.fount.test ??= {}
 
 register(a11yTask)
 register(cssvarTask)
+register(emojiTask)
 register(svgThemeTask)
 register(localeTask)
 observe(document.documentElement, {

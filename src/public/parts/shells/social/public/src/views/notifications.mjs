@@ -1,5 +1,6 @@
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel, insertBeforeScrollSentinel } from '/scripts/lib/infiniteScroll.mjs'
+import { popNumber } from '/scripts/motion/index.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { formatSocialPostHref, formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { getNotifications, getNotificationsSeen, putNotificationsSeen } from '../endpoints/notifications.mjs'
@@ -150,8 +151,10 @@ export async function updateNotificationBadge() {
 		const badge = document.getElementById(badgeId)
 		if (!badge) continue
 		if (unread > 0) {
+			const changed = badge.textContent !== label
 			badge.textContent = label
 			badge.classList.remove('hidden')
+			if (changed) popNumber(badge)
 		}
 		else badge.classList.add('hidden')
 	}

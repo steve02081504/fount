@@ -63,8 +63,13 @@ export function renderCabinetList() {
 		// pathname+#hash：避免抽屉离屏时 a[href^="#"] 被 axe 当成 skip-link
 		a.href = `${location.pathname}#${locationHashFor(cabinet.cabinet_id)}`
 		a.className = cabinet.cabinet_id === cabinetStore.currentCabinetId ? 'menu-active' : ''
-		const badge = cabinet.type === 'shared' ? '🔗 ' : ''
-		a.textContent = `${badge}${cabinet.name}`
+		if (cabinet.type === 'shared') {
+			const sharedIcon = document.createElement('span')
+			sharedIcon.className = 'cabinet-shared-icon'
+			sharedIcon.setAttribute('aria-hidden', 'true')
+			a.append(sharedIcon, document.createTextNode(cabinet.name))
+		}
+		else a.textContent = cabinet.name
 		if (cabinet.cabinet_id === cabinetStore.currentCabinetId) a.setAttribute('aria-current', 'page')
 		else a.removeAttribute('aria-current')
 		a.addEventListener('click', event => {

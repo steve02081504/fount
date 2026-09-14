@@ -5468,6 +5468,7 @@
 			"noResult": "일치하는 테마가 없습니다."
 		},
 		"createButton": "+ 새 테마 만들기",
+		"fontScheme": "글꼴",
 		"preview": {
 			"editButton": {
 				"title": "편집"

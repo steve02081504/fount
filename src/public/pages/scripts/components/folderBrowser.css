@@ -13,6 +13,26 @@
 .folder-browser-entry.active {
 	background: color-mix(in oklab, var(--color-primary) 15%, transparent);
 }
+.folder-browser-entry-icon {
+	flex-shrink: 0;
+	width: 1.1rem;
+	height: 1.1rem;
+	background: currentColor;
+	mask-size: contain;
+	mask-repeat: no-repeat;
+	mask-position: center;
+	-webkit-mask-size: contain;
+	-webkit-mask-repeat: no-repeat;
+	-webkit-mask-position: center;
+}
+.folder-browser-entry-icon[data-kind="folder"] {
+	mask-image: url("https://api.iconify.design/mdi/folder-outline.svg");
+	-webkit-mask-image: url("https://api.iconify.design/mdi/folder-outline.svg");
+}
+.folder-browser-entry-icon[data-kind="file"] {
+	mask-image: url("https://api.iconify.design/mdi/file-outline.svg");
+	-webkit-mask-image: url("https://api.iconify.design/mdi/file-outline.svg");
+}
 .folder-browser-group {
 	padding: 0.25rem 0.75rem;
 	font-size: 0.75rem;

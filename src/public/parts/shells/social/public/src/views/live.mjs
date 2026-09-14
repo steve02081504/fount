@@ -480,7 +480,7 @@ async function sendLiveLike(slide) {
  * @returns {void}
  */
 function showHeartFloat(slide) {
-	playHeartAnim(slide, { emoji: '❤️', durationMs: 1000, mode: 'spawn' })
+	playHeartAnim(slide, { glyphClass: 'icon-notification-like', durationMs: 1000, mode: 'spawn' })
 }
 
 /**

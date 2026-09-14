@@ -5468,6 +5468,7 @@
 			"noResult": "Engin samsvarandi þemu fundust."
 		},
 		"createButton": "+ Búðu til nýtt þema",
+		"fontScheme": "Leturgerð",
 		"preview": {
 			"editButton": {
 				"title": "Breyta"

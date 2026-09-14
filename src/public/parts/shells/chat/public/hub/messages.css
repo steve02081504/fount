@@ -455,8 +455,18 @@
 }
 
 .message-file-card-icon {
-	font-size: 1.25rem;
-	line-height: 1;
+	flex-shrink: 0;
+	width: 1.25rem;
+	height: 1.25rem;
+	background: currentColor;
+	mask-image: url("https://api.iconify.design/mdi/file-outline.svg");
+	-webkit-mask-image: url("https://api.iconify.design/mdi/file-outline.svg");
+	mask-size: contain;
+	mask-repeat: no-repeat;
+	mask-position: center;
+	-webkit-mask-size: contain;
+	-webkit-mask-repeat: no-repeat;
+	-webkit-mask-position: center;
 }
 
 .message-file-card-meta {

@@ -1,28 +1,17 @@
 :root {
 	color-scheme: light dark;
-	font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
 #shell {
 	min-height: 100vh;
-	--bg: var(--color-base-100);
-	--bg-soft: var(--color-base-200);
-	--surface: var(--color-base-200);
-	--surface-hover: var(--color-base-300);
-	--border-color: color-mix(in srgb, var(--color-base-content) 8%, transparent);
-	--border-strong: color-mix(in srgb, var(--color-base-content) 14%, transparent);
-	--text: var(--color-base-content);
-	--muted: color-mix(in srgb, var(--color-base-content) 68%, transparent);
-	--accent: var(--color-primary);
 	--like: var(--color-error);
 	--repost: var(--color-success);
 	--reply: var(--color-primary);
-	--radius: 1rem;
 	--side-width: 275px;
 	--aside-width: 350px;
 	--timeline-width: 600px;
 	--nav-item-h: 52px;
-	--transition: 140ms ease;
+	--transition: var(--duration-hover) var(--ease-standard);
 }
 
 
@@ -346,12 +335,12 @@
 .surface {
 	background: var(--surface);
 	border: var(--border) solid var(--border-color);
-	border-radius: var(--radius);
+	border-radius: var(--radius-box);
 }
 
 .hint {
 	font-size: 0.82rem;
-	color: var(--muted);
+	color: var(--text-muted);
 	margin: 0;
 }
 
@@ -367,7 +356,7 @@
 
 .empty-state--plain .empty-state-title {
 	font-weight: 400;
-	color: var(--muted);
+	color: var(--text-muted);
 	font-size: 0.95rem;
 }
 
@@ -378,7 +367,7 @@
 
 .empty-state--hint .empty-state-title {
 	font-weight: 400;
-	color: var(--muted);
+	color: var(--text-muted);
 	font-size: 0.9rem;
 }
 
@@ -455,7 +444,7 @@
 }
 
 .composer #postText::placeholder {
-	color: var(--muted);
+	color: var(--text-muted);
 }
 
 .composer-cw {
@@ -512,7 +501,7 @@
 .composer-field-label {
 	font-size: 0.75rem;
 	font-weight: 600;
-	color: var(--muted);
+	color: var(--text-muted);
 }
 
 .composer-toolbar {
@@ -546,7 +535,7 @@
 .search-icon {
 	position: absolute;
 	left: 0.85rem;
-	color: var(--muted);
+	color: var(--text-muted);
 	width: 1.1rem;
 	height: 1.1rem;
 	pointer-events: none;
@@ -558,7 +547,7 @@
 	padding: 0.65rem 1.2rem 0.65rem 1.95rem;
 	border: none;
 	border-radius: var(--radius-box);
-	background: var(--bg-soft);
+	background: var(--surface);
 	color: var(--text);
 	font: inherit;
 	outline: none;
@@ -623,7 +612,7 @@
 
 .feed-trending .trending-count {
 	font-size: 0.8rem;
-	color: var(--muted);
+	color: var(--text-muted);
 }
 
 .aside-card-title {
@@ -668,7 +657,7 @@
 .suggested-account-handle {
 	display: block;
 	font-size: 0.85rem;
-	color: var(--muted);
+	color: var(--text-muted);
 }
 
 /* Feed list */
@@ -728,7 +717,7 @@
 	border-radius: var(--radius-box);
 	object-fit: cover;
 	flex-shrink: 0;
-	background: var(--bg-soft);
+	background: var(--surface);
 }
 
 .author-avatar.hash-avatar {
@@ -758,7 +747,7 @@
 	width: 80px;
 	height: 80px;
 	/* theme-radius-ignore */
-	border: 4px solid var(--bg);
+	border: 4px solid var(--surface-elevated);
 	margin-top: -2.5rem;
 }
 
@@ -787,7 +776,7 @@
 
 .author-handle {
 	font-size: 0.85rem;
-	color: var(--muted);
+	color: var(--text-muted);
 	text-decoration: none;
 }
 
@@ -796,13 +785,13 @@
 }
 
 .post-meta-sep {
-	color: var(--muted);
+	color: var(--text-muted);
 	font-size: 0.85rem;
 }
 
 .post-meta {
 	font-size: 0.85rem;
-	color: var(--muted);
+	color: var(--text-muted);
 }
 
 .post-card .body {
@@ -849,14 +838,19 @@
 	gap: 0.35rem;
 	border: none;
 	background: transparent;
-	color: var(--muted);
+	color: var(--text-muted);
 	font: inherit;
 	font-size: 0.82rem;
 	cursor: pointer;
 	padding: 0.35rem;
 	border-radius: var(--radius-box);
-	transition: color var(--transition), background var(--transition);
+	transition: color var(--transition), background var(--transition), transform var(--transition);
 	min-width: 2rem;
+	position: relative;
+}
+
+.action-btn:active {
+	transform: scale(0.94);
 }
 
 .action-btn .icon {
@@ -887,7 +881,7 @@
 
 .action-btn-dislike:hover,
 .action-btn-dislike.disliked {
-	color: var(--muted);
+	color: var(--text-muted);
 }
 
 .action-btn-dislike.disliked .icon-dislike {
@@ -906,7 +900,7 @@
 .post-visibility-icon {
 	width: 0.85rem;
 	height: 0.85rem;
-	color: var(--muted);
+	color: var(--text-muted);
 	vertical-align: middle;
 }
 
@@ -937,7 +931,7 @@
 	border-radius: var(--radius-box);
 	overflow: hidden;
 	border: var(--border) solid var(--border-color);
-	background: var(--bg-soft);
+	background: var(--surface);
 }
 
 .post-media-track {
@@ -969,7 +963,7 @@
 	max-height: 510px;
 	object-fit: cover;
 	display: block;
-	background: var(--bg-soft);
+	background: var(--surface);
 }
 
 .post-media-video {
@@ -1097,7 +1091,7 @@
 	height: 80px;
 	border-radius: var(--radius-box);
 	overflow: hidden;
-	background: var(--bg-soft);
+	background: var(--surface);
 }
 
 .media-chip.media-chip-editable {
@@ -1145,7 +1139,7 @@
 .translation-block {
 	border-radius: var(--radius-box);
 	border: var(--border) solid var(--border-color);
-	background: var(--bg-soft);
+	background: var(--surface);
 }
 
 .translation-block {
@@ -1169,7 +1163,7 @@
 
 .repost-banner {
 	font-size: 0.82rem;
-	color: var(--muted);
+	color: var(--text-muted);
 	margin-bottom: 0.35rem;
 	display: flex;
 	align-items: center;
@@ -1197,7 +1191,7 @@
 	width: 100%;
 	box-sizing: border-box;
 	margin-bottom: 0.35rem;
-	background: var(--bg-soft);
+	background: var(--surface);
 	border: var(--border) solid var(--border-color);
 	color: inherit;
 	border-radius: var(--radius-box);
@@ -1215,7 +1209,7 @@
 	flex-direction: column;
 	align-items: center;
 	gap: 0.45rem;
-	color: var(--muted);
+	color: var(--text-muted);
 }
 
 .empty-state-icon {
@@ -1373,7 +1367,7 @@
 }
 
 .reply-composer textarea::placeholder {
-	color: var(--muted);
+	color: var(--text-muted);
 }
 
 .reply-composer-actions {
@@ -1550,7 +1544,7 @@
 	gap: 0.5rem;
 	padding: 0.25rem 0 0.75rem;
 	font-size: 0.95rem;
-	color: var(--muted);
+	color: var(--text-muted);
 	flex-wrap: wrap;
 }
 
@@ -1591,11 +1585,11 @@
 
 .profile-handle {
 	font-size: 0.95rem;
-	color: var(--muted);
+	color: var(--text-muted);
 }
 
 .profile-stat span {
-	color: var(--muted);
+	color: var(--text-muted);
 }
 
 .profile-tab-panel.hidden {
@@ -1616,14 +1610,14 @@
 .settings-hint {
 	margin: 0;
 	font-size: 0.85rem;
-	color: var(--muted);
+	color: var(--text-muted);
 	line-height: 1.4;
 }
 
 .entity-hash {
 	font-size: 0.75rem;
 	word-break: break-all;
-	color: var(--muted);
+	color: var(--text-muted);
 }
 
 /* Notifications */
@@ -1643,7 +1637,7 @@
 }
 
 .notification-icon {
-	color: var(--muted);
+	color: var(--text-muted);
 	margin-top: 0.15rem;
 }
 
@@ -1673,7 +1667,7 @@
 }
 
 .notification-snippet {
-	color: var(--muted);
+	color: var(--text-muted);
 	font-size: 0.9rem;
 	margin: 0.35rem 0 0;
 }
@@ -1737,7 +1731,7 @@
 	margin: 0;
 	font-size: 0.95rem;
 	letter-spacing: 0.01em;
-	color: var(--muted);
+	color: var(--text-muted);
 	font-weight: 700;
 }
 
@@ -1766,14 +1760,16 @@
 	scroll-snap-align: start;
 	padding: 0.85rem;
 	border: var(--border) solid var(--border-color);
-	border-radius: var(--radius);
+	border-radius: var(--radius-box);
 	background: color-mix(in srgb, var(--surface) 55%, transparent);
-	transition: border-color var(--transition), background var(--transition);
+	transition: border-color var(--transition), background var(--transition), transform var(--transition), box-shadow var(--transition);
 }
 
 .explore-account:hover {
 	border-color: var(--border-strong);
 	background: var(--surface);
+	transform: translateY(-2px);
+	box-shadow: var(--shadow-md);
 }
 
 .explore-account-avatar-link {
@@ -1808,7 +1804,7 @@
 	margin: 0.35rem 0 0;
 	font-size: 0.8rem;
 	line-height: 1.35;
-	color: var(--muted);
+	color: var(--text-muted);
 	display: -webkit-box;
 	-webkit-line-clamp: 2;
 	-webkit-box-orient: vertical;
@@ -1923,7 +1919,7 @@
 .explore-thumb {
 	aspect-ratio: 1;
 	min-height: 4.5rem;
-	background: var(--bg-soft);
+	background: var(--surface);
 	overflow: hidden;
 }
 
@@ -1938,7 +1934,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	color: var(--muted);
+	color: var(--text-muted);
 }
 
 /* Saved */
@@ -1989,7 +1985,7 @@
 	margin: 0;
 	font-size: 0.92rem;
 	font-weight: 700;
-	color: var(--muted);
+	color: var(--text-muted);
 }
 
 .saved-folder-actions {
@@ -1999,7 +1995,7 @@
 }
 
 .saved-section-empty {
-	color: var(--muted);
+	color: var(--text-muted);
 	font-size: 0.85rem;
 	padding: 0.5rem 1rem 1rem;
 }
@@ -2040,7 +2036,7 @@
 }
 
 .saved-preview {
-	color: var(--muted);
+	color: var(--text-muted);
 	font-size: 0.88rem;
 	line-height: 1.35;
 	display: -webkit-box;
@@ -2074,7 +2070,7 @@
 }
 
 .draft-row-meta {
-	color: var(--muted);
+	color: var(--text-muted);
 	font-size: 0.8rem;
 }
 
@@ -2111,7 +2107,7 @@
 }
 
 .mention-option small {
-	color: var(--muted);
+	color: var(--text-muted);
 }
 
 .composer-body {
@@ -2283,7 +2279,7 @@
 .taste-hash,
 .taste-weight {
 	font-size: 0.82rem;
-	color: var(--muted);
+	color: var(--text-muted);
 }
 
 /* === Search view === */
@@ -2610,9 +2606,14 @@
 	left: 50%;
 	top: 50%;
 	transform: translate(-50%, -50%);
-	font-size: 4rem;
+	color: var(--like);
 	pointer-events: none;
 	z-index: 10;
+}
+
+.heart-anim .icon {
+	width: 3.5rem;
+	height: 3.5rem;
 }
 
 @keyframes heartFloat {
@@ -2639,7 +2640,7 @@
 	left: 0;
 	right: 0;
 	max-height: 55%;
-	background: var(--bg);
+	background: var(--surface-elevated);
 	border-radius: var(--radius-box) var(--radius-box) 0 0;
 	overflow-y: auto;
 	padding: 0.75rem 1rem 1rem;
@@ -2657,7 +2658,7 @@
 	gap: 0.75rem;
 	position: sticky;
 	top: 0;
-	background: var(--bg);
+	background: var(--surface-elevated);
 	padding-bottom: 0.35rem;
 	z-index: 1;
 }
@@ -3033,7 +3034,7 @@
 
 .live-broadcast-status {
 	font-size: 0.9rem;
-	color: var(--muted);
+	color: var(--text-muted);
 	margin: 0;
 }
 
@@ -3064,7 +3065,7 @@
 	padding: 0.15rem 0.65rem;
 	font-size: 0.75rem;
 	cursor: pointer;
-	color: var(--muted);
+	color: var(--text-muted);
 }
 
 .album-toolbar {
@@ -3160,7 +3161,7 @@
 #fount-shared-emoji-picker .emoji-tab {
 	background: transparent;
 	border: none;
-	color: var(--muted);
+	color: var(--text-muted);
 	padding: 4px 8px;
 	cursor: pointer;
 	border-radius: var(--radius-field);
@@ -3225,7 +3226,7 @@
 	grid-column: 1 / -1;
 	padding: 16px 8px;
 	text-align: center;
-	color: var(--muted);
+	color: var(--text-muted);
 	font-size: 13px;
 }
 

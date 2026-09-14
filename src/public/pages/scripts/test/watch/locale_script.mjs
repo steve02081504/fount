@@ -98,6 +98,23 @@ export function collectAriaLabelsForLocaleCheck(root = document) {
 }
 
 /**
+ * 收集可见（未被跳过）且包含指定字符的叶子元素选择器，便于定位泄漏元素。
+ * @param {string} character 匹配字符
+ * @returns {string[]} 形如 `span#id.cls[data-i18n="key"]` 的选择器列表
+ */
+export function collectLeakingSelectors(character) {
+	const selectors = new Set()
+	const skip = `${LOCALE_CHECK_SKIP_SELECTOR}, [aria-hidden="true"], [inert]`
+	for (const element of document.querySelectorAll('body *')) {
+		if (element.childElementCount !== 0) continue
+		if (!(element.textContent || '').includes(character)) continue
+		if (element.closest(skip)) continue
+		selectors.add(describeElement(element))
+	}
+	return [...selectors]
+}
+
+/**
  * @param {Element} el 元素
  * @returns {string} 简短定位串
  */

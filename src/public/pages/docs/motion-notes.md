@@ -6,14 +6,14 @@ Enforced by the `motion_hygiene` static check ([checks AGENTS](../../../scripts/
 
 ## Page transitions
 
-Use [`lib/viewTransition.mjs`](../scripts/lib/viewTransition.mjs) (`viewTransition(update, { force? })`) for anything that swaps a whole page/panel. It already respects `prefers-reduced-motion` and swallows the expected `AbortError` / `InvalidStateError` / `TimeoutError`. Do not call `document.startViewTransition` directly, and do not add a motion dependency.
+Use [`motion/viewTransition.mjs`](../scripts/motion/viewTransition.mjs) (`viewTransition(update, { force? })`) for anything that swaps a whole page/panel. It already respects `prefers-reduced-motion` and swallows the expected `AbortError` / `InvalidStateError` / `TimeoutError`. Do not call `document.startViewTransition` directly, and do not add a motion dependency.
 
 ## Perf constraints (checked)
 
 - **Enumerate transition properties.** Never `transition: all`, Tailwind `transition-all`, `transition-property: all`, or the implicit-all form `transition: 0.2s ease` — a later property addition would ride along untyped.
 - **Do not transition reflow properties** (`width` / `height` / `min|max-*` / `inset*` / `margin*` / `padding*` / `flex-basis` / `grid-template-*`). Animate `transform` / `opacity`, or use `grid-template-rows` for height reveals. Genuine exceptions (progress bars, card resize, height reveal) carry an above-line `/* motion-ignore: reason */`.
 - **`will-change` only on compositor-friendly props** (`transform` / `opacity` / `filter` / `backdrop-filter` / `scroll-position` / `contents`). `will-change: width` promotes nothing and costs VRAM.
-- **Keep the global `prefers-reduced-motion` guard in [`base.css`](../base.css).** It is the single reduced-motion net for the whole frontend — page-local animations rely on it instead of shipping their own copy.
+- **Keep the global `prefers-reduced-motion` guard in [`motion/styles.css`](../scripts/motion/styles.css).** It is the single reduced-motion net for the whole frontend — page-local animations rely on it instead of shipping their own copy.
 
 ## Pick by usage, never by the nearest number
 
@@ -53,4 +53,4 @@ Opening is an invitation; closing gets out of the way.
 - Forgetting the reflow (`void el.offsetWidth` between class removal and re-add) that replays an animation.
 - Animating the container instead of the inner piece (badge dot, not the trigger; page sections, not the wrapper).
 - Binding `pointermove` on a rotating tilt card instead of the flat wrapper — the edges slip under the cursor and hover flickers.
-- Re-declaring the reduced-motion guard per file instead of relying on `base.css`.
+- Re-declaring the reduced-motion guard per file instead of relying on `motion/styles.css`.

@@ -2,6 +2,8 @@ import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 
 import { svgInliner } from '../lib/svgInliner.mjs'
 
+import { applyThemeFontScheme } from './fonts.mjs'
+
 /**
  * 自定义样式标签的 ID
  * @constant {string}
@@ -264,6 +266,8 @@ function applyThemeToDOM(theme) {
 
 	if (document.documentElement.getAttribute('data-theme') !== resolvedTheme)
 		document.documentElement.dataset.theme = resolvedTheme
+
+	applyThemeFontScheme(theme)
 }
 
 /**

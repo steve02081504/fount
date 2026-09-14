@@ -5478,6 +5478,7 @@
 			"noResult": "لم يتم العثور على مواضيع مطابقة."
 		},
 		"createButton": "+ إنشاء سمة جديدة",
+		"fontScheme": "نظام الخطوط",
 		"preview": {
 			"editButton": {
 				"title": "تحرير"

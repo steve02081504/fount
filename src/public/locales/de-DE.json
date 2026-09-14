@@ -5468,6 +5468,7 @@
 			"noResult": "Keine passenden Themen gefunden."
 		},
 		"createButton": "+ Neues Thema erstellen",
+		"fontScheme": "Schriftart",
 		"preview": {
 			"editButton": {
 				"title": "Bearbeiten"

@@ -5468,6 +5468,7 @@
 			"noResult": "कोई मिलता-जुलता विषय नहीं मिला।"
 		},
 		"createButton": "+ नई थीम बनाएं",
+		"fontScheme": "फ़ॉन्ट",
 		"preview": {
 			"editButton": {
 				"title": "संपादित करें"

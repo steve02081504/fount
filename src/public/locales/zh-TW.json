@@ -5467,6 +5467,7 @@
 			"noResult": "未找到相符的主題。"
 		},
 		"createButton": "+ 建立新主題",
+		"fontScheme": "字型方案",
 		"preview": {
 			"editButton": {
 				"title": "編輯"

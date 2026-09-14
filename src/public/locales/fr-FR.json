@@ -5474,6 +5474,7 @@
 			"noResult": "Aucun thème correspondant trouvé."
 		},
 		"createButton": "+ Créer un nouveau thème",
+		"fontScheme": "Police de caractères",
 		"preview": {
 			"editButton": {
 				"title": "Modifier"

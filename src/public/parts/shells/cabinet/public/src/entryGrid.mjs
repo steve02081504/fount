@@ -24,16 +24,16 @@ export function formatStamp(stamp) {
 
 /**
  * @param {object} entry 条目
- * @returns {string} 图标
+ * @returns {string} 图标 kind（对应 index.css 的 `.entry-icon[data-icon]`）
  */
-function iconFor(entry) {
-	if (entry.kind === 'folder') return entry.encryption ? '🔒' : '📁'
-	if (entry.kind === 'link') return '🔗'
+function iconKindFor(entry) {
+	if (entry.kind === 'folder') return entry.encryption ? 'lock' : 'folder'
+	if (entry.kind === 'link') return 'link'
 	const mime = String(entry.mime_type || '')
-	if (mime.startsWith('image/')) return '🖼️'
-	if (mime.startsWith('video/')) return '🎬'
-	if (mime.startsWith('audio/')) return '🎵'
-	return '📄'
+	if (mime.startsWith('image/')) return 'image'
+	if (mime.startsWith('video/')) return 'video'
+	if (mime.startsWith('audio/')) return 'audio'
+	return 'file'
 }
 
 /**
@@ -80,7 +80,7 @@ export async function renderEntries() {
 		const previewUrl = entry.preview?.url
 		const thumbHtml = previewUrl && isSafeHtmlUrl(previewUrl)
 			? `<img class="entry-thumb" src="${escapeHtml(previewUrl)}" alt="" />`
-			: `<div class="entry-thumb flex items-center justify-center text-2xl">${iconFor(entry)}</div>`
+			: `<div class="entry-thumb flex items-center justify-center"><span class="entry-icon" data-icon="${iconKindFor(entry)}" aria-hidden="true"></span></div>`
 		const card = await renderTemplate('entry_card', {
 			id: escapeHtml(entry.id),
 			selectedClass: selected.has(entry.id) ? ' selected ring-2 ring-primary' : '',

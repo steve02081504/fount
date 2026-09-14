@@ -408,7 +408,7 @@ function rehypeMermaid({ securityLevel = 'loose' } = {}) {
 			} catch (error) {
 				console.error('Mermaid diagram render failed:', error)
 				const fallback = h('pre.mermaid-error-fallback', { tabIndex: 0 }, `\
-❌ Mermaid Diagram Failed to Render
+Mermaid Diagram Failed to Render
 Error: ${error.message}
 --- Diagram Source ---
 ${mermaidCode}`

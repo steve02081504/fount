@@ -154,9 +154,15 @@ export async function openFolderBrowser(options) {
 			const row = document.createElement('button')
 			row.type = 'button'
 			row.className = 'folder-browser-entry' + (filtered[highlight] === entry ? ' active' : '')
+			const icon = document.createElement('span')
+			icon.className = 'folder-browser-entry-icon'
+			icon.dataset.kind = entry.isDirectory ? 'folder' : 'file'
+			icon.setAttribute('aria-hidden', 'true')
+			const name = document.createElement('span')
 			// 目录/文件名是用户数据，跳过语种轮换的脚本检查（路径含简体汉字在 ja/en 轮换时误报）
-			row.setAttribute('user-content', '')
-			row.textContent = (entry.isDirectory ? '📁 ' : '📄 ') + entry.name
+			name.setAttribute('user-content', '')
+			name.textContent = entry.name
+			row.append(icon, name)
 			// 进入目录（单击）；非仅目录模式下点选文件即选中
 			row.addEventListener('click', () => enterEntry(entry, dialogElement))
 			container.append(row)

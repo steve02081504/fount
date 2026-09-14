@@ -3,10 +3,10 @@
  */
 import { isLocaleHeld } from './locale_hold.mjs'
 import {
-	LOCALE_CHECK_SKIP_SELECTOR,
 	SCRIPT_FORBIDDEN,
 	ariaLabelLocaleProblem,
 	collectAriaLabelsForLocaleCheck,
+	collectLeakingSelectors,
 } from './locale_script.mjs'
 import { ignore, ignoreAsync } from './mutations.mjs'
 import { collectVisiblePageText } from './page_text.mjs'
@@ -193,28 +193,6 @@ async function forbiddenReFor(locale) {
 async function normalizeCycleLocale(locale) {
 	const i18n = await getI18n()
 	return i18n.matchLocale([locale], LOCALE_CYCLE) || null
-}
-
-/**
- * 收集可见（未被 locale 检查跳过）且包含指定字符的叶子元素的 CSS 选择器。
- * 便于定位「本该本地化却漏出他语言字符」的具体元素，而非仅靠人工猜。
- * @param {string} character 匹配字符
- * @returns {string[]} 形如 `span#id.cls[data-i18n="key"]` 的选择器列表
- */
-function collectLeakingSelectors(character) {
-	const selectors = new Set()
-	const skip = `${LOCALE_CHECK_SKIP_SELECTOR}, [aria-hidden="true"], [inert]`
-	for (const element of document.querySelectorAll('body *')) {
-		if (element.childElementCount !== 0) continue
-		if (!(element.textContent || '').includes(character)) continue
-		if (element.closest(skip)) continue
-		const parts = [element.tagName.toLowerCase()]
-		if (element.id) parts.push(`#${CSS.escape(element.id)}`)
-		for (const className of element.classList) parts.push(`.${CSS.escape(className)}`)
-		if (element.dataset.i18n) parts.push(`[data-i18n="${CSS.escape(element.dataset.i18n)}"]`)
-		selectors.add(parts.join(''))
-	}
-	return [...selectors]
 }
 
 /**

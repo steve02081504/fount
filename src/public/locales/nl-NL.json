@@ -5474,6 +5474,7 @@
 			"noResult": "Geen overeenkomende thema's gevonden."
 		},
 		"createButton": "+ Maak een nieuw thema",
+		"fontScheme": "Lettertype",
 		"preview": {
 			"editButton": {
 				"title": "Bewerken"

@@ -6,7 +6,7 @@ import { renderMarkdown } from '../../../scripts/features/markdown/index.mjs'
 import { geti18n, console } from '../../../scripts/i18n/index.mjs'
 import { onElementRemoved } from '../../../scripts/lib/onElementRemoved.mjs'
 import { svgInliner } from '../../../scripts/lib/svgInliner.mjs'
-import { viewTransition } from '../../../scripts/lib/viewTransition.mjs'
+import { viewTransition } from '../../../scripts/motion/viewTransition.mjs'
 
 import { defaultIcons, genericDefaultIcon } from './constants.mjs'
 import { partDetailsCache, getpartDetails, clearCache, getAllpartNames } from './data.mjs'

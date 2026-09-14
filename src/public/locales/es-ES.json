@@ -5474,6 +5474,7 @@
 			"noResult": "No se encontraron temas coincidentes."
 		},
 		"createButton": "+ Crear nuevo tema",
+		"fontScheme": "Tipografía",
 		"preview": {
 			"editButton": {
 				"title": "Editar"

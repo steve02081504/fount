@@ -5468,6 +5468,7 @@
 			"noResult": "未找到匹配的主题。"
 		},
 		"createButton": "+ 创建新主题",
+		"fontScheme": "字体方案",
 		"preview": {
 			"editButton": {
 				"title": "编辑"

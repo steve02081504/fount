@@ -88,10 +88,10 @@ Deno.test('repo: no motion hygiene violations in themed frontend (incl. .github/
 		assert(false, `主题化前端存在动效卫生问题（transition: all / 布局属性过渡 / 非合成 will-change）(${issues.length}):\n${issues.slice(0, 20).map(issue => `${issue.path}:${issue.line} ${issue.token}`).join('\n')}`)
 })
 
-Deno.test('repo: base.css keeps the global prefers-reduced-motion guard', async () => {
-	const content = await readFile(join(REPO_ROOT, 'src/public/pages/base.css'), 'utf8')
+Deno.test('repo: motion/styles.css keeps the global prefers-reduced-motion guard', async () => {
+	const content = await readFile(join(REPO_ROOT, 'src/public/pages/scripts/motion/styles.css'), 'utf8')
 	assert(
 		/@media\s*\(\s*prefers-reduced-motion\s*:\s*reduce\s*\)/u.test(content),
-		'base.css 必须保留全局 prefers-reduced-motion 守卫（页面动效依赖它，见 pages/docs/motion-notes.md）',
+		'motion/styles.css 必须保留全局 prefers-reduced-motion 守卫（页面动效依赖它，见 pages/docs/motion-notes.md）',
 	)
 })

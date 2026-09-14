@@ -9,6 +9,7 @@ import {
 	setCustomTheme,
 	setTheme,
 } from '/scripts/theme/index.mjs'
+import { FONT_SCHEMES, getThemeFontScheme, setThemeFontScheme } from '/scripts/theme/fonts.mjs'
 import {
 	applyThemeWithViewTransition,
 	createAutoPreview,
@@ -87,6 +88,21 @@ async function renderList() {
 		 */
 		createButton.onclick = () => openEditor(null) // New theme
 	}
+
+	// Bind font scheme selector (only once); scheme is bound to the current theme
+	const fontSchemeSelect = document.getElementById('font-scheme-select')
+	if (fontSchemeSelect && !fontSchemeSelect.hasAttribute('data-bound')) {
+		fontSchemeSelect.dataset.bound = 'true'
+		fontSchemeSelect.append(...Object.entries(FONT_SCHEMES).map(([id, scheme]) => {
+			const option = document.createElement('option')
+			option.value = id
+			option.textContent = scheme.label
+			return option
+		}))
+		fontSchemeSelect.addEventListener('change', () =>
+			setThemeFontScheme(getCurrentTheme(), fontSchemeSelect.value))
+	}
+	if (fontSchemeSelect) fontSchemeSelect.value = getThemeFontScheme(getCurrentTheme())
 
 	// Re-create search input to remove old listeners
 	const newSearchInput = searchInput.cloneNode(true)

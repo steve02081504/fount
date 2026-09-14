@@ -6,6 +6,66 @@
 	background: var(--color-base-200);
 }
 
+#entryGrid .entry-icon {
+	display: inline-block;
+	width: 1.9rem;
+	height: 1.9rem;
+	background: currentColor;
+	mask-image: var(--entry-icon, url("https://api.iconify.design/mdi/file-outline.svg"));
+	-webkit-mask-image: var(--entry-icon, url("https://api.iconify.design/mdi/file-outline.svg"));
+	mask-size: contain;
+	mask-repeat: no-repeat;
+	mask-position: center;
+	-webkit-mask-size: contain;
+	-webkit-mask-repeat: no-repeat;
+	-webkit-mask-position: center;
+}
+
+#entryGrid .entry-icon[data-icon="folder"] {
+	--entry-icon: url("https://api.iconify.design/mdi/folder-outline.svg");
+}
+
+#entryGrid .entry-icon[data-icon="lock"] {
+	--entry-icon: url("https://api.iconify.design/mdi/lock-outline.svg");
+}
+
+#entryGrid .entry-icon[data-icon="link"] {
+	--entry-icon: url("https://api.iconify.design/mdi/link-variant.svg");
+}
+
+#entryGrid .entry-icon[data-icon="image"] {
+	--entry-icon: url("https://api.iconify.design/mdi/image-outline.svg");
+}
+
+#entryGrid .entry-icon[data-icon="video"] {
+	--entry-icon: url("https://api.iconify.design/mdi/movie-outline.svg");
+}
+
+#entryGrid .entry-icon[data-icon="audio"] {
+	--entry-icon: url("https://api.iconify.design/mdi/music-note-outline.svg");
+}
+
+#entryGrid .entry-icon[data-icon="file"] {
+	--entry-icon: url("https://api.iconify.design/mdi/file-outline.svg");
+}
+
+.cabinet-shared-icon {
+	display: inline-block;
+	width: 0.95rem;
+	height: 0.95rem;
+	margin-right: 0.35rem;
+	vertical-align: -0.12em;
+	background: currentColor;
+	mask-image: url("https://api.iconify.design/mdi/link-variant.svg");
+	-webkit-mask-image: url("https://api.iconify.design/mdi/link-variant.svg");
+	mask-size: contain;
+	mask-repeat: no-repeat;
+	mask-position: center;
+	-webkit-mask-size: contain;
+	-webkit-mask-repeat: no-repeat;
+	-webkit-mask-position: center;
+}
+
 .cabinet-status-bar {
 	padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0));
 }

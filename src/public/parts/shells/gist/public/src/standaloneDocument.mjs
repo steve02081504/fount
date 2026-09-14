@@ -56,7 +56,7 @@ function renderAttachmentsHtml(files, downloadLabel) {
 		const mime = file.mime_type || file.mimeType || 'application/octet-stream'
 		const name = escapeHtml(file.name || 'file')
 		const safeUrl = escapeHtml(dataUrl)
-		let previewHtml = '<div class="file-placeholder" style="font-size: 40px; text-align: center;">📄</div>'
+		let previewHtml = '<div style="width:40px;height:40px;background:currentColor;opacity:.55;mask:url(https://api.iconify.design/mdi/file-outline.svg) center/contain no-repeat;-webkit-mask:url(https://api.iconify.design/mdi/file-outline.svg) center/contain no-repeat;"></div>'
 		if (mime.startsWith('image/'))
 			previewHtml = `<img src="${safeUrl}" alt="${name}" style="max-width: 100%; max-height: 100%; object-fit: contain; cursor: zoom-in;" onclick="openModal(${escapeHtml(JSON.stringify(dataUrl))}, 'image')">`
 		else if (mime.startsWith('video/'))

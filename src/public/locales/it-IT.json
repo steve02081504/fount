@@ -5474,6 +5474,7 @@
 			"noResult": "Nessun tema corrispondente trovato."
 		},
 		"createButton": "+ Crea un nuovo tema",
+		"fontScheme": "Carattere",
 		"preview": {
 			"editButton": {
 				"title": "Modifica"

@@ -5468,6 +5468,7 @@
 			"noResult": "No matching themes found."
 		},
 		"createButton": "+ Create new theme",
+		"fontScheme": "Font scheme",
 		"preview": {
 			"editButton": {
 				"title": "Edit"
