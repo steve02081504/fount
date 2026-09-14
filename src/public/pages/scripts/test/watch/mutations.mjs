@@ -2,16 +2,18 @@
  * MutationObserver 闸门接线：注册各 watch 任务的脏标记，并转发 observe / ignore 门面。
  */
 import { markDirty } from './a11y.mjs'
+import { markActivity } from './activity.mjs'
 import { markDirty as markCssvarDirty } from './cssvar.mjs'
 import { markDirty as markEmojiDirty } from './emoji_chrome.mjs'
 import { ignore, ignoreAsync, observe, setDirtyHandler } from './mutation_gate.mjs'
 import { markDirty as markSvgThemeDirty } from './svg_theme.mjs'
 
 /**
- * 非忽略期的突变回调：依次标记各 watch 任务脏。
+ * 非忽略期的突变回调：记录活动并依次标记各 watch 任务脏。
  * @returns {void}
  */
 function markAllDirty() {
+	markActivity()
 	markDirty()
 	markCssvarDirty()
 	markEmojiDirty()

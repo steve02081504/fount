@@ -361,10 +361,11 @@ test.describe('code shell pill dropdowns', () => {
 		const dialog = page.locator('dialog.modal:has(#char-switch-list)')
 		await expect(dialog).toBeVisible()
 		const list = dialog.locator('#char-switch-list')
-		await expect(list.locator('.char-option')).toHaveCount(3)
+		await expect(list.locator('.char-option')).toHaveCount(4)
 		await expect(list.locator('.char-option', { hasText: 'codeBuddy' })).toBeVisible()
 		await expect(list.locator('.char-option', { hasText: 'testAgent' })).toBeVisible()
 		await expect(list.locator('.char-option', { hasText: 'streamAgent' })).toBeVisible()
+		await expect(list.locator('.char-option', { hasText: 'toolAgent' })).toBeVisible()
 		await list.locator('.char-option', { hasText: 'testAgent' }).click()
 		await expect(dialog).toBeHidden()
 		await expect(page.locator('#char-pill-label')).toHaveText('testAgent')
@@ -1088,8 +1089,10 @@ test.describe('code shell message actions & layout', () => {
 			await page.keyboard.type('看附件')
 			await page.keyboard.press('Control+Enter')
 			await expect(page.locator('.code-message.role-char')).toContainText('测试回复。', { timeout: 60_000 })
-			await expect(page.locator('.code-message.role-user')).toContainText('📎 note.txt')
-			await expect(page.locator('.code-message.role-user')).toContainText('📎 pic.png')
+			await expect(page.locator('.code-message.role-user')).toContainText('note.txt')
+			await expect(page.locator('.code-message.role-user')).toContainText('pic.png')
+			await expect(page.locator('.code-message.role-user .code-message-file-chip')).toHaveCount(2)
+			await expect(page.locator('.code-message.role-user .code-message-file-chip .text-icon')).toHaveCount(2)
 			await expect(page.locator('.code-attachment-chip')).toHaveCount(0)
 		}
 		finally {
@@ -1129,7 +1132,7 @@ test.describe('code shell @ gist mention', () => {
 			// 正文作为附件并入用户消息（气泡渲染附件 chip）；不依赖后续角色生成链
 			const userBubble = page.locator('.code-message.role-user')
 			await expect(userBubble).toContainText(gistTitle, { timeout: 60_000 })
-			await expect(userBubble).toContainText(`📎 ${gistTitle}.md`)
+			await expect(userBubble).toContainText(`${gistTitle}.md`)
 		}
 		finally {
 			await page.request.post(`${baseUrl}/api/parts/shells:gist/gists/batch-delete`, { data: { ids: [gistId] } })

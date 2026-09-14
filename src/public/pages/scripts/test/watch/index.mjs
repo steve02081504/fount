@@ -3,6 +3,7 @@
  * Playwright 只认 `fount.test.watch`（`kick` / `drain` / `holdLocale` / `releaseLocale` / `started`）。
  */
 import { requestRefresh, task as a11yTask } from './a11y.mjs'
+import { markActivity } from './activity.mjs'
 import { task as cssvarTask } from './cssvar.mjs'
 import { task as emojiTask } from './emoji_chrome.mjs'
 import { bootstrap, task as localeTask } from './locale.mjs'
@@ -25,6 +26,9 @@ observe(document.documentElement, {
 	attributes: true,
 	characterData: true,
 })
+// 用户/测试活动时暂停会重建 DOM 的检查（locale 轮换），静默窗口后再恢复
+for (const type of ['pointerdown', 'pointerup', 'pointermove', 'keydown', 'input'])
+	document.addEventListener(type, markActivity, { capture: true, passive: true })
 
 /**
  * 立刻要求一轮带 issue 刷新的 a11y，并等到扫完。
