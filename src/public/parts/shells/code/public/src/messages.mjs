@@ -387,7 +387,7 @@ function renderEntryBubble(entry, { isLast = false } = {}) {
 
 	for (const file of entry.files || []) {
 		const chip = document.createElement('div')
-		chip.className = 'flex items-center gap-1 text-xs opacity-70'
+		chip.className = 'code-message-file-chip flex items-center gap-1 text-xs opacity-70'
 		const name = document.createElement('span')
 		name.setAttribute('user-content', '')
 		name.textContent = file.name

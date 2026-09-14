@@ -1,6 +1,7 @@
 /**
  * 中日英语种轮换 + 错语脚本检查（可见文案 + aria-label）。
  */
+import { isQuiet } from './activity.mjs'
 import { isLocaleHeld } from './locale_hold.mjs'
 import {
 	SCRIPT_FORBIDDEN,
@@ -91,7 +92,8 @@ export async function bootstrap() {
  */
 async function run({ draining }) {
 	if (isTextlessPage()) return true
-	if (isLocaleHeld() && !draining) return true
+	// 轮换会触发 shell 的 onLanguageChange 重建 DOM；非 drain 期只在静默窗口（无活动）且未被 hold 时才切换，避免抢测试的点击
+	if (!draining && (isLocaleHeld() || !isQuiet())) return true
 	const i18n = await getI18n()
 	if (draining) {
 		const next = LOCALE_CYCLE.find(locale => !seen.has(locale))

@@ -5430,6 +5430,7 @@ export type LocaleData = {
 			noResult: string
 		}
 		createButton: string
+		fontScheme: string
 		preview: {
 			editButton: {
 				title: string
