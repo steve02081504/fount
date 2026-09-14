@@ -13,6 +13,7 @@ export {
 	refreshQuotePreview,
 	setComposerAdvancedOpen,
 	setComposerContentWarningOpen,
+	setComposerPollOpen,
 	setPendingGroupRef,
 	syncGroupRefInComposer,
 } from './composerState.mjs'

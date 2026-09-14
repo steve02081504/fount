@@ -383,7 +383,14 @@ function buildLiveSlide(item) {
 
 	if (item.mediaKind) slide.dataset.mediaKind = item.mediaKind
 
+	const ambientAvatar = entityAvatarUrl(item.entityHash, {
+		name: item.authorName,
+		avatar: item.avatarUrl,
+		infoDefaults: item.authorProfile?.infoDefaults,
+	})
+
 	slide.innerHTML = `
+		<div class="live-ambient" aria-hidden="true">${ambientAvatar ? `<img class="live-ambient-img" src="${escapeHtml(ambientAvatar)}" alt="" loading="lazy" />` : ''}</div>
 		<div class="live-av-wrap">
 			<canvas class="live-av-canvas" width="640" height="480"></canvas>
 			<div class="live-voice-ring-host hidden" data-voice-ring></div>

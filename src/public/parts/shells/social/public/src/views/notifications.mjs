@@ -6,6 +6,7 @@ import { formatSocialPostHref, formatSocialProfileHref } from '../../shared/runU
 import { getNotifications, getNotificationsSeen, putNotificationsSeen } from '../endpoints/notifications.mjs'
 import { authorLabel, formatTimeHtml, renderAvatarHtml } from '../lib/display.mjs'
 import { buildEmptyState } from '../lib/emptyState.mjs'
+import { mountSkeleton } from '../lib/skeleton.mjs'
 import { state } from '../state.mjs'
 
 /** @type {number | null} */
@@ -194,8 +195,9 @@ function notificationHref(row) {
  * @returns {HTMLElement} 卡片
  */
 function renderNotificationCard(row, seenAt) {
+	const unread = row.at > seenAt
 	const card = document.createElement('article')
-	card.className = `list-row notification-card${row.at > seenAt ? ' unread' : ''}`
+	card.className = `list-row notification-card${unread ? ' unread motion-pop' : ''}`
 	if (row.aggregateKey) card.dataset.aggregateKey = row.aggregateKey
 	card.dataset.actorCount = String(Number(row.actorCount) || 1)
 	card.dataset.at = String(Number(row.at) || 0)
@@ -251,7 +253,7 @@ export function mergeIncomingNotification(notification) {
 		return false
 	const container = document.getElementById('notificationsView')
 	if (!container) return false
-	container.querySelector('.empty-state')?.remove()
+	container.querySelector('.empty-state, .skeleton-host')?.remove()
 	const toolbar = document.getElementById('notificationsToolbar')
 	if (toolbar) toolbar.classList.remove('hidden')
 	const seenAt = getNotificationsSeenAt()
@@ -354,19 +356,21 @@ export async function loadNotifications(append = false) {
 	try {
 		await ensureNotificationsSeenAt()
 		syncNotificationFilterTabs()
+		const container = document.getElementById('notificationsView')
+		const toolbar = document.getElementById('notificationsToolbar')
+		if (!append && container && !container.querySelector('.notification-card'))
+			await mountSkeleton(container, 'notification', 5)
 		const data = await getNotifications({
 			cursor: append ? state.notificationsCursor : null,
 			types: state.notificationsFilter,
 		})
-		const container = document.getElementById('notificationsView')
-		const toolbar = document.getElementById('notificationsToolbar')
 		const seenAt = getNotificationsSeenAt()
 		const rows = data.notifications || []
 		state.notificationsCursor = data.nextCursor || null
 		state.lastNotificationUnreadCount = Number(data.unreadCount) || 0
 
 		if (!append) {
-			container.querySelectorAll('.notification-card, .empty-state').forEach(node => node.remove())
+			container.querySelectorAll('.notification-card, .empty-state, .skeleton-host').forEach(node => node.remove())
 			if (!rows.length) {
 				if (toolbar) toolbar.classList.add('hidden')
 				container.appendChild(await buildEmptyState({

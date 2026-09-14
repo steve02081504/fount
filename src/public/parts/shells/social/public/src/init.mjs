@@ -21,6 +21,7 @@ import { getChatViewer } from './endpoints/chatBridge.mjs'
 import { registerFountUserApi } from './fountUser.mjs'
 import { SOCIAL_GATE } from './gate.mjs'
 import { renderAvatarHtml, rememberEntityHandle } from './lib/display.mjs'
+import { initIndicators } from './lib/indicators.mjs'
 import { wireSocialProfileHover } from './lib/profileHover.mjs'
 import { bindAudioSpeechRecognition, bindMediaCarousel } from './mediaRender.mjs'
 import { attachMentionAutocomplete } from './mentionAutocomplete.mjs'
@@ -329,6 +330,7 @@ export async function bootstrap() {
 		initTopicView()
 		initLiveBroadcastView()
 		wireSocialProfileHover()
+		initIndicators()
 
 		// 视频视图键盘导航
 		document.getElementById('videosView')?.addEventListener('keydown', handleVideoKeydown)

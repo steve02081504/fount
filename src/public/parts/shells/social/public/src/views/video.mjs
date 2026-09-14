@@ -14,6 +14,7 @@ import { bindVerticalSnap } from '../lib/verticalSnap.mjs'
 
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
+import { swapIcon } from '/scripts/motion/index.mjs'
 import { renderRepliesPanel } from './replies.mjs'
 import { mediaRefUrl } from '/parts/shells:chat/shared/evfsMedia.mjs'
 
@@ -217,12 +218,32 @@ function resolveVideoSrc(item) {
 }
 
 /**
+ * 解析短视频弱背景图：优先同帖图片 mediaRef，用作模糊 ambient 铺底。
+ * @param {object} item feed 条目
+ * @returns {string} 图片 URL；无则空串
+ */
+function resolveVideoPoster(item) {
+	const refs = item.post?.content?.mediaRefs || item.mediaRefs || []
+	const mediaRef = refs.find(m =>
+		m?.kind === 'image' || String(m?.mimeType || '').startsWith('image/'))
+	if (!mediaRef) return ''
+	try { return mediaRefUrl(mediaRef) }
+	catch { return '' }
+}
+
+/**
  * @param {HTMLElement} slide slide
  * @param {boolean} paused 是否暂停
  * @returns {void}
  */
 function setPauseHint(slide, paused) {
-	slide.querySelector('.video-pause-hint')?.classList.toggle('is-visible', paused)
+	const hint = slide.querySelector('.video-pause-hint')
+	if (!hint) return
+	hint.classList.toggle('is-visible', paused)
+	if (paused) {
+		const icon = hint.querySelector('.icon')
+		if (icon instanceof HTMLElement) swapIcon(icon)
+	}
 }
 
 /**
@@ -418,13 +439,16 @@ function buildVideoSlide(item) {
 	const likeCount = item.likeCount || 0
 	const replyCount = item.replyCount || 0
 	const actionKey = formatActionKey(item.entityHash || '', item.postId || '')
+	const poster = resolveVideoPoster(item)
 
-	slide.innerHTML = videoSrc
-		? `<video class="video-player" src="${escapeHtml(videoSrc)}" loop playsinline preload="metadata"></video>`
-		: `<div class="video-media-fallback">
+	slide.innerHTML = `
+		<div class="video-ambient" aria-hidden="true">${poster ? `<img class="video-ambient-img" src="${escapeHtml(poster)}" alt="" loading="lazy" />` : ''}</div>
+		${videoSrc
+			? `<video class="video-player" src="${escapeHtml(videoSrc)}" loop playsinline preload="metadata"></video>`
+			: `<div class="video-media-fallback">
 			<span class="icon icon-video" aria-hidden="true"></span>
 			<p data-i18n="social.video.unavailable"></p>
-		</div>`
+		</div>`}`
 
 	slide.insertAdjacentHTML('beforeend', `
 		<div class="video-pause-hint" aria-hidden="true">

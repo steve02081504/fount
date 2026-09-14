@@ -1,3 +1,4 @@
+import { refreshNavIndicator } from './lib/indicators.mjs'
 import { pauseAllVideos } from './lib/videoAutoplay.mjs'
 
 /** 可写入 location.hash 的主导航视图 */
@@ -43,4 +44,5 @@ export function activateView(view) {
 		if (!show) pauseAllVideos(section)
 	}
 	document.getElementById('composer')?.classList.toggle('hidden', view !== 'feed')
+	refreshNavIndicator()
 }

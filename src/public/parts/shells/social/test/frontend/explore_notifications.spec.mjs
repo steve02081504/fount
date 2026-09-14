@@ -293,4 +293,25 @@ test.describe('Social secondary views', () => {
 		await expect(page.locator('#profileView .profile-header')).toBeVisible({ timeout: 20_000 })
 		await expect(page.locator('#profileEntityCardHost .profile-popup')).toBeVisible()
 	})
+
+	test('explore empty state stays one piece in the masonry list', async ({ page }) => {
+		await page.locator('.side-nav .nav-btn[data-view="explore"]').click()
+		await expect(page.locator('#exploreView')).toBeVisible({ timeout: 20_000 })
+		const result = await page.evaluate(async () => {
+			const { collectFragmentedBlocks } = await import('/scripts/test/watch/layout.mjs')
+			const list = document.getElementById('explorePostList')
+			const card = document.createElement('div')
+			card.className = 'surface empty-state empty-state--explore'
+			card.innerHTML = '<span class="empty-state-icon-disk" aria-hidden="true"><span class="icon icon-explore empty-state-icon"></span></span><p class="empty-state-title" data-i18n="social.empty.explorePosts"></p>'
+			list.replaceChildren(card)
+			return {
+				columnCount: getComputedStyle(list).columnCount,
+				fragments: card.getClientRects().length,
+				flagged: collectFragmentedBlocks(list.parentElement || document).some(hit => hit.child === card),
+			}
+		})
+		expect(result.columnCount).toBe('1')
+		expect(result.fragments).toBe(1)
+		expect(result.flagged).toBe(false)
+	})
 })
