@@ -1,5 +1,5 @@
 .achievement-card {
-	transition: all 0.3s ease;
+	transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .achievement-card.unlocked {

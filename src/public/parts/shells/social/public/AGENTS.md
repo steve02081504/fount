@@ -26,7 +26,7 @@ Timeline commit / OnMessage test traps: [test domain-harness](../../../../../../
 
 ## UI conventions
 
-- CSS: page-local, no `social-` prefix. DaisyUI; custom chrome uses `.surface` (not `.card`). Empty states via `emptyState.mjs`. Ready-gate: `SOCIAL_GATE` / `fount:social-*`. Do not re-declare `.hidden` (from `/base.css`).
+- CSS: page-local, no `social-` prefix. DaisyUI; custom chrome uses `.surface` (not `.card`). Empty states via `emptyState.mjs`. Ready-gate: `SOCIAL_GATE` / `fount:social-*`. Do not re-declare `.hidden` (from `/base.css`). Motion (like button, notifications, video chrome): [motion-notes.md](../../../../pages/docs/motion-notes.md).
 - Prefer `data-i18n` / `setElementI18n` / `renderTemplate` (from `src/templates.mjs`) / `promptDialog`. Social HTML dialogs: `openDialogFromTemplate` from `src/templates.mjs`; shared prompt/confirm: `/scripts/features/templates.mjs`. **@-mention**: `aria-controls` + `aria-activedescendant` only — no `role="combobox"` on `<textarea>`.
 - Fire-and-forget: `.catch(handleError('social.…'))` for fount faults; `showToastI18n` for user mistakes — never empty `.catch`.
 - **Frontend HTTP**: named functions in `public/src/endpoints/*.mjs` only. Backend: `socialJson(handler)`; per-post JSON: `federation/postScopedJsonStore.mjs`.

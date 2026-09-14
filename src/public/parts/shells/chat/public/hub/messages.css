@@ -340,6 +340,7 @@
 }
 
 #messages .chat-start.message-row[data-char-id] .chat-header .font-semibold {
+	/* motion-ignore: 隐藏角色名需连同 max-height / margin 一起收起空间 */
 	transition: opacity 0.3s ease, max-height 0.3s ease, margin 0.3s ease, transform 0.3s ease;
 	transform-origin: top;
 	max-height: 3rem;

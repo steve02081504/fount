@@ -14,6 +14,7 @@ body {
 .card-container {
 	display: flex;
 	overflow: hidden;
+	/* motion-ignore: 卡片展开需按内容改宽，transform 会拉伸内容 */
 	transition: width 0.3s ease;
 	width: 300px;
 	max-height: 300px;

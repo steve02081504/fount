@@ -371,7 +371,7 @@
 	opacity: 0;
 	width: 0;
 	overflow: hidden;
-	transition: opacity 0.15s, width 0.15s;
+	transition: opacity 0.15s;
 }
 
 .repl-frame-busy.active {

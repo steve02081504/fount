@@ -1360,6 +1360,7 @@
 	max-height: 0;
 	opacity: 0;
 	margin-top: 0;
+	/* motion-ignore: 展开/收起按内容高度撑开，改布局属性是这里的目标 */
 	transition: max-height 0.2s ease, opacity 0.15s ease, margin-top 0.2s ease;
 }
 
