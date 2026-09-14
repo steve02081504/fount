@@ -130,7 +130,7 @@
 		},
 		{
 			"name": "smoke_social",
-			"expected": "5m8s",
+			"expected": "2m4s",
 			"dependsOn": [
 				"server:live"
 			],

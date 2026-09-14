@@ -2,6 +2,7 @@ import { parseEntityHash } from 'https://esm.sh/@steve02081504/fount-p2p/core/en
 import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 
 import { parseSocialRunUri } from '../shared/runUri.mjs'
+import { viewTransition } from '/scripts/motion/viewTransition.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { publishPost } from './composer.mjs'
@@ -93,6 +94,20 @@ export async function refreshVisiblePosts() {
  * @returns {Promise<void>}
  */
 export async function switchView(view, options = {}) {
+	const from = currentMainView()
+	if (from && from !== view)
+		await viewTransition(() => renderSwitchView(view, options))
+	else
+		await renderSwitchView(view, options)
+}
+
+/**
+ * 实际执行视图切换与数据加载（在可能的 View Transition 更新回调内运行）。
+ * @param {string} view 视图名
+ * @param {{ skipHash?: boolean, focusEntityHash?: string, focusPostId?: string }} options 切换选项
+ * @returns {Promise<void>}
+ */
+async function renderSwitchView(view, options) {
 	activateView(view)
 	if (!options.skipHash)
 		syncHashForMainView(view)

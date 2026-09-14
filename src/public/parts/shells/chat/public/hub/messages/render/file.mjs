@@ -244,7 +244,7 @@ async function renderFileCardHtml(file) {
 	const fileName = escapeHtml(file.name || id || 'file')
 	const sizeLabel = formatBytes(Number(file.size) || 0)
 	return `<button type="button" class="message-file-card message-file-download" data-group-file-id="${escapeHtml(id)}">
-		<span class="message-file-card-icon" aria-hidden="true">📄</span>
+		<span class="message-file-card-icon" aria-hidden="true"></span>
 		<span class="message-file-card-meta">
 			<span class="message-file-card-name truncate">${fileName}</span>
 			<span class="message-file-card-size">${escapeHtml(sizeLabel)}</span>

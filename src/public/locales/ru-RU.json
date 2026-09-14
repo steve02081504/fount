@@ -5476,6 +5476,7 @@
 			"noResult": "Подходящих тем не найдено."
 		},
 		"createButton": "+ Создать новую тему",
+		"fontScheme": "Шрифт",
 		"preview": {
 			"editButton": {
 				"title": "Редактировать"

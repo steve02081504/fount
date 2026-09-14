@@ -402,7 +402,7 @@ function bindPostDetailMediaLike(card, entityHash, postId) {
  */
 function showPostMediaHeart(media) {
 	playHeartAnim(media, {
-		emoji: '👍',
+		glyphClass: 'icon-like',
 		durationMs: 800,
 		selector: '.post-media-heart',
 		createIfMissing: true,

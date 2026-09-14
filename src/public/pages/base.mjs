@@ -7,6 +7,7 @@
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
 import { onServerEvent } from './scripts/endpoints/server_events.mjs'
+import './scripts/motion/index.mjs'
 
 let skipBreadcrumb = false
 

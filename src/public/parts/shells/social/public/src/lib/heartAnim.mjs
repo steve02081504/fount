@@ -1,8 +1,9 @@
 /**
- * 媒体区飘心 / 点赞反馈动画。
+ * 媒体区飘心 / 点赞反馈动画。使用 social 图标系统的 Iconify 字形，禁用 emoji。
+ * 关键帧 `heartFloat` 定义在 styles.css；只动 transform / opacity。
  * @param {HTMLElement} host 宿主
  * @param {object} [options] 选项
- * @param {string} [options.emoji='👍'] 表情
+ * @param {string} [options.glyphClass='icon-like'] 图标类名（social `.icon` 系统）
  * @param {number} [options.durationMs=800] 动画毫秒
  * @param {string} [options.selector='.heart-anim'] 已有节点选择器
  * @param {boolean} [options.createIfMissing=false] 无节点时是否创建
@@ -11,17 +12,18 @@
  * @returns {void}
  */
 export function playHeartAnim(host, {
-	emoji = '👍',
+	glyphClass = 'icon-like',
 	durationMs = 800,
 	selector = '.heart-anim',
 	createIfMissing = false,
 	createClass = 'heart-anim',
 	mode = 'reuse',
 } = {}) {
+	const glyph = `<span class="icon ${glyphClass}" aria-hidden="true"></span>`
 	if (mode === 'spawn') {
 		const heart = document.createElement('div')
 		heart.className = createClass
-		heart.textContent = emoji
+		heart.innerHTML = glyph
 		heart.style.cssText = `position:absolute;left:50%;bottom:2rem;animation:heartFloat ${durationMs / 1000}s ease-out forwards;pointer-events:none;`
 		host.appendChild(heart)
 		setTimeout(() => heart.remove(), durationMs + 100)
@@ -36,7 +38,7 @@ export function playHeartAnim(host, {
 		host.appendChild(anim)
 	}
 	anim.classList.remove('hidden')
-	anim.textContent = emoji
+	anim.innerHTML = glyph
 	anim.style.animation = 'none'
 	void anim.offsetWidth
 	anim.style.animation = `heartFloat ${durationMs / 1000}s ease-out forwards`

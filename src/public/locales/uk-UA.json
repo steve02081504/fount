@@ -5468,6 +5468,7 @@
 			"noResult": "Відповідних тем не знайдено."
 		},
 		"createButton": "+ Створити нову тему",
+		"fontScheme": "Шрифт",
 		"preview": {
 			"editButton": {
 				"title": "Редагувати"

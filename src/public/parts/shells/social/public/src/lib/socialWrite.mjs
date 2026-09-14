@@ -1,4 +1,5 @@
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
+import { burst, popNumber } from '/scripts/motion/index.mjs'
 
 /**
  * 执行写操作并在失败时 toast。
@@ -44,7 +45,11 @@ function applyReactionOptimistic(button, key, className, next) {
 	button.dataset[key] = next ? '1' : '0'
 	button.classList.toggle(className, next)
 	syncReactionI18n(button, /** @type {'liked' | 'disliked'} */ key, next)
-	if (countEl) countEl.textContent = String(Math.max(0, /** @type {number} */ snapshot.count + (next ? 1 : -1)))
+	if (countEl) {
+		countEl.textContent = String(Math.max(0, /** @type {number} */ snapshot.count + (next ? 1 : -1)))
+		popNumber(countEl)
+	}
+	if (next && key === 'liked') burst(button, { glyphClass: 'icon icon-like', count: 3 })
 	return snapshot
 }
 

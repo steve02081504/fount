@@ -1,0 +1,137 @@
+/*
+ * Motion library: timing tokens, keyframes, shared micro-interaction classes,
+ * the global reduced-motion guard, and the default view-transition chrome.
+ * Imported globally by base.css; JS helpers live in index.mjs.
+ *
+ * `cssvar-external`: motion tokens are a page-level contract (not every route
+ * uses every token). Keep every name on the directive line.
+ *
+ * cssvar-external: --duration-hover --duration-open --duration-close --duration-stagger --ease-standard --ease-entrance --ease-exit --ease-pop
+ */
+:root {
+	--duration-hover: 120ms;
+	--duration-open: 250ms;
+	--duration-close: 150ms;
+	--duration-stagger: 40ms;
+	--ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+	--ease-entrance: cubic-bezier(0, 0, 0.2, 1);
+	--ease-exit: cubic-bezier(0.4, 0, 1, 1);
+	--ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Shared micro-interaction classes (orchestrated by scripts/motion/index.mjs) */
+@keyframes motion-pop {
+	0% {
+		transform: scale(1);
+	}
+
+	40% {
+		transform: scale(1.18);
+	}
+
+	100% {
+		transform: scale(1);
+	}
+}
+
+.motion-pop {
+	animation: motion-pop 360ms var(--ease-pop);
+}
+
+@keyframes motion-swap {
+	from {
+		opacity: 0;
+		transform: scale(0.6);
+	}
+
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+.motion-swap {
+	animation: motion-swap 240ms var(--ease-entrance);
+}
+
+@keyframes motion-burst-up {
+	0% {
+		opacity: 1;
+		transform: translate(-50%, 0) scale(0.6);
+	}
+
+	60% {
+		opacity: 1;
+		transform: translate(-50%, -60%) scale(1.1);
+	}
+
+	100% {
+		opacity: 0;
+		transform: translate(-50%, -120%) scale(1);
+	}
+}
+
+.motion-particle {
+	position: absolute;
+	left: 50%;
+	bottom: 1.5rem;
+	pointer-events: none;
+	z-index: 10;
+	animation: motion-burst-up 800ms var(--ease-exit) forwards;
+}
+
+/* Neutral default particle glyph: a theme-radius dot tinted by currentColor. */
+.motion-dot {
+	width: 0.55rem;
+	height: 0.55rem;
+	border-radius: var(--radius-box);
+	background: currentColor;
+}
+
+/* Default cross-document / view-transition chrome */
+@view-transition {
+	navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+	animation-duration: 0.3s;
+	animation-timing-function: ease-in-out;
+}
+
+::view-transition-old(root) {
+	animation-name: fade-out;
+}
+
+::view-transition-new(root) {
+	animation-name: fade-in;
+}
+
+@keyframes fade-out {
+	to {
+		opacity: 0;
+	}
+}
+
+@keyframes fade-in {
+	from {
+		opacity: 0;
+	}
+}
+
+/*
+ * Reduced motion: keep the UI functional but drop the movement.
+ * Global on purpose — page-local animations rely on this single guard
+ * instead of each shipping its own copy (see docs/motion-notes.md).
+ */
+@media (prefers-reduced-motion: reduce) {
+
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}

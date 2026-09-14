@@ -11,6 +11,8 @@ alwaysApply: false
 Markdown convertor traps (rehype order, `{:lang}`, trust tiers): [docs/markdown-notes.md](docs/markdown-notes.md).
 `data-i18n` params / placeholders / persistent chrome: [docs/i18n-notes.md](docs/i18n-notes.md).
 Motion / transition rules (perf constraints, timing, decision map): [docs/motion-notes.md](docs/motion-notes.md).
+Visual language & component standards — read before writing UI: [docs/design-system/visual-identity.md](docs/design-system/visual-identity.md)
+(→ [tokens](docs/design-system/tokens.md) · [motion patterns](docs/design-system/motion-patterns.md) · [iconography](docs/design-system/iconography.md)).
 
 ## API & Communication
 
@@ -26,7 +28,7 @@ Motion / transition rules (perf constraints, timing, decision map): [docs/motion
 
 ## UI & Theming
 
-- **`base.css`**: shared page chrome. `.hidden { display: none !important }` — do not re-declare in shells; page-local `display: flex|grid` must not un-hide toggled UI.
+- **`base.css`**: shared page chrome only (`.hidden` / `.disabled` / `.text-icon`). Owns no design tokens or motion — it `@import`s [`theme/tokens.css`](scripts/theme/tokens.css) and [`motion/styles.css`](scripts/motion/styles.css). Do not re-declare `.hidden` in shells; page-local `display: flex|grid` must not un-hide toggled UI. Semantic theme tokens (`--surface`, `--text-muted`, `--shadow-md` …) come from the theme library; motion tokens/keyframes from the motion library. Fonts are swapped as **font schemes bound to a theme** (`theme/fonts.mjs`), never by editing component CSS. Details: [docs/design-system/](docs/design-system/visual-identity.md).
 - **daisyUI 5 dropdown**: while open, the trigger gets `pointer-events: none` — after a menu item click, `document.activeElement?.blur()` to close the menu before the trigger is clickable again (wait/install language selector, blog menus).
 - **Component CSS**: inject at module import (`document.head.prepend`) — do not lazy-`ensure*` stylesheet links on first use. Registry-driven CSS (e.g. markdown extensions) stays async-load. Link the stylesheet via `new URL('./<name>.css', import.meta.url).href` — a hardcoded `/scripts/…` href breaks under subpath mounts (GitHub Pages `/fount`).
 - **`theme.mjs`**: DaisyUI theme management. Call `applyTheme()` first.

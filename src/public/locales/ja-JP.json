@@ -5468,6 +5468,7 @@
 			"noResult": "一致するテーマが見つかりませんでした。"
 		},
 		"createButton": "+ 新しいテーマを作成",
+		"fontScheme": "フォント",
 		"preview": {
 			"editButton": {
 				"title": "編集"

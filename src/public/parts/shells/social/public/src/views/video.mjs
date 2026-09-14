@@ -650,7 +650,7 @@ async function doVideoLike(slide) {
  * @returns {void}
  */
 function showHeartAnim(slide) {
-	playHeartAnim(slide, { emoji: '👍', durationMs: 800 })
+	playHeartAnim(slide, { glyphClass: 'icon-like', durationMs: 800 })
 }
 
 /**

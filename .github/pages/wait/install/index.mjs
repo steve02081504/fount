@@ -7,7 +7,7 @@ import { showToastI18n } from '../../scripts/features/toast.mjs'
 import { waitForFountService, saveFountHostUrl, getFountHostUrl, pingFount } from '../../scripts/fountHostGetter.mjs'
 import { initTranslations, geti18n, console, getAvailableLocales, getLocaleNames, setLocales, onLanguageChange, setElementI18n } from '../../scripts/i18n/index.mjs'
 import { escapeHtml } from '../../scripts/lib/escapeHtml.mjs'
-import { viewTransition } from '../../scripts/lib/viewTransition.mjs'
+import { viewTransition } from '../../scripts/motion/viewTransition.mjs'
 import {
 	applyThemeWithViewTransition,
 	createAutoPreview,
