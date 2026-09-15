@@ -311,7 +311,7 @@ function scanInlineConst(content, tokens) {
 	const declRe = /\bconst\s+([$A-Z_a-z][\w$]*)\s*=\s*([^\n;]+)/gu
 	for (const match of content.matchAll(declRe)) {
 		const name = match[1]
-		const wordRe = new RegExp(`(?<![\\w$])${name.replace(/\$/gu, '\\$')}(?![\\w$])`, 'gu')
+		const wordRe = new RegExp(`(?<![\\w$])${name.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&')}(?![\\w$])`, 'gu')
 		if ([...content.matchAll(wordRe)].length !== 2) continue
 		const rest = content.slice(match.index + match[0].length)
 		const returnMatch = rest.match(/^[\s;]*return\s*/u)

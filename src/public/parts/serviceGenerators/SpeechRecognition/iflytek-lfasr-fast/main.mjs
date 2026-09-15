@@ -243,7 +243,7 @@ async function GetSource(config) {
 		Recognize: async (options) => recognizeByBuffering(options, async (pcm) => {
 			const wav = pcmToWav(pcm)
 			const durationSec = Math.max(1, Math.floor(pcm.byteLength / 32000))
-			const requestId = String(Date.now()) + String(Math.random()).slice(2)
+			const requestId = Date.now().toString(36) + crypto.randomUUID().replaceAll('-', '')
 
 			const audioUrl = wav.byteLength >= LARGE_FILE_THRESHOLD
 				? await uploadLargeAudio(wav, { appId, apiKey, apiSecret, requestId, signal: options.signal })

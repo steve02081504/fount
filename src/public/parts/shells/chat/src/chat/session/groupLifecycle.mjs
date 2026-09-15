@@ -43,7 +43,7 @@ export async function newMetadata(groupId, username) {
  */
 export function findEmptyGroupId() {
 	while (true) {
-		const uuid = Math.random().toString(36).substring(2, 15)
+		const uuid = crypto.randomUUID()
 		if (!groupMetadatas.has(uuid)) return uuid
 	}
 }

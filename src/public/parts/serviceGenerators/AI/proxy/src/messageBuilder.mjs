@@ -13,7 +13,7 @@ export async function buildMessagesFromPromptStruct(prompt_struct, config, confi
 	const ignoreFiles = config.convert_config?.ignoreFiles ?? configTemplate.convert_config.ignoreFiles
 
 	let messages = await Promise.all(mergeStructPromptChatLog(prompt_struct).map(async chatLogEntry => {
-		const uid = chatLogEntry.id ||= Math.random().toString(36).slice(2, 10)
+		const uid = chatLogEntry.id ||= crypto.randomUUID().slice(0, 8)
 		let textContent = `\
 <message "${uid}">
 <sender>${chatLogEntry.name}</sender>

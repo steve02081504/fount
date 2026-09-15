@@ -8,27 +8,37 @@ const copyButton = document.getElementById('copyButton')
 const badgePreview = document.getElementById('badgePreview')
 const previewContainer = document.getElementById('previewContainer')
 
+/**
+ * 解析 shields.io 徽章 URL，仅接受 `img.shields.io` 主机（避免子串匹配绕过）。
+ * 缺省协议时按 https 处理。
+ * @param {string} value - 用户输入。
+ * @returns {URL | null} 主机匹配时返回 URL，否则 null。
+ */
+function parseShieldsUrl(value) {
+	if (!value) return null
+	try {
+		const url = new URL(/^[a-z][\w+.-]*:\/\//i.test(value) ? value : `https://${value}`)
+		return url.hostname === 'img.shields.io' ? url : null
+	}
+	catch {
+		return null
+	}
+}
+
 // 监听输入框的输入事件
 originalUrlInput.addEventListener('input', () => {
-	const originalUrl = originalUrlInput.value.trim()
+	const parsed = parseShieldsUrl(originalUrlInput.value.trim())
 
-	// 检查 URL 是否有效
-	if (originalUrl && originalUrl.includes('img.shields.io')) {
+	if (parsed) {
 		// 1. 替换域名
-		let newUrl = originalUrl.replace('img.shields.io', 'custom-icon-badges.demolab.com')
+		parsed.hostname = 'custom-icon-badges.demolab.com'
 
 		// 2. 附加 logo=fount 参数
-		// 检查 URL 是否已经有查询参数
-		if (newUrl.includes('?'))
-			// 如果有，用 '&' 连接
-			newUrl += '&logo=fount'
-		else
-			// 如果没有，用 '?' 开始
-			newUrl += '?logo=fount'
+		parsed.searchParams.set('logo', 'fount')
 
 		// 更新输出框和预览
-		newUrlOutput.value = newUrl
-		badgePreview.src = newUrl
+		newUrlOutput.value = parsed.href
+		badgePreview.src = parsed.href
 		previewContainer.classList.remove('hidden') // 显示预览
 		copyButton.disabled = false // 启用复制按钮
 	}

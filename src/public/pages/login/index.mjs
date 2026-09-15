@@ -192,10 +192,11 @@ async function resolveLoginSuccessTargetUrl() {
 
 	if (redirect) try {
 		const url = new URL(finalRedirectUrl, window.location.origin)
+		if (url.origin !== window.location.origin) throw new Error('cross-origin redirect')
 		const gobackNum = Number(url.searchParams.get('gobackNum') || 0)
 		if (gobackNum) url.searchParams.set('gobackNum', gobackNum + 1)
 		finalRedirectUrl = url.href
-	} catch { /* URL 解析失败时保持原样 */ }
+	} catch { finalRedirectUrl = `/parts/shells:${defaultShell}` }
 
 	return finalRedirectUrl + window.location.hash
 }
