@@ -66,6 +66,19 @@ export function setDefaultToastDuration(ms) {
 }
 
 /**
+ * 将纯文本按换行插入元素（用 `<br>` 保换行，文本节点避免 HTML 注入）。
+ * @param {HTMLElement} parent - 目标元素。
+ * @param {string} text - 纯文本。
+ * @returns {void}
+ */
+function appendTextWithLineBreaks(parent, text) {
+	text.split('\n').forEach((line, index) => {
+		if (index) parent.appendChild(document.createElement('br'))
+		parent.appendChild(document.createTextNode(line))
+	})
+}
+
+/**
  * 显示一个基本的 toast。
  * @param {string} type - toast 类型。
  * @param {string|HTMLElement} message - toast 消息。
@@ -81,6 +94,7 @@ function base_showToast(type, message, duration = defaultToastDuration) {
 	const alertId = `alert-${Date.now()}`
 	const alertDiv = document.createElement('div')
 	if (type == 'custom') {
+		// custom 是后端/插件推送 HTML toast 的既定通道（如成就解锁），此处保留 HTML 渲染。
 		if (Object(message) instanceof HTMLElement)
 			alertDiv.appendChild(message)
 		else
@@ -99,12 +113,12 @@ function base_showToast(type, message, duration = defaultToastDuration) {
 
 		const textElement = document.createElement('div')
 		if (Object(message) instanceof HTMLElement)
-			alertDiv.appendChild(message)
+			textElement.appendChild(message)
 		else
-			alertDiv.innerHTML = message.replace(/\n/g, '<br>')
+			appendTextWithLineBreaks(textElement, String(message))
 
-		alertDiv.appendChild(iconElement)
 		alertDiv.appendChild(textElement)
+		alertDiv.appendChild(iconElement)
 	}
 	alertDiv.className += ' animate-fade-in-up'
 

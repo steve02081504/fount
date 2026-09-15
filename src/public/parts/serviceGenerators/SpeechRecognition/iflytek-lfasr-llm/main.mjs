@@ -73,10 +73,11 @@ function largeModelSignature(params, secret) {
  * @returns {string} 串
  */
 function randomString(n) {
-	const letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+	const letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_'
 	let out = ''
-	const bytes = crypto.getRandomValues(new Uint8Array(n))
-	for (const b of bytes) out += letters[b % letters.length]
+	// 字母表恰为 64 个字符（2 的幂），用位掩码取值可避免取模偏差。
+	for (const b of crypto.getRandomValues(new Uint8Array(n)))
+		out += letters[b & 63]
 	return out
 }
 

@@ -13,7 +13,7 @@ const FALLBACK_MAX_LEN = 30
  * @returns {string} 清理后的文本。
  */
 function stripInlineMarkdown(text) {
-	return text
+	let result = text
 		.replace(/`([^`]+)`/g, '$1')
 		.replace(/!\[[^\]]*\]\([^)]*\)/g, '')
 		.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
@@ -22,7 +22,13 @@ function stripInlineMarkdown(text) {
 		.replace(/__([^_]+)__/g, '$1')
 		.replace(/_([^_]+)_/g, '$1')
 		.replace(/~~([^~]+)~~/g, '$1')
-		.replace(/<[^>]+>/g, '')
+	// 嵌套形态（如 `<<script>`)需要反复剥离，单次替换会残留可解析标签。
+	let previous
+	do {
+		previous = result
+		result = result.replace(/<[^>]*>/g, '')
+	} while (result !== previous)
+	return result
 }
 
 /**

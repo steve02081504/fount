@@ -205,6 +205,20 @@ const urlParams = new URLSearchParams(window.location.search)
 const redirect = urlParams.get('redirect')
 
 /**
+ * 将 redirect 参数解析为站内地址，拒绝跨源跳转。
+ * @param {string} value - 原始 redirect 参数。
+ * @returns {string} 站内绝对地址；跨源或非法时回退到 home。
+ */
+function resolveInternalRedirect(value) {
+	try {
+		const url = new URL(decodeURIComponent(value), window.location.origin)
+		if (url.origin === window.location.origin) return url.href
+	}
+	catch { /* 解析失败回退 */ }
+	return '/parts/shells:home'
+}
+
+/**
  * 关闭教程。
  */
 async function closeTutorial() {
@@ -216,7 +230,7 @@ async function closeTutorial() {
 	} catch (error) {
 		Sentry.captureException(error)
 	}
-	if (redirect) window.location.href = decodeURIComponent(redirect) + window.location.hash
+	if (redirect) window.location.href = resolveInternalRedirect(redirect) + window.location.hash
 	else window.location.href = '/parts/shells:home'
 }
 skipButton.addEventListener('click', () => {

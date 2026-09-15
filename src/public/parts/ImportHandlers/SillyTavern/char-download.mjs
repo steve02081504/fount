@@ -9,25 +9,35 @@ import { write } from './data_reader.mjs'
 export async function downloadCharacter(url) {
 	const host = getHostFromUrl(url)
 
-	if (host.includes('pygmalion.chat'))
+	if (hostMatches(host, 'pygmalion.chat'))
 		return downloadPygmalionCharacter(getUuidFromUrl(url))
-	else if (host.includes('janitorai'))
+	else if (hostMatches(host, 'janitorai.com'))
 		return downloadJannyCharacter(getUuidFromUrl(url))
-	else if (host.includes('aicharactercards.com'))
+	else if (hostMatches(host, 'aicharactercards.com'))
 		return downloadAICCCharacter(parseAICC(url))
-	else if (host.includes('chub.ai') || host.includes('characterhub.org')) {
+	else if (hostMatches(host, 'chub.ai') || hostMatches(host, 'characterhub.org')) {
 		const parsed = parseChubUrl(url)
 		if (parsed?.type === 'character')
 			return downloadChubCharacter(parsed.id)
 		else if (parsed?.type === 'lorebook')
 			throw new Error('Lorebook download not supported')
 	}
-	else if (host.includes('realm.risuai.net'))
+	else if (hostMatches(host, 'realm.risuai.net'))
 		return downloadRisuCharacter(parseRisuUrl(url))
-	else if (host.includes('github.com'))
+	else if (hostMatches(host, 'github.com'))
 		return downloadGithubCharacter(parseGithubUrl(url))
 	else
 		return downloadGenericPng(url)
+}
+
+/**
+ * 判断主机名是否恰为给定域名或其子域（避免子串匹配被 `evil-github.com` 之类绕过）。
+ * @param {string} host - 已解析的主机名。
+ * @param {string} domain - 期望域名。
+ * @returns {boolean} 命中则返回 true。
+ */
+function hostMatches(host, domain) {
+	return host === domain || host.endsWith(`.${domain}`)
 }
 
 /**

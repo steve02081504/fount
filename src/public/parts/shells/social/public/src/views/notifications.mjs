@@ -216,7 +216,7 @@ function renderNotificationCard(row, seenAt) {
 			<div class="post-header-row">
 				${notificationAvatarsHtml(row)}
 				<div>
-					<div class="notification-type" data-i18n="${msg.i18n}"${msgParams}></div>
+					<div class="notification-type" data-i18n="${escapeHtml(msg.i18n)}"${msgParams}></div>
 					${formatTimeHtml(row.at)}
 				</div>
 			</div>
