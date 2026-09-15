@@ -1,6 +1,6 @@
 import { mkdir, rm } from 'node:fs/promises'
 
-import { exec } from 'npm:@steve02081504/exec'
+import { execFile } from 'npm:@steve02081504/exec'
 
 /**
  * 克隆 Git 仓库。
@@ -11,7 +11,7 @@ import { exec } from 'npm:@steve02081504/exec'
 export async function cloneRepo(repoUrl, targetDir) {
 	await mkdir(targetDir, { recursive: true })
 	try {
-		const result = await exec(`git clone --depth 1 --single-branch ${repoUrl} .`, { cwd: targetDir })
+		const result = await execFile('git', ['clone', '--depth', '1', '--single-branch', '--', repoUrl, '.'], { cwd: targetDir })
 		if (result.code) throw new Error(result.stderr.trim() || 'Failed to clone repository')
 		return result.stdout.trim()
 	}
