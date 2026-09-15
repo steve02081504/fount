@@ -12,8 +12,11 @@ import { uninstallPartBase } from '../../../../server/parts_loader.mjs'
  * @returns {string} - 部件的绝对路径。
  */
 export function resolvePath(username, type, name) {
-	const userPath = getUserDictionary(username)
-	const partPath = path.join(userPath, type, name)
+	const userPath = path.resolve(getUserDictionary(username))
+	const partPath = path.resolve(userPath, type, name)
+	const relativePath = path.relative(userPath, partPath)
+	if (!relativePath || relativePath === '..' || relativePath.startsWith(`..${path.sep}`) || path.isAbsolute(relativePath))
+		throw new Error('Invalid part path')
 	return partPath
 }
 
