@@ -12,6 +12,7 @@
 				"src/public/pages/login/**",
 				"src/public/pages/scripts/endpoints/base.mjs",
 				"src/public/pages/scripts/components/passwordStrength.mjs",
+				"src/public/pages/scripts/features/toast.mjs",
 				"src/public/pages/scripts/test/watch/layout.mjs"
 			],
 			"subtests": [
@@ -24,6 +25,15 @@
 						"src/public/pages/login/**",
 						"src/public/pages/scripts/endpoints/base.mjs",
 						"src/public/pages/scripts/components/passwordStrength.mjs"
+					]
+				},
+				{
+					"name": "toast",
+					"expected": "20s",
+					"triggers": [
+						"src/public/pages/test/frontend/toast.spec.mjs",
+						"src/public/pages/test/frontend/fixtures.mjs",
+						"src/public/pages/scripts/features/toast.mjs"
 					]
 				},
 				{

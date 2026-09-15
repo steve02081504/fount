@@ -455,6 +455,27 @@ function createDocumentFragmentFromHtmlString(htmlString) {
 }
 
 /**
+ * 生成随机令牌。`crypto.getRandomValues` 在非安全上下文也可用，故不依赖 `crypto.randomUUID`。
+ * @returns {string} 十六进制随机串。
+ */
+function randomToken() {
+	return [...crypto.getRandomValues(new Uint8Array(16))].map(byte => byte.toString(16).padStart(2, '0')).join('')
+}
+
+/**
+ * 将纯文本按换行插入元素（用 `<br>` 保换行，文本节点避免 HTML 注入）。
+ * @param {HTMLElement} parent - 目标元素。
+ * @param {string} text - 纯文本。
+ * @returns {void}
+ */
+function appendTextWithLineBreaks(parent, text) {
+	text.split('\n').forEach((line, index) => {
+		if (index) parent.appendChild(document.createElement('br'))
+		parent.appendChild(document.createTextNode(line))
+	})
+}
+
+/**
  * currentColor在img的从url导入的svg中不起作用，此函数旨在解决这个问题。
  * @param {DocumentFragmentOrElement} DOM - 要处理的 DOM。
  * @returns {Promise<DocumentFragmentOrElement>} - 处理后的 DOM。
@@ -466,7 +487,7 @@ async function svgInliner(DOM) {
 		IconCache[url] ??= fetch(url).then(response => response.text())
 		let data = IconCache[url] = await IconCache[url]
 		// 对于每个id="xx"的match，在id后追加uuid
-		const uuid = Math.random().toString(36).slice(2)
+		const uuid = randomToken()
 		const matches = data.matchAll(/id="([^"]+)"/g)
 		for (const match of matches) data = data.replaceAll(match[1], `${match[1]}-${uuid}`)
 		const newSvg = createDocumentFragmentFromHtmlString(data)
@@ -479,6 +500,7 @@ async function svgInliner(DOM) {
 
 // --- 全局变量与常量 ---
 const BLOCK_DURATION_MS = 3600000
+const MAX_TOAST_DURATION_MS = 60000
 const INITIAL_RETRY_DELAY = 5000
 const MAX_RETRY_DELAY = 300000
 const RETRY_INCREMENT = 5000
@@ -667,7 +689,7 @@ const MUTEX_ACQUIRE_TIMEOUT_MS = 10000
  * @returns {string} - 唯一的锁令牌。
  */
 function mutexToken() {
-	return crypto.randomUUID ? crypto.randomUUID() : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`
+	return crypto.randomUUID ? crypto.randomUUID() : randomToken()
 }
 
 /**
@@ -1191,11 +1213,16 @@ async function base_showToast(type, message, duration = 4000) {
 		console.error(`fount userscript: showToast() called with non-string/non-HTMLElement message: ${message}`)
 		message = String(message)
 	}
+	// duration 可来自后端推送，钳制上限避免超长计时器占资源。
+	duration = Number(duration)
+	if (!Number.isFinite(duration) || duration < 0) duration = 4000
+	duration = Math.min(duration, MAX_TOAST_DURATION_MS)
 	const container = ensureToastContainer()
 	applyPageThemeToToast(container)
 	const alertId = `fount-browserIntegration-alert-${Date.now()}`
 	const alertDiv = document.createElement('div')
 	if (type == 'custom') {
+		// custom 是后端推送 HTML toast 的既定通道（如成就解锁），此处保留 HTML 渲染。
 		if (Object(message) instanceof HTMLElement)
 			alertDiv.appendChild(message)
 		else
@@ -1215,14 +1242,15 @@ async function base_showToast(type, message, duration = 4000) {
 		if (message instanceof HTMLElement)
 			textElement.appendChild(message)
 		else
-			textElement.innerHTML = String(message).replace(/\n/g, '<br>')
+			appendTextWithLineBreaks(textElement, String(message))
 
 		alertDiv.appendChild(iconElement)
 		alertDiv.appendChild(textElement)
 	}
 	alertDiv.className += ' fade-in-up'
 	const { host, protocol } = await getStoredData()
-	alertDiv.innerHTML = alertDiv.innerHTML.replaceAll('href="/', `href="${protocol}//${host}/`)
+	for (const anchor of alertDiv.querySelectorAll('a[href^="/"]'))
+		anchor.setAttribute('href', `${protocol}//${host}${anchor.getAttribute('href')}`)
 
 	// 遍历 alertDiv 中的所有元素及其子元素的class，若在 supportedClasses 中，添加 fount-browserIntegration- 前缀
 	for (const element of [alertDiv, ...alertDiv.querySelectorAll('*')])

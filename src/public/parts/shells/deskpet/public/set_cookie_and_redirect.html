@@ -21,13 +21,36 @@
 		const redirect = urlParams.get('redirect')
 
 		if (!apikey || !redirect)
-			document.body.innerHTML = '<h1>Error: Missing parameters</h1>'
+			renderError('Missing parameters')
 		else try {
-			document.cookie = `fount-apikey=${encodeURIComponent(apikey)}; path=/; SameSite=Lax`
-			window.location.replace(decodeURIComponent(redirect))
+			const secure = location.protocol === 'https:' ? '; Secure' : ''
+			document.cookie = `fount-apikey=${encodeURIComponent(apikey)}; path=/; SameSite=Lax${secure}`
+			window.location.replace(resolveRedirect(redirect))
 		}
 		catch (error) {
-			document.body.innerHTML = `<h1>Error: ${error.message || 'Failed to set cookie'}</h1>`
+			renderError(error.message || 'Failed to set cookie')
+		}
+
+		/**
+		 * 解析 redirect 参数为站内地址，拒绝跨源跳转。
+		 * @param {string} value 原始 redirect 参数。
+		 * @returns {string} 站内地址。
+		 */
+		function resolveRedirect(value) {
+			const url = new URL(decodeURIComponent(value), window.location.origin)
+			if (url.origin !== window.location.origin) throw new Error('Invalid redirect')
+			return url.href
+		}
+
+		/**
+		 * 渲染错误提示。
+		 * @param {string} message 错误信息。
+		 * @returns {void}
+		 */
+		function renderError(message) {
+			const heading = document.createElement('h1')
+			heading.textContent = `Error: ${message}`
+			document.body.replaceChildren(heading)
 		}
 	</script>
 </body>

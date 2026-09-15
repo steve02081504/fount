@@ -9,7 +9,7 @@ const IconCache = {}
 async function loadSvgText(url) {
 	IconCache[url] ??= fetch(url).then(response => response.text())
 	const data = IconCache[url] = await IconCache[url]
-	const uuid = Math.random().toString(36).slice(2)
+	const uuid = [...crypto.getRandomValues(new Uint8Array(8))].map(byte => byte.toString(16).padStart(2, '0')).join('')
 	const ids = [...data.matchAll(/id="([^"]+)"/g)].map(match => match[1])
 	const map = new Map(ids.map(id => [id, `${id}-${uuid}`]))
 	return data.replace(/(id="|url\(#|href="#|#)([A-Za-z0-9_:.-]+)/g,
