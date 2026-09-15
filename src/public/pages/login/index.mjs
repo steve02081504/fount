@@ -183,22 +183,22 @@ async function resolveLoginSuccessTargetUrl() {
 	const urlParams = new URLSearchParams(window.location.search)
 	const redirect = urlParams.get('redirect')
 	const defaultShell = await getAnyDefaultPart('shells') || 'home'
+	const fallbackTarget = `/parts/shells:${defaultShell}`
 
-	let finalRedirectUrl
-	if (redirect)
-		finalRedirectUrl = decodeURIComponent(redirect)
-	else
-		finalRedirectUrl = `/parts/shells:${defaultShell}`
+	if (!redirect) return fallbackTarget + window.location.hash
 
-	if (redirect) try {
-		const url = new URL(finalRedirectUrl, window.location.origin)
+	try {
+		const url = new URL(decodeURIComponent(redirect), window.location.origin)
 		if (url.origin !== window.location.origin) throw new Error('cross-origin redirect')
 		const gobackNum = Number(url.searchParams.get('gobackNum') || 0)
 		if (gobackNum) url.searchParams.set('gobackNum', gobackNum + 1)
-		finalRedirectUrl = url.href
-	} catch { finalRedirectUrl = `/parts/shells:${defaultShell}` }
-
-	return finalRedirectUrl + window.location.hash
+		// 只取同源 URL 的路径/查询/哈希，再拼到当前源前缀之后：
+		// pathname 必以 `/` 开头，结果始终留在当前源内，且污染值不构成拼接首段。
+		return window.location.origin + url.pathname + url.search + url.hash + window.location.hash
+	}
+	catch {
+		return fallbackTarget + window.location.hash
+	}
 }
 
 /**
