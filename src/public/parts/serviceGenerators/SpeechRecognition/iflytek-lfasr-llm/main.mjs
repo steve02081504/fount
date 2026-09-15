@@ -69,21 +69,20 @@ function largeModelSignature(params, secret) {
 
 /**
  * 随机串。
- * @param {number} n 长度
+ * @param {number} length 长度
  * @returns {string} 串
  */
-function randomString(n) {
+function randomString(length) {
 	const letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
 	// 字母表 62 个字符非 2 的幂，用拒绝采样保证均匀分布。
-	const range = 256 - (256 % letters.length)
-	let out = ''
-	while (out.length < n)
-		for (const b of crypto.getRandomValues(new Uint8Array(n - out.length))) {
-			if (b >= range) continue
-			out += letters[b % letters.length]
-			if (out.length >= n) break
+	let result = ''
+	while (result.length < length)
+		for (const byte of crypto.getRandomValues(new Uint8Array(length - result.length))) {
+			if (byte >= 256 - (256 % letters.length)) continue
+			result += letters[byte % letters.length]
+			if (result.length >= length) break
 		}
-	return out
+	return result
 }
 
 /**
