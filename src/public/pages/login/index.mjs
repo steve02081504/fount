@@ -188,7 +188,7 @@ async function resolveLoginSuccessTargetUrl() {
 	if (!redirect) return fallbackTarget + window.location.hash
 
 	try {
-		const url = new URL(decodeURIComponent(redirect), window.location.origin)
+		const url = new URL(redirect, window.location.origin)
 		if (url.origin !== window.location.origin) throw new Error('cross-origin redirect')
 		const gobackNum = Number(url.searchParams.get('gobackNum') || 0)
 		if (gobackNum) url.searchParams.set('gobackNum', gobackNum + 1)
