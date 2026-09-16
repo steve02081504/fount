@@ -103,7 +103,7 @@ clearTimeout(graceTimer)
 if (!settled && terminationError)
 	throw Object.assign(terminationError, { timedOut: true, elapsedMs: Date.now() - start })
 return finish({
-	result: settled?.result ?? { code: null, signal: null, stdout: '', stderr: '', stdall: '' },
+	result: settled?.result ?? { code: null, signal: 'SIGKILL', stdout: '', stderr: '', stdall: '' },
 	timedOut: true,
 })
 `
