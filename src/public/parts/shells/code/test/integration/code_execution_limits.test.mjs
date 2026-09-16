@@ -159,8 +159,8 @@ Deno.test('remoteShellStreamScript 超时杀掉分机侧进程树并标记 timed
 	if (!shell) return
 	const posix = shell === 'bash' || shell === 'sh'
 	const command = posix
-		? 'printf before; sleep 2; printf after'
-		: 'Write-Output before; Start-Sleep -Seconds 2; Write-Output after'
+		? `printf before; ${shell} -c 'sleep 2; printf after'`
+		: `Write-Output before; ${shell} -NoProfile -Command 'Start-Sleep -Seconds 2; Write-Output after'`
 	const chunks = []
 	const script = remoteShellStreamScript(shell, command, undefined, 800, 'exec-timeout')
 	const start = Date.now()

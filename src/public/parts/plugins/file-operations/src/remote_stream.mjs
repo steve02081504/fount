@@ -55,10 +55,21 @@ const emit = payload => { try { callback(payload) } catch { /* ignore */ } }
 if (shellName && !shell_exec_map[shellName]) throw new Error('Unsupported shell: ' + shellName)
 const start = Date.now()
 let spawned = null
+let timedOut = false
+const terminate = async child => {
+	if (!child?.pid) return null
+	if (process.platform === 'win32')
+		return await execFile('taskkill', ['/pid', String(child.pid), '/T', '/F']).then(() => null, error => error)
+	try { process.kill(-child.pid, 'SIGKILL'); return null }
+	catch (groupError) {
+		try { child.kill('SIGKILL'); return null }
+		catch (killError) { return new AggregateError([groupError, killError], 'Failed to terminate remote shell process') }
+	}
+}
 const options = {
 	no_ansi_terminal_sequences: true,
 	...cwd ? { cwd } : {},
-	on_spawn: child => { spawned = child },
+	on_spawn: child => { spawned = child; if (timedOut) terminate(child).catch(() => { }) },
 	on_stdout: data => emit({ execId: ${JSON.stringify(execId)}, stream: 'stdout', data }),
 	on_stderr: data => emit({ execId: ${JSON.stringify(execId)}, stream: 'stderr', data }),
 }
@@ -76,24 +87,14 @@ const finish = outcome => {
 }
 if (timeoutMs == null) return finish(await settle())
 let timer
-const timedOut = await Promise.race([
+const beat = await Promise.race([
 	run.then(() => false, () => false),
 	new Promise(resolve => { timer = setTimeout(() => resolve(true), timeoutMs) }),
 ])
 clearTimeout(timer)
-if (!timedOut) return finish(await settle())
-let terminationError = null
-if (spawned?.pid) {
-	if (process.platform === 'win32')
-		await execFile('taskkill', ['/pid', String(spawned.pid), '/T', '/F']).catch(error => { terminationError = error })
-	else {
-		try { process.kill(-spawned.pid, 'SIGKILL') }
-		catch (groupError) {
-			try { spawned.kill('SIGKILL') }
-			catch (killError) { terminationError = new AggregateError([groupError, killError], 'Failed to terminate remote shell process') }
-		}
-	}
-}
+if (!beat) return finish(await settle())
+timedOut = true
+const terminationError = await terminate(spawned)
 let graceTimer
 const settled = await Promise.race([
 	run.then(result => ({ result }), error => ({ result: error })),
