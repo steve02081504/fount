@@ -180,7 +180,7 @@
 	"suites": [
 		{
 			"name": "pure",
-			"expected": "10m30s",
+			"expected": "5m38s",
 			"trigger": [
 				"shellBackend",
 				"shellPureExtra",

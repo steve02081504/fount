@@ -30,7 +30,7 @@ Core: [@steve02081504/fount-p2p](https://www.npmjs.com/package/@steve02081504/fo
 
 ## EVFS cross-node reads (targeted fanout)
 
-- When pulling a public file across nodes (`profile.json` / avatar / banner / `cabinets.public.json` / …), **pass `fanoutTargets`** targeting the owner node or group roster — do not rely on the node-scope public fanout: it dials the full peer set before sending, and with many peers the dialing blocks past the 8s wait window and the request is lost (fount-p2p ≥0.0.41 no longer blocks on dialing, but targeted is still more precise).
+- When pulling a public file across nodes (`profile.json` / avatar / banner / `cabinets.public.json` / …), **pass `fanoutTargets`** targeting the owner node or group roster — do not rely on the node-scope public fanout: it dials the full peer set before sending, and with many peers the dialing can block past the 8s wait window and the request is lost.
 - `readPublicFile` / `readManifestPlaintext` / `readManifestPlaintextStream` / `fetchChunk` all accept and forward `fanoutTargets` (`files/evfs.mjs`, `files/chunk/fetch.mjs`); owner node = `parseEntityHash(entityHash).nodeHash`.
 - Working examples to copy: `chat/src/entity/profile.mjs` (`readRemoteProfilePlain`), `chat/src/entity/profileFederation.mjs`, `chat/src/entity/filesEndpoints.mjs` GET, `cabinet/src/remote.mjs`. Do not call bare `readPublicFile(...)` (public fanout) for new code.
 

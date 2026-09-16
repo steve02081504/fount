@@ -74,25 +74,10 @@ The client must:
 
 ## Verification
 
-Cheap checks that need no live server (run from the repo root):
+No live server needed: `deno test --allow-all --allow-scripts -c ./deno.json ./src/public/parts/shells/phone/test/pure/` and `deno lint -c ./deno.json src/public/parts/shells/phone`. After changes, also run the standard pure scanners (`scanTextLf`, `scanMsLiteral`, `scanI18nKeyStructure`, `scanAgentsMdEnglish`) and the module-graph probe `probeShellPart({ partPath: 'shells/phone' })` (`src/scripts/test/shellLoadProbe.mjs`).
 
-```powershell
-deno lint -c ./deno.json src/public/parts/shells/phone
-deno test --allow-all --allow-scripts -c ./deno.json ./src/public/parts/shells/phone/test/pure/
-deno run --allow-scripts --allow-all ./src/scripts/checks/tools/scan_jsdoc_no_english.mjs src/public/parts/shells/phone
-```
+## Not implemented yet
 
-Module-graph probe (catches missing imports, cross-boundary imports, stale named exports):
-
-```js
-const { probeShellPart } = await import('fount/src/scripts/test/shellLoadProbe.mjs')
-await probeShellPart({ repoRoot, partPath: 'shells/phone', dynamicProbes: [] })
-```
-
-`scanTextLf`, `scanMsLiteral`, `scanI18nKeyStructure` and `scanAgentsMdEnglish` are pure too and worth running after touching this shell.
-
-## Deferred
-
-- `assist` flow (wake → `chatReplyRequest` → streamed reply): build the request the way `shells/code/src/request.mjs` does, prepend the live context as a system log, stream deltas back.
+- `assist` flow (wake → `chatReplyRequest` → streamed reply): build the request like `shells/code/src/request.mjs`, prepend the live context as a system log, stream deltas back.
 - `plugins/phone` tool surface (`<phone-eval>`, `<phone-context>`, `<phone-frame>`, `<phone-call>`) and `GetPrompt` context injection.
-- Frontend page (`public/index.html`) and its Playwright smoke — the shell is API-only for now.
+- Frontend page (`public/index.html`) + Playwright smoke — API-only for now.

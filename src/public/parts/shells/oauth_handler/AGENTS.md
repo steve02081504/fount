@@ -10,7 +10,7 @@ Canonical OAuth completion for fount AI subscription logins.
 
 - Callback page: `/parts/shells:oauth_handler/callback`
 - REST: `/api/parts/shells:oauth_handler/{start,complete,status/:state,cancel}`
-- PKCE providers bind the upstream-registered localhost port and 302 here (`1455/auth/callback` Codex, `53692/callback` Claude). Device flow (GitHub Copilot) does not bind a port. `forget` awaits `hook.close()` — the port stays bound until then. `startPkceLogin` `await sweepExpired()` before `startPortHook`; timer / `putPending` / `getPending` use `void`.
+- PKCE providers bind the upstream-registered localhost port and 302 here (`1455/auth/callback` Codex, `53692/callback` Claude); the port stays bound until `forget` closes the hook. Device flow (GitHub Copilot) does not bind a port.
 - GitHub Pages bounce (`.github/pages/oauth/callback`) only runs when the OAuth app registered that HTTPS `redirect_uri`. Piggybacked Codex/Claude client IDs cannot.
 - Token exchange stays on the server. Persist to `serviceSources/AI/<name>/config.oauth` when `sourceName` is supplied. `/complete` and `/status` return status only — never refresh credentials.
 - Copilot Enterprise host comes from the saved source `config.enterpriseUrl`, not the `/start` body. Loopback and private hosts are rejected.

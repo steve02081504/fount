@@ -31,8 +31,9 @@ alwaysApply: false
 2. Frontend: `public/index.html` — `/preload.mjs`, `/base.css`, `/base.mjs`. Full pages need an `h1` (axe `page-has-heading-one`) and locale leaves `${pageid}.title` + `.description` when `meta[name="description"]` is present ([i18n-notes](../../pages/docs/i18n-notes.md#page-id-title--description)).
 3. Shared scripts: `@src/public/pages/scripts/`.
 4. **GetReply identity**: when building `chatReplyRequest` yourself, `User*` must be the local operator; message authors go only in `ReplyTo*` / `chat_log[].uid`. Details: [chat/session/AGENTS.md](chat/src/chat/session/AGENTS.md) Speaker identity. Platform bots use virtual bridge sessions — never `newGroup` for Discord/Telegram/WeChat chats.
-5. Add `public/llms.txt`.
-6. Ship `test/frontend` smoke (Playwright) — page boot + key UI / template render path; mimic `config` / `serviceSourceManage` / peer `smoke.spec.mjs`.
+5. **Bot outbound text = display layer**: platform bots send `messageLineToReplyEntry(messageLine).content_for_show`, never the agent-layer `content` — reply-handler triggers (e.g. `<gentian-sticker>`) are stripped from `content_for_show` only, so using `content` leaks them to the platform.
+6. Add `public/llms.txt`.
+7. Ship `test/frontend` smoke (Playwright) — page boot + key UI / template render path; mimic `config` / `serviceSourceManage` / peer `smoke.spec.mjs`.
 
 **Example**: `shells/shellassist/`. **Chat**: [entity / ChatClient](chat/public/AGENTS.md), [Hub](chat/public/hub/AGENTS.md). **Social**: [social/public/AGENTS.md](social/public/AGENTS.md).
 
