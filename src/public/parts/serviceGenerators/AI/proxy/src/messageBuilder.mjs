@@ -1,6 +1,7 @@
 import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../../shells/chat/src/prompt_struct/index.mjs'
 
 import { buildFileContentParts } from './fileContentParts.mjs'
+import { normalizeMimePatterns, prependText, splitDeniedFiles, systemMessageCarriesDeniedFiles } from './messagePolicies.mjs'
 
 /**
  * 将 prompt_struct 转成 OpenAI 兼容消息数组。
@@ -10,7 +11,8 @@ import { buildFileContentParts } from './fileContentParts.mjs'
  * @returns {Promise<Array<{role: 'user'|'assistant'|'system', content: string | object[]}>>} OpenAI 格式消息数组。
  */
 export async function buildMessagesFromPromptStruct(prompt_struct, config, configTemplate) {
-	const ignoreFiles = config.convert_config?.ignoreFiles ?? configTemplate.convert_config.ignoreFiles
+	const ignoreFiles = normalizeMimePatterns(config.convert_config?.ignoreFiles ?? configTemplate.convert_config.ignoreFiles)
+	const forbidSystemFiles = normalizeMimePatterns(config.convert_config?.forbidSystemFiles ?? configTemplate.convert_config.forbidSystemFiles)
 
 	let messages = await Promise.all(mergeStructPromptChatLog(prompt_struct).map(async chatLogEntry => {
 		const uid = chatLogEntry.id ||= crypto.randomUUID().slice(0, 8)
@@ -32,18 +34,14 @@ ${chatLogEntry.content}
 			content: textContent,
 		}
 
-		if (chatLogEntry.files?.length) {
-			if (ignoreFiles) {
-				const notices = chatLogEntry.files.map((file) => {
-					const mime_type = file.mime_type || 'application/octet-stream'
-					const name = file.name ?? 'unknown'
-					return `[System Notice: can't show you about file '${name}' because you cant take the file input of type '${mime_type}', but you may be able to access it by using code tools if you have.]`
-				})
-				textContent += '\n' + notices.join('\n')
-				message.content = textContent
-				return message
-			}
-			const { parts, skipped } = await buildFileContentParts(chatLogEntry.files, textContent)
+		const files = chatLogEntry.files || []
+		const { kept, notice } = splitDeniedFiles(files, ignoreFiles)
+		if (notice) {
+			textContent += '\n' + notice
+			message.content = textContent
+		}
+		if (kept.length) {
+			const { parts, skipped } = await buildFileContentParts(kept, textContent)
 			if (parts.length > 1)
 				message.content = parts
 			if (skipped.length) {
@@ -56,6 +54,9 @@ ${chatLogEntry.content}
 					message.content += noticeText
 			}
 		}
+
+		if (systemMessageCarriesDeniedFiles(message.role, files, forbidSystemFiles))
+			return { role: 'user', content: prependText(message.content, 'system: ') }
 
 		return message
 	}))
@@ -85,7 +86,7 @@ ${chatLogEntry.content}
 	if (config.convert_config?.forceNoSystemMessages)
 		messages = messages.map(m => {
 			if (m.role !== 'system') return m
-			return { role: 'user', content: 'system: ' + m.content }
+			return { role: 'user', content: prependText(m.content, 'system: ') }
 		})
 
 	if (config.convert_config?.forceUserMessageEnding)

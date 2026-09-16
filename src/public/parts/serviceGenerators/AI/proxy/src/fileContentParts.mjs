@@ -14,6 +14,35 @@ export function mimeTypeBase(mimeType) {
 }
 
 /**
+ * 附件基础 MIME；缺失时回退 `application/octet-stream`。
+ * @param {object} file 附件描述符
+ * @returns {string} 基础 MIME
+ */
+export function fileMimeType(file) {
+	return mimeTypeBase(file.mime_type) || 'application/octet-stream'
+}
+
+/**
+ * 附件是否命中任一 MIME 正则。
+ * 正则非法时按未命中处理，避免一条坏配置丢掉全部附件。
+ * @param {string[]} patterns MIME 正则列表
+ * @param {object} file 附件描述符
+ * @returns {boolean} 是否命中
+ */
+export function matchesMimePatterns(patterns, file) {
+	if (!Array.isArray(patterns) || !patterns.length) return false
+	const mime = fileMimeType(file)
+	return patterns.some(pattern => {
+		try {
+			return new RegExp(pattern, 'i').test(mime)
+		}
+		catch {
+			return false
+		}
+	})
+}
+
+/**
  * 解析附件字节（优先异步 getBuffer；缺省回退同步 buffer）。
  * 空字节 / 加载失败返回 null——调用方须跳过，不得发空 base64 data URL。
  * @param {object} file 附件描述符

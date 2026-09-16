@@ -1,7 +1,7 @@
 /** 微信机器人 shell 的客户端逻辑。 */
 import qrcode from 'https://esm.sh/qrcode-generator'
 
-import { initTranslations, geti18n, promptI18n, confirmI18n } from '/scripts/i18n/index.mjs'
+import { initTranslations, geti18n, promptI18n, confirmI18n, setElementI18n } from '/scripts/i18n/index.mjs'
 import { createJsonEditor } from '/scripts/components/jsonEditor.mjs'
 import { getPartList } from '/scripts/endpoints/parts.mjs'
 import { applyTheme } from '/scripts/theme/index.mjs'
@@ -38,7 +38,22 @@ function renderQrCode(content) {
 	qr.addData(content)
 	qr.make()
 	qrContainer.innerHTML = qr.createImgTag(5)
+	qrContainer.querySelector('img')?.setAttribute('alt', '')
 	qrWrap.classList.remove('hidden')
+}
+
+/**
+ * 写入 QR 登录状态文案（走 i18n key，随语言切换自动重译）。
+ * @param {string | null} key i18n 键；传 null 清空。
+ * @returns {void}
+ */
+function setQrStatus(key) {
+	if (key) {
+		setElementI18n(qrStatusElement, key)
+		return
+	}
+	delete qrStatusElement.dataset.i18n
+	qrStatusElement.textContent = ''
 }
 
 const newBotButton = document.getElementById('new-bot')
@@ -383,7 +398,7 @@ async function initializeFromURLParams() {
 			try {
 				await newBotConfig(botName)
 				botList = await getBotList()
-				renderBotDropdown()
+				await renderBotDropdown()
 				botToLoad = botName
 			} catch (error) {
 				console.error('Failed to create new bot from URL parameter:', error)
@@ -415,12 +430,13 @@ function stopQrPoll() {
 
 /**
  * 处理单次二维码轮询响应并更新界面。
- * @param {{ done: boolean, status?: string, connected?: boolean, token?: string, apiBaseUrl?: string, qrcodeUrl?: string, error?: string }} result 轮询结果对象。
- * @returns {Promise<any>} 操作完成后的 Promise。
+ * 登录结果只赋值到当前编辑器状态，绝不整份重载配置（否则会连同未保存编辑一起清空）。
+ * @param {{ done: boolean, status?: string, connected?: boolean, token?: string, apiBaseUrl?: string, ilinkUserId?: string, qrcodeContent?: string, error?: string }} result 轮询结果对象。
+ * @returns {void}
  */
-async function handleQrPollResult(result) {
+function handleQrPollResult(result) {
 	if (result.status === 'scanned')
-		qrStatusElement.textContent = geti18n('wechat_bots.qrLogin.scanned')
+		setQrStatus('wechat_bots.qrLogin.scanned')
 
 	if (result.qrcodeContent)
 		renderQrCode(result.qrcodeContent)
@@ -429,18 +445,19 @@ async function handleQrPollResult(result) {
 		if (result.token) tokenInput.value = result.token
 		if (result.apiBaseUrl) apiBaseUrlInput.value = String(result.apiBaseUrl).replace(/\/+$/, '')
 
-		if (selectedBot)
-			await loadBotConfig(selectedBot)
-		else
-			isDirty = true
+		if (result.ilinkUserId && configEditor) {
+			const currentConfig = configEditor.getJson() || {}
+			configEditor.set({ json: { ...currentConfig, OwnerWeChatId: result.ilinkUserId } })
+		}
 
+		isDirty = true
 		showToastI18n('success', 'wechat_bots.qrLogin.success')
-		qrStatusElement.textContent = geti18n('wechat_bots.qrLogin.success')
+		setQrStatus('wechat_bots.qrLogin.success')
 	}
 
 	if (result.done && result.error) {
 		qrWrap.classList.add('hidden')
-		qrStatusElement.textContent = ''
+		setQrStatus(null)
 		showToast('error', String(result.error))
 	}
 }
@@ -463,7 +480,7 @@ async function startQrPolling(sessionKey) {
 			break
 		}
 		if (!qrPollActive) break
-		await handleQrPollResult(result)
+		handleQrPollResult(result)
 		if (result.done) break
 	}
 	qrPollActive = false
@@ -479,18 +496,18 @@ async function handleQrStart() {
 		return
 	}
 	stopQrPoll()
-	qrStatusElement.textContent = geti18n('wechat_bots.qrLogin.waiting')
+	setQrStatus('wechat_bots.qrLogin.waiting')
 	qrWrap.classList.add('hidden')
 	try {
 		const result = await startWechatQrLogin(selectedBot)
 		if (!result.sessionKey)
 			throw new Error(result.message || 'no sessionKey')
 		renderQrCode(result.qrcodeContent)
-		qrStatusElement.textContent = geti18n('wechat_bots.qrLogin.scanPrompt')
+		setQrStatus('wechat_bots.qrLogin.scanPrompt')
 		startQrPolling(result.sessionKey)
 	}
 	catch (error) {
-		qrStatusElement.textContent = ''
+		setQrStatus(null)
 		showToast('error', error.message)
 	}
 }

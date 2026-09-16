@@ -108,14 +108,14 @@ export async function getBotConfigTemplate(username, charname) {
 }
 
 /**
- * 设置指定用户的特定微信 Bot 的配置。
+ * 将配置合并进指定用户的特定微信 Bot（未提供的字段保持不变）。
  * @param {string} username 用户名。
  * @param {string} botname 机器人名称。
  * @param {object} config 配置对象。
  * @returns {void}
  */
 export function setBotConfig(username, botname, config) {
-	getBotsData(username)[botname] = config
+	Object.assign(getBotsData(username)[botname] ??= {}, config)
 	saveShellData(username, 'wechatbot', 'bot_configs')
 }
 

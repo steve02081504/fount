@@ -1,0 +1,54 @@
+# 手机 Shell API
+
+手机 Agent Shell：把一台安卓设备接入 fount，让角色能读屏、操作设备、截屏取帧，并在手机上编译执行原始 Java 代码。
+
+服务端本身不操作手机；一切设备能力都由 fount-app 安卓客户端连上来之后提供。设备离线时相关接口返回 404。
+
+路径前缀：`/api/parts/shells:phone` 与 `/ws/parts/shells:phone`，均需登录鉴权（API Key 走 WebSocket 子协议、`Authorization: Bearer`、查询参数 `fount-apikey` 或同名 Cookie 之一）。
+
+---
+
+## 使用要点
+
+- 一个用户可以同时绑多台设备；不指定 `deviceId` 时命令与查询都作用于最近连接的那台在线设备。
+- 设备会自动上报屏幕上下文（前台应用、屏幕文字、UI 树、截图）与摄像头帧，无需先调用任何接口；查询类接口读到的就是这些最新快照。
+- 一台设备掉线会自动重连，重连后沿用同一个 `deviceId`。
+- 命令和设备响应由服务端按 `requestId` 关联，超时会明确报错，不会无限等待。
+
+---
+
+## 设备连接（WebSocket）
+
+### WS /ws/parts/shells:phone/device
+
+安卓客户端的长连接入口。客户端接入后先握手注册设备，之后持续上报上下文与事件，并响应服务端下发的命令。
+
+- 服务端会向客户端下发 `eval` 命令（编译执行一段原始 Java 代码）。
+- 客户端上报的上下文与通知事件会进入该设备的上下文快照。
+- 手机端主动发起的对话（唤醒）尚未实现，会收到明确的错误回复。
+
+命令与消息的具体字段定义见本部件 `AGENTS.md`。
+
+---
+
+## HTTP 端点
+
+### GET /api/parts/shells:phone/devices
+
+- 用途：列出该用户的全部设备摘要（`deviceId`、名称、安卓版本、自报能力、是否在线、首连与断开时间）。
+
+### GET /api/parts/shells:phone/state?deviceId=
+
+- 用途：取目标设备的上下文快照：最新屏幕文字 / 前台应用、各类帧的数量、最近的通知。
+- `screenshot` 字段以 `<omitted>` 占位，图片请改用下面的 frame 接口。
+
+### GET /api/parts/shells:phone/frame?deviceId=&kind=screen|front|back
+
+- 用途：取目标设备最新一帧图片，直接返回图片二进制（`image/jpeg`）。
+- 尚无对应帧时返回 404。
+
+### POST /api/parts/shells:phone/exec
+
+- Body：`deviceId`（可选，缺省取最近在线设备）、`language`（默认 `java`）、`source`（必填）、`timeoutMs`（可选）、`persist`（可选，登记为可复用的 snippet 名）
+- 用途：让手机编译并执行一段原始 Java 代码，返回执行结果、日志与耗时；编译或运行失败时返回错误文本，便于角色自行修改后重试。
+- 代码可用的能力由客户端提供（读屏、手势、截屏、摄像头、剪贴板、日志等）。

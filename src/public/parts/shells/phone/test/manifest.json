@@ -1,0 +1,37 @@
+{
+	"id": "shells/phone",
+	"triggerSets": {
+		"testFramework": [
+			"src/scripts/test/{deno/serial.mjs,node/boot.mjs}"
+		],
+		"shellBackend": [
+			"src/public/parts/shells/phone/src/**",
+			"src/public/parts/shells/phone/{main.mjs,fount.json,locales.json}",
+			"src/scripts/test/shellLoadProbe.mjs"
+		],
+		"shellPureTests": [
+			"src/public/parts/shells/phone/test/pure/**"
+		]
+	},
+	"suites": [
+		{
+			"name": "pure",
+			"expected": "2s",
+			"trigger": [
+				"shellBackend",
+				"shellPureTests",
+				"testFramework"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/deno/serial.mjs",
+				"./src/public/parts/shells/phone/test/pure/"
+			]
+		}
+	]
+}
