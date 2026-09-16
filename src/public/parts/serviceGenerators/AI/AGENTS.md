@@ -12,7 +12,7 @@ OpenAI-compatible **API keys** (DeepSeek, OpenRouter, Groq, Azure Chat Completio
 
 Overly generic helpers live in the representative part; callers import from there. Provider-specific URL/route/UI stays in that generator.
 
-**`convert_config` file policy**: `ignoreFiles` / `forbidSystemFiles` are MIME regex lists (legacy `ignoreFiles: true` = `['.*']`); `ignoreFiles` hits drop the attachment into a system notice, `forbidSystemFiles` hits downgrade a system message to `user` prefixed `system: `. `messageBuilder.mjs` statically `import`s `src/decl/*.ts` types for JSDoc, so its policy logic lives in the decl-free [proxy/src/messagePolicies.mjs](proxy/src/messagePolicies.mjs) — `pure/` tests cover it there without pulling the decl graph. (`deno.json` sets `strictPropertyInitialization: false` because the JSDoc-style decl classes declare uninitialized fields.)
+**`convert_config` file policy**: `ignoreFiles` / `forbidSystemFiles` / `forbidAssistantFiles` are MIME regex lists (legacy `ignoreFiles: true` = `['.*']`); `ignoreFiles` hits drop the attachment into a system notice, `forbidSystemFiles` hits downgrade a system message to `user` prefixed `system: `, `forbidAssistantFiles` hits downgrade an assistant (char) message to `user` prefixed `assistant: ` (default empty; configure for sources like Kimi that reject attachments on assistant messages). `messageBuilder.mjs` statically `import`s `src/decl/*.ts` types for JSDoc, so its policy logic lives in the decl-free [proxy/src/messagePolicies.mjs](proxy/src/messagePolicies.mjs) — `pure/` tests cover it there without pulling the decl graph. (`deno.json` sets `strictPropertyInitialization: false` because the JSDoc-style decl classes declare uninitialized fields.)
 
 | Need | Home |
 | --- | --- |

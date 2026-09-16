@@ -29,14 +29,32 @@
 			]
 		},
 		"ar-SA": {
-			"name": null,
+			"name": "وكيل الهاتف",
 			"avatar": "https://api.iconify.design/line-md/phone.svg",
-			"description": null
+			"description": "حوِّل هاتفك الأندرويد إلى أدوات لشخصياتك.",
+			"description_markdown": "يتصل بعميل fount-app على أندرويد كي تتمكن الشخصيات من قراءة الشاشة والتحكم في الجهاز وتشغيل كود Java خام عليه.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"أندرويد",
+				"هاتف",
+				"وكيل",
+				"أداة"
+			]
 		},
 		"de-DE": {
-			"name": null,
+			"name": "Telefon-Agent",
 			"avatar": "https://api.iconify.design/line-md/phone.svg",
-			"description": null
+			"description": "Mach dein Android-Telefon zu einem Werkzeug für deine Charaktere.",
+			"description_markdown": "Verbindet den Android-Client von fount-app, damit Charaktere den Bildschirm lesen, das Gerät steuern und darauf rohen Java-Code ausführen können.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"android",
+				"telefon",
+				"agent",
+				"werkzeug"
+			]
 		},
 		"emoji": {
 			"name": "📱🤖",
@@ -52,40 +70,85 @@
 			]
 		},
 		"es-ES": {
-			"name": null,
+			"name": "Agente de teléfono",
 			"avatar": "https://api.iconify.design/line-md/phone.svg",
-			"description": null
-		},
-		"fr-FR": {
-			"name": null,
-			"avatar": "https://api.iconify.design/line-md/phone.svg",
-			"description": null
-		},
-		"hi-IN": {
-			"name": null,
-			"avatar": "https://api.iconify.design/line-md/phone.svg",
-			"description": null
-		},
-		"is-IS": {
-			"name": null,
-			"avatar": "https://api.iconify.design/line-md/phone.svg",
-			"description": null
-		},
-		"it-IT": {
-			"name": null,
-			"avatar": "https://api.iconify.design/line-md/phone.svg",
-			"description": null
-		},
-		"ja-JP": {
-			"name": "フォン Agent",
-			"avatar": "https://api.iconify.design/line-md/phone.svg",
-			"description": "Android スマホをキャラクターの道具に。",
-			"description_markdown": "fount-app の Android クライアントを接続し、キャラクターが画面を読み、端末を操作し、生の Java を実行できるようにします。",
+			"description": "Convierte tu teléfono Android en herramientas para tus personajes.",
+			"description_markdown": "Conecta el cliente Android de fount-app para que los personajes puedan leer la pantalla, controlar el dispositivo y ejecutar código Java sin procesar en él.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
 				"android",
-				"フォン",
+				"teléfono",
+				"agente",
+				"herramienta"
+			]
+		},
+		"fr-FR": {
+			"name": "Agent téléphonique",
+			"avatar": "https://api.iconify.design/line-md/phone.svg",
+			"description": "Transformez votre téléphone Android en outils pour vos personnages.",
+			"description_markdown": "Connecte le client Android de fount-app pour que les personnages puissent lire l'écran, piloter l'appareil et y exécuter du code Java brut.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"android",
+				"téléphone",
+				"agent",
+				"outil"
+			]
+		},
+		"hi-IN": {
+			"name": "फ़ोन एजेंट",
+			"avatar": "https://api.iconify.design/line-md/phone.svg",
+			"description": "अपने Android फ़ोन को अपने पात्रों के औज़ार बनाएँ।",
+			"description_markdown": "fount-app के Android क्लाइंट से जुड़ता है, जिससे पात्र स्क्रीन पढ़ सकें, डिवाइस चला सकें और उस पर कच्चा Java कोड चला सकें।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"android",
+				"फ़ोन",
+				"एजेंट",
+				"औज़ार"
+			]
+		},
+		"is-IS": {
+			"name": "Síma-agent",
+			"avatar": "https://api.iconify.design/line-md/phone.svg",
+			"description": "Breyttu Android-símanum þínum í verkfæri fyrir persónurnar þínar.",
+			"description_markdown": "Tengir Android-biðlara fount-app svo persónur geti lesið skjáinn, stýrt tækinu og keyrt hrátt Java á því.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"android",
+				"sími",
+				"agent",
+				"verkfæri"
+			]
+		},
+		"it-IT": {
+			"name": "Agente del telefono",
+			"avatar": "https://api.iconify.design/line-md/phone.svg",
+			"description": "Trasforma il tuo telefono Android in strumenti per i tuoi personaggi.",
+			"description_markdown": "Collega il client Android di fount-app, così che i personaggi possano leggere lo schermo, controllare il dispositivo ed eseguire codice Java grezzo.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"android",
+				"telefono",
+				"agente",
+				"strumento"
+			]
+		},
+		"ja-JP": {
+			"name": "スマホ Agent",
+			"avatar": "https://api.iconify.design/line-md/phone.svg",
+			"description": "Android スマホをキャラクターの道具に。",
+			"description_markdown": "fount-app の Android クライアントを接続し、キャラクターが画面を読み、端末を操作し、生の Java コードを実行できるようにします。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"android",
+				"スマホ",
 				"エージェント",
 				"ツール"
 			]
@@ -94,7 +157,7 @@
 			"name": "폰 Agent",
 			"avatar": "https://api.iconify.design/line-md/phone.svg",
 			"description": "안드로이드 폰을 캐릭터의 도구로.",
-			"description_markdown": "fount-app 안드로이드 클라이언트를 연결해 캐릭터가 화면을 읽고, 기기를 조작하고, 생 Java 코드를 실행할 수 있게 합니다.",
+			"description_markdown": "fount-app 안드로이드 클라이언트를 연결해 캐릭터가 화면을 읽고, 기기를 조작하고, Java 소스 코드를 직접 실행할 수 있게 합니다.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
@@ -119,29 +182,74 @@
 			]
 		},
 		"nl-NL": {
-			"name": null,
+			"name": "Telefoon-agent",
 			"avatar": "https://api.iconify.design/line-md/phone.svg",
-			"description": null
+			"description": "Verander je Android-telefoon in gereedschap voor je personages.",
+			"description_markdown": "Verbindt de Android-client van fount-app, zodat personages het scherm kunnen lezen, het apparaat kunnen besturen en er ruwe Java-code op kunnen uitvoeren.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"android",
+				"telefoon",
+				"agent",
+				"gereedschap"
+			]
 		},
 		"pt-PT": {
-			"name": null,
+			"name": "Agente de telemóvel",
 			"avatar": "https://api.iconify.design/line-md/phone.svg",
-			"description": null
+			"description": "Transforma o teu telemóvel Android em ferramentas para as tuas personagens.",
+			"description_markdown": "Liga o cliente Android do fount-app para que as personagens possam ler o ecrã, controlar o dispositivo e executar código Java em bruto nele.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"android",
+				"telemóvel",
+				"agente",
+				"ferramenta"
+			]
 		},
 		"ru-RU": {
-			"name": null,
+			"name": "Телефонный агент",
 			"avatar": "https://api.iconify.design/line-md/phone.svg",
-			"description": null
+			"description": "Превратите свой Android-телефон в инструмент для ваших персонажей.",
+			"description_markdown": "Подключает Android-клиент fount-app, чтобы персонажи могли читать экран, управлять устройством и выполнять на нём исходный Java-код.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"android",
+				"телефон",
+				"агент",
+				"инструмент"
+			]
 		},
 		"uk-UA": {
-			"name": null,
+			"name": "Телефонний агент",
 			"avatar": "https://api.iconify.design/line-md/phone.svg",
-			"description": null
+			"description": "Перетворіть свій Android-телефон на інструмент для ваших персонажів.",
+			"description_markdown": "Підключає Android-клієнт fount-app, щоб персонажі могли читати екран, керувати пристроєм і виконувати на ньому вихідний Java-код.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"android",
+				"телефон",
+				"агент",
+				"інструмент"
+			]
 		},
 		"vi-VN": {
-			"name": null,
+			"name": "Agent điện thoại",
 			"avatar": "https://api.iconify.design/line-md/phone.svg",
-			"description": null
+			"description": "Biến điện thoại Android của bạn thành công cụ cho nhân vật của bạn.",
+			"description_markdown": "Kết nối ứng dụng khách Android của fount-app để nhân vật có thể đọc màn hình, điều khiển thiết bị và chạy mã Java thô ngay trên đó.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"android",
+				"điện thoại",
+				"agent",
+				"công cụ"
+			]
 		},
 		"zh-TW": {
 			"name": "手機 Agent",

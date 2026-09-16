@@ -1,6 +1,6 @@
 /**
  * fileContentParts（附件字节不可用 / MIME 参数剥离）与 messagePolicies（convert_config 的
- * ignoreFiles / forbidSystemFiles MIME 正则策略、system → user 降级、正文加前缀）的纯逻辑。
+ * ignoreFiles / forbidSystemFiles / forbidAssistantFiles MIME 正则策略、system / assistant → user 降级、正文加前缀）的纯逻辑。
  * 此文件不得静态 import messageBuilder（会拉入 src/decl 图，pure 套件类型检查会失败）。
  */
 /* global Deno */
@@ -16,6 +16,7 @@ import {
 	resolveFileBuffer,
 } from '../../src/fileContentParts.mjs'
 import {
+	assistantMessageCarriesDeniedFiles,
 	normalizeMimePatterns,
 	prependText,
 	splitDeniedFiles,
@@ -120,6 +121,16 @@ Deno.test('systemMessageCarriesDeniedFiles only fires for system role hits', () 
 	assertFalse(systemMessageCarriesDeniedFiles('assistant', files, ['^image/']))
 	assertFalse(systemMessageCarriesDeniedFiles('system', files, ['^audio/']))
 	assertFalse(systemMessageCarriesDeniedFiles('system', [{}], ['^image/']))
+})
+
+Deno.test('assistantMessageCarriesDeniedFiles only fires for assistant role hits', () => {
+	const files = [{ name: 'pic.png', mime_type: 'image/png' }]
+	assert(assistantMessageCarriesDeniedFiles('assistant', files, ['^image/']))
+	assertFalse(assistantMessageCarriesDeniedFiles('system', files, ['^image/']))
+	assertFalse(assistantMessageCarriesDeniedFiles('user', files, ['^image/']))
+	assertFalse(assistantMessageCarriesDeniedFiles('assistant', files, ['^audio/']))
+	assertFalse(assistantMessageCarriesDeniedFiles('assistant', files, []))
+	assertFalse(assistantMessageCarriesDeniedFiles('assistant', [{}], ['^image/']))
 })
 
 Deno.test('prependText prefixes string and only the first text part', () => {
