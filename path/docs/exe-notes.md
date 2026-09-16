@@ -15,6 +15,10 @@ Rare concerns for `geneexe` / `New-FountExe` / Steam shortcuts. Day-to-day path 
 - `fount init` registers a non-Steam shortcut when Steam is present — skip otherwise. Registration swallows failures so `fount init` still succeeds.
 - `shortcuts.vdf` is read/written in `path/src/steam_vdf.mjs` (no nonsteam); appid is `crc32(Exe+AppName)|0x80000000` so library art matches.
 
-## `run.bat` argument forwarding
+## `run.bat` / `path/fount.bat` argument forwarding
 
-- Windows launchers reach the CLI through `run.bat` / `run.cmd`. Forward args with `call "%~dp0path\fount.bat" %*` — **not** `cmd /c "...fount.bat" %*`. When `%*` contains a quoted (space-containing) argument, `cmd /c` re-parses the whole line and swallows the command name (`'…\fount.bat" eval "1' is not recognized`), so `fount eval "1 + 1"` (and any spaced arg) fails while `fount eval 1+1` still works.
+- Windows launchers reach the CLI through `run.bat` / `run.cmd` → `path/fount.bat`. All forward the caller's `%*`, so three `cmd` traps apply — keep forwards out of blocks and use a direct `"%~dp0path\fount.bat" %*`:
+  - `cmd /c "...fount.bat" %*` — a quoted (space-containing) arg makes `cmd /c` re-parse the line and swallow the command name (`'…\fount.bat" eval "1' is not recognized`).
+  - `call "...fount.bat" %*` — `call` re-expands `%`, so `5 % 3` loses its `%`.
+  - `%*` inside an `if ( … )` block — a `)` in the args closes the block early, so `console.log(1)` breaks.
+- Only the no-arg branch keeps `call ... open` (fixed args) and falls through to the `pause` / `exit /b`. Verified end-to-end: `fount eval "console.log('1+1')"`, `"5 % 3"`, `"true && false"`, `"[1,2,3].map(x => x * 2).join('-')"`.
