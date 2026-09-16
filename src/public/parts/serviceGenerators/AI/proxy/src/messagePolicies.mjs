@@ -32,14 +32,38 @@ export function splitDeniedFiles(files, patterns) {
 }
 
 /**
- * system 消息是否携带命中 `patterns` 的附件（命中则须降级为 user）。
+ * 指定角色的消息是否携带命中 `patterns` 的附件（命中则须降级为 user）。
+ * @param {string} role 消息角色。
+ * @param {string} expectedRole 期望匹配的角色。
+ * @param {object[]} files 附件描述符。
+ * @param {string[]} patterns MIME 正则列表。
+ * @returns {boolean} 是否降级。
+ */
+function roleMessageCarriesDeniedFiles(role, expectedRole, files, patterns) {
+	return role === expectedRole && files.some(file => matchesMimePatterns(patterns, file))
+}
+
+/**
+ * system 消息是否携带命中 `patterns` 的附件。
  * @param {string} role 消息角色。
  * @param {object[]} files 附件描述符。
  * @param {string[]} patterns MIME 正则列表。
  * @returns {boolean} 是否降级。
  */
 export function systemMessageCarriesDeniedFiles(role, files, patterns) {
-	return role === 'system' && files.some(file => matchesMimePatterns(patterns, file))
+	return roleMessageCarriesDeniedFiles(role, 'system', files, patterns)
+}
+
+/**
+ * assistant（角色）消息是否携带命中 `patterns` 的附件。
+ * 部分来源（如 Kimi）不允许 assistant 消息携带附件，命中则降级为 user 并加 `assistant: ` 前缀。
+ * @param {string} role 消息角色。
+ * @param {object[]} files 附件描述符。
+ * @param {string[]} patterns MIME 正则列表。
+ * @returns {boolean} 是否降级。
+ */
+export function assistantMessageCarriesDeniedFiles(role, files, patterns) {
+	return roleMessageCarriesDeniedFiles(role, 'assistant', files, patterns)
 }
 
 /**

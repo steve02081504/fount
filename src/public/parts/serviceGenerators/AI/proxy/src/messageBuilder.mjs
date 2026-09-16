@@ -1,7 +1,7 @@
 import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../../shells/chat/src/prompt_struct/index.mjs'
 
 import { buildFileContentParts } from './fileContentParts.mjs'
-import { normalizeMimePatterns, prependText, splitDeniedFiles, systemMessageCarriesDeniedFiles } from './messagePolicies.mjs'
+import { assistantMessageCarriesDeniedFiles, normalizeMimePatterns, prependText, splitDeniedFiles, systemMessageCarriesDeniedFiles } from './messagePolicies.mjs'
 
 /**
  * 将 prompt_struct 转成 OpenAI 兼容消息数组。
@@ -13,6 +13,7 @@ import { normalizeMimePatterns, prependText, splitDeniedFiles, systemMessageCarr
 export async function buildMessagesFromPromptStruct(prompt_struct, config, configTemplate) {
 	const ignoreFiles = normalizeMimePatterns(config.convert_config?.ignoreFiles ?? configTemplate.convert_config.ignoreFiles)
 	const forbidSystemFiles = normalizeMimePatterns(config.convert_config?.forbidSystemFiles ?? configTemplate.convert_config.forbidSystemFiles)
+	const forbidAssistantFiles = normalizeMimePatterns(config.convert_config?.forbidAssistantFiles ?? configTemplate.convert_config.forbidAssistantFiles)
 
 	let messages = await Promise.all(mergeStructPromptChatLog(prompt_struct).map(async chatLogEntry => {
 		const uid = chatLogEntry.id ||= crypto.randomUUID().slice(0, 8)
@@ -57,6 +58,8 @@ ${chatLogEntry.content}
 
 		if (systemMessageCarriesDeniedFiles(message.role, files, forbidSystemFiles))
 			return { role: 'user', content: prependText(message.content, 'system: ') }
+		if (assistantMessageCarriesDeniedFiles(message.role, files, forbidAssistantFiles))
+			return { role: 'user', content: prependText(message.content, 'assistant: ') }
 
 		return message
 	}))
