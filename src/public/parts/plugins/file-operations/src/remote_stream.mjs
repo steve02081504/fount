@@ -106,12 +106,12 @@ const settled = await Promise.race([
 ])
 clearTimeout(graceTimer)
 if (pendingTermination) terminationError ??= await pendingTermination
-if (!settled && terminationError)
-	throw Object.assign(terminationError, { timedOut: true, elapsedMs: Date.now() - start })
-return finish({
-	result: settled?.result ?? { code: null, signal: 'SIGKILL', stdout: '', stderr: '', stdall: '' },
-	timedOut: true,
-})
+if (!settled)
+	throw Object.assign(
+		terminationError ?? new Error('Remote shell process was not confirmed terminated within the grace period'),
+		{ timedOut: true, elapsedMs: Date.now() - start }
+	)
+return finish({ result: settled.result, timedOut: true })
 `
 }
 
