@@ -1,5 +1,4 @@
 import { console } from '../../../../../../scripts/i18n/bare.mjs'
-import { messageAgentText } from '../../../chat/public/shared/channelContent.mjs'
 import { dispatchBridgeBotStarted, postBridgeGroupEvent } from '../../../chat/src/chat/bridge/groupEvents.mjs'
 import { claimAgentBridgeIdentity, claimOperatorBridgeIdentity } from '../../../chat/src/chat/bridge/identity.mjs'
 import {
@@ -199,11 +198,8 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 				const platformChannel = lookupBridgePlatformChannel(ownerUsername, groupId, channelId)
 				const platformChatId = platformChannel?.platformChatId ?? bridge.platformChatId
 				const threadKey = platformChannel?.platformThreadId
-				const rawText = typeof messageLine.content === 'string'
-					? messageLine.content
-					: messageAgentText(messageLine.content) || ''
-				const plainText = await restoreFountMentionsInText(ownerUsername, rawText)
 				const replyEntry = messageLineToReplyEntry(messageLine, botCharname)
+				const plainText = await restoreFountMentionsInText(ownerUsername, replyEntry.content_for_show)
 				const { cleanMarkdown, stickerIds } = extractStickerIdsFromMarkdown(plainText)
 				const replyParams = replyToPlatformMessageId != null
 					? {

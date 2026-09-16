@@ -145,6 +145,20 @@ Deno.test('wechat virtual bridge: getUpdates → GetReply → sendMessage', asyn
 
 		const groupsAfter = await enumerateJoinedFederatedGroups(username, operatorHash)
 		assert(groupsAfter.length === groupsBefore.length, 'virtual bridge must not create real chat groups')
+
+		const { virtualBridgeGroupId } = await import('../../../chat/src/chat/bridge/session.mjs')
+		const { notifyVirtualBridgeOutbound } = await import('../../../chat/src/chat/bridge/outbound.mjs')
+		const beforeShow = fake.sent.length
+		await notifyVirtualBridgeOutbound(username, virtualBridgeGroupId('wechat', ownerWeChatId), 'default', {
+			content: '前面<gentian-sticker>Secret_Observation</gentian-sticker>后面',
+			content_for_show: '前面后面',
+			extension: { chat: { virtualEventId: `vchar_show_${Date.now().toString(36)}` } },
+		}, CHAR)
+		const showTexts = fake.sent.slice(beforeShow)
+			.flatMap(msg => (msg.item_list || []).map(item => item.text_item?.text || ''))
+			.join('\n')
+		assert(showTexts.includes('前面后面'), `wechat outbound should use content_for_show: ${showTexts}`)
+		assert(!showTexts.includes('gentian-sticker'), 'reply-handler trigger must not leak to platform')
 	}
 	finally {
 		fake.abort()

@@ -295,4 +295,17 @@ Deno.test('discord virtual bridge: MessageCreate → GetReply → channel.send',
 	assert(threaded.length >= 1)
 	assertEquals(threaded[0].reply?.messageReference, 'msg-1')
 	assertEquals(threaded[0].reply?.failIfNotExists, false)
+
+	const beforeShow = fake.sent.length
+	await notifyVirtualBridgeOutbound(username, groupId, channelId, {
+		content: '前面<gentian-sticker>Secret_Observation</gentian-sticker>后面',
+		content_for_show: '前面后面',
+		extension: {
+			chat: { virtualEventId: `vchar_show_${Date.now().toString(36)}` },
+		},
+	}, CHAR)
+	const showSent = fake.sent.slice(beforeShow)
+	assert(showSent.length >= 1, 'display-layer outbound should send text')
+	assert(String(showSent[0].content || '').includes('前面后面'), `outbound should use content_for_show: ${showSent[0].content}`)
+	assert(!String(showSent[0].content || '').includes('gentian-sticker'), 'reply-handler trigger must not leak to platform')
 })

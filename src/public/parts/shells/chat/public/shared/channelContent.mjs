@@ -205,8 +205,8 @@ export function stripInlineImageMarkers(text) {
 }
 
 /**
- * 展示/agent 文本：未知 type（联邦垃圾）返回空串，不抛。
- * @param {object} content wire
+ * 展示/agent 文本：字符串正文原样剥离历史内联标记；未知 type（联邦垃圾）返回空串，不抛。
+ * @param {object | string} content wire 或纯正文
  * @returns {string} agent / 回退正文
  */
 export function messageAgentText(content) {
@@ -216,7 +216,7 @@ export function messageAgentText(content) {
 	if (type === 'sticker') return String(content.emoji || content.stickerName || '')
 	if (type === 'group_invite') return String(content.groupName || content.groupId || '')
 	if (type && type !== 'text') return ''
-	return stripInlineImageMarkers(String(content?.content ?? ''))
+	return stripInlineImageMarkers(typeof content === 'string' ? content : String(content?.content ?? ''))
 }
 
 /**
