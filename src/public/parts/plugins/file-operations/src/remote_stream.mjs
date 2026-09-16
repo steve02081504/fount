@@ -82,16 +82,28 @@ const timedOut = await Promise.race([
 ])
 clearTimeout(timer)
 if (!timedOut) return finish(await settle())
+let terminationError = null
 if (spawned?.pid) {
-	if (process.platform === 'win32') await execFile('taskkill', ['/pid', String(spawned.pid), '/T', '/F']).catch(() => { })
-	else { try { process.kill(-spawned.pid, 'SIGKILL') } catch { try { spawned.kill('SIGKILL') } catch { /* ignore */ } } }
+	if (process.platform === 'win32')
+		await execFile('taskkill', ['/pid', String(spawned.pid), '/T', '/F']).catch(error => { terminationError = error })
+	else {
+		try { process.kill(-spawned.pid, 'SIGKILL') }
+		catch (groupError) {
+			try { spawned.kill('SIGKILL') }
+			catch (killError) { terminationError = new AggregateError([groupError, killError], 'Failed to terminate remote shell process') }
+		}
+	}
 }
+let graceTimer
 const settled = await Promise.race([
 	run.then(result => ({ result }), error => ({ result: error })),
-	new Promise(resolve => setTimeout(() => resolve(null), 5000)),
+	new Promise(resolve => { graceTimer = setTimeout(() => resolve(null), 5000) }),
 ])
+clearTimeout(graceTimer)
+if (!settled && terminationError)
+	throw Object.assign(terminationError, { timedOut: true, elapsedMs: Date.now() - start })
 return finish({
-	result: settled?.result ?? { code: null, signal: 'SIGKILL', stdout: '', stderr: '', stdall: '' },
+	result: settled?.result ?? { code: null, signal: null, stdout: '', stderr: '', stdall: '' },
 	timedOut: true,
 })
 `
