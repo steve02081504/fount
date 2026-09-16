@@ -56,10 +56,14 @@ if (shellName && !shell_exec_map[shellName]) throw new Error('Unsupported shell:
 const start = Date.now()
 let spawned = null
 let timedOut = false
+let pendingTermination = null
 const terminate = async child => {
 	if (!child?.pid) return null
-	if (process.platform === 'win32')
-		return await execFile('taskkill', ['/pid', String(child.pid), '/T', '/F']).then(() => null, error => error)
+	if (process.platform === 'win32') {
+		const result = await execFile('taskkill', ['/pid', String(child.pid), '/T', '/F']).catch(error => ({ error }))
+		if (result.error) return result.error
+		return result.code === 0 ? null : new Error('taskkill failed with exit code ' + result.code)
+	}
 	try { process.kill(-child.pid, 'SIGKILL'); return null }
 	catch (groupError) {
 		try { child.kill('SIGKILL'); return null }
@@ -69,7 +73,7 @@ const terminate = async child => {
 const options = {
 	no_ansi_terminal_sequences: true,
 	...cwd ? { cwd } : {},
-	on_spawn: child => { spawned = child; if (timedOut) terminate(child).catch(() => { }) },
+	on_spawn: child => { spawned = child; if (timedOut) pendingTermination = terminate(child) },
 	on_stdout: data => emit({ execId: ${JSON.stringify(execId)}, stream: 'stdout', data }),
 	on_stderr: data => emit({ execId: ${JSON.stringify(execId)}, stream: 'stderr', data }),
 }
@@ -94,13 +98,14 @@ const beat = await Promise.race([
 clearTimeout(timer)
 if (!beat) return finish(await settle())
 timedOut = true
-const terminationError = await terminate(spawned)
+let terminationError = await terminate(spawned)
 let graceTimer
 const settled = await Promise.race([
 	run.then(result => ({ result }), error => ({ result: error })),
 	new Promise(resolve => { graceTimer = setTimeout(() => resolve(null), 5000) }),
 ])
 clearTimeout(graceTimer)
+if (pendingTermination) terminationError ??= await pendingTermination
 if (!settled && terminationError)
 	throw Object.assign(terminationError, { timedOut: true, elapsedMs: Date.now() - start })
 return finish({
