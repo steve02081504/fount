@@ -11,6 +11,9 @@
 	"unstable": [
 		"npm-lazy-caching"
 	],
+	"compilerOptions": {
+		"strictPropertyInitialization": false
+	},
 	"tasks": {
 		"run": "deno run -A path/fount.mjs run",
 		"init": "deno run -A path/fount.mjs init",

@@ -376,7 +376,7 @@ async function initializeFromURLParams() {
 			try {
 				await newBotConfig(botName)
 				botList = await getBotList()
-				renderBotDropdown() // re-render with new list
+				await renderBotDropdown() // re-render with new list
 				botToLoad = botName
 			} catch (error) {
 				console.error('Failed to create new bot from URL parameter:', error)

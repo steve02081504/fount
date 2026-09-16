@@ -24,7 +24,6 @@ function applyQrLoginResult(username, pollResult) {
 		botSpecificConfig.OwnerWeChatId = pollResult.ilinkUserId
 
 	setBotConfig(username, pollResult.botname, {
-		...existingConfig,
 		token: pollResult.token,
 		apiBaseUrl: normalizedUrl,
 		config: botSpecificConfig,

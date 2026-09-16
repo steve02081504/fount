@@ -21,7 +21,7 @@ const source = await generator.interfaces.serviceGenerator.GetSource({
 	},
 	convert_config: {
 		roleReminding: true,
-		ignoreFiles: true,
+		ignoreFiles: ['.*'],
 		forceRoleAlternation: false,
 		forceUserMessageEnding: false,
 		forceNoSystemMessages: false,

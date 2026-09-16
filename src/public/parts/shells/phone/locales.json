@@ -1,0 +1,101 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Phone Agent",
+			"avatar": "https://api.iconify.design/line-md/phone.svg",
+			"description": "Turn your Android phone into tools for your characters.",
+			"description_markdown": "Connects the fount-app Android client so characters can read the screen, drive the device and run raw Java on it.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"android",
+				"phone",
+				"agent",
+				"tool"
+			]
+		},
+		"zh-CN": {
+			"name": "手机 Agent",
+			"avatar": "https://api.iconify.design/line-md/phone.svg",
+			"description": "把你的安卓手机变成角色的工具。",
+			"description_markdown": "连接 fount-app 安卓客户端，让角色能读屏、操作设备，并在手机上运行原始 Java 代码。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"安卓",
+				"手机",
+				"代理",
+				"工具"
+			]
+		},
+		"zh-TW": {
+			"name": "手機 Agent",
+			"avatar": "https://api.iconify.design/line-md/phone.svg",
+			"description": "把你的安卓手機變成角色的工具。",
+			"description_markdown": "連接 fount-app 安卓客戶端，讓角色能讀屏、操作裝置，並在手機上執行原始 Java 程式碼。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"安卓",
+				"手機",
+				"代理",
+				"工具"
+			]
+		},
+		"ja-JP": {
+			"name": "フォン Agent",
+			"avatar": "https://api.iconify.design/line-md/phone.svg",
+			"description": "Android スマホをキャラクターの道具に。",
+			"description_markdown": "fount-app の Android クライアントを接続し、キャラクターが画面を読み、端末を操作し、生の Java を実行できるようにします。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"android",
+				"フォン",
+				"エージェント",
+				"ツール"
+			]
+		},
+		"ko-KR": {
+			"name": "폰 Agent",
+			"avatar": "https://api.iconify.design/line-md/phone.svg",
+			"description": "안드로이드 폰을 캐릭터의 도구로.",
+			"description_markdown": "fount-app 안드로이드 클라이언트를 연결해 캐릭터가 화면을 읽고, 기기를 조작하고, 생 Java 코드를 실행할 수 있게 합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"android",
+				"폰",
+				"에이전트",
+				"도구"
+			]
+		},
+		"lzh": {
+			"name": "掌中靈樞",
+			"avatar": "https://api.iconify.design/line-md/phone.svg",
+			"description": "化掌中器物為化身之具。",
+			"description_markdown": "連繫 fount-app 之掌中終端，令化身得以觀屏、馭器，並於其中行原始之法。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"掌中",
+				"靈樞",
+				"化身",
+				"器物"
+			]
+		},
+		"emoji": {
+			"name": "📱🤖",
+			"avatar": "https://api.iconify.design/line-md/phone.svg",
+			"description": "📱🪄🤖",
+			"description_markdown": "🔌📱👁️🖐️☕",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"📱",
+				"🤖",
+				"🪄"
+			]
+		}
+	}
+}
