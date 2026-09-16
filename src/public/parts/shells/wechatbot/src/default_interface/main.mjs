@@ -1,5 +1,4 @@
 import { console } from '../../../../../../scripts/i18n/bare.mjs'
-import { messageAgentText } from '../../../chat/public/shared/channelContent.mjs'
 import { dispatchBridgeBotStarted } from '../../../chat/src/chat/bridge/groupEvents.mjs'
 import { claimOperatorBridgeIdentity } from '../../../chat/src/chat/bridge/identity.mjs'
 import {
@@ -223,9 +222,6 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 				const toUserId = String(bridge.platformChatId || lastToUserId || '').trim()
 				if (!toUserId) return {}
 				const contextToken = lastContextToken
-				const rawText = typeof messageLine.content === 'string'
-					? messageLine.content
-					: messageAgentText(messageLine.content) || ''
 				const replyEntry = messageLineToReplyEntry(messageLine, botCharname)
 				const files = (messageLine.files || []).map(file => ({
 					name: file.name,
@@ -251,8 +247,8 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 					chatId: toUserId,
 				})) return {}
 
-				if (rawText.trim())
-					await sendWechatTextChunks(toUserId, contextToken, rawText)
+				if (replyEntry.content_for_show.trim())
+					await sendWechatTextChunks(toUserId, contextToken, replyEntry.content_for_show)
 				if (files.length)
 					await sendWechatFilesToUser(toUserId, contextToken, files)
 				return {}

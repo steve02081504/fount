@@ -1,6 +1,8 @@
 /**
  * bot 壳共用入站套件（虚拟会话，不建真实 chat 群）。
  */
+import { messageAgentText } from '../../../public/shared/channelContent.mjs'
+
 import {
 	appendVirtualBridgeMessage,
 	deleteVirtualBridgeMessage,
@@ -30,22 +32,18 @@ export async function tryFewTimes(func, { times = 3, WhenFailsWaitFor = 2000 } =
 }
 
 /**
+ * `content` 取 agent 层、`content_for_show` 取人类展示层（缺省回退 agent），供 FormatOutboundReply 区分。
  * @param {object} messageLine 虚拟 log / 出站行
  * @param {string} charname 角色名
  * @returns {object} chatLogEntry 形状（FormatOutboundReply 用）
  */
 export function messageLineToReplyEntry(messageLine, charname) {
-	const raw = messageLine?.content
-	const text = typeof raw === 'object' && raw !== null
-		? String(raw.content ?? raw.text ?? '')
-		: typeof raw === 'string' || typeof raw === 'number' || typeof raw === 'boolean'
-			? String(raw)
-			: ''
+	const content = messageAgentText(messageLine?.content)
 	return {
 		name: charname,
 		role: 'char',
-		content: text,
-		content_for_show: text,
+		content,
+		content_for_show: messageLine?.content_for_show ?? content,
 		time_stamp: messageLine?.time_stamp || messageLine?.hlc?.wall || Date.now(),
 		files: (messageLine?.files || []).map(file => ({
 			name: file.name,
