@@ -46,7 +46,7 @@ export function dispatchRemoteStreamOutput(payload) {
  */
 export function remoteShellStreamScript(shell, code, cwd, timeoutMs, execId) {
 	return `\
-const { exec, shell_exec_map } = await import('npm:@steve02081504/exec')
+const { exec, execFile, shell_exec_map } = await import('npm:@steve02081504/exec')
 const shellName = ${JSON.stringify(shell || null)}
 const command = ${JSON.stringify(code)}
 const timeoutMs = ${JSON.stringify(timeoutMs)}
@@ -55,7 +55,6 @@ const emit = payload => { try { callback(payload) } catch { /* ignore */ } }
 if (shellName && !shell_exec_map[shellName]) throw new Error('Unsupported shell: ' + shellName)
 const start = Date.now()
 let spawned = null
-let timedOut = false
 const options = {
 	no_ansi_terminal_sequences: true,
 	...cwd ? { cwd } : {},
@@ -63,20 +62,38 @@ const options = {
 	on_stdout: data => emit({ execId: ${JSON.stringify(execId)}, stream: 'stdout', data }),
 	on_stderr: data => emit({ execId: ${JSON.stringify(execId)}, stream: 'stderr', data }),
 }
+if (process.platform !== 'win32') options.detached = true
 const run = Promise.resolve(shellName ? shell_exec_map[shellName](command, options) : exec(command, options))
 run.catch(() => { })
-if (timeoutMs != null) {
-	const beat = await Promise.race([run.then(() => false, () => false), new Promise(resolve => { setTimeout(() => resolve(true), timeoutMs) })])
-	if (beat) {
-		timedOut = true
-		if (spawned?.pid) {
-			if (process.platform === 'win32') { try { (await import('node:child_process')).execFileSync('taskkill', ['/pid', String(spawned.pid), '/T', '/F']) } catch { /* ignore */ } }
-			else { try { process.kill(-spawned.pid, 'SIGKILL') } catch { try { spawned.kill('SIGKILL') } catch { /* ignore */ } } }
-		}
-	}
+const settle = () => run.then(
+	result => ({ result, timedOut: false }),
+	error => ({ result: error, timedOut: false })
+)
+const finish = outcome => {
+	const elapsedMs = Date.now() - start
+	if (outcome.result instanceof Error) throw Object.assign(outcome.result, { timedOut: outcome.timedOut, elapsedMs })
+	return { ...outcome.result, timedOut: outcome.timedOut, elapsedMs }
 }
-const result = await run
-return { ...result, timedOut, elapsedMs: Date.now() - start }
+if (timeoutMs == null) return finish(await settle())
+let timer
+const timedOut = await Promise.race([
+	run.then(() => false, () => false),
+	new Promise(resolve => { timer = setTimeout(() => resolve(true), timeoutMs) }),
+])
+clearTimeout(timer)
+if (!timedOut) return finish(await settle())
+if (spawned?.pid) {
+	if (process.platform === 'win32') await execFile('taskkill', ['/pid', String(spawned.pid), '/T', '/F']).catch(() => { })
+	else { try { process.kill(-spawned.pid, 'SIGKILL') } catch { try { spawned.kill('SIGKILL') } catch { /* ignore */ } } }
+}
+const settled = await Promise.race([
+	run.then(result => ({ result }), error => ({ result: error })),
+	new Promise(resolve => setTimeout(() => resolve(null), 5000)),
+])
+return finish({
+	result: settled?.result ?? { code: null, signal: 'SIGKILL', stdout: '', stderr: '', stdall: '' },
+	timedOut: true,
+})
 `
 }
 
