@@ -46,7 +46,7 @@ export function dispatchRemoteStreamOutput(payload) {
  */
 export function remoteShellStreamScript(shell, code, cwd, timeoutMs, execId) {
 	return `\
-const { exec, shell_exec_map } = await import('npm:@steve02081504/exec')
+const { exec, execFile, shell_exec_map } = await import('npm:@steve02081504/exec')
 const shellName = ${JSON.stringify(shell || null)}
 const command = ${JSON.stringify(code)}
 const timeoutMs = ${JSON.stringify(timeoutMs)}
@@ -56,27 +56,62 @@ if (shellName && !shell_exec_map[shellName]) throw new Error('Unsupported shell:
 const start = Date.now()
 let spawned = null
 let timedOut = false
+let pendingTermination = null
+const terminate = async child => {
+	if (!child?.pid) return null
+	if (process.platform === 'win32') {
+		const result = await execFile('taskkill', ['/pid', String(child.pid), '/T', '/F']).catch(error => ({ error }))
+		if (result.error) return result.error
+		return result.code === 0 ? null : new Error('taskkill failed with exit code ' + result.code)
+	}
+	try { process.kill(-child.pid, 'SIGKILL'); return null }
+	catch (groupError) {
+		try { child.kill('SIGKILL'); return null }
+		catch (killError) { return new AggregateError([groupError, killError], 'Failed to terminate remote shell process') }
+	}
+}
 const options = {
 	no_ansi_terminal_sequences: true,
 	...cwd ? { cwd } : {},
-	on_spawn: child => { spawned = child },
+	on_spawn: child => { spawned = child; if (timedOut) pendingTermination = terminate(child) },
 	on_stdout: data => emit({ execId: ${JSON.stringify(execId)}, stream: 'stdout', data }),
 	on_stderr: data => emit({ execId: ${JSON.stringify(execId)}, stream: 'stderr', data }),
 }
+if (process.platform !== 'win32') options.detached = true
 const run = Promise.resolve(shellName ? shell_exec_map[shellName](command, options) : exec(command, options))
 run.catch(() => { })
-if (timeoutMs != null) {
-	const beat = await Promise.race([run.then(() => false, () => false), new Promise(resolve => { setTimeout(() => resolve(true), timeoutMs) })])
-	if (beat) {
-		timedOut = true
-		if (spawned?.pid) {
-			if (process.platform === 'win32') { try { (await import('node:child_process')).execFileSync('taskkill', ['/pid', String(spawned.pid), '/T', '/F']) } catch { /* ignore */ } }
-			else { try { process.kill(-spawned.pid, 'SIGKILL') } catch { try { spawned.kill('SIGKILL') } catch { /* ignore */ } } }
-		}
-	}
+const settle = () => run.then(
+	result => ({ result, timedOut: false }),
+	error => ({ result: error, timedOut: false })
+)
+const finish = outcome => {
+	const elapsedMs = Date.now() - start
+	if (outcome.result instanceof Error) throw Object.assign(outcome.result, { timedOut: outcome.timedOut, elapsedMs })
+	return { ...outcome.result, timedOut: outcome.timedOut, elapsedMs }
 }
-const result = await run
-return { ...result, timedOut, elapsedMs: Date.now() - start }
+if (timeoutMs == null) return finish(await settle())
+let timer
+const beat = await Promise.race([
+	run.then(() => false, () => false),
+	new Promise(resolve => { timer = setTimeout(() => resolve(true), timeoutMs) }),
+])
+clearTimeout(timer)
+if (!beat) return finish(await settle())
+timedOut = true
+let terminationError = await terminate(spawned)
+let graceTimer
+const settled = await Promise.race([
+	run.then(result => ({ result }), error => ({ result: error })),
+	new Promise(resolve => { graceTimer = setTimeout(() => resolve(null), 5000) }),
+])
+clearTimeout(graceTimer)
+if (pendingTermination) terminationError ??= await pendingTermination
+if (!settled)
+	throw Object.assign(
+		terminationError ?? new Error('Remote shell process was not confirmed terminated within the grace period'),
+		{ timedOut: true, elapsedMs: Date.now() - start }
+	)
+return finish({ result: settled.result, timedOut: true })
 `
 }
 

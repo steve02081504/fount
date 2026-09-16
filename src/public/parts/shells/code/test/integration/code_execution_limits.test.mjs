@@ -154,6 +154,34 @@ Deno.test('remoteShellStreamScript 在分机侧流式回传并返回结果', asy
 	assert(chunks.some(chunk => chunk.execId === 'exec-test' && chunk.stream === 'stdout' && chunk.data.includes('remote-stream')), '应流式回传 stdout')
 })
 
+Deno.test('remoteShellStreamScript 超时杀掉分机侧进程树并标记 timedOut', async () => {
+	const shell = await pickShell()
+	if (!shell) return
+	const posix = shell === 'bash' || shell === 'sh'
+	const command = posix
+		? `printf before; ${shell} -c 'sleep 2; printf after'`
+		: `Write-Output before; ${shell} -NoProfile -Command 'Start-Sleep -Seconds 2; Write-Output after'`
+	const chunks = []
+	const script = remoteShellStreamScript(shell, command, undefined, 800, 'exec-timeout')
+	const start = Date.now()
+	const evalResult = await async_eval(script, {
+		/**
+		 * 收集回调分片。
+		 * @param {object} payload - 回调负载。
+		 * @returns {number} 数组新长度。
+		 */
+		callback: payload => chunks.push(payload),
+	})
+	const elapsed = Date.now() - start
+	const outcome = evalResult.error ?? evalResult.result
+	assertEquals(outcome?.timedOut, true, '应标记 timedOut')
+	assert(elapsed < 10_000, `应于超时后迅速收敛（实际 ${elapsed}ms）`)
+	await new Promise(resolve => setTimeout(resolve, 2000))
+	const text = chunks.map(chunk => String(chunk.data)).join('')
+	assertStringIncludes(text, 'before')
+	assert(!text.includes('after'), '超时杀进程树后不应再收到后续输出')
+})
+
 Deno.test('remoteJsStreamScript 在分机侧流式回传 console 输出并保留返回值', async () => {
 	const chunks = []
 	const script = remoteJsStreamScript('console.log("remote-js", 1); return 5', 'js-test')
