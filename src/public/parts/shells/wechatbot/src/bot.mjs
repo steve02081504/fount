@@ -40,9 +40,9 @@ async function ensureWechatInterface(char, username, charname) {
  * @param {string} username 用户名。
  * @param {string} charname 角色名称。
  * @param {string} botname bot 实例名。
- * @returns {Promise<void>}
+ * @returns {Promise<{ destroy: () => Promise<void> }>} 机器人句柄，`destroy` 会中止长轮询主循环并等待其收尾。
  */
-async function startBot(config, char, username, charname, botname) {
+export async function startBot(config, char, username, charname, botname) {
 	const abortController = new AbortController()
 	const cdnBaseUrl = config.apiBaseUrl?.trim() || DEFAULT_WECHAT_ILINK_BASE
 	const api = createWechatApi({
@@ -54,7 +54,13 @@ async function startBot(config, char, username, charname, botname) {
 	await ensureWechatInterface(char, username, charname)
 
 	const context = { ...api, signal: abortController.signal, cdnBaseUrl }
-	await char.interfaces.wechat.OnceClientReady(context, config.config, botname)
+	// OnceClientReady 运行的是「直到 abort 才退出」的长轮询主循环：不能 await，
+	// 否则启动 Promise 永不 resolve——botCache 会一直是 pending，关闭时 pauseBot 死锁。
+	const mainLoop = char.interfaces.wechat.OnceClientReady(context, config.config, botname)
+	mainLoop.catch(error => {
+		if (!abortController.signal.aborted)
+			console.error('[WechatBridge] 主循环意外退出:', error)
+	})
 
 	return {
 		/**
@@ -63,6 +69,7 @@ async function startBot(config, char, username, charname, botname) {
 		 */
 		destroy: async () => {
 			abortController.abort()
+			await mainLoop.catch(() => { })
 		},
 	}
 }

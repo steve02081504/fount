@@ -14,3 +14,7 @@ Rare concerns for `geneexe` / `New-FountExe` / Steam shortcuts. Day-to-day path 
 
 - `fount init` registers a non-Steam shortcut when Steam is present — skip otherwise. Registration swallows failures so `fount init` still succeeds.
 - `shortcuts.vdf` is read/written in `path/src/steam_vdf.mjs` (no nonsteam); appid is `crc32(Exe+AppName)|0x80000000` so library art matches.
+
+## `run.bat` argument forwarding
+
+- Windows launchers reach the CLI through `run.bat` / `run.cmd`. Forward args with `call "%~dp0path\fount.bat" %*` — **not** `cmd /c "...fount.bat" %*`. When `%*` contains a quoted (space-containing) argument, `cmd /c` re-parses the whole line and swallows the command name (`'…\fount.bat" eval "1' is not recognized`), so `fount eval "1 + 1"` (and any spaced arg) fails while `fount eval 1+1` still works.

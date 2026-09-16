@@ -9,9 +9,9 @@ exit $?
 :Batch
 if "%1"=="" (
 	set FOUNT_CLICK=1
-	cmd /c "%~dp0/path/fount.bat" open
+	call "%~dp0path\fount.bat" open
 ) else (
-	cmd /c "%~dp0/path/fount.bat" %*
+	call "%~dp0path\fount.bat" %*
 )
 if "%1"=="" if %ERRORLEVEL% NEQ 0 if %ERRORLEVEL% NEQ 130 if %ERRORLEVEL% NEQ 255 pause
 exit /b %ERRORLEVEL%
