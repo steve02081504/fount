@@ -438,6 +438,11 @@
 			"cleanupLeak": "Falha na deteção de resíduos de teste: os seguintes caminhos deveriam ter sido limpos, mas ainda existem:\n${paths}\nLimpe-os e tente novamente."
 		},
 		"path": {
+			"eval": {
+				"usage": "Utilização: fount eval <code> | fount eval -f <file>   (ou passe o código via stdin)",
+				"connectFailed": "Não foi possível ligar a um servidor fount em execução (localhost:${port}).",
+				"disconnected": "A ligação ao servidor fount foi encerrada antes de a avaliação terminar (localhost:${port})."
+			},
 			"protocol": {
 				"description": "URL:protocolo de fount",
 				"registerFailed": "Falha ao registar o manipulador de protocolo `fount://`: ${message}",

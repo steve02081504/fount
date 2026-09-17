@@ -438,6 +438,11 @@
 			"cleanupLeak": "Rilevamento dei residui del test non riuscito: i seguenti percorsi avrebbero dovuto essere puliti, ma esistono ancora:\n${paths}\nTi preghiamo di pulirli e riprovare."
 		},
 		"path": {
+			"eval": {
+				"usage": "Uso: fount eval <code> | fount eval -f <file>   (oppure passa il codice via stdin)",
+				"connectFailed": "Impossibile connettersi a un server fount in esecuzione (localhost:${port}).",
+				"disconnected": "La connessione al server fount si è chiusa prima del completamento della valutazione (localhost:${port})."
+			},
 			"protocol": {
 				"description": "URL: protocollo del fount",
 				"registerFailed": "Impossibile registrare il gestore del protocollo `fount://`: ${message}",

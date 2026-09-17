@@ -438,6 +438,11 @@
 			"cleanupLeak": "🧹🧪🕵️❌：📁🧹⏳🔍：\n${paths}\n🧹➕🔄。"
 		},
 		"path": {
+			"eval": {
+				"usage": "⌨️ fount eval <code> | fount eval -f <file> | 📥 stdin",
+				"connectFailed": "❌ 🔌 ⛲🖥️ (localhost:${port})",
+				"disconnected": "✂️ 🔌 ⛲🖥️ (localhost:${port})"
+			},
 			"protocol": {
 				"description": "🔗⛲📜",
 				"registerFailed": "❌📝 `fount://` 🔗👮: ${message}",

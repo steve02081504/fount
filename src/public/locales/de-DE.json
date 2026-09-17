@@ -438,6 +438,11 @@
 			"cleanupLeak": "Die Erkennung von Testrückständen ist fehlgeschlagen: Die folgenden Pfade hätten bereinigt werden müssen, sind aber weiterhin vorhanden:\n${paths}\nBitte bereinigen Sie diese und versuchen Sie es erneut."
 		},
 		"path": {
+			"eval": {
+				"usage": "Verwendung: fount eval <code> | fount eval -f <file>   (oder Code über stdin übergeben)",
+				"connectFailed": "Verbindung zum laufenden fount-Server nicht möglich (localhost:${port}).",
+				"disconnected": "Die Verbindung zum fount-Server wurde vor Abschluss der Auswertung getrennt (localhost:${port})."
+			},
 			"protocol": {
 				"description": "URL:fount-Protokoll",
 				"registerFailed": "Registrierung des `fount://`-Protokollhandlers fehlgeschlagen: ${message}",

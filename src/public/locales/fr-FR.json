@@ -438,6 +438,11 @@
 			"cleanupLeak": "Échec de la détection des résidus de test : les chemins suivants auraient dû être nettoyés, mais ils existent toujours :\n${paths}\nVeuillez les nettoyer puis réessayer."
 		},
 		"path": {
+			"eval": {
+				"usage": "Utilisation : fount eval <code> | fount eval -f <file>   (ou transmettez le code via stdin)",
+				"connectFailed": "Connexion impossible à un serveur fount en cours d'exécution (localhost:${port}).",
+				"disconnected": "La connexion au serveur fount a été interrompue avant la fin de l'évaluation (localhost:${port})."
+			},
 			"protocol": {
 				"description": "URL : protocole de fount",
 				"registerFailed": "Échec de l'enregistrement du gestionnaire de protocole `fount://` : ${message}",

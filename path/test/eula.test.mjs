@@ -109,6 +109,21 @@ Get-I18n -key 'eula.prompt'
 	assertStringIncludes(powerShellResult.stdout, expectedPrompt)
 })
 
+Deno.test('load.ps1 defers i18n until the first Get-I18n call', async () => {
+	const powerShellResult = await pwsh_exec(`
+$script:FOUNT_SRC = ${JSON.stringify(join(REPO_ROOT, 'path', 'src'))}
+$FOUNT_DIR = ${JSON.stringify(REPO_ROOT)}
+. (Join-Path $script:FOUNT_SRC 'load.ps1')
+if ($script:FountLoaded['i18n']) { Write-Output 'EAGER' }
+$null = Get-I18n -key 'eula.prompt'
+if ($script:FountLoaded['i18n']) { Write-Output 'LAZY_OK' }
+`)
+	assertEquals(powerShellResult.code, 0, powerShellResult.stderr || powerShellResult.stdout)
+	assertStringIncludes(powerShellResult.stdout, 'LAZY_OK')
+	if (powerShellResult.stdout.includes('EAGER'))
+		throw new Error(`i18n was loaded eagerly:\n${powerShellResult.stdout}`)
+})
+
 Deno.test('FOUNT_ACCEPT_EULA matches only exact 1/true/yes', async () => {
 	const powerShellResult = await pwsh_exec(`
 . ${JSON.stringify(eulaPs1Path)}

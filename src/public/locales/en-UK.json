@@ -438,6 +438,11 @@
 			"cleanupLeak": "Test residue detection failed: the following paths should have been cleaned up, but they still exist:\n${paths}\nPlease clean them up and try again."
 		},
 		"path": {
+			"eval": {
+				"usage": "Usage: fount eval <code> | fount eval -f <file>   (or pipe code via stdin)",
+				"connectFailed": "Cannot connect to a running fount server (localhost:${port}).",
+				"disconnected": "The connection to the fount server closed before evaluation completed (localhost:${port})."
+			},
 			"protocol": {
 				"description": "URL:fount protocol",
 				"registerFailed": "Failed to register `fount://` protocol handler: ${message}",

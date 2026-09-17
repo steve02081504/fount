@@ -1,7 +1,10 @@
 import { async_eval } from 'npm:@steve02081504/async-eval'
 import {
 	createExpansionScope,
+	expandSnapshotRef,
 	serializeArgSnapshot,
+	VirtualConsole,
+	WireLogEntry,
 } from 'npm:@steve02081504/virtual-console/node'
 import { handleClientWireMessage } from 'npm:@steve02081504/virtual-console/wire/server'
 
@@ -17,22 +20,69 @@ import {
 const WIRE_MAX_DEPTH = 5
 const COMPLETION_MAX_ITEMS = 50
 
+/** 文本模式渲染的最大快照深度（与旧 CLI 客户端 `renderString({ maxDepth: 8 })` 对齐）。 */
+const TEXT_RENDER_MAX_DEPTH = 8
+
 /**
- * 将 `async_eval` 结果转为可 JSON 传输的 wire 载荷（与 virtual-console log wire 同形）。
- * @param {{ outputEntries: { toJSON: () => object }[]; result?: unknown; error?: unknown }} evalResult - 求值结果。
- * @param {{ allocRef: (target: object) => string } | null} [expansionScope] - 惰性展开作用域。
- * @returns {object} 含 `outputEntries`、成功时必有 `result` 快照、失败时 `error` 快照的对象。
+ * 本地展开被截断的快照（服务端文本渲染用，无需经由 WebSocket 往返）。
+ * @param {string} ref - 展开引用。
+ * @param {number} [depth] - 期望深度。
+ * @returns {Promise<unknown>} 展开后的快照。
  */
-export function serializeEvalWirePayload(evalResult, expansionScope = null) {
+async function localExpandSnapshot(ref, depth) {
+	const result = expandSnapshotRef(ref, depth)
+	if (!result.ok) throw new Error(result.error)
+	return result.snapshot
+}
+
+/**
+ * 将一条 wire 载荷渲染为终端文本（ANSI 或纯文本）。
+ * 原样返回、不裁剪不补换行：`console.log` 自带结尾换行，`stdout.write` 没有就保持没有。
+ * @param {object} raw - wire 载荷（`LogEntry#toJSON()` 同形）。
+ * @param {{ ansi?: boolean, maxDepth?: number }} [options] - 渲染选项。
+ * @returns {Promise<string>} 渲染文本（逐字）
+ */
+async function renderWireEntryText(raw, { ansi = false, maxDepth = TEXT_RENDER_MAX_DEPTH } = {}) {
+	const entry = new WireLogEntry(raw, {
+		requestExpand: localExpandSnapshot,
+		supportsAnsi: ansi,
+	})
+	return ansi
+		? entry.renderString({ indent: '  ', maxDepth })
+		: entry.renderPlain({ indent: '  ', maxDepth })
+}
+
+/**
+ * 将求值完成值/错误渲染为文本行（文本模式客户端用）。
+ * @param {{ result?: unknown; error?: unknown }} evalResult - 求值结果。
+ * @param {{ ansi?: boolean, expansionScope?: object | null }} [options] - 渲染选项。
+ * @returns {Promise<string>} 渲染后的文本。
+ */
+async function renderEvalOutcomeText(evalResult, { ansi = false, expansionScope = null } = {}) {
+	const isError = evalResult.error !== undefined
+	const snapshot = serializeArgSnapshot(isError ? evalResult.error : evalResult.result, {
+		maxDepth: TEXT_RENDER_MAX_DEPTH,
+		expansionScope,
+	})
+	return renderWireEntryText({
+		method: isError ? 'error' : 'result',
+		level: isError ? 'error' : 'log',
+		timestamp: Date.now(),
+		segments: [{ kind: 'value', snapshot }],
+	}, { ansi, maxDepth: TEXT_RENDER_MAX_DEPTH })
+}
+
+/**
+ * 将求值完成值/错误序列化为 wire 快照（结构化客户端用；已流式的输出条目不再重复）。
+ * @param {{ result?: unknown; error?: unknown }} evalResult - 求值结果。
+ * @param {{ allocRef: (target: object) => string } | null} [expansionScope] - 惰性展开作用域。
+ * @returns {{ result?: unknown } | { error?: unknown }} 完成载荷。
+ */
+export function serializeEvalOutcome(evalResult, expansionScope = null) {
 	const snapOpts = { maxDepth: WIRE_MAX_DEPTH, expansionScope }
-	const payload = {
-		outputEntries: evalResult.outputEntries.map(entry => entry.toJSON()),
-	}
 	if (evalResult.error !== undefined)
-		payload.error = serializeArgSnapshot(evalResult.error, snapOpts)
-	else
-		payload.result = serializeArgSnapshot(evalResult.result, snapOpts)
-	return payload
+		return { error: serializeArgSnapshot(evalResult.error, snapOpts) }
+	return { result: serializeArgSnapshot(evalResult.result, snapOpts) }
 }
 
 /**
@@ -166,25 +216,55 @@ export function evalServiceWebSocketHandler(ws) {
 		if (type === 'eval_request') {
 			const { id } = message
 			const code = String(message.code ?? '')
+			const textMode = message.text === true
+			const ansi = message.ansi === true
 			void (async () => {
+				// 每条 console 条目即时推送：结构化客户端自行渲染，文本模式由服务端渲染好文本。
+				const evalConsole = new VirtualConsole({ realConsoleOutput: true })
+				let textRenderQueue = Promise.resolve()
+				/**
+				 * @param {import('npm:@steve02081504/virtual-console').LogEntry} entry - 新日志条目。
+				 * @returns {void}
+				 */
+				const onEntry = entry => {
+					heldEntries.push(entry)
+					const raw = entry.toJSON()
+					if (!textMode) {
+						sendJson({ type: 'eval_output', id, entry: raw })
+						return
+					}
+					textRenderQueue = textRenderQueue
+						.then(async () => sendJson({ type: 'eval_output', id, text: await renderWireEntryText(raw, { ansi }) }))
+						.catch(() => { })
+				}
+				evalConsole.addLogEntryListener(onEntry)
 				try {
-					const evalResult = await async_eval(code, {
-						config
-					})
-					for (const entry of evalResult.outputEntries)
-						heldEntries.push(entry)
-					sendJson({
-						type: 'eval_result',
-						id,
-						...serializeEvalWirePayload(evalResult, expansionScope),
-					})
+					const evalResult = await async_eval(code, { config, console: evalConsole })
+					await textRenderQueue
+					if (textMode)
+						sendJson({
+							type: 'eval_result',
+							id,
+							error: evalResult.error !== undefined,
+							text: await renderEvalOutcomeText(evalResult, { ansi, expansionScope }),
+						})
+					else
+						sendJson({ type: 'eval_result', id, ...serializeEvalOutcome(evalResult, expansionScope) })
 				} catch (err) {
-					sendJson({
-						type: 'eval_result',
-						id,
-						error: serializeArgSnapshot(err, { maxDepth: WIRE_MAX_DEPTH, expansionScope }),
-						outputEntries: [],
-					})
+					await textRenderQueue
+					if (textMode)
+						sendJson({
+							type: 'eval_result',
+							id,
+							error: true,
+							text: await renderEvalOutcomeText({ error: err }, { ansi, expansionScope }),
+						})
+					else
+						sendJson({
+							type: 'eval_result',
+							id,
+							error: serializeArgSnapshot(err, { maxDepth: WIRE_MAX_DEPTH, expansionScope }),
+						})
 				}
 			})()
 			return

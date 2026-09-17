@@ -438,6 +438,11 @@
 			"cleanupLeak": "测试残留检测失败：以下路径应被清理但仍存在：\n${paths}\n请清理后重试。"
 		},
 		"path": {
+			"eval": {
+				"usage": "用法：fount eval <code> | fount eval -f <file>（或通过 stdin 管道传入代码）",
+				"connectFailed": "无法连接到运行中的 fount 服务器（localhost:${port}）。",
+				"disconnected": "求值完成前与 fount 服务器的连接已断开（localhost:${port}）。"
+			},
 			"protocol": {
 				"description": "URL:fount 协议",
 				"registerFailed": "注册 `fount://` 协议处理器失败：${message}",

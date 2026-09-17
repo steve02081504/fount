@@ -28,6 +28,8 @@ export function initRepl({ replUi, onAppendEntry, onEvalExpandRef }) {
 	let evalWire = null
 	/** @type {Map<string, { resolve: (v: object) => void, reject: (e: Error) => void }>} */
 	const pending = new Map()
+	/** 流式输出条目按到达顺序串行追加，避免异步 onAppendEntry 乱序。 */
+	let evalOutputQueue = Promise.resolve()
 	let nextId = 1
 	let historyIndex = -1
 	let historyDraft = ''
@@ -105,6 +107,7 @@ export function initRepl({ replUi, onAppendEntry, onEvalExpandRef }) {
 		const ws = createEvalWs()
 		evalWire = attachLogWire(ws, {
 			extensionHandlers: {
+				eval_output: handleEvalOutput,
 				eval_result: resolveWireReply,
 				completion_result: resolveWireReply,
 			},
@@ -161,15 +164,25 @@ export function initRepl({ replUi, onAppendEntry, onEvalExpandRef }) {
 	}
 
 	/**
-	 * 将求值载荷追加到主日志区。
+	 * 流式追加一条 eval 输出条目（按到达顺序串行）。
+	 * @param {object} raw - `eval_output` 帧。
+	 * @returns {void}
+	 */
+	function handleEvalOutput(raw) {
+		const entry = raw?.entry
+		if (!entry) return
+		evalOutputQueue = evalOutputQueue
+			.then(() => onAppendEntry?.(tagEvalEntry(entry)))
+			.catch(() => { })
+	}
+
+	/**
+	 * 将求值完成/错误追加到主日志区（输出条目已在流式中追加）。
 	 * @param {object} payload - eval_result 载荷。
 	 * @returns {Promise<void>}
 	 */
 	async function appendEvalPayload(payload) {
-		if (Array.isArray(payload.outputEntries))
-			for (const entry of payload.outputEntries)
-				await onAppendEntry?.(tagEvalEntry(entry))
-
+		await evalOutputQueue
 		if (payload.error !== undefined)
 			await onAppendEntry?.(tagEvalEntry({
 				method: 'error',

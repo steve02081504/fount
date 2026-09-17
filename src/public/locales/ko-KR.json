@@ -438,6 +438,11 @@
 			"cleanupLeak": "테스트 잔여물 감지에 실패했습니다: 다음 경로는 정리되었어야 하지만 여전히 존재합니다.\n${paths}\n정리한 후 다시 시도해 주세요."
 		},
 		"path": {
+			"eval": {
+				"usage": "사용법: fount eval <code> | fount eval -f <file>   (또는 stdin으로 코드를 전달)",
+				"connectFailed": "실행 중인 fount 서버에 연결할 수 없습니다 (localhost:${port}).",
+				"disconnected": "평가가 끝나기 전에 fount 서버와의 연결이 끊어졌습니다 (localhost:${port})."
+			},
 			"protocol": {
 				"description": "URL: fount 프로토콜",
 				"registerFailed": "`fount://` 프로토콜 핸들러 등록 실패: ${message}",

@@ -438,6 +438,11 @@
 			"cleanupLeak": "परीक्षण के अवशेषों का पता लगाना विफल रहा: निम्नलिखित पथ साफ़ किए जाने चाहिए थे, लेकिन अभी भी मौजूद हैं:\n${paths}\nकृपया उन्हें साफ़ करें और पुनः प्रयास करें।"
 		},
 		"path": {
+			"eval": {
+				"usage": "उपयोग: fount eval <code> | fount eval -f <file>   (या stdin से कोड पाइप करें)",
+				"connectFailed": "चल रहे fount सर्वर से कनेक्ट नहीं हो सका (localhost:${port})।",
+				"disconnected": "मूल्यांकन पूरा होने से पहले fount सर्वर का कनेक्शन बंद हो गया (localhost:${port})।"
+			},
 			"protocol": {
 				"description": "यूआरएल:फाउंड प्रोटोकॉल",
 				"registerFailed": "`fount://` प्रोटोकॉल हैंडलर पंजीकृत करने में विफल: ${message}",

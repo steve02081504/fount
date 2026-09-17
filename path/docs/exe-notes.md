@@ -4,8 +4,8 @@ Rare concerns for `geneexe` / `New-FountExe` / Steam shortcuts. Day-to-day path 
 
 ## `fount.exe` compile
 
-- Native children of the compiled EXE lose console stdout ([ps12exe#59](https://github.com/steve02081504/ps12exe/issues/59)) — `fount.exe logo` exits with no TUI; do not work around in the runner.
-- `New-FountExe` keeps try/catch glued to `ps12exe`: any throw is reported ([ps12exe#58](https://github.com/steve02081504/ps12exe/issues/58)) and **not** rethrown.
+- Native child TTY was broken by the old ps12exe host ([#59](https://github.com/steve02081504/ps12exe/issues/59), fixed): it wrapped the main function in `Out-String -Stream`, so Deno/Node children saw `isTTY=false` and `fount.exe logo` no-oped. Regression check after `fount geneexe`: `fount.exe logo` must hold the TUI in a real console. Do not add a `Start-Process -NoNewWindow` workaround.
+- `New-FountExe` keeps its try/catch glued to the `ps12exe` call as a fallback: if ps12exe ever throws again, fount reports it via `Send-Ps12exeThrowIssue` and does **not** rethrow, so the optional compile cannot break `init` / `geneexe`. ps12exe now reports failure via `$LastExitCode` only and never throws ([#58](https://github.com/steve02081504/ps12exe/issues/58), fixed); `geneexe` still reads `$Error` / `$LastExitCode` back through `index.ps1`. Do not move `Send-Ps12exeThrowIssue` away from the call.
 - Before compile, `Clear-FountExeOutput` deletes the output path if present, or renames it to `.old` when delete fails (e.g. self-overwrite while `fount.exe` is running).
 - `geneexe` fails via `index.ps1` (`$Error.Count` / `$LastExitCode`). If `favicon.ico` is missing, `geneexe` calls `run shutdown` so init compiles the icon. Call the `run` function, not `fount shutdown`, so bootstrap cannot recurse into Steam registration.
 - `$null` overrides a defaulted parameter (does not mean "use default") — `geneexe` only calls `New-FountExe` with a path when one was given.

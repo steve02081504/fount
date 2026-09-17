@@ -438,6 +438,11 @@
 			"cleanupLeak": "Uppgötvun prófunarleifa mistókst: Eftirfarandi slóðir hefðu átt að vera hreinsaðar, en þær eru enn til:\n${paths}\nVinsamlegast hreinsaðu þær og reyndu aftur."
 		},
 		"path": {
+			"eval": {
+				"usage": "Notkun: fount eval <code> | fount eval -f <file>   (eða sendu kóða í gegnum stdin)",
+				"connectFailed": "Tókst ekki að tengjast keyrandi fount-þjóni (localhost:${port}).",
+				"disconnected": "Tengingin við fount-þjóninn rofnaði áður en mati lauk (localhost:${port})."
+			},
 			"protocol": {
 				"description": "URL:fount samskiptareglur",
 				"registerFailed": "Mistókst að skrá `fount://` samskiptareglur: ${message}",

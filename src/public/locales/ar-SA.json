@@ -438,6 +438,11 @@
 			"cleanupLeak": "فشل الكشف عن بقايا الاختبار: يجب تنظيف المسارات التالية، لكنها ما زالت موجودة:\n${paths}\nيرجى تنظيفها ثم إعادة المحاولة."
 		},
 		"path": {
+			"eval": {
+				"usage": "الاستخدام: fount eval <code> | fount eval -f <file>   (أو مرِّر الشيفرة عبر stdin)",
+				"connectFailed": "تعذّر الاتصال بخادم fount قيد التشغيل (localhost:${port}).",
+				"disconnected": "أُغلق الاتصال بخادم fount قبل اكتمال التقييم (localhost:${port})."
+			},
 			"protocol": {
 				"description": "عنوان URL:البروتوكول الموجود",
 				"registerFailed": "فشل تسجيل معالج البروتوكول `fount://`: ${message}",

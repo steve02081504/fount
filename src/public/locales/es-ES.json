@@ -438,6 +438,11 @@
 			"cleanupLeak": "Error al detectar residuos de prueba: las siguientes rutas deberían haberse limpiado, pero siguen existiendo:\n${paths}\nPor favor, límpialas y vuelve a intentarlo."
 		},
 		"path": {
+			"eval": {
+				"usage": "Uso: fount eval <code> | fount eval -f <file>   (o pasa el código por stdin)",
+				"connectFailed": "No se puede conectar a un servidor fount en ejecución (localhost:${port}).",
+				"disconnected": "La conexión con el servidor fount se cerró antes de completarse la evaluación (localhost:${port})."
+			},
 			"protocol": {
 				"description": "URL: protocolo de fount",
 				"registerFailed": "No se pudo registrar el controlador de protocolo `fount://`: ${message}",

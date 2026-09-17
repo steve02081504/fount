@@ -438,6 +438,11 @@
 			"cleanupLeak": "テスト残留物の検出に失敗しました: 次のパスはクリーンアップされるはずでしたが、まだ存在しています:\n${paths}\nクリーンアップして再試行してください。"
 		},
 		"path": {
+			"eval": {
+				"usage": "使い方: fount eval <code> | fount eval -f <file>（または stdin でコードを渡す）",
+				"connectFailed": "実行中の fount サーバーに接続できません（localhost:${port}）。",
+				"disconnected": "評価が完了する前に fount サーバーとの接続が切断されました（localhost:${port}）。"
+			},
 			"protocol": {
 				"description": "URL: fount プロトコル",
 				"registerFailed": "`fount://` プロトコル ハンドラーの登録に失敗しました: ${message}",
