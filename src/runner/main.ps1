@@ -372,7 +372,13 @@ try {
 		Import-FountLocale $Script:fountDir
 	}
 
-	try { Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser -Force -ErrorAction Ignore }
+	# 直接读注册表判断当前用户执行策略，避免为一次“本已满足”的检查加载 ExecutionPolicy 模块（~0.3s）。
+	try {
+		$fountCurrentPolicy = (Get-ItemProperty -Path 'HKCU:\Software\Microsoft\PowerShell\1\ShellIds\Microsoft.PowerShell' -Name ExecutionPolicy -ErrorAction Ignore).ExecutionPolicy
+		if ($fountCurrentPolicy -ne 'Unrestricted') {
+			Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser -Force -ErrorAction Ignore
+		}
+	}
 	catch { <# ignore #> }
 	#_if PSEXE
 		#_!! if (Test-Path "${PSCommandPath}.old") {

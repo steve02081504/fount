@@ -36,14 +36,16 @@ function script:Pop-NativeCommandErrors([int]$SinceCount) {
 $script:FountCallerErrorActionPreference = $ErrorActionPreference
 $ErrorActionPreference = 'Continue'
 try {
-	require env i18n eula terminal temp_guard
+	require env terminal temp_guard
 
 	check_temp_guard $args[0]
 
 	$ErrorCount = $Error.Count
 
-	require passthrough
-	handle_unix_passthrough @args
+	if (-not $IsWindows) {
+		require passthrough
+		handle_unix_passthrough @args
+	}
 
 	if ($env:FOUNT_CLICK) {
 		Remove-Item Env:\FOUNT_CLICK -Force -ErrorAction Ignore
@@ -56,6 +58,7 @@ try {
 
 	$cmd = $args[0]
 	if (-not (Test-Path -Path "$FOUNT_DIR/data/config.json") -and $cmd -ne 'remove') {
+		require eula
 		Ensure-FountConfig
 		Pop-NativeCommandErrors $ErrorCount
 		if ($ErrorCount -ne $Error.Count) { exit 1 }
@@ -78,6 +81,6 @@ try {
 	if ($ErrorCount -ne $Error.Count) { exit 1 }
 	exit $LastExitCode
 } finally {
-	Stop-FountStatusServer
+	if ($script:FountLoaded['eula']) { Stop-FountStatusServer }
 	$ErrorActionPreference = $script:FountCallerErrorActionPreference
 }

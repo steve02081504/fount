@@ -88,6 +88,8 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	let evalConn = null
 	/** @type {Map<string, { resolve: (v: object) => void, reject: (e: Error) => void }>} */
 	const pendingEvalRequests = new Map()
+	/** 流式输出按到达顺序串行渲染写入，避免异步渲染乱序。 */
+	let evalOutputQueue = Promise.resolve()
 	let nextEvalRequestId = 1
 	let completionActive = false
 	/** @type {string[]} */
@@ -218,6 +220,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		return new Promise((resolve, reject) => {
 			evalConn = connectLogWire(EVAL_WS_URL, {
 				extensionHandlers: {
+					eval_output: handleEvalOutput,
 					eval_result: resolveEvalWireReply,
 					completion_result: resolveEvalWireReply,
 				},
@@ -688,6 +691,30 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	// #region 求值
 
 	/**
+	 * 流式渲染一条 eval 输出条目并写入日志区（按到达顺序串行）。
+	 * @param {object} frame - `eval_output` 帧；条目在其 `entry` 字段。
+	 * @returns {void}
+	 */
+	function handleEvalOutput(frame) {
+		const rawEntry = frame?.entry
+		if (!rawEntry) return
+		evalOutputQueue = evalOutputQueue.then(async () => {
+			const conn = await ensureEvalWire()
+			const entry = new WireLogEntry(rawEntry, {
+				/**
+				 * @param {string} ref - 展开引用 ID。
+				 * @param {number} [maxDepth] - 最大深度。
+				 * @returns {Promise<unknown>} 展开后的快照。
+				 */
+				requestExpand: (ref, maxDepth) => conn.requestExpand(ref, maxDepth),
+				supportsAnsi: true,
+			})
+			// 逐字写入：`stdout.write` 不带换行就保持不带。
+			writeLog(await entry.renderString({ indent: '  ', maxDepth: 8 }))
+		}).catch(() => { })
+	}
+
+	/**
 	 * 渲染 wire 求值载荷为 ANSI 文本（支持惰性展开）。
 	 * @param {object} payload - `eval_result` 响应体。
 	 * @returns {Promise<string>} ANSI 渲染后的求值输出。
@@ -753,6 +780,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		writeLog(`${THEME.accent}❯${ANSI_RESET} ${highlightInputLines(code, highlightJs).replace(/\n/g, '\n  ')}\n`)
 		try {
 			const payload = await sendEvalWireRequest({ type: 'eval_request', code })
+			await evalOutputQueue
 			writeLog(await renderEvalPayload(payload))
 		} catch (err) {
 			writeLog(`${THEME.error}[eval] ${err?.message ?? err}${ANSI_RESET}\n`)

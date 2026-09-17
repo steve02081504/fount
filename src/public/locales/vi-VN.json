@@ -438,6 +438,11 @@
 			"cleanupLeak": "Không phát hiện được dư lượng thử nghiệm: các đường dẫn sau lẽ ra phải được làm sạch nhưng vẫn còn tồn tại:\n${paths}\nHãy dọn dẹp chúng và thử lại."
 		},
 		"path": {
+			"eval": {
+				"usage": "Cách dùng: fount eval <code> | fount eval -f <file>   (hoặc truyền mã qua stdin)",
+				"connectFailed": "Không thể kết nối tới máy chủ fount đang chạy (localhost:${port}).",
+				"disconnected": "Kết nối tới máy chủ fount đã đóng trước khi quá trình đánh giá hoàn tất (localhost:${port})."
+			},
 			"protocol": {
 				"description": "URL: giao thức fount",
 				"registerFailed": "Không thể đăng ký trình xử lý giao thức `fount://`: ${message}",

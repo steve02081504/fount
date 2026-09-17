@@ -438,6 +438,11 @@
 			"cleanupLeak": "Detectie van testresiduen is mislukt: de volgende paden hadden moeten worden opgeschoond, maar bestaan nog steeds:\n${paths}\nMaak ze schoon en probeer het opnieuw."
 		},
 		"path": {
+			"eval": {
+				"usage": "Gebruik: fount eval <code> | fount eval -f <file>   (of geef code door via stdin)",
+				"connectFailed": "Kan geen verbinding maken met een draaiende fount-server (localhost:${port}).",
+				"disconnected": "De verbinding met de fount-server is verbroken voordat de evaluatie was voltooid (localhost:${port})."
+			},
 			"protocol": {
 				"description": "URL:fount protocol",
 				"registerFailed": "Kan `fount://` protocolhandler niet registreren: ${message}",

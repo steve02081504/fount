@@ -438,6 +438,11 @@
 			"cleanupLeak": "測試殘留之察未成：下列路徑宜淨而未去：\n${paths}\n請淨之，再試可也。"
 		},
 		"path": {
+			"eval": {
+				"usage": "用法：fount eval <code>｜fount eval -f <file>（或以 stdin 管輸入程式）",
+				"connectFailed": "未能連於運行中之 fount 伺服器（localhost:${port}）。",
+				"disconnected": "評析未竟，與 fount 伺服器之連已斷（localhost:${port}）。"
+			},
 			"protocol": {
 				"description": "URL:fount 協議",
 				"registerFailed": "失之交臂，難啟 fount 規儀：${message}",

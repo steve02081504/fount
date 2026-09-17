@@ -16,6 +16,15 @@ function script:require {
 	}
 }
 
+# i18n 懒加载：任何模块首次调用 `Get-I18n` 时才 source i18n.ps1（随后真实定义替换本代理）。
+# 运行器（fount.exe）已经 source 过 i18n 时，父作用域已有 Get-I18n，则不再安装代理。
+if (-not (Get-Command Get-I18n -CommandType Function -ErrorAction Ignore)) {
+	function script:Get-I18n($key, [hashtable]$params = @{}) {
+		require i18n
+		Get-I18n -key $key -params $params
+	}
+}
+
 # 已安装的常用路径只需这些
 function script:require_base {
 	require env win/refresh_path deno fs run first_install

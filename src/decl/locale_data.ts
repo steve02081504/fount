@@ -415,6 +415,11 @@ export type LocaleData = {
 			cleanupLeak: string
 		}
 		path: {
+			eval: {
+				usage: string
+				connectFailed: string
+				disconnected: string
+			}
 			protocol: {
 				description: string
 				registerFailed: string
@@ -7044,6 +7049,8 @@ export type LocaleKeyParams = {
 	'fountConsole.path.deno.managedUpgradeFailed': { manager: string | number; package: string | number }
 	'fountConsole.path.deno.patchUnsupportedArch': { arch: string | number }
 	'fountConsole.path.deno.pinNotHonored': { manager: string | number; spec: string | number }
+	'fountConsole.path.eval.connectFailed': { port: string | number }
+	'fountConsole.path.eval.disconnected': { port: string | number }
 	'fountConsole.path.git.backupSavedTo': { path: string | number }
 	'fountConsole.path.git.noUpstreamBranch': { branch: string | number; remote: string | number }
 	'fountConsole.path.git.remoteRefUnavailable': { ref: string | number }

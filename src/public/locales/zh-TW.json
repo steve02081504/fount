@@ -437,6 +437,11 @@
 			"cleanupLeak": "測試殘留物偵測失敗：以下路徑本應清理卻仍存在：\n${paths}\n請清理後再試。"
 		},
 		"path": {
+			"eval": {
+				"usage": "用法：fount eval <code> | fount eval -f <file>（或透過 stdin 管道傳入程式碼）",
+				"connectFailed": "無法連線到執行中的 fount 伺服器（localhost:${port}）。",
+				"disconnected": "求值完成前與 fount 伺服器的連線已中斷（localhost:${port}）。"
+			},
 			"protocol": {
 				"description": "URL:fount 協定",
 				"registerFailed": "註冊 `fount://` 協定處理器失敗：${message}",
