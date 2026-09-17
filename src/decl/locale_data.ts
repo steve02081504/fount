@@ -2456,6 +2456,8 @@ export type LocaleData = {
 					exportJson: string
 					exportOk: string
 					exportFailed: string
+					unsetDefault: string
+					unsetDefaultOk: string
 				}
 				name: string
 				unnamed: string
@@ -2977,6 +2979,11 @@ export type LocaleData = {
 			}
 			unreadBadge: {
 				'aria-label': string
+			}
+			noChannel: {
+				title: string
+				description: string
+				createAction: string
 			}
 		}
 		sidebar: {
