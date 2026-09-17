@@ -23,7 +23,7 @@ export async function getGroupChatConfig(groupId) {
  * @param {string} name 群组名称
  * @param {string} [description] 描述
  * @param {{ joinPolicy?: string }} [options] 建群选项
- * @returns {Promise<{ groupId: string, defaultChannelId: string }>} 新群 ID 与默认频道
+ * @returns {Promise<{ groupId: string, defaultChannelId: string | null }>} 新群 ID 与默认频道
  */
 export async function createGroup(name, description, options = {}) {
 	const data = await groupFetch('', {
@@ -34,7 +34,7 @@ export async function createGroup(name, description, options = {}) {
 			joinPolicy: options.joinPolicy,
 		},
 	})
-	return { groupId: data.groupId, defaultChannelId: data.defaultChannelId || 'default' }
+	return { groupId: data.groupId, defaultChannelId: data.defaultChannelId ?? null }
 }
 
 /**
@@ -269,13 +269,15 @@ export async function setGroupPersona(groupId, personaname) {
  * 设置频道绑定的 world part。
  * @param {string} groupId 群 ID
  * @param {string|null} worldname world 名；空串/`null` 清除
- * @param {string} [channelId] 频道 ID
+ * @param {string | null} [channelId] 频道 ID；缺省时后端回退默认/首个可打开频道
  * @returns {Promise<any>} 响应
  */
-export async function setGroupWorld(groupId, worldname, channelId = 'default') {
+export async function setGroupWorld(groupId, worldname, channelId) {
+	const json = { worldname }
+	if (channelId) json.channelId = channelId
 	return groupFetch(groupPath(groupId, 'world'), {
 		method: 'PUT',
-		json: { worldname, channelId },
+		json,
 	})
 }
 
@@ -373,11 +375,12 @@ export async function getStreamingChannelAuth(groupId, channelId) {
  * 查询当前观众在群/频道上的权限位。
  * @param {string} groupId 群 ID
  * @param {string} pubKeyHash 观众成员公钥哈希
- * @param {string} channelId 频道 ID
+ * @param {string | null} [channelId] 频道 ID；缺省时后端回退治理频道
  * @returns {Promise<Record<string, boolean>>} 权限表
  */
 export async function getViewerPermissions(groupId, pubKeyHash, channelId) {
-	const params = new URLSearchParams({ pubKeyHash, channelId })
+	const params = new URLSearchParams({ pubKeyHash })
+	if (channelId) params.set('channelId', channelId)
 	return groupFetch(`${groupPath(groupId, 'permissions')}?${params}`, { method: 'GET' })
 }
 

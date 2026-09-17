@@ -29,7 +29,7 @@ import { validateDmIntroLinkProof } from './linkValidate.mjs'
  * 按 `group_meta_update` 中的 `dmSessionTag` 查找已有 ECDH DM 群。
  * @param {string} username 用户
  * @param {string} dmSessionTag 会话标签
- * @returns {Promise<{ groupId: string, defaultChannelId: string } | null>} 已有群或 null
+ * @returns {Promise<{ groupId: string, defaultChannelId: string | null } | null>} 已有群或 null
  */
 export async function findDmGroupBySessionTag(username, dmSessionTag) {
 	if (!dmSessionTag) return null
@@ -39,7 +39,7 @@ export async function findDmGroupBySessionTag(username, dmSessionTag) {
 		if (meta.dmKind === 'ecdh' && meta.dmSessionTag === dmSessionTag)
 			return {
 				groupId,
-				defaultChannelId: state.groupSettings?.defaultChannelId || 'default',
+				defaultChannelId: state.groupSettings?.defaultChannelId ?? null,
 			}
 	}
 
@@ -52,7 +52,7 @@ export async function findDmGroupBySessionTag(username, dmSessionTag) {
  * @param {string} myPubKeyHex 本端 ECDH 公钥（实体稳定公钥；与本群 local signer 可不同）
  * @param {string} peerPubKeyHex 对端公钥
  * @param {{ entityHash?: string }} [options] 建群实体（缺省 operator）
- * @returns {Promise<{ groupId: string, defaultChannelId: string, dmSessionTag: string }>} 新建或已存在的 DM 群
+ * @returns {Promise<{ groupId: string, defaultChannelId: string | null, dmSessionTag: string }>} 新建或已存在的 DM 群
  */
 export async function createEcdhDmGroup(username, myPubKeyHex, peerPubKeyHex, options = {}) {
 	const entityHash = options.entityHash || undefined
@@ -71,6 +71,7 @@ export async function createEcdhDmGroup(username, myPubKeyHex, peerPubKeyHex, op
 		secretKey,
 		entityHash,
 		defaultChannelName: '',
+		markDefaultChannel: false,
 		enableGroupFederation: true,
 	})
 	const { groupId } = result
@@ -154,7 +155,7 @@ export async function maybeAssignEcdhDmAdmin(username, groupId, state) {
  * @param {string} introPubKeyHex 介绍者公钥 hex
  * @param {string} dmIntroNonce nonce
  * @param {string} dmIntroSignatureHex 签名 hex
- * @returns {Promise<{ groupId: string, defaultChannelId: string, created: boolean }>} 打开/新建的 DM
+ * @returns {Promise<{ groupId: string, defaultChannelId: string | null, created: boolean }>} 打开/新建的 DM
  */
 export async function orchestrateDmFirstContact(username, introPubKeyHex, dmIntroNonce, dmIntroSignatureHex) {
 	const dmCheck = await validateDmIntroLinkProof(username, { members: {} }, introPubKeyHex, dmIntroNonce, dmIntroSignatureHex)
@@ -230,7 +231,7 @@ async function bindJoinFederation(username, groupId) {
  * @param {string} [options.dmIntroSignatureHex] DM intro 签名 hex
  * @param {number} [options.reputationEdge] 入群信誉边 [-1,1]
  * @param {{ roomSecret?: string, signalingAppId?: string, dmSessionTag?: string }} [options.bootstrap] 首次联邦 bootstrap
- * @returns {Promise<{ groupId: string, defaultChannelId: string }>} 入群后的群信息
+ * @returns {Promise<{ groupId: string, defaultChannelId: string | null }>} 入群后的群信息
  */
 export async function performMemberJoin(username, groupId, options = {}) {
 	const entityHash = options.entityHash || undefined
@@ -247,7 +248,7 @@ export async function performMemberJoin(username, groupId, options = {}) {
 		? resolveActiveMemberKey(state, existingSender)
 		: !entityHash && await resolveActiveMemberKeyForLocalUser(username, groupId, state)
 
-	let defaultChannelId = state.groupSettings?.defaultChannelId || 'default'
+	let defaultChannelId = state.groupSettings?.defaultChannelId ?? null
 	if (!alreadyMember) {
 		const content = { homeNodeHash: getLocalNodeHash() }
 		if (options.inviteCode) content.inviteCode = options.inviteCode
@@ -267,7 +268,7 @@ export async function performMemberJoin(username, groupId, options = {}) {
 		await appendSignedLocalEvent(username, groupId, { type: 'member_join', timestamp: Date.now(), content }, { entityHash })
 		const { state: afterJoin } = await getState(username, groupId)
 		await maybeAssignEcdhDmAdmin(username, groupId, afterJoin)
-		defaultChannelId = afterJoin.groupSettings?.defaultChannelId || 'default'
+		defaultChannelId = afterJoin.groupSettings?.defaultChannelId ?? null
 		try {
 			// 发布加入者 entity profile 到 EVFS，让远端成员能验证 member_join 的活跃钥归属。
 			const { syncEntityProfileFromPersona } = await import('../../profile/syncFromPersona.mjs')

@@ -289,6 +289,8 @@ async function finalizeChannelMessagesForViewer(username, groupId, state, lines,
  * @returns {Promise<object[]>} 消息行对象数组
  */
 export async function readChannelMessagesForUser(username, groupId, channelId, pagination = {}) {
+	// 群允许无默认频道：无可用频道时没有消息可读。
+	if (!channelId) return []
 	const { state } = await getState(username, groupId)
 	const { listChannelMessages, JOIN_CHANNEL_HISTORY_LIMIT } = await import('../chat/dag/queries.mjs')
 	const messageLimit = Number(pagination.limit)

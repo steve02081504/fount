@@ -1,4 +1,5 @@
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
+import { fallbackChannelId } from '../../chat/lib/channelId.mjs'
 import { buildConversationContext } from '../../chat/lib/conversationContext.mjs'
 import { enumerateJoinedFederatedGroups } from '../../group/queries.mjs'
 import { createGroup as hydrateGroup } from '../group.mjs'
@@ -23,7 +24,7 @@ export function createGroupAccessMethods(apiContext) {
 		}
 		const { loadGroupState } = await import('../internal.mjs')
 		const state = await loadGroupState(apiContext, groupId)
-		const channelId = state.groupSettings?.defaultChannelId || 'default'
+		const channelId = fallbackChannelId(state)
 		const { group: meta } = await buildConversationContext(apiContext.username, groupId, channelId)
 		return hydrateGroup(apiContext, groupId, meta)
 	}
@@ -35,7 +36,7 @@ export function createGroupAccessMethods(apiContext) {
 		async groups() {
 			const rows = await enumerateJoinedFederatedGroups(apiContext.username, apiContext.entityHash)
 			return Promise.all(rows.map(async row => {
-				const { group: meta } = await buildConversationContext(apiContext.username, row.groupId, row.defaultChannelId || 'default')
+				const { group: meta } = await buildConversationContext(apiContext.username, row.groupId, row.defaultChannelId ?? null)
 				return hydrateGroup(apiContext, row.groupId, meta)
 			}))
 		},

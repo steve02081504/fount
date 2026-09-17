@@ -80,8 +80,10 @@ export async function showCreateGroupModal(parentDialog) {
 						{ joinPolicy: formData.get('joinPolicy') || 'invite-only' },
 					)
 					dialog.close()
-					const hubUrl = `/parts/shells:chat/hub/#group:${encodeURIComponent(groupId)}:${encodeURIComponent(defaultChannelId || 'default')}`
-					window.location.assign(hubUrl)
+					const hash = defaultChannelId
+						? `#group:${encodeURIComponent(groupId)}:${encodeURIComponent(defaultChannelId)}`
+						: `#group:${encodeURIComponent(groupId)}`
+					window.location.assign(`/parts/shells:chat/hub/${hash}`)
 				}
 				catch (error) {
 					showToastI18n('error', 'chat.hub.createModal.failed', { error: error.message })
@@ -97,7 +99,7 @@ export async function showCreateGroupModal(parentDialog) {
  * @returns {void}
  */
 export function openGroup(groupId) {
-	window.location.href = `/parts/shells:chat/hub/#group:${encodeURIComponent(groupId)}:default`
+	window.location.href = `/parts/shells:chat/hub/#group:${encodeURIComponent(groupId)}`
 }
 
 /**
@@ -132,7 +134,7 @@ export async function joinGroupById(parentDialog) {
 					try { gid = decodeURIComponent(gid) }
 					catch { /* use raw */ }
 				}
-				const hash = `group:${encodeURIComponent(gid)}:default`
+				const hash = `group:${encodeURIComponent(gid)}`
 				const query = inviteCode ? `?invite=${encodeURIComponent(inviteCode)}` : ''
 				window.location.href = `/parts/shells:chat/hub/${query}#${hash}`
 			})

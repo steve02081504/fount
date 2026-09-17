@@ -885,6 +885,23 @@
 					]
 				},
 				{
+					"expected": "1m20s",
+					"name": "noDefaultChannel",
+					"triggers": [
+						"src/public/parts/shells/chat/test/frontend/noDefaultChannel.spec.mjs",
+						"src/public/parts/shells/chat/public/hub/sidebar/firstOpenableChannel.mjs",
+						"src/public/parts/shells/chat/public/hub/sidebar/noChannelState.mjs",
+						"src/public/parts/shells/chat/public/hub/sidebar/index.mjs",
+						"src/public/parts/shells/chat/public/hub/sidebar/selectChannel.mjs",
+						"src/public/parts/shells/chat/public/hub/core/urlHash.mjs",
+						"src/public/parts/shells/chat/public/hub/channelContextMenu.mjs",
+						"src/public/parts/shells/chat/public/src/templates/hub/empty/no_channel.html",
+						"src/public/parts/shells/chat/public/src/templates/hub/nav/channel_context_menu.html",
+						"src/public/parts/shells/chat/src/group/routes/channelCrud.mjs",
+						"src/public/parts/shells/chat/public/src/endpoints/groupChannel.mjs"
+					]
+				},
+				{
 					"name": "mobilePane",
 					"expected": "39s",
 					"triggers": [

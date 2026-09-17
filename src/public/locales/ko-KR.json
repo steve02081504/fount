@@ -2493,7 +2493,9 @@
 					"copyLink": "채널 링크 복사",
 					"exportJson": "JSON 내보내기",
 					"exportOk": "채널 자료실이 다운로드됨",
-					"exportFailed": "내보내기 실패: ${error}"
+					"exportFailed": "내보내기 실패: ${error}",
+					"unsetDefault": "기본 채널 해제",
+					"unsetDefaultOk": "기본 채널을 해제했습니다"
 				},
 				"name": "채널 이름",
 				"unnamed": "이름 없음",
@@ -3015,6 +3017,11 @@
 			},
 			"unreadBadge": {
 				"aria-label": "읽지 않은 항목 ${count}개"
+			},
+			"noChannel": {
+				"title": "이 그룹에는 아직 채널이 없습니다",
+				"description": "오른쪽에서 채널을 만들거나 선택하여 대화를 시작하세요",
+				"createAction": "채널 만들기"
 			}
 		},
 		"sidebar": {

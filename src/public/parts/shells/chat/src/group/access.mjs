@@ -110,11 +110,14 @@ export function canInChannel(state, member, permission, channelId) {
 
 /**
  * @param {object} state 物化群状态
- * @returns {string} 治理权限折叠用频道 id
+ * @returns {string | null} 治理权限折叠用频道 id（无默认时回退根容器 / 首个频道；可能为 null）
  */
 export function governanceChannelId(state) {
 	const defaultChannelId = state.groupSettings?.defaultChannelId
-	return state.channels[defaultChannelId] ? defaultChannelId : Object.keys(state.channels)[0] || 'default'
+	if (state.channels[defaultChannelId]) return defaultChannelId
+	const rootChannelId = state.groupSettings?.rootChannelId
+	if (rootChannelId && state.channels[rootChannelId]) return rootChannelId
+	return Object.keys(state.channels || {})[0] || null
 }
 
 /**

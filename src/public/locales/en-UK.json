@@ -2493,7 +2493,9 @@
 					"copyLink": "Copy channel link",
 					"exportJson": "Export JSON",
 					"exportOk": "Channel archive downloaded",
-					"exportFailed": "Export failed: ${error}"
+					"exportFailed": "Export failed: ${error}",
+					"unsetDefault": "Unset as default channel",
+					"unsetDefaultOk": "No longer the default channel"
 				},
 				"name": "Channel name",
 				"unnamed": "Unnamed",
@@ -3015,6 +3017,11 @@
 			},
 			"unreadBadge": {
 				"aria-label": "${count} unread"
+			},
+			"noChannel": {
+				"title": "This group has no channels yet",
+				"description": "Create or select a channel on the right to start chatting",
+				"createAction": "Create new channel"
 			}
 		},
 		"sidebar": {

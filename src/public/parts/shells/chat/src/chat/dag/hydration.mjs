@@ -383,7 +383,9 @@ async function buildChatLogEntryFromDagMessage(
  */
 export async function hydrateChatLogFromDag(username, groupId, chatMetadata) {
 	const defaultChannelId = await resolveGroupChannelId(username, groupId, null)
-	const lines = await readChannelMessagesForUser(username, groupId, defaultChannelId, { limit: 500 })
+	const lines = defaultChannelId
+		? await readChannelMessagesForUser(username, groupId, defaultChannelId, { limit: 500 })
+		: []
 	const i18n = await loadDagHydrationI18n(username)
 	const { getState } = await import('./materialize.mjs')
 	const { state } = await getState(username, groupId)

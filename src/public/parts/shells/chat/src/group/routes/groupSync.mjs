@@ -156,8 +156,9 @@ export function registerGroupSyncRoutes(router, authenticate) {
 				Object.entries(state.channelPermissions).filter(([channelId]) => channelId in channels),
 			)
 
+			// 群允许无默认频道：默认频道不可见时置 null，由前端落地回退首个可打开频道。
 			if (groupSettings.defaultChannelId && !(groupSettings.defaultChannelId in channels))
-				groupSettings.defaultChannelId = Object.keys(channels)[0] || null
+				groupSettings.defaultChannelId = null
 			if (groupSettings.rootChannelId && !(groupSettings.rootChannelId in channels))
 				groupSettings.rootChannelId = null
 		}

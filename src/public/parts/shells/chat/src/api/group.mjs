@@ -66,11 +66,14 @@ export function createGroup(apiContext, groupId, projection) {
 			return createChannel(apiContext, groupId, channelId, channel)
 		},
 		/**
-		 * @returns {Promise<object>} group_meta_update 事件 默认频道
+		 * @returns {Promise<object>} group_meta_update 事件 默认频道（无默认时回退根容器/首个频道）
 		 */
 		async defaultChannel() {
 			const state = await loadGroupState(apiContext, groupId)
-			const channelId = state.groupSettings?.defaultChannelId || 'default'
+			const channelId = state.groupSettings?.defaultChannelId
+				|| state.groupSettings?.rootChannelId
+				|| Object.keys(state.channels || {})[0]
+				|| null
 			return this.channel(channelId)
 		},
 		/**

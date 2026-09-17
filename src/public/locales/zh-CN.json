@@ -2493,7 +2493,9 @@
 					"copyLink": "复制频道链接",
 					"exportJson": "导出 JSON",
 					"exportOk": "频道归档已下载",
-					"exportFailed": "导出失败：${error}"
+					"exportFailed": "导出失败：${error}",
+					"unsetDefault": "取消默认频道",
+					"unsetDefaultOk": "已取消默认频道"
 				},
 				"name": "频道名称",
 				"unnamed": "未命名",
@@ -3015,6 +3017,11 @@
 			},
 			"unreadBadge": {
 				"aria-label": "${count} 条未读"
+			},
+			"noChannel": {
+				"title": "这个群还没有频道",
+				"description": "在右侧新建或选择一个频道即可开始聊天",
+				"createAction": "新建频道"
 			}
 		},
 		"sidebar": {

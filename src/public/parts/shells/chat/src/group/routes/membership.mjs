@@ -239,7 +239,7 @@ export function registerMembershipRoutes(router, authenticate) {
 		const joinedState = await loadGroupState({ username, entityHash: client.entityHash }, group.id)
 		res.status(200).json({
 			groupId,
-			defaultChannelId: joinedState.groupSettings?.defaultChannelId || 'default',
+			defaultChannelId: joinedState.groupSettings?.defaultChannelId ?? null,
 		})
 	})
 

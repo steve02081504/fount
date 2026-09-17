@@ -24,6 +24,7 @@ import { bindDismissOnDocumentInteraction } from '/scripts/components/contextMen
 import { positionContextMenu } from '/scripts/components/positionContextMenu.mjs'
 import { store } from './core/state.mjs'
 import { openChannelNotifyPrefsDialog } from './notifyPrefsDialog.mjs'
+import { firstOpenableChannelId } from './sidebar/firstOpenableChannel.mjs'
 import { renderHubChannelSidebar, selectChannel } from './sidebar/index.mjs'
 
 /** @type {HTMLElement | null} */
@@ -47,7 +48,9 @@ async function refreshChannelsAfterManage(channelId) {
 	await renderHubChannelSidebar(store.context.currentState)
 	const stillExists = store.context.currentState?.channels?.[channelId]
 	if (store.context.currentChannelId === channelId && !stillExists) {
-		const fallback = store.context.currentState?.groupSettings?.defaultChannelId || 'default'
+		// 删除当前频道：优先显式默认，其次最上侧第一个可打开频道；都没有则 selectChannel(null) 落空态。
+		const fallback = store.context.currentState?.groupSettings?.defaultChannelId
+			|| firstOpenableChannelId(store.context.currentState)
 		await selectChannel(fallback)
 	}
 }
@@ -68,9 +71,10 @@ export async function showChannelContextMenu(event, channelId) {
 	const channel = store.context.currentState?.channels?.[channelId]
 	const channelName = channel?.name || channelId
 	const caps = store.context.currentState?.channelCaps?.[channelId]
-	const defaultChannelId = store.context.currentState?.groupSettings?.defaultChannelId || 'default'
+	const defaultChannelId = store.context.currentState?.groupSettings?.defaultChannelId || null
 	const showRename = !!caps?.canManageChannel
 	const showSetDefault = showRename && channelId !== defaultChannelId
+	const showUnsetDefault = showRename && !!defaultChannelId && channelId === defaultChannelId
 
 	const menu = document.createElement('ul')
 	menu.className = 'menu menu-sm bg-base-100 rounded-box shadow-lg border border-base-300 p-1 z-50'
@@ -78,6 +82,7 @@ export async function showChannelContextMenu(event, channelId) {
 		channelId,
 		showRename,
 		showSetDefault,
+		showUnsetDefault,
 		showDelete: showRename,
 	}))
 	document.body.appendChild(menu)
@@ -121,6 +126,18 @@ export async function showChannelContextMenu(event, channelId) {
 		try {
 			await setDefaultChannel(groupId, channelId)
 			showToastI18n('success', 'chat.hub.channel.context.setDefaultOk')
+			await refreshChannelsAfterManage(channelId)
+		}
+		catch (error) {
+			showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })
+		}
+		closeOnce()
+	})
+
+	menu.querySelector('.channel-menu-unset-default')?.addEventListener('click', async () => {
+		try {
+			await setDefaultChannel(groupId, null)
+			showToastI18n('success', 'chat.hub.channel.context.unsetDefaultOk')
 			await refreshChannelsAfterManage(channelId)
 		}
 		catch (error) {

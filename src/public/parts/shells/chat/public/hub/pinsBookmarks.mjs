@@ -193,8 +193,10 @@ export async function refreshPinsBookmarks() {
 			bookmarksHost.appendChild(line)
 		}
 		else {
+			const fallbackGroup = targetGroup || store.context.currentGroupId
+			const fallbackChannel = store.context.currentChannelId
 			const href = bookmark.href?.trim()
-				|| `#group:${encodeURIComponent(targetGroup || store.context.currentGroupId)}:${encodeURIComponent(store.context.currentChannelId || 'default')}`
+				|| `#group:${encodeURIComponent(fallbackGroup)}${fallbackChannel ? `:${encodeURIComponent(fallbackChannel)}` : ''}`
 			const line = await renderTemplate('hub/bookmarks/row_link', { href, title, titleI18nAttr, meta })
 			line.querySelector('.bookmark-remove')?.addEventListener('click', async clickEvent => {
 				clickEvent.stopPropagation()

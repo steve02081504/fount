@@ -512,9 +512,9 @@ export async function deleteChannel(groupId, channelId) {
 }
 
 /**
- * 将频道设为群默认频道。
+ * 设置 / 清除群默认频道。
  * @param {string} groupId 群 ID
- * @param {string} channelId 频道 ID
+ * @param {string | null} channelId 频道 ID；null 表示取消默认频道
  * @returns {Promise<void>} 无
  */
 export async function setDefaultChannel(groupId, channelId) {

@@ -10,12 +10,14 @@ import { getViewerPermissions } from './endpoints/groupCore.mjs'
 
 /**
  * @param {object} stateJson `/groups/:id/state` 的 JSON
- * @returns {string} 治理权限查询用的频道 ID
+ * @returns {string | null} 治理权限查询用的频道 ID（无默认时回退根容器 / 首个频道；可能为 null）
  */
 export function governanceChannelIdFromState(stateJson) {
-	return stateJson?.groupSettings?.defaultChannelId
-		|| Object.keys(stateJson?.channels || {})[0]
-		|| 'default'
+	const settings = stateJson?.groupSettings
+	const channels = stateJson?.channels || {}
+	if (settings?.defaultChannelId && channels[settings.defaultChannelId]) return settings.defaultChannelId
+	if (settings?.rootChannelId && channels[settings.rootChannelId]) return settings.rootChannelId
+	return Object.keys(channels)[0] || null
 }
 
 /**

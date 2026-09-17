@@ -29,18 +29,18 @@ import { GROUPS_PREFIX } from './path.mjs'
 export function registerChannelCrudRoutes(router, authenticate) {
 	router.put(`${GROUPS_PREFIX}/:groupId/default-channel`, authenticate, async (req, res) => {
 		const { groupId } = req.params
-		const channelId = String(req.body?.channelId || '').trim()
-		if (!channelId)
-			throw httpError(400, 'channelId required')
+		const rawChannelId = req.body?.channelId
+		const channelId = rawChannelId == null ? null : String(rawChannelId).trim()
 
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username, state } = membership
-		ensureChannel(state, channelId)
+		// 空值表示清除默认频道（群允许无默认频道）。
+		if (channelId) ensureChannel(state, channelId)
 
 		await appendSignedLocalEvent(username, groupId, {
 			type: 'group_settings_update',
 			timestamp: Date.now(),
-			content: { defaultChannelId: channelId },
+			content: { defaultChannelId: channelId || null },
 		})
 		res.status(200).json({})
 	})
@@ -110,7 +110,7 @@ export function registerChannelCrudRoutes(router, authenticate) {
 			channelId: prefixedRandomId('channel_'),
 			isPrivate: isPrivate || false,
 			parentChannelId: parentId,
-			permissionBlockId: parentId || state.groupSettings?.defaultChannelId || null,
+			permissionBlockId: parentId || null,
 		})
 		// DM 群根级无名频道的 greeting-only 清理与 AI 命名/分类在后端异步进行，创建接口只发射并遗忘。
 		scheduleDmChannelAutoNameAndCleanup(username, groupId, channel.id, state).catch(() => { })
@@ -222,10 +222,16 @@ export function registerChannelCrudRoutes(router, authenticate) {
 		const { username, state } = membership
 		ensureChannel(state, channelId)
 
-		if (state.groupSettings.defaultChannelId === channelId)
-			throw httpError(400, 'Cannot delete default channel')
 		if (state.groupSettings.rootChannelId === channelId)
 			throw httpError(400, 'Cannot delete root channel')
+
+		// 群允许无默认频道：删除当前默认频道前先清空标记（reducer 亦有兜底）。
+		if (state.groupSettings.defaultChannelId === channelId)
+			await appendSignedLocalEvent(username, groupId, {
+				type: 'group_settings_update',
+				timestamp: Date.now(),
+				content: { defaultChannelId: null },
+			})
 
 		await appendSignedLocalEvent(username, groupId, {
 			type: 'channel_delete',

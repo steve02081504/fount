@@ -182,9 +182,9 @@ export function registerGovernanceRoutes(router, authenticate) {
 		const { username } = getUserByReq(req)
 		const { groupId } = req.params
 		const subject = (req.query.pubKeyHash || '').trim()
-		const channelId = (req.query.channelId || '').trim() || 'default'
 
 		const { state } = await getState(username, groupId)
+		const channelId = (req.query.channelId || '').trim() || governanceChannelId(state)
 		let resolvedKey = subject ? resolveActiveMemberKey(state, subject) : null
 		if (!resolvedKey)
 			resolvedKey = await resolveActiveMemberKeyForLocalUser(username, groupId, state)

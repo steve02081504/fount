@@ -199,7 +199,10 @@ async function insertCharGreeting(groupId, charname, username, chatMetadata, tim
 		? char.interfaces?.chat?.GetGroupGreeting || char.interfaces?.chat?.GetGreeting
 		: char.interfaces?.chat?.GetGreeting
 	if (!getGreeting) return null
-	const request = await getChatRequest(groupId, charname, await getDefaultChannelId(username, groupId), { replicaUsername: username })
+	const greetingChannelId = await getDefaultChannelId(username, groupId)
+	// 群无可用频道时没有地方安放问候语。
+	if (!greetingChannelId) return null
+	const request = await getChatRequest(groupId, charname, greetingChannelId, { replicaUsername: username })
 	try {
 		const result = await getGreeting(request, 0)
 		if (!result) return null

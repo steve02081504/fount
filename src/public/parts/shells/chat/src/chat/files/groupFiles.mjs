@@ -35,6 +35,7 @@ import {
 import { ensureFederationRoom } from '../federation/room.mjs'
 import { getCurrentFileMasterKey, getFileMasterKeyByGeneration } from '../file_keys/store.mjs'
 import { updateGroupEntityIndex } from '../groupEntityIndex.mjs'
+import { fallbackChannelId } from '../lib/channelId.mjs'
 import { shellChatRoot } from '../lib/paths.mjs'
 import { getFederatedChunkStorage, getStorageForGroup } from '../storage.mjs'
 
@@ -56,12 +57,12 @@ import {
 /**
  * @param {object} state 物化群状态
  * @param {string} [channelId] 目标频道；缺省为群默认频道
- * @returns {string} 用于 `UPLOAD_FILES` 权限检查的频道 ID
+ * @returns {string | null} 用于 `UPLOAD_FILES` 权限检查的频道 ID（群无频道时为 null）
  */
 export function uploadPermissionChannelId(state, channelId) {
 	const trimmed = channelId || ''
 	if (trimmed && state.channels?.[trimmed]) return trimmed
-	return state.groupSettings?.defaultChannelId || 'default'
+	return fallbackChannelId(state)
 }
 
 /**

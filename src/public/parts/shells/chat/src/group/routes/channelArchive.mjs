@@ -13,6 +13,7 @@ import {
 	importChannelArchive,
 	validateChannelArchive,
 } from '../../chat/channelArchive.mjs'
+import { fallbackChannelId } from '../../chat/lib/channelId.mjs'
 
 import {
 	ensureCanInChannel,
@@ -40,9 +41,7 @@ export function registerChannelArchiveRoutes(router, authenticate) {
 		const { groupId } = req.params
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username, state, member } = membership
-		const defaultChannelId = state.groupSettings?.defaultChannelId
-			|| Object.keys(state.channels || {})[0]
-			|| 'default'
+		const defaultChannelId = fallbackChannelId(state)
 		ensureCanInChannel(state, member, PERMISSIONS.MANAGE_CHANNELS, defaultChannelId)
 
 		const file = pickUploadedFile(req, 'archive')

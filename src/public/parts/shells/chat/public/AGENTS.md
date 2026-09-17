@@ -42,6 +42,8 @@ Root: `{userDict}/shells/chat/entities/{entityHash}/` — bookmarks, folders, al
 
 `GET …/groups/:id/state` → `{ meta, viewer, federation }`. Frontend flatten must **not** let `viewer.roles` (held role IDs) overwrite `meta.roles` (role definition map) — write held roles into `myRoles`.
 
+**Default channel is optional** (`groupSettings.defaultChannelId: string | null`; DM always null). `resolveGroupChannelId` / `getDefaultChannelId` resolve `explicit default → first openable channel → null` — never fabricate `'default'`; write/trigger paths must no-op on `null` (`readChannelMessagesForUser` returns `[]`). Governance permission folding falls back to `rootChannelId` (`governanceChannelId` / `governanceChannelIdFromState`). Deleting the current default clears it both in the HTTP route and the `channel_delete` reducer (federation-safe).
+
 ## Permission gates
 
 - **Authoritative**: `src/chat/dag/authorizeEvent.mjs` (`checkEventPermission` / `assertEventPermission` → `httpError(403)`).

@@ -191,7 +191,7 @@ async function loadUserGroups() {
 			const description = group.description ?? ''
 			container.appendChild(await renderTemplate('profile/group_row', {
 				groupId: group.groupId,
-				defaultChannelId: group.defaultChannelId || 'default',
+				defaultChannelId: group.defaultChannelId ?? null,
 				initial: avatarInitial(group.name || 'G'),
 				name: group.name || group.groupId,
 				description: escapeHtml(description),

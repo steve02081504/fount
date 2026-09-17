@@ -93,3 +93,59 @@ Deno.test('channel_delete of root is not applied by reducer (guard against wipin
 	// 保护：删除根容器时不应级联清空（联邦恶意/误删防御），reducer 应为完全无操作。
 	assertEquals(state, stateBefore)
 })
+
+Deno.test('channel_delete of current default clears defaultChannelId (group may have no default)', () => {
+	let state = emptyMaterializedState()
+	state = channelReducers.channel_create(state, {
+		timestamp: 1,
+		content: { channelId: ROOT_CHANNEL_ID, type: 'category', name: '', links: ['default'], permissionBlockId: null },
+	})
+	state = channelReducers.channel_create(state, {
+		timestamp: 2,
+		content: {
+			channelId: 'default',
+			type: 'text',
+			name: 'general',
+			links: [],
+			parentChannelId: ROOT_CHANNEL_ID,
+			permissionBlockId: ROOT_CHANNEL_ID,
+		},
+	})
+	state = governanceReducers.group_settings_update(state, {
+		content: { defaultChannelId: 'default', rootChannelId: ROOT_CHANNEL_ID },
+	})
+
+	state = channelReducers.channel_delete(state, { content: { channelId: 'default' } })
+
+	assertEquals(state.channels['default'], undefined)
+	assertEquals(state.groupSettings.defaultChannelId, null)
+	assertEquals(state.groupSettings.rootChannelId, ROOT_CHANNEL_ID)
+})
+
+Deno.test('channel_delete of a non-default channel keeps defaultChannelId', () => {
+	let state = emptyMaterializedState()
+	state = channelReducers.channel_create(state, {
+		timestamp: 1,
+		content: { channelId: ROOT_CHANNEL_ID, type: 'category', name: '', links: ['default', 'other'], permissionBlockId: null },
+	})
+	for (const [index, channelId] of ['default', 'other'].entries())
+		state = channelReducers.channel_create(state, {
+			timestamp: index + 2,
+			content: {
+				channelId,
+				type: 'text',
+				name: channelId,
+				links: [],
+				parentChannelId: ROOT_CHANNEL_ID,
+				permissionBlockId: ROOT_CHANNEL_ID,
+			},
+		})
+	state = governanceReducers.group_settings_update(state, {
+		content: { defaultChannelId: 'default', rootChannelId: ROOT_CHANNEL_ID },
+	})
+
+	state = channelReducers.channel_delete(state, { content: { channelId: 'other' } })
+
+	assertEquals(state.channels.other, undefined)
+	assertEquals(state.groupSettings.defaultChannelId, 'default')
+})

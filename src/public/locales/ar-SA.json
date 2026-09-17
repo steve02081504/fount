@@ -2493,7 +2493,9 @@
 					"copyLink": "انسخ رابط القناة",
 					"exportJson": "تصدير JSON",
 					"exportOk": "تم تنزيل أرشيف القناة",
-					"exportFailed": "فشل التصدير: ${error}"
+					"exportFailed": "فشل التصدير: ${error}",
+					"unsetDefault": "إلغاء التعيين كقناة افتراضية",
+					"unsetDefaultOk": "تم إلغاء التعيين كقناة افتراضية"
 				},
 				"name": "اسم القناة",
 				"unnamed": "بدون اسم",
@@ -3015,6 +3017,11 @@
 			},
 			"unreadBadge": {
 				"aria-label": "${count} غير مقروء"
+			},
+			"noChannel": {
+				"title": "لا توجد قنوات في هذه المجموعة بعد",
+				"description": "أنشئ قناة على اليمين أو اختر إحداها لبدء الدردشة",
+				"createAction": "إنشاء قناة جديدة"
 			}
 		},
 		"sidebar": {

@@ -26,7 +26,7 @@ export function clearPrivateGroupState() {
 	const { privateGroup } = store
 	privateGroup.groupId = null
 	privateGroup.peerEntityHash = null
-	privateGroup.channelId = 'default'
+	privateGroup.channelId = null
 	refreshStopGenerationButton()
 }
 

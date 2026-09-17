@@ -37,11 +37,11 @@ async function buildSelectOptions(names, selected) {
 /**
  * 在角色聊天设置浮层中渲染并绑定 world / persona / plugin / 频率配置。
  * @param {string} groupId 会话组 ID
- * @param {string} channelId 频道 ID（world 绑定）
+ * @param {string | null} channelId 频道 ID（world 绑定）；null 时后端回退默认/首个可打开频道
  * @param {{ canEditWorldPlugins?: boolean }} [options] 世界与插件是否可编辑
  * @returns {Promise<void>}
  */
-export async function mountChatConfigPanel(groupId, channelId = 'default', options = {}) {
+export async function mountChatConfigPanel(groupId, channelId = null, options = {}) {
 	const canEditWorldPlugins = options.canEditWorldPlugins !== false
 	let host = document.getElementById('character-chat-config-host')
 	if (!host) {

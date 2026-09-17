@@ -35,13 +35,14 @@ async function openChannelListContextMenu(page) {
 }
 
 /**
- * 通过 API 创建 DM 群并在默认频道注入一条 world-greeting（仅含问候语）。
+ * 通过 API 创建 DM 群并在占位频道注入一条 world-greeting（仅含问候语）。
+ * DM 群无默认频道，占位频道由 fixture 解析为最上侧第一个可打开频道。
  * @param {string} baseUrl 测试根 URL
  * @param {string} apiKey API 密钥
- * @returns {Promise<{ groupId: string, defaultChannelId: string }>} DM 群信息
+ * @returns {Promise<{ groupId: string, placeholderChannelId: string }>} DM 群信息
  */
 async function createDmWithGreeting(baseUrl, apiKey) {
-	const { groupId, defaultChannelId } = await createFriendChatGroup(baseUrl, apiKey, 'on_message_yes', { forceNew: true })
+	const { groupId, channelId } = await createFriendChatGroup(baseUrl, apiKey, 'on_message_yes', { forceNew: true })
 	await withApiRequest(async req => {
 		const key = encodeURIComponent(apiKey)
 		const groupPath = encodeURIComponent(groupId)
@@ -52,11 +53,11 @@ async function createDmWithGreeting(baseUrl, apiKey) {
 		if (!addRes.ok()) throw new Error(`addChar failed: ${addRes.status()} ${await addRes.text()}`)
 		const bindRes = await req.put(
 			`${baseUrl}/api/parts/shells:chat/groups/${groupPath}/world?fount-apikey=${key}`,
-			{ data: { worldname: 'write_path_hooks', channelId: defaultChannelId } },
+			{ data: { worldname: 'write_path_hooks', channelId } },
 		)
 		if (!bindRes.ok()) throw new Error(`bindWorld failed: ${bindRes.status()} ${await bindRes.text()}`)
 	})
-	return { groupId, defaultChannelId }
+	return { groupId, placeholderChannelId: channelId }
 }
 
 test.describe('DM channel list context menu', () => {
@@ -108,14 +109,14 @@ test.describe('DM channel list context menu', () => {
 		expect(after?.channelId).not.toBe(initialChannelId)
 	})
 
-	test('DM quick-create: backend async-removes greeting-only default channel', async ({ page, baseUrl, apiKey }) => {
-		const { groupId, defaultChannelId } = await createDmWithGreeting(baseUrl, apiKey)
+	test('DM quick-create: backend async-removes greeting-only placeholder channel', async ({ page, baseUrl, apiKey }) => {
+		const { groupId, placeholderChannelId } = await createDmWithGreeting(baseUrl, apiKey)
 
 		await waitForHub(page, baseUrl, { friendsMode: false })
 		await expect(page).toHaveURL(/#friends/, { timeout: 60_000 })
-		await navigateGroupChannelHash(page, groupId, defaultChannelId)
+		await navigateGroupChannelHash(page, groupId, placeholderChannelId)
 
-		// 默认频道仅含一条问候语
+		// 占位频道仅含一条问候语
 		await expectMessageInChat(page, 'world-greeting')
 		await expect(page.locator('.channel-list-virtual')).toBeVisible({ timeout: 30_000 })
 
@@ -124,13 +125,13 @@ test.describe('DM channel list context menu', () => {
 		await page.locator('[data-action="create-channel"]').click()
 
 		await expect(page.locator('#new-channel-name')).toHaveCount(0)
-		// 后端异步把仅含问候语的默认占位频道删除，最终只剩新建的未命名频道
-		await expect(page.locator(`#private-channel-list-host .channel-item[data-channel-id="${defaultChannelId}"]`))
+		// 后端异步把仅含问候语的占位频道删除，最终只剩新建的未命名频道
+		await expect(page.locator(`#private-channel-list-host .channel-item[data-channel-id="${placeholderChannelId}"]`))
 			.toHaveCount(0, { timeout: 60_000 })
 		await expect(page.locator('#private-channel-list-host .channel-item')).toHaveCount(1)
 
 		const after = parseGroupHashFromUrl(page.url())
 		expect(after?.channelId).toBeTruthy()
-		expect(after?.channelId).not.toBe(defaultChannelId)
+		expect(after?.channelId).not.toBe(placeholderChannelId)
 	})
 })
