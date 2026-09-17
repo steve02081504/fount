@@ -16,6 +16,12 @@ function script:require {
 	}
 }
 
+# 已安装的常用路径只需这些
+function script:require_base {
+	require env win/refresh_path deno fs run first_install
+	install_deno
+}
+
 function script:require_mid {
 	require env win/refresh_path win/winget win/installer_dir
 	require pkg_common packages browser passthrough profile
@@ -26,12 +32,16 @@ function script:require_mid {
 }
 
 function script:bootstrap_full {
-	require_mid
+	require_base
 	fount_first_install_if_needed @args
 }
 
 function script:bootstrap_server {
-	bootstrap_full @args
+	require_mid
+	fount_first_install_if_needed @args
+	# 后台维护 job 只在长驻进程里有意义
+	Enable-FountClashTunBackground
+	Update-FountPwshModulesBackground
 	assert_dir_writable $FOUNT_DIR
 	update_fount_and_deno_background
 	deno -V

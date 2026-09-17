@@ -28,6 +28,10 @@ CI sets `FOUNT_ACCEPT_EULA=1`. There is no `--accept-EULA` flag.
 
 No `data/config.json` (except `remove`): `ensure_fount_config` / `Ensure-FountConfig`, then the original command. Same EULA + 8930 + wait page; refusal always removes the installation. `cmd_open` opens `wait?cold_bootting=true` only when `FOUNT_INSTALL_WAIT` is unset. See [path AGENTS](../../path/AGENTS.md).
 
+## Windows runner latency
+
+The compiled exe runs the path CLI **in-process** with `& path/src/index.ps1` (child scope, so the runner's variables are not merged; the script's `exit` only sets `$LastExitCode` and returns, as in `path/fount.ps1`, so the runner reads it back) — `index.ps1` always exists in a valid tree, so no `run.bat` fallback. This skips the `run.bat` → `fount.bat` → fresh `pwsh` round trip (~1s). The Clash TUN `Start-Job` is only spawned from `Install-FountTree` (fresh clone needs it; afterwards the path CLI handles install/server) — `main.sh` mirrors this with `enable_clash_tun_background` called from `install_fount_tree`. The compiled-exe self-update preprocesses `main.ps1` with `ps12exe -PreprocessOnly` only when the source mtime is newer than the exe, instead of on every run (the sh runner already uses a cheap `cmp -s`).
+
 Package operations in the runner use a **bash-flavored** `install_package` + lock / DB-refresh-throttle helpers defined inline (main.sh is a bash script). It mirrors the behavior of the POSIX family that `path/fount` carries (see [path AGENTS](../../path/AGENTS.md)) but is **not** part of the sync — keep the two behaviorally aligned when editing either.
 
 ## `fount.exe` native child TTY ([ps12exe#59](https://github.com/steve02081504/ps12exe/issues/59))

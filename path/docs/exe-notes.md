@@ -17,7 +17,7 @@ Rare concerns for `geneexe` / `New-FountExe` / Steam shortcuts. Day-to-day path 
 
 ## `run.bat` / `path/fount.bat` argument forwarding
 
-- Windows launchers reach the CLI through `run.bat` / `run.cmd` → `path/fount.bat`. All forward the caller's `%*`, so these `cmd` traps apply — keep forwards out of blocks and use a direct `"%~dp0path\fount.bat" %*`:
+- Windows launchers reach the CLI through `run.bat` / `run.cmd` → `path/fount.bat`. The compiled `fount.exe` bypasses this chain (it invokes `path/src/index.ps1` in-process via `&`; see [runner AGENTS](../../src/runner/AGENTS.md)), but direct `run.bat` use still hits the traps. All forward the caller's `%*`, so these `cmd` traps apply — keep forwards out of blocks and use a direct `"%~dp0path\fount.bat" %*`:
   - `cmd /c "...fount.bat" %*` — a quoted (space-containing) arg makes `cmd /c` re-parse the line and swallow the command name (`'…\fount.bat" eval "1' is not recognized`).
   - `call "...fount.bat" %*` — `call` re-expands `%`, so `5 % 3` loses its `%`.
   - `%*` inside an `if ( … )` block — a `)` in the args closes the block early, so `console.log(1)` breaks.

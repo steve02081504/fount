@@ -33,9 +33,10 @@ function Write-TaskbarProgressError {
 
 Write-TaskbarProgress -Percent 0
 
-if ((Get-Culture).Name -match '-(CN|KP|RU)$') {
+# 随手之劳之经验医学之clash的tun没开
+function Enable-ClashTunBackground {
+	if ((Get-Culture).Name -notmatch '-(CN|KP|RU)$') { return }
 	Start-Job {
-		# 随手之劳之经验医学之clash的tun没开
 		if ((Test-Connection "github.com", "cdn.jsdelivr.net" -Count 1 -Quiet -ErrorAction SilentlyContinue) -contains $false) {
 			Invoke-RestMethod http://127.0.0.1:9090/configs -Method Patch -Body '{"tun":{"enable":true}}' -ErrorAction SilentlyContinue
 			Invoke-RestMethod http://127.0.0.1:9097/configs -Method Patch -Body '{"tun":{"enable":true}}' -ErrorAction SilentlyContinue
@@ -266,6 +267,7 @@ function Test-Winget {
 function Install-FountTree {
 	param([string]$Dir, [string]$Branch)
 	Remove-Item $Dir -Force -ErrorAction Ignore -Recurse
+	Enable-ClashTunBackground
 	if (Get-Command git -ErrorAction Ignore) {
 		$cloneUrls = @("https://github.com/steve02081504/fount")
 		if ((Get-Culture).Name -match '-(CN|KP|RU)$') {
@@ -376,7 +378,13 @@ try {
 		#_!! if (Test-Path "${PSCommandPath}.old") {
 			#_!! Remove-Item "${PSCommandPath}.old"
 		#_!! }
-		#_!! $(if ((Get-Command ps12exe -ErrorAction Ignore) -and ($PSEXEscript -ne (ps12exe -inputFile "$Script:fountDir/src/runner/main.ps1" -PreprocessOnly))) {
+		#_!! $runnerSource = "$Script:fountDir/src/runner/main.ps1"
+		#_!! $runnerStale = $true
+		#_!! try {
+			#_!! $runnerStale = (Get-Item -LiteralPath $runnerSource -ErrorAction Stop).LastWriteTimeUtc -gt (Get-Item -LiteralPath $PSCommandPath -ErrorAction Stop).LastWriteTimeUtc
+		#_!! }
+		#_!! catch { }
+		#_!! $(if ($runnerStale -and (Get-Command ps12exe -ErrorAction Ignore) -and ($PSEXEscript -ne (ps12exe -inputFile $runnerSource -PreprocessOnly))) {
 			#_!! Write-Host (Get-I18n -key 'install.runnerUpdating')
 			#_!! Move-Item "$PSCommandPath" "${PSCommandPath}.old"
 			#_!! & "$Script:fountDir/run.bat" geneexe "$PSCommandPath"
@@ -394,7 +402,7 @@ try {
 		}
 	#_endif
 	$OutputEncoding = [console]::OutputEncoding = [System.Text.Encoding]::UTF8
-	& "$Script:fountDir/run.bat" @forwardedArgs
+	& "$Script:fountDir/path/fount.ps1" @forwardedArgs
 	$fountExitCode = $LastExitCode
 }
 finally {

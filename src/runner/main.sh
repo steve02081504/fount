@@ -65,23 +65,24 @@ elif ! test_fount_target_empty "$FOUNT_DIR"; then
 	exit 1
 fi
 
-if echo "${LANG:-}" | grep -iqE "_(CN|KP|RU)"; then
-(
-	TARGETS="github.com cdn.jsdelivr.net"
-	# 随手之劳之经验医学之clash的tun没开
-	for host in $TARGETS; do
-		if ! ping -c 1 -W 2 "$host" >/dev/null 2>&1; then
-			curl -X PATCH "http://127.0.0.1:9090/configs" \
-				-d '{"tun":{"enable":true}}' \
-				-s -o /dev/null --max-time 3
-			curl -X PATCH "http://127.0.0.1:9097/configs" \
-				-d '{"tun":{"enable":true}}' \
-				-s -o /dev/null --max-time 3
-			break
-		fi
-	done
-) >/dev/null 2>&1 &
-fi
+# 随手之劳之经验医学之clash的tun没开
+enable_clash_tun_background() {
+	echo "${LANG:-}" | grep -iqE "_(CN|KP|RU)" || return 0
+	(
+		TARGETS="github.com cdn.jsdelivr.net"
+		for host in $TARGETS; do
+			if ! ping -c 1 -W 2 "$host" >/dev/null 2>&1; then
+				curl -X PATCH "http://127.0.0.1:9090/configs" \
+					-d '{"tun":{"enable":true}}' \
+					-s -o /dev/null --max-time 3
+				curl -X PATCH "http://127.0.0.1:9097/configs" \
+					-d '{"tun":{"enable":true}}' \
+					-s -o /dev/null --max-time 3
+				break
+			fi
+		done
+	) >/dev/null 2>&1 &
+}
 
 # 若是 Windows 环境，则转交 PowerShell 处理
 if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
@@ -392,6 +393,7 @@ remove_fount_after_eula_decline() {
 install_fount_tree() {
 	local clone_ok="" clones=() install_dir="$FOUNT_DIR"
 	local locale_var="${LC_ALL:-${LC_MESSAGES:-$LANG}}"
+	enable_clash_tun_background
 	echo -e "Installing fount into ${C_CYAN}$FOUNT_DIR${C_RESET}..."
 	FOUNT_INSTALL_TMP=$(mktemp -d) || return 1
 	install_dir="$FOUNT_INSTALL_TMP/tree"
@@ -593,7 +595,7 @@ if [[ "$can_self_modify" -eq 1 && -f "$FOUNT_DIR/src/runner/main.sh" ]] && ! cmp
 fi
 
 # 执行真正的 fount 核心脚本
-"$FOUNT_DIR/run.sh" "${new_args[@]}"
+"$FOUNT_DIR/path/fount.sh" "${new_args[@]}"
 fountExitCode=$?
 
 if [[ "$can_self_modify" -eq 1 && "${new_args[0]}" == "remove" ]]; then

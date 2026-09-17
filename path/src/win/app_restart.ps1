@@ -1,4 +1,8 @@
-﻿Add-Type -TypeDefinition @'
+﻿# Add-Type 会编译 C#（首次可达 ~1s），只在真正注册/注销时编译，避免拖慢 eval/log 等短命令。
+function script:Initialize-FountRestartType {
+	if (!$IsWindows) { return $false }
+	if ($script:FountRestartTypeReady) { return $true }
+	Add-Type -TypeDefinition @'
 using System;
 using System.Runtime.InteropServices;
 public class FountRestart {
@@ -8,11 +12,15 @@ public class FountRestart {
 	public static extern int UnregisterApplicationRestart();
 }
 '@ -ErrorAction SilentlyContinue | Out-Null
+	$script:FountRestartTypeReady = $true
+	return $true
+}
 
 # 智能自启动：向 Windows 注册“系统重启/更新后恢复”
 function script:Register-FountApplicationRestart {
 	if (!$IsWindows) { return }
 	if ($script:FountRestartRegistered) { return }
+	if (-not (Initialize-FountRestartType)) { return }
 	$script:FountRestartRegistered = $true
 	$restartArgs = ''
 	if ($env:FOUNT_BACKGROUND) {
@@ -29,5 +37,6 @@ function script:Register-FountApplicationRestart {
 function script:Unregister-FountApplicationRestart {
 	if (!$IsWindows) { return }
 	Remove-Item Env:\FOUNT_RESTART_REGISTERED -Force -ErrorAction Ignore
+	Initialize-FountRestartType | Out-Null
 	[FountRestart]::UnregisterApplicationRestart() | Out-Null
 }

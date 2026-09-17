@@ -10,9 +10,12 @@ Thin entries `path/fount.{ps1,sh}` dispatch to `path/src/cmd/<name>.*` via inlin
 
 | Bootstrap | Use |
 | --- | --- |
-| `bootstrap_full` | Full install / runtime |
-| `bootstrap_server` | Server path (uses background updates) |
+| `bootstrap_full` | Runtime: lean `require_base` (pwsh) / `require_mid` (sh) + first-install check |
+| `bootstrap_server` | Server path: `require_mid` + background updates |
+| `require_mid` | Full module set (install / update / remove / geneexe) |
 | `require_mid` + `source_uninstall_hooks` | `remove` |
+
+Kept fast for short commands (e.g. `fount eval`): on PowerShell `bootstrap_full` only `require_base`s (env, refresh_path, deno, fs, run, first_install), and `fount_first_install_if_needed` calls `require_mid` **inside** its install branch, so an already-installed tree never parses the ~0.4s registration/update module set. Heavy load-time side effects are likewise deferred: the Clash TUN and pwsh-module updater `Start-Job`s (~0.5s each; killed on short-command exit) run only from `bootstrap_server` / first install, `win/app_restart` and `win/explorer_refresh` compile their C# on first use, and `profile.ps1` skips the `Get-Module fount-pwsh` scan when `$Profile` already imports it. The sh side mirrors the Clash deferral (`enable_clash_tun_background`, called from `first_install.sh` / `bootstrap_server`); its module sourcing is already sub-millisecond (~150µs each), so no `require_base` split is needed there.
 
 `fount init` (and first install) registers a non-Steam shortcut when Steam is present — skip otherwise. Windows launchers use `$FOUNT_DIR/fount.exe` (written if missing, gitignored); other platforms use `path/fount`. `fount geneexe [path]` still defaults to `./fount.exe` (cwd). `remove` unregisters this install only (level 85, before Deno uninstall). No `data/config.json` (except `remove`) is `ensure_fount_config` / `Ensure-FountConfig` then the original command — not `cmd_open`. Interactive first-run starts `:8930` (wait/install liveness) and opens `wait/install/?from=runner`; `FOUNT_INSTALL_WAIT=1` is exported and `:8930` stays up until that process exits (after the dispatched command). `cmd_open` opens `wait?cold_bootting=true` only when that flag is unset. Docker / `FOUNT_ACCEPT_EULA` skip the prompt and copy default config; refusing the EULA or running without a console removes the installation (`N` → `fount remove`). See [runner AGENTS](../src/runner/AGENTS.md). `fount.exe` compile / Steam registration traps (ps12exe, favicon, `shortcuts.vdf`): [docs/exe-notes.md](docs/exe-notes.md).
 

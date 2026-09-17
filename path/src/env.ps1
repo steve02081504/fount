@@ -7,16 +7,16 @@
 }
 Set-MissingVariablesForWindowsPowershell
 
-Start-Job -ScriptBlock {
-	$FOUNT_DIR = $args[0]
-	if ((Get-Culture).Name -match '-(CN|KP|RU)$') {
-		# 随手之劳之经验医学之clash的tun没开
+# 随手之劳之经验医学之clash的tun没开
+function script:Enable-FountClashTunBackground {
+	if ((Get-Culture).Name -notmatch '-(CN|KP|RU)$') { return }
+	Start-Job -ScriptBlock {
 		if ((Test-Connection "github.com", "cdn.jsdelivr.net" -Count 1 -Quiet -ErrorAction SilentlyContinue) -contains $false) {
 			Invoke-RestMethod http://127.0.0.1:9090/configs -Method Patch -Body '{"tun":{"enable":true}}' -ErrorAction SilentlyContinue
 			Invoke-RestMethod http://127.0.0.1:9097/configs -Method Patch -Body '{"tun":{"enable":true}}' -ErrorAction SilentlyContinue
 		}
-	}
-} -ArgumentList $FOUNT_DIR | Out-Null
+	} | Out-Null
+}
 
 function script:in_docker { $false }
 function script:in_termux { $false }

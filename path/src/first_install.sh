@@ -3,6 +3,8 @@
 
 fount_first_install_if_needed() {
 	if [[ ! -d "$FOUNT_DIR/node_modules" || "${1:-}" = 'init' ]]; then
+		# 安装/更新要联网，先在受限区域尽力打开 Clash TUN。
+		enable_clash_tun_background
 		if [ ! -f "$FOUNT_DIR/.noupdate" ]; then
 			install_package "git" "git git-core" || true
 		fi
