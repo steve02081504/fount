@@ -77,7 +77,9 @@ export function wireForkActions() {
 				tipId: selectedForkTipId(),
 			})
 			forkSplitModal?.close()
-			location.hash = `group:${data.groupId}:${data.defaultChannelId || 'default'}`
+			location.hash = data.defaultChannelId
+				? `group:${data.groupId}:${data.defaultChannelId}`
+				: `group:${data.groupId}`
 			location.reload()
 		}
 		catch (error) {

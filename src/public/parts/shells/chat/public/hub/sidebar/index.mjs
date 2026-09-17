@@ -22,9 +22,11 @@ import { loadGroups } from '../serverBar.mjs'
 import { closeGroupWebSocket } from '../stream/index.mjs'
 
 import { renderChannelList } from './channels.mjs'
+import { firstOpenableChannelId } from './firstOpenableChannel.mjs'
 import { ensureGroupMembership, syncGroupStateForHub } from './groupMembership.mjs'
 import { renderGroupInfoCard } from './infoCard.mjs'
 import { renderMemberList } from './members.mjs'
+import { showNoChannelMainPane } from './noChannelState.mjs'
 import { backToFriendsList, isPrivateChatActive } from './privateShell.mjs'
 import { selectChannel } from './selectChannel.mjs'
 
@@ -85,18 +87,24 @@ async function paintGroupHubChrome(state) {
  */
 async function activateGroupChannel(state, presetChannelId) {
 	const rootChannelId = state.groupSettings?.rootChannelId
-	const channelIds = Object.keys(state.channels || {}).filter(id => id !== rootChannelId)
-	const targetChannelId = presetChannelId && state.channels?.[presetChannelId] && presetChannelId !== rootChannelId
-		? presetChannelId
-		: state.groupSettings?.defaultChannelId !== rootChannelId
-			? state.groupSettings.defaultChannelId
-			: channelIds[0] || null
+	/**
+	 * @param {string | null | undefined} id 候选频道 id
+	 * @returns {boolean} 是否可直接打开
+	 */
+	const isOpenable = id => !!id && id !== rootChannelId
+		&& !!state.channels?.[id] && state.channels[id].type !== 'category'
+	const explicitDefault = state.groupSettings?.defaultChannelId
+	// 落地顺序：预设 → 显式默认 → 侧栏最上侧第一个可打开频道 → 都没有则空态。
+	const targetChannelId = isOpenable(presetChannelId) ? presetChannelId
+		: isOpenable(explicitDefault) ? explicitDefault
+			: firstOpenableChannelId(state)
 	if (targetChannelId) await selectChannel(targetChannelId)
 	else {
 		setState('context.currentChannelId', null)
 		updateHash(store.context.currentGroupId, null)
 		const { disableComposer } = await import('../messages/composerController.mjs')
 		disableComposer()
+		await showNoChannelMainPane(state)
 		updateStatusBanners()
 		void refreshPinsBookmarks()
 	}

@@ -38,7 +38,7 @@ export function setupPartDragDrop() {
 		if (!partType || !partName)
 			return showToastI18n('error', 'chat.dragAndDrop.invalidPartData')
 
-		const channelId = store.context.currentChannelId || 'default'
+		const channelId = store.context.currentChannelId || null
 		try {
 			switch (partType) {
 				case 'chars':

@@ -2493,7 +2493,9 @@
 					"copyLink": "Copiar enlace del canal",
 					"exportJson": "Exportar JSON",
 					"exportOk": "Archivo del canal descargado",
-					"exportFailed": "Exportación fallida: ${error}"
+					"exportFailed": "Exportación fallida: ${error}",
+					"unsetDefault": "Quitar como canal predeterminado",
+					"unsetDefaultOk": "Ya no es el canal predeterminado"
 				},
 				"name": "Nombre del canal",
 				"unnamed": "Sin nombre",
@@ -3021,6 +3023,11 @@
 						"1": "1 mensaje sin leer"
 					}
 				}
+			},
+			"noChannel": {
+				"title": "Este grupo aún no tiene canales",
+				"description": "Crea o selecciona un canal a la derecha para empezar a chatear",
+				"createAction": "Crear nuevo canal"
 			}
 		},
 		"sidebar": {

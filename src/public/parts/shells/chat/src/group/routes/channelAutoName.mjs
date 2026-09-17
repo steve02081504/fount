@@ -2,7 +2,7 @@
  * 【文件】group/routes/channelAutoName.mjs
  * 【职责】DM 群空名频道自动命名/分类与 greeting-only 占位频道清理：新建频道后由
  *   `scheduleDmChannelAutoNameAndCleanup` 触发，对根级每个无名频道截取最近 13 条消息：
- *   全部为问候语则删除，否则交给本机默认 AI 源以 XML 标签命名并归入分类（分类缺失则自动创建）。
+ *   全部为问候语且存在新建的替代频道时删除，否则交给本机默认 AI 源以 XML 标签命名并归入分类（分类缺失则自动创建）。
  * 【原理】仅在 DM 群（`groupKindFromState === 'dm'` 或带 friendBinding）执行；无默认 AI 源时
  *   跳过命名。异步总结用 `autoNamingInFlight` Map 去重（键 `groupId:channelId`），失败即从
  *   Map 移除，待下次新建频道时再触发；清理/命名产出的 DAG 事件经群 WS 广播给前端。
@@ -14,13 +14,7 @@ import { prefixedRandomId } from 'npm:@steve02081504/fount-p2p/core/random_id'
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { loadAnyPreferredDefaultPart } from '../../../../../../../server/parts_loader.mjs'
 import { messageLineShowText } from '../../../public/shared/channelContent.mjs'
-import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
-import {
-	appendChannelLink,
-	createChannel,
-	deleteChannel,
-	updateChannel,
-} from '../../chat/dag/channelOperations.mjs'
+import { appendChannelLink, createChannel, deleteChannel, updateChannel } from '../../chat/dag/channelOperations.mjs'
 import { getState } from '../../chat/dag/materialize.mjs'
 import { groupKindFromState } from '../../chat/lib/notificationPreferences.mjs'
 import { withLock } from '../lib/locks.mjs'
@@ -174,7 +168,7 @@ async function autoNameChannelAsync(username, groupId, channelId) {
 /**
  * DM 群新建频道后异步清理/命名根级无名频道：
  *   截取每个无名频道最近 13 条消息，全为问候语则删除，否则启动异步 AI 命名（Map 去重，失败放行）。
- *   若被删除频道是默认频道，先改默认频道为刚创建的新频道。
+ *   DM 群无默认频道；仅当存在新建的替代频道时才删除 greeting-only 占位频道。
  * @param {string} username 用户名
  * @param {string} groupId 群 ID
  * @param {string} newChannelId 刚创建的新频道 id
@@ -203,21 +197,14 @@ export async function scheduleDmChannelAutoNameAndCleanup(username, groupId, new
 		else toName.push(channelId)
 	}
 
-	const defaultChannelId = state.groupSettings?.defaultChannelId
-	// 仅当存在有效的替代频道 id（新建频道路径）时才更新默认频道并清理旧默认频道；
-	// 自动命名路由不提供 newChannelId（''），此时不得写入空 defaultChannelId 或删除当前默认频道。
+	// 仅在新建频道（存在有效替代频道）时清理旧占位频道；自动命名路由不提供 newChannelId（''），
+	// 此时不得删除任何频道（DM 无默认频道，占位频道就是唯一入口）。
 	const hasValidReplacement = !!newChannelId
-	if (hasValidReplacement && toDelete.includes(defaultChannelId))
-		await appendSignedLocalEvent(username, groupId, {
-			type: 'group_settings_update',
-			timestamp: Date.now(),
-			content: { defaultChannelId: newChannelId },
-		})
 
-	for (const channelId of toDelete) try {
-		if (channelId === defaultChannelId && !hasValidReplacement) continue
-		await deleteChannel(username, groupId, channelId)
-	} catch { /* 删除失败放行，继续清理其余频道 */ }
+	if (hasValidReplacement)
+		for (const channelId of toDelete) try {
+			await deleteChannel(username, groupId, channelId)
+		} catch { /* 删除失败放行，继续清理其余频道 */ }
 
 	for (const channelId of toName) {
 		const key = `${groupId}:${channelId}`

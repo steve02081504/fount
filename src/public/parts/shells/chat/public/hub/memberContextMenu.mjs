@@ -10,7 +10,7 @@ import { isCared, setCared } from '../shared/care.mjs'
 import { promptText } from '/scripts/features/promptDialog.mjs'
 import { getGroupState } from '../src/endpoints/groupCore.mjs'
 import { kickMember } from '../src/endpoints/members.mjs'
-import { fetchViewerChannelPermissions } from '../src/groupViewerPermissions.mjs'
+import { fetchViewerChannelPermissions, governanceChannelIdFromState } from '../src/groupViewerPermissions.mjs'
 import { renderTemplate } from '../src/templates.mjs'
 
 import { refreshAliasDependentUi } from './aliasUi.mjs'
@@ -48,12 +48,12 @@ export async function showMemberContextMenu(event, memberElement) {
 	const displayName = memberElement.querySelector('.member-name')?.textContent?.trim() || memberKey
 	const viewer = store.context.currentState?.viewerMemberPubKeyHash || ''
 	const viewerEntity = store.viewer.viewerEntityHash || ''
-	const defaultChannelId = store.context.currentState?.groupSettings?.defaultChannelId || 'default'
+	const permissionChannelId = governanceChannelIdFromState(store.context.currentState)
 	const isAgent = memberElement.dataset.memberKind === 'agent'
 	const ownerEntityHash = memberElement.dataset.ownerEntityHash || ''
 	const isOwnerOwnAgent = isAgent && !!(ownerEntityHash && ownerEntityHash === viewerEntity)
 	const perms = viewer && memberKey !== viewer
-		? await fetchViewerChannelPermissions(store.context.currentState, store.context.currentGroupId, defaultChannelId)
+		? await fetchViewerChannelPermissions(store.context.currentState, store.context.currentGroupId, permissionChannelId)
 		: {}
 	const showKick = memberKey !== viewer && (
 		isAgent ? isOwnerOwnAgent || perms.ADMIN === true : perms.KICK_MEMBERS === true

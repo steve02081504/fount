@@ -31,6 +31,7 @@ import {
 	syncGroupFileManifest,
 	uploadPermissionChannelId,
 } from '../../chat/files/groupFiles.mjs'
+import { fallbackChannelId } from '../../chat/lib/channelId.mjs'
 import { resolveActiveMemberKeyForLocalUser } from '../access.mjs'
 
 import { GROUPS_PREFIX } from './path.mjs'
@@ -163,7 +164,7 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 		const memberKey = await resolveActiveMemberKeyForLocalUser(username, groupId, state)
 		if (!memberKey)
 			return res.status(403).json({ error: 'Not a member' })
-		const defaultChannelId = state.groupSettings?.defaultChannelId || 'default'
+		const defaultChannelId = fallbackChannelId(state)
 		const member = state.members[memberKey]
 		if (!canInChannel(state, member, PERMISSIONS.MANAGE_FILES, defaultChannelId))
 			return res.status(403).json({ error: 'No permission to delete files' })

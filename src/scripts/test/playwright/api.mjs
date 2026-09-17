@@ -65,7 +65,7 @@ export async function fetchViewerEntityHash(baseUrl, apiKey, options = {}) {
  * @param {string} [options.defaultChannelName] 默认频道名
  * @param {boolean} [options.forceNew] 强制新建，不复用同好友的既有 DM 群
  * @param {{ entityHash?: string, charname?: string, displayName?: string }} [options.friendBinding] 好友绑定
- * @returns {Promise<{ groupId: string, defaultChannelId: string, channelId: string }>} 群与默认频道
+ * @returns {Promise<{ groupId: string, defaultChannelId: string | null, channelId: string | null }>} 群与频道
  */
 export async function createChatTestGroup(baseUrl, apiKey, options = {}) {
 	const name = options.name ?? `pw-group-${Date.now()}`
@@ -84,11 +84,50 @@ export async function createChatTestGroup(baseUrl, apiKey, options = {}) {
 		if (!res.ok()) throw new Error(`createGroup failed: ${res.status()}`)
 		const data = await res.json()
 		if (!data.groupId) throw new Error('groupId missing')
-		const defaultChannelId = data.defaultChannelId || 'default'
+		const defaultChannelId = data.defaultChannelId ?? null
+		const channelId = defaultChannelId || await resolveFirstOpenableChannel(req, baseUrl, apiKey, data.groupId)
 		return {
 			groupId: data.groupId,
 			defaultChannelId,
-			channelId: defaultChannelId,
+			channelId,
 		}
 	})
+}
+
+/**
+ * 群无默认频道时（如 DM），从 `/state` 取最上侧第一个可打开频道。
+ * @param {object} req API 请求器
+ * @param {string} baseUrl 测试根 URL
+ * @param {string} apiKey API 密钥
+ * @param {string} groupId 群 ID
+ * @returns {Promise<string | null>} 频道 ID 或 null
+ */
+async function resolveFirstOpenableChannel(req, baseUrl, apiKey, groupId) {
+	const res = await req.get(
+		`${baseUrl}/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/state?fount-apikey=${encodeURIComponent(apiKey)}`,
+	)
+	if (!res.ok()) return null
+	const { meta = {} } = await res.json()
+	const channels = meta.channels || {}
+	const rootChannelId = meta.groupSettings?.rootChannelId
+	/**
+	 * @param {string} parentId 父频道 id
+	 * @returns {string | null} 频道 id 或 null
+	 */
+	const visit = parentId => {
+		for (const childId of channels[parentId]?.links || []) {
+			const child = channels[childId]
+			if (!child) continue
+			if (child.type === 'category') {
+				const found = visit(childId)
+				if (found) return found
+				continue
+			}
+			if (child.parentEventId) continue
+			return childId
+		}
+		return null
+	}
+	if (rootChannelId && channels[rootChannelId]) return visit(rootChannelId)
+	return Object.keys(channels).find(id => channels[id]?.type !== 'category') || null
 }

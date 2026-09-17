@@ -284,10 +284,10 @@ export async function computeLastGroupActivityMs(username, groupId) {
 }
 
 /**
- * 获取群组的默认频道 ID：优先 `groupSettings.defaultChannelId`，否则取首个频道或 `default`。
+ * 获取群组的默认频道 ID：优先 `groupSettings.defaultChannelId`，否则取首个可打开频道；群无频道则 null。
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
- * @returns {Promise<string>} 解析得到的默认频道 ID
+ * @returns {Promise<string | null>} 解析得到的频道 ID 或 null
  */
 export async function getDefaultChannelId(username, groupId) {
 	return resolveGroupChannelId(username, groupId, null)

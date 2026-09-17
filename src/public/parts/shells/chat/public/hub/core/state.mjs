@@ -75,7 +75,7 @@ export const store = {
 		groupId: null,
 		/** 对端 128 位 entityHash（角色 agent / 用户统一） */
 		peerEntityHash: null,
-		channelId: 'default',
+		channelId: null,
 	},
 }
 

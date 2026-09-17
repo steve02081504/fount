@@ -26,6 +26,7 @@ import { friendBindingForGroup } from './friendBindings.mjs'
 import { cancelScheduledChannelRefresh } from './messages/channelRefreshScheduler.mjs'
 import { setActiveModeTab, setMode } from './mode.mjs'
 import { loadGroups } from './serverBar.mjs'
+import { firstOpenableChannelId } from './sidebar/firstOpenableChannel.mjs'
 import { selectChannel } from './sidebar/index.mjs'
 import { closeGroupWebSocket } from './stream/index.mjs'
 
@@ -159,15 +160,14 @@ async function resolveFriendGroupId(binding, options) {
 /**
  * @param {object} state 群 state
  * @param {string | null | undefined} preferredChannelId 优先频道
- * @returns {string} 可用频道 ID
+ * @returns {string | null} 可用频道 ID（群无可打开频道时为 null）
  */
 function resolvePrivateChannelId(state, preferredChannelId) {
 	const channels = state?.channels || {}
-	const defaultId = state?.groupSettings?.defaultChannelId || 'default'
 	if (preferredChannelId && channels[preferredChannelId]) return preferredChannelId
-	if (channels[defaultId]) return defaultId
-	const keys = Object.keys(channels)
-	return keys[0] || 'default'
+	const defaultId = state?.groupSettings?.defaultChannelId
+	if (defaultId && channels[defaultId]) return defaultId
+	return firstOpenableChannelId(state)
 }
 
 /**

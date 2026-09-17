@@ -2493,7 +2493,9 @@
 					"copyLink": "📋📺🔗",
 					"exportJson": "📤📊",
 					"exportOk": "📺📦⬇️✅",
-					"exportFailed": "📤❌：${error}"
+					"exportFailed": "📤❌：${error}",
+					"unsetDefault": "🚫⭐📺",
+					"unsetDefaultOk": "✅🚫⭐📺"
 				},
 				"name": "📺🏷️",
 				"unnamed": "❓📺",
@@ -3015,6 +3017,11 @@
 			},
 			"unreadBadge": {
 				"aria-label": "📬 ${count}"
+			},
+			"noChannel": {
+				"title": "📺📭",
+				"description": "➕📺 🖱️💬",
+				"createAction": "🆕📺"
 			}
 		},
 		"sidebar": {

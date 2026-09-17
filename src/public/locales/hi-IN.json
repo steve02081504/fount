@@ -2493,7 +2493,9 @@
 					"copyLink": "चैनल लिंक कॉपी करें",
 					"exportJson": "JSON निर्यात करें",
 					"exportOk": "चैनल संग्रह डाउनलोड किया गया",
-					"exportFailed": "निर्यात विफल: ${error}"
+					"exportFailed": "निर्यात विफल: ${error}",
+					"unsetDefault": "डिफ़ॉल्ट चैनल की सेटिंग हटाएँ",
+					"unsetDefaultOk": "डिफ़ॉल्ट चैनल की सेटिंग हटा दी गई"
 				},
 				"name": "चैनल नाम",
 				"unnamed": "अनाम",
@@ -3015,6 +3017,11 @@
 			},
 			"unreadBadge": {
 				"aria-label": "${count} अपठित आइटम"
+			},
+			"noChannel": {
+				"title": "इस समूह में अभी कोई चैनल नहीं है",
+				"description": "चैट शुरू करने के लिए दाईं ओर एक चैनल बनाएँ या चुनें",
+				"createAction": "नया चैनल बनाएं"
 			}
 		},
 		"sidebar": {

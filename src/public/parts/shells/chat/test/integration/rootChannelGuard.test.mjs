@@ -35,7 +35,7 @@ Deno.test('newGroup without defaultChannelId creates root + default text channel
 	assertEquals(state.groupSettings.defaultChannelId, 'default')
 })
 
-Deno.test('DM default channel is unnamed (empty name)', async () => {
+Deno.test('DM group has an unnamed placeholder channel but no default channel', async () => {
 	const username = `root-dm-${crypto.randomUUID().slice(0, 8)}`
 	await createIntegrationBoot({ username, minP2pNode: true, p2p: false }).ensureServer()
 
@@ -43,14 +43,19 @@ Deno.test('DM default channel is unnamed (empty name)', async () => {
 	const { randomKeyPair } = await import('npm:@steve02081504/fount-p2p/crypto')
 	const { createEcdhDmGroup } = await import('../../src/chat/dm/index.mjs')
 	const { getState } = await import('../../src/chat/dag/materialize.mjs')
+	const { firstOpenableChannelId } = await import('../../src/chat/lib/channelId.mjs')
 
 	const myPub = await ensureOperatorPubKey(username)
 	const peerPub = Buffer.from((await randomKeyPair()).publicKey).toString('hex')
 	const dm = await createEcdhDmGroup(username, myPub, peerPub)
+	assertEquals(dm.defaultChannelId, null)
 	const { state } = await getState(username, dm.groupId)
-	const def = state.channels[dm.defaultChannelId]
-	assert(def, 'DM default channel must exist')
-	assertEquals(def.name, '')
+	assertEquals(state.groupSettings.defaultChannelId, null)
+	// 占位频道仍存在（问候语落点），但未登记为默认频道。
+	const placeholderId = firstOpenableChannelId(state)
+	assert(placeholderId, 'DM placeholder channel must exist')
+	assertEquals(state.channels[placeholderId].type, 'text')
+	assertEquals(state.channels[placeholderId].name, '')
 })
 
 Deno.test('postChannelMessage to root channel is rejected even for admin', async () => {

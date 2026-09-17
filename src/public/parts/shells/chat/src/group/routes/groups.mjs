@@ -17,6 +17,7 @@ import { createGroup, removeLocalGroupReplica } from '../../chat/dag/lifecycle.m
 import { getLocalSignerForNewGroup } from '../../chat/dag/localSigner.mjs'
 import { createEcdhDmGroup } from '../../chat/dm/index.mjs'
 import { validateDmIntroLinkProof } from '../../chat/dm/linkValidate.mjs'
+import { resolveGroupChannelId } from '../../chat/lib/channelId.mjs'
 import { newMetadata } from '../../chat/session/groupLifecycle.mjs'
 import { getActiveGroupRuntime } from '../../chat/session/persistence.mjs'
 import { registerGroupRuntime } from '../../chat/session/runtime.mjs'
@@ -90,7 +91,7 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 				registerGroupRuntime(existing.groupId, username)
 				return res.status(200).json({
 					groupId: existing.groupId,
-					defaultChannelId: 'default',
+					defaultChannelId: existing.defaultChannelId ?? null,
 					reused: true,
 					friendBinding: existing.friendBinding || friendBinding,
 				})
@@ -111,7 +112,7 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 			const state = await loadGroupState({ username, entityHash: client.entityHash }, group.id)
 			return res.status(201).json({
 				groupId: group.id,
-				defaultChannelId: state.groupSettings?.defaultChannelId || 'default',
+				defaultChannelId: state.groupSettings?.defaultChannelId ?? null,
 			})
 		}
 
@@ -160,7 +161,10 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 		if (typeof delta !== 'number' || Number.isNaN(delta))
 			return res.status(400).json({ error: 'delta or latest required' })
 
-		const channelId = String(body.channelId || 'default').trim() || 'default'
+		const channelId = String(body.channelId || '').trim()
+			|| await resolveGroupChannelId(username, groupId, null)
+		if (!channelId)
+			return res.status(400).json({ error: 'no channel available' })
 		const entry = await modifyTimeLine(groupId, channelId, delta)
 		res.status(200).json({ entry: await entry.toData(username) })
 	})

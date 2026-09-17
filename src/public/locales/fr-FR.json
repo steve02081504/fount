@@ -2493,7 +2493,9 @@
 					"copyLink": "Copier le lien de la chaîne",
 					"exportJson": "Exporter JSON",
 					"exportOk": "Archive de chaîne téléchargée",
-					"exportFailed": "Échec de l'exportation : ${error}"
+					"exportFailed": "Échec de l'exportation : ${error}",
+					"unsetDefault": "Retirer le salon par défaut",
+					"unsetDefaultOk": "Salon par défaut retiré"
 				},
 				"name": "Nom de la chaîne",
 				"unnamed": "Sans nom",
@@ -3021,6 +3023,11 @@
 						"1": "1 élément non lu"
 					}
 				}
+			},
+			"noChannel": {
+				"title": "Ce groupe n'a pas encore de salon",
+				"description": "Créez ou sélectionnez un salon à droite pour commencer à discuter",
+				"createAction": "Créer un salon"
 			}
 		},
 		"sidebar": {

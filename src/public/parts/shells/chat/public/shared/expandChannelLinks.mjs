@@ -6,11 +6,12 @@ import {
 
 /**
  * @param {string} groupId 群 ID
- * @param {string} [channelId] 频道 ID
+ * @param {string | null} [channelId] 频道 ID；缺省时链接只含群（落地时自动选择频道）
  * @returns {string} Hub hash 链接
  */
-export function formatChatGroupHref(groupId, channelId = 'default') {
-	return `/parts/shells:chat/hub/#group:${encodeURIComponent(groupId)}:${encodeURIComponent(channelId)}`
+export function formatChatGroupHref(groupId, channelId) {
+	const base = `/parts/shells:chat/hub/#group:${encodeURIComponent(groupId)}`
+	return channelId ? `${base}:${encodeURIComponent(channelId)}` : base
 }
 
 /**

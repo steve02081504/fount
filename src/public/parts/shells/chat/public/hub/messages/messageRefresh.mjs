@@ -7,6 +7,7 @@ import { mountTemplate } from '../../src/templates.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { refreshChannelPinsBar } from '../banners.mjs'
 import { store } from '../core/state.mjs'
+import { showNoChannelMainPane } from '../sidebar/noChannelState.mjs'
 import {
 	dismissVolatileStreamPreview,
 } from '../stream/index.mjs'
@@ -270,7 +271,7 @@ export async function loadMessages(isCurrent) {
 	const channel = store.context.currentState?.channels?.[channelId]
 	if (!channelId || !channel) {
 		destroyChannelVirtualList()
-		await mountTemplate(container, 'hub/nav/side_muted', { i18nKey: 'chat.hub.no.channels' })
+		await showNoChannelMainPane()
 		return
 	}
 	const pipelineKey = `${groupId}:${channelId}`

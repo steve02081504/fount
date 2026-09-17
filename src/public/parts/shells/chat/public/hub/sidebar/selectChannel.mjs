@@ -25,6 +25,8 @@ import { connectGroupWebSocket } from '../stream/index.mjs'
 
 import { channelDisplayName } from './channelDisplayName.mjs'
 import { rebindFederationRoomQuiet } from './federationRoom.mjs'
+import { firstOpenableChannelId } from './firstOpenableChannel.mjs'
+import { showNoChannelMainPane } from './noChannelState.mjs'
 import { isPrivateChatActive } from './privateShell.mjs'
 
 /** 每次 selectChannel 调用递增的请求令牌，用于拦截过期请求。 */
@@ -73,15 +75,15 @@ export async function selectChannel(channelId) {
 	if (!stillCurrent()) return
 	const channel = store.context.currentState?.channels?.[channelId]
 	if (!channel) {
+		// 目标频道已不存在：回退到最上侧第一个可打开频道，否则落空态。
+		const fallback = firstOpenableChannelId(store.context.currentState)
+		if (fallback && fallback !== channelId) return selectChannel(fallback)
 		setState('context.currentChannelId', null)
 		updateHash(store.context.currentGroupId, null)
 		disableComposer()
 		const { renderHubChannelSidebar } = await import('./index.mjs')
 		await renderHubChannelSidebar(store.context.currentState)
-		const { mountTemplate } = await import('../../src/templates.mjs')
-		await mountTemplate(document.getElementById('messages'), 'hub/nav/side_muted', {
-			i18nKey: 'chat.hub.no.channels',
-		})
+		await showNoChannelMainPane()
 		updateStatusBanners()
 		return
 	}

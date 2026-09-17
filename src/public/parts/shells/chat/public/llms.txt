@@ -110,7 +110,7 @@ chat shell 提供联邦群组与 DM、Hub 主壳、实体身份与 EVFS 文件�
 | 方法 | 路径 | 说明 |
 |------|------|------|
 | GET | `G/` | 已加入的群 / DM 摘要，按消息活动时间排序 |
-| POST | `G/` | 建群：`name`、`description`、`defaultChannelName`、`defaultChannelId` → `201 { groupId, defaultChannelId }`。好友私聊：`friendBinding` 为 `{ entityHash }` 或 `{ charname }`（互斥，可选 `displayName`；`charname` 时服务端 ensure 本地 agent）→ 响应含规范化 `friendBinding`。建 DM：`{ template: 'dm', myPubKeyHex, peerPubKeyHex }`（各 64 hex），可选 `dmIntroNonce` + `dmIntroSignatureHex` 成对出现 |
+| POST | `G/` | 建群：`name`、`description`、`defaultChannelName`、`defaultChannelId` → `201 { groupId, defaultChannelId }`（普通群初始频道登记为默认；`defaultChannelId` 可为 `null`）。好友私聊：`friendBinding` 为 `{ entityHash }` 或 `{ charname }`（互斥，可选 `displayName`；`charname` 时服务端 ensure 本地 agent）→ 响应含规范化 `friendBinding`。建 DM：`{ template: 'dm', myPubKeyHex, peerPubKeyHex }`（各 64 hex），可选 `dmIntroNonce` + `dmIntroSignatureHex` 成对出现；DM 保留一个空名占位频道但 `defaultChannelId` 为 `null` |
 | GET | `G/:groupId/preview` | 非成员群卡片预览（私密群隐藏加入入口） |
 | DELETE | `G/:groupId` | 删整群本地 DAG 数据；需 `ADMIN` 或 `MANAGE_ADMINS` |
 | GET | `G/:groupId/state` | 分层 DTO `{ meta, viewer, federation }`：`meta` 含 `channels`/`groupSettings`/`roles`/`members`/`pinsByChannel`/`cabinets`/`files`；`viewer` 是当前用户视角（`isMember`、`memberKey`、`entityHash`、`roles`）；`federation` 是同步与隔离状态 |
@@ -119,10 +119,12 @@ chat shell 提供联邦群组与 DM、Hub 主壳、实体身份与 EVFS 文件�
 | GET | `G/:groupId/search?q=&channelId=&limit=` | 群内全文搜索（`q` ≥2，默认 30 / 上限 100）→ `{ query, items[] }` |
 | GET | `G/:groupId/audit-log` | 治理审计流 |
 | GET / PUT | `G/:groupId/branch` | RPG 分支索引；PUT body `{ delta }` 或 `{ latest: true, channelId? }` |
-| PUT | `G/:groupId/default-channel` · `G/:groupId/meta` · `G/:groupId/settings` | 默认频道 / 群资料 / 群设置 |
-| POST / PUT / DELETE | `G/:groupId/channels` · `C`（`PUT`/`DELETE`） | 频道增改删 |
+| PUT | `G/:groupId/default-channel` · `G/:groupId/meta` · `G/:groupId/settings` | 设置默认频道（`channelId`；`null`/空串表示取消默认，群允许无默认频道） / 群资料 / 群设置 |
+| POST / PUT / DELETE | `G/:groupId/channels` · `C`（`PUT`/`DELETE`） | 频道增改删；删除当前默认频道会清空 `defaultChannelId`（根容器不可删） |
 | GET | `C/export` | 导出频道完整归档 JSON（冷热历史终态、墓碑、反应计数、附件元数据）；需 `VIEW_CHANNEL` |
 | POST | `G/:groupId/channels/import` | 把归档导入为本群新 text 频道（multipart 字段 `archive` 或 JSON body）；需 `MANAGE_CHANNELS` → `{ channelId, messageCount }` |
+
+群允许无默认频道（`groupSettings.defaultChannelId` 可为 `null`，DM 建群即如此）。Hub 进入群按 `hash 指定频道 → defaultChannelId → 侧栏最上侧第一个可打开频道` 顺序选择；都没有时主区展示空态（可管理成员可一键新建频道），侧栏仍正常列出/管理频道。`PUT .../default-channel` 传 `channelId: null` 可取消默认。
 
 ## 群：DAG 与联邦
 

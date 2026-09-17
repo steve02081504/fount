@@ -47,6 +47,7 @@ async function triggerViaGroupId(username, groupId, char_id, reason, chatLogSnip
 	if (!chatMetadata?.LastTimeSlice.chars[char_id]) return false
 	setPendingNotification(groupId, char_id, makeTimerSystemEntry(reason, chatLogSnip, char_id))
 	const channelId = await getDefaultChannelId(username, groupId)
+	if (!channelId) return false
 	await triggerCharReply(groupId, channelId, char_id)
 	return true
 }

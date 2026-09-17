@@ -2493,7 +2493,9 @@
 					"copyLink": "Kanallink kopieren",
 					"exportJson": "JSON exportieren",
 					"exportOk": "Kanalarchiv heruntergeladen",
-					"exportFailed": "Export fehlgeschlagen: ${error}"
+					"exportFailed": "Export fehlgeschlagen: ${error}",
+					"unsetDefault": "Standardkanal aufheben",
+					"unsetDefaultOk": "Standardkanal aufgehoben"
 				},
 				"name": "Kanalname",
 				"unnamed": "Unbenannt",
@@ -3015,6 +3017,11 @@
 			},
 			"unreadBadge": {
 				"aria-label": "${count} ungelesen"
+			},
+			"noChannel": {
+				"title": "Diese Gruppe hat noch keine Kanäle",
+				"description": "Erstelle oder wähle rechts einen Kanal, um zu chatten",
+				"createAction": "Neuen Kanal erstellen"
 			}
 		},
 		"sidebar": {

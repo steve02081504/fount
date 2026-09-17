@@ -2408,10 +2408,10 @@
 				}
 			},
 			"newChannel": {
-				"button": "Criar new channel",
-				"failed": "Falha ao create channel",
+				"button": "Criar novo canal",
+				"failed": "Falha ao criar o canal",
 				"success": "Canal criado",
-				"title": "Criar new channel"
+				"title": "Criar novo canal"
 			},
 			"newCategory": {
 				"button": "Nova categoria",
@@ -2485,7 +2485,7 @@
 					"notifyPrefs": "Definições de notificação do canal",
 					"rename": "Renomear canal",
 					"renameOk": "O canal foi renomeado",
-					"delete": "Eliminar channel",
+					"delete": "Eliminar canal",
 					"deleteOk": "Canal eliminado",
 					"deleteConfirm": "Tem a certeza de que deseja eliminar o canal \"${name}\"? Esta ação não pode ser desfeita.",
 					"setDefault": "Definir como canal padrão",
@@ -2493,7 +2493,9 @@
 					"copyLink": "Copiar link do canal",
 					"exportJson": "Exportar JSON",
 					"exportOk": "Arquivo do canal descarregado",
-					"exportFailed": "Exportar failed: ${error}"
+					"exportFailed": "Exportar failed: ${error}",
+					"unsetDefault": "Remover como canal predefinido",
+					"unsetDefaultOk": "Canal predefinido removido"
 				},
 				"name": "Nome do canal",
 				"unnamed": "Sem nome",
@@ -3021,6 +3023,11 @@
 						"1": "1 item não lido"
 					}
 				}
+			},
+			"noChannel": {
+				"title": "Este grupo ainda não tem canais",
+				"description": "Crie ou selecione um canal à direita para começar a conversar",
+				"createAction": "Criar novo canal"
 			}
 		},
 		"sidebar": {

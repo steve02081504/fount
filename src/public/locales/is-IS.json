@@ -2493,7 +2493,9 @@
 					"copyLink": "Afritaðu tengil á rás",
 					"exportJson": "Flytja út JSON",
 					"exportOk": "Rásasafn hlaðið niður",
-					"exportFailed": "Útflutningur mistókst: ${error}"
+					"exportFailed": "Útflutningur mistókst: ${error}",
+					"unsetDefault": "Afvelja sem sjálfgefna rás",
+					"unsetDefaultOk": "Sjálfgefna rás afvalin"
 				},
 				"name": "Heiti rásar",
 				"unnamed": "Nafnlaus",
@@ -3015,6 +3017,11 @@
 			},
 			"unreadBadge": {
 				"aria-label": "${count} ólesin atriði"
+			},
+			"noChannel": {
+				"title": "Þessi hópur hefur engar rásir ennþá",
+				"description": "Búðu til eða veldu rás til hægri til að byrja að spjalla",
+				"createAction": "Búa til nýja rás"
 			}
 		},
 		"sidebar": {

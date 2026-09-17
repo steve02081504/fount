@@ -242,7 +242,7 @@ export async function checkEventPermission(state, event, senderHash, options = {
 			const parentChannelId = event.content?.parentChannelId
 				|| state.groupSettings?.rootChannelId
 				|| state.groupSettings?.defaultChannelId
-				|| 'default'
+				|| null
 			return memberChannelPermissions(state, sender, parentChannelId)[PERMISSIONS.MANAGE_CHANNELS]
 				? { ok: true }
 				: { ok: false, reason: 'MANAGE_CHANNELS denied' }

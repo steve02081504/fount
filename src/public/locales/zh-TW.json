@@ -2492,7 +2492,9 @@
 					"copyLink": "複製頻道連結",
 					"exportJson": "匯出 JSON",
 					"exportOk": "頻道歸檔已下載",
-					"exportFailed": "匯出失敗：${error}"
+					"exportFailed": "匯出失敗：${error}",
+					"unsetDefault": "取消預設頻道",
+					"unsetDefaultOk": "已取消預設頻道"
 				},
 				"name": "頻道名稱",
 				"unnamed": "未命名",
@@ -3014,6 +3016,11 @@
 			},
 			"unreadBadge": {
 				"aria-label": "${count} 條未讀"
+			},
+			"noChannel": {
+				"title": "這個群組還沒有頻道",
+				"description": "在右側新建或選擇一個頻道，就能開始聊天",
+				"createAction": "新建頻道"
 			}
 		},
 		"sidebar": {

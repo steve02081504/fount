@@ -2493,7 +2493,9 @@
 					"copyLink": "Kanaallink kopiëren",
 					"exportJson": "JSON exporteren",
 					"exportOk": "Kanaalarchief gedownload",
-					"exportFailed": "Exporteren mislukt: ${error}"
+					"exportFailed": "Exporteren mislukt: ${error}",
+					"unsetDefault": "Standaardkanaal opheffen",
+					"unsetDefaultOk": "Standaardkanaal opgeheven"
 				},
 				"name": "Kanaalnaam",
 				"unnamed": "Naamloos",
@@ -3021,6 +3023,11 @@
 						"1": "1 ongelezen item"
 					}
 				}
+			},
+			"noChannel": {
+				"title": "Deze groep heeft nog geen kanalen",
+				"description": "Maak of kies rechts een kanaal om te beginnen met chatten",
+				"createAction": "Nieuw kanaal maken"
 			}
 		},
 		"sidebar": {

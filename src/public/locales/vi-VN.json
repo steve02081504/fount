@@ -2493,7 +2493,9 @@
 					"copyLink": "Sao chép liên kết kênh",
 					"exportJson": "Xuất JSON",
 					"exportOk": "Đã tải xuống kho lưu trữ kênh",
-					"exportFailed": "Xuất không thành công: ${error}"
+					"exportFailed": "Xuất không thành công: ${error}",
+					"unsetDefault": "Hủy đặt làm kênh mặc định",
+					"unsetDefaultOk": "Đã bỏ kênh mặc định"
 				},
 				"name": "Tên kênh",
 				"unnamed": "Không tên",
@@ -3015,6 +3017,11 @@
 			},
 			"unreadBadge": {
 				"aria-label": "${count} mục chưa đọc"
+			},
+			"noChannel": {
+				"title": "Nhóm này chưa có kênh nào",
+				"description": "Tạo hoặc chọn một kênh ở bên phải để bắt đầu trò chuyện",
+				"createAction": "Tạo kênh mới"
 			}
 		},
 		"sidebar": {

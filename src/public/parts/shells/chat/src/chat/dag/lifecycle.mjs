@@ -98,7 +98,7 @@ export async function convergeDagTipsIfAuthorized(username, groupId) {
  * 创建新群：写入创世 `group_meta_update`、默认频道与默认频道设置事件。
  * @param {string} username 用户名
  * @param {object} body 建群参数
- * @returns {Promise<{ groupId: string, checkpoint: object | null, defaultChannelId: string }>} 新群元数据
+ * @returns {Promise<{ groupId: string, checkpoint: object | null, defaultChannelId: string | null }>} 新群元数据
  */
 export async function createGroup(username, body) {
 	const groupId = body.groupId || randomUUID()
@@ -146,6 +146,8 @@ export async function createGroup(username, body) {
 	// 默认频道 id 不得与隐藏根容器频道冲突，否则根 links 与 rootChannelId/defaultChannelId 不变量被破坏。
 	const requestedDefaultChannelId = body.defaultChannelId || 'default'
 	const initialChannelId = requestedDefaultChannelId !== ROOT_CHANNEL_ID ? requestedDefaultChannelId : 'default'
+	// 首频道是否登记为默认频道：DM 等场景保留占位频道但不设默认（defaultChannelId 保持 null）。
+	const markDefaultChannel = body.markDefaultChannel !== false
 	// 隐藏根容器频道：category 类型、空名，承载所有顶层频道的顺序（defaultChannel 挂其下）。
 	await genesisAppend({
 		type: 'channel_create',
@@ -180,7 +182,7 @@ export async function createGroup(username, body) {
 		sender: owner,
 		timestamp: Date.now(),
 		content: {
-			defaultChannelId: initialChannelId,
+			...markDefaultChannel ? { defaultChannelId: initialChannelId } : {},
 			rootChannelId: ROOT_CHANNEL_ID,
 			streamGeneratingIdleMs: DEFAULT_STREAM_GENERATING_IDLE_MS,
 			hlcMaxSkewMs: DEFAULT_HLC_MAX_SKEW_MS,
@@ -245,7 +247,7 @@ export async function createGroup(username, body) {
 	await rotateAllChannelKeys(username, groupId)
 
 	invalidateKnownMemberIndex(username)
-	const defaultChannelId = state.groupSettings?.defaultChannelId ?? initialChannelId
+	const defaultChannelId = state.groupSettings?.defaultChannelId ?? null
 	const { ensureDefaultGroupPack } = await import('../../group/groupEmojis.mjs')
 	await ensureDefaultGroupPack(username, groupId, state.groupSettings)
 	const { convergeLinkedDefault, groupDefaultLinkKey, resolveGroupDefaultPackId } = await import('../../emojiUsage.mjs')
@@ -288,7 +290,7 @@ export async function ensureGroup(username, groupId, options = {}) {
 	const { state } = await getState(username, groupId)
 	if (isGroupFederationActive(state.groupSettings))
 		void ensureFederationRoom(username, groupId, {
-			channelId: options.defaultChannelId || 'default',
+			channelId: options.defaultChannelId || state.groupSettings?.defaultChannelId || state.groupSettings?.rootChannelId || null,
 		}).catch(console.error)
 	return out
 }

@@ -65,11 +65,12 @@ export function parseGroupHashFromUrl(url) {
 	if (!hash.startsWith('group:')) return null
 	const rest = hash.slice('group:'.length)
 	const sep = rest.indexOf(':')
-	if (sep < 0) return null
+	const rawGroup = sep < 0 ? rest : rest.slice(0, sep)
+	const rawChannel = sep < 0 ? '' : rest.slice(sep + 1)
 	try {
-		const groupId = decodeURIComponent(rest.slice(0, sep))
-		const channelId = rest.slice(sep + 1)
-		if (!groupId || !channelId) return null
+		const groupId = decodeURIComponent(rawGroup)
+		if (!groupId) return null
+		const channelId = rawChannel ? decodeURIComponent(rawChannel) : null
 		return { groupId, channelId }
 	}
 	catch {
@@ -308,7 +309,7 @@ export function createTestChannel(baseUrl, apiKey, groupId, options = {}) {
  * @param {string} charname - 对端本地角色 part 名。
  * @param {object} [options] - 可选项。
  * @param {string} [options.name] - 群名。
- * @returns {Promise<{ groupId: string, defaultChannelId: string, channelId: string }>} 新建 DM 群信息。
+ * @returns {Promise<{ groupId: string, defaultChannelId: string | null, channelId: string | null }>} 新建 DM 群信息。
  */
 export function createFriendChatGroup(baseUrl, apiKey, charname, options = {}) {
 	return createChatTestGroup(baseUrl, apiKey, {

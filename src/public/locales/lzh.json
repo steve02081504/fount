@@ -2493,7 +2493,9 @@
 					"copyLink": "謄錄分苑鏈接",
 					"exportJson": "導出 JSON",
 					"exportOk": "分苑歸檔已拓存",
-					"exportFailed": "導出未遂：${error}"
+					"exportFailed": "導出未遂：${error}",
+					"unsetDefault": "撤常制分苑",
+					"unsetDefaultOk": "已撤常制分苑"
 				},
 				"name": "分苑名稱",
 				"unnamed": "無名",
@@ -3015,6 +3017,11 @@
 			},
 			"unreadBadge": {
 				"aria-label": "${count} 條未讀"
+			},
+			"noChannel": {
+				"title": "此群尚無分苑",
+				"description": "於右側新立或擇分苑以敘",
+				"createAction": "立分苑"
 			}
 		},
 		"sidebar": {

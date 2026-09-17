@@ -2493,7 +2493,9 @@
 					"copyLink": "チャンネルリンクをコピーする",
 					"exportJson": "JSONのエクスポート",
 					"exportOk": "チャンネルアーカイブがダウンロードされました",
-					"exportFailed": "エクスポートに失敗しました: ${error}"
+					"exportFailed": "エクスポートに失敗しました: ${error}",
+					"unsetDefault": "デフォルトチャンネルを解除",
+					"unsetDefaultOk": "デフォルトチャンネルを解除しました"
 				},
 				"name": "チャンネル名",
 				"unnamed": "無名",
@@ -3015,6 +3017,11 @@
 			},
 			"unreadBadge": {
 				"aria-label": "${count} 件の未読"
+			},
+			"noChannel": {
+				"title": "このグループにはまだチャンネルがありません",
+				"description": "右側でチャンネルを作成または選択してチャットを始めましょう",
+				"createAction": "チャンネルを作成"
 			}
 		},
 		"sidebar": {

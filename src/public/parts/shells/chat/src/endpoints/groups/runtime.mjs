@@ -63,6 +63,7 @@ export function registerGroupsRuntimeRoutes(router) {
 		const { params: { groupId }, body: { worldname, channelId: requestedChannelId } } = req
 		const { username } = getUserByReq(req)
 		const channelId = await resolveGroupChannel(groupId, optionalChannelId(requestedChannelId), username)
+		if (!channelId) throw httpError(400, 'no channel available for world binding')
 		const { client } = await chatClientFromReq(req)
 		await (await client.group(groupId)).session.bindWorld(channelId, worldname)
 		res.status(200).json({})

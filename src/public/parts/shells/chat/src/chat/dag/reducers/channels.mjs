@@ -109,6 +109,9 @@ export const channelReducers = {
 					if (toDelete.has(childId)) removal.push(childId)
 			}
 		}
+		// 群允许无默认频道：删除闭包包含当前默认频道时清空标记，避免 defaultChannelId 悬空。
+		if (state.groupSettings?.defaultChannelId && toDelete.has(state.groupSettings.defaultChannelId))
+			state.groupSettings.defaultChannelId = null
 		// 先给引用被删权限块的频道复制其有效块：在 channelPermissions 删除前保留既有覆写。
 		for (const channel of Object.values(state.channels))
 			if (channel && channel.permissionBlockId && toDelete.has(channel.permissionBlockId)) {

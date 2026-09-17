@@ -14,6 +14,7 @@ import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat
 import { canInChannel, resolveActiveMemberKeyForLocalUser } from '../group/access.mjs'
 
 import { getState } from './dag/materialize.mjs'
+import { fallbackChannelId } from './lib/channelId.mjs'
 import { groupIdFromGroupEntity, groupIdFromManifestMeta } from './lib/groupEntity.mjs'
 
 const OWNER_ID = 'chat'
@@ -33,7 +34,7 @@ export function registerChatManifestAcl() {
 		if (!memberKey) return false
 		if (logicalPath != null) {
 			const member = state.members[memberKey]
-			const channelId = state.groupSettings?.defaultChannelId || 'default'
+			const channelId = fallbackChannelId(state)
 			return canInChannel(state, member, PERMISSIONS.UPLOAD_FILES, channelId)
 		}
 		return true

@@ -26,7 +26,7 @@ import { enumerateJoinedFederatedGroups } from './group/queries.mjs'
 
 /**
  * @param {string} groupId 群组 ID
- * @returns {Promise<string>} 默认频道 ID
+ * @returns {Promise<string | null>} 默认频道 ID（群无频道时为 null）
  */
 async function defaultChannelForGroup(groupId) {
 	const meta = await getActiveGroupRuntime(groupId)
@@ -111,6 +111,7 @@ export const actions = {
 		const meta = await getActiveGroupRuntime(groupId)
 		if (!meta) throw new Error('Group not found')
 		const channelId = await getDefaultChannelId(meta.username, groupId)
+		if (!channelId) throw new Error('Group has no channel to send to')
 		const { state } = await getState(meta.username, groupId)
 		const text = typeof message === 'string'
 			? message
@@ -168,6 +169,7 @@ export const actions = {
 	'set-world': async ({ groupId, worldName }) => {
 		if (!groupId) throw new Error('Group ID is required.')
 		const channelId = await defaultChannelForGroup(groupId)
+		if (!channelId) throw new Error('Group has no channel to bind world to')
 		return bindWorld(groupId, channelId, worldName || null)
 	},
 	/**
@@ -223,6 +225,7 @@ export const actions = {
 	'trigger-reply': async ({ groupId, charname }) => {
 		if (!groupId) throw new Error('Group ID is required.')
 		const channelId = await defaultChannelForGroup(groupId)
+		if (!channelId) throw new Error('Group has no channel to trigger reply in')
 		return triggerCharReply(groupId, channelId, charname || null)
 	},
 	/**

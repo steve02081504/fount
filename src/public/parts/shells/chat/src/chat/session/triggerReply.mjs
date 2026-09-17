@@ -95,6 +95,8 @@ export async function handleAutoReply(groupId, channelId, replyFrequency, lastSp
 	if (!chatMetadata) return
 	const { username } = chatMetadata
 	const effectiveChannelId = channelId || await getDefaultChannelId(username, groupId)
+	// 群无可用频道时不进行自动回复。
+	if (!effectiveChannelId) return
 	const channelWorld = await resolveWorld(groupId, effectiveChannelId, username)
 	const session = await getMaterializedSession(username, groupId)
 
@@ -356,7 +358,7 @@ export async function getCharReplyFrequency(groupId) {
 			|| await resolveChar(groupId, charname, chatMetadata.username)
 		if (!char) continue
 		let frequency = session.charFrequencies?.[charname] ?? 1
-		if (char.interfaces?.chat?.OnMessage) {
+		if (char.interfaces?.chat?.OnMessage && defaultChannelId) {
 			const bucketKey = autoReplyBucketKey(groupId, defaultChannelId, charname)
 			const event = await buildOnMessageEvent(chatMetadata.username, groupId, defaultChannelId, charname)
 			let spoke = false

@@ -12,7 +12,7 @@ import {
 	uploadGroupEmoji,
 } from '../endpoints/emojiPacks.mjs'
 import { putGroupSettings } from '../endpoints/groupCore.mjs'
-import { fetchViewerChannelPermissions } from '../groupViewerPermissions.mjs'
+import { fetchViewerChannelPermissions, governanceChannelIdFromState } from '../groupViewerPermissions.mjs'
 import { mountTemplate } from '../templates.mjs'
 
 /**
@@ -72,7 +72,7 @@ function buildPackOptionsHtml(packs, selected, groupId) {
 async function renderGroupEmojis(context) {
 	const container = document.getElementById('group-emojis-container')
 	if (!container || !context.groupId) return
-	const channelId = context.state?.groupSettings?.defaultChannelId || 'default'
+	const channelId = governanceChannelIdFromState(context.state)
 	const packsPayload = await listGroupEmojiPacks(context.groupId).catch(error => {
 		handleError('chat.hub.group.emojisLoadFailed')(error)
 		return []

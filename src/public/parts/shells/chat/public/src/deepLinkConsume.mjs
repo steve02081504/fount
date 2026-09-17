@@ -68,7 +68,7 @@ export async function applyChatRunUri(raw) {
 		return {
 			kind: 'dm',
 			groupId: data.groupId,
-			channelId: data.defaultChannelId || 'default',
+			channelId: data.defaultChannelId || null,
 		}
 	}
 
@@ -94,7 +94,7 @@ export async function applyChatRunUri(raw) {
 		await joinGroup(join.groupId, join.inviteCode, null, pow, join)
 		sessionStorage.removeItem(PENDING_INVITE_STORAGE_KEY)
 		broadcastHubGroupJoined(join.groupId)
-		return { kind: 'join', groupId: join.groupId, channelId: 'default' }
+		return { kind: 'join', groupId: join.groupId, channelId: null }
 	}
 
 	return null
