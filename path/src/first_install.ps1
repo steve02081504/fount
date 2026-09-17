@@ -1,6 +1,10 @@
 ﻿function script:fount_first_install_if_needed {
 	if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or $args[0] -eq 'init') {
+		# 安装路径才需要完整模块集；已安装的常用路径走 require_base。
+		require_mid
 		Get-ChildItem -Path $FOUNT_DIR -Recurse -File -Filter '*.ps1' -ErrorAction SilentlyContinue | Unblock-File -ErrorAction SilentlyContinue
+		# 安装/更新要联网，先在受限区域尽力打开 Clash TUN。
+		Enable-FountClashTunBackground
 		if (Test-Path -Path "$FOUNT_DIR/node_modules") {
 			run shutdown
 		}
@@ -63,5 +67,8 @@
 		invoke_explorer_refresh
 
 		Register-FountSteam
+
+		# 后台把 ps12exe / fount-pwsh 模块更新到最新（job，不阻塞）。
+		Update-FountPwshModulesBackground
 	}
 }

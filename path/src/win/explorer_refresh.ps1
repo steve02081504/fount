@@ -1,4 +1,7 @@
-﻿Add-Type -TypeDefinition @'
+﻿# Add-Type 编译 C#；仅在真正刷新桌面/资源管理器时编译，避免拖慢 eval/log 等短命令。
+function script:Initialize-ExplorerRefresherType {
+	if ($script:ExplorerRefresherTypeReady) { return }
+	Add-Type -TypeDefinition @'
 using System;
 using System.Runtime.InteropServices;
 
@@ -19,8 +22,11 @@ public class ExplorerRefresher {
 	}
 }
 '@ -ErrorAction Ignore
+	$script:ExplorerRefresherTypeReady = $true
+}
 
 function script:invoke_explorer_refresh {
+	Initialize-ExplorerRefresherType
 	try {
 		[ExplorerRefresher]::RefreshSettings()
 		[ExplorerRefresher]::RefreshDesktop()

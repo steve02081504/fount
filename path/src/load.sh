@@ -30,6 +30,8 @@ bootstrap_full() {
 
 bootstrap_server() {
 	bootstrap_full "$@"
+	# 后台维护只在长驻进程里有意义
+	enable_clash_tun_background
 	assert_dir_writable "$FOUNT_DIR"
 	update_fount_and_deno_background
 	run_deno -V
