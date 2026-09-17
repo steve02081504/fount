@@ -414,6 +414,8 @@ export class CharAPI_t {
 				avatar: string
 				recommend_command: string
 				content: string
+				/** rph 处理后的展示层，供终端显示；缺省时回退 `content` */
+				content_for_show?: string
 				chat_scoped_char_memory: object
 			}>
 		},
