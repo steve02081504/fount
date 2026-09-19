@@ -36,7 +36,7 @@ async function runFountExeHarness({
 	try {
 		await mkdir(join(root, 'src', 'runner'), { recursive: true })
 		await mkdir(join(root, 'src', 'public', 'pages'), { recursive: true })
-		await writeFile(join(root, 'src', 'runner', 'main.ps1'), '#_pragma icon dummy\n')
+		await writeFile(join(root, 'src', 'runner', 'main.ps1'), '#_pragma Resources.Icon dummy\n')
 		if (!missingIcon)
 			await writeFile(join(root, 'src', 'public', 'pages', 'favicon.ico'), 'ico')
 
