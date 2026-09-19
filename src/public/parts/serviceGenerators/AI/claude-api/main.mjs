@@ -3,6 +3,7 @@ import * as mime from 'npm:mime-types'
 
 import { escapeRegExp } from '../../../../../scripts/regex.mjs'
 import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../shells/chat/src/prompt_struct/index.mjs'
+import { identityTokenizer } from '../proxy/src/identityTokenizer.mjs'
 import { buildSourceInfo } from '../proxy/src/sourceInfo.mjs'
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
@@ -47,6 +48,7 @@ const configTemplate = {
 	name: 'claude-3.5-sonnet',
 	apikey: '',
 	model: 'claude-3-5-sonnet-20240620',
+	context_size: 200000,
 	model_arguments: {
 	},
 	proxy_url: '', // 例如 'http://127.0.0.1:7890'
@@ -109,6 +111,7 @@ export async function GetSource(config, extra = {}) {
 		info: buildSourceInfo(infoLocales, config, providerUrl),
 		is_paid: true,
 		extension: {},
+		context_size: config.context_size ?? configTemplate.context_size,
 
 		// 简单的文本调用
 		/**
@@ -284,37 +287,7 @@ ${chatLogEntry.content}
 
 			return Object.assign(base_result, clearFormat(result))
 		},
-		tokenizer: {
-			/**
-			 * 释放分词器。
-			 * @returns {number} 0
-			 */
-			free: () => 0,
-			/**
-			 * 编码提示。
-			 * @param {string} prompt - 要编码的提示。
-			 * @returns {string} 编码后的提示。
-			 */
-			encode: prompt => prompt,
-			/**
-			 * 解码令牌。
-			 * @param {string} tokens - 要解码的令牌。
-			 * @returns {string} 解码后的令牌。
-			 */
-			decode: tokens => tokens,
-			/**
-			 * 解码单个令牌。
-			 * @param {string} token - 要解码的令牌。
-			 * @returns {string} 解码后的令牌。
-			 */
-			decode_single: token => token,
-			/**
-			 * 获取令牌计数。
-			 * @param {string} prompt - 要计算令牌的提示。
-			 * @returns {number} 令牌数。
-			 */
-			get_token_count: prompt => prompt?.length ?? 0,
-		}
+		tokenizer: identityTokenizer,
 	}
 
 	return result

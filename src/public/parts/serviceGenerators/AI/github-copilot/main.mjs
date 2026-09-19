@@ -13,6 +13,7 @@ const { info, product_info } = (await import('./locales.json', { with: { type: '
 const configTemplate = {
 	name: 'GitHub Copilot',
 	model: 'gpt-4.1',
+	context_size: 128000,
 	enterpriseUrl: '',
 	model_arguments: {},
 	custom_headers: {},

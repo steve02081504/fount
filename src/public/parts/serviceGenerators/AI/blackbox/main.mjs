@@ -1,6 +1,7 @@
 import { with_timeout } from '../../../../../scripts/await_timeout.mjs'
 import { escapeRegExp } from '../../../../../scripts/regex.mjs'
 import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../shells/chat/src/prompt_struct/index.mjs'
+import { estimateTokenCount } from '../proxy/src/identityTokenizer.mjs'
 import { buildSourceInfo } from '../proxy/src/sourceInfo.mjs'
 
 import { BlackboxAI } from './blackbox.mjs'
@@ -37,6 +38,7 @@ export default {
 const configTemplate = {
 	name: 'Blackbox',
 	model: 'claude-3-5-sonnet',
+	context_size: 128000,
 	timeout: 10000,
 	system_prompt_at_depth: 10,
 	convert_config: {
@@ -59,6 +61,7 @@ async function GetSource(config) {
 		info: buildSourceInfo(product_info, config),
 		is_paid: false,
 		extension: {},
+		context_size: config.context_size ?? configTemplate.context_size,
 		/**
 		 * 调用 AI 源。
 		 * @param {string} prompt - 要发送给 AI 的提示。
@@ -203,6 +206,10 @@ ${chatLogEntry.content}
 			 * @returns {Promise<number>} 令牌数。
 			 */
 			get_token_count: prompt => blackbox.countTokens(prompt)
+				.catch(error => {
+					console.warn('Failed to get token count from Blackbox API, falling back to estimate.', error)
+					return estimateTokenCount(prompt)
+				})
 		}
 	}
 

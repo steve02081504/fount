@@ -17,7 +17,7 @@ const apiData = {
 		name: 'NanoGPT',
 		api: 'https://nano-gpt.com/api',
 		models: {
-			'deepseek/deepseek-chat': { id: 'deepseek/deepseek-chat', name: 'DeepSeek Chat', family: 'deepseek', limit: { context: 64, output: 8 } },
+			'deepseek/deepseek-chat': { id: 'deepseek/deepseek-chat', name: 'DeepSeek Chat', family: 'deepseek', limit: { context: 64, input: 60, output: 8 } },
 			'deepseek/deepseek-reasoner': { id: 'deepseek/deepseek-reasoner', name: 'DeepSeek Reasoner', family: 'deepseek' },
 		},
 	},
@@ -46,6 +46,7 @@ Deno.test('flattenCatalog keeps provider / model fields', () => {
 	assertEquals(entry.providerApi, 'https://nano-gpt.com/api')
 	assertEquals(entry.family, 'deepseek')
 	assertEquals(entry.context, 64)
+	assertEquals(entry.inputLimit, 60)
 	assertEquals(entry.outputLimit, 8)
 })
 

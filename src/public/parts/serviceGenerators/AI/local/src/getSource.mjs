@@ -4,6 +4,7 @@ import path from 'node:path'
 import { GeneralChatWrapper, getLlama, LlamaChatSession } from 'npm:node-llama-cpp'
 
 import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../../shells/chat/src/prompt_struct/index.mjs'
+import { estimateTokenCount } from '../../proxy/src/identityTokenizer.mjs'
 import { buildContentForShowFromLogprobs } from '../../proxy/src/logprobsRenderer.mjs'
 import { clearFormat } from '../../proxy/src/responseFormat.mjs'
 import { buildSourceInfo } from '../../proxy/src/sourceInfo.mjs'
@@ -175,6 +176,7 @@ export async function GetSource(config) {
 		info: buildSourceInfo(product_info, config, { fallbackName: path.basename(resolvedPath) }),
 		is_paid: false,
 		extension: {},
+		context_size: context.contextSize,
 
 		/**
 		 * 调用 AI 源。
@@ -408,7 +410,7 @@ export async function GetSource(config) {
 					return model.tokenize(String(prompt)).length
 				}
 				catch {
-					return Math.ceil(String(prompt).length / 4)
+					return estimateTokenCount(prompt)
 				}
 			}
 		},

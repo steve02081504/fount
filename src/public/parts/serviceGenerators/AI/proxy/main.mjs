@@ -41,6 +41,7 @@ const configTemplate = {
 	url: process.env.OPENAI_API_URL || process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1/chat/completions',
 	model: process.env.OPENAI_MODEL || 'gpt-3.5-turbo',
 	apikey: process.env.OPENAI_API_KEY || '',
+	context_size: 128000,
 	system_prompt_at_depth: 10,
 	model_arguments: {
 		temperature: 1,

@@ -66,6 +66,7 @@ export function flattenCatalog(apiData) {
 				modelName: model.name || model.id,
 				family: model.family || '',
 				context: model.limit?.context,
+				inputLimit: model.limit?.input,
 				outputLimit: model.limit?.output,
 				cost: model.cost || {},
 				modalities: model.modalities || {},

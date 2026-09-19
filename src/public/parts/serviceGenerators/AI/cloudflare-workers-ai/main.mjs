@@ -17,6 +17,7 @@ const configTemplate = {
 	model: '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
 	account_id: process.env.CLOUDFLARE_ACCOUNT_ID || '',
 	apikey: process.env.CLOUDFLARE_API_TOKEN || '',
+	context_size: 131072,
 	sessionAffinity: '',
 	model_arguments: {},
 	custom_headers: {},

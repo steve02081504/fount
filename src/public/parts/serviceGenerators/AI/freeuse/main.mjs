@@ -8,6 +8,7 @@
  */
 
 import { structPromptToSingleNoChatLog } from '../../../shells/chat/src/prompt_struct/index.mjs'
+import { identityTokenizer } from '../proxy/src/identityTokenizer.mjs'
 import { buildSourceInfo } from '../proxy/src/sourceInfo.mjs'
 
 import { MarkovGenerator } from './MarkovGenerator.mjs'
@@ -57,6 +58,7 @@ async function GetSource(config) {
 		info: buildSourceInfo(product_info, config, { fallbackName: 'Freeuse' }),
 		is_paid: false,
 		extension: {},
+		context_size: config.context_size ?? 8192,
 
 		/**
 		 * 调用 AI 源。
@@ -96,37 +98,7 @@ ${prompt_struct.Charname}: `
 				files: [...base_result?.files || []],
 			})
 		},
-		tokenizer: {
-			/**
-			 * 释放分词器。
-			 * @returns {number} 0
-			 */
-			free: () => 0,
-			/**
-			 * 编码提示。
-			 * @param {string} prompt - 要编码的提示。
-			 * @returns {string} 编码后的提示。
-			 */
-			encode: prompt => prompt,
-			/**
-			 * 解码令牌。
-			 * @param {string} tokens - 要解码的令牌。
-			 * @returns {string} 解码后的令牌。
-			 */
-			decode: tokens => tokens,
-			/**
-			 * 解码单个令牌。
-			 * @param {string} token - 要解码的令牌。
-			 * @returns {string} 解码后的令牌。
-			 */
-			decode_single: token => token,
-			/**
-			 * 获取令牌计数。
-			 * @param {string} prompt - 要计算令牌的提示。
-			 * @returns {number} 令牌数。
-			 */
-			get_token_count: prompt => prompt.length
-		}
+		tokenizer: identityTokenizer,
 	}
 
 	return result

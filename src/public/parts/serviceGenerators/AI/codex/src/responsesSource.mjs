@@ -26,6 +26,7 @@ export async function createResponsesSource({
 }) {
 	config.convert_config = { ...configTemplate.convert_config, ...config.convert_config }
 	config.use_stream ??= true
+	config.context_size ??= configTemplate.context_size
 
 	/**
 	 * 打 Responses。
@@ -54,6 +55,7 @@ export async function createResponsesSource({
 		info: buildSourceInfo(product_info, config, providerUrl),
 		is_paid,
 		extension: {},
+		context_size: config.context_size,
 		/**
 		 * 纯文本调用。
 		 * @param {string} prompt - 提示。

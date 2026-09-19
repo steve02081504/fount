@@ -18,6 +18,7 @@ const { info, product_info } = (await import('./locales.json', { with: { type: '
 const configTemplate = {
 	name: 'Amazon Bedrock',
 	model: 'anthropic.claude-sonnet-4-5-20250929-v1:0',
+	context_size: 200000,
 	region: process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || '',
 	accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
 	secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
@@ -81,6 +82,7 @@ async function createBedrockClient(config) {
 async function GetSource(config) {
 	config.convert_config = { ...configTemplate.convert_config, ...config.convert_config }
 	config.use_stream ??= true
+	config.context_size ??= configTemplate.context_size
 	const client = await createBedrockClient(config)
 	const { ConverseCommand, ConverseStreamCommand } = await import('npm:@aws-sdk/client-bedrock-runtime')
 
@@ -126,6 +128,7 @@ async function GetSource(config) {
 		info: buildSourceInfo(product_info, config),
 		is_paid: true,
 		extension: {},
+		context_size: config.context_size,
 		/**
 		 * 纯文本调用。
 		 * @param {string} prompt - 提示。

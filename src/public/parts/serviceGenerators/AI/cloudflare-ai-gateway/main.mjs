@@ -19,6 +19,7 @@ const configTemplate = {
 	account_id: process.env.CLOUDFLARE_ACCOUNT_ID || '',
 	gateway_id: process.env.CLOUDFLARE_AI_GATEWAY_ID || '',
 	apikey: process.env.CLOUDFLARE_API_TOKEN || '',
+	context_size: 128000,
 	model_arguments: {},
 	custom_headers: {},
 	convert_config: defaultConvertConfig(),

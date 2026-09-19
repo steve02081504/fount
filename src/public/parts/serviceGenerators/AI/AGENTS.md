@@ -12,11 +12,13 @@ OpenAI-compatible **API keys** (DeepSeek, OpenRouter, Groq, Azure Chat Completio
 
 Overly generic helpers live in the representative part; callers import from there. Provider-specific URL/route/UI stays in that generator.
 
+**AI-source context / token counting**: every source exposes an optional `context_size` number (max input tokens) on its `AIsource_t`; wrappers/aggregators take the min of their members ([identityTokenizer.mjs](proxy/src/identityTokenizer.mjs) `minKnownContextSize`). Token counting goes through `Tokenizer_t.get_token_count`; when a provider has no real tokenizer (or the API call fails) fall back to `estimateTokenCount` — ASCII ≈ 4 chars/token, ideographic / syllabic scripts (CJK, kana, hangul, bopomofo, fullwidth, emoji) ≈ 1 char/token, other non-ASCII letter scripts ≈ 2 chars/token; aligned with opencode's `length / 4` but script-aware. Proxy auto-fills `config.context_size` from models.dev `limit.input ?? limit.context` when a model is picked in its view (models.dev has no tokenizer field, so counter is the shared estimator).
+
 **`convert_config` file policy**: `ignoreFiles` / `forbidSystemFiles` / `forbidAssistantFiles` are MIME regex lists (legacy `ignoreFiles: true` = `['.*']`); `ignoreFiles` hits drop the attachment into a system notice, `forbidSystemFiles` hits downgrade a system message to `user` prefixed `system: `, `forbidAssistantFiles` hits downgrade an assistant (char) message to `user` prefixed `assistant: ` (default empty; configure for sources like Kimi that reject attachments on assistant messages). `messageBuilder.mjs` statically `import`s `src/decl/*.ts` types for JSDoc, so its policy logic lives in the decl-free [proxy/src/messagePolicies.mjs](proxy/src/messagePolicies.mjs) — `pure/` tests cover it there without pulling the decl graph. (`deno.json` sets `strictPropertyInitialization: false` because the JSDoc-style decl classes declare uninitialized fields.)
 
 | Need | Home |
 | --- | --- |
-| OpenAI-compat source / `convert_config` / identity tokenizer / `buildSourceInfo` | [proxy/src](proxy/src/) (`createOpenAICompatibleSource`, `defaultConvertConfig`, `identityTokenizer`, `sourceInfo`) |
+| OpenAI-compat source / `convert_config` / token estimator / `buildSourceInfo` | [proxy/src](proxy/src/) (`createOpenAICompatibleSource`, `defaultConvertConfig`, `identityTokenizer` + `estimateTokenCount` / `minKnownContextSize`, `sourceInfo`) |
 | Responses client + source | [codex/src](codex/src/) (`createResponsesSource`); Azure imports it |
 | OAuth login UI | [oauth_handler](../../shells/oauth_handler/AGENTS.md) `public/src/oauthDisplay.mjs`; each OAuth generator’s `display.mjs` calls `renderOauthPanel` |
 | Fetch doubles | [proxy/test/mockFetch.mjs](proxy/test/mockFetch.mjs) |
