@@ -1,12 +1,14 @@
 // Handle WebSocket connections from userscripts
 import { randomUUID } from 'node:crypto'
-import { setInterval, setTimeout } from 'node:timers'
+import { setInterval } from 'node:timers'
 
 import { httpError } from '../../../../../scripts/http_error.mjs'
 import { ms } from '../../../../../scripts/ms.mjs'
 import { events } from '../../../../../server/events.mjs'
 import { loadShellData, saveShellData } from '../../../../../server/setting_loader.mjs'
 import { unlockAchievement } from '../../achievements/src/api.mjs'
+
+import { RequestTracker } from './request-tracker.mjs'
 
 /**
  * 页面信息类型
@@ -20,7 +22,7 @@ import { unlockAchievement } from '../../achievements/src/api.mjs'
  * @property {Date|null} disconnectedAt - 断开连接时间
  */
 
-const pendingRequests = new Map()
+const requestTracker = new RequestTracker()
 let pageIdCounter = 0
 
 /**
@@ -292,18 +294,10 @@ class UserPageManager {
 			if (!page || !page.ws || page.ws.readyState !== page.ws.OPEN)
 				return reject(new Error('Page not connected or connection not open.'))
 
-
 			const requestId = `${pageId}-${randomUUID()}`
-			pendingRequests.set(requestId, { resolve, reject })
-
-			setTimeout(() => {
-				if (pendingRequests.has(requestId)) {
-					pendingRequests.delete(requestId)
-					reject(new Error('Request timed out after 15 seconds.'))
-				}
-			}, 15000)
-
-			page.ws.send(JSON.stringify({ ...command, requestId }))
+			requestTracker.requestWithResolvers(requestId, () => {
+				page.ws.send(JSON.stringify({ ...command, requestId }))
+			}, resolve, reject)
 		})
 	}
 
@@ -374,14 +368,11 @@ export function handleConnection(ws, username) {
 					break
 				}
 				case 'response': {
-					const pendingRequest = pendingRequests.get(data.requestId)
-					if (pendingRequest) {
+					if (requestTracker.has(data.requestId)) {
 						if (data.isError)
-							pendingRequest.reject(new Error(data.payload.error))
+							requestTracker.reject(data.requestId, new Error(data.payload.error))
 						else
-							pendingRequest.resolve(data.payload)
-
-						pendingRequests.delete(data.requestId)
+							requestTracker.resolve(data.requestId, data.payload)
 					}
 					break
 				}

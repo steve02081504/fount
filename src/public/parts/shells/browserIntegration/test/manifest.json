@@ -1,6 +1,9 @@
 {
 	"id": "shells/browserIntegration",
 	"triggerSets": {
+		"rpcBackend": [
+			"src/public/parts/shells/browserIntegration/src/{api,request-tracker}.mjs"
+		],
 		"frontendShared": [
 			"src/public/parts/shells/browserIntegration/public/**",
 			"src/public/parts/shells/browserIntegration/test/frontend/**",
@@ -8,6 +11,19 @@
 		]
 	},
 	"suites": [
+		{
+			"name": "pure",
+			"expected": "1s",
+			"trigger": "rpcBackend",
+			"triggers": [
+				"src/public/parts/shells/browserIntegration/test/pure/**"
+			],
+			"run": [
+				"node",
+				"--test",
+				"./src/public/parts/shells/browserIntegration/test/pure/request-tracker.test.mjs"
+			]
+		},
 		{
 			"name": "frontend",
 			"expected": "1m55s",
