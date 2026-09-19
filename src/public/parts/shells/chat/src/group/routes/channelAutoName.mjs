@@ -1,11 +1,10 @@
 /**
  * 【文件】group/routes/channelAutoName.mjs
- * 【职责】DM 群空名频道自动命名/分类与 greeting-only 占位频道清理：新建频道后由
- *   `scheduleDmChannelAutoNameAndCleanup` 触发，对根级每个无名频道截取最近 13 条消息：
- *   全部为问候语且存在新建的替代频道时删除，否则交给本机默认 AI 源以 XML 标签命名并归入分类（分类缺失则自动创建）。
+ * 【职责】DM 群空名频道自动命名/分类：新建频道后由 `scheduleDmChannelAutoName` 触发，
+ *   对根级每个无名频道截取最近 13 条消息，交给本机默认 AI 源以 XML 标签命名并归入分类（分类缺失则自动创建）。
  * 【原理】仅在 DM 群（`groupKindFromState === 'dm'` 或带 friendBinding）执行；无默认 AI 源时
  *   跳过命名。异步总结用 `autoNamingInFlight` Map 去重（键 `groupId:channelId`），失败即从
- *   Map 移除，待下次新建频道时再触发；清理/命名产出的 DAG 事件经群 WS 广播给前端。
+ *   Map 移除，待下次新建频道时再触发；命名产出的 DAG 事件经群 WS 广播给前端。
  * 【关联】parts_loader.loadAnyPreferredDefaultPart、queries.readChannelMessagesForUser、
  *   dag/channelOperations、dag/append、decl/AIsource。
  */
@@ -14,7 +13,7 @@ import { prefixedRandomId } from 'npm:@steve02081504/fount-p2p/core/random_id'
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { loadAnyPreferredDefaultPart } from '../../../../../../../server/parts_loader.mjs'
 import { messageLineShowText } from '../../../public/shared/channelContent.mjs'
-import { appendChannelLink, createChannel, deleteChannel, updateChannel } from '../../chat/dag/channelOperations.mjs'
+import { appendChannelLink, createChannel, updateChannel } from '../../chat/dag/channelOperations.mjs'
 import { getState } from '../../chat/dag/materialize.mjs'
 import { groupKindFromState } from '../../chat/lib/notificationPreferences.mjs'
 import { withLock } from '../lib/locks.mjs'
@@ -23,7 +22,7 @@ import { readChannelMessagesForUser } from '../queries.mjs'
 import { requireGroupMember } from './middleware.mjs'
 import { GROUPS_PREFIX } from './path.mjs'
 
-/** 每个空名频道最多读取的消息条数（判断 greeting-only 也复用此阈值：取最近 13 条）。 */
+/** 每个空名频道最多读取的消息条数。 */
 const CONTEXT_MESSAGE_COUNT = 13
 /** 每个空名频道送入 AI 的上下文最大字符数 */
 const CONTEXT_MAX_CHARS = 4000
@@ -33,15 +32,6 @@ const autoNamingInFlight = new Map()
 
 /** 每群分类 find-or-create 互斥锁：并发 autoName 共享，避免同群并发创建同名分类。 */
 const categoryCreateLocks = new Map()
-
-/**
- * 判断一条频道消息是否为问候语（world greeting / 角色开场）。
- * @param {object} message 频道消息行
- * @returns {boolean} 是问候语为 true
- */
-function isGreetingOnlyMessage(message) {
-	return message?.content?.extension?.chat?.isGreeting || message?.extension?.timeSlice?.greeting_type
-}
 
 /**
  * 将频道最近消息聚合成一个上下文块：合并为一条文本（超长时截断并标注省略）。
@@ -166,16 +156,16 @@ async function autoNameChannelAsync(username, groupId, channelId) {
 }
 
 /**
- * DM 群新建频道后异步清理/命名根级无名频道：
- *   截取每个无名频道最近 13 条消息，全为问候语则删除，否则启动异步 AI 命名（Map 去重，失败放行）。
- *   DM 群无默认频道；仅当存在新建的替代频道时才删除 greeting-only 占位频道。
+ * DM 群新建频道后异步命名/分类根级无名频道：
+ *   截取每个无名频道最近 13 条消息，启动异步 AI 命名（Map 去重，失败放行）。
+ *   频道现由用户手动创建，故不再自动清理只含问候语的“占位对话”（旧版进入聊天即新建对话的遗留）。
  * @param {string} username 用户名
  * @param {string} groupId 群 ID
- * @param {string} newChannelId 刚创建的新频道 id
+ * @param {string} newChannelId 刚创建的新频道 id（跳过，避免用空上下文命名）
  * @param {object} state 物化群状态
  * @returns {Promise<void>}
  */
-export async function scheduleDmChannelAutoNameAndCleanup(username, groupId, newChannelId, state) {
+export async function scheduleDmChannelAutoName(username, groupId, newChannelId, state) {
 	const isDm = groupKindFromState(state) === 'dm' || !!state.groupMeta?.friendBinding
 	if (!isDm) return
 	const rootChannelId = state.groupSettings?.rootChannelId
@@ -188,23 +178,12 @@ export async function scheduleDmChannelAutoNameAndCleanup(username, groupId, new
 		})
 	if (!candidates.length) return
 
-	const toDelete = []
 	const toName = []
 	for (const channelId of candidates) {
 		const lines = await readChannelMessagesForUser(username, groupId, channelId, { limit: CONTEXT_MESSAGE_COUNT })
 		if (!lines.length) continue
-		if (lines.every(isGreetingOnlyMessage)) toDelete.push(channelId)
-		else toName.push(channelId)
+		toName.push(channelId)
 	}
-
-	// 仅在新建频道（存在有效替代频道）时清理旧占位频道；自动命名路由不提供 newChannelId（''），
-	// 此时不得删除任何频道（DM 无默认频道，占位频道就是唯一入口）。
-	const hasValidReplacement = !!newChannelId
-
-	if (hasValidReplacement)
-		for (const channelId of toDelete) try {
-			await deleteChannel(username, groupId, channelId)
-		} catch { /* 删除失败放行，继续清理其余频道 */ }
 
 	for (const channelId of toName) {
 		const key = `${groupId}:${channelId}`
@@ -233,7 +212,7 @@ export function registerChannelAutoNameRoutes(router, authenticate) {
 		if (!(groupKindFromState(state) === 'dm' || !!state.groupMeta?.friendBinding))
 			throw httpError(403, 'auto-name is only allowed in DM groups')
 
-		await scheduleDmChannelAutoNameAndCleanup(username, groupId, '', state)
+		await scheduleDmChannelAutoName(username, groupId, '', state)
 		res.status(200).json({ skipped: false, renamed: [] })
 	})
 }

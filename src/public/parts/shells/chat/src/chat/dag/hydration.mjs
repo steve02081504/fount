@@ -360,6 +360,14 @@ async function buildChatLogEntryFromDagMessage(
 		entry.name = displayName || line.sender || entry.role || 'system'
 		entry.extension.timeSlice = slice.copy()
 	}
+	// 问候语事实源：wire `extension.chat.isGreeting` 持久化在频道消息里；
+	// 重建条目时还原 `greeting_type`，否则重启/运行时重建后 prelude 过滤与开场重 roll 都会丢掉问候。
+	const wireGreeting = chatExtensionOf(content)
+	if (wireGreeting?.isGreeting)
+		entry.extension.timeSlice.greeting_type = wireGreeting.greetingType
+			|| (charId
+				? Object.keys(state?.session?.chars || {}).length > 1 ? 'group' : 'single'
+				: 'world_single')
 	entry.uid = resolveSpeakerUid(line, content, state)
 	entry.time_stamp = new Date(line.hlc?.wall ?? Date.now()).toISOString()
 
