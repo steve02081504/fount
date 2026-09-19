@@ -77,6 +77,12 @@ export class AIsource_t<InputType, OutputType> {
 	extension: object
 
 	/**
+	 * AI 数据源支持的最大输入 token 数（上下文大小）。
+	 * 未知时缺省；消费方应据此保守地裁剪输入，缺失时自行降级。
+	 */
+	context_size?: number
+
+	/**
 	 * 卸载 AI 数据源并释放资源。
 	 * @returns {Promise<void>}
 	 */

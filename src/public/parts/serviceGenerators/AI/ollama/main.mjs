@@ -4,6 +4,7 @@ import path from 'node:path'
 import { Ollama } from 'npm:ollama'
 
 import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../shells/chat/src/prompt_struct/index.mjs'
+import { estimateTokenCount } from '../proxy/src/identityTokenizer.mjs'
 import { buildSourceInfo } from '../proxy/src/sourceInfo.mjs'
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
@@ -46,6 +47,7 @@ const configTemplate = {
 	name: 'ollama',
 	host: 'http://127.0.0.1:11434',
 	model: 'llama3',
+	context_size: 8192,
 	model_arguments: {
 		temperature: 1,
 		num_predict: -1, // -1 for infinite
@@ -74,6 +76,7 @@ async function GetSource(config) {
 		info: buildSourceInfo(product_info, config, { url: config.host, defaultUrl: configTemplate.host }),
 		is_paid: false,
 		extension: {},
+		context_size: config.context_size ?? config.model_arguments?.num_ctx ?? configTemplate.context_size,
 
 		/**
 		 * 调用 AI 源。
@@ -234,8 +237,8 @@ async function GetSource(config) {
 					return response.tokens.length
 				}
 				catch (error) {
-					console.warn('Failed to get token count from Ollama API, falling back to character count.', error)
-					return (prompt?.length ?? 0) / 4
+					console.warn('Failed to get token count from Ollama API, falling back to estimate.', error)
+					return estimateTokenCount(prompt)
 				}
 			}
 		}

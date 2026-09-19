@@ -10,6 +10,7 @@
 import { FullProxy } from 'npm:full-proxy'
 
 import { loadAIsourceFromNameOrConfigData } from '../../../serviceSources/AI/main.mjs'
+import { minKnownContextSize } from '../proxy/src/identityTokenizer.mjs'
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
@@ -108,6 +109,7 @@ async function GetSource(config, { username, SaveConfig }) {
 			return [k, v]
 		})),
 		is_paid: weightedSources.some(s => s.source.is_paid),
+		context_size: minKnownContextSize(weightedSources.map(item => item.source)),
 
 		/**
 		 * 卸载 AI 源。

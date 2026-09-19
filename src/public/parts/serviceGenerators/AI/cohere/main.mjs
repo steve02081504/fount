@@ -1,5 +1,6 @@
 import { escapeRegExp } from '../../../../../scripts/regex.mjs'
 import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../shells/chat/src/prompt_struct/index.mjs'
+import { estimateTokenCount } from '../proxy/src/identityTokenizer.mjs'
 import { buildSourceInfo } from '../proxy/src/sourceInfo.mjs'
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
@@ -35,6 +36,7 @@ const configTemplate = {
 	name: 'cohere-command-r-plus',
 	model: 'command-r-plus',
 	apikey: '',
+	context_size: 128000,
 	use_stream: true,
 	convert_config: {
 		roleReminding: true
@@ -59,6 +61,7 @@ async function GetSource(config) {
 		info: buildSourceInfo(product_info, config),
 		is_paid: false,
 		extension: {},
+		context_size: config.context_size ?? configTemplate.context_size,
 
 		/**
 		 * 调用 AI 源。
@@ -228,7 +231,10 @@ ${chatLogEntry.content}
 			get_token_count: prompt => cohere.tokenize({
 				model: config.model,
 				text: prompt
-			}).then(result => result.tokens.length)
+			}).then(result => result.tokens.length).catch(error => {
+				console.warn('Failed to get token count from Cohere API, falling back to estimate.', error)
+				return estimateTokenCount(prompt)
+			})
 		}
 	}
 

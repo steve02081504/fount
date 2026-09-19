@@ -62,13 +62,14 @@ function applyConfigFromEntry(editors, entry) {
 	catch {
 		return
 	}
-	editors.json.set({
-		json: {
-			...config,
-			model: entry.modelId,
-			url: providerApiToCompletionsUrl(entry.providerApi),
-		},
-	})
+	const json = {
+		...config,
+		model: entry.modelId,
+		url: providerApiToCompletionsUrl(entry.providerApi),
+	}
+	const contextSize = entry.inputLimit ?? entry.context
+	if (contextSize != null) json.context_size = contextSize
+	editors.json.set({ json })
 }
 
 /**

@@ -104,6 +104,7 @@ async function GetSource(config, { username, SaveConfig }) {
 		})),
 		is_paid: false,
 		extension: {},
+		context_size: base_source.context_size,
 
 		/**
 		 * 卸载 AI 源。

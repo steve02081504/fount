@@ -8,6 +8,7 @@
  */
 
 import { loadAIsourceFromNameOrConfigData } from '../../../serviceSources/AI/main.mjs'
+import { identityTokenizer, minKnownContextSize } from '../proxy/src/identityTokenizer.mjs'
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
@@ -71,6 +72,7 @@ async function GetSource(config, { username, SaveConfig }) {
 		})),
 		is_paid: false,
 		extension: {},
+		context_size: minKnownContextSize(sources),
 
 		/**
 		 * 卸载 AI 源。
@@ -110,37 +112,7 @@ async function GetSource(config, { username, SaveConfig }) {
 				console.error(e)
 			}
 		},
-		tokenizer: {
-			/**
-			 * 释放分词器。
-			 * @returns {number} 0
-			 */
-			free: () => 0,
-			/**
-			 * 编码提示。
-			 * @param {string} prompt - 要编码的提示。
-			 * @returns {string} 编码后的提示。
-			 */
-			encode: prompt => prompt,
-			/**
-			 * 解码令牌。
-			 * @param {string} tokens - 要解码的令牌。
-			 * @returns {string} 解码后的令牌。
-			 */
-			decode: tokens => tokens,
-			/**
-			 * 解码单个令牌。
-			 * @param {string} token - 要解码的令牌。
-			 * @returns {string} 解码后的令牌。
-			 */
-			decode_single: token => token,
-			/**
-			 * 获取令牌计数。
-			 * @param {string} prompt - 要计算令牌的提示。
-			 * @returns {number} 令牌数。
-			 */
-			get_token_count: prompt => prompt.length
-		}
+		tokenizer: identityTokenizer,
 	}
 	return result
 }

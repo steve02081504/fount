@@ -16,6 +16,7 @@ const CODEX_RESPONSES_URL = 'https://chatgpt.com/backend-api/codex/responses'
 const configTemplate = {
 	name: 'ChatGPT Codex',
 	model: 'gpt-5.1-codex',
+	context_size: 128000,
 	model_arguments: {},
 	convert_config: defaultConvertConfig(),
 	use_stream: true,

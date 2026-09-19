@@ -38,6 +38,7 @@ const configTemplate = {
 	email: '',
 	password: '',
 	model: 'gpt-4o-mini',
+	context_size: 128000,
 	use_stream: true,
 	convert_config: {
 		roleReminding: true
@@ -76,6 +77,7 @@ async function GetSource(config) {
 		info: buildSourceInfo(product_info, config),
 		is_paid: false,
 		extension: {},
+		context_size: config.context_size ?? configTemplate.context_size,
 
 		/**
 		 * 使用纯文本提示调用 AI 源。

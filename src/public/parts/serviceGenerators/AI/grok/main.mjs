@@ -33,6 +33,7 @@ export default {
 const configTemplate = {
 	name: 'Grok',
 	model: 'grok-3',
+	context_size: 131072,
 	cookies: [],
 	use_stream: true,
 	system_prompt_at_depth: 10,
@@ -61,6 +62,7 @@ async function GetSource(config) {
 		info: buildSourceInfo(product_info, config),
 		is_paid: false, // 根据实际情况设置
 		extension: {},
+		context_size: config.context_size ?? configTemplate.context_size,
 
 		/**
 		 * 卸载 AI 源。

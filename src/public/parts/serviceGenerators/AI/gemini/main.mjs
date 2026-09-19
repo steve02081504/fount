@@ -12,6 +12,7 @@ import * as mime from 'npm:mime-types'
 import { escapeRegExp } from '../../../../../scripts/regex.mjs'
 import { source_dead } from '../../../serviceSources/AI/main.mjs'
 import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../shells/chat/src/prompt_struct/index.mjs'
+import { estimateTokenCount } from '../proxy/src/identityTokenizer.mjs'
 import { buildSourceInfo } from '../proxy/src/sourceInfo.mjs'
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
@@ -317,6 +318,7 @@ export async function GetSource(config, extra = {}) {
 		is_paid: false,
 		info: buildSourceInfo(infoLocales, config, { url: config.base_url, defaultUrl: configTemplate.base_url }),
 		extension: {},
+		context_size: config.max_input_tokens,
 
 		/**
 		 * 调用 AI 源。
@@ -846,8 +848,8 @@ ${is_ImageGeneration
 				} catch (error) {
 					if (isGeminiApiKeyError(error)) throw source_dead(error)
 					console.error('Failed to get token count:', error)
-					// 返回一个估算值或0
-					return (prompt?.length ?? 0) / 4
+					// 返回一个估算值
+					return estimateTokenCount(prompt)
 				}
 			}
 		}

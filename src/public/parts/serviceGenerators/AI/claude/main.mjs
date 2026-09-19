@@ -36,6 +36,7 @@ export default {
 const configTemplate = {
 	name: 'Claude',
 	model: 'claude-3-sonnet',
+	context_size: 200000,
 	timeout: 10000,
 	cookie_array: [], // 填入你的 Cookie, 格式: ["sessionKey=sk-ant-sid01-..."]
 	cookie_counter: 3,
@@ -64,6 +65,7 @@ async function GetSource(config, { SaveConfig }) { // 接收 SaveConfig
 		info: buildSourceInfo(product_info, config),
 		is_paid: false,
 		extension: {},
+		context_size: config.context_size ?? configTemplate.context_size,
 
 		/**
 		 * 调用 AI 源。
