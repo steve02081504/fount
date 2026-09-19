@@ -1,6 +1,6 @@
 #!pwsh
-#_pragma icon $PSScriptRoot/../../src/public/pages/favicon.ico
-#_pragma title "fount"
+#_pragma Resources.Icon $PSScriptRoot/../../src/public/pages/favicon.ico
+#_pragma Resources.Title "fount"
 
 if (!$env:FOUNT_BRANCH) {
 	$env:FOUNT_BRANCH = "master"
