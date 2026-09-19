@@ -55,7 +55,7 @@ function inferCreateParent() {
 
 /**
  * DM 群快速新建频道：空名创建（显示"未命名"、置顶根级）。后端异步处理该频道及其余根级无名频道的
- * 命名/分类与 greeting-only 占位清理，前端只关注创建结束。
+ * 命名/分类，前端只关注创建结束。
  * @returns {Promise<void>}
  */
 export async function quickCreateChannel() {

@@ -11,7 +11,7 @@ import { prependChannelLink } from '../../chat/dag/channelOperations.mjs'
 import { chatClientFromReq } from '../../endpoints/shared.mjs'
 import { materializeFriendBinding } from '../lib/friendBinding.mjs'
 
-import { scheduleDmChannelAutoNameAndCleanup } from './channelAutoName.mjs'
+import { scheduleDmChannelAutoName } from './channelAutoName.mjs'
 import {
 	ensureChannel,
 	requireGroupMember,
@@ -112,8 +112,8 @@ export function registerChannelCrudRoutes(router, authenticate) {
 			parentChannelId: parentId,
 			permissionBlockId: parentId || null,
 		})
-		// DM 群根级无名频道的 greeting-only 清理与 AI 命名/分类在后端异步进行，创建接口只发射并遗忘。
-		scheduleDmChannelAutoNameAndCleanup(username, groupId, channel.id, state).catch(() => { })
+		// DM 群根级无名频道的 AI 命名/分类在后端异步进行，创建接口只发射并遗忘。
+		scheduleDmChannelAutoName(username, groupId, channel.id, state).catch(() => { })
 		res.status(201).json({ channelId: channel.id })
 	})
 
