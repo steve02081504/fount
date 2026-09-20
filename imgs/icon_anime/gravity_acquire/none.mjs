@@ -3,4 +3,4 @@
  */
 
 /** @returns {() => void} stop */
-export const start = () => () => {}
+export const start = () => () => { }

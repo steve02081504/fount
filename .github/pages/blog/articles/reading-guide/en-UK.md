@@ -1,9 +1,9 @@
 ---
-title: "Where to Start"
-summary: "These essays grew out of building fount, not out of a writing plan. Read them front to back for one long argument, or jump straight to whatever hurts."
+title: 'Where to Start'
+summary: 'These essays grew out of building fount, not out of a writing plan. Read them front to back for one long argument, or jump straight to whatever hurts.'
 tags:
-  - "fount"
-  - "guide"
+  - 'fount'
+  - 'guide'
 ---
 
 # Where to Start
@@ -14,7 +14,7 @@ Which means the reading order is not a topic index. It is an argument, where eac
 
 ## Front to back
 
-About two hours. You come out with a whole: what an agent actually is, where the LLM sits in one, why context should never be hoarded, how money turns into quality, and why agent safety is a question of *when*, not *if*. It all lands on [Building fount Shell](building-fount-shell) — the place where every claim in the series becomes code.
+About two hours. You come out with a whole: what an agent actually is, where the LLM sits in one, why context should never be hoarded, how money turns into quality, and why agent safety is a question of _when_, not _if_. It all lands on [Building fount Shell](building-fount-shell) — the place where every claim in the series becomes code.
 
 ## Straight to the pain
 
@@ -26,18 +26,18 @@ About two hours. You come out with a whole: what an agent actually is, where the
 
 ## The map
 
-| Section | Essay | One line |
-| --- | --- | --- |
-| Definitions & architecture | Why fount Agents Are Not Chatbots | An agent is a task execution system; chat is one interface among many |
-| Definitions & architecture | The LLM Is Not the Agent | The LLM's two actual jobs, and the long list of jobs it should never touch |
-| Context engineering | Does Roleplay Make LLMs Worse? | Persona is sometimes an overhead and sometimes a salary — depends which kind |
-| Context engineering | Don't Put Everything in the Context | Activate context, don't hoard it; includes the four-rung routing ladder |
-| Cost & verification | Let the Program Do It | Six budgets; determinism first |
-| Cost & verification | What If Cost Is No Object? | Sampling plus a verifier turns budget into quality |
-| Safety & trust | Cage the Power | A real permission incident, and the three cage rules it paid for |
-| Safety & trust | The Price of Anthropomorphism | Trust gets collected by the skin; the reliability never shows up |
-| Safety & trust | The Untrusted Upstream | The intelligence streams in from someone else's servers; includes my canary lesson |
-| fount in practice | Building fount Shell | Field notes from compiling the theory into parts |
+| Section                    | Essay                               | One line                                                                           |
+| -------------------------- | ----------------------------------- | ---------------------------------------------------------------------------------- |
+| Definitions & architecture | Why fount Agents Are Not Chatbots   | An agent is a task execution system; chat is one interface among many              |
+| Definitions & architecture | The LLM Is Not the Agent            | The LLM's two actual jobs, and the long list of jobs it should never touch         |
+| Context engineering        | Does Roleplay Make LLMs Worse?      | Persona is sometimes an overhead and sometimes a salary — depends which kind       |
+| Context engineering        | Don't Put Everything in the Context | Activate context, don't hoard it; includes the four-rung routing ladder            |
+| Cost & verification        | Let the Program Do It               | Six budgets; determinism first                                                     |
+| Cost & verification        | What If Cost Is No Object?          | Sampling plus a verifier turns budget into quality                                 |
+| Safety & trust             | Cage the Power                      | A real permission incident, and the three cage rules it paid for                   |
+| Safety & trust             | The Price of Anthropomorphism       | Trust gets collected by the skin; the reliability never shows up                   |
+| Safety & trust             | The Untrusted Upstream              | The intelligence streams in from someone else's servers; includes my canary lesson |
+| fount in practice          | Building fount Shell                | Field notes from compiling the theory into parts                                   |
 
 ## Two warnings
 

@@ -1,11 +1,11 @@
 ---
-title: "构建 fount Shell"
-summary: "复盘一次理论落地：fount 的 Shell 怎么把「Agent 即任务系统」变成 parts 目录里的代码，笼子在真实系统里长什么样——以及哪些观点，我自己还在修。"
+title: '构建 fount Shell'
+summary: '复盘一次理论落地：fount 的 Shell 怎么把「Agent 即任务系统」变成 parts 目录里的代码，笼子在真实系统里长什么样——以及哪些观点，我自己还在修。'
 tags:
-  - "fount"
-  - "Shell"
-  - "架构"
-  - "设计模式"
+  - 'fount'
+  - 'Shell'
+  - '架构'
+  - '设计模式'
 ---
 
 # 构建 fount Shell

@@ -157,12 +157,11 @@ function scanDeclarations(content, relativePath, ignoredLines, issues) {
 		const line = lineNumberAt(content, match.index)
 		if (ignoredLines.has(line)) continue
 		const value = readDeclarationValue(content, match.index + match[0].length)
-		for (const prop of splitTopLevel(value, ',').map(part => part.toLowerCase())) 
+		for (const prop of splitTopLevel(value, ',').map(part => part.toLowerCase()))
 			if (prop === 'all')
 				issues.push({ path: relativePath, line, token: 'transition-property: all' })
 			else if (isLayoutTransitionProp(prop))
 				issues.push({ path: relativePath, line, token: `transition-property: ${prop}` })
-		
 	}
 	for (const match of content.matchAll(WILL_CHANGE_RE)) {
 		const line = lineNumberAt(content, match.index)

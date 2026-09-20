@@ -87,7 +87,8 @@
 	inset: 0;
 	background: linear-gradient(to top,
 		color-mix(in oklch, var(--color-base-100) 78%, transparent) 0%,
-		transparent 60%);
+		transparent 60%
+	);
 	pointer-events: none;
 }
 
@@ -258,8 +259,15 @@
 }
 
 @keyframes gist-skeleton-pulse {
-	0%, 100% { opacity: 0.55; }
-	50% { opacity: 1; }
+
+	0%,
+	100% {
+		opacity: 0.55;
+	}
+
+	50% {
+		opacity: 1;
+	}
 }
 
 /* 紧凑列表视图：封面内容并入正文流，隐去大面积渐变封面 */

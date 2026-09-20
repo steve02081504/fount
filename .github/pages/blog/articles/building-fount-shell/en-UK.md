@@ -1,11 +1,11 @@
 ---
-title: "Building fount Shell"
+title: 'Building fount Shell'
 summary: "Field notes from landing the theory: how fount's Shell turns 'agent as task system' into code in a parts tree, what the cage looks like in practice — and which of my own positions are under revision."
 tags:
-  - "fount"
-  - "shell"
-  - "architecture"
-  - "design patterns"
+  - 'fount'
+  - 'shell'
+  - 'architecture'
+  - 'design patterns'
 ---
 
 # Building fount Shell
@@ -66,11 +66,11 @@ Because the agent is a task execution system and chat is one event source among 
 
 ### Why characters and personas are parts
 
-Because a persona is a task configuration, not a soul. A char binds a target portrait, a style, a toolset, a world — everything the task needs to be executed *this way*. Different tasks deserve different configurations, and users deserve to compose them: pick a shell, pick a char, mount a world, attach a plugin — no code, all composition. When the persona is data rather than architecture, [the roleplay question](does-roleplay-make-llms-worse) stops being a religious debate and becomes an A/B experiment.
+Because a persona is a task configuration, not a soul. A char binds a target portrait, a style, a toolset, a world — everything the task needs to be executed _this way_. Different tasks deserve different configurations, and users deserve to compose them: pick a shell, pick a char, mount a world, attach a plugin — no code, all composition. When the persona is data rather than architecture, [the roleplay question](does-roleplay-make-llms-worse) stops being a religious debate and becomes an A/B experiment.
 
 ### Why worlds are parts
 
-Because the environment loop in the diagram needs something to pass *through*. A world is where events originate and artefacts land — it gives the agent a habitat, not a chat log.
+Because the environment loop in the diagram needs something to pass _through_. A world is where events originate and artefacts land — it gives the agent a habitat, not a chat log.
 
 The generalisation writes itself: **everything the theory treats as a variable — interface, persona, environment, services — becomes a replaceable part; everything it treats as an invariant — activation, allocation, the task core — stays in the core.** That sentence is the whole design.
 
@@ -78,9 +78,9 @@ The generalisation writes itself: **everything the theory treats as a variable �
 
 The safety chapters gave principles; this section shows them in code. If you can read source, check along.
 
-Every reply request in fount carries a `supported_functions` list: markdown, html, unsafe_html, files, add_message... For anything absent from the list, the corresponding plugin prompt is simply never injected. The model never learns that it *could* send files — no temptation, no abuse. This is "capabilities that don't exist cannot be abused" at the implementation layer.
+Every reply request in fount carries a `supported_functions` list: markdown, html, unsafe_html, files, add_message... For anything absent from the list, the corresponding plugin prompt is simply never injected. The model never learns that it _could_ send files — no temptation, no abuse. This is "capabilities that don't exist cannot be abused" at the implementation layer.
 
-Least privilege has a concrete shape, too. The code-execution plugin distinguishes `view_files` (the model looks; the content stays on the machine) from `add_files` (the model looks *and* sends). Sensitive content — camera, screenshots — defaults to the former; the prompt states in writing that unless the user explicitly asks for a file to be sent, `view_files` is the right call. Content reaching the model and content leaving the machine are two different permissions.
+Least privilege has a concrete shape, too. The code-execution plugin distinguishes `view_files` (the model looks; the content stays on the machine) from `add_files` (the model looks _and_ sends). Sensitive content — camera, screenshots — defaults to the former; the prompt states in writing that unless the user explicitly asks for a file to be sent, `view_files` is the right call. Content reaching the model and content leaving the machine are two different permissions.
 
 Two clauses in that plugin's prompt are plain enough to be overlooked: "avoid deleting files/folders directly; prefer the recycle bin" and "when overwriting data, consider backing up the original first". Neither would have saved my ID photo — publish-class operations are irreversible, the lesson of [the canary chapter](untrusted-upstream) — but they are the daily-edition version of the same idea: leave the error an exit.
 
@@ -96,7 +96,7 @@ Name a thing and the name becomes a constraint. fount's architecture exists so t
 4. **Task-Oriented Persona.** Personas exist to shape task performance — goals, style, constraints — not to name chatbots and put hats on them.
 5. **LLM on Demand.** The model is called at specific, bounded positions in the task pipeline, not kept warm as a resident oracle.
 6. **Tool over Prompt.** Rather give the agent a tool than describe a procedure in the system prompt. A described procedure is a suggestion; a tool is an interface.
-7. **Program over Reasoning.** Eliminate the *need* to reason rather than improving reasoning. The best prompt for multiplication is a calculator.
+7. **Program over Reasoning.** Eliminate the _need_ to reason rather than improving reasoning. The best prompt for multiplication is a calculator.
 
 None of these patterns is clever — that's the point. Each one is the theory refusing to pay a bill it doesn't owe.
 
@@ -105,12 +105,12 @@ None of these patterns is clever — that's the point. Each one is the theory re
 A series that preaches honesty owes its ending some. This is not a disclaimer-shaped "open questions" list; it is the list of places where I am actually changing my mind:
 
 - **Dynamic activation has its own costs.** Deciding what to activate is itself a task, and tasks fail. Retrieval errors are silent: the model doesn't know which memory it was never given. A narrowly-activated system can fail confidently in ways a stuffed-context system happens not to.
-- **Persona is not pure overhead.** [The roleplay essay](does-roleplay-make-llms-worse) landed on "mixed evidence"; there genuinely are cases where a character frame *raises* task performance. Treating persona as pure cost overcorrects, and where the border lies, nobody has a map.
+- **Persona is not pure overhead.** [The roleplay essay](does-roleplay-make-llms-worse) landed on "mixed evidence"; there genuinely are cases where a character frame _raises_ task performance. Treating persona as pure cost overcorrects, and where the border lies, nobody has a map.
 - **Rules sometimes lose to models.** A hand-written regex router accumulates maintenance debt, and one small-model call can handle the same variation at lower total cost. The allocation principle does not repeal the budget.
 - **Less context is not always better.** Whenever the model must re-derive facts you deleted, aggressive trimming trades a token cost for a reasoning cost. Sometimes the stuffed context is the cheaper machine.
 - **The "smarter model" temptation is bigger than I admitted.** After the deepseek3.5 incident I assumed I was immune to marketing. Honestly: every new model release, my first reaction is still "let's try it". Discipline is not an asset you acquire once; it is rent you pay every time.
 
-These are not pleasantries pinned to the end. Each is a place where fount's architecture deliberately makes the question *measurable*: swap the persona part, ablate the activation, compare the budgets. When revisions land, the essays will be revised too.
+These are not pleasantries pinned to the end. Each is a place where fount's architecture deliberately makes the question _measurable_: swap the persona part, ablate the activation, compare the budgets. When revisions land, the essays will be revised too.
 
 ## What fount is
 

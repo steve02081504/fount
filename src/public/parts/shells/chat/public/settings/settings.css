@@ -69,6 +69,7 @@
 		opacity: 0;
 		transform: translateY(4px);
 	}
+
 	to {
 		opacity: 1;
 		transform: translateY(0);
@@ -316,6 +317,7 @@
 }
 
 @media (max-width: 768px) {
+
 	.settings-field-grid,
 	.settings-role-perms {
 		grid-template-columns: 1fr;

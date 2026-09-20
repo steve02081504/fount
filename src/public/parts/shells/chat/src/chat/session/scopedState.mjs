@@ -96,7 +96,7 @@ export function withScopedStateMutex(username, groupId, channelId, mutate, charn
 	if (deletedChannelKeys.has(key)) return Promise.resolve()
 	const prev = channelMutexes.get(key) ?? Promise.resolve()
 	const next = prev
-		.catch(() => {})
+		.catch(() => { })
 		.then(async () => {
 			if (deletedChannelKeys.has(key)) return
 			if (!charname) return
@@ -211,7 +211,7 @@ export async function clearScopedState(username, groupId, channelId) {
 	const key = channelKey(username, groupId, channelId)
 	const prev = channelMutexes.get(key) ?? Promise.resolve()
 	const next = prev
-		.catch(() => {})
+		.catch(() => { })
 		.then(async () => {
 			deletedChannelKeys.add(key)
 			await rm(scopedStatePath(username, groupId, channelId), { force: true })

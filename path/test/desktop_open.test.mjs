@@ -33,7 +33,7 @@ async function captureDesktopOpener() {
 			 * 替身无需维持进程事件循环。
 			 * @returns {void} 不创建任何资源。
 			 */
-			unref: () => {}
+			unref: () => { }
 		})
 		queueMicrotask(() => subprocess.emit('spawn'))
 		return subprocess

@@ -184,7 +184,7 @@ function cleanSelfCreatedDataDirs(outPath) {
 			const dataDir = line.trim()
 			if (!dataDir) continue
 			// Windows 上子进程刚退出时句柄/杀软锁释放有延迟：单目录小退避重试，失败不放弃其余目录。
-			for (let attempt = 0;; attempt++)
+			for (let attempt = 0; ; attempt++)
 				try {
 					rmSync(dataDir, { recursive: true, force: true })
 					break

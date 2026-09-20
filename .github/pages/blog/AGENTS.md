@@ -26,8 +26,8 @@ A static, GitHub Pages-hosted blog/wiki for fount's essays on agent design (the 
 
    ```md
    ---
-   title: "Why fount Agents Are Not Chatbots"
-   summary: "One-sentence teaser shown on index cards."
+   title: 'Why fount Agents Are Not Chatbots'
+   summary: 'One-sentence teaser shown on index cards.'
    tags:
      - agent
      - definition
@@ -36,7 +36,8 @@ A static, GitHub Pages-hosted blog/wiki for fount's essays on agent design (the 
    # Why fount Agents Are Not Chatbots
    ```
 
-   Required: `title`, `summary` (strings), `tags` (list of strings, may be empty). Quote values containing `: `. Keep the frontmatter `title` in sync with the first `# heading`. Unknown frontmatter keys are ignored. No YAML frontmatter after the closing `---` rules; no `<script>` in articles.
+   Required: `title`, `summary` (strings), `tags` (list of strings, may be empty). Quote values containing `:`. Keep the frontmatter `title` in sync with the first `# heading`. Unknown frontmatter keys are ignored. No YAML frontmatter after the closing `---` rules; no `<script>` in articles.
+
 3. Add `meta.json` to the folder: `{ "category": "<id>", "order": <int> }`. Use an existing category from `categories.json` when one fits; otherwise add the category there (order + localized names).
 4. Done — no registry edits. The deploy workflow regenerates `index.json`; the local pages server regenerates it at startup.
 5. Cross-link liberally: existing articles may now link to yours; add reciprocal links where it helps the reading flow.

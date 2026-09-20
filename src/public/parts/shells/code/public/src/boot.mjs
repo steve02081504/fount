@@ -92,7 +92,7 @@ function warmupMarkdownPipeline() {
  * @returns {void}
  */
 function warmupWorkspaceBrowser() {
-	void api.browseMachine(store.machine, '', store.workspace?.path || '').catch(() => {})
+	void api.browseMachine(store.machine, '', store.workspace?.path || '').catch(() => { })
 }
 
 /** 初始化。 */

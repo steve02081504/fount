@@ -1,10 +1,10 @@
 ---
-title: "The LLM Is Not the Agent"
-summary: "The LLM has earned two real jobs inside an agent: translating human speech into executable structure, and thinking where nothing can be computed. The rest of the work belongs to somebody else."
+title: 'The LLM Is Not the Agent'
+summary: 'The LLM has earned two real jobs inside an agent: translating human speech into executable structure, and thinking where nothing can be computed. The rest of the work belongs to somebody else.'
 tags:
-  - "llm"
-  - "architecture"
-  - "cognition"
+  - 'llm'
+  - 'architecture'
+  - 'cognition'
 ---
 
 # The LLM Is Not the Agent
@@ -32,18 +32,18 @@ Steps: 1. list files modified in the last 24 hours
 Then it translates the steps into operations a machine can actually run:
 
 ```js
-const changed = await fs.findModifiedSince(yesterday)  // query files
-const js      = changed.filter(f => f.ext === ".js")   // filter by extension
-const bundle  = await zip.create(js, "daily-js.zip")   // bundle
-const peer    = await contacts.lookup("Xiaoming")      // resolve contact
-await transfer.send(peer, bundle)                      // send
+const changed = await fs.findModifiedSince(yesterday); // query files
+const js = changed.filter((f) => f.ext === '.js'); // filter by extension
+const bundle = await zip.create(js, 'daily-js.zip'); // bundle
+const peer = await contacts.lookup('Xiaoming'); // resolve contact
+await transfer.send(peer, bundle); // send
 ```
 
 Until recently, this translation required a human sitting at the interface, clicking and typing. That is the genuinely revolutionary part. But notice what the example quietly reveals: of the five steps, only one requires cognition — understanding the request, sketching the plan. Listing, filtering, zipping, contact lookup, sending: all deterministic. Keep that asymmetry in mind; two sections from now it becomes a principle.
 
 ## Job two: thinking where nothing can be computed
 
-Some problems have no closed-form solution: analysing code, understanding language, divining what a user actually wants, planning, weighing conflicting options, working with partial information, creating. Their common structure: the answer cannot be *computed*, only *thought* by something with the power to generalise. That is cognition, and the LLM supplies it on demand.
+Some problems have no closed-form solution: analysing code, understanding language, divining what a user actually wants, planning, weighing conflicting options, working with partial information, creating. Their common structure: the answer cannot be _computed_, only _thought_ by something with the power to generalise. That is cognition, and the LLM supplies it on demand.
 
 ### Cognitive-as-a-Service
 
@@ -53,7 +53,7 @@ It is worth being blunt about what exactly got abstracted. Before the LLM, intel
 
 The comparison is stark, and worth putting on the table. Hiring a human expert is a subscription: the salary includes their holidays, their sick days, their entire life — and "how smart they are" is never written into the contract. Renting an LLM is metered: unused, it never appears on the bill; capability upgrades with versions instead of depreciating from the day of hire; benchmark scores are in writing. For procurement purposes, these are not the same species.
 
-The ledger has a other side, though. A human expert comes with judgement and responsibility — above all, with the standing to *answer for consequences*, which metered intelligence does not include. So the layer that answers for consequences must be the agent system itself; it cannot be outsourced to the model. That sentence gets used repeatedly later on ([Cage the Power](cage-the-power) is built entirely on top of it).
+The ledger has a other side, though. A human expert comes with judgement and responsibility — above all, with the standing to _answer for consequences_, which metered intelligence does not include. So the layer that answers for consequences must be the agent system itself; it cannot be outsourced to the model. That sentence gets used repeatedly later on ([Cage the Power](cage-the-power) is built entirely on top of it).
 
 Whatever one makes of this philosophically, architecturally it is clarifying. If cognition is a metered utility, the agent is the customer — and a sensible customer does not buy electricity to run a hand-cranked calculator.
 
@@ -104,13 +104,13 @@ flowchart TB
 
 Here the LLM is one node among several, invoked through orchestration like everything else. It is not at the centre, because the centre is the task. Taken apart by component:
 
-| Component | What it contributes |
-| --- | --- |
+| Component     | What it contributes                                       |
+| ------------- | --------------------------------------------------------- |
 | Orchestration | Task decomposition, decisions, ordering, failure recovery |
-| Programs | Deterministic computation |
-| Tools | Effects on the external world |
-| Models | Cognitive and perceptual abilities, LLM included |
-| State | Task state, artefacts, memory |
+| Programs      | Deterministic computation                                 |
+| Tools         | Effects on the external world                             |
+| Models        | Cognitive and perceptual abilities, LLM included          |
+| State         | Task state, artefacts, memory                             |
 
 ## The whole argument in one line
 

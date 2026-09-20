@@ -49,14 +49,16 @@ public static class FountDirAccessCheck {
 "@
 		}
 		return [FountDirAccessCheck]::CanWriteDirectory($dir)
-	} catch { return $false }
+	}
+	catch { return $false }
 }
 
 function script:assert_dir_writable($dir) {
 	if (-not (check_dir_writable $dir)) {
 		if (isRoot) {
 			Write-Error (Get-I18n -key 'install.permissionDeniedAsRoot' -params @{path = $dir })
-		} else {
+		}
+		else {
 			Write-Error (Get-I18n -key 'install.permissionDeniedNotRoot' -params @{path = $dir })
 		}
 		exit 1

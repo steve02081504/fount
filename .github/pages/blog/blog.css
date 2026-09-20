@@ -407,7 +407,7 @@
 	font-weight: 700;
 }
 
-.blog-article :not(pre) > code {
+.blog-article :not(pre)>code {
 	padding: 0.15em 0.4em;
 	border-radius: var(--radius-field);
 	background: color-mix(in oklab, var(--color-base-content) 8%, transparent);
@@ -564,7 +564,7 @@ html {
 	gap: 0.4rem;
 }
 
-.blog-toc-section + .blog-toc-section {
+.blog-toc-section+.blog-toc-section {
 	margin-top: 1.25rem;
 	padding-top: 1rem;
 	border-top: var(--border) solid color-mix(in oklab, var(--color-base-content) 10%, transparent);

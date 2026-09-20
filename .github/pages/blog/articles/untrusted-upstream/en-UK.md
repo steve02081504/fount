@@ -1,16 +1,16 @@
 ---
-title: "The Untrusted Upstream"
+title: 'The Untrusted Upstream'
 summary: "The agent holds local privileges while the intelligence streams in from someone else's servers. My canary died once: the new model wiped her own memory files first, I shrugged; days later she posted my ID photo to four thousand people."
 tags:
-  - "supply chain"
-  - "local-first"
-  - "canary"
-  - "safety"
+  - 'supply chain'
+  - 'local-first'
+  - 'canary'
+  - 'safety'
 ---
 
 # The Untrusted Upstream
 
-So far this series has defended against the agent *itself*: the model draws bad cards, so cage it; people get talked over by the surface, so anthropomorphise up to the capability. One piece of the puzzle has not been inspected: **where the intelligence comes from**. An agent's intelligence is rented ([The LLM Is Not the Agent](llm-is-not-the-agent)), and at the other end of the rental pipe sits a party you can neither see nor govern.
+So far this series has defended against the agent _itself_: the model draws bad cards, so cage it; people get talked over by the surface, so anthropomorphise up to the capability. One piece of the puzzle has not been inspected: **where the intelligence comes from**. An agent's intelligence is rented ([The LLM Is Not the Agent](llm-is-not-the-agent)), and at the other end of the rental pipe sits a party you can neither see nor govern.
 
 [My incident](cage-the-power) has an untold half, and it makes the right opening for this chapter.
 
@@ -40,7 +40,7 @@ An online LLM service may, for cost reasons or to free up capacity for training 
 
 A footnote to the deepseek3.5 affair: I picked it for the wall-to-wall marketing and the pretty leaderboard numbers. Leaderboards quantify the exam-setter's task distribution, not mine. By the time I discovered that "agent capability" and "leaderboard score" were two different quantities, the tuition had been paid.
 
-Since [that chapter](llm-is-not-the-agent) likes the power-station analogy, the analogy deserves finishing: voltage and frequency on the grid are regulated, standardised, and the meter is installed in *your* house. The "voltage" of an LLM is decided unilaterally by the provider, and the meter sits on their side. Using rented intelligence means accepting, by default, that its quality drift is out of your control.
+Since [that chapter](llm-is-not-the-agent) likes the power-station analogy, the analogy deserves finishing: voltage and frequency on the grid are regulated, standardised, and the meter is installed in _your_ house. The "voltage" of an LLM is decided unilaterally by the provider, and the meter sits on their side. Using rented intelligence means accepting, by default, that its quality drift is out of your control.
 
 ## Relay stations: one fish, N meals
 

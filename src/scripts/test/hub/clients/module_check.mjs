@@ -79,7 +79,7 @@ export async function signalModuleCheckReady(ticket) {
 	const base = getTestHubBaseUrl()
 	if (!base || !ticket) return
 	const deadline = Date.now() + MODULE_CHECK_READY_TOTAL_TIMEOUT_MS
-	while(true) try {
+	while (true) try {
 		const res = await fetch(`${base}/module-check/ready`, {
 			method: 'POST',
 			headers: { 'content-type': 'application/json' },

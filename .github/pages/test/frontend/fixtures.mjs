@@ -35,8 +35,8 @@ export function createPagesFixtures(options = {}) {
 			const context = await browser.newContext({ locale, serviceWorkers: 'block' })
 			await installCdnResponseCache(context)
 			// 死主机探针：挂起请求由页面自身 AbortController 中止（Chrome 会拦 1/9 等端口为 ERR_UNSAFE_PORT，属预期噪声）
-			await context.route('http://127.0.0.1:9/**', () => new Promise(() => {}))
-			await context.route('http://127.0.0.1:1/**', () => new Promise(() => {}))
+			await context.route('http://127.0.0.1:9/**', () => new Promise(() => { }))
+			await context.route('http://127.0.0.1:1/**', () => new Promise(() => { }))
 			// 静态站评语数据：测试环境无 data/comments.json（CI 部署期注入），兜底空列表避免评论轮播的 fetch 失败噪声
 			await context.route('**/data/comments.json*', route => route.fulfill({ status: 200, contentType: 'application/json', body: '[]' }))
 			await context.addInitScript(language => {
@@ -84,7 +84,7 @@ export function createPagesFixtures(options = {}) {
 			}, {
 				// 静态站无 fount 节点：安装/等待页对本机 fount 服务（localhost:8931）的探活
 				// 与冷启动预渲染必然连不上，属预期噪声，与既有死主机路由同一原则
-				/** 
+				/**
 				 * 额外网络豁免：本机 fount 服务（localhost:8931）在静态站上必然连不上。
 				 * @param {{ url?: string }} entry 网络条目
 				 * @returns {boolean} 是否豁免

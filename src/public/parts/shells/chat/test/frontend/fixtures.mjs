@@ -371,7 +371,7 @@ export function messageRowByText(page, text) {
  * @returns {Promise<import('@playwright/test').APIResponse>} 最终响应
  */
 async function postWithRetry(request, url, options, retries = 2) {
-	for (let attempt = 0;; attempt++)
+	for (let attempt = 0; ; attempt++)
 		try {
 			return await request.post(url, options)
 		}

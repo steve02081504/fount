@@ -1,11 +1,11 @@
 ---
-title: "Why fount Agents Are Not Chatbots"
-summary: "An agent is a task execution system, not a persona shell wrapped around a chat model. Chat is one interface it may choose — a 2 AM timer and a person typing are structurally equal."
+title: 'Why fount Agents Are Not Chatbots'
+summary: 'An agent is a task execution system, not a persona shell wrapped around a chat model. Chat is one interface it may choose — a 2 AM timer and a person typing are structurally equal.'
 tags:
-  - "agent"
-  - "definition"
-  - "task system"
-  - "chatbot"
+  - 'agent'
+  - 'definition'
+  - 'task system'
+  - 'chatbot'
 ---
 
 # Why fount Agents Are Not Chatbots
@@ -16,7 +16,7 @@ I build agents too. What I build descends from a different picture, and fount st
 
 > An agent is not a chatbot built around an LLM. It is a task execution system that can combine different kinds of computation, and the LLM is just one cognitive ability it can call.
 
-The weight sits on *task execution system*. Let's take both sides apart.
+The weight sits on _task execution system_. Let's take both sides apart.
 
 ## The template
 
@@ -27,7 +27,7 @@ Products flying the "AI Agent" flag are almost universally assembled from four p
 3. **Memory**: past chats are summarised, vectorised, and injected back into the prompt so the character "remembers" you.
 4. **An LLM**: the engine driving everything, generating every reply end to end.
 
-None of these parts is wrong on its own. What's wrong is the order, and the priorities the order implies: in this architecture, dialogue is the fundamental interface, the LLM is the fundamental processor, and persona and memory hang around them as decoration. A system built this way can *talk about* tasks but struggles to *do* them. It will describe a file-cleanup plan with great verve and then invent a cron expression that does not exist. What this architecture is genuinely good at is talking.
+None of these parts is wrong on its own. What's wrong is the order, and the priorities the order implies: in this architecture, dialogue is the fundamental interface, the LLM is the fundamental processor, and persona and memory hang around them as decoration. A system built this way can _talk about_ tasks but struggles to _do_ them. It will describe a file-cleanup plan with great verve and then invent a cron expression that does not exist. What this architecture is genuinely good at is talking.
 
 And the chat window was never a technical necessity. It is the habit of the first wave of LLM products, mistakenly promoted to product identity.
 
@@ -37,15 +37,15 @@ Remove it and an agent becomes something else: a program that accepts a task and
 
 **What it receives.** Activation conditions, intents, tasks, constraints, context. The sources are wider than most products admit:
 
-| Input | Typical sources | Examples |
-| --- | --- | --- |
-| Activation | Event systems, timers, webhooks | "run daily at 02:00"; a file on disk changed |
-| Intent | A human, another agent | "clean up the build directory" |
-| Task | Programs, upstream systems | a work item with acceptance criteria |
-| Constraints | Policy, callers | read-only access; a token budget; never touch production |
-| Context | Files, world state, prior runs | repo layout; the artefacts of the last run |
+| Input       | Typical sources                 | Examples                                                 |
+| ----------- | ------------------------------- | -------------------------------------------------------- |
+| Activation  | Event systems, timers, webhooks | "run daily at 02:00"; a file on disk changed             |
+| Intent      | A human, another agent          | "clean up the build directory"                           |
+| Task        | Programs, upstream systems      | a work item with acceptance criteria                     |
+| Constraints | Policy, callers                 | read-only access; a token budget; never touch production |
+| Context     | Files, world state, prior runs  | repo layout; the artefacts of the last run               |
 
-Notice who is *not* on that list: a human who wants to chat. A person arriving with a question is one activation source among many — structurally no more special than a timer that fires at 2 AM.
+Notice who is _not_ on that list: a human who wants to chat. A person arriving with a question is one activation source among many — structurally no more special than a timer that fires at 2 AM.
 
 **What it owes.** To convert input into a sequence of execution steps and, in the end, produce some artefact or effect on the world. Artefacts can be text, files, code, tool calls, API requests, state changes, new tasks — any observable result. The test is simple: if a system's output can be either a sentence or a merge commit, it is an agent. If the only possible output is text, it is a chatbot, whatever the landing page says.
 
@@ -77,13 +77,13 @@ In the first loop the LLM is everything. In the second it is one callable among 
 
 Many products treat "persona → dialogue → memory → LLM" as the core structure of the thing they are building. It is exactly backwards. Where the weight sits is the task and its execution:
 
-| Question | Chatbot-shaped product | Task execution system |
-| --- | --- | --- |
-| Why does the system exist? | To sustain a conversation | To complete tasks |
-| What is the interface? | A chat window | Whatever the task needs: events, APIs, files, dialogue |
-| What is state? | Chat logs and character memory | Task state, artefacts, effects on the world |
-| What is the LLM? | The engine everything depends on | A cognitive ability, called on demand |
-| What is persona? | The product's identity | One task configuration among many |
+| Question                   | Chatbot-shaped product           | Task execution system                                  |
+| -------------------------- | -------------------------------- | ------------------------------------------------------ |
+| Why does the system exist? | To sustain a conversation        | To complete tasks                                      |
+| What is the interface?     | A chat window                    | Whatever the task needs: events, APIs, files, dialogue |
+| What is state?             | Chat logs and character memory   | Task state, artefacts, effects on the world            |
+| What is the LLM?           | The engine everything depends on | A cognitive ability, called on demand                  |
+| What is persona?           | The product's identity           | One task configuration among many                      |
 
 The same comparison as a picture:
 

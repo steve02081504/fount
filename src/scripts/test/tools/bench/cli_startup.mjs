@@ -115,7 +115,7 @@ if (fountPath) {
 	else
 		console.log(`（localhost:${port} 无运行中的服务器，跳过 fount eval）`)
 }
-else 
+else
 	console.log('（PATH 上没有 fount，跳过 launcher 行）')
 
 

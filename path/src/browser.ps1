@@ -12,7 +12,8 @@
 				$candidates += ($command -split '\s+')[0].Trim('"')
 			}
 		}
-	} catch { <# UserChoice 缺失/无默认浏览器时忽略 #> }
+	}
+	catch { <# UserChoice 缺失/无默认浏览器时忽略 #> }
 	# 2. 常见安装路径（Edge 优先——Windows 11 自带，即使默认处理器未登记也存在）。
 	$candidates += @(
 		"$env:ProgramFiles\Microsoft\Edge\Application\msedge.exe"
@@ -45,7 +46,8 @@ function script:Test-Browser {
 	try {
 		Test-Winget
 		winget install --id Google.Chrome -e --source winget
-	} catch { <# ignore #> }
+	}
+	catch { <# ignore #> }
 	if (!(Get-Browser)) {
 		try {
 			$ChromeSetup = "ChromeSetup.exe"
@@ -55,7 +57,8 @@ function script:Test-Browser {
 				Start-Sleep -Seconds 2
 			} while (-not $installer.HasExited)
 			Remove-Item "$env:TEMP\$ChromeSetup" -ErrorAction SilentlyContinue
-		} catch { <# ignore #> }
+		}
+		catch { <# ignore #> }
 	}
 
 	if (Get-Browser) {
@@ -63,7 +66,8 @@ function script:Test-Browser {
 		try {
 			New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
 			Set-Content "$FOUNT_DIR/data/installer/auto_installed_chrome" '1'
-		} catch { <# ignore #> }
+		}
+		catch { <# ignore #> }
 	}
 }
 

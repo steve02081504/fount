@@ -204,7 +204,7 @@ export const MAX_SLEEP_INTERRUPT_ATTEMPTS = 5
 export async function runSuite(suite, options, globalBudget, stream = false, watchdog = {}) {
 	const label = watchdog.label || `${suite.manifestId}:${suite.name}`
 	let attempt = 0
-	while(true) {
+	while (true) {
 		attempt++
 		if (watchdog.signal?.aborted)
 			return {

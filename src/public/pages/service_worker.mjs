@@ -480,14 +480,16 @@ self.addEventListener('message', event => {
 	else if (event.data?.type === 'GET_FOUNT_VERSION')
 		event.ports[0]?.postMessage?.({ fountVersion })
 	else if (event.data?.type === 'WAKE_SERVER_REQUEST')
-		event.ports[0]?.postMessage?.({ approved: (() => {
-			if (serverOnline) return true
-			const now = Date.now()
-			try {
-				if (now - lastWakeRequestAt < WAKE_GRACE_MS) return true
-			} finally { lastWakeRequestAt = now }
-			return false
-		})() })
+		event.ports[0]?.postMessage?.({
+			approved: (() => {
+				if (serverOnline) return true
+				const now = Date.now()
+				try {
+					if (now - lastWakeRequestAt < WAKE_GRACE_MS) return true
+				} finally { lastWakeRequestAt = now }
+				return false
+			})()
+		})
 })
 
 /**

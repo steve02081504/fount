@@ -117,10 +117,12 @@ await withTempDir('fount-bench-', async workDir => {
 	const rows = [
 		{ name: 'spawn→healthy', samples: totals },
 		{ name: 'spawn 返回', samples: spawns },
-		{ name: 'healthy 轮询粒度', samples: withPhases.map(it => {
-			const { abs } = toAbsolute(it.phases)
-			return abs.startReady != null ? Math.max(0, it.healthyEpoch - abs.startReady) : 0
-		}) },
+		{
+			name: 'healthy 轮询粒度', samples: withPhases.map(it => {
+				const { abs } = toAbsolute(it.phases)
+				return abs.startReady != null ? Math.max(0, it.healthyEpoch - abs.startReady) : 0
+			})
+		},
 		{ name: 'shutdown（收尾）', samples: shutdowns },
 	]
 
@@ -157,10 +159,10 @@ await withTempDir('fount-bench-', async workDir => {
 		console.log(`中位迭代相位明细（spawn=${fmt(timeOrigin - medianIter.spawnEpoch)}ms 后，总 ${fmt(medianIter.healthyEpoch - medianIter.spawnEpoch)}ms）：`)
 		console.log('| 相位 | 距 timeOrigin |')
 		console.log('| --- | --- |')
-		for (const name of ['mainEval', 'kernelConstructed', 'catalogStart', 'catalogReady', 'loopReady', 'expressReady', 'listening', 'wsReady', 'startReady']) 
+		for (const name of ['mainEval', 'kernelConstructed', 'catalogStart', 'catalogReady', 'loopReady', 'expressReady', 'listening', 'wsReady', 'startReady'])
 			if (abs[name] != null)
 				console.log(`| ${name} | ${fmt(abs[name] - timeOrigin)} |`)
-		
+
 		console.log(`| healthy（外部） | ${fmt(medianIter.healthyEpoch - timeOrigin)} |`)
 	}
 

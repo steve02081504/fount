@@ -524,9 +524,7 @@ export function wireComposerEvents() {
 			void ensureHistory('shell')
 			return
 		}
-		if (store.shellMode) 
-			hideSlashPanel()
-		
+		if (store.shellMode) hideSlashPanel()
 		else {
 			// / 命令面板
 			const caret = elements.composerInput.selectionStart

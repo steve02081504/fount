@@ -1,10 +1,10 @@
 ---
-title: "LLM 不是 Agent"
-summary: "LLM 在 Agent 里挣到了两个真实职位：把人话翻译成可执行结构，以及在无解可算处思考。此外的一长串活，都该交给别人。"
+title: 'LLM 不是 Agent'
+summary: 'LLM 在 Agent 里挣到了两个真实职位：把人话翻译成可执行结构，以及在无解可算处思考。此外的一长串活，都该交给别人。'
 tags:
-  - "LLM"
-  - "架构"
-  - "认知"
+  - 'LLM'
+  - '架构'
+  - '认知'
 ---
 
 # LLM 不是 Agent
@@ -32,11 +32,11 @@ tags:
 再把步骤翻译成机器真正能跑的操作：
 
 ```js
-const changed = await fs.findModifiedSince(yesterday)  // 查询文件
-const js      = changed.filter(f => f.ext === ".js")   // 按扩展名筛选
-const bundle  = await zip.create(js, "daily-js.zip")   // 压缩打包
-const peer    = await contacts.lookup("Xiaoming")      // 获取联系人
-await transfer.send(peer, bundle)                      // 发送文件
+const changed = await fs.findModifiedSince(yesterday); // 查询文件
+const js = changed.filter((f) => f.ext === '.js'); // 按扩展名筛选
+const bundle = await zip.create(js, 'daily-js.zip'); // 压缩打包
+const peer = await contacts.lookup('Xiaoming'); // 获取联系人
+await transfer.send(peer, bundle); // 发送文件
 ```
 
 过去这一步需要一个真人坐在界面前又点又敲。这是这项技术真正革命性的地方。但请注意这个例子里悄悄露出的另一件事：五个步骤中只有一步需要认知——理解请求、勾画计划。列文件、筛选、压缩、查联系人、发送，全是确定性操作。记住这个不对称，它很快会变成一条原则。
@@ -104,13 +104,13 @@ flowchart TB
 
 LLM 在这张图里是若干节点中的一个，和其他一切一样经由编排被调用。它不在中心，因为中心是任务。按部件拆开看：
 
-| 部件 | 贡献什么 |
-| --- | --- |
+| 部件 | 贡献什么                       |
+| ---- | ------------------------------ |
 | 编排 | 分解任务、决策、排序、失败恢复 |
-| 程序 | 确定性计算 |
-| 工具 | 对外部世界的作用 |
-| 模型 | 认知与感知能力，LLM 包含在内 |
-| 状态 | 任务状态、产物、记忆 |
+| 程序 | 确定性计算                     |
+| 工具 | 对外部世界的作用               |
+| 模型 | 认知与感知能力，LLM 包含在内   |
+| 状态 | 任务状态、产物、记忆           |
 
 ## 一行字
 
