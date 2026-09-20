@@ -48,11 +48,11 @@ Feed replay：删除/屏蔽/mute 须 `purgeFeedShownPost` / `purgeFeedShownAutho
 
 ## 三、图谱与通知（有意形态，非漏实现）
 
-| 项                    | 说明                                                         |
-| --------------------- | ------------------------------------------------------------ |
-| DM                    | 无 social 收件箱；深链 chat Hub `?contact=`（有意）          |
-| 密友                  | 可见性 `selected` 每次手填 allow；无独立「密友列表」产品类型 |
-| Lists / Page / 社区   | 无；群组在 chat                                              |
+| 项                   | 说明                                                         |
+| -------------------- | ------------------------------------------------------------ |
+| DM                   | 无 social 收件箱；深链 chat Hub `?contact=`（有意）          |
+| 密友                 | 可见性 `selected` 每次手填 allow；无独立「密友列表」产品类型 |
+| Lists / Page / 社区  | 无；群组在 chat                                              |
 | social↔chat 结构化桥 | 深链 + `replyViaChat`；无 mention→channel ingress（未排期）  |
 
 通知九种已有（`reply` / `mention` / `like` / `repost` / `follow` / `care_post` / `poll_closed` / `post_note` / `live_started`）。仍缺：关键词 match→提醒。

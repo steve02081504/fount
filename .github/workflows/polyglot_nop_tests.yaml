@@ -1,7 +1,7 @@
 name: Polyglot NOP Tests
 
 env:
-  FOUNT_ACCEPT_EULA: "1"
+  FOUNT_ACCEPT_EULA: '1'
 
 on:
   workflow_dispatch:

@@ -11,7 +11,7 @@
 | 优先级 | 动作                                                | 状态                           |
 | ------ | --------------------------------------------------- | ------------------------------ |
 | 中     | import map / `@chat/hub/...` 别名，缓解相对路径地狱 | 中长期；短期 AGENTS 文档即可   |
-| 慎做   | Chat DAG ↔ Social Timeline 事件内核合并            | 大工程；联邦规则要统一改时再动 |
+| 慎做   | Chat DAG ↔ Social Timeline 事件内核合并             | 大工程；联邦规则要统一改时再动 |
 
 ---
 
@@ -48,7 +48,7 @@
 | 面                                                         | 原因         |
 | ---------------------------------------------------------- | ------------ |
 | Social feed cursor 分页 vs Chat `MessagePipeline` 虚拟列表 | 产品模型不同 |
-| Chat DAG ↔ Social Timeline 全量内核                       | 见 §1.2      |
+| Chat DAG ↔ Social Timeline 全量内核                        | 见 §1.2      |
 | replyTo / quoteRef UI 硬合并                               | 产品模型不同 |
 
 ---

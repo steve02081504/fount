@@ -104,7 +104,7 @@ async function scanEditorSources() {
 				const { DatabaseSync } = await import('node:sqlite')
 				db = new DatabaseSync(dbPath, { readOnly: true })
 				const rows = db.prepare('SELECT value FROM ItemTable WHERE key = ?').all('terminal.history.entries.dirs')
-				for (const row of rows) 
+				for (const row of rows)
 					try {
 						const parsed = JSON.parse(typeof row.value === 'string' ? row.value : decoder.decode(row.value))
 						for (const entry of parsed.entries || [])
@@ -121,17 +121,15 @@ async function scanEditorSources() {
 		const storageRoot = path.join(userDataDir, 'User', 'workspaceStorage')
 		let hashes
 		try { hashes = await fs.readdir(storageRoot) } catch { continue }
-		for (const hash of hashes) 
-			try {
-				const data = JSON.parse(await fs.readFile(path.join(storageRoot, hash, 'workspace.json'), 'utf8'))
-				if (typeof data?.folder !== 'string') continue
-				// workspace.json 的 folder 恒为 file:// URI；非 file 值（异常/其他 scheme）无法映射本地目录，跳过
-				if (!data.folder.startsWith('file:')) continue
-				// fileURLToPath 处理 Windows 盘符（%3A 编码、盘符前根斜杠）与 UNC 路径（file://server/share → \\server\share），返回目标机文件系统路径
-				await addDir(fileURLToPath(data.folder))
-			}
-			catch { /* 单个 hash 目录异常则跳过 */ }
-		
+		for (const hash of hashes) try {
+			const data = JSON.parse(await fs.readFile(path.join(storageRoot, hash, 'workspace.json'), 'utf8'))
+			if (typeof data?.folder !== 'string') continue
+			// workspace.json 的 folder 恒为 file:// URI；非 file 值（异常/其他 scheme）无法映射本地目录，跳过
+			if (!data.folder.startsWith('file:')) continue
+			// fileURLToPath 处理 Windows 盘符（%3A 编码、盘符前根斜杠）与 UNC 路径（file://server/share → \\server\share），返回目标机文件系统路径
+			await addDir(fileURLToPath(data.folder))
+		}
+		catch { /* 单个 hash 目录异常则跳过 */ }
 	}
 	// Notepad++（仅 Windows）：session.xml 的文件条目，stat 确认是目录
 	if (process.platform === 'win32' && process.env.APPDATA) {
@@ -163,7 +161,7 @@ async function scanEditorSources() {
 	for (const root of jetbrainsRoots) {
 		let dirs
 		try { dirs = await fs.readdir(root) } catch { continue }
-		for (const dir of dirs) 
+		for (const dir of dirs)
 			try {
 				const xml = await fs.readFile(path.join(root, dir, 'options', 'recentProjects.xml'), 'utf8')
 				for (const match of xml.matchAll(/<entry key="([^"]*)"/g)) {

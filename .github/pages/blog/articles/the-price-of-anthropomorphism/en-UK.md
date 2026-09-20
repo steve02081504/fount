@@ -1,16 +1,16 @@
 ---
-title: "The Price of Anthropomorphism"
-summary: "A human-looking surface gets people to sign human-level trust over to a gacha machine. The freedom of playing with fire, a personality with no reliability certificate, a born yes-man — and why anthropomorphising up to capability, never past it, is the safety line."
+title: 'The Price of Anthropomorphism'
+summary: 'A human-looking surface gets people to sign human-level trust over to a gacha machine. The freedom of playing with fire, a personality with no reliability certificate, a born yes-man — and why anthropomorphising up to capability, never past it, is the safety line.'
 tags:
-  - "anthropomorphism"
-  - "trust"
-  - "echo chamber"
-  - "sycophancy"
+  - 'anthropomorphism'
+  - 'trust'
+  - 'echo chamber'
+  - 'sycophancy'
 ---
 
 # The Price of Anthropomorphism
 
-[The previous chapter](cage-the-power) put power in a cage, but one fact has to be faced honestly: some people don't want it caged. Some people *want* an all-powerful agent wife — the LLM deciding for itself, no consent, no confirmation. That's allowed. It is their freedom, and an open-source system will not — should not — confiscate it.
+[The previous chapter](cage-the-power) put power in a cage, but one fact has to be faced honestly: some people don't want it caged. Some people _want_ an all-powerful agent wife — the LLM deciding for itself, no consent, no confirmation. That's allowed. It is their freedom, and an open-source system will not — should not — confiscate it.
 
 But it is the freedom of playing with fire. A non-human principal with the power to act and no responsibility for outcomes is dangerous and uncontrollable, however fond of it you are. This chapter is not about "why not to allow it". It is about why the match strikes so easily: **anthropomorphism**.
 
@@ -42,4 +42,4 @@ This is not "thou shalt not anthropomorphise". Persona is a first-class citizen 
 
 A dividing line: **anthropomorphise the capability, not the responsibility.** Let the persona serve the task ([Agents Are Not Chatbots](agents-are-not-chatbots): persona is policy, not soul), let the permission system gate the consequences ([Cage the Power](cage-the-power)), let the verifier gate correctness ([the cost chapter](infinity-monkeys-and-verifiers)). The anthropomorphic skin can stay on the outermost layer — but underneath it there must be a cage and a system, not a you who was talked into dismantling the cage.
 
-One piece of the puzzle remains. So far the series has defended against the agent *itself*: it draws bad cards ([the cage](cage-the-power)), it soothes you (this chapter). But the agent's intelligence is rented — what if the party at the other end of the pipe is quietly swapping out the thing you rent? Next chapter: [The Untrusted Upstream](untrusted-upstream).
+One piece of the puzzle remains. So far the series has defended against the agent _itself_: it draws bad cards ([the cage](cage-the-power)), it soothes you (this chapter). But the agent's intelligence is rented — what if the party at the other end of the pipe is quietly swapping out the thing you rent? Next chapter: [The Untrusted Upstream](untrusted-upstream).

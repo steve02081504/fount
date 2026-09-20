@@ -111,7 +111,7 @@ export function writeBinaryVdf(root) {
 	 * @returns {void}
 	 */
 	function writeObject(object) {
-		for (const [key, value] of Object.entries(object)) 
+		for (const [key, value] of Object.entries(object))
 			if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
 				chunks.push(Buffer.from([TYPE_OBJECT]))
 				writeString(key)
@@ -129,7 +129,7 @@ export function writeBinaryVdf(root) {
 				writeString(key)
 				writeString(value)
 			}
-		
+
 		chunks.push(Buffer.from([TYPE_END]))
 	}
 	writeObject(root)

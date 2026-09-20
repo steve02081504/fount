@@ -30,46 +30,45 @@ async function readNativeHistory(username, machine, shell) {
 			: path.join(homedir, '.local', 'share', 'powershell', 'PSReadLine', 'ConsoleHost_history.txt')
 		const candidates = shellName === 'pwsh' || shellName === 'powershell' ? [pwsh]
 			: shellName === 'bash' ? [path.join(homedir, '.bash_history')]
-			: shellName === 'zsh' ? [path.join(homedir, '.zsh_history')]
-			: [path.join(homedir, '.bash_history'), path.join(homedir, '.zsh_history'), pwsh]
-		for (const file of candidates) 
-			try {
-				const text = await fs.readFile(file, 'utf-8')
-				// 与模块原 parseHistoryLines 等价：去空行/前导空格项，zsh 处理 `: <ts>:<n>;<cmd>` 续行，去重保留最近一次
-				const lines = (text || '').split(/\r?\n/)
-				/** @type {string[]} */
-				const entries = []
-				if (shellName === 'zsh') {
-					let current = ''
-					for (const line of lines) {
-						const match = line.match(/^:\s*\d+:(\d*);(.*)$/)
-						if (match) {
-							if (current) entries.push(current)
-							current = match[2]
-						}
-						else if (line && current) current += '\n' + line
+				: shellName === 'zsh' ? [path.join(homedir, '.zsh_history')]
+					: [path.join(homedir, '.bash_history'), path.join(homedir, '.zsh_history'), pwsh]
+		for (const file of candidates) try {
+			const text = await fs.readFile(file, 'utf-8')
+			// 与模块原 parseHistoryLines 等价：去空行/前导空格项，zsh 处理 `: <ts>:<n>;<cmd>` 续行，去重保留最近一次
+			const lines = (text || '').split(/\r?\n/)
+			/** @type {string[]} */
+			const entries = []
+			if (shellName === 'zsh') {
+				let current = ''
+				for (const line of lines) {
+					const match = line.match(/^:\s*\d+:(\d*);(.*)$/)
+					if (match) {
+						if (current) entries.push(current)
+						current = match[2]
 					}
-					if (current) entries.push(current)
+					else if (line && current) current += '\n' + line
 				}
-				else
-					for (const line of lines) {
-						const trimmed = line.trim()
-						if (!trimmed || /^\s/.test(line)) continue
-						entries.push(trimmed)
-					}
-				const seen = new Set()
-				/** @type {string[]} */
-				const out = []
-				for (let i = entries.length - 1; i >= 0; i--) {
-					const entry = entries[i].trim()
-					if (!entry || seen.has(entry)) continue
-					seen.add(entry)
-					out.push(entry)
-				}
-				return out
+				if (current) entries.push(current)
 			}
-			catch { /* 文件不存在等，尝试下一个 */ }
-		
+			else
+				for (const line of lines) {
+					const trimmed = line.trim()
+					if (!trimmed || /^\s/.test(line)) continue
+					entries.push(trimmed)
+				}
+			const seen = new Set()
+			/** @type {string[]} */
+			const out = []
+			for (let i = entries.length - 1; i >= 0; i--) {
+				const entry = entries[i].trim()
+				if (!entry || seen.has(entry)) continue
+				seen.add(entry)
+				out.push(entry)
+			}
+			return out
+		}
+		catch { /* 文件不存在等，尝试下一个 */ }
+
 		return []
 	}, shell)
 }

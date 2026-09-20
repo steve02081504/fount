@@ -3757,12 +3757,12 @@
 	transition: grid-template-rows var(--duration-open) var(--ease-standard);
 }
 
-.composer-reveal > .composer-reveal-body {
+.composer-reveal>.composer-reveal-body {
 	min-height: 0;
 	overflow: hidden;
 }
 
-.composer-reveal:not(.is-open) > .composer-reveal-body {
+.composer-reveal:not(.is-open)>.composer-reveal-body {
 	visibility: hidden;
 	transition: visibility 0s linear var(--duration-open);
 }

@@ -61,7 +61,8 @@ function script:Import-LocaleData {
 
 	try {
 		Get-Content $localeFile -Raw -Encoding UTF8 | ConvertFrom-Json
-	} catch { $null }
+	}
+	catch { $null }
 }
 
 # 获取翻译后的字符串
@@ -101,9 +102,9 @@ function script:Format-I18nBacktickInner([string]$Inner) {
 function script:Format-I18nText([string]$Text) {
 	if ($Script:I18nSupportsAnsi) {
 		return [regex]::Replace($Text, '`([^`]*)`', {
-				param($Match)
-				Format-I18nBacktickInner $Match.Groups[1].Value
-			})
+			param($Match)
+			Format-I18nBacktickInner $Match.Groups[1].Value
+		})
 	}
 	return [regex]::Replace($Text, '`([^`]*)`', '$1')
 }

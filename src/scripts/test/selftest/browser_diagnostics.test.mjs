@@ -142,7 +142,7 @@ function createMockSession() {
 	 * @returns {void}
 	 */
 	const on = (name, callback) => {
-		;(listeners[name] ??= []).push(callback)
+		; (listeners[name] ??= []).push(callback)
 	}
 	/**
 	 * CDP 方法调用。
@@ -170,7 +170,7 @@ function createMockPage() {
 	 * @returns {void}
 	 */
 	const on = (name, callback) => {
-		;(listeners[name] ??= []).push(callback)
+		; (listeners[name] ??= []).push(callback)
 	}
 	/**
 	 * 触发 console 事件。
@@ -219,10 +219,12 @@ Deno.test('createBrowserDiagnostics skips browser resource-failure console messa
 
 Deno.test('createBrowserDiagnostics threshold ignores resource-failure console messages', async () => {
 	let thresholdHits = 0
-	const diagnostics = createBrowserDiagnostics({ /**
+	const diagnostics = createBrowserDiagnostics({
+		/**
 		 * 控制台错误达到阈值时的回调。
 		 */
-		onConsoleErrorThreshold: () => { thresholdHits += 1 } })
+		onConsoleErrorThreshold: () => { thresholdHits += 1 }
+	})
 	const page = createMockPage()
 	await diagnostics.attach(page)
 	for (let errorIndex = 0; errorIndex < MAX_CONSOLE_ERRORS * 2; errorIndex++)
@@ -273,10 +275,12 @@ Deno.test('isBrowserResourceFailureConsoleText matches failed resource loads', (
 
 Deno.test('createBrowserDiagnostics fires onConsoleErrorThreshold at MAX_CONSOLE_ERRORS', async () => {
 	let thresholdHits = 0
-	const diagnostics = createBrowserDiagnostics({ /**
+	const diagnostics = createBrowserDiagnostics({
+		/**
 		 * 控制台错误达到阈值时的回调。
 		 */
-		onConsoleErrorThreshold: () => { thresholdHits += 1 } })
+		onConsoleErrorThreshold: () => { thresholdHits += 1 }
+	})
 	const page = createMockPage()
 	await diagnostics.attach(page)
 	for (let errorIndex = 0; errorIndex < MAX_CONSOLE_ERRORS; errorIndex++) page.emitConsole(consoleMsg('error', `e${errorIndex}`))

@@ -515,9 +515,7 @@ def translate_value(value, source_lang, target_lang):
 				default=translate_value(value["default"], source_lang, target_lang),
 			)
 			if "cases" in value:
-				out["cases"] = OrderedDict(
-					(k, translate_value(v, source_lang, target_lang)) for k, v in value["cases"].items()
-				)
+				out["cases"] = OrderedDict((k, translate_value(v, source_lang, target_lang)) for k, v in value["cases"].items())
 			return out
 		translated_dict = OrderedDict()
 		for k, v in value.items():
@@ -1703,11 +1701,13 @@ def self_test_normalize_applicator() -> int:
 		print(f"multi-key should not normalize: changed={changed2} c={c!r}", file=sys.stderr)
 		return 1
 
-	switch_leaf = OrderedDict([
-		("switch", "count"),
-		("default", "${count} items"),
-		("cases", OrderedDict([("1", "1 item")])),
-	])
+	switch_leaf = OrderedDict(
+		[
+			("switch", "count"),
+			("default", "${count} items"),
+			("cases", OrderedDict([("1", "1 item")])),
+		]
+	)
 	if not is_switch_value(switch_leaf):
 		print("is_switch_value failed", file=sys.stderr)
 		return 1
@@ -1728,6 +1728,7 @@ def self_test_normalize_applicator() -> int:
 		return 1
 
 	import tempfile
+
 	fd, ts_path = tempfile.mkstemp(suffix=".ts")
 	os.close(fd)
 	try:

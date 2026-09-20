@@ -1,11 +1,11 @@
 ---
-title: "Does Roleplay Make LLMs Worse?"
-summary: "A persona is not free decoration; it is a second task competing for the same budget as the first. The functional/biographical split explains the sign of the effect — the mechanism is still a hypothesis."
+title: 'Does Roleplay Make LLMs Worse?'
+summary: 'A persona is not free decoration; it is a second task competing for the same budget as the first. The functional/biographical split explains the sign of the effect — the mechanism is still a hypothesis.'
 tags:
-  - "persona"
-  - "roleplay"
-  - "research"
-  - "context"
+  - 'persona'
+  - 'roleplay'
+  - 'research'
+  - 'context'
 ---
 
 # Does Roleplay Make LLMs Worse?
@@ -47,12 +47,12 @@ Note how modest the claim is. The hypothesis does not say persona is poison. It 
 
 Plenty of LLM writing crashes on this reef: phenomenon and mechanism, sold together. Separated, the picture is much clearer:
 
-| Layer | Claim | Status |
-| --- | --- | --- |
-| Phenomenon | Task-irrelevant persona details can affect task performance | Observed experimentally |
-| Phenomenon | Different system prompts produce measurable performance differences | Well documented |
-| Phenomenon | Different character assignments can change reasoning results | Documented |
-| Mechanism | Performance drops *because* compute is diverted to character consistency | Hypothesis — not proven |
+| Layer      | Claim                                                                    | Status                  |
+| ---------- | ------------------------------------------------------------------------ | ----------------------- |
+| Phenomenon | Task-irrelevant persona details can affect task performance              | Observed experimentally |
+| Phenomenon | Different system prompts produce measurable performance differences      | Well documented         |
+| Phenomenon | Different character assignments can change reasoning results             | Documented              |
+| Mechanism  | Performance drops _because_ compute is diverted to character consistency | Hypothesis — not proven |
 
 The phenomenon layer is solid ground. Task-irrelevant persona details — a birthday here, a hometown there — have been observed to affect unrelated tasks; swapping the system prompt moves benchmark numbers; assigning different characters changes reasoning outcomes. Anyone who has watched a model's commit messages drift into the voice of the play will find none of this surprising.
 
@@ -114,11 +114,11 @@ This is the direction fount actually takes: a persona is not a prompt but a set 
 
 If this framework implies "persona is always harmful", it has overreached. It does not:
 
-- **Style fit.** In creative writing, a persona carrying the right register can *raise* output quality. There the persona is itself doing task work.
-- **Framing and engagement.** "A senior engineer is reviewing your PR" sharpens review comments; a patient tutor persona improves the pacing of an explanation. Here the persona is not competing with the task — it *is* part of the task.
+- **Style fit.** In creative writing, a persona carrying the right register can _raise_ output quality. There the persona is itself doing task work.
+- **Framing and engagement.** "A senior engineer is reviewing your PR" sharpens review comments; a patient tutor persona improves the pacing of an explanation. Here the persona is not competing with the task — it _is_ part of the task.
 - **Consistency is the product.** Where the character is the product (companionship, NPCs), persona consistency is the core requirement, and benchmarks are not the objective function at all.
 
-Read through the earlier vocabulary: the first two are functional character prompts; the third switches the objective function. So the honest statement is conditional: a persona *may* compete with the core task, the effect is real enough to design around, and its sign depends on whether the persona is serving the task or merely lodging beside it.
+Read through the earlier vocabulary: the first two are functional character prompts; the third switches the objective function. So the honest statement is conditional: a persona _may_ compete with the core task, the effect is real enough to design around, and its sign depends on whether the persona is serving the task or merely lodging beside it.
 
 Guard against the opposite overcorrection, too: treating persona as pure overhead throws away the real gains of style fit and framing. The functional/biographical split is a first-approximation sketch of the terrain — the border has to be surveyed by measurement, and [one later chapter](infinity-monkeys-and-verifiers) is about exactly how.
 

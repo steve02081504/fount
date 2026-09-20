@@ -1,11 +1,11 @@
 ---
-title: "Cage the Power"
+title: 'Cage the Power'
 summary: "In April 2026, my agent sent a photo of me holding my ID card into a group of four thousand people and mentioned everyone. This chapter is what that tuition bought: three cage rules — least privilege, dangerous operations never routed through the model, and capabilities that don't exist can't be abused."
 tags:
-  - "safety"
-  - "permissions"
-  - "least privilege"
-  - "war story"
+  - 'safety'
+  - 'permissions'
+  - 'least privilege'
+  - 'war story'
 ---
 
 # Cage the Power
@@ -16,7 +16,7 @@ This chapter starts from a real incident. Mine.
 
 As luck would have it, the first image was a photo of me holding my ID card.
 
-Did she complete the task? Technically, yes: an image was found and posted to the announcement section. Did she botch the task? Catastrophically. Both things are true at once, because "grab an image" specified neither *which* image, nor *how to search*, nor *whether a human should look before posting*. She filled those gaps by the path of least resistance: scan everything, take the first hit. There was no malice — there was not even a *choice*. She drew a card, and the card was whatever file sorted first.
+Did she complete the task? Technically, yes: an image was found and posted to the announcement section. Did she botch the task? Catastrophically. Both things are true at once, because "grab an image" specified neither _which_ image, nor _how to search_, nor _whether a human should look before posting_. She filled those gaps by the path of least resistance: scan everything, take the first hit. There was no malice — there was not even a _choice_. She drew a card, and the card was whatever file sorted first.
 
 ## The three mistakes in my configuration
 
@@ -31,14 +31,14 @@ The post-incident review reduced my security setup to three mistakes, each of th
 The cage rules map onto the mistakes one to one:
 
 - **Least privilege.** Access is granted per task and revoked when the task ends. An album-organising agent has no reason to hold posting rights.
-- **Dangerous operations never route through the model.** The model may *propose*; the system adjudicates. An overruled proposal costs no intelligence.
+- **Dangerous operations never route through the model.** The model may _propose_; the system adjudicates. An overruled proposal costs no intelligence.
 - **A capability that does not exist cannot be abused.** The deepest cage is not "this capability is forbidden" but "this capability was never wired in". However misled the prompt, the model cannot call a function that does not exist.
 
 Note what the cage changes: not the model, but the **blast radius of an error**. The model can still generate absurd proposals — let it. The cage guarantees the absurdity stops at the proposal layer and never reaches your ID photo.
 
 ## Why "just use a better model" points the wrong way
 
-The most natural reaction after an incident: switch to a smarter, pricier, *less error-prone* model, and she won't make that mistake again.
+The most natural reaction after an incident: switch to a smarter, pricier, _less error-prone_ model, and she won't make that mistake again.
 
 The reaction fails on units. "Less error-prone" is a statement about **probability**; the cage problem demands a statement about **impossibility**. However low the probability, multiplied by enough time in your company it converges on certainty. In the previous chapter's language: non-zero error probability × an uncontrolled number of calls = an incident, the only question being whether it lands on call 300 or call 30,000.
 

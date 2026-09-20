@@ -264,31 +264,29 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 		const entityHash = groupEntityHash(groupId)
 		const logicalPath = `chat/${fileId}`
 		let manifest = await loadFileManifest(entityHash, logicalPath)
-		if (!manifest) 
+		if (!manifest) try {
 			// 跨节点：manifest 未落本地 → 向群 roster 定向拉取（p2p fetchManifest 非 public 支持）。
-			try {
-				const slot = await ensureFederationRoom(username, groupId)
-				const targets = [...new Set(
-					(slot?.getRoster?.() || []).map(peer => peer?.remoteNodeHash).filter(Boolean),
-				)]
-				if (targets.length)
-					manifest = await fetchManifest({ username, ownerEntityHash: entityHash, logicalPath, fanoutTargets: targets })
-			}
-			catch (error) {
-				console.error('[group files] manifest fetch failed', error)
-			}
-		
+			const slot = await ensureFederationRoom(username, groupId)
+			const targets = [...new Set(
+				(slot?.getRoster?.() || []).map(peer => peer?.remoteNodeHash).filter(Boolean),
+			)]
+			if (targets.length)
+				manifest = await fetchManifest({ username, ownerEntityHash: entityHash, logicalPath, fanoutTargets: targets })
+		}
+		catch (error) {
+			console.error('[group files] manifest fetch failed', error)
+		}
+
 		let stream = null
 		if (manifest)
 			stream = await readManifestPlaintextStream(username, manifest, { username }).catch(() => null)
-		if (!stream && meta?.contentHash) 
+		if (!stream && meta?.contentHash) try {
 			// 兜底：manifest 缺失但 DAG fileIndex 元数据完整 → 直接按 fileIndex 解密（含联邦 chunk 拉取）。
-			try {
-				const buf = await getDecryptedFile(username, groupId, { ...meta, fileId }, undefined)
-				stream = Readable.from([Buffer.from(buf)])
-			}
-			catch { /* 保持 404 */ }
-		
+			const buf = await getDecryptedFile(username, groupId, { ...meta, fileId }, undefined)
+			stream = Readable.from([Buffer.from(buf)])
+		}
+		catch { /* 保持 404 */ }
+
 		if (!stream)
 			throw httpError(404, 'chunk unavailable')
 		applySafeContentHeaders(res, {

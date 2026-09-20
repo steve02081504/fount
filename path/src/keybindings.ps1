@@ -155,12 +155,12 @@ function script:merge_editor_keybindings([string]$KeybindingsPath) {
 
 	foreach ($patch in $script:FountEditorTerminalKeyPatches) {
 		$entries.Add([ordered]@{
-				key          = $patch.Key
-				command      = 'workbench.action.terminal.sendSequence'
-				args         = [ordered]@{ text = $patch.Text }
-				when         = 'terminalFocus'
-				isfountPatch = $true
-			})
+			key          = $patch.Key
+			command      = 'workbench.action.terminal.sendSequence'
+			args         = [ordered]@{ text = $patch.Text }
+			when         = 'terminalFocus'
+			isfountPatch = $true
+		})
 		$changed = $true
 	}
 

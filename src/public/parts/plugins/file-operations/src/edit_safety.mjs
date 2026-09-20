@@ -343,11 +343,11 @@ function computeLineOps(a, b) {
 				dp[at(i, j)] = midA[i] === midB[j] ? dp[at(i + 1, j + 1)] + 1 : Math.max(dp[at(i + 1, j)], dp[at(i, j + 1)])
 		let i = 0
 		let j = 0
-		while (i < midA.length && j < midB.length) 
+		while (i < midA.length && j < midB.length)
 			if (midA[i] === midB[j]) { ops.push({ type: 'equal', text: midA[i] }); i++; j++ }
 			else if (dp[at(i + 1, j)] >= dp[at(i, j + 1)]) ops.push({ type: 'del', text: midA[i++] })
 			else ops.push({ type: 'add', text: midB[j++] })
-		
+
 		while (i < midA.length) ops.push({ type: 'del', text: midA[i++] })
 		while (j < midB.length) ops.push({ type: 'add', text: midB[j++] })
 	}

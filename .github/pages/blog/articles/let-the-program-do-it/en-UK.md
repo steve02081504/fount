@@ -1,11 +1,11 @@
 ---
-title: "Let the Program Do It"
+title: 'Let the Program Do It'
 summary: "Deterministic problems deserve deterministic answers. With a real exam paper, how fount's code-execution plugin answers it, and the six budgets every agent is spending."
 tags:
-  - "determinism"
-  - "tool calling"
-  - "cost"
-  - "budget"
+  - 'determinism'
+  - 'tool calling'
+  - 'cost'
+  - 'budget'
 ---
 
 # Let the Program Do It
@@ -20,15 +20,15 @@ If a traditional program can compute the answer, do not ask the LLM. Not because
 
 ## The comparison table
 
-| Task | Teach the LLM to do it | Let a program do it |
-| --- | --- | --- |
-| Compute $123456 \times 789012$ | Write a prompt, pray, pray again | Calculator: $97{,}408{,}265{,}472$, every time |
-| "What day is next Wednesday?" | The model guesses; timezone and locale each drift | Date API: exact, testable |
-| Copy 500 files | The model narrates a plan; some path may be hallucinated | A filesystem call: completes, or fails loudly |
-| Sort a table | "Please sort this"; two runs may disagree | A sort function: stable, deterministic |
-| "May this user edit this record?" | Let the model adjudicate | A permission check: yes or no |
-| Look up a customer | The model "remembers" — that is, invents | A database query: indexed, transactional |
-| Validate an email address | The model glances at it | A parser: cheap and unsentimental |
+| Task                              | Teach the LLM to do it                                   | Let a program do it                            |
+| --------------------------------- | -------------------------------------------------------- | ---------------------------------------------- |
+| Compute $123456 \times 789012$    | Write a prompt, pray, pray again                         | Calculator: $97{,}408{,}265{,}472$, every time |
+| "What day is next Wednesday?"     | The model guesses; timezone and locale each drift        | Date API: exact, testable                      |
+| Copy 500 files                    | The model narrates a plan; some path may be hallucinated | A filesystem call: completes, or fails loudly  |
+| Sort a table                      | "Please sort this"; two runs may disagree                | A sort function: stable, deterministic         |
+| "May this user edit this record?" | Let the model adjudicate                                 | A permission check: yes or no                  |
+| Look up a customer                | The model "remembers" — that is, invents                 | A database query: indexed, transactional       |
+| Validate an email address         | The model glances at it                                  | A parser: cheap and unsentimental              |
 
 The pattern is not hard to state: **sorting, hashing, regex matching, permission checks, database queries, date arithmetic, format conversion — every task with exactly one correct answer and known steps — belongs to traditional programs.** "Belongs" is meant literally: not "code can also do this" but "code is strictly better". Programs are exact, fast, and fail loudly instead of confidently inventing. A program returns the same answer a million times out of a million runs — no amount of prompt engineering can get that promise out of a model.
 
@@ -59,7 +59,7 @@ It's <inline-js>14n**17n</inline-js>, you know?
 
 The pleasing part: this exam is nearly the acceptance test for inline-js. The few-shot examples the plugin injects map almost one to one onto the questions — `'0'.repeat(308)` against the $10^{308}$ output, evaluating `![]+[]`, counting from 0 to 200 in English. The exam's author knew models make fools of themselves here; fount's answer is to have the model not sit the exam at all. Every deterministic question gets translated into one line of code — the model is demoted from examinee to translator, which is exactly its first job from [The LLM Is Not the Agent](llm-is-not-the-agent).
 
-The exam admits this itself. Question 3 says "step by step, no other method allowed"; question 7 demands reversed English. To humiliate an LLM on deterministic tasks, the author must first *forbid it to call programs*. That ban is the sharpest inverse proof of the determinism-first principle: even the exam's author knows the model's escape hatch is code. The only question is whether your agent has built the hatch.
+The exam admits this itself. Question 3 says "step by step, no other method allowed"; question 7 demands reversed English. To humiliate an LLM on deterministic tasks, the author must first _forbid it to call programs_. That ban is the sharpest inverse proof of the determinism-first principle: even the exam's author knows the model's escape hatch is code. The only question is whether your agent has built the hatch.
 
 Two clauses from that plugin's prompt have nothing to do with this chapter but are worth quoting anyway: "avoid deleting files/folders directly; prefer moving them to the recycle bin", and "when overwriting data, consider backing up the original first". Determinism-first saves budget; those two save incidents. They belong to a [later story](cage-the-power).
 
@@ -79,14 +79,14 @@ A useful dividing line: **if two competent engineers would independently write t
 
 Intuition bills LLM usage under one heading: "API cost". Far too incomplete. An agent is always spending at least six budgets, and deterministic computation spends almost none of them.
 
-| Budget | What it is | What exhaustion looks like |
-| --- | --- | --- |
-| **Tokens** | Every call consumes context; longer context means more cost and latency, and information that interferes with itself | An instruction from 20k tokens ago quietly ignored; per-request cost creeping up |
-| **Inference compute** | The reasoning in each call is itself a finite budget | Shallower answers, skipped steps, sloppy logic where depth was needed |
-| **Cognitive / representation** | The more simultaneous goals, the harder concentration on the core one | Dropped constraints, ignored output formats, tone drift |
-| **Money** | API calls are real money, multiplied by every user and every turn | The invoice arrives; the agent cost more than the task was worth |
-| **Latency** | More agent calls, slower system | Users watching a spinner; interactive flows dying |
-| **Engineering** | Complex agents mean more modules, state, error paths, maintenance | Nobody can say why the agent did that; debugging becomes archaeology |
+| Budget                         | What it is                                                                                                           | What exhaustion looks like                                                       |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| **Tokens**                     | Every call consumes context; longer context means more cost and latency, and information that interferes with itself | An instruction from 20k tokens ago quietly ignored; per-request cost creeping up |
+| **Inference compute**          | The reasoning in each call is itself a finite budget                                                                 | Shallower answers, skipped steps, sloppy logic where depth was needed            |
+| **Cognitive / representation** | The more simultaneous goals, the harder concentration on the core one                                                | Dropped constraints, ignored output formats, tone drift                          |
+| **Money**                      | API calls are real money, multiplied by every user and every turn                                                    | The invoice arrives; the agent cost more than the task was worth                 |
+| **Latency**                    | More agent calls, slower system                                                                                      | Users watching a spinner; interactive flows dying                                |
+| **Engineering**                | Complex agents mean more modules, state, error paths, maintenance                                                    | Nobody can say why the agent did that; debugging becomes archaeology             |
 
 The decisive observation: a `sort()` call costs zero on this entire table. No tokens, no inference, negligible latency, no drift, no maintenance beyond one line. **Every task moved from model to program stops consuming five of the six budgets, and barely dents the sixth.**
 
@@ -108,7 +108,7 @@ route(task):
         call a Tool          # also a program, just wearing the agent's badge
 ```
 
-Note what this frame rejects. It rejects "maximise the agent" — consulting a model at every step; it equally rejects "minimise the agent" — a rigid pipeline pretending intelligence is never needed. Allocation means some things *should* be expensive: that summary, that plan, that draft. The money goes there; everywhere else saves.
+Note what this frame rejects. It rejects "maximise the agent" — consulting a model at every step; it equally rejects "minimise the agent" — a rigid pipeline pretending intelligence is never needed. Allocation means some things _should_ be expensive: that summary, that plan, that draft. The money goes there; everywhere else saves.
 
 ## Where the rules lose
 

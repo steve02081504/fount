@@ -31,9 +31,27 @@ Deno.test('mimeTypeBase strips parameters', () => {
 })
 
 Deno.test('resolveFileBuffer prefers async getBuffer and rejects empty', async () => {
-	assertEquals((await resolveFileBuffer({ getBuffer: async () => PNG })).equals(PNG), true)
-	assertEquals(await resolveFileBuffer({ getBuffer: async () => Buffer.alloc(0) }), null)
-	assertEquals(await resolveFileBuffer({ getBuffer: async () => { throw new Error('fetch fail') } }), null)
+	assertEquals((await resolveFileBuffer({
+		/**
+		 * 返回非空的 PNG 字节。
+		 * @returns {Promise<Buffer>} PNG 字节。
+		 */
+		getBuffer: async () => PNG
+	})).equals(PNG), true)
+	assertEquals(await resolveFileBuffer({
+		/**
+		 * 返回空缓冲区以模拟缺失的附件字节。
+		 * @returns {Promise<Buffer>} 空缓冲区。
+		 */
+		getBuffer: async () => Buffer.alloc(0)
+	}), null)
+	assertEquals(await resolveFileBuffer({
+		/**
+		 * 抛错以模拟取回附件字节失败。
+		 * @returns {Promise<Buffer>} 不会返回，始终抛错。
+		 */
+		getBuffer: async () => { throw new Error('fetch fail') }
+	}), null)
 	assertEquals((await resolveFileBuffer({ buffer: PNG })).equals(PNG), true)
 	assertEquals(await resolveFileBuffer({ buffer: Buffer.alloc(0) }), null)
 	assertEquals(await resolveFileBuffer({}), null)
@@ -41,7 +59,15 @@ Deno.test('resolveFileBuffer prefers async getBuffer and rejects empty', async (
 
 Deno.test('image file with bytes becomes data URL (mime params stripped)', async () => {
 	const { parts, skipped } = await buildFileContentParts([
-		{ name: 'a.png', mime_type: 'image/png;charset=utf-8', getBuffer: async () => PNG },
+		{
+			name: 'a.png',
+			mime_type: 'image/png;charset=utf-8',
+			/**
+			 * 返回 PNG 字节。
+			 * @returns {Promise<Buffer>} PNG 字节。
+			 */
+			getBuffer: async () => PNG
+		},
 	], '看图')
 	assertEquals(skipped, [])
 	const imagePart = parts.find(p => p.type === 'image_url')
@@ -52,8 +78,24 @@ Deno.test('image file with bytes becomes data URL (mime params stripped)', async
 
 Deno.test('empty or failing buffer skips file, never emits empty data URL', async () => {
 	const { parts, skipped } = await buildFileContentParts([
-		{ name: 'remote.png', mime_type: 'image/png', getBuffer: async () => { throw new Error('ciphertext missing') } },
-		{ name: 'empty.png', mime_type: 'image/png', getBuffer: async () => Buffer.alloc(0) },
+		{
+			name: 'remote.png',
+			mime_type: 'image/png',
+			/**
+			 * 抛错以模拟密文缺失。
+			 * @returns {Promise<Buffer>} 不会返回，始终抛错。
+			 */
+			getBuffer: async () => { throw new Error('ciphertext missing') }
+		},
+		{
+			name: 'empty.png',
+			mime_type: 'image/png',
+			/**
+			 * 返回空缓冲区以模拟空附件。
+			 * @returns {Promise<Buffer>} 空缓冲区。
+			 */
+			getBuffer: async () => Buffer.alloc(0)
+		},
 	], '看图')
 	assertEquals(skipped, ['remote.png', 'empty.png'])
 	assertEquals(parts.filter(p => p.type === 'image_url').length, 0)

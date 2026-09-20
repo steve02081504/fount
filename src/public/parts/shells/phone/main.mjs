@@ -35,6 +35,12 @@ export default {
 		 * @returns {Promise<object>} 命令结果。
 		 */
 		invokes: {
+			/**
+			 * 在指定用户的设备上执行一次命令。
+			 * @param {string} username - 用户名。
+			 * @param {object} data - IPC 负载。
+			 * @returns {Promise<object>} 命令结果。
+			 */
 			IPCInvokeHandler: async (username, data) => {
 				const { execOnDevice } = await import('./src/api.mjs')
 				return execOnDevice(username, data)

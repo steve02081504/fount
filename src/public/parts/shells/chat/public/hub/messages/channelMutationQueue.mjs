@@ -14,6 +14,6 @@ let tail = Promise.resolve()
  */
 export function enqueueChannelMutation(fn) {
 	const run = tail.then(fn)
-	tail = run.catch(() => {})
+	tail = run.catch(() => { })
 	return run
 }

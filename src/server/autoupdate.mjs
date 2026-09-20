@@ -80,14 +80,14 @@ async function checkUpstream() {
 async function checkDenoUpdate() {
 	/* global Deno */
 	let denoPath
-	if (Deno.build.os === 'linux' && !fs.existsSync('/data/data/com.termux')) 
+	if (Deno.build.os === 'linux' && !fs.existsSync('/data/data/com.termux'))
 		try { denoPath = fs.realpathSync(Deno.execPath()) }
 		catch (error) {
 			if (error.code !== 'ENOENT') throw error
 			console.warn('Deno executable no longer exists; restart fount before checking runtime updates.')
 			return
 		}
-	
+
 	const versionBefore = 'deno ' + Deno.version.deno
 
 	// 直接按路径调用独立的运行时更新脚本：归属检测/管理器升级/锁/刷新节流都在 path 层。

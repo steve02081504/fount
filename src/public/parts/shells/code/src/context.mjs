@@ -185,11 +185,10 @@ function parseParamsBlock(frontmatter) {
 			current = params[key] ??= {}
 			if (value) current.default = value
 		}
-		else if (indent >= 4 && current) 
+		else if (indent >= 4 && current)
 			if (key === 'required') current.required = value === 'true'
 			else if (key === 'default') current.default = value
 			else if (key === 'description') current.description = value
-		
 	}
 	return params
 }

@@ -68,9 +68,9 @@ test.describe('Chat profile page', () => {
 		await page.locator('#profile-edit-tag-input').fill('#男 #萝莉控 #游手好闲')
 		await page.locator('#profile-edit-tag-add').click()
 		await expect(page.locator('#profile-edit-tags .profile-edit-tag-chip')).toHaveCount(4)
-		for (const tag of ['男', '萝莉控', '游手好闲']) 
+		for (const tag of ['男', '萝莉控', '游手好闲'])
 			await expect(page.locator('#profile-edit-tags .profile-edit-tag-chip').filter({ hasText: `#${tag}` })).toHaveCount(1)
-		
+
 		await expect(page.locator('#profile-edit-live-preview [data-entity-profile-tags]')).toContainText('#萝莉控')
 
 		const firstRow = page.locator('#profile-edit-links .profile-edit-link-row').first()

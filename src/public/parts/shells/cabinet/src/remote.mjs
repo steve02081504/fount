@@ -14,15 +14,14 @@ import { isSafeHtmlUrl } from '../../../../pages/scripts/lib/sanitizeHtml.mjs'
  */
 async function readRemoteManifest(username, ownerEntityHash, logicalPath) {
 	let manifest = await loadFileManifest(ownerEntityHash, logicalPath)
-	if (!manifest) 
-		try {
-			const { parseEntityHash } = await import('npm:@steve02081504/fount-p2p/core/entity_id')
-			const ownerNode = parseEntityHash(ownerEntityHash)?.nodeHash
-			if (ownerNode)
-				manifest = await fetchManifest({ username, ownerEntityHash, logicalPath, fanoutTargets: [ownerNode] })
-		}
-		catch { manifest = null }
-	
+	if (!manifest) try {
+		const { parseEntityHash } = await import('npm:@steve02081504/fount-p2p/core/entity_id')
+		const ownerNode = parseEntityHash(ownerEntityHash)?.nodeHash
+		if (ownerNode)
+			manifest = await fetchManifest({ username, ownerEntityHash, logicalPath, fanoutTargets: [ownerNode] })
+	}
+	catch { manifest = null }
+
 	if (!manifest) return null
 	const plain = await readManifestPlaintext(username, manifest)
 	return plain ? Buffer.from(plain) : null

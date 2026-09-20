@@ -101,13 +101,13 @@ function varFallbackAt(content, match) {
 	let depth = 1
 	let index = match.index + match[0].length
 	const start = index
-	for (; index < content.length; index++) 
+	for (; index < content.length; index++)
 		if (content[index] === '(') depth++
 		else if (content[index] === ')') {
 			depth--
 			if (depth === 0) break
 		}
-	
+
 	return { fallback: content.slice(start, index), end: index }
 }
 

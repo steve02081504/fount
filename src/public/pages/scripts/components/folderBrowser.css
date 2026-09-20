@@ -10,9 +10,11 @@
 	border: 0;
 	cursor: pointer;
 }
+
 .folder-browser-entry.active {
 	background: color-mix(in oklab, var(--color-primary) 15%, transparent);
 }
+
 .folder-browser-entry-icon {
 	flex-shrink: 0;
 	width: 1.1rem;
@@ -25,25 +27,30 @@
 	-webkit-mask-repeat: no-repeat;
 	-webkit-mask-position: center;
 }
+
 .folder-browser-entry-icon[data-kind="folder"] {
 	mask-image: url("https://api.iconify.design/mdi/folder-outline.svg");
 	-webkit-mask-image: url("https://api.iconify.design/mdi/folder-outline.svg");
 }
+
 .folder-browser-entry-icon[data-kind="file"] {
 	mask-image: url("https://api.iconify.design/mdi/file-outline.svg");
 	-webkit-mask-image: url("https://api.iconify.design/mdi/file-outline.svg");
 }
+
 .folder-browser-group {
 	padding: 0.25rem 0.75rem;
 	font-size: 0.75rem;
 	font-weight: 600;
 	opacity: 0.6;
 }
+
 .folder-browser-empty {
 	padding: 1rem 0.75rem;
 	text-align: center;
 	opacity: 0.6;
 }
+
 .folder-browser-status {
 	display: flex;
 	align-items: center;
@@ -53,6 +60,7 @@
 	font-size: 0.875rem;
 	opacity: 0.6;
 }
+
 .folder-browser-label {
 	position: absolute;
 	width: 1px;

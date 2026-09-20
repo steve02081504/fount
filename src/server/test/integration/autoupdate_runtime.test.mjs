@@ -110,7 +110,7 @@ Deno.test('unexpected Linux executable resolution failures remain visible', asyn
 })
 
 Deno.test('idle update on macOS and Termux delegates to the POSIX script without runtime resolution', async () => {
-	for (const [name, os, termux] of [['darwin', 'darwin', false], ['Termux', 'linux', true]]) 
+	for (const [name, os, termux] of [['darwin', 'darwin', false], ['Termux', 'linux', true]])
 		assert.deepEqual(await checkUpdate({ os, termux }), {
 			calls: [
 				['bash', [updateDenoScript]],
@@ -119,7 +119,6 @@ Deno.test('idle update on macOS and Termux delegates to the POSIX script without
 			restarts: 0,
 			realpaths: [],
 		})
-	
 })
 
 Deno.test('idle update on Windows delegates through powershell_exec to the PS script and checks PATH deno', async () => {

@@ -1,3 +1,5 @@
+import { Buffer } from 'node:buffer'
+
 import { authenticate, getUserByReq } from '../../../../../server/auth/index.mjs'
 
 import {

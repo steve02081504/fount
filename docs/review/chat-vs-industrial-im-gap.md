@@ -56,12 +56,12 @@ Web Hub + PWA；Web Push 有；**无**原生 App / APNs / FCM（产品边界「�
 
 ## 四、安全与联邦
 
-| 项                    | 说明                                                                          |
-| --------------------- | ----------------------------------------------------------------------------- |
-| 明文展示侧车          | `messages/{channelId}.jsonl` 明文；DAG 事件仍密文                             |
-| 元数据                | 信任图 / 信誉 / denylist；弱于 Signal sealed sender（路线差异）               |
-| persona 跨节点        | 群内远端 persona 经 `createRemotePersonaProxy`（RPC）✅；无实体级对称读写代理 |
-| plugin 跨节点         | `local_plugins.json` **仅本机**，不入 DAG、不联邦                             |
+| 项                   | 说明                                                                          |
+| -------------------- | ----------------------------------------------------------------------------- |
+| 明文展示侧车         | `messages/{channelId}.jsonl` 明文；DAG 事件仍密文                             |
+| 元数据               | 信任图 / 信誉 / denylist；弱于 Signal sealed sender（路线差异）               |
+| persona 跨节点       | 群内远端 persona 经 `createRemotePersonaProxy`（RPC）✅；无实体级对称读写代理 |
+| plugin 跨节点        | `local_plugins.json` **仅本机**，不入 DAG、不联邦                             |
 | social↔chat 结构化桥 | 深链 + `replyViaChat`；无 mention→channel ingress（未排期）                   |
 
 ---

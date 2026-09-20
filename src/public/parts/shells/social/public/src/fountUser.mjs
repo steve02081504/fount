@@ -26,7 +26,7 @@ export function trackClickTarget() {
 	const onCaptureClick = event => {
 		lastClickTarget = event.target instanceof Element ? event.target : null
 	}
-	if (clickTrackingBound) return () => {}
+	if (clickTrackingBound) return () => { }
 	clickTrackingBound = true
 	document.addEventListener('click', onCaptureClick, { capture: true })
 	return () => document.removeEventListener('click', onCaptureClick, { capture: true })

@@ -1,11 +1,11 @@
 ---
-title: "What If Cost Is No Object?"
-summary: "This series has been teaching agents to save money; this chapter spends it. The infinite monkey theorem, gacha-style generation, verifiers — and why even taste can be measured."
+title: 'What If Cost Is No Object?'
+summary: 'This series has been teaching agents to save money; this chapter spends it. The infinite monkey theorem, gacha-style generation, verifiers — and why even taste can be measured.'
 tags:
-  - "infinite monkeys"
-  - "verifiers"
-  - "sampling"
-  - "quantification"
+  - 'infinite monkeys'
+  - 'verifiers'
+  - 'sampling'
+  - 'quantification'
 ---
 
 # What If Cost Is No Object?

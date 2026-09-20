@@ -67,7 +67,7 @@ export async function git(...args) {
 }
 
 /** 不向外部错误跟踪服务发送标签。 */
-export function setTag() {}
+export function setTag() { }
 
 /**
  * 保存真实模块注册的空闲回调。
@@ -94,12 +94,12 @@ export async function restartor() { updateFixture.restarts++ }
 export function invalidateAllPartTreeCaches() { updateFixture.cacheInvalidations++ }
 
 /** 不向客户端发送实际事件。 */
-export function sendEventToAll() {}
+export function sendEventToAll() { }
 
 /** 自动更新模块的国际化日志替身。 */
 export const console = {
 	/** 忽略预期的重启提示。 */
-	logI18n() {},
+	logI18n() { },
 	/**
 	 * 记录可执行文件失效的提示，不污染测试输出。
 	 * @param {string} message 更新跳过原因。

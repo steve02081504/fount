@@ -28,8 +28,8 @@ import { openDialogFromTemplate } from '../features/templates.mjs'
  */
 export async function openFolderBrowser(options) {
 	const browse = options.browse
-	const onSelect = options.onSelect || (() => {})
-	const onError = options.onError || (() => {})
+	const onSelect = options.onSelect || (() => { })
+	const onError = options.onError || (() => { })
 	const dirsOnly = Boolean(options.dirsOnly)
 
 	/** 当前显示的可选条目 {name, path, isDirectory, isFile}。 */

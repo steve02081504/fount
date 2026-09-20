@@ -330,9 +330,9 @@ function readProbeStatus(probe) {
  * @returns {{ status: () => number, headers: () => Record<string, string>, body: () => Promise<Buffer> }} 统一形状
  */
 function wireProbeResponse(response) {
-	if (typeof response.status === 'function' && typeof response.body === 'function') 
+	if (typeof response.status === 'function' && typeof response.body === 'function')
 		return /** @type {{ status: () => number, headers: () => Record<string, string>, body: () => Promise<Buffer> }} */ response
-	
+
 	return {
 		/**
 		 * @returns {number} 状态码

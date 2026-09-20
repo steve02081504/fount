@@ -32,7 +32,8 @@
 				if ($elapsedTime.TotalMinutes -lt 3 -and $initAttempted) {
 					Write-Error (Get-I18n -key 'keepalive.failedToStart')
 					exit 1
-				} else { $initAttempted = $false }
+				}
+				else { $initAttempted = $false }
 
 				$current_time = Get-Date
 				$restart_timestamps.Add($current_time)

@@ -14,7 +14,8 @@
 			$p = $_.ToLower().TrimEnd('\') + '\'
 			-not ($all | Where-Object { $q = $_.ToLower().TrimEnd('\') + '\'; $q -ne $p -and $p.StartsWith($q) })
 		}
-	} else {
+	}
+	else {
 		@(
 			(Join-Path $env:LOCALAPPDATA 'deno'),
 			(Join-Path $HOME '.deno')

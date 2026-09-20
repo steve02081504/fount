@@ -126,7 +126,7 @@ async function collectExternalDirectives() {
 	const styleSheets = [...document.styleSheets]
 	const inlineTexts = []
 	const hrefsToFetch = []
-	for (const sheet of styleSheets) 
+	for (const sheet of styleSheets)
 		try {
 			if (sheet.href) {
 				const url = new URL(sheet.href, location.href)
@@ -139,7 +139,7 @@ async function collectExternalDirectives() {
 			}
 		}
 		catch { /* 跨域样式表跳过 */ }
-	
+
 	for (const href of hrefsToFetch) {
 		if (sheetTextCache.has(href)) continue
 		sheetTextCache.set(href, fetch(href).then(

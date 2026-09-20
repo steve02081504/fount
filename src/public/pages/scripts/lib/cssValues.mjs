@@ -67,12 +67,12 @@ function resolveTargets(targets) {
 	if (!targets) return []
 	const list = Array.isArray(targets) ? targets : [targets]
 	const elements = []
-	for (const target of list) 
+	for (const target of list)
 		if (typeof target === 'string')
 			elements.push(...document.querySelectorAll(target))
 		else if (target instanceof Element)
 			elements.push(target)
-	
+
 	return elements
 }
 
