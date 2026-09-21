@@ -15,6 +15,8 @@
 
 import { entryVisibleToViewer } from '../chat/lib/visibility.mjs'
 
+import { applySummaryBoundary } from './summaryBoundary.mjs'
+
 /**
  * 获取单部分提示。
  * @returns {{text: Array, additional_chat_log: Array, extension: object}} - 单部分提示对象。
@@ -281,7 +283,12 @@ export function mergeStructPromptChatLog(/** @type {prompt_struct_t} */ prompt) 
 			content: `User ${label} an alternate-timeline reply. Reason: ${feedback.content}.`,
 		})
 	}
-	return mergedChatLog.filter(entry => entryVisibleForPrompt(entry, prompt))
+	/**
+	 *
+	 * @param entry
+	 */
+	return applySummaryBoundary(mergedChatLog, entry => entryVisibleForPrompt(entry, prompt))
+		.filter(entry => entryVisibleForPrompt(entry, prompt))
 }
 
 /**
