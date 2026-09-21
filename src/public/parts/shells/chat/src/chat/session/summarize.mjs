@@ -5,10 +5,10 @@
  *   同时把 prompt_struct.chat_log 收敛为 [摘要]，后续 regen 经 summaryBoundary 只保留摘要之后的历史。同一 result 只压缩一次。
  * 【关联】summaryBoundary.mjs、prompt_struct/index.mjs、char 模板 regen、plugins/context-compress。
  */
-/** @typedef {import('../../../../../../decl/chatLog.ts').chatReplyRequest_t} chatReplyRequest_t */
-/** @typedef {import('../../../../../../decl/chatLog.ts').chatLogEntry_t} chatLogEntry_t */
-/** @typedef {import('../../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
-/** @typedef {import('../../../../../../decl/AIsource.ts').AIsource_t} AIsource_t */
+/** @typedef {import('../../../../../../../decl/chatLog.ts').chatReplyRequest_t} chatReplyRequest_t */
+/** @typedef {import('../../../../../../../decl/chatLog.ts').chatLogEntry_t} chatLogEntry_t */
+/** @typedef {import('../../../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
+/** @typedef {import('../../../../../../../decl/AIsource.ts').AIsource_t} AIsource_t */
 
 import { mergeStructPromptChatLog, structPromptToSingle } from '../../prompt_struct/index.mjs'
 import { isSummaryEntry } from '../../prompt_struct/summaryBoundary.mjs'
