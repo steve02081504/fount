@@ -1,0 +1,32 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Agent Studio",
+			"avatar": "https://api.iconify.design/mdi/flask-outline.svg",
+			"description": "Inspect generations and sub-agent runs, and benchmark characters.",
+			"description_markdown": "Observe how a character is prompted and what it replies, follow the sub-agent runs it spawns, browse generation chains, and run judge-scored benchmarks against any character.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"agent",
+				"benchmark",
+				"observability"
+			]
+		},
+		"zh-CN": {
+			"name": "智能体工作室",
+			"avatar": "https://api.iconify.design/mdi/flask-outline.svg",
+			"description": "查看生成记录与子代理运行，并对角色进行基准测试。",
+			"description_markdown": "观察角色的提示与回复，追踪其派生的子代理运行，浏览生成链，并对任意角色运行裁判评分的基准测试。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"智能体",
+				"基准测试",
+				"可观测"
+			]
+		}
+	}
+}
