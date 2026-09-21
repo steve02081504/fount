@@ -123,6 +123,8 @@ export class chatLogEntry_t {
 	avatar
 	time_stamp
 	role
+	/** @type {string | undefined} */
+	type
 	content
 	content_for_show
 	content_for_edit
@@ -151,6 +153,7 @@ export class chatLogEntry_t {
 			avatar: this.avatar,
 			time_stamp: this.time_stamp,
 			role: this.role,
+			type: this.type,
 			content: this.content,
 			content_for_show: this.content_for_show,
 			content_for_edit: this.content_for_edit,
@@ -183,6 +186,7 @@ export class chatLogEntry_t {
 			avatar: this.avatar,
 			time_stamp: this.time_stamp,
 			role: this.role,
+			type: this.type,
 			content: this.content,
 			content_for_show: this.content_for_show,
 			content_for_edit: this.content_for_edit,
@@ -235,6 +239,7 @@ export class chatLogEntry_t {
 			avatar: json.avatar,
 			time_stamp: json.time_stamp,
 			role: json.role,
+			type: json.type,
 			content: json.content,
 			content_for_show: json.content_for_show,
 			content_for_edit: json.content_for_edit,

@@ -225,6 +225,8 @@ export class chatLogEntry_t {
 	avatar: string
 	time_stamp: timeStamp_t
 	role: role_t
+	/** 条目类型标记（如 `'summary'` 表示上下文压缩摘要） */
+	type?: string
 	content: string
 	content_for_show?: string
 	content_for_edit?: string
