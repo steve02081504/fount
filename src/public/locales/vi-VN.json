@@ -6743,5 +6743,66 @@
 				"aria-label": "Mức bảo mật: không bảo vệ"
 			}
 		}
+	},
+	"agent_studio": {
+		"title": "Agent Studio",
+		"description": "查看生成记录与子代理运行，并对角色做基准测试。",
+		"chars": {
+			"title": "角色",
+			"empty": "暂无角色。"
+		},
+		"detail": {
+			"subAgents": "子代理",
+			"generations": "近期生成",
+			"none": "暂无数据。"
+		},
+		"generation": {
+			"title": "生成详情",
+			"prompt": "请求聊天记录",
+			"response": "回复",
+			"ok": "正常",
+			"error": "出错"
+		},
+		"run": {
+			"detail": "生成 ${generations} 条 · 轮次 ${rounds}/${roundLimit}",
+			"state": {
+				"running": "运行中",
+				"summarizing": "总结中",
+				"done": "已完成",
+				"failed": "失败",
+				"terminated": "已终止"
+			}
+		},
+		"retention": {
+			"title": "记录保留策略",
+			"prompt": "请求记录保留（天）",
+			"conversation": "整条记录保留（天）",
+			"save": "保存",
+			"saved": "已保存。"
+		},
+		"benchmarks": {
+			"title": "基准测试",
+			"empty": "暂无基准测试。",
+			"new": "新建",
+			"newName": "请输入基准测试名称",
+			"cases": "用例（JSON 数组）",
+			"saveCases": "保存用例",
+			"delete": "删除",
+			"deleteConfirm": "确定删除该基准测试吗？",
+			"selectChar": "运行角色",
+			"selectCharFirst": "请先选择角色。",
+			"judgeSource": "裁判 AI 源（可选）",
+			"run": "运行",
+			"runDone": "运行完成。",
+			"results": "结果",
+			"noResults": "暂无结果。",
+			"notJudged": "未评分",
+			"stats": "共 ${total} 条 · 空回复 ${empty} · 平均长度 ${avgLength} · 已评分 ${judged} · 平均分 ${avgScore}"
+		},
+		"alerts": {
+			"loadFailed": "加载失败：${message}",
+			"saveFailed": "保存失败：${message}",
+			"runFailed": "运行失败：${message}"
+		}
 	}
 }

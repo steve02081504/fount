@@ -24,7 +24,7 @@ export async function Load() { }
 export async function Unload() { }
 
 /**
- *
+ * 子代理插件默认导出：暴露配置接口与聊天接口。
  */
 export default {
 	info,

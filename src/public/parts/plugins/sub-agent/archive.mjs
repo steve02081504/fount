@@ -10,8 +10,10 @@ import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 
+import { ms } from '../../../../scripts/ms.mjs'
+
 /** 档案默认保留时长（孤儿清理）。 */
-export const ARCHIVE_TTL_MS = 2 * 60 * 60 * 1000
+export const ARCHIVE_TTL_MS = ms('2h')
 
 /**
  * 把 chat_log 尾部投影为可序列化的精简条目。

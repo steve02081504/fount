@@ -9,6 +9,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import { loadJsonFileIfExists, saveJsonFile } from '../../../../../scripts/json_loader.mjs'
+import { ms } from '../../../../../scripts/ms.mjs'
 import { getUserDictionary } from '../../../../../server/auth/index.mjs'
 import { events } from '../../../../../server/events.mjs'
 
@@ -19,8 +20,8 @@ export { buildChains, groupByConversation } from '../public/shared/generationCha
 
 /** 默认保留策略：prompt（input）2 天，conversation（整条记录）7 天。 */
 export const DEFAULT_RETENTION = {
-	promptMs: 2 * 24 * 60 * 60 * 1000,
-	conversationMs: 7 * 24 * 60 * 60 * 1000,
+	promptMs: ms('2d'),
+	conversationMs: ms('7d'),
 }
 
 /**
