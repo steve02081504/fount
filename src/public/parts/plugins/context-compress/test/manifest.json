@@ -1,0 +1,53 @@
+{
+	"id": "plugins/context-compress",
+	"suites": [
+		{
+			"name": "pure",
+			"expected": "3s",
+			"triggers": [
+				"src/public/parts/plugins/context-compress/**",
+				"src/public/parts/shells/chat/src/chat/session/summarize.mjs",
+				"src/public/parts/shells/chat/src/prompt_struct/**",
+				"src/public/parts/shells/chat/src/chat/lib/visibility.mjs",
+				"src/public/parts/serviceGenerators/AI/proxy/src/identityTokenizer.mjs",
+				"src/scripts/test/{deno/serial.mjs,node/boot.mjs}"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/deno/serial.mjs",
+				"./src/public/parts/plugins/context-compress/test/pure/"
+			]
+		},
+		{
+			"name": "integration",
+			"expected": "5s",
+			"triggers": [
+				"src/public/parts/plugins/context-compress/**",
+				"src/public/parts/shells/chat/src/chat/session/summarize.mjs",
+				"src/public/parts/shells/chat/src/prompt_struct/**",
+				"src/public/parts/shells/chat/src/reply/**",
+				"src/public/parts/shells/chat/src/streaming/**",
+				"src/public/parts/shells/chat/src/tags/**",
+				"src/public/parts/shells/chat/src/chat/lib/visibility.mjs",
+				"src/scripts/shell_guard.mjs",
+				"src/scripts/ms.mjs",
+				"src/scripts/test/{deno/serial.mjs,node/boot.mjs}"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/deno/serial.mjs",
+				"./src/public/parts/plugins/context-compress/test/integration/"
+			]
+		}
+	]
+}

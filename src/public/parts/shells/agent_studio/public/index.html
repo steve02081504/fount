@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta property="og:title" content="Agent Studio" />
+	<meta property="og:url" content="https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:agent_studio/" />
+	<meta property="og:type" content="website" />
+	<meta property="og:description" content="Inspect generations and sub-agent runs, and benchmark characters." />
+	<meta name="description" content="Inspect generations and sub-agent runs, and benchmark characters." />
+	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b" />
+	<title data-i18n="agent_studio.title"></title>
+	<link rel="icon" href="/favicon.ico" />
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+	<link rel="manifest" href="/manifest.json" />
+	<script blocking="render" type="module" src="/preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<script type="module" src="/base.mjs"></script>
+	<link rel="stylesheet" href="./index.css" type="text/css" />
+</head>
+
+<body>
+	<main class="container mx-auto p-4 max-w-7xl">
+		<header class="mb-6">
+			<h1 class="text-3xl font-bold" data-i18n="agent_studio.title"></h1>
+			<p class="opacity-70 mt-1" data-i18n="agent_studio.description"></p>
+		</header>
+
+		<section class="card bg-base-200 shadow-xl mb-6">
+			<div class="card-body">
+				<h2 class="card-title text-lg" data-i18n="agent_studio.retention.title"></h2>
+				<div class="flex flex-wrap gap-4 items-end">
+					<label class="form-control">
+						<span class="label-text" data-i18n="agent_studio.retention.prompt"></span>
+						<input id="retentionPrompt" type="number" min="0" step="0.5" class="input input-bordered input-sm w-40" />
+					</label>
+					<label class="form-control">
+						<span class="label-text" data-i18n="agent_studio.retention.conversation"></span>
+						<input id="retentionConversation" type="number" min="0" step="0.5" class="input input-bordered input-sm w-40" />
+					</label>
+					<button id="retentionSave" class="btn btn-sm btn-primary" data-i18n="agent_studio.retention.save"></button>
+				</div>
+			</div>
+		</section>
+
+		<div class="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+			<section class="lg:col-span-1 card bg-base-200 shadow-xl">
+				<div class="card-body p-4 gap-2">
+					<h2 class="card-title text-lg" data-i18n="agent_studio.chars.title"></h2>
+					<ul id="charList" class="list flex flex-col gap-1 max-h-[60vh] overflow-y-auto"></ul>
+					<p id="charListEmpty" class="text-center text-sm opacity-60 py-6 hidden" data-i18n="agent_studio.chars.empty"></p>
+				</div>
+			</section>
+
+			<section class="lg:col-span-3 card bg-base-200 shadow-xl">
+				<div class="card-body gap-4">
+					<div>
+						<h2 id="charDetailTitle" class="card-title text-xl" user-content></h2>
+						<p id="charDetailDescription" class="text-sm opacity-70" user-content></p>
+					</div>
+
+					<div>
+						<h3 class="font-semibold mb-2" data-i18n="agent_studio.detail.subAgents"></h3>
+						<ul id="subAgentList" class="grid grid-cols-1 md:grid-cols-2 gap-2"></ul>
+						<p id="subAgentEmpty" class="text-sm opacity-60 hidden" data-i18n="agent_studio.detail.none"></p>
+					</div>
+
+					<div>
+						<h3 class="font-semibold mb-2" data-i18n="agent_studio.detail.generations"></h3>
+						<ul id="generationList" class="list flex flex-col gap-1 max-h-[40vh] overflow-y-auto"></ul>
+						<p id="generationEmpty" class="text-sm opacity-60 hidden" data-i18n="agent_studio.detail.none"></p>
+					</div>
+
+					<div id="generationDetail" class="hidden">
+						<h3 class="font-semibold mb-2" data-i18n="agent_studio.generation.title"></h3>
+						<p class="text-sm opacity-70" data-i18n="agent_studio.generation.prompt"></p>
+						<pre id="generationPrompt" class="bg-base-300 rounded-box p-2 text-xs whitespace-pre-wrap max-h-40 overflow-auto" user-content></pre>
+						<p class="text-sm opacity-70 mt-2" data-i18n="agent_studio.generation.response"></p>
+						<pre id="generationResponse" class="bg-base-300 rounded-box p-2 text-xs whitespace-pre-wrap max-h-40 overflow-auto" user-content></pre>
+					</div>
+				</div>
+			</section>
+		</div>
+
+		<section class="card bg-base-200 shadow-xl mt-6">
+			<div class="card-body gap-4">
+				<div class="flex justify-between items-center">
+					<h2 class="card-title text-xl" data-i18n="agent_studio.benchmarks.title"></h2>
+					<button id="newBenchmarkButton" class="btn btn-sm btn-primary" data-i18n="agent_studio.benchmarks.new"></button>
+				</div>
+				<ul id="benchmarkList" class="list flex flex-col gap-1"></ul>
+				<p id="benchmarkEmpty" class="text-sm opacity-60 hidden" data-i18n="agent_studio.benchmarks.empty"></p>
+
+				<div id="benchmarkDetail" class="hidden border-t border-base-300 pt-4">
+					<div class="flex justify-between items-center gap-2">
+						<h3 id="benchmarkTitle" class="font-semibold" user-content></h3>
+						<button id="deleteBenchmarkButton" class="btn btn-xs btn-error btn-outline" data-i18n="agent_studio.benchmarks.delete"></button>
+					</div>
+
+					<div class="flex flex-wrap gap-3 items-end mt-3">
+						<label class="form-control">
+							<span class="label-text" data-i18n="agent_studio.benchmarks.selectChar"></span>
+							<select id="runCharSelect" class="select select-bordered select-sm"></select>
+						</label>
+						<label class="form-control">
+							<span class="label-text" data-i18n="agent_studio.benchmarks.judgeSource"></span>
+							<input id="runJudgeSource" type="text" class="input input-bordered input-sm" />
+						</label>
+						<button id="runBenchmarkButton" class="btn btn-sm btn-primary" data-i18n="agent_studio.benchmarks.run"></button>
+					</div>
+
+					<label class="form-control w-full mt-3">
+						<span class="label-text mb-1" data-i18n="agent_studio.benchmarks.cases"></span>
+						<textarea id="benchmarkCasesText" class="textarea textarea-bordered w-full h-40 font-mono text-xs"></textarea>
+					</label>
+					<button id="saveBenchmarkButton" class="btn btn-sm btn-outline mt-2" data-i18n="agent_studio.benchmarks.saveCases"></button>
+
+					<h4 class="font-semibold mt-4" data-i18n="agent_studio.benchmarks.results"></h4>
+					<div id="benchmarkStats" class="text-sm opacity-70"></div>
+					<ul id="benchmarkResults" class="list flex flex-col gap-2 mt-2"></ul>
+					<p id="benchmarkResultsEmpty" class="text-sm opacity-60 hidden" data-i18n="agent_studio.benchmarks.noResults"></p>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<script type="module" src="./index.mjs"></script>
+</body>
+
+</html>

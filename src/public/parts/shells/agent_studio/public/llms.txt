@@ -1,0 +1,79 @@
+# agent_studio shell Web API
+
+智能体工作室：查看角色的生成历史与子代理运行、构建生成链、管理保留策略，并对角色运行裁判评分的基准测试。
+
+所有接口前缀 `/api/parts/shells:agent_studio`，均需登录（`authenticate`）。成功返回 2xx JSON（无 `success` 包装），失败 `throw httpError(code,message)`。
+
+---
+
+## 角色与概览
+
+### GET /api/parts/shells:agent_studio/chars
+- 用途：列出全部角色（`id` 与本地化 `info`）。
+
+### GET /api/parts/shells:agent_studio/char/:id/overview
+- 查询：`limit`（最近生成条数，默认 50）
+- 用途：角色基本信息 + 最近生成记录 + 子代理运行与批次。
+
+### GET /api/parts/shells:agent_studio/subagents
+- 查询：`charId`（必填）
+- 用途：该角色的子代理运行视图（由生成记录的 `subAgent.runId` 聚合，进度/状态合并 `plugins/sub-agent` 内存注册表）与批次列表。
+
+---
+
+## 生成历史
+
+### GET /api/parts/shells:agent_studio/generations
+- 查询：`charId`、`source`、`conversationId`、`chatId`、`runId`、`since`、`limit`
+- 用途：生成记录摘要列表（按开始时间倒序）。
+
+### GET /api/parts/shells:agent_studio/generation/:id
+- 用途：单条生成记录完整内容（含 `input`/`response`，受保留策略约束）。
+
+### GET /api/parts/shells:agent_studio/chains
+- 查询：同 `generations`
+- 用途：按 `parentId` 构建生成链森林。
+
+### GET /api/parts/shells:agent_studio/retention
+- 用途：读取保留策略 `{ promptMs, conversationMs }`（毫秒）。
+
+### PUT /api/parts/shells:agent_studio/retention
+- Body：`{ promptMs?, conversationMs? }`
+- 用途：更新保留策略；`promptMs` 超期清除 `input`，`conversationMs` 超期删除整条记录。
+
+---
+
+## 基准定义
+
+### GET /api/parts/shells:agent_studio/benchmarks
+- 用途：列出基准定义（附 `caseCount`）。
+
+### POST /api/parts/shells:agent_studio/benchmarks
+- Body：`{ name, description?, cases?, metadata? }`；用例为 `{ id?, input, expected?, criteria?, metadata? }`
+- 用途：创建基准定义。定义不含角色字段，角色/模型在运行时选择。
+
+### GET /api/parts/shells:agent_studio/benchmarks/:id
+- 用途：读取单个基准定义。
+
+### PUT /api/parts/shells:agent_studio/benchmarks/:id
+- Body：基准字段补丁（浅合并后重新归一化）
+- 用途：更新基准定义。
+
+### DELETE /api/parts/shells:agent_studio/benchmarks/:id
+- 用途：删除基准定义。
+
+### POST /api/parts/shells:agent_studio/benchmarks/:id/run
+- Body：`{ charId, aiSource?, judgeAiSource?, model? }`
+- 用途：运行基准。逐用例以 `BUILTIN_WORLD`/`BUILTIN_PERSONA` 手构请求并调用角色 `chat.GetReply`，写入生成记录（source `shells/agent_studio/benchmark`）；当用例含 `criteria` 或 `expected` 时，用裁判 AI 源（`judgeAiSource`，缺省取首选默认 AI 源）评分。
+- 返回：`benchmarkRun_t`（`results` / `stats`）。
+
+---
+
+## 基准运行
+
+### GET /api/parts/shells:agent_studio/runs
+- 查询：`benchmarkId`、`charId`
+- 用途：基准运行摘要列表。
+
+### GET /api/parts/shells:agent_studio/runs/:id
+- 用途：单次基准运行完整结果（含每用例回复与裁判评分）。

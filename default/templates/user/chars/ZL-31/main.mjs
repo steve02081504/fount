@@ -5,6 +5,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
+import { needsCompression, compressContext } from '../../../../../src/public/parts/shells/chat/src/chat/session/summarize.mjs'
 import { buildPromptStruct } from '../../../../../src/public/parts/shells/chat/src/prompt_struct/index.mjs'
 import { defineReplyHandler } from '../../../../../src/public/parts/shells/chat/src/reply/defineReplyHandler.mjs'
 import { runReplyHandlers } from '../../../../../src/public/parts/shells/chat/src/reply/handlerPipeline.mjs'
@@ -736,6 +737,8 @@ export default {
 					'file-operations',
 					'timer',
 					'fount-api',
+					'sub-agent',
+					'context-compress',
 				]
 				plugins = Object.fromEntries(await Promise.all(data.plugins.map(async x => [x, await loadPart(username, 'plugins/' + x)])))
 			}
@@ -770,6 +773,7 @@ export default {
 			GetPrompt: async (args) => {
 				// 请求级 AI 源覆盖（code shell 等会传入实例）；据此告知角色自己由哪个来源/模型驱动
 				const aiSource = args.ai_source ?? AIsource
+				args.ai_source ??= aiSource
 				const sourceInfo = aiSource ? await getPartInfo(aiSource, args.locales) : null
 				const sourceLine = sourceInfo
 					? `\n关于你自己：你当前使用的 AI 来源是「${sourceInfo.name}」（由 ${sourceInfo.provider} 提供）。模型名称不属于人设信息，用户问起时可以如实告知。\n`
@@ -823,6 +827,7 @@ ${sourceLine}`,
 				// 如果没有设置AI源，返回默认回复
 				if (!aiSource)
 					return { content: getLocale(args.locales, 'noAISourceFeedback') }
+				args.ai_source ??= aiSource
 				// 注入角色插件
 				args.plugins = Object.assign({}, plugins, args.plugins)
 				// 用fount提供的工具构建提示词结构
@@ -896,6 +901,10 @@ ${sourceLine}`,
 				regen: while (true) {
 					args.generation_options.base_result = result
 					await aiSource.StructCall(prompt_struct, args.generation_options)
+					// 达到 72.9% 上下文阈值时压缩历史后重新生成
+					if (needsCompression(args, { threshold: 0.729, prompt_struct }) &&
+						await compressContext({ args, aiSource, prompt_struct, result }))
+						continue regen
 					if (await runReplyHandlers(result, { ...args, prompt_struct, AddLongTimeLog }, handlers))
 						continue regen
 					break

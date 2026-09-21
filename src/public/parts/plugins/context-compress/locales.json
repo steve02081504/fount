@@ -1,0 +1,34 @@
+{
+	"info": {
+		"zh-CN": {
+			"name": "上下文压缩",
+			"avatar": "https://api.iconify.design/material-symbols/compress.svg",
+			"description": "让 AI 角色按需把过长的对话历史压缩为摘要，腾出上下文空间继续对话",
+			"description_markdown": "**上下文压缩**插件为 AI 角色提供一个手动触发的工具标签：\n\n```\n<compress-context/>\n```\n\n当对话历史接近 AI 源的上下文上限时，角色可以输出该标签；插件会调用摘要生成，把历史收敛为一条 `summary` 条目，并在下一轮生成本轮 prompt，使角色在不丢失关键信息的前提下继续对话。\n\n该工具在普通聊天与角色 regen 循环中均可使用；同一轮生成最多压缩一次，避免重复摘要。",
+			"version": "0.1.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"context",
+				"compression",
+				"summary",
+				"plugin"
+			]
+		},
+		"en-UK": {
+			"name": "Context Compress",
+			"avatar": "https://api.iconify.design/material-symbols/compress.svg",
+			"description": "Lets AI characters compress an over-long conversation history into a summary on demand to free context space.",
+			"description_markdown": "The **Context Compress** plugin gives an AI character a manually triggered tool tag:\n\n```\n<compress-context/>\n```\n\nWhen the conversation history approaches the AI source's context limit, the character can emit this tag; the plugin runs a summarisation, folds the history into a single `summary` entry, and reconciles the next round's prompt so the character can keep talking without losing key facts.\n\nIt works in ordinary chats and in the character regen loop alike; a single round compresses at most once to avoid duplicate summaries.",
+			"version": "0.1.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"context",
+				"compression",
+				"summary",
+				"plugin"
+			]
+		}
+	}
+}
