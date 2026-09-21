@@ -397,8 +397,12 @@ async function recordRunGeneration(run, deps) {
 async function deliverNotification(run, deps) {
 	const batchActive = run.batchId ? countActiveRunsInBatch(run.batchId) : 0
 	const agentActive = countActiveRunsForAgent(run.username, run.charId)
-	const text = `[sub-agent] 后台子代理 ${run.backgroundId} 已完成（状态：${run.state}）。`
-		+ `同批次进行中：${batchActive} 个；该角色剩余活跃子代理：${agentActive} 个。\n\n结果：\n${truncate(run.finalText)}`
+	const text = `\
+[sub-agent] 后台子代理 ${run.backgroundId} 已完成（状态：${run.state}）。
+同批次进行中：${batchActive} 个；该角色剩余活跃子代理：${agentActive} 个。
+
+结果：
+${truncate(run.finalText)}`
 	const entry = makeNotificationEntry(text)
 
 	if (!run.parentRunId) {

@@ -6743,5 +6743,66 @@
 				"aria-label": "⚠️🔓"
 			}
 		}
+	},
+	"agent_studio": {
+		"title": "🤖🎛️",
+		"description": "👀✨📜🈂️👤🔬",
+		"chars": {
+			"title": "👤",
+			"empty": "🈳👤"
+		},
+		"detail": {
+			"subAgents": "🤖👥",
+			"generations": "🕒✨",
+			"none": "🈳📊"
+		},
+		"generation": {
+			"title": "✨📜",
+			"prompt": "📨💬📜",
+			"response": "🔊",
+			"ok": "✅",
+			"error": "⚠️"
+		},
+		"run": {
+			"detail": "✨${generations}🔢 ↻${rounds}/${roundLimit}",
+			"state": {
+				"running": "🏃",
+				"summarizing": "📝",
+				"done": "✅",
+				"failed": "❌",
+				"terminated": "🛑"
+			}
+		},
+		"retention": {
+			"title": "📜⏳",
+			"prompt": "📨📜⏳🌐",
+			"conversation": "📜⏳🌐",
+			"save": "💾",
+			"saved": "✅💾"
+		},
+		"benchmarks": {
+			"title": "📊🏁",
+			"empty": "🈳📊",
+			"new": "➕",
+			"newName": "✍️📊📛",
+			"cases": "🧪📋",
+			"saveCases": "💾🧪",
+			"delete": "🗑️",
+			"deleteConfirm": "❓🗑️📊",
+			"selectChar": "👤🏃",
+			"selectCharFirst": "👉👤",
+			"judgeSource": "⚖️🤖",
+			"run": "🏃",
+			"runDone": "✅🏁",
+			"results": "📊",
+			"noResults": "🈳📊",
+			"notJudged": "🚫⚖️",
+			"stats": "Σ${total}·🈳${empty}·📏${avgLength}·⚖️${judged}·⭐${avgScore}"
+		},
+		"alerts": {
+			"loadFailed": "⚠️📥 ${message}",
+			"saveFailed": "⚠️💾 ${message}",
+			"runFailed": "⚠️🏃 ${message}"
+		}
 	}
 }

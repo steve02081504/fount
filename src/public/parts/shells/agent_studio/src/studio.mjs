@@ -439,6 +439,6 @@ export function buildBenchmarkRequest({ username, charId, benchmark, caseItem, c
 }
 
 /**
- *
+ * 重导出生成历史查询接口，便于调用方从 studio 模块统一获取。
  */
 export { buildChains, getGeneration, getRetention, listGenerations, setRetention }
