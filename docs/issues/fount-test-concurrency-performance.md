@@ -166,17 +166,23 @@
 
 8. **让 Playwright node 启动与 module-check 互斥协同**（RC7）：frontend 启动前确保共享 `.deno` 稳定（或把 node worker 纳入同一闸门），并对其「module not found」错误类做一次自动重试。
 
-9. **派生子进程时中和 `RUST_BACKTRACE`**（RC8）：在 `src/scripts/test/env.mjs` / `deno/no_dom_shim.mjs` 的 preload 里 `delete process.env.RUST_BACKTRACE`（或强制空），失败日志不再带 `aws_lc_*` backtrace。
+9. **`RUST_BACKTRACE` 是**有意**设置，不要中和**（RC8 更正）：`src/scripts/test/env.mjs` 明确设 `RUST_BACKTRACE=full` 以在 Deno panic 时保留 Rust 栈帧供自动上报（`core/deno_panic.mjs`）。`aws_lc_*` 尾巴只是已知噪声，不是崩溃；根 `AGENTS.md` 也已写明「诊断时不要被它误导」。此处无需改动。
 
-## 5. 验收
+## 5. 实施状态
+
+- 已落地（commit `0d99f519`，`fount test testkit:kernel` 全绿 138 passed）：P0-1（Deno 更新移入内核生命周期）、P0-2（module-check 立即释放 + 3m 上限）、P0-3（CLI 队列 FIFO）、P0-4（plain/json 输出模式 + 去重修复）、P1-5（ensure 预算 30s + 端口占用处理）。
+- 已在工作区完成、待随 code shell 重构一起提交：P1-6（`ui.spec.mjs` 拆分为 14 个主题 spec + manifest `subtests`；其 `tool_cards` 断言依赖尚未提交的 `.code-run-card-label` 重命名，故不能单独提交）。
+- 待办：P1-7 的 abort 落盘日志（心跳行已随 P0-4 落地）、P2-8（Playwright node 与 module-check 协同）。
+
+## 6. 验收
 
 - 并发冒烟：同时发起 4 个 `fount test checks:<x>` 与 1 个长套件，断言没有一次被 600s 工具超时杀掉（P0-2/P0-3 之后应稳定通过）。
 - 单调用开销：在空闲机器上，`checks:theme_radius` 墙钟与其基线（~8s）差距 < 2×；`fount test` 不再每次触发网络升级查询（P0-1）。
 - 输出整洁：管道运行单个 check，输出行数 ≤ 10，且不含 `未知时长` / `剩余 0 毫秒` / `资源闸门变动`（P0-4）；`--json` 每行可解析。
 - `fount test testkit` 全绿，新增 selftest 覆盖 P0-2 / P0-3 / P0-4。
-- 失败日志无 `aws_lc_*` backtrace（P2-9）。
+- 失败日志的 `aws_lc_*` backtrace 属于有意保留的诊断信息（见 §4 第 9 条），不作为验收项。
 
-## 6. 关联
+## 7. 关联
 
 - 资源调度 / module-check 现状：[resource-scheduling.md](../../src/scripts/test/docs/resource-scheduling.md)
 - 内核 / 队列 / idle 退出 / 显示：[kernel.md](../../src/scripts/test/docs/kernel.md)
