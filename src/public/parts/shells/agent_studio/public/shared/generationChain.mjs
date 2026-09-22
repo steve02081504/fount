@@ -37,6 +37,52 @@ export function groupByConversation(records) {
 }
 
 /**
+ * 会话键：优先 `conversationId`，其次 `chatId`，都缺失时以记录自身 id 独立成组。
+ * @param {generationRecordSummary_t} record 记录
+ * @returns {string} 会话键
+ */
+export function conversationKey(record) {
+	return record?.conversationId || record?.chatId || record?.id || ''
+}
+
+/**
+ * 把生成记录摘要聚合为会话摘要列表（按最近活动倒序）。
+ * @param {generationRecordSummary_t[]} records 生成记录摘要
+ * @returns {Array<{ key: string, conversationId: string, chatId: string, source: string, charId: string, charname: string, startedAt: number|null, finishedAt: number|null, generationCount: number, errorCount: number, requestCount: number, lastModel: string|null }>} 会话摘要
+ */
+export function summarizeConversations(records) {
+	const groups = new Map()
+	for (const record of records || []) {
+		const key = conversationKey(record)
+		if (!groups.has(key)) groups.set(key, {
+			key,
+			conversationId: record.conversationId || '',
+			chatId: record.chatId || '',
+			source: record.source || '',
+			charId: record.charId || '',
+			charname: record.charname || '',
+			startedAt: record.startedAt ?? null,
+			finishedAt: record.finishedAt ?? record.startedAt ?? null,
+			generationCount: 0,
+			errorCount: 0,
+			requestCount: 0,
+			lastModel: record.model || null,
+		})
+		const group = groups.get(key)
+		group.generationCount++
+		if (record.hasError) group.errorCount++
+		group.requestCount += record.requestCount ?? 0
+		const startedAt = record.startedAt ?? null
+		const finishedAt = record.finishedAt ?? record.startedAt ?? null
+		if (startedAt != null) group.startedAt = group.startedAt == null ? startedAt : Math.min(group.startedAt, startedAt)
+		if (finishedAt != null) group.finishedAt = group.finishedAt == null ? finishedAt : Math.max(group.finishedAt, finishedAt)
+		if (record.model) group.lastModel = record.model
+		if (record.charname) group.charname = record.charname
+	}
+	return [...groups.values()].sort((a, b) => (b.finishedAt ?? b.startedAt ?? 0) - (a.finishedAt ?? a.startedAt ?? 0))
+}
+
+/**
  * 按 `parentId` 构建生成链森林。
  * @param {generationRecordSummary_t[]} records 生成记录
  * @returns {Array<{ record: generationRecordSummary_t, children: object[] }>} 链根列表

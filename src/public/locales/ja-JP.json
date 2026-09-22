@@ -6872,7 +6872,10 @@
 			"allChars": "すべてのキャラクター",
 			"recordsCount": "全 ${count} 件",
 			"empty": "生成記録がありません。",
-			"chainsEmpty": "生成チェーンがありません。"
+			"chainsEmpty": "生成チェーンがありません。",
+			"conversations": "会話",
+			"conversationsCount": "会話 ${count} 件",
+			"conversationsEmpty": "会話がありません。"
 		},
 		"benchmarks": {
 			"title": "ベンチマーク",
@@ -6934,6 +6937,27 @@
 			"task": "タスク",
 			"conversation": "内部会話",
 			"empty": "（会話がありません）"
+		},
+		"conversation": {
+			"title": "会話の詳細",
+			"description": "1 つの会話に含まれるすべての生成と、各ラウンドのプロンプトリクエストを確認します。",
+			"back": "会話一覧に戻る",
+			"empty": "（この会話には生成がありません）",
+			"generationsCount": "生成 ${count} 件",
+			"rounds": "ラウンド ${count}",
+			"response": "応答",
+			"requests": "ラウンドごとのプロンプトリクエスト",
+			"requestsMissing": "（この生成ではラウンドごとのプロンプトを収集していません）",
+			"requestsExpired": "（ラウンドごとのプロンプトは期限切れです。元は ${count} ラウンド）",
+			"round": "ラウンド ${index} · モデル ${model} · ${time}",
+			"systemPrompt": "システムプロンプト",
+			"messages": "メッセージ",
+			"role": {
+				"system": "システム",
+				"user": "ユーザー",
+				"char": "キャラクター",
+				"tool": "ツール"
+			}
 		}
 	}
 }

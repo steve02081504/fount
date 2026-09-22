@@ -90,6 +90,28 @@ export function getGeneration(id) {
 }
 
 /**
+ * 列出会话摘要。
+ * @param {object} [filter] 过滤条件
+ * @returns {Promise<object[]>} 会话摘要列表
+ */
+export function listConversations(filter = {}) {
+	const params = new URLSearchParams()
+	for (const [key, value] of Object.entries(filter))
+		if (value !== undefined && value !== null && value !== '') params.set(key, String(value))
+	const query = params.toString()
+	return requestJson(`/conversations${query ? '?' + query : ''}`)
+}
+
+/**
+ * 获取一个会话的全部现存生成记录。
+ * @param {string} key 会话键
+ * @returns {Promise<{ key: string, generations: object[] }>} 会话详情
+ */
+export function getConversation(key) {
+	return requestJson(`/conversation/${encodeURIComponent(key)}`)
+}
+
+/**
  * 构建生成链森林。
  * @param {object} [filter] 过滤条件
  * @returns {Promise<object[]>} 链根列表

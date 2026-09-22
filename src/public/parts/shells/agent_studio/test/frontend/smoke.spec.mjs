@@ -11,6 +11,8 @@ const ENDPOINT_EXPORTS = [
 	'getSubAgent',
 	'listGenerations',
 	'getGeneration',
+	'listConversations',
+	'getConversation',
 	'listChains',
 	'getRetention',
 	'setRetention',
@@ -107,5 +109,15 @@ test.describe('Agent Studio shell boot', () => {
 		await page.locator('#subagentBackButton').click()
 		await expect(page.locator('#generationsView')).toBeVisible()
 		await expect(page.locator('#subagentView')).toBeHidden()
+	})
+
+	test('deep-links to the conversation view through the hash', async ({ page, baseUrl }) => {
+		await openAgentStudio(page, baseUrl)
+		await page.evaluate(() => { window.location.hash = '#conversation/unknown-key' })
+		await expect(page.locator('#conversationView')).toBeVisible()
+		await expect(page.locator('#dashboardView')).toBeHidden()
+		await page.locator('#conversationBackButton').click()
+		await expect(page.locator('#generationsView')).toBeVisible()
+		await expect(page.locator('#conversationView')).toBeHidden()
 	})
 })

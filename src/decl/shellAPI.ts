@@ -83,9 +83,10 @@ export class shellAPI_t {
 			 * 参数处理程序。
 			 * @param {string} user - 用户名。
 			 * @param {string[]} args - 参数数组。
-			 * @returns {Promise<void>}
+			 * @param {object} [context] - 调用上下文（如 `cwd`）。
+			 * @returns {Promise<void | string>} 返回字符串时作为 CLI 机器输出直接写入 stdout。
 			 */
-			ArgumentsHandler?: (user: string, args: string[]) => Promise<void>;
+			ArgumentsHandler?: (user: string, args: string[], context?: { cwd?: string }) => Promise<void | string>;
 			/**
 			 * IPC 调用处理程序。
 			 * @param {string} user - 用户名。

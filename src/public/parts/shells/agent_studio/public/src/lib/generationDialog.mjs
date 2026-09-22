@@ -12,6 +12,29 @@ import { getGeneration } from '../endpoints.mjs'
 import { formatTime } from './format.mjs'
 
 /**
+ * 生成详情中 prompt 区域的文本：优先逐轮请求快照，旧记录回落到 `input`。
+ * @param {object} record 生成记录
+ * @returns {string} 文本
+ */
+function buildPromptText(record) {
+	if (record.requests?.length) 
+		return record.requests.map(request => {
+			const lines = [`[轮次 ${request.index}] 模型 ${request.model ?? '-'} · ${formatTime(request.startedAt, primaryLocale())}`]
+			if (request.error) lines.push(`错误：${request.error.name || ''}: ${request.error.message || ''}`)
+			lines.push('--- system ---', request.systemPrompt ?? '', '--- messages ---')
+			for (const message of request.messages ?? [])
+				lines.push(`${message.role} ${message.name}: ${message.content}`)
+			return lines.join('\n')
+		}).join('\n\n')
+	
+	if (record.requestsStripped || record.requestCount)
+		return geti18n('agent_studio.conversation.requestsExpired', { count: record.requestCount ?? 0 })
+	return record.input === undefined || record.input === null
+		? geti18n('agent_studio.generation.promptExpired')
+		: JSON.stringify(record.input, null, 2)
+}
+
+/**
  * 打开某条生成记录的详情对话框。
  * @param {string} id 生成记录 id
  * @returns {Promise<void>}
@@ -42,9 +65,7 @@ export async function openGenerationDialog(id) {
 			}
 		}
 		if (prompt)
-			prompt.textContent = record.input === undefined || record.input === null
-				? geti18n('agent_studio.generation.promptExpired')
-				: JSON.stringify(record.input, null, 2)
+			prompt.textContent = buildPromptText(record)
 		if (response)
 			response.textContent = typeof record.response === 'string'
 				? record.response

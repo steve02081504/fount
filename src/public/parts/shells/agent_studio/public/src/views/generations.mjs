@@ -7,8 +7,9 @@
 import { geti18n } from '/scripts/i18n/index.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
 
-import { listChains, listGenerations } from '../endpoints.mjs'
+import { listChains, listConversations } from '../endpoints.mjs'
 import { fillCharOptions } from '../lib/charOptions.mjs'
+import { renderConversationItem } from '../lib/conversationItem.mjs'
 import { mountEmptyState } from '../lib/emptyState.mjs'
 import { renderGenerationItem } from '../lib/generationItem.mjs'
 import { state } from '../state.mjs'
@@ -105,25 +106,25 @@ function currentFilter() {
 }
 
 /**
- * 渲染生成记录列表。
+ * 渲染会话列表（每行一个对话，进入后可见逐轮生成）。
  * @returns {Promise<void>}
  */
 async function renderRecords() {
-	const records = await listGenerations(currentFilter())
+	const conversations = await listConversations(currentFilter())
 	const list = document.getElementById('generationRecordsList')
 	const empty = document.getElementById('generationRecordsEmpty')
 	const count = document.getElementById('generationRecordsCount')
 	if (!list || !empty) return
 	list.replaceChildren()
 	if (count)
-		count.textContent = records.length ? geti18n('agent_studio.generations.recordsCount', { count: records.length }) : ''
-	empty.classList.toggle('hidden', records.length > 0)
-	if (!records.length) {
-		await mountEmptyState(empty, { titleKey: 'agent_studio.generations.empty', iconClass: 'icon-branch' })
+		count.textContent = conversations.length ? geti18n('agent_studio.generations.conversationsCount', { count: conversations.length }) : ''
+	empty.classList.toggle('hidden', conversations.length > 0)
+	if (!conversations.length) {
+		await mountEmptyState(empty, { titleKey: 'agent_studio.generations.conversationsEmpty', iconClass: 'icon-branch' })
 		return
 	}
-	for (const record of records)
-		list.appendChild(await renderGenerationItem(record))
+	for (const conversation of conversations)
+		list.appendChild(await renderConversationItem(conversation))
 }
 
 /**

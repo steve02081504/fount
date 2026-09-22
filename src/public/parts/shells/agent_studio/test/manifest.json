@@ -7,13 +7,15 @@
 		"pureCore": [
 			"src/public/parts/shells/agent_studio/src/benchmark.mjs",
 			"src/public/parts/shells/agent_studio/public/shared/**",
-			"src/public/parts/shells/agent_studio/test/pure/**"
+			"src/public/parts/shells/agent_studio/test/pure/**",
+			"src/public/parts/shells/chat/src/prompt_struct/**"
 		],
 		"integrationCore": [
 			"src/public/parts/shells/agent_studio/src/**",
 			"src/public/parts/shells/agent_studio/test/integration/**",
 			"src/public/parts/plugins/sub-agent/state.mjs",
 			"src/public/parts/shells/chat/src/chat/session/builtinParts.mjs",
+			"src/public/parts/shells/chat/src/prompt_struct/**",
 			"src/server/parts_loader.mjs",
 			"src/server/setting_loader.mjs"
 		],

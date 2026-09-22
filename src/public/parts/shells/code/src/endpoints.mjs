@@ -12,6 +12,7 @@ import { getAllDefaultParts, getPartList } from '../../../../../server/parts_loa
 import { loadShellData, saveShellData, assignShellData } from '../../../../../server/setting_loader.mjs'
 import { listTasks as listAsyncTasks } from '../../../plugins/async-task/registry.mjs'
 import { createTargetExecutor, listMachines, parseVolumeLabels } from '../../../plugins/file-operations/src/target.mjs'
+import { createPromptRequestRecorder } from '../../chat/src/prompt_struct/snapshot.mjs'
 
 import {
 	getCommand,
@@ -49,10 +50,11 @@ import { readWorkspaceConfig } from './workspace_config.mjs'
  * @param {object} params.session 会话
  * @param {object} params.requestSession 请求侧会话（含用户消息快照）
  * @param {object|null} params.reply 角色回复
+ * @param {object[]} [params.requests] 逐轮 prompt 请求快照
  * @param {number} params.startedAt 开始时间
  * @returns {Promise<void>}
  */
-async function recordCodeGeneration(username, { generationId, session, requestSession, reply, startedAt }) {
+async function recordCodeGeneration(username, { generationId, session, requestSession, reply, requests, startedAt }) {
 	try {
 		const { recordGeneration } = await import('../../agent_studio/src/generation_history.mjs')
 		await recordGeneration(username, {
@@ -72,6 +74,8 @@ async function recordCodeGeneration(username, { generationId, session, requestSe
 				content: entry.content,
 				time_stamp: entry.time,
 			})),
+			requests,
+			requestCount: requests?.length ?? 0,
 			response: reply?.content ?? '',
 		})
 	}
@@ -871,6 +875,13 @@ export function setEndpoints(router) {
 			beginCodeGeneration(username)
 			const generationId = randomUUID()
 			const generationStartedAt = Date.now()
+			const promptRecorder = createPromptRequestRecorder()
+			/**
+			 * 每轮 AI 调用前的 prompt 快照回调。
+			 * @param {object} prompt 提示结构
+			 * @returns {void}
+			 */
+			const onPromptRequest = prompt => { promptRecorder.record(prompt) }
 			// 生成运行身份：带回 runId 的 run-start 帧（前端据此接纳本运行的事件）
 			send({ type: 'run-start' })
 			// 先落盘一个生成中占位，页面在生成期间重置时磁盘仍有「进行中」标记可供恢复
@@ -914,6 +925,7 @@ export function setEndpoints(router) {
 					onToolOutput: event => {
 						send({ type: 'tool-output', ...event })
 					},
+					onPromptRequest,
 				})
 				// 已在预览期增量推送的 tool 日志只补发剩余部分，避免前端重复插入
 				for (const rawEntry of (reply?.logContextBefore || []).slice(emittedLogCount)) {
@@ -925,7 +937,7 @@ export function setEndpoints(router) {
 					if (replyEntry) entries.push(replyEntry)
 				}
 				if (reply)
-					void recordCodeGeneration(username, { generationId, session, requestSession, reply, startedAt: generationStartedAt })
+					void recordCodeGeneration(username, { generationId, session, requestSession, reply, requests: promptRecorder.requests, startedAt: generationStartedAt })
 				// 权威结果先落盘，再广播完成帧：页面/连接丢失也不会丢内容
 				await persist(memory)
 				send({ type: 'done', entries, memory })

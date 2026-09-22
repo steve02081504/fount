@@ -9,10 +9,11 @@
 export const NAVIGATE_EVENT = 'agent-studio:navigate'
 
 /**
- * 请求切换到某个主视图（由导航层监听执行）。
+ * 请求切换到某个视图（由导航层监听执行）。
  * @param {string} view 视图名
+ * @param {object} [params] 视图参数（如会话详情的 `key`）
  * @returns {void}
  */
-export function requestNavigate(view) {
-	window.dispatchEvent(new CustomEvent(NAVIGATE_EVENT, { detail: { view } }))
+export function requestNavigate(view, params = {}) {
+	window.dispatchEvent(new CustomEvent(NAVIGATE_EVENT, { detail: { view, params } }))
 }

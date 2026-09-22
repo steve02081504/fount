@@ -263,6 +263,7 @@ export default {
 				// 在重新生成循环中检查插件触发
 				regen: while (true) {
 					args.generation_options.base_result = result
+					args.generation_options.onPromptRequest?.(prompt_struct)
 					await activeSource.StructCall(prompt_struct, args.generation_options)
 					// 达到 72.9% 上下文阈值时压缩历史后重新生成
 					if (needsCompression(args, { prompt_struct }) &&

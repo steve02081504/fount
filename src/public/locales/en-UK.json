@@ -6872,7 +6872,10 @@
 			"allChars": "All characters",
 			"recordsCount": "${count} records",
 			"empty": "No generations yet.",
-			"chainsEmpty": "No generation chains yet."
+			"chainsEmpty": "No generation chains yet.",
+			"conversations": "Conversations",
+			"conversationsCount": "${count} conversations",
+			"conversationsEmpty": "No conversations yet."
 		},
 		"benchmarks": {
 			"title": "Benchmarks",
@@ -6934,6 +6937,27 @@
 			"task": "Task",
 			"conversation": "Internal conversation",
 			"empty": "(no conversation yet)"
+		},
+		"conversation": {
+			"title": "Conversation",
+			"description": "Inspect every generation in a conversation and the prompt request of each round.",
+			"back": "Back to conversations",
+			"empty": "(This conversation has no generations)",
+			"generationsCount": "${count} generations",
+			"rounds": "${count} rounds",
+			"response": "Response",
+			"requests": "Per-round prompt requests",
+			"requestsMissing": "(No per-round prompts captured for this generation)",
+			"requestsExpired": "(Per-round prompts expired; ${count} rounds originally)",
+			"round": "Round ${index} · Model ${model} · ${time}",
+			"systemPrompt": "System prompt",
+			"messages": "Messages",
+			"role": {
+				"system": "System",
+				"user": "User",
+				"char": "Character",
+				"tool": "Tool"
+			}
 		}
 	}
 }

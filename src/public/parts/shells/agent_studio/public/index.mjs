@@ -14,6 +14,7 @@ import { AGENT_STUDIO_GATE } from './src/gate.mjs'
 import { applyIncomingNavigation, installNavigationEvents, switchView } from './src/navigation.mjs'
 import { currentMainView } from './src/viewChrome.mjs'
 import { initBenchmarksView } from './src/views/benchmarks.mjs'
+import { initConversationView } from './src/views/conversation.mjs'
 import { initDashboardView } from './src/views/dashboard.mjs'
 import { initGenerationsView } from './src/views/generations.mjs'
 import { initSettingsView } from './src/views/settings.mjs'
@@ -65,6 +66,7 @@ async function boot() {
 		initBenchmarksView()
 		initSettingsView()
 		initSubAgentView()
+		initConversationView()
 		onLanguageChange(() => {
 			const view = currentMainView()
 			if (view) void switchView(view, { skipHash: true })

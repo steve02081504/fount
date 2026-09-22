@@ -10,10 +10,12 @@ alwaysApply: false
 
 - Directly imported (never `loadPart`, no `interfaces`). Self-initializing; `data/users/<u>/shells/agent_studio/{settings.json,index.json,records/<id>.json}`. Writes are serialized per user.
 - `recordGeneration(username, record)` / `listGenerations(username, filter)` / `getGeneration` / `getRetention` / `setRetention` / `pruneGenerations`; re-exports `buildChains` / `groupByConversation` from `public/shared/generationChain.mjs`.
-- Record shape: `{ id, parentId?, charId, charname?, subAgent?, chatId?, conversationId?, source, startedAt, finishedAt?, input?, response?, model?, metadata?, error? }`. `input` is a request `chat_log` snapshot, not the assembled prompt.
-- Two TTLs: `input` (prompt) 2 days, whole record (conversation) 7 days; adjustable via `setRetention`.
+- Record shape: `{ id, parentId?, charId, charname?, subAgent?, chatId?, conversationId?, source, startedAt, finishedAt?, input?, requests?, requestCount?, response?, conversation?, model?, metadata?, error? }`. `input` is a legacy request `chat_log` snapshot (not the assembled prompt). `requests` is the per-round AI request snapshot: `{ index, startedAt, finishedAt, model, systemPrompt, messages }` (`systemPrompt` = merged system prompt, `messages` = visible chat log after `mergeStructPromptChatLog`).
+- Per-round capture: `chat/src/prompt_struct/snapshot.mjs` `createPromptRequestRecorder()`; setters wire `generation_options.onPromptRequest` in `triggerReply` (chat), the char templates (easychar / SillyTavern / Risu), `plugins/sub-agent` runtime, `shells/code` request and the benchmark runner. A generation with no captured rounds reports "not captured" — never fall back to `input` as if it were the full prompt.
+- Two TTLs: `input` + `requests` (prompt) 2 days, whole record (conversation) 7 days; adjustable via `setRetention`. Stripping keeps `requestCount` and sets `requestsStripped`.
+- Conversation grouping: `conversationKey = conversationId || chatId || id`; `summarizeConversations` (both in `public/shared/generationChain.mjs`) powers `listConversations` / `getConversation`.
 - Emits `events.emit('GenerationRecorded', …)` after each write.
-- `shells/chat` writes every generation via `executeGeneration` (try/catch, never blocks the reply); `plugins/sub-agent` writes each run.
+- `shells/chat` / `shells/code` write every generation (try/catch, never blocks the reply); `plugins/sub-agent` writes each run.
 
 ## Plugin set resolution (sub-agent, no inheritance)
 
@@ -62,12 +64,18 @@ alwaysApply: false
 
 ## Endpoints
 
-`/api/parts/shells:agent_studio/` — `/chars`, `/char/:id/overview`, `/subagents?charId=|chatId=`, `/subagent/:runId`, `/generations`, `/generation/:id`, `/chains`, `/retention`, `/benchmarks` CRUD, `/benchmarks/:id/run`, `/runs`. Sub-agent views derive from generation records grouped by `subAgent.runId` / `batchId`; live state is imported from `plugins/sub-agent/state.mjs`.
+`/api/parts/shells:agent_studio/` — `/chars`, `/char/:id/overview`, `/subagents?charId=|chatId=`, `/subagent/:runId`, `/generations`, `/generation/:id`, `/conversations`, `/conversation/:key`, `/chains`, `/retention`, `/benchmarks` CRUD, `/benchmarks/:id/run`, `/runs`. Sub-agent views derive from generation records grouped by `subAgent.runId` / `batchId`; live state is imported from `plugins/sub-agent/state.mjs`.
+
+## CLI (`fount run` / `fount runas`)
+
+- `shells/agent_studio/main.mjs` exposes `interfaces.invokes.ArgumentsHandler` → `src/cli.mjs` `runStudioCli`; `fount run agent_studio <subcommand>` uses the last-active user, `fount runas <user> agent_studio <subcommand>` is explicit. No new path-CLI command.
+- Subcommands: `conversations` / `conversation <key>` / `generation <id>` / `dump <key>`; `--json` (or `dump --format json`) prints full JSON to stdout, `--out <path>` writes a file relative to the CLI cwd.
+- The handler **returns a string**; `src/server/index.mjs` `runpart` writes a string result to `process.stdout` (otherwise falls back to the VirtualConsole `outputs`), so a dump stays valid JSON. Errors propagate through IPC as a non-zero exit.
 
 ## Frontend views
 
 - `public/index.mjs` boots the shell: `applyTheme` → `initTranslations('agent_studio')` → preload shared data (`src/data.mjs`) → enter the hash view. A ready gate (`src/gate.mjs`, id `agent-studio`) is exposed for Playwright.
-- Four main views, each `<section id="<view>View" class="view">` in `public/index.html`: `dashboard` (char list + overview), `generations` (records + chains, char filter), `benchmarks` (defs + runner + results), `settings` (retention). Plus the non-nav deep-link view `subagent` (`#subagent/<runId>` → `views/subagent.mjs`), entered only via `applyIncomingNavigation`. `src/viewChrome.mjs` toggles visibility/highlight; `src/navigation.mjs` maps view → loader, syncs `location.hash`, and wraps switches in a View Transition.
+- Four main views, each `<section id="<view>View" class="view">` in `public/index.html`: `dashboard` (char list + overview), `generations` (conversations + chains, char filter), `benchmarks` (defs + runner + results), `settings` (retention). The generations records tab lists **conversations** (`conversation_item` + `lib/conversationItem.mjs`) and opens `views/conversation.mjs`; per-round prompt requests render there (`requests` / `requestsStripped` / `requestCount`). Two non-nav deep-link views entered only via `applyIncomingNavigation`: `subagent` (`#subagent/<runId>`) and `conversation` (`#conversation/<key>`). `src/viewChrome.mjs` toggles visibility/highlight; `src/navigation.mjs` maps view → loader, syncs `location.hash`, and wraps switches in a View Transition.
 - `src/views/*.mjs` own rendering; loaders are safe to re-run (language change re-invokes the active view). Templates live in `public/src/templates/`; `public/src/lib/` holds `format` / `emptyState` / `generationDialog` / `activate` / `generationItem` / `charOptions` / `stateBadge` / `navigationEvents` helpers. No view imports `navigation.mjs` (avoids a cycle); the subagent back button dispatches a `navigationEvents` request that `installNavigationEvents` (called in boot) turns into `switchView`.
 - Nav chrome (sidebar + mobile dock) shares `.nav-btn[data-view]`, bound once by `wireNavigation`.
 - UI rules: Iconify mask icons only (no emoji), theme tokens only, no hardcoded radius / border / color, animate `transform` / `opacity` / colors only.

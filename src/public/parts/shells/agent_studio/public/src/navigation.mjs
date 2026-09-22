@@ -10,13 +10,14 @@ import { viewTransition } from '/scripts/motion/viewTransition.mjs'
 import { NAVIGATE_EVENT } from './lib/navigationEvents.mjs'
 import { activateView, currentMainView, MAIN_NAV_VIEWS } from './viewChrome.mjs'
 import { loadBenchmarks } from './views/benchmarks.mjs'
+import { loadConversationView } from './views/conversation.mjs'
 import { loadDashboard } from './views/dashboard.mjs'
 import { loadGenerations } from './views/generations.mjs'
 import { loadSettings } from './views/settings.mjs'
 import { loadSubAgentView } from './views/subagent.mjs'
 
-/** 全部可进入的视图（主导航 + 仅深链的 subagent）。 */
-const ALL_VIEWS = [...MAIN_NAV_VIEWS, 'subagent']
+/** 全部可进入的视图（主导航 + 仅深链的 subagent / conversation）。 */
+const ALL_VIEWS = [...MAIN_NAV_VIEWS, 'subagent', 'conversation']
 
 /** 视图名 → 数据加载器。 */
 const VIEW_LOADERS = {
@@ -25,6 +26,7 @@ const VIEW_LOADERS = {
 	benchmarks: loadBenchmarks,
 	settings: loadSettings,
 	subagent: loadSubAgentView,
+	conversation: loadConversationView,
 }
 
 /** 当前深链参数（subagent 视图的 runId）。 */
@@ -37,7 +39,7 @@ let currentParams = {}
 export function installNavigationEvents() {
 	window.addEventListener(NAVIGATE_EVENT, event => {
 		const view = event.detail?.view
-		if (typeof view === 'string') void switchView(view)
+		if (typeof view === 'string') void switchView(view, { params: event.detail?.params })
 	})
 }
 
@@ -48,9 +50,9 @@ export function installNavigationEvents() {
  * @returns {void}
  */
 function syncHashForMainView(view, params = {}) {
-	const next = view === 'subagent' && params.runId
-		? `#subagent/${encodeURIComponent(params.runId)}`
-		: `#${view}`
+	let next = `#${view}`
+	if (view === 'subagent' && params.runId) next = `#subagent/${encodeURIComponent(params.runId)}`
+	else if (view === 'conversation' && params.key) next = `#conversation/${encodeURIComponent(params.key)}`
 	if (location.hash === next) return
 	history.replaceState(null, '', `${location.pathname}${location.search}${next}`)
 }
@@ -100,6 +102,13 @@ export async function applyIncomingNavigation() {
 		const runId = decodeURIComponent(subagentMatch[1])
 		if (currentMainView() === 'subagent' && currentParams.runId === runId) return true
 		await switchView('subagent', { skipHash: true, params: { runId } })
+		return true
+	}
+	const conversationMatch = /^conversation\/(.+)$/.exec(rawHash)
+	if (conversationMatch) {
+		const key = decodeURIComponent(conversationMatch[1])
+		if (currentMainView() === 'conversation' && currentParams.key === key) return true
+		await switchView('conversation', { skipHash: true, params: { key } })
 		return true
 	}
 	if (!MAIN_NAV_VIEWS.includes(rawHash)) return false

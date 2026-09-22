@@ -14,6 +14,7 @@ import { getAllCachedPartDetails, getPartDetails, getPartList, loadAnyPreferredD
 import { loadShellData, saveShellData } from '../../../../../server/setting_loader.mjs'
 import { getRun as getLiveRun, listBatches as listLiveBatches, listRuns as listLiveRuns } from '../../../plugins/sub-agent/state.mjs'
 import { BUILTIN_PERSONA, BUILTIN_WORLD } from '../../chat/src/chat/session/builtinParts.mjs'
+import { createPromptRequestRecorder } from '../../chat/src/prompt_struct/snapshot.mjs'
 
 import { buildJudgePrompt, computeStats, normalizeBenchmark, parseJudgeResponse } from './benchmark.mjs'
 import { getGeneration, listGenerations, recordGeneration } from './generation_history.mjs'
@@ -366,6 +367,14 @@ export async function runBenchmark(username, benchmarkId, config = {}) {
  */
 async function runBenchmarkCase({ username, benchmark, caseItem, char, charInfo, run, aiSource, judgeSource }) {
 	const request = buildBenchmarkRequest({ username, charId: run.charId, benchmark, caseItem, char, charInfo, run, aiSource })
+	const promptRecorder = createPromptRequestRecorder()
+	/**
+	 * 每轮 AI 调用前的 prompt 快照回调。
+	 * @param {object} prompt 提示结构
+	 * @returns {void}
+	 */
+	const onPromptRequest = prompt => { promptRecorder.record(prompt, { model: aiSource?.filename }) }
+	request.generation_options = { onPromptRequest }
 	const reply = await char.interfaces.chat.GetReply(request)
 	const response = String(reply?.content ?? '')
 	const generation = await recordGeneration(username, {
@@ -374,6 +383,8 @@ async function runBenchmarkCase({ username, benchmark, caseItem, char, charInfo,
 		conversationId: 'benchmark:' + run.id,
 		source: BENCHMARK_SOURCE,
 		input: request.chat_log,
+		requests: promptRecorder.requests,
+		requestCount: promptRecorder.requests.length,
 		response,
 		metadata: { benchmarkId: benchmark.id, caseId: caseItem.id, runId: run.id },
 	})

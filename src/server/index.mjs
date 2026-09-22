@@ -177,8 +177,10 @@ if (command_obj) await (async () => {
 		const result = await IPCManager.sendCommand(command_obj.type, command_obj.data)
 		switch (command_obj.type) {
 			case 'runpart': {
-				const { outputs } = result
-				console.log(outputs)
+				const { result: runResult, outputs } = result
+				// 约定的机器输出：handler 返回字符串时直接写 stdout（保证 JSON dump 纯净）；否则回落到虚拟控制台输出
+				if (typeof runResult === 'string') process.stdout.write(runResult.endsWith('\n') ? runResult : runResult + '\n')
+				else console.log(outputs)
 			}
 		}
 	} catch (err) {

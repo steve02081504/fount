@@ -77,10 +77,11 @@ async function sessionToChatLog(entries) {
  * @param {string} [options.generationId] - 本轮生成 id（供子代理回链父代生成；缺省由调用方生成）。
  * @param {(reply: chatReply_t) => void} [options.onPreview] - 流式预览回调。
  * @param {(event: object) => void} [options.onToolOutput] - 工具执行实时输出回调（`generation_options.onToolOutput`）。
+ * @param {(prompt: object) => void} [options.onPromptRequest] - 每次 AI 源调用前的 prompt 快照回调（`generation_options.onPromptRequest`）。
  * @param {AbortSignal} [options.signal] - 中断信号。
  * @returns {Promise<chatReplyRequest_t>} 构建好的请求。
  */
-async function buildCodeChatRequest({ username, session, requestSession, machine, workdir, ai_source, profile, generationId, onPreview, onToolOutput, signal }) {
+async function buildCodeChatRequest({ username, session, requestSession, machine, workdir, ai_source, profile, generationId, onPreview, onToolOutput, onPromptRequest, signal }) {
 	const char = await loadPart(username, 'chars/' + session.charname)
 	const personaName = getAnyPreferredDefaultPart(username, 'personas')
 	const user = personaName ? await loadPart(username, 'personas/' + personaName) : null
@@ -132,7 +133,7 @@ async function buildCodeChatRequest({ username, session, requestSession, machine
 		 * 重读会话条目并重建请求（供轮次刷新 `injectRoundEntries` 采集新条目）。
 		 * @returns {Promise<object>} 刷新后的请求
 		 */
-		Update: () => buildCodeChatRequest({ username, session, machine, workdir, ai_source, profile, generationId, onPreview, onToolOutput, signal }),
+		Update: () => buildCodeChatRequest({ username, session, machine, workdir, ai_source, profile, generationId, onPreview, onToolOutput, onPromptRequest, signal }),
 		/**
 		 * 追加一条日志条目。`role === 'char'`（或缺省）作为角色回复写入；其余 role（异步完成通知等）额外
 		 * 推送 `code-async-entry` 事件，让前端持久化并在空闲时触发生成。
@@ -193,6 +194,8 @@ async function buildCodeChatRequest({ username, session, requestSession, machine
 			},
 			/** 工具执行实时输出（code-execution 插件回调），远程流式回显经 `shells/code` 的 RemoteCallBack。 */
 			onToolOutput,
+			/** 每轮 AI 源调用前的 prompt 快照（Agent Studio 逐轮请求展示）。 */
+			onPromptRequest,
 			remoteToolCallbackPartpath: onToolOutput ? 'shells/code' : undefined,
 			signal,
 		},

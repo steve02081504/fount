@@ -8,7 +8,15 @@
 import { httpError } from '../../../../../scripts/http_error.mjs'
 import { authenticate, getUserByReq } from '../../../../../server/auth/index.mjs'
 
-import { buildChains, getGeneration, getRetention, listGenerations, setRetention } from './generation_history.mjs'
+import {
+	buildChains,
+	getConversation,
+	getGeneration,
+	getRetention,
+	listConversations,
+	listGenerations,
+	setRetention,
+} from './generation_history.mjs'
 import {
 	createBenchmark,
 	deleteBenchmark,
@@ -82,6 +90,18 @@ export function setEndpoints(router) {
 	router.get(`${PREFIX}/generations`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		res.status(200).json(await listGenerations(username, generationFilter(req.query)))
+	})
+
+	router.get(`${PREFIX}/conversations`, authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		res.status(200).json(await listConversations(username, generationFilter(req.query)))
+	})
+
+	router.get(`${PREFIX}/conversation/:key`, authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const conversation = await getConversation(username, req.params.key)
+		if (!conversation) throw httpError(404, `conversation not found: ${req.params.key}`)
+		res.status(200).json(conversation)
 	})
 
 	router.get(`${PREFIX}/generation/:id`, authenticate, async (req, res) => {

@@ -8,6 +8,7 @@
  * 【关联】handler.mjs 解析标签后调用 `runSubAgent` / `terminateSubAgentRun` / `listAvailableAiSources`；prompt.mjs 注入预算；archive.mjs 管理父代档案；state.mjs 保存注册表。
  */
 import { buildPromptStruct } from '../../shells/chat/src/prompt_struct/index.mjs'
+import { createPromptRequestRecorder } from '../../shells/chat/src/prompt_struct/snapshot.mjs'
 import { runReplyHandlers } from '../../shells/chat/src/reply/handlerPipeline.mjs'
 import { ownerFromArgs, registerTask } from '../async-task/registry.mjs'
 
@@ -460,6 +461,8 @@ async function recordRunGeneration(run, deps) {
 			model: run.aiSource?.filename,
 			input: run.parentArgs?.chat_log?.slice(-run.archiveTail),
 			conversation: serializeConversation(run.conversation),
+			requests: run.promptRequests,
+			requestCount: run.promptRequests?.length ?? 0,
 			response: run.finalText,
 			metadata: {
 				status: run.state,
@@ -498,6 +501,9 @@ export async function executeSubAgentRun(run, deps = defaultSubAgentDeps) {
 	const batch = run.batchId ? getBatch(run.batchId) : undefined
 	run.conversation.push(...buildOpeningEntries(run, batch))
 	const childArgs = buildChildArgs(run)
+	// 逐轮请求快照：每轮 StructCall 前采集完整 prompt，供 Agent Studio 展示
+	const promptRecorder = createPromptRequestRecorder()
+	run.promptRequests = promptRecorder.requests
 
 	let summarized = false
 	try {
@@ -522,6 +528,12 @@ export async function executeSubAgentRun(run, deps = defaultSubAgentDeps) {
 		const generationOptions = {
 			signal: run.controller.signal,
 			supported_functions: childArgs.supported_functions,
+			/**
+			 * 每轮 AI 调用前的 prompt 快照回调。
+			 * @param {object} prompt 提示结构
+			 * @returns {void}
+			 */
+			onPromptRequest: prompt => { promptRecorder.record(prompt, { model: run.aiSource?.filename }) },
 		}
 		childArgs.generation_options = generationOptions
 		run.timer = setTimeout(() => {
