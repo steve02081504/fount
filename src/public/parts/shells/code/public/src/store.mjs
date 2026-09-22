@@ -86,6 +86,10 @@ export const store = {
 	subAgents: new Map(),
 	/** 子代理历史查询节流：{ chatId, at }。 */
 	subAgentFetch: null,
+	/** 当前会话的统一异步任务（任务 id → 状态摘要，来自实时事件与进行中查询）。 */
+	asyncTasks: new Map(),
+	/** 异步任务查询节流：{ chatId, at }。 */
+	asyncTaskFetch: null,
 }
 
 /**

@@ -91,7 +91,7 @@ function writeAsyncDispatchLog(args, task, label) {
 		content: `${label} 已在后台运行，id=${task.id}。可用 <await-async ids="${task.id}"/> 等待，或用 <list-async/> 查看；未被等待时完成后会以系统消息通知你。`,
 		content_for_show: `${label} 已在后台运行（id：${task.id}）。`,
 		files: [],
-		extension: { asyncTask: { id: task.id, kind: task.kind } },
+		extension: { asyncTask: { id: task.id, kind: task.kind, label: task.label } },
 	})
 }
 

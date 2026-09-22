@@ -714,15 +714,30 @@ export function terminateSubAgentRun(id) {
 }
 
 /**
+ * 取运行最近对话的结构化条目（用于 check-subagent 的可读 UI 与文本回执）。
+ * @param {object} run 运行
+ * @param {number} [limit] 最近条数
+ * @param {number} [contentLimit] 每条内容上限
+ * @returns {Array<{ role: string, name: string, content: string }>} 条目
+ */
+export function describeRunEntries(run, limit = 3, contentLimit = 1000) {
+	const entries = [...run.conversation ?? [], ...run.result?.logContextBefore ?? []]
+	return entries.slice(-limit).map(entry => ({
+		role: entry.role ?? 'system',
+		name: entry.name ?? '',
+		content: truncate(entry.content_for_show ?? entry.content ?? '', contentLimit),
+	}))
+}
+
+/**
  * 描述运行最近的对话（用于 check-subagent）。
  * @param {object} run 运行
  * @param {number} [limit] 最近条数
  * @returns {string} 文本
  */
 export function describeRunConversation(run, limit = 3) {
-	const entries = [...run.conversation ?? [], ...run.result?.logContextBefore ?? []]
-	return entries.slice(-limit)
-		.map(entry => `[${entry.role ?? '?'}] ${entry.name ?? ''}: ${truncate(entry.content ?? '', 1000)}`)
+	return describeRunEntries(run, limit, 1000)
+		.map(entry => `[${entry.role}] ${entry.name}: ${entry.content}`)
 		.join('\n---\n')
 }
 

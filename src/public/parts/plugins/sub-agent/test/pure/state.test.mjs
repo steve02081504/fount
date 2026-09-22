@@ -5,7 +5,7 @@
 import { assertEquals, assertFalse, assert } from 'jsr:@std/assert'
 
 import { notificationQueueKey, pushPendingNotification, resetAsyncTaskState, takePendingNotifications } from '../../../async-task/registry.mjs'
-import { parseBooleanAttr, parseDurationMs, parseRoundLimit, terminateSubAgentRun } from '../../runtime.mjs'
+import { describeRunEntries, parseBooleanAttr, parseDurationMs, parseRoundLimit, terminateSubAgentRun } from '../../runtime.mjs'
 import {
 	countActiveRunsForAgent,
 	countActiveRunsInBatch,
@@ -169,4 +169,20 @@ Deno.test('duration, round-limit and boolean attribute parsers accept tool synta
 	assertEquals(parseBooleanAttr(true), true)
 	assertEquals(parseBooleanAttr('false'), false)
 	assertEquals(parseBooleanAttr(undefined), false)
+})
+
+Deno.test('describeRunEntries slices, prefers the show layer, and truncates', () => {
+	const run = {
+		conversation: [
+			{ role: 'system', name: 'system', content: 'opening' },
+			{ role: 'char', name: 'Char', content: 'agent-layer', content_for_show: 'show-layer' },
+			{ role: 'tool', name: 'code-execution.run-js', content: 'x'.repeat(60) },
+		],
+	}
+	const entries = describeRunEntries(run, 2, 10)
+	assertEquals(entries.length, 2)
+	assertEquals(entries[0], { role: 'char', name: 'Char', content: 'show-layer' })
+	assertEquals(entries[1].role, 'tool')
+	assert(entries[1].content.startsWith('x'.repeat(10)))
+	assert(entries[1].content.length < 60, 'expected truncation')
 })

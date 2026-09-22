@@ -46,6 +46,9 @@ const pendingNotifications = new Map()
 /** 统一异步工具是否已由插件 Load 启用。 */
 let toolingEnabled = false
 
+/** 任务生命周期通知器（由插件 Load 注入，仅内存；宿主 shell 据此实时刷新任务卡）。 @type {((event: { phase: 'start' | 'settle', task: object }) => void) | null} */
+let notifier = null
+
 /**
  * 标记统一异步工具是否可用（由 async-task 插件 Load 置位）。
  * @param {boolean} value 是否启用
@@ -53,6 +56,50 @@ let toolingEnabled = false
  */
 export function setAsyncToolingEnabled(value) {
 	toolingEnabled = Boolean(value)
+}
+
+/**
+ * 注入任务生命周期通知器（start / settle 各触发一次）。
+ * @param {((event: { phase: 'start' | 'settle', task: object }) => void) | null} fn 通知器
+ * @returns {void}
+ */
+export function setAsyncTaskNotifier(fn) {
+	notifier = typeof fn === 'function' ? fn : null
+}
+
+/**
+ * 构造可序列化的任务视图（不含 `done` / `run` 等不可序列化字段）。
+ * @param {asyncTask_t} task 任务
+ * @returns {object} 视图
+ */
+function taskView(task) {
+	return {
+		id: task.id,
+		kind: task.kind,
+		label: task.label,
+		state: task.state,
+		owner: task.owner,
+		startedAt: task.startedAt,
+		finishedAt: task.finishedAt,
+		error: task.error,
+		meta: task.meta,
+	}
+}
+
+/**
+ * 触发任务生命周期通知（尽力而为，绝不打断任务本身）。
+ * @param {'start' | 'settle'} phase 阶段
+ * @param {asyncTask_t} task 任务
+ * @returns {void}
+ */
+function emitTaskEvent(phase, task) {
+	if (!notifier) return
+	try {
+		notifier({ phase, task: taskView(task) })
+	}
+	catch (error) {
+		console.warn('async-task: 生命周期通知失败', error)
+	}
 }
 
 /**
@@ -137,6 +184,7 @@ export function registerTask({ id, kind, label = '', owner = {}, run, meta = {},
 		format,
 	}
 	tasks.set(task.id, task)
+	emitTaskEvent('start', task)
 	task.done = Promise.resolve()
 		.then(run)
 		.then(
@@ -163,6 +211,7 @@ function finishTask(task, state, result, error) {
 	if (!task.consumed)
 		void deliverNotification(task).catch(err => console.warn('async-task: 完成通知投递失败', err))
 	tasks.delete(task.id)
+	emitTaskEvent('settle', task)
 	return task
 }
 
@@ -402,4 +451,5 @@ export function resetAsyncTaskState() {
 	channelRegistry.clear()
 	pendingNotifications.clear()
 	toolingEnabled = false
+	notifier = null
 }

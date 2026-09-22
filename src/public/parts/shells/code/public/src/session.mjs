@@ -12,6 +12,7 @@ import { geti18n } from '/scripts/i18n/index.mjs'
 import { arrayBufferToBase64 } from '/scripts/lib/base64.mjs'
 import { svgInliner } from '/scripts/lib/svgInliner.mjs'
 
+import { refreshAsyncTasks } from './asynctasks.mjs'
 import { appendLocalHistory, removeGhost, renderAttachmentPreview } from './composer.mjs'
 import * as api from './endpoints.mjs'
 import { iconElement, icons } from './icons.mjs'
@@ -607,6 +608,7 @@ export async function activateTab(tab) {
 	renderTabs()
 	renderMessages()
 	void refreshSubAgents({ force: true })
+	void refreshAsyncTasks({ force: true })
 	updateCharMenu()
 	renderModePillLabel()
 	renderAiSourcePillLabel()
@@ -938,6 +940,7 @@ async function finishGeneration(entries, memory, aborted = false) {
 		if (aborted) showToastI18n('info', 'code.error.aborted')
 	}
 	void refreshSubAgents({ force: true })
+	void refreshAsyncTasks({ force: true })
 	await markSessionDirty(session)
 	renderTabs()
 	void refreshAllSessions()

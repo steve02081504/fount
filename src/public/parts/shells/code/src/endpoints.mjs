@@ -10,6 +10,7 @@ import { ms } from '../../../../../scripts/ms.mjs'
 import { authenticate, getUserByReq } from '../../../../../server/auth/index.mjs'
 import { getAllDefaultParts, getPartList } from '../../../../../server/parts_loader.mjs'
 import { loadShellData, saveShellData, assignShellData } from '../../../../../server/setting_loader.mjs'
+import { listTasks as listAsyncTasks } from '../../../plugins/async-task/registry.mjs'
 import { createTargetExecutor, listMachines, parseVolumeLabels } from '../../../plugins/file-operations/src/target.mjs'
 
 import {
@@ -22,6 +23,7 @@ import {
 	searchWorkspaceFiles,
 } from './context.mjs'
 import { collectEditorSources } from './editor_sources.mjs'
+import { pickEntryExtension } from './entry_extension.mjs'
 import { appendOwnHistory, getHistory } from './history.mjs'
 import {
 	beginCodeGeneration,
@@ -347,20 +349,6 @@ function sanitizeEntry(entry) {
 }
 
 /**
- * 挑选需随会话落盘的前端可见扩展字段（当前仅子代理运行定位）。
- * @param {object} extension - 条目扩展。
- * @returns {object} 白名单后的扩展。
- */
-function pickEntryExtension(extension) {
-	if (!extension || typeof extension !== 'object') return {}
-	/** @type {object} */
-	const picked = {}
-	if (extension.subAgent) picked.subAgent = extension.subAgent
-	if (extension.error) picked.error = extension.error
-	return picked
-}
-
-/**
  * 设置 API 端点。
  * @param {object} router - Express 的路由实例。
  */
@@ -647,6 +635,20 @@ export function setEndpoints(router) {
 		const target = (await listMachines(username)).find(m => String(m.id) === machine)
 		if (!target || (machine !== '0' && !target.isConnected)) throw httpError(400, 'machine not available.')
 		res.json(schedulePowerAction(username, machine, action))
+	})
+
+	// 进行中的统一异步任务（供前端实时任务卡；已完成任务已从注册表释放）
+	router.get('/api/parts/shells\\:code/async-tasks', authenticate, (req, res) => {
+		const chatId = String(req.query.chatId || '')
+		if (!chatId) throw httpError(400, 'chatId is required.')
+		const tasks = listAsyncTasks({ chatName: chatId, parentRunId: null }).map(task => ({
+			id: task.id,
+			kind: task.kind,
+			label: task.label,
+			startedAt: task.startedAt,
+			meta: task.meta,
+		}))
+		res.json({ tasks })
 	})
 
 	// 会话存取（前端为唯一写入方；存于工作区 .fount/code/sessions）

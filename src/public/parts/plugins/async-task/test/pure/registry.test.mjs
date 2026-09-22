@@ -11,6 +11,7 @@ import {
 	ownerFromArgs,
 	registerTask,
 	resetAsyncTaskState,
+	setAsyncTaskNotifier,
 	takePendingNotifications,
 } from '../../registry.mjs'
 
@@ -87,6 +88,24 @@ Deno.test('registerTask settles, notifies, and releases the task', async () => {
 	assertEquals(notes.length, 1)
 	assert(notes[0].content.includes('hello'))
 	assertEquals(takePendingNotifications(target), [])
+})
+
+Deno.test('registerTask emits start and settle lifecycle events', async () => {
+	resetAsyncTaskState()
+	const events = []
+	setAsyncTaskNotifier(event => events.push(event))
+	const target = owner()
+	const task = registerTask({ kind: 'js', label: 'demo', owner: target, run: resolveWith('ok') })
+	assertEquals(events.length, 1)
+	assertEquals(events[0].phase, 'start')
+	assertEquals(events[0].task.id, task.id)
+	assertEquals(events[0].task.state, 'running')
+
+	await task.done
+	const settle = events.find(event => event.phase === 'settle')
+	assertEquals(settle.task.id, task.id)
+	assertEquals(settle.task.state, 'done')
+	assert(!('result' in settle.task), '生命周期事件不应携带结果体（结果由完成通知承载）')
 })
 
 Deno.test('failed tasks record the error then release', async () => {
