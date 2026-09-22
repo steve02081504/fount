@@ -1146,7 +1146,10 @@ test.describe('code shell power actions', () => {
 		await holdLocale(page)
 		try {
 			const button = page.locator('#power-settings-button')
-			await expect(button).toHaveText('完成后自动操作设置')
+			const badge = page.locator('#power-armed-badge')
+			// 图标按钮：无内联文本，默认无武装角标
+			await expect(button).toBeVisible()
+			await expect(badge).toBeHidden()
 			await button.click()
 			const dialog = page.locator('dialog.modal', { has: page.locator('#power-settings-list') })
 			await expect(dialog).toBeVisible()
@@ -1155,9 +1158,11 @@ test.describe('code shell power actions', () => {
 			const select = dialog.locator('select[data-machine-id="0"]')
 			await expect(select).toBeVisible()
 			await expect(select.locator('option')).toHaveCount(4)
-			// 选择关机 → 按钮显示已武装
+			// 选择关机 → 图标按钮武装：角标计数 + 警示配色
 			await select.selectOption('shutdown')
-			await expect(button).toHaveText('任务完成后：1 台主机')
+			await expect(badge).toBeVisible()
+			await expect(badge).toHaveText('1')
+			await expect(button).toHaveClass(/btn-warning/)
 			await expect(async () => {
 				const data = await (await page.request.get(`${baseUrl}${API_BASE}/shutdown`)).json()
 				expect(data.actions).toEqual({ 0: 'shutdown' })
@@ -1168,9 +1173,10 @@ test.describe('code shell power actions', () => {
 				const data = await (await page.request.get(`${baseUrl}${API_BASE}/shutdown`)).json()
 				expect(data.actions).toEqual({ 0: 'sleep' })
 			}).toPass()
-			// 恢复不操作 → 按钮回到默认
+			// 恢复不操作 → 角标消失、配色回到 ghost
 			await select.selectOption('')
-			await expect(button).toHaveText('完成后自动操作设置')
+			await expect(badge).toBeHidden()
+			await expect(button).not.toHaveClass(/btn-warning/)
 			await expect(async () => {
 				const data = await (await page.request.get(`${baseUrl}${API_BASE}/shutdown`)).json()
 				expect(data.actions).toEqual({})
@@ -1178,6 +1184,38 @@ test.describe('code shell power actions', () => {
 		}
 		finally {
 			await releaseLocale(page)
+		}
+	})
+})
+
+test.describe('code shell composer chrome', () => {
+	test('collapses hint/targets once a conversation starts, keeping power + context accessible', async ({ page, baseUrl }) => {
+		const dir = makeWorkspace('fe-chrome', {})
+		try {
+			await openCode(page, baseUrl)
+			await selectWorkspaceViaBrowser(page, dir)
+			const main = page.locator('.code-main')
+			// 空态：选择器可见，顶栏上下文 chip 隐藏（避免与 targets 重复）
+			await expect(main).toHaveClass(/empty-mode/)
+			await expect(page.locator('#composer-targets')).toBeVisible()
+			await expect(page.locator('#composer-hint')).toBeVisible()
+			await expect(page.locator('#code-context')).toBeHidden()
+			// 发一条 shell 命令进入对话（不依赖 AI 生成）
+			await page.locator('#composer-input').click()
+			await page.keyboard.type('！echo chrome-test')
+			await page.locator('#send-button').click()
+			await expect(page.locator('.code-message.role-tool')).toContainText('chrome-test')
+			await expect(main).not.toHaveClass(/empty-mode/)
+			// 对话态：hint / targets 收起，电源与上下文 chip 仍可达
+			await expect(page.locator('#composer-targets')).toBeHidden()
+			await expect(page.locator('#composer-hint')).toBeHidden()
+			await expect(page.locator('#power-settings-button')).toBeVisible()
+			await expect(page.locator('#code-context')).toBeVisible()
+			await expect(page.locator('#code-context-workspace-label')).toContainText(basename(dir))
+		}
+		finally {
+			await removeAllWorkspacesViaApi(page, baseUrl)
+			await rmDirRetry(dir)
 		}
 	})
 })

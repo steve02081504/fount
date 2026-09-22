@@ -6,6 +6,11 @@
 	z-index: 10;
 }
 
+/* 消息流滚动后顶栏投影：提示上方仍有内容 */
+.code-topbar.scrolled {
+	box-shadow: 0 2px 8px color-mix(in oklch, var(--color-base-content) 10%, transparent);
+}
+
 /* ---------------- 标签条 ---------------- */
 
 .code-tab-strip {
@@ -319,6 +324,19 @@
 	opacity: 1;
 }
 
+/* 触屏无 hover：操作栏与反馈条常显（低透明度），否则完全无法操作 */
+@media (hover: none) {
+	.code-message-actions {
+		opacity: 0.85;
+		pointer-events: auto;
+		transform: translateY(0);
+	}
+
+	.code-message-feedback {
+		opacity: 0.85;
+	}
+}
+
 /* 行内编辑（消息原文） */
 .code-message-editor,
 .code-message-feedback-reason {
@@ -609,6 +627,33 @@ pre.code-shell-stream-output {
 	min-width: 0;
 }
 
+/* 电源图标按钮：armed 时角标计数（常驻卡片内，折叠 targets 后仍可见） */
+.code-power-button {
+	position: relative;
+	flex-shrink: 0;
+}
+
+.code-power-badge {
+	position: absolute;
+	top: -0.25rem;
+	inset-inline-end: -0.25rem;
+	min-width: 1rem;
+	height: 1rem;
+	padding: 0 0.1875rem;
+	border-radius: var(--radius-selector);
+	background: var(--color-warning);
+	color: var(--color-warning-content);
+	font-size: 0.625rem;
+	font-weight: 700;
+	line-height: 1rem;
+	text-align: center;
+	pointer-events: none;
+}
+
+.code-power-badge[hidden] {
+	display: none;
+}
+
 /* 待发送附件预览条 */
 .code-attachment-preview {
 	display: flex;
@@ -704,13 +749,57 @@ pre.code-shell-stream-output {
 	margin: 0.75rem auto 0;
 }
 
-/* 任务完成后的自动电源操作：targets 下方独立一行、居中 */
-.code-composer-power-actions {
+/* 进入对话后收起 hint / targets，把视口让给消息流（空态仍显示全部选择器）；
+   上下文与电源入口改由顶栏 chip 与卡片内图标按钮常驻。 */
+.code-main:not(.empty-mode) .code-composer-hint,
+.code-main:not(.empty-mode) .code-composer-targets {
+	display: none;
+}
+
+/* 顶栏上下文 chip（工作区 / 角色）：空态隐藏（此时 targets 已可见），对话态常驻 */
+.code-context {
 	display: flex;
-	flex-wrap: wrap;
-	justify-content: center;
-	gap: 0.375rem;
-	margin: 0.5rem auto 0;
+	align-items: center;
+	gap: 0.25rem;
+	flex-shrink: 0;
+	min-width: 0;
+}
+
+.code-main.empty-mode .code-context,
+.code-context[hidden] {
+	display: none;
+}
+
+.code-context-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+	max-width: 11rem;
+	height: 1.5rem;
+	padding: 0 0.5rem;
+	border: 0;
+	border-radius: var(--radius-field);
+	background: transparent;
+	font-size: 0.75rem;
+	color: color-mix(in oklch, var(--color-base-content) 60%, transparent);
+	cursor: pointer;
+	transition: background-color 0.12s, color 0.12s;
+}
+
+.code-context-btn:hover,
+.code-context-btn:focus-visible {
+	background: color-mix(in oklch, var(--color-base-content) 8%, transparent);
+	color: var(--color-base-content);
+}
+
+.code-context-btn[hidden] {
+	display: none;
+}
+
+.code-context-label {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 /* 电源操作设置对话框中的主机行 */
