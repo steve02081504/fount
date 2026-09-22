@@ -22,7 +22,7 @@
 			"sub_items": [
 				{
 					"info": "terminal_assistant.home_function_buttons.dev.sub_items.terminalAssist",
-					"level": 2,
+					"level": 3,
 					"url": "/parts/shells:shellassist/",
 					"button": "<img src=\"https://api.iconify.design/line-md/laptop.svg\" class=\"text-icon\"/>"
 				}

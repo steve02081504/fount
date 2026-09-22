@@ -5331,7 +5331,9 @@
 		"copied": "Afritað á klippiborð",
 		"generateApiKeyButton": "Búðu til nýjan lykil",
 		"home_function_buttons": {
-			"integration_related": "Samþætting tengd",
+			"integration_related": {
+				"title": "Samþætting tengd"
+			},
 			"ide_integration_config": {
 				"title": "IDE samþættingarstillingar"
 			}

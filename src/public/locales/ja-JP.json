@@ -5331,7 +5331,9 @@
 		"copied": "クリップボードにコピー完了",
 		"generateApiKeyButton": "新しいキーを生成する",
 		"home_function_buttons": {
-			"integration_related": "統合関連",
+			"integration_related": {
+				"title": "統合関連"
+			},
 			"ide_integration_config": {
 				"title": "IDE 連携設定"
 			}

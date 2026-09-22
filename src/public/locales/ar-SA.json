@@ -5341,7 +5341,9 @@
 		"copied": "تم النسخ إلى الحافظة",
 		"generateApiKeyButton": "توليد مفتاح جديد",
 		"home_function_buttons": {
-			"integration_related": "المتعلقة بالتكامل",
+			"integration_related": {
+				"title": "المتعلقة بالتكامل"
+			},
 			"ide_integration_config": {
 				"title": "تكامل بيئة تطوير متكاملة"
 			}

@@ -5331,7 +5331,9 @@
 		"copied": "已复制到剪贴板",
 		"generateApiKeyButton": "生成新密钥",
 		"home_function_buttons": {
-			"integration_related": "集成相关",
+			"integration_related": {
+				"title": "集成相关"
+			},
 			"ide_integration_config": {
 				"title": "IDE 集成配置"
 			}
@@ -6861,6 +6863,16 @@
 			"loadFailed": "加载失败：${message}",
 			"saveFailed": "保存失败：${message}",
 			"runFailed": "运行失败：${message}"
+		},
+		"home_function_buttons": {
+			"dev": {
+				"title": "开发",
+				"sub_items": {
+					"open": {
+						"title": "Agent Studio"
+					}
+				}
+			}
 		}
 	}
 }

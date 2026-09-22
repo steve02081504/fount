@@ -5331,7 +5331,9 @@
 		"copied": "क्लिपबोर्ड पर कॉपी किया गया",
 		"generateApiKeyButton": "नई कुंजी जनरेट करें",
 		"home_function_buttons": {
-			"integration_related": "एकीकरण संबंधी",
+			"integration_related": {
+				"title": "एकीकरण संबंधी"
+			},
 			"ide_integration_config": {
 				"title": "IDE एकीकरण संयोजन"
 			}

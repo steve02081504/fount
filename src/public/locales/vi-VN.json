@@ -5331,7 +5331,9 @@
 		"copied": "Đã sao chép vào bảng nhớ tạm",
 		"generateApiKeyButton": "Tạo khóa mới",
 		"home_function_buttons": {
-			"integration_related": "Liên quan đến tích hợp",
+			"integration_related": {
+				"title": "Liên quan đến tích hợp"
+			},
 			"ide_integration_config": {
 				"title": "Cấu hình tích hợp IDE"
 			}

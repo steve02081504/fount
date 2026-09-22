@@ -5337,7 +5337,9 @@
 		"copied": "Copiado para a área de transferência",
 		"generateApiKeyButton": "Gerar nova chave",
 		"home_function_buttons": {
-			"integration_related": "Relacionado à integração",
+			"integration_related": {
+				"title": "Relacionado à integração"
+			},
 			"ide_integration_config": {
 				"title": "Configuração de integração IDE"
 			}

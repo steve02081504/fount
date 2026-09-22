@@ -12,6 +12,7 @@ Manifest: `src/scripts/checks/test/manifest.json` (`checks`). Run: `fount test c
 | --- | --- |
 | `html_meta` | HTML meta / landmarks / `drawer-toggle` / aside ARIA; `og_meta_list` `under` prefix filter; pages readme/EULA redirect locales vs `docs/readme/` / `docs/EULA/` |
 | `info` | parts `locales.json` / `achievements_registry.json` info + remote icon URL |
+| `home_registry` | `home_registry.json` `info` keys resolve in zh-CN; display entries (`home_function_buttons` incl. `sub_items`, `home_interfaces`) carry a non-empty `title` |
 | `i18n_keys` | locale key structure + shared-path value kinds vs zh-CN + emoji.json must not carry Han/kana/Cyrillic |
 | `i18n_refs` | `data-i18n` / `setElementI18n` objects need a DOM applicator; string APIs + `path/fount.{ps1,sh}` keys must resolve to strings |
 | `reshape_i18n_keys` | `.esh/commands/reshape_i18n_keys.py --self-test` |

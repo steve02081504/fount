@@ -5337,7 +5337,9 @@
 		"copied": "Gekopieerd naar klembord",
 		"generateApiKeyButton": "Nieuwe sleutel genereren",
 		"home_function_buttons": {
-			"integration_related": "Integratie gerelateerd",
+			"integration_related": {
+				"title": "Integratie gerelateerd"
+			},
 			"ide_integration_config": {
 				"title": "IDE-integratieconfiguratie"
 			}

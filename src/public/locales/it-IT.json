@@ -5337,7 +5337,9 @@
 		"copied": "Copiato negli appunti",
 		"generateApiKeyButton": "Genera nuova chiave",
 		"home_function_buttons": {
-			"integration_related": "Relativo all'integrazione",
+			"integration_related": {
+				"title": "Relativo all'integrazione"
+			},
 			"ide_integration_config": {
 				"title": "Configurazione dell'integrazione IDE"
 			}
