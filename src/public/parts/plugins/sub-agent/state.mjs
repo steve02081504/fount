@@ -40,7 +40,7 @@ export function getSubAgentConfig() {
  * @returns {typeof DEFAULT_SUBAGENT_CONFIG} 更新后的配置
  */
 export function setSubAgentConfig(data) {
-	pluginConfig = { ...DEFAULT_SUBAGENT_CONFIG, ...data ?? {} }
+	pluginConfig = { ...DEFAULT_SUBAGENT_CONFIG, ...data }
 	return pluginConfig
 }
 
