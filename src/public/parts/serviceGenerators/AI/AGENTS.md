@@ -19,6 +19,7 @@ Overly generic helpers live in the representative part; callers import from ther
 | Need | Home |
 | --- | --- |
 | OpenAI-compat source / `convert_config` / token estimator / `buildSourceInfo` | [proxy/src](proxy/src/) (`createOpenAICompatibleSource`, `defaultConvertConfig`, `identityTokenizer` + `estimateTokenCount` / `minKnownContextSize`, `sourceInfo`) |
+| Envelope-tag cleanup (`<message>`/`<sender>`/`<content>`) | [proxy/src/responseFormat.mjs](proxy/src/responseFormat.mjs) (`cleanupResponseText` / `clearFormat`) — all generators import this; never copy the regex chain |
 | Responses client + source | [codex/src](codex/src/) (`createResponsesSource`); Azure imports it |
 | OAuth login UI | [oauth_handler](../../shells/oauth_handler/AGENTS.md) `public/src/oauthDisplay.mjs`; each OAuth generator’s `display.mjs` calls `renderOauthPanel` |
 | Fetch doubles | [proxy/test/mockFetch.mjs](proxy/test/mockFetch.mjs) |
