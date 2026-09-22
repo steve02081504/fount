@@ -2,27 +2,39 @@
  * 【文件】public/src/views/subagent.mjs — 子代理内部对话视图
  * 【职责】按 runId 深链展示一次子代理运行的状态、任务与完整内部对话。
  * 【原理】数据经 `/subagent/:runId` 拉取（实时注册表优先，回落落盘记录）；纯文本 `textContent` 写入避免注入。
- * 【关联】endpoints.mjs、navigation.mjs、index.html 的 #subagentView。
+ * 【关联】endpoints.mjs、lib/navigationEvents.mjs、index.html 的 #subagentView。
  */
-import { geti18n } from '/scripts/i18n/index.mjs'
+import { geti18n, geti18n_nowarn, primaryLocale } from '/scripts/i18n/index.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
 
 import { getSubAgent } from '../endpoints.mjs'
 import { formatTime } from '../lib/format.mjs'
+import { requestNavigate } from '../lib/navigationEvents.mjs'
+import { stateBadge } from '../lib/stateBadge.mjs'
 
 /** 当前深链的运行 id（语言切换重载时复用）。 */
 let currentRunId = ''
 
 /**
- * 取状态徽章样式。
- * @param {string} runState 状态
- * @returns {string} 徽章类名
+ * 内部对话角色标签的 i18n 键（缺失时回落原始角色名）。
+ * @type {Record<string, string>}
  */
-function stateBadge(runState) {
-	if (runState === 'running' || runState === 'summarizing') return 'badge-info'
-	if (runState === 'failed' || runState === 'terminated') return 'badge-error'
-	if (runState === 'done') return 'badge-success'
-	return 'badge-ghost'
+const ROLE_LABEL_KEYS = {
+	system: 'agent_studio.subagent.role.system',
+	user: 'agent_studio.subagent.role.user',
+	char: 'agent_studio.subagent.role.char',
+	tool: 'agent_studio.subagent.role.tool',
+}
+
+/**
+ * 取条目的展示名：优先条目自带名字，其次角色标签，最后原始角色名。
+ * @param {object} entry 条目
+ * @returns {string} 展示名
+ */
+function entryLabel(entry) {
+	if (entry.name) return entry.name
+	const key = ROLE_LABEL_KEYS[entry.role]
+	return (key && geti18n_nowarn(key)) || entry.role || ''
 }
 
 /**
@@ -30,8 +42,7 @@ function stateBadge(runState) {
  * @returns {void}
  */
 export function initSubAgentView() {
-	// 经 hashchange 回到生成记录视图（避免视图静态依赖 navigation.mjs 造成环）
-	document.getElementById('subagentBackButton')?.addEventListener('click', () => { window.location.hash = '#generations' })
+	document.getElementById('subagentBackButton')?.addEventListener('click', () => { requestNavigate('generations') })
 }
 
 /**
@@ -82,7 +93,7 @@ function renderMeta(container, run) {
 			rounds: run.rounds ?? 0,
 			roundLimit: run.roundLimit ?? '-',
 		}),
-		run.startedAt ? formatTime(run.startedAt) : '',
+		run.startedAt ? formatTime(run.startedAt, primaryLocale()) : '',
 		run.runId,
 	].filter(Boolean)
 	for (const [index, text] of chips.entries()) {
@@ -106,10 +117,10 @@ function renderEntry(entry) {
 	const name = document.createElement('span')
 	name.className = 'subagent-entry-name'
 	name.setAttribute('user-content', '')
-	name.textContent = `${entry.name || entry.role || ''}`
+	name.textContent = entryLabel(entry)
 	const time = document.createElement('span')
 	time.className = 'subagent-entry-time'
-	time.textContent = formatTime(entry.time_stamp)
+	time.textContent = formatTime(entry.time_stamp, primaryLocale())
 	head.append(name, time)
 	const body = document.createElement('pre')
 	body.className = 'subagent-entry-body'

@@ -1,7 +1,7 @@
 /**
  * 【文件】public/src/endpoints.mjs — agent_studio 前端 HTTP 客户端
  * 【职责】以命名导出封装 `shells:agent_studio` 的全部 REST 调用；UI / 模板层不得直接 `fetch`。
- * 【原理】统一 `requestJson` 处理非 2xx：抛出带服务端 `message` 的错误。
+ * 【原理】统一 `requestJson` 处理非 2xx：优先抛出服务端 `error`（真实原因），回退 `message` 与状态文本。
  * 【关联】后端 src/endpoints.mjs；public/index.mjs 消费。
  */
 
@@ -18,7 +18,7 @@ async function requestJson(path, options = {}) {
 	const response = await fetch(API_BASE + path, options)
 	if (!response.ok) {
 		const body = await response.json().catch(() => ({}))
-		throw new Error(body.message || body.error || response.statusText)
+		throw new Error(body.error || body.message || response.statusText)
 	}
 	if (response.status === 204) return null
 	return response.json()

@@ -10,8 +10,8 @@ import { showToastI18n } from '/scripts/features/toast.mjs'
 import { getCharOverview } from '../endpoints.mjs'
 import { bindActivate } from '../lib/activate.mjs'
 import { mountEmptyState } from '../lib/emptyState.mjs'
-import { formatTime, truncate } from '../lib/format.mjs'
-import { openGenerationDialog } from '../lib/generationDialog.mjs'
+import { renderGenerationItem } from '../lib/generationItem.mjs'
+import { stateBadge } from '../lib/stateBadge.mjs'
 import { state } from '../state.mjs'
 import { renderTemplate } from '../templates.mjs'
 
@@ -20,18 +20,6 @@ const DEFAULT_AVATAR = 'https://api.iconify.design/mdi/robot-outline.svg'
 
 /** 当前角色名过滤词。 */
 let charFilter = ''
-
-/**
- * 取运行状态对应的徽章样式。
- * @param {string} runState 状态
- * @returns {string} 徽章类名
- */
-function stateBadge(runState) {
-	if (runState === 'running' || runState === 'summarizing') return 'badge-info'
-	if (runState === 'failed' || runState === 'terminated') return 'badge-error'
-	if (runState === 'done') return 'badge-success'
-	return 'badge-ghost'
-}
 
 /**
  * 绑定仪表盘内的静态控件。
@@ -212,15 +200,6 @@ async function renderGenerations(records) {
 		await mountEmptyState(empty, { titleKey: 'agent_studio.detail.none' })
 		return
 	}
-	for (const record of items) {
-		const item = await renderTemplate('generation_item', {
-			id: record.id,
-			preview: truncate(record.charname || record.conversationId || record.id),
-			meta: [record.source || '', record.model || '', formatTime(record.startedAt)].filter(Boolean).join(' · '),
-			status: record.hasError ? geti18n('agent_studio.generation.error') : geti18n('agent_studio.generation.ok'),
-			badgeClass: record.hasError ? 'badge-error' : 'badge-ghost',
-		})
-		bindActivate(item, () => { void openGenerationDialog(record.id) })
-		list.appendChild(item)
-	}
+	for (const record of items)
+		list.appendChild(await renderGenerationItem(record))
 }

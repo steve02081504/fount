@@ -191,34 +191,37 @@ function retentionAction(record, retention, now) {
 /**
  * 清理某用户的过期记录（索引与记录文件）。
  * @param {string} username 用户
+ * @param {{ index?: { records: object[] } }} [options] 选项（`index` 为已加载的索引，避免二次读盘）
  * @returns {number} 删除的记录数
  */
-export function pruneGenerations(username) {
+export function pruneGenerations(username, { index } = {}) {
 	ensureUser(username)
 	const retention = loadRetention(username)
 	const now = Date.now()
-	const index = loadIndex(username)
+	const loadedIndex = index ?? loadIndex(username)
 	const kept = []
 	let removed = 0
-	for (const summary of index.records) {
-		const file = recordPath(username, summary.id)
-		const record = loadJsonFileIfExists(file, null)
-		if (!record) { removed++; continue }
-		const action = retentionAction(record, retention, now)
-		if (action === 'delete') {
-			try { fs.rmSync(file, { force: true }) } catch { /* 忽略删除失败 */ }
+	for (const summary of loadedIndex.records) {
+		const age = now - (summary.finishedAt || summary.startedAt || 0)
+		if (age > retention.conversationMs) {
+			try { fs.rmSync(recordPath(username, summary.id), { force: true }) } catch { /* 忽略删除失败 */ }
 			removed++
 			continue
 		}
-		if (action === 'strip-input') {
-			delete record.input
-			saveJsonFile(file, record)
+		if (age > retention.promptMs) {
+			const file = recordPath(username, summary.id)
+			const record = loadJsonFileIfExists(file, null)
+			if (!record) { removed++; continue }
+			if (record.input !== undefined) {
+				delete record.input
+				saveJsonFile(file, record)
+			}
 		}
 		kept.push(summary)
 	}
-	if (kept.length !== index.records.length) {
-		index.records = kept
-		saveIndex(username, index)
+	if (kept.length !== loadedIndex.records.length) {
+		loadedIndex.records = kept
+		saveIndex(username, loadedIndex)
 	}
 	return removed
 }
@@ -253,7 +256,6 @@ export async function recordGeneration(username, record) {
 	}
 	return enqueue(username, async () => {
 		ensureUser(username)
-		fs.mkdirSync(path.join(shellDir(username), 'records'), { recursive: true })
 		saveJsonFile(recordPath(username, full.id), full)
 		const index = loadIndex(username)
 		index.records = index.records.filter(summary => summary.id !== full.id)
@@ -272,8 +274,9 @@ export async function recordGeneration(username, record) {
  */
 export async function listGenerations(username, filter = {}) {
 	ensureUser(username)
-	pruneGenerations(username)
-	let records = loadIndex(username).records
+	const index = loadIndex(username)
+	pruneGenerations(username, { index })
+	let records = index.records
 	if (filter.charId) records = records.filter(record => record.charId === filter.charId)
 	if (filter.source) records = records.filter(record => record.source === filter.source)
 	if (filter.conversationId) records = records.filter(record => record.conversationId === filter.conversationId)

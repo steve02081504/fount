@@ -7,6 +7,7 @@
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { viewTransition } from '/scripts/motion/viewTransition.mjs'
 
+import { NAVIGATE_EVENT } from './lib/navigationEvents.mjs'
 import { activateView, currentMainView, MAIN_NAV_VIEWS } from './viewChrome.mjs'
 import { loadBenchmarks } from './views/benchmarks.mjs'
 import { loadDashboard } from './views/dashboard.mjs'
@@ -28,6 +29,17 @@ const VIEW_LOADERS = {
 
 /** 当前深链参数（subagent 视图的 runId）。 */
 let currentParams = {}
+
+/**
+ * 监听视图派发的导航请求（如子代理视图的返回按钮）。
+ * @returns {void}
+ */
+export function installNavigationEvents() {
+	window.addEventListener(NAVIGATE_EVENT, event => {
+		const view = event.detail?.view
+		if (typeof view === 'string') void switchView(view)
+	})
+}
 
 /**
  * 把主视图同步到 location.hash（replace，避免历史堆叠）。
