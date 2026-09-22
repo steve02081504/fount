@@ -1,6 +1,6 @@
 ---
 description: Agent Studio shell — generation history store, sub-agent run inspection, benchmarks with LLM judge
-globs: src/public/parts/shells/agent_studio/**, src/public/parts/plugins/sub-agent/**, src/public/parts/plugins/context-compress/**
+globs: src/public/parts/shells/agent_studio/**, src/public/parts/plugins/sub-agent/**, src/public/parts/plugins/async-task/**, src/public/parts/plugins/context-compress/**
 alwaysApply: false
 ---
 
@@ -34,9 +34,18 @@ alwaysApply: false
 
 ## Sub-agent async notifications
 
-- `run({ async: true })` returns `{ backgroundId }`; the plugin keeps an in-memory run registry.
-- Delivery is channel-scoped: the notification goes back to the channel that spawned the run (from the plugin's own channel registry, keyed `${username}|${char_id}`). It prefers a timer-style proactive trigger (parent channel `Update()` → `char.GetReply` → `AddChatLogEntry`) and falls back to a pending queue injected via `GetPrompt` on the parent's next generation.
+- `run({ async: true })` returns `{ backgroundId }`; sub-agent keeps its own in-memory run registry and registers the background promise with `plugins/async-task` (task id = `backgroundId`, kind `subagent`).
+- Completion delivery is owned by `plugins/async-task/registry.mjs`: channel-scoped (keyed `${username}|${charId}`, nested runs by `parentRunId`). It prefers a timer-style proactive trigger (parent channel `Update()` → `char.GetReply` → `AddChatLogEntry`) and falls back to a pending queue injected via `GetPrompt` on the parent's next generation.
+- `getSubAgentPrompt` and `getAsyncTaskPrompt` drain the same unified queue (first caller wins); an async task awaited via `<await-async>` is marked consumed, so it is not notified twice.
 - Nested runs notify their own parent run, never the root channel.
+
+## Unified async tasks (`plugins/async-task`)
+
+- `registry.mjs` is a pure in-memory registry (no `src/server/**` import): `registerTask({ id?, kind, label, owner, run })` → `{ id, done }`; `listTasks` / `awaitTasks({ mode: 'all'|'any', timeoutMs })`; channel registry + pending-notification queue.
+- **Lifecycle**: task settles → if not consumed by `<await-async>` it is notified → removed from the registry. Finished tasks are never retained.
+- Producers register their background promise: sub-agent async runs (id = `backgroundId`) and code-execution `<run-js async="true">` / `<run-<shell> async="true">`. `setAsyncToolingEnabled` is flipped by the plugin's `Load`; code-execution rejects `async` when the plugin is absent.
+- Tools: `<list-async/>` (list in-flight tasks, optional `kind=`), `<await-async ids="a,b" mode="all|any" time-limit="5m"/>`.
+- `resolvePluginList` force-includes `async-task`; the code shell loads it as a base plugin.
 
 ## Sub-agent observability (live + history)
 

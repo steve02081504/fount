@@ -1,18 +1,12 @@
 {
-	"id": "plugins/sub-agent",
+	"id": "plugins/async-task",
 	"triggerSets": {
 		"testFramework": [
 			"src/scripts/test/{deno/serial.mjs,node/boot.mjs}"
 		],
 		"pluginCore": [
-			"src/public/parts/plugins/sub-agent/**",
-			"src/public/parts/plugins/async-task/{registry,duration}.mjs",
-			"src/public/parts/shells/chat/src/{prompt_struct,reply}/**",
-			"src/public/parts/shells/chat/src/chat/lib/visibility.mjs"
-		],
-		"integrationDeps": [
-			"src/server/parts_loader.mjs",
-			"src/public/parts/shells/agent_studio/src/generation_history.mjs"
+			"src/public/parts/plugins/async-task/**",
+			"src/public/parts/shells/chat/src/{prompt_struct,reply}/**"
 		]
 	},
 	"suites": [
@@ -31,15 +25,14 @@
 				"-c",
 				"./deno.json",
 				"./src/scripts/test/deno/serial.mjs",
-				"./src/public/parts/plugins/sub-agent/test/pure/"
+				"./src/public/parts/plugins/async-task/test/pure/"
 			]
 		},
 		{
 			"name": "integration",
-			"expected": "45s",
+			"expected": "30s",
 			"trigger": [
 				"pluginCore",
-				"integrationDeps",
 				"testFramework"
 			],
 			"run": [
@@ -50,7 +43,7 @@
 				"-c",
 				"./deno.json",
 				"./src/scripts/test/deno/serial.mjs",
-				"./src/public/parts/plugins/sub-agent/test/integration/"
+				"./src/public/parts/plugins/async-task/test/integration/"
 			]
 		}
 	]

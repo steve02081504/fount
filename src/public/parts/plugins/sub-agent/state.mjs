@@ -1,17 +1,18 @@
 /**
  * 【文件】src/public/parts/plugins/sub-agent/state.mjs
- * 【职责】sub-agent 插件的纯内存状态与纯决策逻辑：批次注册表、运行注册表、活跃频道注册表、待注入通知队列，以及插件集解析、层级轮次传播、限额判定。
+ * 【职责】sub-agent 插件的纯内存状态与纯决策逻辑：批次注册表、运行注册表，以及插件集解析、层级轮次传播、限额判定。
  * 【原理】本模块刻意不 import `src/server/**`，只依赖全局 `AbortController` 与 `crypto`，因此可在 `test/pure` 中零 I/O 直接测试。
  *   运行以 `runId` 为键；父链经 `run.parentRunId -> runId` 串起，`propagateRoundsToAncestors` 沿链累加轮次，`isRunOverLimit` 沿链判定——任一祖先超限则当前运行也须摘要。
- * 【数据结构】batch_t / run_t；`channelRegistry: Map<agentKey, args[]>`；`pendingNotifications: Map<queueKey, entry[]>`。队列键在根代理由 `root|username|charId` 给出，在子代理由 `run|parentRunId` 给出，保证通知只投递给正确的生成。
- * 【关联】runtime.mjs 负责真正的生成与 I/O；handler.mjs 解析标签后调用；prompt.mjs 读取通知与轮次；测试 test/pure/state.test.mjs。
+ *   活跃频道与待注入通知队列已迁至通用 `plugins/async-task/registry.mjs`，本模块不再持有。
+ * 【数据结构】batch_t / run_t。
+ * 【关联】runtime.mjs 负责真正的生成与 I/O；handler.mjs 解析标签后调用；prompt.mjs 读取轮次；测试 test/pure/state.test.mjs。
  */
 
 /** 未显式指定插件集时的默认工具集（`context-compress` 缺失时由 runtime 容错跳过）。 */
-export const DEFAULT_SUBAGENT_PLUGINS = ['code-execution', 'file-operations', 'sub-agent', 'context-compress']
+export const DEFAULT_SUBAGENT_PLUGINS = ['code-execution', 'file-operations', 'sub-agent', 'context-compress', 'async-task']
 
-/** 任何子代理运行都必须包含的插件（嵌套运行与轮次统计依赖它）。 */
-export const FORCED_SUBAGENT_PLUGIN = 'sub-agent'
+/** 任何子代理运行都必须包含的插件（嵌套运行与轮次统计依赖 `sub-agent`，任务登记与等待依赖 `async-task`）。 */
+export const FORCED_SUBAGENT_PLUGINS = ['sub-agent', 'async-task']
 
 /** 永远不得出现在子代理插件集中的插件（避免把宿主聊天层重新拉进来）。 */
 export const EXCLUDED_SUBAGENT_PLUGINS = new Set(['fount_chat'])
@@ -99,12 +100,6 @@ const batches = new Map()
 /** 运行注册表（仅内存）。 @type {Map<string, subAgentRun_t>} */
 const runs = new Map()
 
-/** 活跃频道注册表：`${username}|${char_id}` -> 最近的 chatReplyRequest（最新在前）。 @type {Map<string, object[]>} */
-const channelRegistry = new Map()
-
-/** 待注入通知队列：queueKey -> chatLogEntry 队列。 @type {Map<string, object[]>} */
-const pendingNotifications = new Map()
-
 /**
  * 解析插件集声明（`plugins="a,b,c"` 或名称数组）。
  * @param {string | string[] | null | undefined} value 原始声明
@@ -119,7 +114,7 @@ export function parsePluginListAttr(value) {
 /**
  * 把显式声明或默认集解析为最终插件列表。
  *
- * 规则（无继承）：显式列表**完全替换**默认列表，绝不与父代插件并集；永远剔除 `fount_chat` 与重复项；永远强制包含 `sub-agent`。
+ * 规则（无继承）：显式列表**完全替换**默认列表，绝不与父代插件并集；永远剔除 `fount_chat` 与重复项；永远强制包含 `sub-agent` 与 `async-task`。
  * @param {string | string[] | null | undefined} explicit 显式插件列表（`run-subagent` 或批次级默认）
  * @returns {string[]} 最终插件名列表
  */
@@ -130,7 +125,8 @@ export function resolvePluginList(explicit) {
 	for (const name of source)
 		if (name && !EXCLUDED_SUBAGENT_PLUGINS.has(name) && !resolved.includes(name))
 			resolved.push(name)
-	if (!resolved.includes(FORCED_SUBAGENT_PLUGIN)) resolved.push(FORCED_SUBAGENT_PLUGIN)
+	for (const name of FORCED_SUBAGENT_PLUGINS)
+		if (!resolved.includes(name)) resolved.push(name)
 	return resolved
 }
 
@@ -278,66 +274,6 @@ export function isRunOverLimit(run, lookup, now = Date.now(), seen = new Set()) 
 }
 
 /**
- * 注册（或刷新）一个活跃频道。
- * @param {string} username 用户
- * @param {string} charId 角色 id
- * @param {object} channel chatReplyRequest 请求上下文
- * @returns {void}
- */
-export function registerChannel(username, charId, channel) {
-	const key = `${username}|${charId}`
-	const channels = channelRegistry.get(key) ?? []
-	const deduped = channels.filter(candidate => candidate.chat_name !== channel.chat_name)
-	deduped.unshift(channel)
-	channelRegistry.set(key, deduped.slice(0, 5))
-}
-
-/**
- * 获取某用户/角色的活跃频道（最新在前）。
- * @param {string} username 用户
- * @param {string} charId 角色 id
- * @returns {object[]} 频道列表
- */
-export function getChannels(username, charId) {
-	return channelRegistry.get(`${username}|${charId}`) ?? []
-}
-
-/**
- * 计算待注入队列键。
- * @param {{ username: string, charId: string, parentRunId?: string | null }} target 目标
- * @returns {string} 队列键
- */
-export function notificationQueueKey(target) {
-	return target.parentRunId ? `run|${target.parentRunId}` : `root|${target.username}|${target.charId}`
-}
-
-/**
- * 存入一条待注入通知（用于父代下次 GetPrompt 注入）。
- * @param {{ username: string, charId: string, parentRunId?: string | null }} target 目标
- * @param {object} entry chatLogEntry 形状的纯对象
- * @returns {void}
- */
-export function pushPendingNotification(target, entry) {
-	const key = notificationQueueKey(target)
-	const queue = pendingNotifications.get(key) ?? []
-	queue.push(entry)
-	pendingNotifications.set(key, queue)
-}
-
-/**
- * 取走（并清空）某目标的所有待注入通知。
- * @param {{ username: string, charId: string, parentRunId?: string | null }} target 目标
- * @returns {object[]} 通知列表
- */
-export function takePendingNotifications(target) {
-	const key = notificationQueueKey(target)
-	const queue = pendingNotifications.get(key)
-	if (!queue?.length) return []
-	pendingNotifications.delete(key)
-	return queue
-}
-
-/**
  * 统计某角色当前活跃（running/summarizing）的运行数量。
  * @param {string} username 用户
  * @param {string} charId 角色 id
@@ -368,6 +304,4 @@ export function countActiveRunsInBatch(batchId) {
 export function resetSubAgentState() {
 	batches.clear()
 	runs.clear()
-	channelRegistry.clear()
-	pendingNotifications.clear()
 }

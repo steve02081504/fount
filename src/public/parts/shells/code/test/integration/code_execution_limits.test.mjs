@@ -21,6 +21,7 @@ import {
 	SHELL_DEFAULT_TIMEOUT_MS,
 	truncateOutput,
 } from '../../../../../../scripts/shell_guard.mjs'
+import { getTask, resetAsyncTaskState, setAsyncToolingEnabled, takePendingNotifications } from '../../../../plugins/async-task/registry.mjs'
 import { getCodeExecutionReplyHandlers } from '../../../../plugins/code-execution/handler.mjs'
 import { fileOperationsReplyHandlers } from '../../../../plugins/file-operations/handler.mjs'
 import { dispatchRemoteStreamOutput, remoteJsStreamScript, remoteShellStreamScript, withRemoteStreamSink } from '../../../../plugins/file-operations/src/remote_stream.mjs'
@@ -215,6 +216,31 @@ Deno.test('code-execution run-js 实时转发 console 输出', async () => {
 	assert(events.some(event => event.phase === 'chunk' && event.stream === 'stdout' && event.data.includes('流式输出 42')), '应转发 console 输出')
 	assert(events.some(event => event.phase === 'end'), '应发 end 事件')
 	assertEquals(new Set(events.map(event => event.callId)).size, 1, '同一调用应共用 callId')
+})
+
+Deno.test('code-execution run-js async="true" 登记统一异步任务并投递完成通知', async () => {
+	resetAsyncTaskState()
+	setAsyncToolingEnabled(true)
+	try {
+		const { logs, result, args } = createHandlerArgs()
+		args.chat_name = 'code-test'
+		result.content = '<run-js async="true">return 21 * 2</run-js>'
+		assertEquals(await runReplyHandlers(result, args, getCodeExecutionReplyHandlers()), true)
+		const dispatch = logs.find(entry => entry.name === 'code-execution.async')
+		assert(dispatch, '应写异步派发回执')
+		const id = dispatch.extension?.asyncTask?.id
+		assert(id, '回执应携带统一异步任务 id')
+
+		const deadline = Date.now() + 3000
+		while (getTask(id) && Date.now() < deadline) await new Promise(resolve => setTimeout(resolve, 20))
+		assertEquals(getTask(id), undefined, '任务完成后应从注册表移除')
+		const notes = takePendingNotifications({ username: 'test-user', charId: 'test-char', parentRunId: null })
+		assert(notes.some(note => note.content.includes('42')), '应投递包含结果的完成通知')
+	}
+	finally {
+		setAsyncToolingEnabled(false)
+		resetAsyncTaskState()
+	}
 })
 
 Deno.test('code-execution run-* 实时转发 shell 输出', async () => {

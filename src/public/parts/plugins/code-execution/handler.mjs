@@ -22,6 +22,7 @@ import {
 import { defineReplyHandler } from '../../shells/chat/src/reply/defineReplyHandler.mjs'
 import { defaultDisplay } from '../../shells/chat/src/reply/display.mjs'
 import { getChatI18n, renderMarkdownCodeBlock, renderMarkdownInlineCode } from '../../shells/chat/src/streaming/index.mjs'
+import { isAsyncToolingEnabled, ownerFromArgs, registerTask } from '../async-task/registry.mjs'
 import { createArgsExecutorResolver, resolveTarget } from '../file-operations/src/target.mjs'
 
 /**
@@ -54,6 +55,61 @@ function toolOutputEmitter(args) {
  */
 function remoteToolCallbackPartpath(args) {
 	return args?.generation_options?.remoteToolCallbackPartpath || ''
+}
+
+/**
+ * 判断 `<run-*>` 是否请求异步后台执行。
+ * @param {Record<string, string>} attrs - 标签属性表。
+ * @returns {boolean} 是否异步。
+ */
+function isAsyncRequested(attrs) {
+	const value = attrs?.async
+	return value != null && value !== '' && value !== 'false' && value !== '0'
+}
+
+/**
+ * 取任务首行预览（用于异步任务标签）。
+ * @param {string} text - 文本。
+ * @returns {string} 预览。
+ */
+function taskPreview(text) {
+	const line = String(text ?? '').split(/\r?\n/).find(part => part.trim())?.trim() ?? ''
+	return line.length > 80 ? `${line.slice(0, 80)}…` : line
+}
+
+/**
+ * 写一条后台任务派发回执（含统一异步 id）。
+ * @param {object} args - 请求上下文。
+ * @param {object} task - async-task 任务。
+ * @param {string} label - 类型标签（如 `JS` / `pwsh`）。
+ * @returns {void}
+ */
+function writeAsyncDispatchLog(args, task, label) {
+	args.AddLongTimeLog?.({
+		name: 'code-execution.async',
+		role: 'tool',
+		content: `${label} 已在后台运行，id=${task.id}。可用 <await-async ids="${task.id}"/> 等待，或用 <list-async/> 查看；未被等待时完成后会以系统消息通知你。`,
+		content_for_show: `${label} 已在后台运行（id：${task.id}）。`,
+		files: [],
+		extension: { asyncTask: { id: task.id, kind: task.kind } },
+	})
+}
+
+/**
+ * 写一条异步不可用的错误回执。
+ * @param {object} args - 请求上下文。
+ * @returns {object} handler 返回值。
+ */
+function rejectAsyncWithoutTooling(args) {
+	args.AddLongTimeLog?.({
+		name: 'code-execution.async',
+		role: 'tool',
+		content: 'async="true" 需要加载 async-task 插件才能管理异步任务；当前未启用，请改用同步执行。',
+		content_for_show: '异步执行不可用（缺少 async-task 插件）。',
+		files: [],
+		extension: { error: true },
+	})
+	return { regen: true }
 }
 
 /**
@@ -235,6 +291,8 @@ function createRuntime(result, args) {
 			js_eval_context.workspace = args.chat_scoped_char_memory.coderunner_workspace = {}
 			js_eval_context.workspace.clear = clear_workspace
 		}
+		// 初始工作区即挂上 clear，保证文档示例 `workspace.clear()` 在首次执行时可用
+		js_eval_context.workspace.clear = clear_workspace
 		js_eval_context.clear_workspace = clear_workspace
 		if (args.supported_functions?.add_message)
 			/**
@@ -492,7 +550,39 @@ function createInlineHandle(lang) {
 }
 
 /**
- * `<run-js>`：执行 JS 代码。
+ * 执行一次 `<run-js>` 并构造完整结果文本（同步执行与后台异步执行共用）。
+ * @param {object} options - 执行参数。
+ * @param {object} options.runtime - code-execution 运行时。
+ * @param {object} options.args - 请求上下文。
+ * @param {object} options.call - 调用对象。
+ * @param {object} options.limits - 运行限制。
+ * @param {boolean} options.remote - 是否远程执行。
+ * @param {Function|null} options.stream - 流式输出回调（后台执行传 null）。
+ * @returns {Promise<string>} 完整结果文本。
+ */
+async function executeRunJs({ runtime, args, call, limits, remote, stream }) {
+	const collecting = createCollectingConsole(stream ?? undefined)
+	const { evalResult, timedOut, elapsedMs } = remote
+		? await runJsWithTimeout(() => runtime.executorFor(call.params).execJsWithTimeout(call.inner, limits.timeoutMs, { onOutput: stream ?? undefined, callbackPartpath: remoteToolCallbackPartpath(args) }), limits.timeoutMs)
+		: await runJsWithTimeout(() => runtime.runJscodeForAI(call.inner, collecting.console), limits.timeoutMs)
+	runtime.execedCodes[call.inner] = evalResult ?? { timedOut: true }
+	const elapsedText = formatElapsed(elapsedMs)
+	let fullOutput
+	if (timedOut) {
+		fullOutput = `执行超时（耗时 ${elapsedText}）：JS 无法强制终止，代码可能仍在后台运行。`
+		const partial = collecting.text()
+		if (partial) fullOutput += `\n超时前捕获的输出：\n${partial}`
+	}
+	else if (evalResult?.error)
+		fullOutput = '执行出错：\n' + (evalResult.error.stack || String(evalResult.error))
+	else
+		fullOutput = '执行结果：\n' + util.inspect(evalResult, { depth: 4 }) + (elapsedText ? `\n（耗时 ${elapsedText}）` : '')
+	fullOutput += formatTimeoutNotice({ timedOut, elapsedMs, waitForever: limits.waitForever, expectMs: limits.expectMs, toleranceMs: limits.toleranceMs, kind: 'js' })
+	return fullOutput
+}
+
+/**
+ * `<run-js>`：执行 JS 代码（`async="true"` 时后台运行并登记统一异步任务）。
  * @type {ReplyHandler_t}
  */
 export const runJsReplyHandler = defineReplyHandler({
@@ -509,9 +599,7 @@ export const runJsReplyHandler = defineReplyHandler({
 		const { AddLongTimeLog } = args
 		const runtime = getRuntime(reply, args)
 		const attrs = call.params
-		const target = resolveTarget(args, attrs)
-		const remote = Boolean(target.remote)
-		const toolEntry = { name: 'code-execution.run-js', role: 'tool', content: '', files: [] }
+		const remote = Boolean(resolveTarget(args, attrs).remote)
 		const emit = toolOutputEmitter(args)
 		const callId = randomUUID()
 		const name = 'code-execution.run-js'
@@ -522,33 +610,41 @@ export const runJsReplyHandler = defineReplyHandler({
 		 * @returns {void}
 		 */
 		const stream = (channel, data) => emit?.({ callId, phase: 'chunk', name, stream: channel, data })
+		const limits = parseRunLimits(attrs, JS_DEFAULT_TIMEOUT_MS)
+
+		if (isAsyncRequested(attrs)) {
+			if (!isAsyncToolingEnabled()) return rejectAsyncWithoutTooling(args)
+			const task = registerTask({
+				kind: 'js',
+				label: taskPreview(call.inner),
+				owner: ownerFromArgs(args),
+				/**
+				 * 后台执行 JS 并返回供完成通知使用的文本。
+				 * @returns {Promise<string>} 结果文本
+				 */
+				run: async () => '执行结果：\n' + (await guardOutput(
+					await executeRunJs({ runtime, args, call, limits, remote, stream: null }),
+					{ name: 'run-js', label: 'JS 结果' },
+				)).text,
+				meta: { code: call.inner, remote },
+			})
+			writeAsyncDispatchLog(args, task, 'JS')
+			return { regen: true }
+		}
 
 		await logCode(`${args.Charname} running JS code:`, call.inner, 'js')
-		const limits = parseRunLimits(attrs, JS_DEFAULT_TIMEOUT_MS)
-		const collecting = createCollectingConsole(stream)
 		emit?.({ callId, phase: 'start', name, lang: 'js', code: call.inner })
-		const { evalResult, timedOut, elapsedMs } = remote
-			? await runJsWithTimeout(() => runtime.executorFor(attrs).execJsWithTimeout(call.inner, limits.timeoutMs, { onOutput: stream, callbackPartpath: remoteToolCallbackPartpath(args) }), limits.timeoutMs)
-			: await runJsWithTimeout(() => runtime.runJscodeForAI(call.inner, collecting.console), limits.timeoutMs)
+		const fullOutput = await executeRunJs({ runtime, args, call, limits, remote, stream })
 		emit?.({ callId, phase: 'end', name })
-		console.info(`${args.Charname} JS result:`, evalResult, timedOut ? '(timed out)' : '')
-		runtime.execedCodes[call.inner] = evalResult ?? { timedOut: true }
-		const elapsedText = formatElapsed(elapsedMs)
-		let fullOutput
-		if (timedOut) {
-			fullOutput = `执行超时（耗时 ${elapsedText}）：JS 无法强制终止，代码可能仍在后台运行。`
-			const partial = collecting.text()
-			if (partial) fullOutput += `\n超时前捕获的输出：\n${partial}`
-		}
-		else if (evalResult?.error)
-			fullOutput = '执行出错：\n' + (evalResult.error.stack || String(evalResult.error))
-		else
-			fullOutput = '执行结果：\n' + util.inspect(evalResult, { depth: 4 }) + (elapsedText ? `\n（耗时 ${elapsedText}）` : '')
-		fullOutput += formatTimeoutNotice({ timedOut, elapsedMs, waitForever: limits.waitForever, expectMs: limits.expectMs, toleranceMs: limits.toleranceMs, kind: 'js' })
+		console.info(`${args.Charname} JS result:`, runtime.execedCodes[call.inner])
 		const guarded = await guardOutput(fullOutput, { name: 'run-js', label: 'JS 结果' })
-		toolEntry.content = '执行结果：\n' + guarded.text
-		toolEntry.content_for_show = renderMarkdownCodeBlock(call.inner, { lang: 'js' }) + '\n\n执行结果：\n' + fullOutput
-		AddLongTimeLog(toolEntry)
+		AddLongTimeLog({
+			name: 'code-execution.run-js',
+			role: 'tool',
+			content: '执行结果：\n' + guarded.text,
+			content_for_show: renderMarkdownCodeBlock(call.inner, { lang: 'js' }) + '\n\n执行结果：\n' + fullOutput,
+			files: [],
+		})
 		return { regen: true }
 	},
 })
@@ -565,7 +661,46 @@ export const inlineJsReplyHandler = defineReplyHandler({
 })
 
 /**
- * 生成 `<run-<shell>>` 处理器。
+ * 执行一次 `<run-<shell>>` 并构造完整结果文本（同步执行与后台异步执行共用）。
+ * @param {object} options - 执行参数。
+ * @param {object} options.runtime - code-execution 运行时。
+ * @param {object} options.args - 请求上下文。
+ * @param {object} options.call - 调用对象。
+ * @param {object} options.limits - 运行限制。
+ * @param {string} options.shellName - shell 名。
+ * @param {Function|null} options.stream - 流式输出回调（后台执行传 null）。
+ * @returns {Promise<string>} 完整结果文本。
+ */
+async function executeRunShell({ runtime, args, call, limits, shellName, stream }) {
+	let shell_result
+	try {
+		shell_result = await runtime.executorFor(call.params).execShell(shellName, call.inner, {
+			timeoutMs: limits.timeoutMs,
+			onOutput: stream ?? undefined,
+			callbackPartpath: remoteToolCallbackPartpath(args),
+		})
+	} catch (err) { shell_result = err }
+	runtime.execedCodes[call.inner] = shell_result
+	const elapsedText = shell_result?.elapsedMs ? formatElapsed(shell_result.elapsedMs) : ''
+	const timedOut = Boolean(shell_result?.timedOut)
+	let fullOutput
+	if (shell_result instanceof Error)
+		fullOutput = '执行出错：\n' + (shell_result.stack || String(shell_result))
+	else {
+		const output = shell_result?.stdall ?? [shell_result?.stdout, shell_result?.stderr].filter(Boolean).join('\n') ?? ''
+		const header = `退出码 ${shell_result?.code ?? '(无)'}${shell_result?.signal ? `，信号 ${shell_result.signal}` : ''}${timedOut ? '（超时）' : ''}${elapsedText ? `，耗时 ${elapsedText}` : ''}：`
+		fullOutput = header + '\n' + output
+	}
+	fullOutput += formatTimeoutNotice({
+		timedOut, elapsedMs: shell_result?.elapsedMs ?? 0, waitForever: limits.waitForever,
+		expectMs: limits.expectMs, toleranceMs: limits.toleranceMs, kind: 'shell',
+		killed: shell_result?.killed, remote: false,
+	})
+	return fullOutput
+}
+
+/**
+ * 生成 `<run-<shell>>` 处理器（`async="true"` 时后台运行并登记统一异步任务）。
  * @param {string} shell_name - shell 名。
  * @returns {ReplyHandler_t} ReplyHandler
  */
@@ -584,7 +719,6 @@ function createRunShellReplyHandler(shell_name) {
 			const { AddLongTimeLog } = args
 			const runtime = getRuntime(reply, args)
 			const attrs = call.params
-			const toolEntry = { name: `code-execution.run-${shell_name}`, role: 'tool', content: '', files: [] }
 			const emit = toolOutputEmitter(args)
 			const callId = randomUUID()
 			const name = `code-execution.run-${shell_name}`
@@ -595,40 +729,41 @@ function createRunShellReplyHandler(shell_name) {
 			 * @returns {void}
 			 */
 			const stream = (channel, data) => emit?.({ callId, phase: 'chunk', name, stream: channel, data })
+			const limits = parseRunLimits(attrs, SHELL_DEFAULT_TIMEOUT_MS)
+
+			if (isAsyncRequested(attrs)) {
+				if (!isAsyncToolingEnabled()) return rejectAsyncWithoutTooling(args)
+				const task = registerTask({
+					kind: shell_name,
+					label: taskPreview(call.inner),
+					owner: ownerFromArgs(args),
+					/**
+					 * 后台执行 shell 并返回供完成通知使用的文本。
+					 * @returns {Promise<string>} 结果文本
+					 */
+					run: async () => '执行结果：\n' + (await guardOutput(
+						await executeRunShell({ runtime, args, call, limits, shellName: shell_name, stream: null }),
+						{ name: `shell-${shell_name}`, label: 'shell 输出' },
+					)).text,
+					meta: { code: call.inner },
+				})
+				writeAsyncDispatchLog(args, task, shell_name)
+				return { regen: true }
+			}
 
 			await logCode(`${args.Charname} running ${shell_name} code:`, call.inner, shell_name)
-			const limits = parseRunLimits(attrs, SHELL_DEFAULT_TIMEOUT_MS)
 			emit?.({ callId, phase: 'start', name, lang: shell_name, code: call.inner })
-			let shell_result
-			try {
-				shell_result = await runtime.executorFor(attrs).execShell(shell_name, call.inner, {
-					timeoutMs: limits.timeoutMs,
-					onOutput: stream,
-					callbackPartpath: remoteToolCallbackPartpath(args),
-				})
-			} catch (err) { shell_result = err }
+			const fullOutput = await executeRunShell({ runtime, args, call, limits, shellName: shell_name, stream })
 			emit?.({ callId, phase: 'end', name })
-			runtime.execedCodes[call.inner] = shell_result
-			console.info(`${args.Charname} ${shell_name} result:`, shell_result)
-			const elapsedText = shell_result?.elapsedMs ? formatElapsed(shell_result.elapsedMs) : ''
-			const timedOut = Boolean(shell_result?.timedOut)
-			let fullOutput
-			if (shell_result instanceof Error)
-				fullOutput = '执行出错：\n' + (shell_result.stack || String(shell_result))
-			else {
-				const output = shell_result?.stdall ?? [shell_result?.stdout, shell_result?.stderr].filter(Boolean).join('\n') ?? ''
-				const header = `退出码 ${shell_result?.code ?? '(无)'}${shell_result?.signal ? `，信号 ${shell_result.signal}` : ''}${timedOut ? '（超时）' : ''}${elapsedText ? `，耗时 ${elapsedText}` : ''}：`
-				fullOutput = header + '\n' + output
-			}
-			fullOutput += formatTimeoutNotice({
-				timedOut, elapsedMs: shell_result?.elapsedMs ?? 0, waitForever: limits.waitForever,
-				expectMs: limits.expectMs, toleranceMs: limits.toleranceMs, kind: 'shell',
-				killed: shell_result?.killed, remote: false,
-			})
+			console.info(`${args.Charname} ${shell_name} result:`, runtime.execedCodes[call.inner])
 			const guarded = await guardOutput(fullOutput, { name: `shell-${shell_name}`, label: 'shell 输出' })
-			toolEntry.content = '执行结果：\n' + guarded.text
-			toolEntry.content_for_show = renderMarkdownCodeBlock(call.inner, { lang: shell_name }) + '\n\n执行结果：\n' + fullOutput
-			AddLongTimeLog(toolEntry)
+			AddLongTimeLog({
+				name: `code-execution.run-${shell_name}`,
+				role: 'tool',
+				content: '执行结果：\n' + guarded.text,
+				content_for_show: renderMarkdownCodeBlock(call.inner, { lang: shell_name }) + '\n\n执行结果：\n' + fullOutput,
+				files: [],
+			})
 			return { regen: true }
 		},
 	})

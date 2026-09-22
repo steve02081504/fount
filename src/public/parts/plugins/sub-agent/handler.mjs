@@ -146,7 +146,7 @@ export const runSubAgentHandler = defineReplyHandler({
 		try {
 			const outcome = await runSubAgent(args, request)
 			if (request.async)
-				writeToolLog(args, `子代理已在后台运行，backgroundId=${outcome.backgroundId}。完成后会以系统消息通知你。`, false, runToolMeta(outcome.run, true))
+				writeToolLog(args, `子代理已在后台运行，backgroundId=${outcome.backgroundId}。可用 <await-async ids="${outcome.backgroundId}"/> 等待，或用 <list-async/> 查看；未被等待时完成后会以系统消息通知你。`, false, runToolMeta(outcome.run, true))
 			else
 				writeToolLog(args, `子代理已完成，最终结果：\n\n${echo(outcome.text)}`, false, runToolMeta(outcome.run, false))
 		}
@@ -178,7 +178,15 @@ export const listAiSourcesHandler = defineReplyHandler({
 		try {
 			const sources = await listAvailableAiSources(args.username)
 			const lines = sources.length
-				? sources.map(source => `- ${source.name}${source.title && source.title !== source.name ? `（${source.title}）` : ''}`).join('\n')
+				? sources.map(source => {
+					const head = `- ${source.name}${source.title && source.title !== source.name ? `（${source.title}）` : ''}`
+					const meta = []
+					if (source.context_size) meta.push(`上下文 ${source.context_size}`)
+					if (source.is_paid) meta.push('付费')
+					const suffix = meta.length ? ` [${meta.join('，')}]` : ''
+					const desc = source.description ? `\n  ${source.description}` : ''
+					return head + suffix + desc
+				}).join('\n')
 				: '（无可用 AI 源）'
 			writeToolLog(args, `可用 AI 源：\n${lines}`)
 		}
@@ -236,7 +244,7 @@ export const terminateSubAgentHandler = defineReplyHandler({
 		if (!outcome.ok)
 			writeToolLog(args, `未找到子代理运行 "${call.params.id}"。`, true)
 		else
-			writeToolLog(args, `已请求终止子代理 ${outcome.run.runId}；它将总结后返回最终结果。`)
+			writeToolLog(args, `已请求终止子代理 ${outcome.run.runId}（软取消：在当前工具调用结束后、下一轮开始前生效并进入摘要；若它正卡在不可中断的进程内任务中，可能仍需等其自然结束，超时后也会强制收尾）。`)
 		return { regen: true }
 	},
 })
