@@ -88,5 +88,5 @@ a glyph the mask system does not have, add an `.icon-*` rule — never a raw emo
 
 Hand-written inline SVG is rejected by the `no_manual_svg` check; emoji in chrome
 is caught at runtime by the `[test:emoji]` page-watch (visible text + `aria-label`,
-`user-content=""` / `language-check-ignore` exempt). When adding UI, run the Static
+`user-content=""` / `language-check-ignore` / `prompt-content` exempt). When adding UI, run the Static
 checks and the frontend tests before opening a PR.

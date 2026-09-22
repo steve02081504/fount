@@ -459,6 +459,16 @@ export async function importAndSetTheme(themeData) {
 }
 
 /**
+ * 将亮/暗状态写入文档根的 `color-scheme` 属性。
+ * 该属性供 shiki 双主题选择器 `[color-scheme*="…"]` 匹配；base.css 由属性派生 CSS `color-scheme` 属性。
+ * @param {boolean} isDark 是否暗色
+ * @returns {void}
+ */
+export function applyColorScheme(isDark) {
+	document.documentElement.setAttribute('color-scheme', 'only ' + (isDark ? 'dark' : 'light'))
+}
+
+/**
  * 更新当前的颜色状态（亮色/暗色）。
  * 计算背景颜色的亮度并通知所有监听器。
  * @returns {void}
@@ -493,8 +503,7 @@ function updateColors() {
 	else // 如果未定义背景色，回退到系统偏好
 		is_dark = window.matchMedia?.('(prefers-color-scheme: dark)')?.matches
 
-	const scheme = 'only ' + (is_dark ? 'dark' : 'light')
-	document.documentElement.setAttribute('color-scheme', document.documentElement.style.colorScheme = scheme)
+	applyColorScheme(is_dark)
 
 	for (const func of functions) try {
 		func(theme_now, is_dark)

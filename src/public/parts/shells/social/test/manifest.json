@@ -243,7 +243,7 @@
 				},
 				{
 					"name": "postActions",
-					"expected": "1m16s",
+					"expected": "4m3s",
 					"triggers": [
 						"src/public/parts/shells/social/test/frontend/postActions.spec.mjs",
 						"src/public/parts/shells/social/public/src/actions/**",
@@ -280,7 +280,7 @@
 				},
 				{
 					"name": "composer",
-					"expected": "1m48s",
+					"expected": "4m",
 					"triggers": [
 						"src/public/parts/shells/social/test/frontend/composer.spec.mjs",
 						"src/public/parts/shells/social/public/index.html",
@@ -369,7 +369,7 @@
 				},
 				{
 					"name": "explore_notifications",
-					"expected": "2m19s",
+					"expected": "4m48s",
 					"triggers": [
 						"src/public/parts/shells/social/test/frontend/explore_notifications.spec.mjs",
 						"src/public/parts/shells/social/public/src/views/{explore,notifications}.mjs"

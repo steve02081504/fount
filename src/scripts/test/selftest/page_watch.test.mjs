@@ -340,6 +340,7 @@ Deno.test('locale check skip: language-check-ignore and user-content', async () 
 		ARIA_LABEL_ONLY_USER_CONTENT,
 		LANGUAGE_CHECK_IGNORE_ATTR,
 		LOCALE_CHECK_SKIP_SELECTOR,
+		PROMPT_CONTENT_ATTR,
 		USER_CONTENT_ATTR,
 		collectAriaLabelsForLocaleCheck,
 		isInsideLocaleCheckSkip,
@@ -348,7 +349,9 @@ Deno.test('locale check skip: language-check-ignore and user-content', async () 
 	assertEquals(USER_CONTENT_ATTR, 'user-content')
 	assertEquals(ARIA_LABEL_ONLY_USER_CONTENT, 'aria-label')
 	assertEquals(LANGUAGE_CHECK_IGNORE_ATTR, 'language-check-ignore')
+	assertEquals(PROMPT_CONTENT_ATTR, 'prompt-content')
 	assertEquals(LOCALE_CHECK_SKIP_SELECTOR.includes(LANGUAGE_CHECK_IGNORE_ATTR), true)
+	assertEquals(LOCALE_CHECK_SKIP_SELECTOR.includes(PROMPT_CONTENT_ATTR), true)
 
 	const { document } = parseHTML(`<!DOCTYPE html><html><body>
 		<button aria-label="下载">keep</button>
@@ -357,17 +360,19 @@ Deno.test('locale check skip: language-check-ignore and user-content', async () 
 		<button user-content aria-label="文言">user</button>
 		<button user-content="aria-label" aria-label="综合">aria-only</button>
 		<div user-content="aria-label" aria-label="容器"><button aria-label="子级">descendant</button></div>
+		<div prompt-content><button aria-label="工具">tool</button></div>
 	</body></html>`)
 
 	assertEquals(isInsideLocaleCheckSkip(document.querySelector('[language-check-ignore]')), true)
 	assertEquals(isInsideLocaleCheckSkip(document.querySelector('[user-content]')), true)
+	assertEquals(isInsideLocaleCheckSkip(document.querySelector('[prompt-content]')), true)
 	assertEquals(isInsideLocaleCheckSkip(document.querySelector('button[aria-label="下载"]')), false)
 	// `user-content="aria-label"` 只跳过本元素 aria-label，不算整棵子树跳过
 	assertEquals(isInsideLocaleCheckSkip(document.querySelector('[user-content="aria-label"]')), false)
 
 	assertEquals(
 		collectAriaLabelsForLocaleCheck(document).map(item => item.label),
-		// aria-only 自身的 aria-label 跳过，但其内后代的 aria-label 仍收集
+		// aria-only 自身的 aria-label 跳过，但其内后代的 aria-label 仍收集；prompt-content 整棵子树跳过
 		['下载', '子级'],
 	)
 })

@@ -8,8 +8,10 @@ export const USER_CONTENT_ATTR = 'user-content'
 export const ARIA_LABEL_ONLY_USER_CONTENT = 'aria-label'
 /** 故意多语种的 chrome（语言名列表、选定语言的法律文本等）。 */
 export const LANGUAGE_CHECK_IGNORE_ATTR = 'language-check-ignore'
+/** 提示词 / 模型与插件生成内容（工具回执、结构化工具卡、内部对话等）；非 UI chrome、非用户内容，整棵子树跳过扫描。 */
+export const PROMPT_CONTENT_ATTR = 'prompt-content'
 /** 可见文案与 aria-label 语种扫描共同跳过的整棵子树（仅空值 user-content；`user-content="aria-label"` 不在此列）。 */
-export const LOCALE_CHECK_SKIP_SELECTOR = `[${USER_CONTENT_ATTR}=""], [${LANGUAGE_CHECK_IGNORE_ATTR}]`
+export const LOCALE_CHECK_SKIP_SELECTOR = `[${USER_CONTENT_ATTR}=""], [${LANGUAGE_CHECK_IGNORE_ATTR}], [${PROMPT_CONTENT_ATTR}]`
 
 /** 英语：不得出现汉字 / 假名；中文：不得出现平假名 / 片假名 */
 export const SCRIPT_FORBIDDEN = {

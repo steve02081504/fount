@@ -3,8 +3,13 @@
  *
  * 主页功能菜单与接口按钮用 `geti18n(info).title` 渲染标题（home/public/src/ui.mjs、
  * ui/itemModal.mjs）；info 缺失或指向不存在的 locale 键时，菜单项只剩图标、标题为空。
- * 本检查确保每个 info 都能在 zh-CN 中解析，且显示类条目解析为含非空 title 字符串的对象。
+ * 本检查确保每个 info 都能在每种权威语言中解析，且显示类条目解析为含非空 title 字符串的对象。
  */
+
+/**
+ * 权威语言集合：主页 info 键必须在这些语言中均可解析，避免某语言缺键时标题显示 undefined。
+ */
+export const AUTHORITATIVE_LOCALES = ['zh-CN', 'en-UK', 'ja-JP']
 
 /**
  * 按点分路径解析 locale 树。
@@ -85,10 +90,11 @@ export function collectHomeInfoRefs(data) {
  * 扫描单个 home_registry.json 的 info 引用问题。
  * @param {string} relPath 相对仓库根的路径
  * @param {unknown} data home_registry.json 根对象
- * @param {unknown} locale locale 根（通常 zh-CN.json）
+ * @param {unknown} locale locale 根
+ * @param {string} localeName 语言 id（用于问题文案）
  * @returns {{ path: string, message: string }[]} 问题列表
  */
-export function scanHomeRegistryData(relPath, data, locale) {
+export function scanHomeRegistryData(relPath, data, locale, localeName) {
 	/** @type {{ path: string, message: string }[]} */
 	const issues = []
 	for (const { info, requiresTitle, context } of collectHomeInfoRefs(data)) {
@@ -98,7 +104,7 @@ export function scanHomeRegistryData(relPath, data, locale) {
 		}
 		const value = resolveLocaleKey(locale, info)
 		if (value === undefined) {
-			issues.push({ path: relPath, message: `${context} 的 info 键不存在于 zh-CN: ${info}` })
+			issues.push({ path: relPath, message: `${context} 的 info 键不存在于 ${localeName}: ${info}` })
 			continue
 		}
 		if (!requiresTitle) continue

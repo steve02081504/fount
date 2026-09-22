@@ -20,3 +20,15 @@
 .text-icon {
 	color: inherit;
 }
+
+/*
+ * preload / theme 只写 `color-scheme` 属性（供 shiki 双主题选择器 [color-scheme*="…"] 匹配），
+ * 由属性派生 CSS `color-scheme` 属性告知浏览器配色（屏蔽 Chrome 自动深色）——JS 一处写入即可。
+ */
+:root[color-scheme*="dark"] {
+	color-scheme: only dark;
+}
+
+:root[color-scheme*="light"] {
+	color-scheme: only light;
+}
