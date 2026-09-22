@@ -265,6 +265,41 @@ test.describe('markdown secure render', () => {
 		expect(html).toContain('<b>bold</b>')
 	})
 
+	test('unknown HTML tag renders as literal text (trusted)', async ({ modulePage }) => {
+		const html = await renderMarkdown(modulePage, '前 <list-ai-sources/> 后', TRUSTED)
+		expect(html).toContain('list-ai-sources')
+		expect(html).toContain('前')
+		expect(html).toContain('后')
+		expect(html).not.toContain('<list-ai-sources')
+	})
+
+	test('unknown HTML tag renders as literal text (untrusted)', async ({ modulePage }) => {
+		const html = await renderMarkdown(modulePage, '前 <list-ai-sources/> 后')
+		expect(html).toContain('list-ai-sources')
+		expect(html).toContain('前')
+		expect(html).toContain('后')
+		expect(html).not.toContain('<list-ai-sources')
+	})
+
+	test('unknown custom tag block renders as literal text (trusted)', async ({ modulePage }) => {
+		const html = await renderMarkdown(modulePage, '<run-subagent plugins="code-execution">\n任务正文\n</run-subagent>', TRUSTED)
+		expect(html).toContain('run-subagent')
+		expect(html).toContain('任务正文')
+		expect(html).not.toContain('<run-subagent')
+	})
+
+	test('known HTML tags are not literalized', async ({ modulePage }) => {
+		const html = await renderMarkdown(modulePage, '<b>bold</b>', TRUSTED)
+		expect(html).toContain('<b>bold</b>')
+	})
+
+	test('inline code with angle brackets is not double-escaped', async ({ modulePage }) => {
+		const html = await renderMarkdown(modulePage, 'use `Array<T>` now', TRUSTED)
+		expect(html).toContain('Array')
+		expect(html).not.toContain('&amp;lt;')
+		expect(html).not.toContain('&amp;#x3C;')
+	})
+
 	test('trusted render marks markdown img with svg-inliner-ignore', async ({ modulePage }) => {
 		const html = await renderMarkdown(modulePage, '![](https://attacker.example/poc.svg)', TRUSTED)
 		expect(html).toMatch(/<img[^>]*src="https:\/\/attacker\.example\/poc\.svg"[^>]*svg-inliner-ignore/)
