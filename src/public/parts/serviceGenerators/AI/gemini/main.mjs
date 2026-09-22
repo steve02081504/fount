@@ -9,10 +9,10 @@ import { where_command } from 'npm:@steve02081504/exec'
 import ffmpeg from 'npm:fluent-ffmpeg'
 import * as mime from 'npm:mime-types'
 
-import { escapeRegExp } from '../../../../../scripts/regex.mjs'
 import { source_dead } from '../../../serviceSources/AI/main.mjs'
 import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../shells/chat/src/prompt_struct/index.mjs'
 import { estimateTokenCount } from '../proxy/src/identityTokenizer.mjs'
+import { cleanupResponseText } from '../proxy/src/responseFormat.mjs'
 import { buildSourceInfo } from '../proxy/src/sourceInfo.mjs'
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
@@ -715,20 +715,8 @@ ${is_ImageGeneration
 				 * @returns {object} - 清理后的响应对象。
 				 */
 				function clearFormat(res) {
-					let text = res.content
-					if (text.match(/<\/sender>\s*<content>/))
-						text = (text.match(/<\/sender>\s*<content>([\S\s]*)/)?.[1] ?? text).split(new RegExp(
-							`(${(prompt_struct.alternative_charnames || []).map(
-								s => s instanceof RegExp ? s.source : escapeRegExp(s)
-							).join('|')})\\s*<\\/sender>\\s*<content>`
-						)).pop().split(/<\/content>\s*<\/message/).shift()
-					if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
-						text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
-					text = text.replace(/^\s*<message[^>]*>\s*/, '').replace(/^\s*<content>\s*/, '')
-					text = text.replace(/<\/content\s*>/, '').replace(/<\/message[^>]*>/, '').replace(/<\/\s*$/, '')
-					// 清理 declare 标签
-					text = text.replace(/<declare>[^]*?<\/declare>\s*$/, '').replace(/<declare>[^]*$/, '')
-					res.content = text
+					res.content = cleanupResponseText(res.content, prompt_struct)
+						.replace(/<declare>[^]*?<\/declare>\s*$/, '').replace(/<declare>[^]*$/, '')
 					return res
 				}
 
