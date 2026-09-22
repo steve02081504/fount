@@ -51,7 +51,7 @@ export const icons = {
 	stopCircle: 'mdi/stop-circle-outline',
 	alertCircle: 'mdi/alert-circle-outline',
 	checkCircle: 'mdi/check-circle-outline',
-	clock: 'mdi/timer-sand',
+	timerSand: 'mdi/timer-sand',
 	javascript: 'mdi/language-javascript',
 	terminal: 'mdi/console-line',
 }

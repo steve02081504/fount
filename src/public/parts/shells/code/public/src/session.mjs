@@ -12,14 +12,13 @@ import { geti18n } from '/scripts/i18n/index.mjs'
 import { arrayBufferToBase64 } from '/scripts/lib/base64.mjs'
 import { svgInliner } from '/scripts/lib/svgInliner.mjs'
 
-import { refreshAsyncTasks } from './asynctasks.mjs'
 import { appendLocalHistory, removeGhost, renderAttachmentPreview } from './composer.mjs'
 import * as api from './endpoints.mjs'
 import { iconElement, icons } from './icons.mjs'
 import { appendEntryBubble, backToBottom, nearBottom, renderMessages, scrollMessagesBottom, updateEntryBubble, updateRegenButtons, updateShellStreamBubble, updateEmptyMode } from './messages.mjs'
 import { refreshShutdownState, renderAiSourcePillLabel, renderModePillLabel, selectWorkspace, updateCharMenu } from './pills.mjs'
+import { refreshRunCards } from './runCards.mjs'
 import { elements, richInput, store, TAB_SAVE_DEBOUNCE, target } from './store.mjs'
-import { refreshSubAgents } from './subagents.mjs'
 
 /** 标签页保存防抖定时器句柄。 */
 let tabSaveTimer = 0
@@ -607,8 +606,7 @@ export async function activateTab(tab) {
 	syncCodeUrl(tab)
 	renderTabs()
 	renderMessages()
-	void refreshSubAgents({ force: true })
-	void refreshAsyncTasks({ force: true })
+	void refreshRunCards({ force: true })
 	updateCharMenu()
 	renderModePillLabel()
 	renderAiSourcePillLabel()
@@ -939,8 +937,7 @@ async function finishGeneration(entries, memory, aborted = false) {
 		for (const entry of freshEntries) appendEntryBubble(entry)
 		if (aborted) showToastI18n('info', 'code.error.aborted')
 	}
-	void refreshSubAgents({ force: true })
-	void refreshAsyncTasks({ force: true })
+	void refreshRunCards({ force: true })
 	await markSessionDirty(session)
 	renderTabs()
 	void refreshAllSessions()

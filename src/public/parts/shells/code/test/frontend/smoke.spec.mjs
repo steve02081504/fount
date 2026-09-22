@@ -86,8 +86,8 @@ test.describe('code shell smoke', () => {
 				tag: element.tagName,
 				runId: element.dataset.subagentRunId,
 				working: element.classList.contains('is-working'),
-				label: element.querySelector('.code-subagent-label')?.textContent,
-				hasIcon: !!element.querySelector('.code-subagent-icon img, .code-subagent-icon svg'),
+				label: element.querySelector('.code-run-card-label')?.textContent,
+				hasIcon: !!element.querySelector('.code-run-card-icon img, .code-run-card-icon svg'),
 			}
 		})
 		expect(card.tag).toBe('BUTTON')

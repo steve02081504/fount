@@ -13,6 +13,8 @@ const getElementById = id => document.getElementById(id)
 
 /** 静态 DOM 引用；pill 镀铬元素由 `mountPillChrome` 补全。 */
 export const elements = {
+	main: document.querySelector('.code-main'),
+	topbar: document.querySelector('.code-topbar'),
 	homeToggle: getElementById('home-toggle'),
 	tabMenu: getElementById('code-tab-menu'),
 	tabStrip: getElementById('tab-strip'),
@@ -82,14 +84,6 @@ export const store = {
 	markdownCache: {},
 	/** 有未读通知的标签键集合（tabKey → true）。 */
 	tabUnread: new Set(),
-	/** 当前会话的子代理运行（runId → 状态摘要，来自实时事件与历史查询）。 */
-	subAgents: new Map(),
-	/** 子代理历史查询节流：{ chatId, at }。 */
-	subAgentFetch: null,
-	/** 当前会话的统一异步任务（任务 id → 状态摘要，来自实时事件与进行中查询）。 */
-	asyncTasks: new Map(),
-	/** 异步任务查询节流：{ chatId, at }。 */
-	asyncTaskFetch: null,
 }
 
 /**

@@ -53,11 +53,129 @@
 		},
 		{
 			"name": "frontend",
-			"expected": "9m23s",
+			"expected": "15m14s",
 			"dependsOn": [
 				"server:live"
 			],
 			"trigger": "frontendShared",
+			"subtests": [
+				{
+					"name": "smoke",
+					"expected": "55s",
+					"triggers": [
+						"src/public/parts/shells/code/test/frontend/smoke.spec.mjs",
+						"src/public/parts/shells/code/public/**"
+					]
+				},
+				{
+					"name": "composer",
+					"expected": "3m",
+					"triggers": [
+						"src/public/parts/shells/code/test/frontend/composer.spec.mjs",
+						"src/public/parts/shells/code/public/**"
+					]
+				},
+				{
+					"name": "pill_dropdowns",
+					"expected": "1m",
+					"triggers": [
+						"src/public/parts/shells/code/test/frontend/pill_dropdowns.spec.mjs",
+						"src/public/parts/shells/code/public/**"
+					]
+				},
+				{
+					"name": "sessions",
+					"expected": "3m",
+					"triggers": [
+						"src/public/parts/shells/code/test/frontend/sessions.spec.mjs",
+						"src/public/parts/shells/code/public/**"
+					]
+				},
+				{
+					"name": "tabs",
+					"expected": "50s",
+					"triggers": [
+						"src/public/parts/shells/code/test/frontend/tabs.spec.mjs",
+						"src/public/parts/shells/code/public/**"
+					]
+				},
+				{
+					"name": "messages",
+					"expected": "3m",
+					"triggers": [
+						"src/public/parts/shells/code/test/frontend/messages.spec.mjs",
+						"src/public/parts/shells/code/public/**",
+						"src/public/parts/shells/gist/public/**"
+					]
+				},
+				{
+					"name": "gist_mention",
+					"expected": "25s",
+					"triggers": [
+						"src/public/parts/shells/code/test/frontend/gist_mention.spec.mjs",
+						"src/public/parts/shells/code/public/**",
+						"src/public/parts/shells/gist/public/**"
+					]
+				},
+				{
+					"name": "power_actions",
+					"expected": "25s",
+					"triggers": [
+						"src/public/parts/shells/code/test/frontend/power_actions.spec.mjs",
+						"src/public/parts/shells/code/public/**",
+						"src/public/parts/shells/code/src/**"
+					]
+				},
+				{
+					"name": "composer_chrome",
+					"expected": "25s",
+					"triggers": [
+						"src/public/parts/shells/code/test/frontend/composer_chrome.spec.mjs",
+						"src/public/parts/shells/code/public/**"
+					]
+				},
+				{
+					"name": "composer_keyboard",
+					"expected": "35s",
+					"triggers": [
+						"src/public/parts/shells/code/test/frontend/composer_keyboard.spec.mjs",
+						"src/public/parts/shells/code/public/**"
+					]
+				},
+				{
+					"name": "home_picker_search",
+					"expected": "30s",
+					"triggers": [
+						"src/public/parts/shells/code/test/frontend/home_picker_search.spec.mjs",
+						"src/public/parts/shells/code/public/**"
+					]
+				},
+				{
+					"name": "workspace_pill_search",
+					"expected": "30s",
+					"triggers": [
+						"src/public/parts/shells/code/test/frontend/workspace_pill_search.spec.mjs",
+						"src/public/parts/shells/code/public/**"
+					]
+				},
+				{
+					"name": "notifications",
+					"expected": "40s",
+					"triggers": [
+						"src/public/parts/shells/code/test/frontend/notifications.spec.mjs",
+						"src/public/parts/shells/code/public/**",
+						"src/public/parts/shells/code/src/**"
+					]
+				},
+				{
+					"name": "tool_cards",
+					"expected": "30s",
+					"triggers": [
+						"src/public/parts/shells/code/test/frontend/tool_cards.spec.mjs",
+						"src/public/parts/shells/code/public/**"
+					]
+				}
+			],
 			"run": [
 				"deno",
 				"run",

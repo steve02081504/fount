@@ -170,13 +170,10 @@ export function renderPowerButton() {
 	const button = elements.powerSettingsButton
 	const badge = elements.powerArmedBadge
 	const count = Object.keys(store.shutdownActions || {}).length
-	const label = count
+	// title 由 index.html 的 data-i18n（code.power.settings.title）独占，避免与静态文案双来源
+	button.setAttribute('aria-label', count
 		? geti18n('code.power.armedAria', { count })
-		: geti18n('code.power.settings.aria')
-	button.setAttribute('aria-label', label)
-	button.setAttribute('title', count
-		? geti18n('code.power.armedCount', { count })
-		: geti18n('code.power.settings.button'))
+		: geti18n('code.power.settings.aria'))
 	button.classList.toggle('btn-warning', count > 0)
 	button.classList.toggle('btn-ghost', count === 0)
 	if (badge) {
@@ -196,8 +193,8 @@ export function renderContextChip() {
 	const charName = store.charname || ''
 	elements.contextWorkspaceButton.hidden = !workspaceName
 	elements.contextWorkspaceLabel.textContent = workspaceName
-	elements.contextWorkspaceButton.setAttribute('aria-label', geti18n('code.home.title'))
-	elements.contextWorkspaceButton.setAttribute('title', geti18n('code.home.title'))
+	elements.contextWorkspaceButton.setAttribute('aria-label', geti18n('code.workspaces.open'))
+	elements.contextWorkspaceButton.setAttribute('title', geti18n('code.workspaces.open'))
 	elements.contextCharButton.hidden = !charName
 	elements.contextCharLabel.textContent = charName
 	elements.contextCharButton.setAttribute('aria-label', geti18n('code.char.switch'))
