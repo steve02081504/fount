@@ -9,10 +9,18 @@ import { describeRunEntries, parseBooleanAttr, parseDurationMs, parseRoundLimit,
 import {
 	countActiveRunsForAgent,
 	countActiveRunsInBatch,
+	createBatch,
 	createRun,
 	DEFAULT_SUBAGENT_PLUGINS,
+	deleteRun,
+	getBatch,
+	getRun,
+	isRunOverLimit,
+	isRunRoundExceeded,
+	isRunTimeExceeded,
 	parsePluginListAttr,
 	propagateRoundsToAncestors,
+	pruneSubAgentState,
 	resetSubAgentState,
 	resolvePluginList,
 } from '../../state.mjs'
@@ -84,8 +92,7 @@ Deno.test('propagateRoundsToAncestors stops at the root and tolerates cycles', (
 	assertEquals(b.rounds, 1)
 })
 
-Deno.test('isRunOverLimit reports local round and time budgets', async () => {
-	const { isRunOverLimit, isRunRoundExceeded, isRunTimeExceeded } = await import('../../state.mjs')
+Deno.test('isRunOverLimit reports local round and time budgets', () => {
 	const run = { runId: 'x', parentRunId: null, rounds: 2, roundLimit: 3, deadline: 1000 }
 	/**
 	 * 无祖先查询。
@@ -102,8 +109,7 @@ Deno.test('isRunOverLimit reports local round and time budgets', async () => {
 	assert(isRunOverLimit(run, lookup, 1000))
 })
 
-Deno.test('isRunOverLimit propagates an ancestor breach to the current run', async () => {
-	const { isRunOverLimit } = await import('../../state.mjs')
+Deno.test('isRunOverLimit propagates an ancestor breach to the current run', () => {
 	const ancestor = { runId: 'a', parentRunId: null, rounds: 9, roundLimit: 3, deadline: 10_000 }
 	const child = { runId: 'c', parentRunId: 'a', rounds: 0, roundLimit: 99, deadline: 10_000 }
 	/**
@@ -137,6 +143,30 @@ Deno.test('run registry counts active runs per agent and per batch', () => {
 	assertEquals(countActiveRunsForAgent('u', 'c'), 2)
 	assertEquals(countActiveRunsInBatch('b1'), 2)
 	assertEquals(countActiveRunsInBatch('b2'), 0)
+})
+
+Deno.test('deleteRun releases the terminal run and its now-empty batch', () => {
+	resetSubAgentState()
+	createBatch({ batchId: 'b1', username: 'u', charId: 'c' })
+	createRun({ runId: 'r1', batchId: 'b1', state: 'done', createdAt: Date.now() })
+	createRun({ runId: 'r2', batchId: 'b1', state: 'running', createdAt: Date.now() })
+	assertEquals(deleteRun('r1'), true)
+	assertEquals(getBatch('b1')?.batchId, 'b1')
+	assertEquals(deleteRun('r2'), true)
+	assertEquals(getBatch('b1'), undefined)
+	assertEquals(deleteRun('missing'), false)
+})
+
+Deno.test('pruneSubAgentState evicts stale terminal runs and idle batches', () => {
+	resetSubAgentState()
+	const old = Date.now() - 3 * 60 * 60 * 1000
+	createBatch({ batchId: 'old-batch', username: 'u', charId: 'c', createdAt: old })
+	createRun({ runId: 'old-run', state: 'done', createdAt: old, finishedAt: old })
+	createRun({ runId: 'live-run', state: 'running', createdAt: old })
+	pruneSubAgentState()
+	assertEquals(getRun('old-run'), undefined)
+	assertEquals(getBatch('old-batch'), undefined)
+	assert(getRun('live-run'))
 })
 
 Deno.test('terminateSubAgentRun sets the flag and aborts the controller', () => {

@@ -5,6 +5,8 @@
  * 【数据结构】default export 实现 PluginAPI_t：{ info, Load, Unload, interfaces: { chat } }。
  * 【关联】registry.mjs、prompt.mjs、handler.mjs；插件加载见 src/server/parts_loader.mjs。
  */
+import { sendEventToUser } from '../../../../server/web_server/event_dispatcher.mjs'
+
 import { asyncTaskReplyHandlers } from './handler.mjs'
 import { getAsyncTaskPrompt } from './prompt.mjs'
 import { setAsyncTaskNotifier, setAsyncToolingEnabled } from './registry.mjs'
@@ -14,13 +16,12 @@ const { info } = (await import('./locales.json', { with: { type: 'json' } })).de
 /**
  * 默认任务生命周期通知实现：经用户事件通道推送给宿主 shell（尽力而为）。
  * @param {{ phase: 'start' | 'settle', task: object }} event 生命周期事件
- * @returns {Promise<void>}
+ * @returns {void}
  */
-async function notifyAsyncTask(event) {
+function notifyAsyncTask(event) {
 	const username = event?.task?.owner?.username
 	if (!username) return
 	try {
-		const { sendEventToUser } = await import('../../../../server/web_server/event_dispatcher.mjs')
 		sendEventToUser(username, 'async-task', { phase: event.phase, ...event.task })
 	}
 	catch (error) {

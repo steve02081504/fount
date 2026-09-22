@@ -18,7 +18,7 @@ import {
 	SubAgentError,
 	terminateSubAgentRun,
 } from './runtime.mjs'
-import { createBatch, getRun, getRunByBackgroundId, parsePluginListAttr } from './state.mjs'
+import { createBatch, getRun, parsePluginListAttr } from './state.mjs'
 
 /** 单个工具回执的长度上限。 */
 const TOOL_ECHO_LIMIT = 4000
@@ -216,7 +216,7 @@ export const checkSubAgentHandler = defineReplyHandler({
 	 */
 	handle: async (reply, args, call) => {
 		const id = call.params.id
-		const run = getRun(id) ?? getRunByBackgroundId(id)
+		const run = getRun(id)
 		if (!run) {
 			writeToolLog(args, 'sub-agent.check', `未找到子代理运行 "${id}"。`, true)
 			return { regen: true }

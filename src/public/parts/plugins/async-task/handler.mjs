@@ -2,13 +2,15 @@
  * 【文件】src/public/parts/plugins/async-task/handler.mjs
  * 【职责】async-task 插件的 ReplyHandler 组：解析 `<list-async>` / `<await-async>` 两个统一异步工具标签。
  * 【原理】标签层只做参数解析与工具回执；真正的任务注册表、等待与通知在 registry.mjs。
+ *   提示词与工具回执固定中文（不做多语言化）。
  * 【数据结构】handler = defineReplyHandler(...)；`<await-async ids="a,b" mode="all|any" time-limit="5m"/>`。
- * 【关联】registry.mjs 的 listTasks / awaitTasks；prompt.mjs 注入说明；main.mjs 汇总为 ReplyHandler。
+ * 【关联】registry.mjs 的 listTasksForOwner / awaitTasks；prompt.mjs 注入说明；main.mjs 汇总为 ReplyHandler。
  */
+import { msstr } from '../../../../scripts/ms.mjs'
 import { defineReplyHandler, defineReplyHandlers } from '../../shells/chat/src/reply/defineReplyHandler.mjs'
 
 import { DEFAULT_AWAIT_TIMEOUT_MS, parseDurationMs } from './duration.mjs'
-import { awaitTasks, listTasks, ownerFromArgs } from './registry.mjs'
+import { awaitTasks, listTasksForOwner, ownerFromArgs } from './registry.mjs'
 
 /** 单个工具回执的长度上限。 */
 const TOOL_ECHO_LIMIT = 4000
@@ -22,17 +24,6 @@ const TOOL_ECHO_LIMIT = 4000
 function echo(text, limit = TOOL_ECHO_LIMIT) {
 	const value = String(text ?? '')
 	return value.length > limit ? `${value.slice(0, limit)}\n…（已截断 ${value.length - limit} 字符）` : value
-}
-
-/**
- * 把毫秒格式化为简短耗时文本。
- * @param {number} ms 毫秒数
- * @returns {string} 如 `12s` / `3m5s`
- */
-function formatElapsed(ms) {
-	const sec = Math.max(0, Math.round(ms / 1000))
-	if (sec < 60) return `${sec}s`
-	return `${Math.floor(sec / 60)}m${sec % 60}s`
 }
 
 /**
@@ -112,13 +103,7 @@ export const listAsyncHandler = defineReplyHandler({
 	handle: async (reply, args, call) => {
 		const owner = ownerFromArgs(args)
 		const kind = call.params.kind ? String(call.params.kind).trim() : undefined
-		const tasks = listTasks({
-			username: owner.username,
-			charId: owner.charId,
-			chatName: owner.chatName,
-			parentRunId: owner.parentRunId,
-			kind,
-		})
+		const tasks = listTasksForOwner(owner, { kind })
 		const view = tasks.map(task => ({
 			id: task.id,
 			kind: task.kind,
@@ -133,7 +118,7 @@ export const listAsyncHandler = defineReplyHandler({
 		}
 		const now = Date.now()
 		const lines = tasks.map(task =>
-			`- [${task.kind}] ${task.id}（已运行 ${formatElapsed(now - task.startedAt)}）${task.label ? `：${task.label}` : ''}`
+			`- [${task.kind}] ${task.id}（已运行 ${msstr(now - task.startedAt)}）${task.label ? `：${task.label}` : ''}`
 		)
 		writeToolLog(args, 'async-task.list', `进行中的异步任务（${tasks.length}）：\n${lines.join('\n')}`, false, {
 			extension: { asyncList: { kind: kind ?? null, tasks: view } },

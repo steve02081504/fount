@@ -17,9 +17,6 @@ export const FORCED_SUBAGENT_PLUGINS = ['sub-agent', 'async-task']
 /** 永远不得出现在子代理插件集中的插件（避免把宿主聊天层重新拉进来）。 */
 export const EXCLUDED_SUBAGENT_PLUGINS = new Set(['fount_chat'])
 
-/** 运行状态机取值。 */
-export const RUN_STATES = ['running', 'summarizing', 'done', 'terminated', 'failed']
-
 /** 插件配置默认值：最大子代理深度、父代档案保留消息条数。 */
 export const DEFAULT_SUBAGENT_CONFIG = {
 	maxDepth: 2,
@@ -34,7 +31,7 @@ let pluginConfig = { ...DEFAULT_SUBAGENT_CONFIG }
  * @returns {typeof DEFAULT_SUBAGENT_CONFIG} 配置副本
  */
 export function getSubAgentConfig() {
-	return pluginConfig
+	return { ...pluginConfig }
 }
 
 /**
@@ -99,6 +96,9 @@ const batches = new Map()
 
 /** 运行注册表（仅内存）。 @type {Map<string, subAgentRun_t>} */
 const runs = new Map()
+
+/** 兜底 TTL：异常路径漏删的终态运行与无运行引用的批次按此时长淘汰。 */
+const STATE_TTL_MS = 2 * 60 * 60 * 1000
 
 /**
  * 解析插件集声明（`plugins="a,b,c"` 或名称数组）。
@@ -189,20 +189,33 @@ export function getRun(runId) {
 }
 
 /**
- * @param {string} backgroundId 后台 id
- * @returns {subAgentRun_t | undefined} 运行
- */
-export function getRunByBackgroundId(backgroundId) {
-	return runs.get(backgroundId)
-}
-
-/**
- * 删除运行。
+ * 删除运行，并在其所在批次已无任何运行时一并删除该批次。
+ *
+ * 生命周期：动作结束并通知父代后，该 run（及其空批次）即视为失效，再次使用该 id 属于未定义行为，故直接释放而不驻留。
  * @param {string} runId 运行 id
  * @returns {boolean} 是否删除成功
  */
 export function deleteRun(runId) {
-	return runs.delete(runId)
+	const run = runs.get(runId)
+	if (!run) return false
+	runs.delete(runId)
+	if (run.batchId && ![...runs.values()].some(candidate => candidate.batchId === run.batchId))
+		batches.delete(run.batchId)
+	return true
+}
+
+/**
+ * 兜底清理：淘汰超 TTL 的终态运行与已无运行引用的批次（正常路径由 deleteRun 即时释放）。
+ * @param {number} [now] 当前时间
+ * @returns {void}
+ */
+export function pruneSubAgentState(now = Date.now()) {
+	for (const run of runs.values())
+		if (run.state !== 'running' && run.state !== 'summarizing' && now - (run.finishedAt ?? run.createdAt) >= STATE_TTL_MS)
+			runs.delete(run.runId)
+	for (const batch of batches.values())
+		if (now - batch.createdAt >= STATE_TTL_MS && ![...runs.values()].some(run => run.batchId === batch.batchId))
+			batches.delete(batch.batchId)
 }
 
 /**
