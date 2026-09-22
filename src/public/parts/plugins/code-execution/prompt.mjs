@@ -86,6 +86,11 @@ ${getConnectedSubfounts(args.username).length === 1 ? `\
   * 尤其软件文件夹很可能有用户数据在其中，删除前至少通过命令检查下文件夹架构。
 - 覆写数据时也一样，在用程序删除部分数据或覆写可能的重要文件时考虑进行原文件的备份，以防误操作。
 
+异步执行（需加载 async-task 插件）：
+- 给 <run-js> / <run-${defaultShell}> 等加 async="true" 会立即返回一个统一异步任务 id，不阻塞本轮；任务完成后若未被等待，会以系统消息通知你。
+- 用 <list-async/> 查看进行中的异步任务，用 <await-async ids="id1,id2" mode="all|any" time-limit="5m"/> 等待一个或多个任务完成并取回结果。
+- 注意：JS 在进程内无法强制终止，异步执行也不会改变这一点。
+
 js代码相关：
 - 复杂情况下，考虑有什么npm包可以满足你的需求，参照例子使用<run-js>+import。
   * 导入包需要符合deno的包名规范（追加\`npm|node|jsr:\`前缀），如\`npm:mathjs\`或\`node:fs\`。

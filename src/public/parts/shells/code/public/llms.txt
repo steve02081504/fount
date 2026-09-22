@@ -7,6 +7,7 @@ AI 编码会话 shell：与任意角色就工作区对话，在本机或已连�
 - 机器 id `"0"` = 本机，其他为已连接 subfount；执行/文件读写默认使用请求的 `workdir`（`{ machine, path }`）。
 - `!` 模式：以 shell 命令执行用户输入，命令在目标机器工作目录执行，输出作为 tool 日志条目进入会话；执行期间逐块实时回显（WS `/exec`），本机直连、远程经分机回调通道（未支持回调时结束一次性返回）。
 - AI 会话执行 `<run-js>` / `<run-<shell>>` / `<inline-*>` 时，服务端经会话 WS 的 `tool-output` 消息实时转发 stdout/stderr。
+- 代码执行插件与 `async-task` 插件随 code shell 基础插件加载：`<run-js async="true">` / `<run-<shell> async="true">` 立即返回统一异步任务 id，任务完成后（若未被等待）以系统消息通知角色；`<list-async/>` 列出进行中的任务，`<await-async ids="a,b" mode="all|any" time-limit="5m"/>` 等待其一或全部。JS 在进程内始终不可强制终止。
 
 ## HTTP API（均需登录；base = `/api/parts/shells:code`）
 

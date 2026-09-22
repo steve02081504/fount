@@ -220,7 +220,7 @@ Deno.test('runSubAgent runs a synchronous loop and isolates the parent workdir',
 	assertEquals(outcome.text, 'round-2')
 	assertEquals(outcome.run.state, 'done')
 	assertEquals(outcome.run.rounds, 2)
-	assertEquals(outcome.run.pluginNames, ['file-operations', 'sub-agent'])
+	assertEquals(outcome.run.pluginNames, ['file-operations', 'sub-agent', 'async-task'])
 	assertEquals(outcome.run.task, 'do the task')
 	assertEquals(parentArgs.workdir, { machine: '0', path: '/tmp' })
 })

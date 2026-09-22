@@ -4,19 +4,17 @@
  */
 import { assertEquals, assertFalse, assert } from 'jsr:@std/assert'
 
+import { notificationQueueKey, pushPendingNotification, resetAsyncTaskState, takePendingNotifications } from '../../../async-task/registry.mjs'
 import { parseBooleanAttr, parseDurationMs, parseRoundLimit, terminateSubAgentRun } from '../../runtime.mjs'
 import {
 	countActiveRunsForAgent,
 	countActiveRunsInBatch,
 	createRun,
 	DEFAULT_SUBAGENT_PLUGINS,
-	notificationQueueKey,
 	parsePluginListAttr,
 	propagateRoundsToAncestors,
-	pushPendingNotification,
 	resetSubAgentState,
 	resolvePluginList,
-	takePendingNotifications,
 } from '../../state.mjs'
 
 Deno.test('resolvePluginList uses the default set when nothing is declared', () => {
@@ -27,21 +25,21 @@ Deno.test('resolvePluginList uses the default set when nothing is declared', () 
 
 Deno.test('resolvePluginList lets an explicit list fully replace the default', () => {
 	const resolved = resolvePluginList(['file-operations'])
-	assertEquals(resolved, ['file-operations', 'sub-agent'])
+	assertEquals(resolved, ['file-operations', 'sub-agent', 'async-task'])
 	assertFalse(resolved.includes('code-execution'))
 	assertFalse(resolved.includes('context-compress'))
 })
 
-Deno.test('resolvePluginList forces sub-agent and never allows fount_chat', () => {
-	assertEquals(resolvePluginList(['code-execution', 'fount_chat']), ['code-execution', 'sub-agent'])
-	assertEquals(resolvePluginList(['sub-agent']), ['sub-agent'])
-	assertEquals(resolvePluginList(['code-execution', 'sub-agent', 'file-operations']), ['code-execution', 'sub-agent', 'file-operations'])
+Deno.test('resolvePluginList forces sub-agent/async-task and never allows fount_chat', () => {
+	assertEquals(resolvePluginList(['code-execution', 'fount_chat']), ['code-execution', 'sub-agent', 'async-task'])
+	assertEquals(resolvePluginList(['sub-agent']), ['sub-agent', 'async-task'])
+	assertEquals(resolvePluginList(['code-execution', 'sub-agent', 'file-operations']), ['code-execution', 'sub-agent', 'file-operations', 'async-task'])
 })
 
 Deno.test('resolvePluginList dedupes and parses comma strings', () => {
 	assertEquals(parsePluginListAttr('a, b ,a'), ['a', 'b', 'a'])
 	assertEquals(resolvePluginList('a,b,a').filter(name => name === 'a').length, 1)
-	assertEquals(resolvePluginList(['file-operations', 'file-operations']), ['file-operations', 'sub-agent'])
+	assertEquals(resolvePluginList(['file-operations', 'file-operations']), ['file-operations', 'sub-agent', 'async-task'])
 })
 
 Deno.test('propagateRoundsToAncestors increments the run and every ancestor', () => {
@@ -118,7 +116,7 @@ Deno.test('isRunOverLimit propagates an ancestor breach to the current run', asy
 })
 
 Deno.test('notification queues are scoped per root agent or per parent run', () => {
-	resetSubAgentState()
+	resetAsyncTaskState()
 	const rootTarget = { username: 'u', charId: 'c', parentRunId: null }
 	const runTarget = { username: 'u', charId: 'c', parentRunId: 'p' }
 	assertEquals(notificationQueueKey(rootTarget), 'root|u|c')

@@ -9,6 +9,7 @@
  */
 import { buildPromptStruct } from '../../shells/chat/src/prompt_struct/index.mjs'
 import { runReplyHandlers } from '../../shells/chat/src/reply/handlerPipeline.mjs'
+import { registerTask } from '../async-task/registry.mjs'
 
 import { cleanupExpiredArchives, projectArchiveEntries, removeParentArchive, writeParentArchive } from './archive.mjs'
 import { makeRoundBudgetEntry } from './prompt.mjs'
@@ -17,16 +18,17 @@ import {
 	countActiveRunsInBatch,
 	createRun,
 	getBatch,
-	getChannels,
 	getRun,
 	getRunByBackgroundId,
 	getSubAgentConfig,
 	isRunOverLimit,
 	isRunTimeExceeded,
 	propagateRoundsToAncestors,
-	pushPendingNotification,
 	resolvePluginList,
 } from './state.mjs'
+
+/** 时长解析统一由 async-task 提供（`<await-async time-limit>` 与 `run-subagent` 共用）。 */
+export { parseDurationMs } from '../async-task/duration.mjs'
 
 /** 单条工具回执 / 通知中保留的结果长度上限。 */
 const RESULT_ECHO_LIMIT = 4000
@@ -44,22 +46,6 @@ export class SubAgentError extends Error {
 		this.name = 'SubAgentError'
 		this.code = code
 	}
-}
-
-/**
- * 把 `90s` / `5m` / `1h` / `2d` / 纯秒数解析为毫秒。
- * @param {string | number | null | undefined} value 时长声明
- * @returns {number | null} 毫秒数；无法解析返回 null
- */
-export function parseDurationMs(value) {
-	if (value == null || value === '') return null
-	if (typeof value === 'number') return Number.isFinite(value) ? value : null
-	const match = /^\s*(\d+(?:\.\d+)?)\s*(ms|s|m|h|d)?\s*$/i.exec(String(value))
-	if (!match) return null
-	const amount = Number(match[1])
-	const unit = (match[2] ?? 's').toLowerCase()
-	const factor = { ms: 1, s: 1000, m: 60_000, h: 3_600_000, d: 86_400_000 }[unit]
-	return Math.round(amount * factor)
 }
 
 /**
@@ -108,15 +94,24 @@ async function defaultLoadAnyPreferredDefaultPart(username, parent) {
 /**
  * 默认 AI 源枚举实现。
  * @param {string} username 用户
- * @returns {Promise<Array<{ name: string, title: string, description: string }>>} AI 源列表
+ * @returns {Promise<Array<{ name: string, title: string, description: string, context_size?: number | null, is_paid?: boolean | null, filename?: string | null }>>} AI 源列表
  */
 async function defaultListAiSources(username) {
 	const { getAllCachedPartDetails } = await import('../../../../server/parts_loader.mjs')
 	const { cachedDetails, uncachedNames } = await getAllCachedPartDetails(username, 'serviceSources/AI')
-	const cached = Object.entries(cachedDetails).map(([name, details]) => ({
-		name,
-		title: details?.info?.name ?? name,
-		description: details?.info?.description ?? '',
+	const cached = await Promise.all(Object.entries(cachedDetails).map(async ([name, details]) => {
+		const base = {
+			name,
+			title: details?.info?.name ?? name,
+			description: details?.info?.description ?? '',
+		}
+		try {
+			const part = await defaultLoadPart(username, 'serviceSources/AI/' + name)
+			return { ...base, context_size: part?.context_size ?? null, is_paid: part?.is_paid ?? null, filename: part?.filename ?? null }
+		}
+		catch {
+			return base
+		}
 	}))
 	const uncached = uncachedNames.map(name => ({ name, title: name, description: '' }))
 	return [...cached, ...uncached]
@@ -152,6 +147,16 @@ async function defaultNotifyRun(username, payload) {
 	catch (error) {
 		console.warn('sub-agent: notifyRun 失败', error)
 	}
+}
+
+/**
+ * 取任务首行预览（用于异步任务的标签）。
+ * @param {string} task 任务文本
+ * @returns {string} 预览
+ */
+function taskPreview(task) {
+	const line = String(task ?? '').split(/\r?\n/).find(text => text.trim())?.trim() ?? ''
+	return line.length > 80 ? `${line.slice(0, 80)}…` : line
 }
 
 /** 默认依赖集合；集成测试可传入同形状的替身。 */
@@ -349,11 +354,14 @@ function buildOpeningEntries(run, batch) {
 	const archiveGuide = run.archivePath
 		? `父代聊天档案（JSON，含 role/name/uid/time_stamp/content）位于：\n${run.archivePath}\n需要父代细节时请自行用文件工具检索它。若你没有文件工具，请直接失败并向父代报告。`
 		: '父代聊天档案不可用（写入失败）。若你需要父代细节且没有其它途径，请直接失败并向父代报告。'
+	const contextGuide = run.pluginNames?.includes('code-execution')
+		? '\n\n环境提示：工作目录/文件系统与父代共享（不是隔离副本）；但 code-execution 提供的 workspace 是**独立的新对象**（不继承父代变量），chat_log 是**你自己的对话**。'
+		: ''
 	opening.push({
 		name: 'system',
 		uid: 'system',
 		role: 'system',
-		content: `任务：\n${run.task}\n\n${archiveGuide}`,
+		content: `任务：\n${run.task}\n\n${archiveGuide}${contextGuide}`,
 		files: [],
 	})
 	return opening
@@ -385,18 +393,20 @@ ${transcript}
 }
 
 /**
- * 构造一条系统通知条目。
- * @param {string} text 通知文本
- * @returns {object} chatLogEntry 形状
+ * 生成 sub-agent 异步任务的完成通知文本（供 async-task 注册表在结算时调用）。
+ * @param {object} task async-task 任务（`result` 为 run）
+ * @returns {string} 通知文本
  */
-function makeNotificationEntry(text) {
-	return {
-		name: 'sub-agent',
-		uid: 'system',
-		role: 'system',
-		content: text,
-		files: [],
-	}
+function subAgentNotificationText(task) {
+	const run = task.result ?? {}
+	const batchActive = run.batchId ? countActiveRunsInBatch(run.batchId) : 0
+	const agentActive = run.username ? countActiveRunsForAgent(run.username, run.charId) : 0
+	return `\
+[sub-agent] 后台子代理 ${run.backgroundId ?? task.id} 已完成（状态：${run.state ?? task.state}）。
+同批次进行中：${batchActive} 个；该角色剩余活跃子代理：${agentActive} 个。
+
+结果：
+${truncate(run.finalText ?? run.error?.message ?? '')}`
 }
 
 /**
@@ -462,49 +472,6 @@ async function recordRunGeneration(run, deps) {
 	catch (error) {
 		console.warn('sub-agent: 记录生成失败', error)
 	}
-}
-
-/**
- * 回投异步完成通知：优先走父代活跃频道的主动生成，否则落入待注入队列。
- * @param {object} run 运行
- * @param {object} deps 依赖
- * @returns {Promise<void>}
- */
-async function deliverNotification(run, deps) {
-	const batchActive = run.batchId ? countActiveRunsInBatch(run.batchId) : 0
-	const agentActive = countActiveRunsForAgent(run.username, run.charId)
-	const text = `\
-[sub-agent] 后台子代理 ${run.backgroundId} 已完成（状态：${run.state}）。
-同批次进行中：${batchActive} 个；该角色剩余活跃子代理：${agentActive} 个。
-
-结果：
-${truncate(run.finalText)}`
-	const entry = makeNotificationEntry(text)
-
-	if (!run.parentRunId) {
-		const channels = getChannels(run.username, run.charId)
-		const channel = channels.find(candidate => candidate.chat_name === run.chat_name) ?? channels[0] ?? null
-		if (channel) try {
-			const updated = await channel.Update?.() ?? channel
-			if (updated?.AddChatLogEntry && updated?.char?.interfaces?.chat?.GetReply) {
-				const reply = await updated.char.interfaces.chat.GetReply({
-					...updated,
-					chat_log: [...updated.chat_log ?? [], entry],
-				})
-				if (reply) {
-					reply.logContextBefore ??= []
-					reply.logContextBefore.push(entry)
-					await updated.AddChatLogEntry({ name: updated.Charname, ...reply })
-					return
-				}
-			}
-		}
-		catch (error) {
-			console.warn('sub-agent: 主动通知失败，回退待注入队列', error)
-		}
-	}
-
-	pushPendingNotification({ username: run.username, charId: run.charId, parentRunId: run.parentRunId }, entry)
 }
 
 /**
@@ -617,8 +584,6 @@ export async function executeSubAgentRun(run, deps = defaultSubAgentDeps) {
 		deps.archive.removeParentArchive(run.archivePath)
 		emitRunStatus(run, deps)
 		void recordRunGeneration(run, deps)
-		if (run.isAsync)
-			void deliverNotification(run, deps).catch(error => console.warn('sub-agent: 通知投递失败', error))
 	}
 	return run
 }
@@ -713,7 +678,19 @@ export async function runSubAgent(args, request, deps = defaultSubAgentDeps) {
 	createRun(run)
 
 	if (request.async) {
-		void executeSubAgentRun(run, deps).catch(error => console.error('sub-agent: 后台运行异常', error))
+		registerTask({
+			id: run.backgroundId,
+			kind: 'subagent',
+			label: taskPreview(run.task),
+			owner: { username, charId, chatName: run.chat_name, parentRunId },
+			/**
+			 * 后台执行子代理运行。
+			 * @returns {Promise<object>} 运行对象
+			 */
+			run: () => executeSubAgentRun(run, deps),
+			meta: { runId: run.runId, batchId: run.batchId, depth },
+			format: subAgentNotificationText,
+		})
 		return { backgroundId: run.backgroundId, run }
 	}
 	await executeSubAgentRun(run, deps)

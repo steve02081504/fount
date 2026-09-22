@@ -1,0 +1,60 @@
+{
+	"info": {
+		"zh-CN": {
+			"name": "异步任务",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "统一登记与等待后台异步任务（子代理、后台代码执行等）",
+			"description_markdown": "**异步任务**插件为所有后台异步操作（子代理运行、后台 JS/shell 执行等）提供统一的资源 id 与等待工具。角色可用 `<list-async/>` 查看进行中的任务，用 `<await-async ids=\"…\" mode=\"all|any\"/>` 等待一个或多个任务完成；任务完成后若未被等待，会以系统消息通知角色。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"异步",
+				"任务",
+				"插件"
+			]
+		},
+		"en-UK": {
+			"name": "Async tasks",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "Register and await background async tasks (sub-agents, background code execution, …)",
+			"description_markdown": "The **Async tasks** plugin gives every background operation (sub-agent runs, background JS/shell execution, …) a unified resource id and await tooling. A character can list in-flight tasks with `<list-async/>` and await one or more with `<await-async ids=\"…\" mode=\"all|any\"/>`; a task that finishes without being awaited notifies the character as a system message.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"async",
+				"task",
+				"plugin"
+			]
+		},
+		"zh-TW": {
+			"name": "非同步任務",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "統一登記與等待後台非同步任務（子代理、後台程式執行等）",
+			"description_markdown": "**非同步任務**外掛為所有後台非同步操作（子代理執行、後台 JS/shell 執行等）提供統一的資源 id 與等待工具。角色可用 `<list-async/>` 檢視進行中的任務，用 `<await-async ids=\"…\" mode=\"all|any\"/>` 等待一個或多個任務完成；任務完成後若未被等待，會以系統訊息通知角色。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"非同步",
+				"任務",
+				"外掛"
+			]
+		},
+		"ja-JP": {
+			"name": "非同期タスク",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "バックグラウンドの非同期タスク（サブエージェント、コード実行など）を一元登録・待機",
+			"description_markdown": "**非同期タスク**プラグインは、すべてのバックグラウンド処理（サブエージェント実行、バックグラウンドの JS/shell 実行など）に統一的なリソース id と待機ツールを提供します。キャラクターは `<list-async/>` で進行中のタスクを一覧し、`<await-async ids=\"…\" mode=\"all|any\"/>` で 1 つ以上を待機できます。待機されずに完了したタスクはシステムメッセージで通知されます。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"非同期",
+				"タスク",
+				"プラグイン"
+			]
+		}
+	}
+}

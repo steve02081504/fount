@@ -85,6 +85,7 @@ async function buildCodeChatRequest({ username, session, machine, workdir, ai_so
 	const plugins = {
 		'code-execution': await loadPart(username, 'plugins/code-execution'),
 		'file-operations': await loadPart(username, 'plugins/file-operations'),
+		'async-task': await loadPart(username, 'plugins/async-task'),
 	}
 	// ai_source 请求级覆盖：loadPart 出实例后传给角色（args.ai_source 为部件实例）
 	const aiSourceInstance = ai_source ? await loadPart(username, 'serviceSources/AI/' + ai_source) : undefined
