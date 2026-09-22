@@ -1,7 +1,7 @@
-<li class="char-item list-row cursor-pointer" data-char-id="${id}" tabindex="0" role="button">
-	<img class="size-10 rounded-box bg-base-300" src="${avatar}" alt="" aria-hidden="true" />
-	<div class="min-w-0 flex-grow">
-		<p class="font-semibold truncate" user-content>${name}</p>
-		<p class="text-xs opacity-60 truncate" user-content>${description}</p>
+<li class="char-item" data-char-id="${escapeHtml(id)}" tabindex="0" role="button">
+	<img class="char-avatar" src="${escapeHtml(avatar)}" alt="" aria-hidden="true" loading="lazy" />
+	<div class="char-item-body">
+		<p class="char-item-name" user-content>${escapeHtml(name)}</p>
+		<p class="char-item-desc" user-content>${escapeHtml(description)}</p>
 	</div>
 </li>

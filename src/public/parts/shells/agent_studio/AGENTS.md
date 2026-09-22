@@ -47,3 +47,11 @@ alwaysApply: false
 ## Endpoints
 
 `/api/parts/shells:agent_studio/` — `/chars`, `/char/:id/overview`, `/subagents?charId=`, `/generations`, `/generation/:id`, `/chains`, `/retention`, `/benchmarks` CRUD, `/benchmarks/:id/run`, `/runs`. Sub-agent views derive from generation records grouped by `subAgent.runId` / `batchId`; live state is imported from `plugins/sub-agent/state.mjs`.
+
+## Frontend views
+
+- `public/index.mjs` boots the shell: `applyTheme` → `initTranslations('agent_studio')` → preload shared data (`src/data.mjs`) → enter the hash view. A ready gate (`src/gate.mjs`, id `agent-studio`) is exposed for Playwright.
+- Four main views, each `<section id="<view>View" class="view">` in `public/index.html`: `dashboard` (char list + overview), `generations` (records + chains, char filter), `benchmarks` (defs + runner + results), `settings` (retention). `src/viewChrome.mjs` toggles visibility/highlight; `src/navigation.mjs` maps view → loader, syncs `location.hash`, and wraps switches in a View Transition.
+- `src/views/*.mjs` own rendering; loaders are safe to re-run (language change re-invokes the active view). Templates live in `public/src/templates/`; `public/src/lib/` holds `format` / `emptyState` / `generationDialog` / `activate` helpers. No view imports `navigation.mjs` (avoids a cycle).
+- Nav chrome (sidebar + mobile dock) shares `.nav-btn[data-view]`, bound once by `wireNavigation`.
+- UI rules: Iconify mask icons only (no emoji), theme tokens only, no hardcoded radius / border / color, animate `transform` / `opacity` / colors only.

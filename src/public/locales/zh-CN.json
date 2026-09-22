@@ -6747,12 +6747,44 @@
 	"agent_studio": {
 		"title": "Agent Studio",
 		"description": "查看生成记录与子代理运行，并对角色做基准测试。",
+		"nav": {
+			"region": {
+				"aria-label": "主导航"
+			},
+			"mobile": {
+				"aria-label": "主导航（移动端）"
+			},
+			"dashboard": "仪表盘",
+			"generations": "生成记录",
+			"benchmarks": "基准测试",
+			"settings": "设置"
+		},
+		"actions": {
+			"refreshData": "刷新数据",
+			"refresh": {
+				"title": "刷新",
+				"aria-label": "刷新数据"
+			},
+			"close": {
+				"title": "关闭",
+				"aria-label": "关闭"
+			}
+		},
+		"dashboard": {
+			"title": "仪表盘",
+			"description": "选择角色，查看它的子代理运行与近期生成。",
+			"selectPrompt": "从左侧选择一个角色开始查看。"
+		},
 		"chars": {
 			"title": "角色",
-			"empty": "暂无角色。"
+			"empty": "暂无角色。",
+			"noMatch": "没有匹配的角色。",
+			"search": {
+				"placeholder": "搜索角色…"
+			}
 		},
 		"detail": {
-			"subAgents": "子代理",
+			"subAgents": "子代理运行",
 			"generations": "近期生成",
 			"none": "暂无数据。"
 		},
@@ -6761,7 +6793,10 @@
 			"prompt": "请求聊天记录",
 			"response": "回复",
 			"ok": "正常",
-			"error": "出错"
+			"error": "出错",
+			"meta": "来源 ${source} · 模型 ${model}",
+			"character": "角色 ${name}",
+			"promptExpired": "请求记录已过期或不可用。"
 		},
 		"run": {
 			"detail": "生成 ${generations} 条 · 轮次 ${rounds}/${roundLimit}",
@@ -6773,21 +6808,32 @@
 				"terminated": "已终止"
 			}
 		},
-		"retention": {
-			"title": "记录保留策略",
-			"prompt": "请求记录保留（天）",
-			"conversation": "整条记录保留（天）",
-			"save": "保存",
-			"saved": "已保存。"
+		"generations": {
+			"title": "生成记录",
+			"description": "浏览所有角色的生成记录与生成链。",
+			"records": "记录",
+			"chains": "生成链",
+			"filterChar": "角色",
+			"allChars": "全部角色",
+			"recordsCount": "共 ${count} 条记录",
+			"empty": "暂无生成记录。",
+			"chainsEmpty": "暂无生成链。"
 		},
 		"benchmarks": {
 			"title": "基准测试",
+			"description": "定义用例、选择角色与裁判，运行评分基准。",
 			"empty": "暂无基准测试。",
+			"pick": "选择或新建一个基准测试。",
 			"new": "新建",
 			"newName": "请输入基准测试名称",
 			"cases": "用例（JSON 数组）",
 			"saveCases": "保存用例",
-			"delete": "删除",
+			"saved": "用例已保存。",
+			"casesInvalid": "用例 JSON 解析失败：${message}",
+			"delete": {
+				"title": "删除",
+				"aria-label": "删除"
+			},
 			"deleteConfirm": "确定删除该基准测试吗？",
 			"selectChar": "运行角色",
 			"selectCharFirst": "请先选择角色。",
@@ -6798,6 +6844,18 @@
 			"noResults": "暂无结果。",
 			"notJudged": "未评分",
 			"stats": "共 ${total} 条 · 空回复 ${empty} · 平均长度 ${avgLength} · 已评分 ${judged} · 平均分 ${avgScore}"
+		},
+		"retention": {
+			"title": "记录保留策略",
+			"hint": "超过请求记录保留期后只保留回复，超过整条记录保留期后整条删除。",
+			"prompt": "请求记录保留（天）",
+			"conversation": "整条记录保留（天）",
+			"save": "保存",
+			"saved": "已保存。"
+		},
+		"settings": {
+			"title": "设置",
+			"description": "调整生成记录的保留策略。"
 		},
 		"alerts": {
 			"loadFailed": "加载失败：${message}",

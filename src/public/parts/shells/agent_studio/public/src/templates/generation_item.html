@@ -1,7 +1,8 @@
-<li class="generation-item list-row cursor-pointer" data-generation-id="${id}" tabindex="0" role="button">
-	<div class="min-w-0 flex-grow">
-		<p class="text-sm truncate" user-content>${preview}</p>
-		<p class="text-xs opacity-60 truncate">${meta}</p>
+<li class="generation-item" data-generation-id="${escapeHtml(id)}" tabindex="0" role="button">
+	<span class="generation-dot" aria-hidden="true"></span>
+	<div class="generation-item-body">
+		<p class="generation-preview" user-content>${escapeHtml(preview)}</p>
+		<p class="generation-meta" user-content>${escapeHtml(meta)}</p>
 	</div>
-	<span class="badge ${badgeClass}">${status}</span>
+	<span class="badge ${badgeClass}">${escapeHtml(status)}</span>
 </li>
