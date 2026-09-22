@@ -42,6 +42,8 @@ const { positionals, values } = parseArgsOrExit({
 		'update-estimates': { type: 'boolean', default: false },
 		list: { type: 'boolean', default: false },
 		kernel: { type: 'string' },
+		output: { type: 'string' },
+		json: { type: 'boolean', default: false },
 		help: { type: 'boolean', short: 'h', default: false },
 	},
 })
@@ -253,11 +255,13 @@ process.exit(await (async () => {
 	}
 
 	await ensureTestKernel()
+	const output = values.output ?? (values.json ? 'json' : undefined)
 	if (values.watch)
-		return runTestDisplay({ watch: true })
+		return runTestDisplay({ watch: true, output })
 
 	const { parsed } = await loadCliSelection()
 	return runTestDisplay({
+		output,
 		job: {
 			runAll: values.all,
 			force: values.force,

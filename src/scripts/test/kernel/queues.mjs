@@ -1,5 +1,5 @@
 /**
- * 测试内核待运行队列：CLI 同优先级 LIFO、FS LIFO、预备 debounce。
+ * 测试内核待运行队列：CLI 同优先级 FIFO、FS LIFO、预备 debounce。
  */
 import { ms } from '../../ms.mjs'
 
@@ -30,7 +30,7 @@ export const DEFAULT_PREP_SETTLE_MS = ms('3m')
  */
 
 /**
- * CLI 同优先级 LIFO + FS LIFO + 预备 debounce。
+ * CLI 同优先级 FIFO + FS LIFO + 预备 debounce。
  */
 export class TestQueues {
 	/**
@@ -61,7 +61,7 @@ export class TestQueues {
 	}
 
 	/**
-	 * CLI 队列追加（尾部；同优先级由 peekReady 取最后入队者）。
+	 * CLI 队列追加（尾部；同优先级由 peekReady 取最先入队者）。
 	 * @param {Omit<QueueItem, 'id' | 'source' | 'enqueuedAt'>} spec 项
 	 * @returns {QueueItem} 入队项
 	 */
@@ -147,7 +147,11 @@ export class TestQueues {
 	}
 
 	/**
-	 * 取下一个可调度项：CLI 同优先级后入队者先（LIFO），否则 FS 中最新的 ready。不做出队。
+	 * 取下一个可调度项：CLI **同优先级先入队者先（FIFO）**，否则 FS 中最新的 ready。不做出队。
+	 *
+	 * FIFO 而非 LIFO：多个并行 CLI job 共用一个内核队列时，LIFO 会让后到的 job 持续插队、
+	 * 先到的 job 无限等待（实测 4 个 `checks:*` 被饿死到 600s 工具超时）。优先级仍绝对生效
+	 *（imperfect=0 先于普通=1），同优先级按入队先后。
 	 * @param {(item: QueueItem) => boolean} isReady 是否可开工
 	 * @returns {{ queue: 'cli' | 'fs', item: QueueItem } | null} 选中项
 	 */
@@ -157,12 +161,11 @@ export class TestQueues {
 		for (const item of this.cli) {
 			if (!isReady(item)) continue
 			const priority = item.priority ?? 1
+			// 严格小于：同优先级保留更早入队的那一项（数组顺序即入队顺序）。
 			if (priority < bestPriority) {
 				bestPriority = priority
 				best = item
 			}
-			else if (priority === bestPriority)
-				best = item
 		}
 		if (best)
 			return { queue: 'cli', item: best }

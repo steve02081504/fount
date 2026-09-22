@@ -28,6 +28,7 @@ import { TestKernel } from './runtime.mjs'
 	 * @param {number} [options.idleAllMs] watch 闲置自动补跑 --all 的静置毫秒
 	 * @param {boolean} [options.autoUpdateExpected] 跑完是否按漂移自动回写 manifest `expected`
 	 * @param {number} [options.idleExitGraceMs] 空闲且无 watcher 后自动退出的宽限毫秒
+	 * @param {((reason: string) => Promise<{ changed?: boolean }>) | null} [options.denoUpdater] Deno 更新器
 	 * @param {(name: string) => void} [options.onPhase] 启动相位回调（bench 工具）
 	 * @returns {Promise<{ url: string, kernel: TestKernel, close: () => Promise<void> }>} 句柄
 	 */
@@ -42,9 +43,10 @@ export async function startTestKernel({
 	idleAllMs,
 	autoUpdateExpected,
 	idleExitGraceMs,
+	denoUpdater = null,
 	onPhase = () => { },
 } = {}) {
-	const kernel = new TestKernel({ repoRoot, autoExit, watchFs, prepSettleMs, writeReport, moduleCheckHoldTimeoutMs, idleAllMs, autoUpdateExpected, idleExitGraceMs })
+	const kernel = new TestKernel({ repoRoot, autoExit, watchFs, prepSettleMs, writeReport, moduleCheckHoldTimeoutMs, idleAllMs, autoUpdateExpected, idleExitGraceMs, denoUpdater })
 	onPhase('kernelConstructed')
 	await kernel.start(onPhase)
 

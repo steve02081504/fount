@@ -14,7 +14,8 @@ import { testHubUrl } from '../hub/index.mjs'
 
 import { TestDashboard } from './dashboard.mjs'
 import { displayShouldResolve, resolveDisplayMode } from './mode.mjs'
-import { paintAccepted, paintJobDone, paintJobWait, paintSuiteEnd, splitSuiteKey, suiteEndHasFailureOutput } from './paint.mjs'
+import { createEventEmitter, resolveOutputMode } from './output.mjs'
+import { formatFailureOutput, paintAccepted, paintJobDone, paintJobWait, paintSuiteEnd, splitSuiteKey, suiteEndHasFailureOutput } from './paint.mjs'
 import { paintScheduleUpdate } from './schedule.mjs'
 
 /**
@@ -22,14 +23,18 @@ import { paintScheduleUpdate } from './schedule.mjs'
  * @property {boolean} [watch] 是否 watch 挂起
  * @property {object} [job] 提交给内核的 job
  * @property {number} [port] 内核端口
+ * @property {'human' | 'plain' | 'json'} [output] 输出模式（缺省按 TTY 自动选择）
  */
+
+/** 面向 agent 的进度心跳间隔（毫秒）。 */
+export const HEARTBEAT_MS = 30_000
 
 /**
  * 连接内核并显示直到该次调用该退出。
  * @param {DisplayOptions} options 选项
  * @returns {Promise<number>} 退出码
  */
-export async function runTestDisplay({ watch = false, job, port } = {}) {
+export async function runTestDisplay({ watch = false, job, port, output } = {}) {
 	const url = `${testHubUrl(port).replace(/^http/, 'ws')}/ws/viewer`
 	const ws = new WebSocket(url)
 	await new Promise((resolve, reject) => {
@@ -37,15 +42,28 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 		ws.addEventListener('error', () => reject(new Error(`cannot connect test kernel at ${url}`)), { once: true })
 	})
 
+	/** 输出模式：human=TTY 仪表盘；plain/json=面向 agent 的离散事件。 */
+	const outputMode = resolveOutputMode({ requested: output })
+	const human = outputMode === 'human'
+	/** 非 human 模式的事件发射器；human 直走 paint*。 */
+	const emit = human ? null : createEventEmitter(outputMode)
 	let exitCode = 0
 	let runCount = 0
 	let displayMode = resolveDisplayMode({ watch, job })
-	/** 包管理器式仪表盘：仅 TTY + ANSI 且非 stream 模式启用。 */
-	const dashboard = new TestDashboard({ enabled: Boolean(process.stdout.isTTY && supportsAnsi) })
+	/** 包管理器式仪表盘：仅 human + TTY + ANSI 且非 stream 模式启用。 */
+	const dashboard = new TestDashboard({ enabled: human && Boolean(process.stdout.isTTY && supportsAnsi) })
 	/** @type {string | null} */
 	let jobId = null
 	const done = Promise.withResolvers()
 	let finished = 0
+	let passedCount = 0
+	let failedCount = 0
+	/** 本波首个 suite-start 时刻（心跳耗时基准）。 */
+	let waveStartedAt = null
+	/** 当前在跑 suite 键（心跳展示）。 */
+	const runningKeys = new Set()
+	/** 面向 agent 的进度心跳计时器。 */
+	let heartbeatTimer = null
 	/** @type {{ key: string, output: string }[]} */
 	const failureLogs = []
 	/** @type {number | null} */
@@ -68,8 +86,25 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 	 * @returns {void}
 	 */
 	function resolveDone() {
+		if (heartbeatTimer != null) {
+			clearInterval(heartbeatTimer)
+			heartbeatTimer = null
+		}
 		dashboard.end()
 		done.resolve()
+	}
+
+	/**
+	 * 启动面向 agent 的进度心跳（plain/json 下每 {@link HEARTBEAT_MS} 一条，仅在有套件在跑时）。
+	 * 让 agent 知道"还在跑"，而不必消费 ETA 抖动。
+	 * @returns {void}
+	 */
+	function startHeartbeat() {
+		if (human || heartbeatTimer != null) return
+		heartbeatTimer = setInterval(() => {
+			if (!runningKeys.size || waveStartedAt == null) return
+			emit({ type: 'progress', running: [...runningKeys], elapsedMs: Date.now() - waveStartedAt })
+		}, HEARTBEAT_MS)
 	}
 
 	/**
@@ -160,7 +195,24 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 		runCount = message.runCount ?? 0
 		displayMode = message.mode || displayMode
 		jobId = message.jobId ?? jobId
-		paintAccepted(message)
+		if (human)
+			paintAccepted(message)
+		else {
+			// 错误细节（deadTriggers / 可用 id 等）仍走 paintAccepted 的 i18n 明细，再补一条可解析行。
+			if (message.error) paintAccepted(message)
+			emit({
+				type: 'accepted',
+				error: message.error ?? null,
+				code: message.code ?? 0,
+				selectionMode: message.selectionMode ?? null,
+				goalCount: message.goalCount ?? 0,
+				total: message.total ?? 0,
+				runCount: message.runCount ?? 0,
+				reuseCount: message.reuseCount ?? 0,
+				blockedCount: message.blockedCount ?? 0,
+				skippedCount: message.skippedCount ?? 0,
+			})
+		}
 		if (message.reportPath)
 			console.logI18n('fountConsole.test.reportPath', { path: message.reportPath })
 		// 有真跑的非 stream 展示才上仪表盘（错误/空波次直接走 job-done）。
@@ -172,6 +224,9 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 		shownPct = null
 		lastTaskbarState = null
 		lastCompletionAt = null
+		waveStartedAt = Date.now()
+		runningKeys.clear()
+		startHeartbeat()
 		scheduleProgressRefresh()
 	}
 
@@ -194,8 +249,13 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 	 * @returns {void}
 	 */
 	function onSuiteStart(message) {
+		runningKeys.add(message.key)
 		if (dashboard.active) {
 			dashboard.onSuiteStart(message)
+			return
+		}
+		if (!human) {
+			emit({ type: 'suite-start', key: message.key, expectedMs: message.expectedMs })
 			return
 		}
 		const expected = formatMs(message.expectedMs)
@@ -209,12 +269,16 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 	 * @returns {void}
 	 */
 	function onScheduleUpdate(message) {
+		// plain/json 不消费 ETA：进度由心跳覆盖，避免非单调 ETA 抖动刷屏。
+		if (!human) return
 		const nextCompletionAt = message.lastCompletionAt ? Date.parse(message.lastCompletionAt) : null
 		const previousCompletionAt = lastCompletionAt
-		// 相对 5% 或绝对 ≥500ms 之一变化才重印剩余文案，避免接近结束时高频重画。
-		const changed = previousCompletionAt == null || nextCompletionAt == null
-			|| Math.abs(nextCompletionAt - previousCompletionAt) / Math.max(1, previousCompletionAt) > 0.05
-			|| Math.abs(nextCompletionAt - previousCompletionAt) >= 500
+		// 双方都未知（空档/未就绪）视为未变化：旧逻辑把 `prev == null || next == null` 当变化，
+		// 导致未知阶段每一帧都重印。
+		const changed = (previousCompletionAt != null || nextCompletionAt != null)
+			&& (previousCompletionAt == null || nextCompletionAt == null
+				|| Math.abs(nextCompletionAt - previousCompletionAt) / Math.max(1, previousCompletionAt) > 0.05
+				|| Math.abs(nextCompletionAt - previousCompletionAt) >= 500)
 		lastCompletionAt = nextCompletionAt
 		if (dashboard.active) {
 			dashboard.onScheduleUpdate(message)
@@ -233,10 +297,25 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 	 */
 	function onSuiteEnd(message) {
 		finished++
+		runningKeys.delete(message.key)
+		const countedRun = !message.reused && !message.blockedBy?.length && !message.skippedBy?.length
+		if (countedRun && message.passed) passedCount++
+		else if (countedRun) failedCount++
 		if (displayMode !== 'stream' && suiteEndHasFailureOutput(message))
 			failureLogs.push({ key: message.key, output: message.output })
 		if (dashboard.active) {
 			dashboard.onSuiteEnd(message)
+			return
+		}
+		if (!human) {
+			emit({
+				type: 'suite-end',
+				key: message.key,
+				passed: message.passed === true,
+				reused: message.reused === true,
+				blockedBy: message.blockedBy ?? null,
+				durationMs: message.durationMs ?? null,
+			})
 			return
 		}
 		paintSuiteEnd(message, { stream: displayMode === 'stream' })
@@ -256,7 +335,7 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 			dashboard.onQueue(message)
 			return
 		}
-		if (!watch) return
+		if (!human || !watch) return
 		console.logI18n(
 			message.type === 'queue-append' ? 'fountConsole.test.queue.append' : 'fountConsole.test.queue.remove',
 			{ label: message.key, reason: message.reason || '' },
@@ -274,6 +353,10 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 			dashboard.onJobWait(message)
 			return
 		}
+		if (!human) {
+			emit({ type: 'job-wait', aheadCount: message.aheadCount })
+			return
+		}
 		paintJobWait(message)
 	}
 
@@ -286,6 +369,10 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 			dashboard.commitLine(geti18nForTerminal('fountConsole.test.cleanupLeak', {
 				paths: message.leaks.join('\n'),
 			}))
+			return
+		}
+		if (!human) {
+			emit({ type: 'cleanup-leak', leaks: message.leaks })
 			return
 		}
 		console.errorI18n('fountConsole.test.cleanupLeak', {
@@ -301,10 +388,29 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 		exitCode = message.exitCode ?? 0
 		// 先撤仪表盘，失败日志回放回到普通滚动区。
 		dashboard.end()
-		paintJobDone({
-			...message,
-			failureLogs: displayMode === 'stream' ? [] : failureLogs,
-		})
+		if (heartbeatTimer != null) {
+			clearInterval(heartbeatTimer)
+			heartbeatTimer = null
+		}
+		const failures = displayMode === 'stream' ? [] : failureLogs
+		if (human)
+			paintJobDone({ ...message, failureLogs: failures })
+		else {
+			emit({
+				type: 'job-done',
+				exitCode,
+				reportPath: message.reportPath ?? null,
+				passed: passedCount,
+				failed: failedCount,
+				durationMs: waveStartedAt == null ? null : Date.now() - waveStartedAt,
+				failures: failures.map(failure => ({ key: failure.key, output: failure.output })),
+			})
+			for (const failure of failures) {
+				if (!failure.output) continue
+				process.stdout.write(`—— ${failure.key} tail ——\n`)
+				process.stdout.write(formatFailureOutput(failure.output))
+			}
+		}
 		if (displayShouldResolve(message, { watch, displayMode, job, runCount }))
 			resolveDone()
 	}

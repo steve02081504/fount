@@ -18,10 +18,13 @@ alwaysApply: false
 | Upstream blockers (do not silence) | [docs/upstream-blockers.md](docs/upstream-blockers.md) |
 | OOM / heap | [docs/heap-snapshots.md](docs/heap-snapshots.md) |
 | Trigger filter | [docs/trigger-filter.md](docs/trigger-filter.md) |
+| Concurrency / perf / output-noise diagnosis | [../../../docs/issues/fount-test-concurrency-performance.md](../../../docs/issues/fount-test-concurrency-performance.md) |
 
 ## Architecture
 
 - **Entry**: `fount test` → `cli.mjs` ensures a detached kernel then `display/` paints. `--watch` is a flag, not a selector. `--update-estimates` rewrites manifests and skips the kernel. Internals: [kernel.md](docs/kernel.md). Overview/multi print failed/noisy suite tails once at `job-done` (CI last-lines); stream mode already live-prints.
+- **Output modes**: `human` (TTY dashboard) / `plain` / `json` (NDJSON), via `FOUNT_TEST_OUTPUT` or `--output`/`--json`; non-TTY defaults to `plain`. `plain`/`json` drop the schedule ETA/reason stream (the `总剩余：0 个未知时长` flood) and instead emit discrete events (accepted / suite start–end / job-wait / job-done) plus a 30s heartbeat. `display/output.mjs`; diagnosis: [../../../docs/issues/fount-test-concurrency-performance.md](../../../docs/issues/fount-test-concurrency-performance.md).
+- **Deno update**: the kernel (not the path CLI) self-updates via `kernel/deno_update.mjs` — on kernel startup and when the run queue drains. Throttled to once per `FOUNT_TEST_DENO_UPGRADE_INTERVAL` (default 1h) by `data/installer/deno_upgraded.test`; a successful upgrade restarts only the kernel. Opt out `FOUNT_TEST_SKIP_DENO_UPGRADE=1`. CI installs its own pinned deno.
 - **CLI `--help`**: `fountConsole.test.help` is a usage tutorial (invocation, selectors, flags, examples). Kernel bind, state paths, manifest fields, and scheduler internals belong in this guide / `docs/` — not `--help`.
 - **`--update-estimates`**: rewrite suite/subtest `expected` from state EMA baselines (`baselineDurationMs` / subtest `durationMs`); skip the kernel; selectors narrow the set. Does not run tests. Combine with `--watch` / `--all` / `--force` / `--list` is an error.
 - **`--list`**: print available suites (grouped by manifest, subtests indented, `expected` inline) and exit; skip the kernel. Selectors narrow the scope; a group that matches nothing exits 2. Combine with `--watch` / `--all` / `--force` / `--update-estimates` / `--kernel` is an error.
@@ -87,7 +90,7 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 
 Deep detail (performance bench, isolation runs, temp-dir internals): [docs/operator-tools.md](docs/operator-tools.md).
 
-- **Hung run**: `data/test/state/logs/`; rerun with env from the log. Watchdogs / sleep retry / baselines: [host-keep-awake.md](docs/host-keep-awake.md), [resource-scheduling.md](docs/resource-scheduling.md). Opt out: `FOUNT_TEST_ALLOW_SLEEP=1`. Module-check mutex leaks (killed Deno child never POSTs ready) auto-release the mutex after the idle window and still fail the suite as missed-ready; they must not freeze later suites. Stuck detached kernel: `fount test --kernel shutdown` / `--kernel reboot`.
+- **Hung run**: `data/test/state/logs/`; rerun with env from the log. Watchdogs / sleep retry / baselines: [host-keep-awake.md](docs/host-keep-awake.md), [resource-scheduling.md](docs/resource-scheduling.md). Opt out: `FOUNT_TEST_ALLOW_SLEEP=1`. Module-check mutex leaks (killed Deno child never POSTs ready) release the mutex immediately when the suite is kicked, or after the spawn→ready cap (`3m`) otherwise, and still fail the suite as missed-ready; they must not freeze later suites. Stuck detached kernel: `fount test --kernel shutdown` / `--kernel reboot`.
 - **Temp leak check**: every kernel job baselines Temp at submit; only `fount[-_]*` entries **created during the job** and still present at its end are reported (exit 3). Keep scratch dirs under the `fount[-_]` prefix and **always clean them up in a `finally`** — there is no prefix-based escape hatch. Long-lived data dirs (`fount_node_*`, `fount_test_*`) register via `FOUNT_TEST_DATA_DIRS_OUT`; hand-built kernel jobs must pass `cleanupBaseline: findCleanupLeaks()`.
 - **Temp origin marker**: `core/temp_origin.mjs` writes `origin.txt` (creator + timestamp) into every `fount[-_]*` scratch dir at creation — **read it first when investigating leftover Temp dirs**.
 - **Deno panic auto-report**: `core/deno_panic.mjs` → `denoland/deno` (if `gh` + auth); dedup `data/test/deno_panics.json`. Override: `FOUNT_DENO_PANIC_REPO`. `testkit` excluded.

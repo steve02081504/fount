@@ -12,7 +12,10 @@ import { formatScheduleReason } from '../kernel/schedule_event.mjs'
  */
 export function paintScheduleUpdate(message, prevCompletionMs) {
 	const ms = message.lastCompletionMs
-	if (ms == null || !Number.isFinite(ms))
+	const known = Number.isFinite(ms) && ms > 0
+	// 空档 / 全部就绪：既无已知剩余也无未知项时，打印 `0 个未知时长` 毫无信息，直接跳过。
+	if (!known && !(message.unknownCount > 0)) return
+	if (!known)
 		console.logI18n('fountConsole.test.display.remainingOnlyUnknown', { count: message.unknownCount ?? 0 })
 	else
 		console.logI18n('fountConsole.test.display.remaining', { remaining: formatDuration(ms) })

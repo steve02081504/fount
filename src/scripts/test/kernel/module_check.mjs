@@ -3,11 +3,20 @@
  */
 
 import { randomUUID } from 'node:crypto'
+import process from 'node:process'
 
 import { ms } from '../../ms.mjs'
 
-/** spawn→ready 窗口上限；超时视为持有者已死，释放等待者。与 suite idle watchdog 对齐。 */
-export const MODULE_CHECK_HOLD_TIMEOUT_MS = ms('10m')
+/**
+ * spawn→ready 窗口上限；超时视为持有者已死，释放等待者。
+ * 这**不是**整套 suite 的 watchdog：正常模块检查只需数秒，只有「持有租约的子进程既不 ready
+ * 也不退出」时才会走到这里。共用内核的并行 CLI 下，一次泄漏会冻结所有 Deno 套件，故默认收紧到
+ * 3 分钟（旧值 10 分钟与 suite idle watchdog 对齐，但那混淆了「spawn→ready」与「整套运行」）。
+ * 可用 `FOUNT_TEST_MODULE_CHECK_HOLD_MS` 覆盖。
+ */
+export const MODULE_CHECK_HOLD_TIMEOUT_MS = Number(process.env.FOUNT_TEST_MODULE_CHECK_HOLD_MS) > 0
+	? Number(process.env.FOUNT_TEST_MODULE_CHECK_HOLD_MS)
+	: ms('3m')
 
 /**
  * 无任何实测样本时的模块检查均值兜底（毫秒）。
