@@ -252,5 +252,17 @@ export class chatLogEntry_t {
 	}
 }
 
+/** 上下文压缩摘要条目的模型标记（同时用作条目 `name` 与 `type`）。 */
+export const SUMMARY_ENTRY_TYPE = 'summary'
+
+/**
+ * 判断条目是否为摘要条目。
+ * @param {chatLogEntry_t} entry 日志条目
+ * @returns {boolean} 是否为摘要条目
+ */
+export function isSummaryEntry(entry: chatLogEntry_t): boolean {
+	return entry.type === SUMMARY_ENTRY_TYPE
+}
+
 /** 聊天日志条目数组。 */
 export type chatLog_t = chatLogEntry_t[]

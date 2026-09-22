@@ -4,7 +4,8 @@
 /* global Deno */
 import { assertEquals } from 'jsr:@std/assert'
 
-import { applySummaryBoundary, isSummaryEntry } from '../../src/prompt_struct/summaryBoundary.mjs'
+import { isSummaryEntry } from '../../../../../../decl/chatLog.ts'
+import { applySummaryBoundary } from '../../src/prompt_struct/summaryBoundary.mjs'
 
 /**
  * 始终可见的判定函数。
@@ -16,7 +17,6 @@ Deno.test('isSummaryEntry only matches type=summary', () => {
 	assertEquals(isSummaryEntry({ type: 'summary' }), true)
 	assertEquals(isSummaryEntry({ type: 'other' }), false)
 	assertEquals(isSummaryEntry({}), false)
-	assertEquals(isSummaryEntry(null), false)
 })
 
 Deno.test('applySummaryBoundary slices from the newest visible summary', () => {

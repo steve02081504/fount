@@ -25,16 +25,6 @@ const replyHandlers = defineReplyHandlers([compressContextReplyHandler])
  */
 export default {
 	info,
-	/**
-	 * 插件加载时调用。
-	 * @returns {Promise<void>}
-	 */
-	Load: async () => { },
-	/**
-	 * 插件卸载时调用。
-	 * @returns {Promise<void>}
-	 */
-	Unload: async () => { },
 	interfaces: {
 		config: {
 			/**
