@@ -5330,7 +5330,9 @@
 		"copied": "已複製到剪貼簿",
 		"generateApiKeyButton": "產生新金鑰",
 		"home_function_buttons": {
-			"integration_related": "整合相關",
+			"integration_related": {
+				"title": "整合相關"
+			},
 			"ide_integration_config": {
 				"title": "IDE 整合設定"
 			}

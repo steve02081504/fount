@@ -50,6 +50,26 @@
 			]
 		},
 		{
+			"name": "home_registry",
+			"expected": "1s",
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/checks/test/home_registry.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/checks/{home_registry.mjs,walk.mjs}",
+				"src/scripts/checks/test/home_registry.test.mjs",
+				"src/public/parts/**/home_registry.json",
+				"src/public/locales/zh-CN.json"
+			]
+		},
+		{
 			"name": "i18n_keys",
 			"expected": 600,
 			"run": [

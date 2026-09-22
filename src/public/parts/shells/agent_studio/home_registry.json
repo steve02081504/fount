@@ -1,14 +1,14 @@
 {
 	"home_function_buttons": [
 		{
-			"id": "agent_studio",
-			"info": "agent_studio.home_function_buttons.title",
-			"level": 1,
-			"button": "<img src=\"https://api.iconify.design/mdi/flask-outline.svg\" class=\"text-icon\"/>",
+			"id": "dev",
+			"info": "agent_studio.home_function_buttons.dev",
+			"level": 6,
+			"button": "<img src=\"https://api.iconify.design/mdi/code-braces.svg\" class=\"text-icon\"/>",
 			"sub_items": [
 				{
-					"info": "agent_studio.home_function_buttons.open",
-					"level": 1,
+					"info": "agent_studio.home_function_buttons.dev.sub_items.open",
+					"level": 2,
 					"url": "/parts/shells:agent_studio/",
 					"button": "<img src=\"https://api.iconify.design/mdi/flask-outline.svg\" class=\"text-icon\"/>"
 				}

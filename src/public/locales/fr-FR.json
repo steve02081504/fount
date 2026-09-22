@@ -5337,7 +5337,9 @@
 		"copied": "Copié dans le presse-papiers",
 		"generateApiKeyButton": "Générer une nouvelle clé",
 		"home_function_buttons": {
-			"integration_related": "Lié à l'intégration",
+			"integration_related": {
+				"title": "Lié à l'intégration"
+			},
 			"ide_integration_config": {
 				"title": "Configuration de l'intégration IDE"
 			}
