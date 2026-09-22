@@ -34,6 +34,16 @@
 					</button>
 					<div class="code-tab-strip" id="tab-strip" role="toolbar" data-i18n="code.tabs"></div>
 				</div>
+				<div class="code-context" id="code-context" hidden>
+					<button class="code-context-btn" id="code-context-workspace" type="button" aria-haspopup="dialog">
+						<img src="https://api.iconify.design/mdi/folder-outline.svg" class="text-icon" width="14" height="14" alt="" aria-hidden="true" />
+						<span class="code-context-label" id="code-context-workspace-label" user-content></span>
+					</button>
+					<button class="code-context-btn" id="code-context-char" type="button" aria-haspopup="dialog">
+						<img src="https://api.iconify.design/mdi/robot-outline.svg" class="text-icon" width="14" height="14" alt="" aria-hidden="true" />
+						<span class="code-context-label" id="code-context-char-label" user-content></span>
+					</button>
+				</div>
 			</header>
 			<div class="code-messages" id="messages"></div>
 			<div class="code-composer">
@@ -49,6 +59,10 @@
 								<img src="https://api.iconify.design/mdi/paperclip.svg" class="text-icon" width="15" height="15" alt="" aria-hidden="true" />
 							</button>
 						</div>
+						<button type="button" class="btn btn-ghost btn-square btn-sm code-power-button" id="power-settings-button" data-i18n="code.power.settings">
+							<img src="https://api.iconify.design/mdi/power-settings.svg" class="text-icon" width="16" height="16" alt="" aria-hidden="true" />
+							<span class="code-power-badge" id="power-armed-badge" hidden></span>
+						</button>
 						<button type="button" class="code-composer-send btn btn-square btn-primary shrink-0 w-8" id="send-button" data-i18n="code.composer.sendButton">
 							<img id="send-icon" src="https://api.iconify.design/mdi/arrow-up.svg" class="text-icon" width="16" height="16" alt="" aria-hidden="true" />
 						</button>
@@ -56,9 +70,6 @@
 				</div>
 				<div class="code-composer-hint" id="composer-hint" data-i18n="code.composer.hint"></div>
 				<div class="code-composer-targets" id="composer-targets"></div>
-				<div class="code-composer-power-actions" id="composer-power-actions">
-					<button type="button" class="btn btn-sm btn-ghost" id="power-settings-button" data-i18n="code.power.settings.button"></button>
-				</div>
 			</div>
 			<div id="code-tab-menu" class="code-tab-menu fixed hidden z-50 min-w-44 rounded-box border border-base-300 bg-base-100 p-1 shadow-xl" role="menu"></div>
 		</main>

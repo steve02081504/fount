@@ -447,7 +447,15 @@ function updateBackToBottom() {
 	backToBottom.classList.toggle('show', !nearBottom() && (store.session?.entries?.length || 0) > 0)
 }
 
-elements.messages.addEventListener('scroll', updateBackToBottom, { passive: true })
+/** 消息流滚动后给顶栏加投影（提示上方仍有内容）。 */
+function updateScrollShadow() {
+	document.querySelector('.code-topbar')?.classList.toggle('scrolled', elements.messages.scrollTop > 2)
+}
+
+elements.messages.addEventListener('scroll', () => {
+	updateBackToBottom()
+	updateScrollShadow()
+}, { passive: true })
 
 /**
  * 空态布局开关：无条目且未在生成时 composer 垂直居中 + wordmark。
@@ -466,11 +474,13 @@ export function renderMessages() {
 	if (!entries.length) {
 		elements.messages.replaceChildren(backToBottom)
 		updateBackToBottom()
+		updateScrollShadow()
 		return
 	}
 	elements.messages.replaceChildren(...entries.map((entry, index) => renderEntryBubble(entry, { isLast: index === entries.length - 1 })), backToBottom)
 	scrollMessagesBottom()
 	updateBackToBottom()
+	updateScrollShadow()
 	updateRegenButtons()
 	updateSubAgentCards()
 }

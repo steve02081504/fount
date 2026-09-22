@@ -27,6 +27,12 @@ export const elements = {
 	composerControlsMain: getElementById('composer-controls-main'),
 	composerTargets: getElementById('composer-targets'),
 	powerSettingsButton: getElementById('power-settings-button'),
+	powerArmedBadge: getElementById('power-armed-badge'),
+	contextChip: getElementById('code-context'),
+	contextWorkspaceButton: getElementById('code-context-workspace'),
+	contextWorkspaceLabel: getElementById('code-context-workspace-label'),
+	contextCharButton: getElementById('code-context-char'),
+	contextCharLabel: getElementById('code-context-char-label'),
 }
 
 /** 全局会话 / 选择状态 + 运行时单例（跨模块读写）。 */

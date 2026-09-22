@@ -169,6 +169,9 @@ export async function boot() {
 /** 绑定顶栏 / pill / 发送按钮事件（pill 镀铬挂载后调用）。 */
 function wireGlobalEvents() {
 	elements.homeToggle.addEventListener('click', () => void openHomePicker())
+	// 对话态 targets 隐藏后，顶栏上下文 chip 继续提供工作区 / 角色入口
+	elements.contextWorkspaceButton.addEventListener('click', () => void openHomePicker())
+	elements.contextCharButton.addEventListener('click', () => void openCharSwitchDialog())
 	// Alt+1..9 切换标签，Alt+T 新建会话（浏览器页签保留键无法拦截，改用浏览器安全的 Alt 系）
 	document.addEventListener('keydown', event => {
 		if (!event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return

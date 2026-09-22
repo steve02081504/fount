@@ -165,18 +165,44 @@ export async function refreshShutdownState() {
 	renderPowerButton()
 }
 
-/** 更新电源操作按钮（文案 + 启用态配色）。 */
+/** 更新电源操作图标按钮（armed 徽标 + 启用态配色 + 无障碍文案）。 */
 export function renderPowerButton() {
 	const button = elements.powerSettingsButton
+	const badge = elements.powerArmedBadge
 	const count = Object.keys(store.shutdownActions || {}).length
-	button.textContent = count
-		? geti18n('code.power.armedCount', { count })
-		: geti18n('code.power.settings.button')
-	button.setAttribute('aria-label', count
+	const label = count
 		? geti18n('code.power.armedAria', { count })
-		: geti18n('code.power.settings.aria'))
+		: geti18n('code.power.settings.aria')
+	button.setAttribute('aria-label', label)
+	button.setAttribute('title', count
+		? geti18n('code.power.armedCount', { count })
+		: geti18n('code.power.settings.button'))
 	button.classList.toggle('btn-warning', count > 0)
 	button.classList.toggle('btn-ghost', count === 0)
+	if (badge) {
+		badge.textContent = String(count)
+		badge.hidden = count === 0
+	}
+}
+
+/**
+ * 更新顶栏上下文 chip（当前工作区 / 角色；对话态 targets 隐藏后仍可见，点击打开选择器）。
+ * @returns {void}
+ */
+export function renderContextChip() {
+	const chip = elements.contextChip
+	if (!chip) return
+	const workspaceName = store.workspace?.name || store.workspace?.path || ''
+	const charName = store.charname || ''
+	elements.contextWorkspaceButton.hidden = !workspaceName
+	elements.contextWorkspaceLabel.textContent = workspaceName
+	elements.contextWorkspaceButton.setAttribute('aria-label', geti18n('code.home.title'))
+	elements.contextWorkspaceButton.setAttribute('title', geti18n('code.home.title'))
+	elements.contextCharButton.hidden = !charName
+	elements.contextCharLabel.textContent = charName
+	elements.contextCharButton.setAttribute('aria-label', geti18n('code.char.switch'))
+	elements.contextCharButton.setAttribute('title', geti18n('code.char.switch'))
+	chip.hidden = !workspaceName && !charName
 }
 
 /** 打开「任务完成后的自动操作」设置对话框。 */
@@ -355,6 +381,7 @@ function renderWorkspaceItems() {
 /** 更新工作区 pill 标签。 */
 export function renderWorkspacePillLabel() {
 	elements.workspacePillLabel.textContent = store.workspace?.name || store.workspace?.path || geti18n('code.workspaces.none')
+	renderContextChip()
 }
 
 /**
@@ -629,6 +656,7 @@ async function openAiSourcePanel() {
 export function updateCharMenu() {
 	elements.charPillLabel.textContent = store.charname || geti18n('code.char.none')
 	elements.charSettingsLink.href = `/parts/shells:config/?partpath=${encodeURIComponent('chars/' + (store.charname || ''))}`
+	renderContextChip()
 }
 
 /** 刷新角色列表。 */
