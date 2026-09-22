@@ -3,9 +3,38 @@
  * 供 file-operations / code shell 等共用，配合 `target.mjs` 的执行器实现本机/远程一致。
  */
 
+import { createHash } from 'node:crypto'
+
 // chat shell 的 streaming/markdown.mjs 同时承担事实共享层：part（char/插件构建 prompt 链路）直接导入其提供的
 // markdown 工具属预期设计，依赖方向正常（无需迁出到额外共享模块）。
 import { inferCodeLanguageFromPath, renderMarkdownCodeBlock } from '../../../shells/chat/src/streaming/markdown.mjs'
+
+/**
+ * 计算注入上下文内容的内容哈希（sha256 hex）。
+ * 供「同一内容已注入过则跳过」的去重使用：只要正文不变，换路径/重读都不再重复注入。
+ * @param {string} text - 内容文本。
+ * @returns {string} sha256 十六进制摘要。
+ */
+export function hashContent(text) {
+	return createHash('sha256').update(String(text ?? ''), 'utf8').digest('hex')
+}
+
+/**
+ * 收集一组日志条目里已预存的注入上下文哈希。
+ * 读取工具日志 `extension.loadedContextHashes`（`hashContent` 结果数组），避免重复扫描/重算正文。
+ * @param {object[]} entries - 日志条目数组（chatLogEntry_t 形状）。
+ * @returns {Set<string>} 已注入内容哈希集合。
+ */
+export function collectLoadedHashes(entries) {
+	const hashes = new Set()
+	for (const entry of entries || []) {
+		const stored = entry?.extension?.loadedContextHashes
+		if (!Array.isArray(stored)) continue
+		for (const hash of stored)
+			if (typeof hash === 'string' && hash) hashes.add(hash)
+	}
+	return hashes
+}
 
 /**
  * 从 markdown 文本中解析 yaml frontmatter 的简单标量键值。
@@ -58,8 +87,8 @@ export function globToRegExp(glob) {
 /**
  * 上下文收集结果。
  * @typedef {object} upwardContext_t
- * @property {{path: string, content: string}[]} agents - 各级 AGENTS.md（自近及远）。
- * @property {{path: string, content: string}[]} docs - 触发的 .agents/docs/*.md。
+ * @property {{path: string, content: string, hash: string}[]} agents - 各级 AGENTS.md（自近及远）。
+ * @property {{path: string, content: string, hash: string}[]} docs - 触发的 .agents/docs/*.md。
  */
 
 /**
@@ -92,7 +121,7 @@ export async function collectUpwardContext(executor, workspaceRoot, filePath) {
 			const agentsFile = entries.find(e => e.isFile && e.name.toLowerCase() === 'agents.md')
 			if (agentsFile) {
 				const content = await executor.readTextFile(dir + '/' + agentsFile.name).catch(() => null)
-				if (content != null) agents.push({ path: dir + '/' + agentsFile.name, content })
+				if (content != null) agents.push({ path: dir + '/' + agentsFile.name, content, hash: hashContent(content) })
 			}
 			const docsDir = entries.find(e => e.isDirectory && e.name === '.agents')
 			if (docsDir) {
@@ -106,7 +135,7 @@ export async function collectUpwardContext(executor, workspaceRoot, filePath) {
 					const { glob } = parseFrontmatter(content)
 					if (!glob) continue
 					if (!globToRegExp(glob).test(relFromRoot)) continue
-					docs.push({ path: docPath, content })
+					docs.push({ path: docPath, content, hash: hashContent(content) })
 				}
 			}
 		}

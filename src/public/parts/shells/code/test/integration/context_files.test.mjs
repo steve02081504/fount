@@ -8,7 +8,7 @@ import path from 'node:path'
 
 import { assert, assertEquals } from 'jsr:@std/assert'
 
-import { collectUpwardContext, formatUpwardContext, globToRegExp, parseFrontmatter } from '../../../../plugins/file-operations/src/context_files.mjs'
+import { collectLoadedHashes, collectUpwardContext, formatUpwardContext, globToRegExp, hashContent, parseFrontmatter } from '../../../../plugins/file-operations/src/context_files.mjs'
 import { createTargetExecutor } from '../../../../plugins/file-operations/src/target.mjs'
 
 /**
@@ -37,6 +37,23 @@ Deno.test('globToRegExp matches documented patterns', () => {
 	assert(star.test('anything.txt'))
 })
 
+Deno.test('hashContent is a stable sha256 hex and collectLoadedHashes reads precomputed hashes', () => {
+	const hash = hashContent('# rules')
+	assert(/^[0-9a-f]{64}$/.test(hash), `expected sha256 hex: ${hash}`)
+	assertEquals(hashContent('# rules'), hash)
+	assert(hashContent('# other') !== hash)
+
+	const entries = [
+		{ extension: { loadedContextHashes: [hash, 'other'] } },
+		{ extension: {} },
+		{},
+		{ extension: { loadedContextHashes: hash } },
+	]
+	const collected = collectLoadedHashes(entries)
+	assertEquals([...collected].sort(), ['other', hash].sort())
+	assertEquals(collectLoadedHashes(undefined).size, 0)
+})
+
 Deno.test('collectUpwardContext walks up for AGENTS.md and triggered docs', async () => {
 	const root = await tempDir()
 	try {
@@ -53,6 +70,8 @@ Deno.test('collectUpwardContext walks up for AGENTS.md and triggered docs', asyn
 		assertEquals(context.agents.length, 2, '两级 AGENTS.md 均收集')
 		assert(context.agents.some(a => a.content.includes('root rules')))
 		assert(context.agents.some(a => a.content.includes('src rules')))
+		for (const item of [...context.agents, ...context.docs])
+			assertEquals(item.hash, hashContent(item.content), '每项应带内容哈希')
 		assertEquals(context.docs.length, 1)
 		assertEquals(context.docs[0].content, '---\nglob: **/*.ts\n---\nts 触发')
 		assert(formatUpwardContext(context).includes('ts 触发'))

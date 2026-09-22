@@ -2,11 +2,12 @@ import { Buffer } from 'node:buffer'
 import fs from 'node:fs'
 import path from 'node:path'
 
+import { mergeStructPromptChatLog } from '../../shells/chat/src/prompt_struct/index.mjs'
 import { defineReplyHandler } from '../../shells/chat/src/reply/defineReplyHandler.mjs'
 import { defaultDisplay } from '../../shells/chat/src/reply/display.mjs'
 import { getChatI18n, inferCodeLanguageFromPath, renderMarkdownCodeBlock } from '../../shells/chat/src/streaming/index.mjs'
 
-import { collectUpwardContext, formatUpwardContext } from './src/context_files.mjs'
+import { collectLoadedHashes, collectUpwardContext, formatUpwardContext } from './src/context_files.mjs'
 import { applyEol, applyReplacement, detectTextStyle, renderLineDiff, restoreBom, similarityRatio, stripBom, toLf } from './src/edit_safety.mjs'
 import { formatReadWindowNotice, isProbablyTextBuffer, parseReadWindow, windowText } from './src/read_window.mjs'
 import { runRipgrep } from './src/search.mjs'
@@ -25,6 +26,47 @@ const SEARCH_MATCH_LIMIT = 200
  * 聊天日志条目类型别名。
  * @typedef {import("../../../../../src/public/parts/shells/chat/decl/chatLog.ts").chatLogEntry_t} chatLogEntry_t
  */
+
+/**
+ * 同一请求内已注入上下文哈希的 in-flight 集合。
+ * 跨轮去重靠工具日志 `extension.loadedContextHashes`；此集合额外兜底同轮并发（parallel）读取：
+ * 相邻多个 `<view-file>` 的日志要等批次结束才回放，期间彼此不可见。以请求 `prompt_struct`（稳定引用）
+ * 为键，并在摘要边界变化（summary 会裁掉更早历史）时重置。
+ * @type {WeakMap<object, {summaryKey: string, hashes: Set<string>}>}
+ */
+const inFlightContextHashes = new WeakMap()
+
+/**
+ * 取「对当前角色生效」的合并日志：优先 `prompt_struct`（自带摘要边界与可见性过滤），缺失时回退 `args.chat_log`。
+ * @param {object} args - 请求上下文。
+ * @returns {object[]} 合并后的日志条目数组。
+ */
+function resolveEffectiveLog(args) {
+	if (Array.isArray(args?.prompt_struct?.chat_log))
+		try {
+			return mergeStructPromptChatLog(args.prompt_struct)
+		}
+		catch { /* prompt_struct 结构不完整时回退 */ }
+	return Array.isArray(args?.chat_log) ? args.chat_log : []
+}
+
+/**
+ * 取生效窗口内已注入的上下文哈希集合（同一请求内共享引用）。
+ * 摘要边界变化（出现新的可见 summary）时重置：更早历史已被裁掉，其中注入过的上下文需重新注入。
+ * @param {object} args - 请求上下文。
+ * @returns {Set<string>} 已注入内容哈希集合。
+ */
+function resolveKnownContextHashes(args) {
+	const key = args?.prompt_struct ?? args
+	const merged = resolveEffectiveLog(args)
+	const summaryKey = merged.find(entry => entry?.type === 'summary')?.id ?? ''
+	let record = inFlightContextHashes.get(key)
+	if (!record || record.summaryKey !== summaryKey)
+		record = { summaryKey, hashes: new Set() }
+	for (const hash of collectLoadedHashes(merged)) record.hashes.add(hash)
+	inFlightContextHashes.set(key, record)
+	return record.hashes
+}
 
 /**
  * 渲染读取窗口结果：区间头 + 代码块 + 截断提示。
@@ -167,16 +209,17 @@ function pendingDisplay(render) {
  * @param {object} args - 请求上下文。
  * @param {string} call - 工具调用文本。
  * @param {string} resultText - agent 层执行结果。
- * @param {{name?: string, files?: object[]}} [options] - 工具名（供人类侧区分读写/搜索）与结果附件。
+ * @param {{name?: string, files?: object[], loadedContextHashes?: string[]}} [options] - 工具名（供人类侧区分读写/搜索）、结果附件与本次注入的上下文哈希。
  * @returns {void}
  */
-function addFileToolLog(args, call, resultText, { name = 'file-operations', files = [] } = {}) {
+function addFileToolLog(args, call, resultText, { name = 'file-operations', files = [], loadedContextHashes } = {}) {
 	args.AddLongTimeLog({
 		name,
 		role: 'tool',
 		content: resultText,
 		content_for_show: renderMarkdownCodeBlock(call.trim()) + '\n\n' + resultText,
 		files,
+		...Array.isArray(loadedContextHashes) && loadedContextHashes.length ? { extension: { loadedContextHashes } } : {},
 	})
 }
 
@@ -257,6 +300,8 @@ export const viewFileReplyHandler = defineReplyHandler({
 		const readWindow = parseReadWindow(call.params)
 		const files = []
 		let file_content = ''
+		const loadedContextHashes = []
+		const knownContextHashes = resolveKnownContextHashes(args)
 		for (const filepath of paths)
 			try {
 				if (filepath.startsWith('http://') || filepath.startsWith('https://')) {
@@ -272,12 +317,16 @@ export const viewFileReplyHandler = defineReplyHandler({
 				const buffer = await executor.readFileBuffer(filepath)
 				if (isProbablyTextBuffer(buffer)) {
 					file_content += renderReadResult(filepath, buffer.toString('utf-8'), readWindow)
-					// 仅首页读取时向上收集 AGENTS.md 与触发的 .agents/docs 文档，避免分页重复注入
-					if (readWindow.offset === 1) {
-						const context = await collectUpwardContext(executor, target.workdir, filepath)
-						const contextText = formatUpwardContext(context)
-						if (contextText) file_content += '随文件一并加载的上下文：\n' + contextText + '\n'
+					// 向上收集 AGENTS.md 与触发的 .agents/docs 文档，按内容 hash 去重：生效窗口内已注入过的跳过
+					const context = await collectUpwardContext(executor, target.workdir, filepath)
+					const freshAgents = context.agents.filter(item => !knownContextHashes.has(item.hash))
+					const freshDocs = context.docs.filter(item => !knownContextHashes.has(item.hash))
+					for (const item of [...freshAgents, ...freshDocs]) {
+						knownContextHashes.add(item.hash)
+						loadedContextHashes.push(item.hash)
 					}
+					const contextText = formatUpwardContext({ agents: freshAgents, docs: freshDocs })
+					if (contextText) file_content += '随文件一并加载的上下文：\n' + contextText + '\n'
 				}
 				else {
 					files.push({ name: filepath.split(/[\\/]/).pop() || 'file', buffer, mime_type: 'application/octet-stream' })
@@ -288,7 +337,7 @@ export const viewFileReplyHandler = defineReplyHandler({
 				file_content += `读取文件失败：${filepath}\n${renderMarkdownCodeBlock(err.stack || String(err))}\n`
 			}
 
-		addFileToolLog(args, call.raw, file_content, { name: 'file-operations.view-file', files })
+		addFileToolLog(args, call.raw, file_content, { name: 'file-operations.view-file', files, loadedContextHashes })
 		return { regen: true }
 	},
 })

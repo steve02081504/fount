@@ -14,6 +14,7 @@ Deno.test('pickEntryExtension keeps frontend-rendering fields and drops the rest
 		asyncList: { tasks: [] },
 		asyncAwait: { settled: [] },
 		error: true,
+		loadedContextHashes: ['abc', 'def'],
 		feedback: { type: 'up' },
 		internal: { secret: 1 },
 	})
@@ -24,6 +25,7 @@ Deno.test('pickEntryExtension keeps frontend-rendering fields and drops the rest
 		asyncList: { tasks: [] },
 		asyncAwait: { settled: [] },
 		error: true,
+		loadedContextHashes: ['abc', 'def'],
 	})
 	assertEquals(pickEntryExtension(null), {})
 	assertEquals(pickEntryExtension('nope'), {})
