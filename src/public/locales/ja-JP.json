@@ -6644,7 +6644,7 @@
 		"subagent": {
 			"title": "サブエージェント",
 			"open": "サブエージェント：${task}（内部会話を開く）",
-			"working": "実行中 ${rounds}/${roundLimit}",
+			"working": "実行中 ${rounds}/${roundLimit} ラウンド",
 			"workingUnknown": "実行中",
 			"state": {
 				"running": "実行中",
@@ -6867,12 +6867,12 @@
 			"title": "生成記録",
 			"description": "全キャラクターの生成記録と生成チェーンを閲覧します。",
 			"records": "記録",
-			"chains": "チェーン",
+			"chains": "生成チェーン",
 			"filterChar": "キャラクター",
 			"allChars": "すべてのキャラクター",
 			"recordsCount": "全 ${count} 件",
 			"empty": "生成記録がありません。",
-			"chainsEmpty": "チェーンがありません。"
+			"chainsEmpty": "生成チェーンがありません。"
 		},
 		"benchmarks": {
 			"title": "ベンチマーク",
@@ -6890,7 +6890,7 @@
 				"aria-label": "削除"
 			},
 			"deleteConfirm": "このベンチマークを削除しますか？",
-			"selectChar": "実行キャラクター",
+			"selectChar": "実行するキャラクター",
 			"selectCharFirst": "先にキャラクターを選択してください。",
 			"judgeSource": "審査 AI ソース（任意）",
 			"run": "実行",
@@ -6898,7 +6898,7 @@
 			"results": "結果",
 			"noResults": "結果がありません。",
 			"notJudged": "未採点",
-			"stats": "全 ${total} 件 · 空応答 ${empty} · 平均長 ${avgLength} · 採点済み ${judged} · 平均スコア ${avgScore}"
+			"stats": "全 ${total} 件 · 空応答 ${empty} · 平均文字数 ${avgLength} · 採点済み ${judged} · 平均スコア ${avgScore}"
 		},
 		"retention": {
 			"title": "記録の保持ポリシー",

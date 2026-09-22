@@ -6451,7 +6451,7 @@
 		},
 		"workspaces": {
 			"browse": "Bladeren…",
-			"open": null,
+			"open": "Werkruimten en gesprekken openen",
 			"remove": "Huidige werkruimte verwijderen",
 			"removeConfirm": "Weet je zeker dat je de werkruimte \"${name}\" wilt verwijderen? De sessiebestanden op schijf blijven behouden.",
 			"none": "Geen werkruimte geselecteerd",
@@ -6632,7 +6632,59 @@
 			"viewFiles": "Bestanden bekijken",
 			"addFiles": "Bestanden verzenden",
 			"callback": "Tool-callback",
-			"runShell": "${lang} uitvoeren"
+			"runShell": "${lang} uitvoeren",
+			"subAgent": {
+				"createBatch": "Subagent-batch aanmaken",
+				"run": "Subagent uitvoeren",
+				"listAiSources": "AI-bronnen weergeven",
+				"check": "Subagent-gesprek bekijken",
+				"terminate": "Subagent beëindigen"
+			},
+			"async": {
+				"list": "Asynchrone taken weergeven",
+				"await": "Wachten op asynchrone taken",
+				"notice": "Melding van achtergrondtaak",
+				"run": "${kind} op de achtergrond uitvoeren"
+			}
+		},
+		"subagent": {
+			"title": "Subagent",
+			"open": "Subagent: ${task} (intern gesprek openen)",
+			"working": "Bezig ${rounds}/${roundLimit} rondes",
+			"workingUnknown": "Bezig",
+			"state": {
+				"running": "Bezig",
+				"summarizing": "Samenvatten",
+				"done": "Voltooid",
+				"terminated": "Beëindigd",
+				"failed": "Mislukt"
+			},
+			"check": {
+				"open": "Openen in Agent Studio",
+				"rounds": "Ronde ${rounds}/${roundLimit}"
+			}
+		},
+		"transcript": {
+			"role": {
+				"tool": "Hulpmiddel",
+				"char": "Personage",
+				"user": "Gebruiker",
+				"system": "Systeem"
+			}
+		},
+		"asyncTasks": {
+			"title": "Achtergrondtaken",
+			"none": "Er zijn momenteel geen asynchrone taken actief.",
+			"timedOut": "Time-out: er zijn nog taken actief.",
+			"open": "Achtergrondtaak: ${label}",
+			"working": "Achtergrondtaak actief (${kind})",
+			"state": {
+				"running": "Bezig",
+				"done": "Voltooid",
+				"failed": "Mislukt",
+				"unknown": "Niet gevonden",
+				"idle": "Achtergrondtaak"
+			}
 		}
 	},
 	"gist": {
@@ -6755,66 +6807,139 @@
 	},
 	"agent_studio": {
 		"title": "Agent Studio",
-		"description": "查看生成记录与子代理运行，并对角色做基准测试。",
-		"chars": {
-			"title": "角色",
-			"empty": "暂无角色。"
+		"description": "Bekijk generaties en subagent-runs en benchmark personages.",
+		"nav": {
+			"region": {
+				"aria-label": "Hoofdnavigatie"
+			},
+			"mobile": {
+				"aria-label": "Hoofdnavigatie (mobiel)"
+			},
+			"dashboard": "Dashboard",
+			"generations": "Generaties",
+			"benchmarks": "Benchmarks",
+			"settings": "Instellingen"
 		},
-		"detail": {
-			"subAgents": "子代理",
-			"generations": "近期生成",
-			"none": "暂无数据。"
-		},
-		"generation": {
-			"title": "生成详情",
-			"prompt": "请求聊天记录",
-			"response": "回复",
-			"ok": "正常",
-			"error": "出错"
-		},
-		"run": {
-			"detail": "生成 ${generations} 条 · 轮次 ${rounds}/${roundLimit}",
-			"state": {
-				"running": "运行中",
-				"summarizing": "总结中",
-				"done": "已完成",
-				"failed": "失败",
-				"terminated": "已终止"
+		"actions": {
+			"refreshData": "Gegevens vernieuwen",
+			"refresh": {
+				"title": "Vernieuwen",
+				"aria-label": "Gegevens vernieuwen"
+			},
+			"close": {
+				"title": "Sluiten",
+				"aria-label": "Sluiten"
 			}
 		},
+		"dashboard": {
+			"title": "Dashboard",
+			"description": "Kies een personage om de subagent-runs en recente generaties te bekijken.",
+			"selectPrompt": "Kies links een personage om te beginnen."
+		},
+		"chars": {
+			"title": "Personages",
+			"empty": "Nog geen personages.",
+			"noMatch": "Geen overeenkomende personages.",
+			"search": {
+				"placeholder": "Personages zoeken…"
+			}
+		},
+		"detail": {
+			"subAgents": "Subagent-runs",
+			"generations": "Recente generaties",
+			"none": "Geen gegevens."
+		},
+		"generation": {
+			"title": "Generatiedetails",
+			"prompt": "Opgevraagde chatgeschiedenis",
+			"response": "Antwoord",
+			"ok": "OK",
+			"error": "Fout",
+			"meta": "Bron ${source} · model ${model}",
+			"character": "Personage ${name}",
+			"promptExpired": "De opgevraagde chatgeschiedenis is verlopen of niet beschikbaar."
+		},
+		"run": {
+			"detail": "Generaties ${generations} · rondes ${rounds}/${roundLimit}",
+			"state": {
+				"running": "Bezig",
+				"summarizing": "Samenvatten",
+				"done": "Voltooid",
+				"failed": "Mislukt",
+				"terminated": "Beëindigd"
+			}
+		},
+		"generations": {
+			"title": "Generaties",
+			"description": "Bekijk records en generatieketens van alle personages.",
+			"records": "Records",
+			"chains": "Generatieketens",
+			"filterChar": "Personage",
+			"allChars": "Alle personages",
+			"recordsCount": "${count} records",
+			"empty": "Nog geen generaties.",
+			"chainsEmpty": "Nog geen ketens."
+		},
 		"benchmarks": {
-			"title": "基准测试",
-			"empty": "暂无基准测试。",
-			"new": "新建",
-			"newName": "请输入基准测试名称",
-			"cases": "用例（JSON 数组）",
-			"saveCases": "保存用例",
+			"title": "Benchmarks",
+			"description": "Definieer testgevallen, kies een personage en beoordelaar en voer beoordeelde benchmarks uit.",
+			"empty": "Nog geen benchmarks.",
+			"pick": "Selecteer of maak een benchmark.",
+			"new": "Nieuw",
+			"newName": "Voer een naam voor de benchmark in",
+			"cases": "Testgevallen (JSON-array)",
+			"saveCases": "Testgevallen opslaan",
+			"saved": "Testgevallen opgeslagen.",
+			"casesInvalid": "JSON van testgevallen kon niet worden geparseerd: ${message}",
 			"delete": {
-				"title": "删除",
-				"aria-label": "删除"
+				"title": "Verwijderen",
+				"aria-label": "Verwijderen"
 			},
-			"deleteConfirm": "确定删除该基准测试吗？",
-			"selectChar": "运行角色",
-			"selectCharFirst": "请先选择角色。",
-			"judgeSource": "裁判 AI 源（可选）",
-			"run": "运行",
-			"runDone": "运行完成。",
-			"results": "结果",
-			"noResults": "暂无结果。",
-			"notJudged": "未评分",
-			"stats": "共 ${total} 条 · 空回复 ${empty} · 平均长度 ${avgLength} · 已评分 ${judged} · 平均分 ${avgScore}"
+			"deleteConfirm": "Deze benchmark verwijderen?",
+			"selectChar": "Personage om uit te voeren",
+			"selectCharFirst": "Selecteer eerst een personage.",
+			"judgeSource": "AI-bron voor beoordeling (optioneel)",
+			"run": "Uitvoeren",
+			"runDone": "Uitvoering voltooid.",
+			"results": "Resultaten",
+			"noResults": "Nog geen resultaten.",
+			"notJudged": "Niet beoordeeld",
+			"stats": "Totaal ${total} · leeg ${empty} · gem. lengte ${avgLength} · beoordeeld ${judged} · gem. score ${avgScore}"
 		},
 		"retention": {
-			"title": "记录保留策略",
-			"prompt": "请求记录保留（天）",
-			"conversation": "整条记录保留（天）",
-			"save": "保存",
-			"saved": "已保存。"
+			"title": "Bewaring van records",
+			"hint": "Na de bewaartermijn van de verzoekgeschiedenis blijven alleen de antwoorden bewaard; na de bewaartermijn van het volledige record wordt het hele record verwijderd.",
+			"prompt": "Bewaartermijn verzoekgeschiedenis (dagen)",
+			"conversation": "Bewaartermijn volledig record (dagen)",
+			"save": "Opslaan",
+			"saved": "Opgeslagen."
+		},
+		"settings": {
+			"title": "Instellingen",
+			"description": "Pas de bewaring van generatierecords aan."
 		},
 		"alerts": {
-			"loadFailed": "加载失败：${message}",
-			"saveFailed": "保存失败：${message}",
-			"runFailed": "运行失败：${message}"
+			"loadFailed": "Laden mislukt: ${message}",
+			"saveFailed": "Opslaan mislukt: ${message}",
+			"runFailed": "Uitvoering mislukt: ${message}"
+		},
+		"home_function_buttons": {
+			"dev": {
+				"title": "Ontwikkeling",
+				"sub_items": {
+					"open": {
+						"title": "Agent Studio"
+					}
+				}
+			}
+		},
+		"subagent": {
+			"title": "Intern gesprek van subagent",
+			"description": "Bekijk de status, taak en het volledige interne gesprek van een subagent-run.",
+			"back": "Terug naar generaties",
+			"task": "Taak",
+			"conversation": "Intern gesprek",
+			"empty": "(nog geen gesprek)"
 		}
 	}
 }

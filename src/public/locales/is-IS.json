@@ -6445,7 +6445,7 @@
 		},
 		"workspaces": {
 			"browse": "Fletta…",
-			"open": null,
+			"open": "Opna vinnusvæði og lotur",
 			"remove": "Fjarlægja núverandi vinnusvæði",
 			"removeConfirm": "Ertu viss um að þú viljir fjarlægja vinnusvæðið „${name}“? Lotuskrárnar á disknum verða áfram.",
 			"none": "Ekkert vinnusvæði valið",
@@ -6626,7 +6626,59 @@
 			"viewFiles": "Skoða skrár",
 			"addFiles": "Senda skrár",
 			"callback": "Endurkall verkfæris",
-			"runShell": "Keyra ${lang}"
+			"runShell": "Keyra ${lang}",
+			"subAgent": {
+				"createBatch": "Búa til hóp undiragenta",
+				"run": "Keyra undiragent",
+				"listAiSources": "Lista gervigreindargjafa",
+				"check": "Skoða samtal undiragents",
+				"terminate": "Stöðva undiragent"
+			},
+			"async": {
+				"list": "Lista ósamstillt verk",
+				"await": "Bíða eftir ósamstilltum verkum",
+				"notice": "Tilkynning um bakgrunnsverk",
+				"run": "Keyra ${kind} í bakgrunni"
+			}
+		},
+		"subagent": {
+			"title": "Undiragent",
+			"open": "Undiragent: ${task} (opna innra samtal)",
+			"working": "Í gangi ${rounds}/${roundLimit} umferðir",
+			"workingUnknown": "Í gangi",
+			"state": {
+				"running": "Í gangi",
+				"summarizing": "Tekur saman",
+				"done": "Lokið",
+				"terminated": "Stöðvað",
+				"failed": "Mistókst"
+			},
+			"check": {
+				"open": "Opna í Agent Studio",
+				"rounds": "Umferð ${rounds}/${roundLimit}"
+			}
+		},
+		"transcript": {
+			"role": {
+				"tool": "Verkfæri",
+				"char": "Persóna",
+				"user": "Notandi",
+				"system": "Kerfi"
+			}
+		},
+		"asyncTasks": {
+			"title": "Bakgrunnsverk",
+			"none": "Engin ósamstillt verk eru í gangi núna.",
+			"timedOut": "Náði tímamörkum: enn eru verk í gangi.",
+			"open": "Bakgrunnsverk: ${label}",
+			"working": "Bakgrunnsverk í gangi (${kind})",
+			"state": {
+				"running": "Í gangi",
+				"done": "Lokið",
+				"failed": "Mistókst",
+				"unknown": "Fannst ekki",
+				"idle": "Bakgrunnsverk"
+			}
 		}
 	},
 	"gist": {
@@ -6749,66 +6801,139 @@
 	},
 	"agent_studio": {
 		"title": "Agent Studio",
-		"description": "查看生成记录与子代理运行，并对角色做基准测试。",
-		"chars": {
-			"title": "角色",
-			"empty": "暂无角色。"
+		"description": "Skoða myndanir og keyrslur undiragenta og keyra viðmið á persónur.",
+		"nav": {
+			"region": {
+				"aria-label": "Aðalvalmynd"
+			},
+			"mobile": {
+				"aria-label": "Aðalvalmynd (farsíma)"
+			},
+			"dashboard": "Mælaborð",
+			"generations": "Myndanir",
+			"benchmarks": "Viðmið",
+			"settings": "Stillingar"
 		},
-		"detail": {
-			"subAgents": "子代理",
-			"generations": "近期生成",
-			"none": "暂无数据。"
-		},
-		"generation": {
-			"title": "生成详情",
-			"prompt": "请求聊天记录",
-			"response": "回复",
-			"ok": "正常",
-			"error": "出错"
-		},
-		"run": {
-			"detail": "生成 ${generations} 条 · 轮次 ${rounds}/${roundLimit}",
-			"state": {
-				"running": "运行中",
-				"summarizing": "总结中",
-				"done": "已完成",
-				"failed": "失败",
-				"terminated": "已终止"
+		"actions": {
+			"refreshData": "Endurhlaða gögnum",
+			"refresh": {
+				"title": "Endurhlaða",
+				"aria-label": "Endurhlaða gögnum"
+			},
+			"close": {
+				"title": "Loka",
+				"aria-label": "Loka"
 			}
 		},
+		"dashboard": {
+			"title": "Mælaborð",
+			"description": "Veldu persónu til að skoða keyrslur undiragenta og nýlegar myndanir.",
+			"selectPrompt": "Veldu persónu til vinstri til að byrja."
+		},
+		"chars": {
+			"title": "Persónur",
+			"empty": "Engar persónur ennþá.",
+			"noMatch": "Engar persónur passa.",
+			"search": {
+				"placeholder": "Leita að persónum…"
+			}
+		},
+		"detail": {
+			"subAgents": "Keyrslur undiragenta",
+			"generations": "Nýlegar myndanir",
+			"none": "Engin gögn."
+		},
+		"generation": {
+			"title": "Nánar um myndun",
+			"prompt": "Beiðnaskrá samtals",
+			"response": "Svar",
+			"ok": "Í lagi",
+			"error": "Villa",
+			"meta": "Uppruni ${source} · Líkan ${model}",
+			"character": "Persóna ${name}",
+			"promptExpired": "Beiðnaskráin er útrunnin eða ekki tiltæk."
+		},
+		"run": {
+			"detail": "Myndanir ${generations} · umferðir ${rounds}/${roundLimit}",
+			"state": {
+				"running": "Í gangi",
+				"summarizing": "Tekur saman",
+				"done": "Lokið",
+				"failed": "Mistókst",
+				"terminated": "Stöðvað"
+			}
+		},
+		"generations": {
+			"title": "Myndanir",
+			"description": "Skoða myndunarskrár og keðjur fyrir allar persónur.",
+			"records": "Færslur",
+			"chains": "Keðjur",
+			"filterChar": "Persóna",
+			"allChars": "Allar persónur",
+			"recordsCount": "${count} færslur",
+			"empty": "Engar myndanir ennþá.",
+			"chainsEmpty": "Engar keðjur ennþá."
+		},
 		"benchmarks": {
-			"title": "基准测试",
-			"empty": "暂无基准测试。",
-			"new": "新建",
-			"newName": "请输入基准测试名称",
-			"cases": "用例（JSON 数组）",
-			"saveCases": "保存用例",
+			"title": "Viðmið",
+			"description": "Skilgreindu tilfelli, veldu persónu og dómara og keyrðu skorað viðmið.",
+			"empty": "Engin viðmið ennþá.",
+			"pick": "Veldu eða búðu til viðmið.",
+			"new": "Nýtt",
+			"newName": "Sláðu inn heiti viðmiðs",
+			"cases": "Tilfelli (JSON fylki)",
+			"saveCases": "Vista tilfelli",
+			"saved": "Tilfelli vistað.",
+			"casesInvalid": "Tókst ekki að þátta JSON tilfella: ${message}",
 			"delete": {
-				"title": "删除",
-				"aria-label": "删除"
+				"title": "Eyða",
+				"aria-label": "Eyða"
 			},
-			"deleteConfirm": "确定删除该基准测试吗？",
-			"selectChar": "运行角色",
-			"selectCharFirst": "请先选择角色。",
-			"judgeSource": "裁判 AI 源（可选）",
-			"run": "运行",
-			"runDone": "运行完成。",
-			"results": "结果",
-			"noResults": "暂无结果。",
-			"notJudged": "未评分",
-			"stats": "共 ${total} 条 · 空回复 ${empty} · 平均长度 ${avgLength} · 已评分 ${judged} · 平均分 ${avgScore}"
+			"deleteConfirm": "Eyða þessu viðmiði?",
+			"selectChar": "Keyra persónu",
+			"selectCharFirst": "Veldu fyrst persónu.",
+			"judgeSource": "Gervigreindargjafi dómara (valfrjálst)",
+			"run": "Keyra",
+			"runDone": "Keyrslu lokið.",
+			"results": "Niðurstöður",
+			"noResults": "Engar niðurstöður ennþá.",
+			"notJudged": "Ekki metið",
+			"stats": "Alls ${total} · tóm svör ${empty} · meðallengd ${avgLength} · metið ${judged} · meðaleinkunn ${avgScore}"
 		},
 		"retention": {
-			"title": "记录保留策略",
-			"prompt": "请求记录保留（天）",
-			"conversation": "整条记录保留（天）",
-			"save": "保存",
-			"saved": "已保存。"
+			"title": "Varðveisla færslna",
+			"hint": "Eftir að varðveislutíma beiðnaskrár lýkur eru aðeins svör varðveitt; eftir að varðveislutíma heildarfærslunnar lýkur er færslunni eytt í heild.",
+			"prompt": "Varðveisla beiðnaskrár (dagar)",
+			"conversation": "Varðveisla heildarfærslu (dagar)",
+			"save": "Vista",
+			"saved": "Vistað."
+		},
+		"settings": {
+			"title": "Stillingar",
+			"description": "Stilla varðveislu myndunarskráa."
 		},
 		"alerts": {
-			"loadFailed": "加载失败：${message}",
-			"saveFailed": "保存失败：${message}",
-			"runFailed": "运行失败：${message}"
+			"loadFailed": "Hleðsla mistókst: ${message}",
+			"saveFailed": "Vistun mistókst: ${message}",
+			"runFailed": "Keyrsla mistókst: ${message}"
+		},
+		"home_function_buttons": {
+			"dev": {
+				"title": "Þróun",
+				"sub_items": {
+					"open": {
+						"title": "Agent Studio"
+					}
+				}
+			}
+		},
+		"subagent": {
+			"title": "Innra samtal undiragents",
+			"description": "Skoðaðu stöðu, verk og allt innra samtal einnar keyrslu undiragents.",
+			"back": "Aftur í myndanir",
+			"task": "Verk",
+			"conversation": "Innra samtal",
+			"empty": "(ekkert samtal ennþá)"
 		}
 	}
 }

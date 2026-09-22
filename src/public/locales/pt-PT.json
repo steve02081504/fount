@@ -6451,7 +6451,7 @@
 		},
 		"workspaces": {
 			"browse": "Explorar…",
-			"open": null,
+			"open": "Abrir áreas de trabalho e sessões",
 			"remove": "Remover a área de trabalho atual",
 			"removeConfirm": "Tem a certeza de que deseja remover a área de trabalho \"${name}\"? Os ficheiros de sessão no disco serão mantidos.",
 			"none": "Nenhuma área de trabalho selecionada",
@@ -6632,7 +6632,59 @@
 			"viewFiles": "Ver ficheiros",
 			"addFiles": "Enviar ficheiros",
 			"callback": "Callback da ferramenta",
-			"runShell": "Executar ${lang}"
+			"runShell": "Executar ${lang}",
+			"subAgent": {
+				"createBatch": "Criar lote de subagentes",
+				"run": "Executar subagente",
+				"listAiSources": "Listar fontes de IA",
+				"check": "Ver conversa do subagente",
+				"terminate": "Terminar subagente"
+			},
+			"async": {
+				"list": "Listar tarefas assíncronas",
+				"await": "Aguardar tarefa assíncrona",
+				"notice": "Notificação de tarefa em segundo plano",
+				"run": "Executar ${kind} em segundo plano"
+			}
+		},
+		"subagent": {
+			"title": "Subagente",
+			"open": "Subagente: ${task} (clique para ver a conversa interna)",
+			"working": "Em execução: ${rounds}/${roundLimit} rondas",
+			"workingUnknown": "Em execução",
+			"state": {
+				"running": "Em execução",
+				"summarizing": "A resumir",
+				"done": "Concluído",
+				"terminated": "Terminado",
+				"failed": "Falhado"
+			},
+			"check": {
+				"open": "Abrir no Agent Studio",
+				"rounds": "Rondas ${rounds}/${roundLimit}"
+			}
+		},
+		"transcript": {
+			"role": {
+				"tool": "Ferramenta",
+				"char": "Personagem",
+				"user": "Utilizador",
+				"system": "Sistema"
+			}
+		},
+		"asyncTasks": {
+			"title": "Tarefas em segundo plano",
+			"none": "Não há tarefas assíncronas em curso.",
+			"timedOut": "Tempo de espera esgotado: ainda há tarefas em curso.",
+			"open": "Tarefa em segundo plano: ${label}",
+			"working": "Tarefa em segundo plano em execução (${kind})",
+			"state": {
+				"running": "Em execução",
+				"done": "Concluído",
+				"failed": "Falhado",
+				"unknown": "Não encontrado",
+				"idle": "Tarefa em segundo plano"
+			}
 		}
 	},
 	"gist": {
@@ -6755,66 +6807,139 @@
 	},
 	"agent_studio": {
 		"title": "Agent Studio",
-		"description": "查看生成记录与子代理运行，并对角色做基准测试。",
-		"chars": {
-			"title": "角色",
-			"empty": "暂无角色。"
+		"description": "Consulte os registos de geração e as execuções de subagentes, e avalie personagens com benchmarks.",
+		"nav": {
+			"region": {
+				"aria-label": "Navegação principal"
+			},
+			"mobile": {
+				"aria-label": "Navegação principal (móvel)"
+			},
+			"dashboard": "Painel",
+			"generations": "Gerações",
+			"benchmarks": "Benchmarks",
+			"settings": "Definições"
 		},
-		"detail": {
-			"subAgents": "子代理",
-			"generations": "近期生成",
-			"none": "暂无数据。"
-		},
-		"generation": {
-			"title": "生成详情",
-			"prompt": "请求聊天记录",
-			"response": "回复",
-			"ok": "正常",
-			"error": "出错"
-		},
-		"run": {
-			"detail": "生成 ${generations} 条 · 轮次 ${rounds}/${roundLimit}",
-			"state": {
-				"running": "运行中",
-				"summarizing": "总结中",
-				"done": "已完成",
-				"failed": "失败",
-				"terminated": "已终止"
+		"actions": {
+			"refreshData": "Atualizar dados",
+			"refresh": {
+				"title": "Atualizar",
+				"aria-label": "Atualizar dados"
+			},
+			"close": {
+				"title": "Fechar",
+				"aria-label": "Fechar"
 			}
 		},
+		"dashboard": {
+			"title": "Painel",
+			"description": "Escolha um personagem para consultar as suas execuções de subagentes e gerações recentes.",
+			"selectPrompt": "Selecione um personagem à esquerda para começar."
+		},
+		"chars": {
+			"title": "Personagens",
+			"empty": "Ainda não há personagens.",
+			"noMatch": "Nenhum personagem correspondente.",
+			"search": {
+				"placeholder": "Pesquisar personagens…"
+			}
+		},
+		"detail": {
+			"subAgents": "Execuções de subagentes",
+			"generations": "Gerações recentes",
+			"none": "Sem dados."
+		},
+		"generation": {
+			"title": "Detalhe da geração",
+			"prompt": "Registo de chat do pedido",
+			"response": "Resposta",
+			"ok": "Correto",
+			"error": "Erro",
+			"meta": "Fonte ${source} · Modelo ${model}",
+			"character": "Personagem ${name}",
+			"promptExpired": "O registo do pedido expirou ou não está disponível."
+		},
+		"run": {
+			"detail": "Gerações ${generations} · rondas ${rounds}/${roundLimit}",
+			"state": {
+				"running": "Em execução",
+				"summarizing": "A resumir",
+				"done": "Concluído",
+				"failed": "Falhado",
+				"terminated": "Terminado"
+			}
+		},
+		"generations": {
+			"title": "Gerações",
+			"description": "Explore os registos e as cadeias de geração de todos os personagens.",
+			"records": "Registos",
+			"chains": "Cadeias",
+			"filterChar": "Personagem",
+			"allChars": "Todos os personagens",
+			"recordsCount": "${count} registos",
+			"empty": "Ainda não há gerações.",
+			"chainsEmpty": "Ainda não há cadeias."
+		},
 		"benchmarks": {
-			"title": "基准测试",
-			"empty": "暂无基准测试。",
-			"new": "新建",
-			"newName": "请输入基准测试名称",
-			"cases": "用例（JSON 数组）",
-			"saveCases": "保存用例",
+			"title": "Benchmarks",
+			"description": "Defina casos, escolha um personagem e um juiz, e execute benchmarks pontuados.",
+			"empty": "Ainda não há benchmarks.",
+			"pick": "Selecione ou crie um benchmark.",
+			"new": "Novo",
+			"newName": "Introduza um nome para o benchmark",
+			"cases": "Casos (matriz JSON)",
+			"saveCases": "Guardar casos",
+			"saved": "Casos guardados.",
+			"casesInvalid": "Falha ao analisar o JSON dos casos: ${message}",
 			"delete": {
-				"title": "删除",
-				"aria-label": "删除"
+				"title": "Eliminar",
+				"aria-label": "Eliminar"
 			},
-			"deleteConfirm": "确定删除该基准测试吗？",
-			"selectChar": "运行角色",
-			"selectCharFirst": "请先选择角色。",
-			"judgeSource": "裁判 AI 源（可选）",
-			"run": "运行",
-			"runDone": "运行完成。",
-			"results": "结果",
-			"noResults": "暂无结果。",
-			"notJudged": "未评分",
-			"stats": "共 ${total} 条 · 空回复 ${empty} · 平均长度 ${avgLength} · 已评分 ${judged} · 平均分 ${avgScore}"
+			"deleteConfirm": "Eliminar este benchmark?",
+			"selectChar": "Personagem a executar",
+			"selectCharFirst": "Selecione primeiro um personagem.",
+			"judgeSource": "Fonte de IA do juiz (opcional)",
+			"run": "Executar",
+			"runDone": "Execução concluída.",
+			"results": "Resultados",
+			"noResults": "Ainda não há resultados.",
+			"notJudged": "Não avaliado",
+			"stats": "Total ${total} · vazias ${empty} · comprimento médio ${avgLength} · avaliados ${judged} · pontuação média ${avgScore}"
 		},
 		"retention": {
-			"title": "记录保留策略",
-			"prompt": "请求记录保留（天）",
-			"conversation": "整条记录保留（天）",
-			"save": "保存",
-			"saved": "已保存。"
+			"title": "Política de retenção de registos",
+			"hint": "Após o prazo de retenção do registo do pedido, apenas as respostas são mantidas; após o prazo de retenção do registo completo, o registo inteiro é eliminado.",
+			"prompt": "Retenção do registo do pedido (dias)",
+			"conversation": "Retenção do registo completo (dias)",
+			"save": "Guardar",
+			"saved": "Guardado."
+		},
+		"settings": {
+			"title": "Definições",
+			"description": "Ajuste a retenção dos registos de geração."
 		},
 		"alerts": {
-			"loadFailed": "加载失败：${message}",
-			"saveFailed": "保存失败：${message}",
-			"runFailed": "运行失败：${message}"
+			"loadFailed": "Falha ao carregar: ${message}",
+			"saveFailed": "Falha ao guardar: ${message}",
+			"runFailed": "Falha ao executar: ${message}"
+		},
+		"home_function_buttons": {
+			"dev": {
+				"title": "Desenvolvimento",
+				"sub_items": {
+					"open": {
+						"title": "Agent Studio"
+					}
+				}
+			}
+		},
+		"subagent": {
+			"title": "Conversa interna do subagente",
+			"description": "Consulte o estado, a tarefa e a conversa interna completa de uma execução de subagente.",
+			"back": "Voltar às gerações",
+			"task": "Tarefa",
+			"conversation": "Conversa interna",
+			"empty": "(Ainda não há conversa)"
 		}
 	}
 }

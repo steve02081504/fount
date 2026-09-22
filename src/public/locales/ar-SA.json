@@ -6455,7 +6455,7 @@
 		},
 		"workspaces": {
 			"browse": "تصفح…",
-			"open": null,
+			"open": "فتح مساحات العمل والجلسات",
 			"remove": "إزالة مساحة العمل الحالية",
 			"removeConfirm": "هل أنت متأكد أنك تريد إزالة مساحة العمل \"${name}\"؟ ستبقى ملفات الجلسات على القرص.",
 			"none": "لم يتم تحديد مساحة عمل",
@@ -6636,7 +6636,59 @@
 			"viewFiles": "عرض الملفات",
 			"addFiles": "إرسال ملفات",
 			"callback": "استجابة الأداة",
-			"runShell": "تشغيل ${lang}"
+			"runShell": "تشغيل ${lang}",
+			"subAgent": {
+				"createBatch": "إنشاء دفعة وكلاء فرعيين",
+				"run": "تشغيل وكيل فرعي",
+				"listAiSources": "عرض مصادر الذكاء الاصطناعي",
+				"check": "عرض محادثة الوكيل الفرعي",
+				"terminate": "إنهاء الوكيل الفرعي"
+			},
+			"async": {
+				"list": "عرض المهام غير المتزامنة",
+				"await": "انتظار المهام غير المتزامنة",
+				"notice": "إشعار المهام في الخلفية",
+				"run": "تشغيل ${kind} في الخلفية"
+			}
+		},
+		"subagent": {
+			"title": "وكيل فرعي",
+			"open": "وكيل فرعي: ${task} (انقر لعرض المحادثة الداخلية)",
+			"working": "قيد التشغيل ${rounds}/${roundLimit} جولة",
+			"workingUnknown": "قيد التشغيل",
+			"state": {
+				"running": "قيد التشغيل",
+				"summarizing": "قيد التلخيص",
+				"done": "مكتمل",
+				"terminated": "تم الإنهاء",
+				"failed": "فشل"
+			},
+			"check": {
+				"open": "فتح في Agent Studio",
+				"rounds": "الجولات ${rounds}/${roundLimit}"
+			}
+		},
+		"transcript": {
+			"role": {
+				"tool": "أداة",
+				"char": "الشخصية",
+				"user": "المستخدم",
+				"system": "النظام"
+			}
+		},
+		"asyncTasks": {
+			"title": "مهام الخلفية",
+			"none": "لا توجد حاليًا مهام غير متزامنة قيد التنفيذ.",
+			"timedOut": "انتهت مهلة الانتظار: لا تزال هناك مهام قيد التنفيذ.",
+			"open": "مهمة في الخلفية: ${label}",
+			"working": "مهمة في الخلفية قيد التشغيل (${kind})",
+			"state": {
+				"running": "قيد التشغيل",
+				"done": "مكتمل",
+				"failed": "فشل",
+				"unknown": "غير موجود",
+				"idle": "مهام الخلفية"
+			}
 		}
 	},
 	"gist": {
@@ -6759,66 +6811,139 @@
 	},
 	"agent_studio": {
 		"title": "Agent Studio",
-		"description": "查看生成记录与子代理运行，并对角色做基准测试。",
-		"chars": {
-			"title": "角色",
-			"empty": "暂无角色。"
+		"description": "اطّلع على سجلات التوليد وعمليات تشغيل الوكلاء الفرعيين، وأجرِ اختبارات معيارية على الشخصيات.",
+		"nav": {
+			"region": {
+				"aria-label": "التنقل الرئيسي"
+			},
+			"mobile": {
+				"aria-label": "التنقل الرئيسي (للجوال)"
+			},
+			"dashboard": "لوحة المعلومات",
+			"generations": "سجلات التوليد",
+			"benchmarks": "الاختبارات المعيارية",
+			"settings": "الإعدادات"
 		},
-		"detail": {
-			"subAgents": "子代理",
-			"generations": "近期生成",
-			"none": "暂无数据。"
-		},
-		"generation": {
-			"title": "生成详情",
-			"prompt": "请求聊天记录",
-			"response": "回复",
-			"ok": "正常",
-			"error": "出错"
-		},
-		"run": {
-			"detail": "生成 ${generations} 条 · 轮次 ${rounds}/${roundLimit}",
-			"state": {
-				"running": "运行中",
-				"summarizing": "总结中",
-				"done": "已完成",
-				"failed": "失败",
-				"terminated": "已终止"
+		"actions": {
+			"refreshData": "تحديث البيانات",
+			"refresh": {
+				"title": "تحديث",
+				"aria-label": "تحديث البيانات"
+			},
+			"close": {
+				"title": "إغلاق",
+				"aria-label": "إغلاق"
 			}
 		},
+		"dashboard": {
+			"title": "لوحة المعلومات",
+			"description": "اختر شخصية لعرض عمليات تشغيل الوكلاء الفرعيين والتوليدات الأخيرة الخاصة بها.",
+			"selectPrompt": "اختر شخصية من القائمة اليسرى لبدء العرض."
+		},
+		"chars": {
+			"title": "الشخصيات",
+			"empty": "لا توجد شخصيات بعد.",
+			"noMatch": "لا توجد شخصيات مطابقة.",
+			"search": {
+				"placeholder": "البحث عن شخصية…"
+			}
+		},
+		"detail": {
+			"subAgents": "عمليات تشغيل الوكلاء الفرعيين",
+			"generations": "التوليدات الأخيرة",
+			"none": "لا توجد بيانات بعد."
+		},
+		"generation": {
+			"title": "تفاصيل التوليد",
+			"prompt": "سجل محادثة الطلب",
+			"response": "الرد",
+			"ok": "ناجح",
+			"error": "خطأ",
+			"meta": "المصدر ${source} · النموذج ${model}",
+			"character": "الشخصية ${name}",
+			"promptExpired": "انتهت صلاحية سجل الطلب أو أنه غير متاح."
+		},
+		"run": {
+			"detail": "${generations} عملية توليد · الجولات ${rounds}/${roundLimit}",
+			"state": {
+				"running": "قيد التشغيل",
+				"summarizing": "قيد التلخيص",
+				"done": "مكتمل",
+				"failed": "فشل",
+				"terminated": "تم الإنهاء"
+			}
+		},
+		"generations": {
+			"title": "سجلات التوليد",
+			"description": "تصفّح سجلات التوليد وسلاسل التوليد لجميع الشخصيات.",
+			"records": "السجلات",
+			"chains": "سلاسل التوليد",
+			"filterChar": "الشخصية",
+			"allChars": "كل الشخصيات",
+			"recordsCount": "إجمالي ${count} سجل",
+			"empty": "لا توجد سجلات توليد بعد.",
+			"chainsEmpty": "لا توجد سلاسل توليد بعد."
+		},
 		"benchmarks": {
-			"title": "基准测试",
-			"empty": "暂无基准测试。",
-			"new": "新建",
-			"newName": "请输入基准测试名称",
-			"cases": "用例（JSON 数组）",
-			"saveCases": "保存用例",
+			"title": "الاختبارات المعيارية",
+			"description": "حدّد الحالات، واختر شخصية ومحكّمًا، ثم شغّل اختبارًا معياريًا للتقييم.",
+			"empty": "لا توجد اختبارات معيارية بعد.",
+			"pick": "اختر اختبارًا معياريًا أو أنشئ واحدًا جديدًا.",
+			"new": "جديد",
+			"newName": "أدخل اسم الاختبار المعياري",
+			"cases": "الحالات (مصفوفة JSON)",
+			"saveCases": "حفظ الحالات",
+			"saved": "تم حفظ الحالات.",
+			"casesInvalid": "فشل تحليل JSON للحالات: ${message}",
 			"delete": {
-				"title": "删除",
-				"aria-label": "删除"
+				"title": "حذف",
+				"aria-label": "حذف"
 			},
-			"deleteConfirm": "确定删除该基准测试吗？",
-			"selectChar": "运行角色",
-			"selectCharFirst": "请先选择角色。",
-			"judgeSource": "裁判 AI 源（可选）",
-			"run": "运行",
-			"runDone": "运行完成。",
-			"results": "结果",
-			"noResults": "暂无结果。",
-			"notJudged": "未评分",
-			"stats": "共 ${total} 条 · 空回复 ${empty} · 平均长度 ${avgLength} · 已评分 ${judged} · 平均分 ${avgScore}"
+			"deleteConfirm": "هل أنت متأكد من حذف هذا الاختبار المعياري؟",
+			"selectChar": "شخصية التشغيل",
+			"selectCharFirst": "يرجى تحديد شخصية أولًا.",
+			"judgeSource": "مصدر الذكاء الاصطناعي للمحكّم (اختياري)",
+			"run": "تشغيل",
+			"runDone": "اكتمل التشغيل.",
+			"results": "النتائج",
+			"noResults": "لا توجد نتائج بعد.",
+			"notJudged": "بدون تقييم",
+			"stats": "إجمالي ${total} · ردود فارغة ${empty} · متوسط الطول ${avgLength} · مُقيَّم ${judged} · متوسط الدرجة ${avgScore}"
 		},
 		"retention": {
-			"title": "记录保留策略",
-			"prompt": "请求记录保留（天）",
-			"conversation": "整条记录保留（天）",
-			"save": "保存",
-			"saved": "已保存。"
+			"title": "سياسة الاحتفاظ بالسجلات",
+			"hint": "بعد انتهاء مدة الاحتفاظ بسجل الطلب، يبقى الرد فقط؛ وبعد انتهاء مدة الاحتفاظ بالسجل كاملًا، يُحذف السجل بالكامل.",
+			"prompt": "الاحتفاظ بسجل الطلب (أيام)",
+			"conversation": "الاحتفاظ بالسجل كاملًا (أيام)",
+			"save": "حفظ",
+			"saved": "تم الحفظ."
+		},
+		"settings": {
+			"title": "الإعدادات",
+			"description": "اضبط سياسة الاحتفاظ بسجلات التوليد."
 		},
 		"alerts": {
-			"loadFailed": "加载失败：${message}",
-			"saveFailed": "保存失败：${message}",
-			"runFailed": "运行失败：${message}"
+			"loadFailed": "فشل التحميل: ${message}",
+			"saveFailed": "فشل الحفظ: ${message}",
+			"runFailed": "فشل التشغيل: ${message}"
+		},
+		"home_function_buttons": {
+			"dev": {
+				"title": "التطوير",
+				"sub_items": {
+					"open": {
+						"title": "Agent Studio"
+					}
+				}
+			}
+		},
+		"subagent": {
+			"title": "المحادثة الداخلية للوكيل الفرعي",
+			"description": "اطّلع على حالة تشغيل الوكيل الفرعي ومهمته ومحادثته الداخلية الكاملة.",
+			"back": "العودة إلى سجلات التوليد",
+			"task": "المهمة",
+			"conversation": "المحادثة الداخلية",
+			"empty": "(لا يوجد محتوى للمحادثة)"
 		}
 	}
 }

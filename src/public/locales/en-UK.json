@@ -6644,7 +6644,7 @@
 		"subagent": {
 			"title": "Sub-agent",
 			"open": "Sub-agent: ${task} (open internal conversation)",
-			"working": "Running ${rounds}/${roundLimit}",
+			"working": "Running round ${rounds}/${roundLimit}",
 			"workingUnknown": "Running",
 			"state": {
 				"running": "Running",
@@ -6854,7 +6854,7 @@
 			"promptExpired": "The request log has expired or is unavailable."
 		},
 		"run": {
-			"detail": "generations ${generations} · rounds ${rounds}/${roundLimit}",
+			"detail": "Generations ${generations} · Rounds ${rounds}/${roundLimit}",
 			"state": {
 				"running": "Running",
 				"summarizing": "Summarizing",
@@ -6867,12 +6867,12 @@
 			"title": "Generations",
 			"description": "Browse generation records and chains across all characters.",
 			"records": "Records",
-			"chains": "Chains",
+			"chains": "Generation chains",
 			"filterChar": "Character",
 			"allChars": "All characters",
 			"recordsCount": "${count} records",
 			"empty": "No generations yet.",
-			"chainsEmpty": "No chains yet."
+			"chainsEmpty": "No generation chains yet."
 		},
 		"benchmarks": {
 			"title": "Benchmarks",
@@ -6890,7 +6890,7 @@
 				"aria-label": "Delete"
 			},
 			"deleteConfirm": "Delete this benchmark?",
-			"selectChar": "Run character",
+			"selectChar": "Character to run",
 			"selectCharFirst": "Select a character first.",
 			"judgeSource": "Judge AI source (optional)",
 			"run": "Run",
@@ -6898,7 +6898,7 @@
 			"results": "Results",
 			"noResults": "No results yet.",
 			"notJudged": "Not judged",
-			"stats": "total ${total} · empty ${empty} · avg length ${avgLength} · judged ${judged} · avg score ${avgScore}"
+			"stats": "Total ${total} · Empty ${empty} · Avg. length ${avgLength} · Judged ${judged} · Avg. score ${avgScore}"
 		},
 		"retention": {
 			"title": "Record retention",

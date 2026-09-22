@@ -6445,7 +6445,7 @@
 		},
 		"workspaces": {
 			"browse": "Durchsuchen…",
-			"open": null,
+			"open": "Arbeitsbereiche und Unterhaltungen öffnen",
 			"remove": "Aktuellen Arbeitsbereich entfernen",
 			"removeConfirm": "Sind Sie sicher, dass Sie den Arbeitsbereich „${name}“ entfernen möchten? Die Sitzungsdateien auf dem Datenträger bleiben erhalten.",
 			"none": "Kein Arbeitsbereich ausgewählt",
@@ -6626,7 +6626,59 @@
 			"viewFiles": "Dateien anzeigen",
 			"addFiles": "Dateien senden",
 			"callback": "Werkzeug-Rückruf",
-			"runShell": "${lang} ausführen"
+			"runShell": "${lang} ausführen",
+			"subAgent": {
+				"createBatch": "Subagenten-Batch erstellen",
+				"run": "Subagent ausführen",
+				"listAiSources": "KI-Quellen auflisten",
+				"check": "Subagenten-Unterhaltung anzeigen",
+				"terminate": "Subagent beenden"
+			},
+			"async": {
+				"list": "Asynchrone Aufgaben auflisten",
+				"await": "Auf asynchrone Aufgaben warten",
+				"notice": "Benachrichtigung zu Hintergrundaufgaben",
+				"run": "${kind} im Hintergrund ausführen"
+			}
+		},
+		"subagent": {
+			"title": "Subagent",
+			"open": "Subagent: ${task} (interne Unterhaltung öffnen)",
+			"working": "Läuft: Runde ${rounds}/${roundLimit}",
+			"workingUnknown": "Läuft",
+			"state": {
+				"running": "Läuft",
+				"summarizing": "Zusammenfassung",
+				"done": "Abgeschlossen",
+				"terminated": "Beendet",
+				"failed": "Fehlgeschlagen"
+			},
+			"check": {
+				"open": "In Agent Studio öffnen",
+				"rounds": "Runde ${rounds}/${roundLimit}"
+			}
+		},
+		"transcript": {
+			"role": {
+				"tool": "Werkzeug",
+				"char": "Charakter",
+				"user": "Benutzer",
+				"system": "System"
+			}
+		},
+		"asyncTasks": {
+			"title": "Hintergrundaufgaben",
+			"none": "Derzeit laufen keine asynchronen Aufgaben.",
+			"timedOut": "Zeitüberschreitung beim Warten: Es laufen noch Aufgaben.",
+			"open": "Hintergrundaufgabe: ${label}",
+			"working": "Hintergrundaufgabe läuft (${kind})",
+			"state": {
+				"running": "Läuft",
+				"done": "Abgeschlossen",
+				"failed": "Fehlgeschlagen",
+				"unknown": "Nicht gefunden",
+				"idle": "Hintergrundaufgabe"
+			}
 		}
 	},
 	"gist": {
@@ -6749,66 +6801,139 @@
 	},
 	"agent_studio": {
 		"title": "Agent Studio",
-		"description": "查看生成记录与子代理运行，并对角色做基准测试。",
-		"chars": {
-			"title": "角色",
-			"empty": "暂无角色。"
+		"description": "Generierungen und Subagenten-Läufe ansehen und Charaktere mit Benchmarks testen.",
+		"nav": {
+			"region": {
+				"aria-label": "Hauptnavigation"
+			},
+			"mobile": {
+				"aria-label": "Hauptnavigation (mobil)"
+			},
+			"dashboard": "Dashboard",
+			"generations": "Generierungen",
+			"benchmarks": "Benchmarks",
+			"settings": "Einstellungen"
 		},
-		"detail": {
-			"subAgents": "子代理",
-			"generations": "近期生成",
-			"none": "暂无数据。"
-		},
-		"generation": {
-			"title": "生成详情",
-			"prompt": "请求聊天记录",
-			"response": "回复",
-			"ok": "正常",
-			"error": "出错"
-		},
-		"run": {
-			"detail": "生成 ${generations} 条 · 轮次 ${rounds}/${roundLimit}",
-			"state": {
-				"running": "运行中",
-				"summarizing": "总结中",
-				"done": "已完成",
-				"failed": "失败",
-				"terminated": "已终止"
+		"actions": {
+			"refreshData": "Daten aktualisieren",
+			"refresh": {
+				"title": "Aktualisieren",
+				"aria-label": "Daten aktualisieren"
+			},
+			"close": {
+				"title": "Schließen",
+				"aria-label": "Schließen"
 			}
 		},
+		"dashboard": {
+			"title": "Dashboard",
+			"description": "Wählen Sie einen Charakter, um seine Subagenten-Läufe und letzten Generierungen zu sehen.",
+			"selectPrompt": "Wählen Sie links einen Charakter, um zu beginnen."
+		},
+		"chars": {
+			"title": "Charaktere",
+			"empty": "Noch keine Charaktere.",
+			"noMatch": "Keine passenden Charaktere.",
+			"search": {
+				"placeholder": "Charaktere suchen…"
+			}
+		},
+		"detail": {
+			"subAgents": "Subagenten-Läufe",
+			"generations": "Letzte Generierungen",
+			"none": "Keine Daten."
+		},
+		"generation": {
+			"title": "Generierungsdetails",
+			"prompt": "Angeforderter Chatverlauf",
+			"response": "Antwort",
+			"ok": "OK",
+			"error": "Fehler",
+			"meta": "Quelle ${source} · Modell ${model}",
+			"character": "Charakter ${name}",
+			"promptExpired": "Der angeforderte Chatverlauf ist abgelaufen oder nicht verfügbar."
+		},
+		"run": {
+			"detail": "Generierungen ${generations} · Runden ${rounds}/${roundLimit}",
+			"state": {
+				"running": "Läuft",
+				"summarizing": "Zusammenfassung",
+				"done": "Abgeschlossen",
+				"failed": "Fehlgeschlagen",
+				"terminated": "Beendet"
+			}
+		},
+		"generations": {
+			"title": "Generierungen",
+			"description": "Generierungsdatensätze und -ketten aller Charaktere durchsuchen.",
+			"records": "Datensätze",
+			"chains": "Generierungsketten",
+			"filterChar": "Charakter",
+			"allChars": "Alle Charaktere",
+			"recordsCount": "${count} Datensätze",
+			"empty": "Noch keine Generierungen.",
+			"chainsEmpty": "Noch keine Generierungsketten."
+		},
 		"benchmarks": {
-			"title": "基准测试",
-			"empty": "暂无基准测试。",
-			"new": "新建",
-			"newName": "请输入基准测试名称",
-			"cases": "用例（JSON 数组）",
-			"saveCases": "保存用例",
+			"title": "Benchmarks",
+			"description": "Testfälle definieren, Charakter und Richter wählen und bewertete Benchmarks ausführen.",
+			"empty": "Noch keine Benchmarks.",
+			"pick": "Wählen Sie ein Benchmark aus oder erstellen Sie ein neues.",
+			"new": "Neu",
+			"newName": "Benchmark-Namen eingeben",
+			"cases": "Testfälle (JSON-Array)",
+			"saveCases": "Testfälle speichern",
+			"saved": "Testfälle gespeichert.",
+			"casesInvalid": "Testfall-JSON konnte nicht analysiert werden: ${message}",
 			"delete": {
-				"title": "删除",
-				"aria-label": "删除"
+				"title": "Löschen",
+				"aria-label": "Löschen"
 			},
-			"deleteConfirm": "确定删除该基准测试吗？",
-			"selectChar": "运行角色",
-			"selectCharFirst": "请先选择角色。",
-			"judgeSource": "裁判 AI 源（可选）",
-			"run": "运行",
-			"runDone": "运行完成。",
-			"results": "结果",
-			"noResults": "暂无结果。",
-			"notJudged": "未评分",
-			"stats": "共 ${total} 条 · 空回复 ${empty} · 平均长度 ${avgLength} · 已评分 ${judged} · 平均分 ${avgScore}"
+			"deleteConfirm": "Dieses Benchmark löschen?",
+			"selectChar": "Charakter ausführen",
+			"selectCharFirst": "Wählen Sie zuerst einen Charakter.",
+			"judgeSource": "KI-Quelle für Bewertung (optional)",
+			"run": "Ausführen",
+			"runDone": "Ausführung abgeschlossen.",
+			"results": "Ergebnisse",
+			"noResults": "Noch keine Ergebnisse.",
+			"notJudged": "Nicht bewertet",
+			"stats": "Gesamt ${total} · Leer ${empty} · Ø Länge ${avgLength} · Bewertet ${judged} · Ø Punktzahl ${avgScore}"
 		},
 		"retention": {
-			"title": "记录保留策略",
-			"prompt": "请求记录保留（天）",
-			"conversation": "整条记录保留（天）",
-			"save": "保存",
-			"saved": "已保存。"
+			"title": "Aufbewahrung von Datensätzen",
+			"hint": "Nach Ablauf der Aufbewahrungsfrist für den Anfrageverlauf werden nur die Antworten behalten; nach Ablauf der Frist für den gesamten Datensatz wird dieser vollständig gelöscht.",
+			"prompt": "Aufbewahrung des Anfrageverlaufs (Tage)",
+			"conversation": "Aufbewahrung des gesamten Datensatzes (Tage)",
+			"save": "Speichern",
+			"saved": "Gespeichert."
+		},
+		"settings": {
+			"title": "Einstellungen",
+			"description": "Die Aufbewahrung von Generierungsdatensätzen anpassen."
 		},
 		"alerts": {
-			"loadFailed": "加载失败：${message}",
-			"saveFailed": "保存失败：${message}",
-			"runFailed": "运行失败：${message}"
+			"loadFailed": "Laden fehlgeschlagen: ${message}",
+			"saveFailed": "Speichern fehlgeschlagen: ${message}",
+			"runFailed": "Ausführung fehlgeschlagen: ${message}"
+		},
+		"home_function_buttons": {
+			"dev": {
+				"title": "Entwicklung",
+				"sub_items": {
+					"open": {
+						"title": "Agent Studio"
+					}
+				}
+			}
+		},
+		"subagent": {
+			"title": "Interne Unterhaltung des Subagenten",
+			"description": "Status, Aufgabe und vollständige interne Unterhaltung eines Subagenten-Laufs ansehen.",
+			"back": "Zurück zu den Generierungen",
+			"task": "Aufgabe",
+			"conversation": "Interne Unterhaltung",
+			"empty": "(noch keine Unterhaltung)"
 		}
 	}
 }

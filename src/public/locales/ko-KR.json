@@ -6445,7 +6445,7 @@
 		},
 		"workspaces": {
 			"browse": "찾아보기…",
-			"open": null,
+			"open": "작업 영역 및 대화 열기",
 			"remove": "현재 작업 영역 제거",
 			"removeConfirm": "\"${name}\" 작업 영역을 제거하시겠습니까? 디스크의 세션 파일은 유지됩니다.",
 			"none": "작업 영역 선택 안 됨",
@@ -6626,7 +6626,59 @@
 			"viewFiles": "파일 보기",
 			"addFiles": "파일 보내기",
 			"callback": "도구 콜백",
-			"runShell": "${lang} 실행"
+			"runShell": "${lang} 실행",
+			"subAgent": {
+				"createBatch": "하위 에이전트 배치 만들기",
+				"run": "하위 에이전트 실행",
+				"listAiSources": "AI 소스 나열",
+				"check": "하위 에이전트 대화 보기",
+				"terminate": "하위 에이전트 종료"
+			},
+			"async": {
+				"list": "비동기 작업 나열",
+				"await": "비동기 작업 대기",
+				"notice": "백그라운드 작업 알림",
+				"run": "${kind} 백그라운드로 실행"
+			}
+		},
+		"subagent": {
+			"title": "하위 에이전트",
+			"open": "하위 에이전트: ${task}(클릭하여 내부 대화 보기)",
+			"working": "실행 중 ${rounds}/${roundLimit}라운드",
+			"workingUnknown": "실행 중",
+			"state": {
+				"running": "실행 중",
+				"summarizing": "요약 중",
+				"done": "완료됨",
+				"terminated": "종료됨",
+				"failed": "실패함"
+			},
+			"check": {
+				"open": "Agent Studio에서 열기",
+				"rounds": "라운드 ${rounds}/${roundLimit}"
+			}
+		},
+		"transcript": {
+			"role": {
+				"tool": "도구",
+				"char": "캐릭터",
+				"user": "사용자",
+				"system": "시스템"
+			}
+		},
+		"asyncTasks": {
+			"title": "백그라운드 작업",
+			"none": "현재 진행 중인 비동기 작업이 없습니다.",
+			"timedOut": "대기 시간 초과: 아직 진행 중인 작업이 있습니다.",
+			"open": "백그라운드 작업: ${label}",
+			"working": "백그라운드 작업 실행 중(${kind})",
+			"state": {
+				"running": "실행 중",
+				"done": "완료됨",
+				"failed": "실패함",
+				"unknown": "찾을 수 없음",
+				"idle": "백그라운드 작업"
+			}
 		}
 	},
 	"gist": {
@@ -6749,66 +6801,139 @@
 	},
 	"agent_studio": {
 		"title": "Agent Studio",
-		"description": "查看生成记录与子代理运行，并对角色做基准测试。",
-		"chars": {
-			"title": "角色",
-			"empty": "暂无角色。"
+		"description": "생성 기록과 하위 에이전트 실행을 확인하고 캐릭터를 벤치마크합니다.",
+		"nav": {
+			"region": {
+				"aria-label": "기본 탐색"
+			},
+			"mobile": {
+				"aria-label": "기본 탐색(모바일)"
+			},
+			"dashboard": "대시보드",
+			"generations": "생성 기록",
+			"benchmarks": "벤치마크",
+			"settings": "설정"
 		},
-		"detail": {
-			"subAgents": "子代理",
-			"generations": "近期生成",
-			"none": "暂无数据。"
-		},
-		"generation": {
-			"title": "生成详情",
-			"prompt": "请求聊天记录",
-			"response": "回复",
-			"ok": "正常",
-			"error": "出错"
-		},
-		"run": {
-			"detail": "生成 ${generations} 条 · 轮次 ${rounds}/${roundLimit}",
-			"state": {
-				"running": "运行中",
-				"summarizing": "总结中",
-				"done": "已完成",
-				"failed": "失败",
-				"terminated": "已终止"
+		"actions": {
+			"refreshData": "데이터 새로고침",
+			"refresh": {
+				"title": "새로고침",
+				"aria-label": "데이터 새로고침"
+			},
+			"close": {
+				"title": "닫기",
+				"aria-label": "닫기"
 			}
 		},
+		"dashboard": {
+			"title": "대시보드",
+			"description": "캐릭터를 선택하여 하위 에이전트 실행과 최근 생성을 확인하세요.",
+			"selectPrompt": "왼쪽에서 캐릭터를 선택하여 확인을 시작하세요."
+		},
+		"chars": {
+			"title": "캐릭터",
+			"empty": "아직 캐릭터가 없습니다.",
+			"noMatch": "일치하는 캐릭터가 없습니다.",
+			"search": {
+				"placeholder": "캐릭터 검색…"
+			}
+		},
+		"detail": {
+			"subAgents": "하위 에이전트 실행",
+			"generations": "최근 생성",
+			"none": "아직 데이터가 없습니다."
+		},
+		"generation": {
+			"title": "생성 상세",
+			"prompt": "요청 대화 기록",
+			"response": "응답",
+			"ok": "정상",
+			"error": "오류",
+			"meta": "소스 ${source} · 모델 ${model}",
+			"character": "캐릭터 ${name}",
+			"promptExpired": "요청 기록이 만료되었거나 사용할 수 없습니다."
+		},
+		"run": {
+			"detail": "생성 ${generations}건 · 라운드 ${rounds}/${roundLimit}",
+			"state": {
+				"running": "실행 중",
+				"summarizing": "요약 중",
+				"done": "완료됨",
+				"failed": "실패",
+				"terminated": "종료됨"
+			}
+		},
+		"generations": {
+			"title": "생성 기록",
+			"description": "모든 캐릭터의 생성 기록과 생성 체인을 살펴보세요.",
+			"records": "기록",
+			"chains": "생성 체인",
+			"filterChar": "캐릭터",
+			"allChars": "전체 캐릭터",
+			"recordsCount": "총 ${count}건의 기록",
+			"empty": "아직 생성 기록이 없습니다.",
+			"chainsEmpty": "아직 생성 체인이 없습니다."
+		},
 		"benchmarks": {
-			"title": "基准测试",
-			"empty": "暂无基准测试。",
-			"new": "新建",
-			"newName": "请输入基准测试名称",
-			"cases": "用例（JSON 数组）",
-			"saveCases": "保存用例",
+			"title": "벤치마크",
+			"description": "케이스를 정의하고 캐릭터와 심사자를 선택하여 평가 벤치마크를 실행하세요.",
+			"empty": "아직 벤치마크가 없습니다.",
+			"pick": "벤치마크를 선택하거나 새로 만드세요.",
+			"new": "새로 만들기",
+			"newName": "벤치마크 이름을 입력하세요",
+			"cases": "케이스(JSON 배열)",
+			"saveCases": "케이스 저장",
+			"saved": "케이스가 저장되었습니다.",
+			"casesInvalid": "케이스 JSON 파싱 실패: ${message}",
 			"delete": {
-				"title": "删除",
-				"aria-label": "删除"
+				"title": "삭제",
+				"aria-label": "삭제"
 			},
-			"deleteConfirm": "确定删除该基准测试吗？",
-			"selectChar": "运行角色",
-			"selectCharFirst": "请先选择角色。",
-			"judgeSource": "裁判 AI 源（可选）",
-			"run": "运行",
-			"runDone": "运行完成。",
-			"results": "结果",
-			"noResults": "暂无结果。",
-			"notJudged": "未评分",
-			"stats": "共 ${total} 条 · 空回复 ${empty} · 平均长度 ${avgLength} · 已评分 ${judged} · 平均分 ${avgScore}"
+			"deleteConfirm": "이 벤치마크를 삭제하시겠습니까?",
+			"selectChar": "실행할 캐릭터",
+			"selectCharFirst": "먼저 캐릭터를 선택하세요.",
+			"judgeSource": "심사자 AI 소스(선택 사항)",
+			"run": "실행",
+			"runDone": "실행이 완료되었습니다.",
+			"results": "결과",
+			"noResults": "아직 결과가 없습니다.",
+			"notJudged": "평가되지 않음",
+			"stats": "총 ${total}건 · 빈 응답 ${empty} · 평균 길이 ${avgLength} · 평가됨 ${judged} · 평균 점수 ${avgScore}"
 		},
 		"retention": {
-			"title": "记录保留策略",
-			"prompt": "请求记录保留（天）",
-			"conversation": "整条记录保留（天）",
-			"save": "保存",
-			"saved": "已保存。"
+			"title": "기록 보존 정책",
+			"hint": "요청 기록 보존 기간이 지나면 응답만 보존되고, 전체 기록 보존 기간이 지나면 기록 전체가 삭제됩니다.",
+			"prompt": "요청 기록 보존(일)",
+			"conversation": "전체 기록 보존(일)",
+			"save": "저장",
+			"saved": "저장되었습니다."
+		},
+		"settings": {
+			"title": "설정",
+			"description": "생성 기록의 보존 정책을 조정합니다."
 		},
 		"alerts": {
-			"loadFailed": "加载失败：${message}",
-			"saveFailed": "保存失败：${message}",
-			"runFailed": "运行失败：${message}"
+			"loadFailed": "불러오기 실패: ${message}",
+			"saveFailed": "저장 실패: ${message}",
+			"runFailed": "실행 실패: ${message}"
+		},
+		"home_function_buttons": {
+			"dev": {
+				"title": "개발",
+				"sub_items": {
+					"open": {
+						"title": "Agent Studio"
+					}
+				}
+			}
+		},
+		"subagent": {
+			"title": "하위 에이전트 내부 대화",
+			"description": "하위 에이전트 실행의 상태, 작업 및 전체 내부 대화를 확인합니다.",
+			"back": "생성 기록으로 돌아가기",
+			"task": "작업",
+			"conversation": "내부 대화",
+			"empty": "(대화 내용이 없습니다)"
 		}
 	}
 }

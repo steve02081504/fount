@@ -6444,7 +6444,7 @@
 		},
 		"workspaces": {
 			"browse": "瀏覽…",
-			"open": null,
+			"open": "開啟工作區與對話",
 			"remove": "移除目前工作區",
 			"removeConfirm": "確定移除工作區「${name}」嗎？磁碟上的工作階段檔案會保留。",
 			"none": "尚未選擇工作區",
@@ -6625,7 +6625,59 @@
 			"viewFiles": "檢視檔案",
 			"addFiles": "傳送檔案",
 			"callback": "工具回呼",
-			"runShell": "執行 ${lang}"
+			"runShell": "執行 ${lang}",
+			"subAgent": {
+				"createBatch": "建立子代理批次",
+				"run": "執行子代理",
+				"listAiSources": "列出 AI 來源",
+				"check": "檢視子代理對話",
+				"terminate": "終止子代理"
+			},
+			"async": {
+				"list": "列出非同步任務",
+				"await": "等待非同步任務",
+				"notice": "背景任務通知",
+				"run": "在背景執行 ${kind}"
+			}
+		},
+		"subagent": {
+			"title": "子代理",
+			"open": "子代理：${task}（點擊檢視內部對話）",
+			"working": "執行中 ${rounds}/${roundLimit} 輪",
+			"workingUnknown": "執行中",
+			"state": {
+				"running": "執行中",
+				"summarizing": "總結中",
+				"done": "已完成",
+				"terminated": "已終止",
+				"failed": "已失敗"
+			},
+			"check": {
+				"open": "在 Agent Studio 開啟",
+				"rounds": "輪次 ${rounds}/${roundLimit}"
+			}
+		},
+		"transcript": {
+			"role": {
+				"tool": "工具",
+				"char": "角色",
+				"user": "使用者",
+				"system": "系統"
+			}
+		},
+		"asyncTasks": {
+			"title": "背景任務",
+			"none": "目前沒有進行中的非同步任務。",
+			"timedOut": "等待逾時：仍有任務正在進行中。",
+			"open": "背景任務：${label}",
+			"working": "背景任務執行中（${kind}）",
+			"state": {
+				"running": "執行中",
+				"done": "已完成",
+				"failed": "已失敗",
+				"unknown": "找不到",
+				"idle": "背景任務"
+			}
 		}
 	},
 	"gist": {
@@ -6748,66 +6800,139 @@
 	},
 	"agent_studio": {
 		"title": "Agent Studio",
-		"description": "查看生成记录与子代理运行，并对角色做基准测试。",
-		"chars": {
-			"title": "角色",
-			"empty": "暂无角色。"
+		"description": "檢視生成記錄與子代理執行，並對角色進行基準測試。",
+		"nav": {
+			"region": {
+				"aria-label": "主導覽"
+			},
+			"mobile": {
+				"aria-label": "主導覽（行動版）"
+			},
+			"dashboard": "儀表板",
+			"generations": "生成記錄",
+			"benchmarks": "基準測試",
+			"settings": "設定"
 		},
-		"detail": {
-			"subAgents": "子代理",
-			"generations": "近期生成",
-			"none": "暂无数据。"
-		},
-		"generation": {
-			"title": "生成详情",
-			"prompt": "请求聊天记录",
-			"response": "回复",
-			"ok": "正常",
-			"error": "出错"
-		},
-		"run": {
-			"detail": "生成 ${generations} 条 · 轮次 ${rounds}/${roundLimit}",
-			"state": {
-				"running": "运行中",
-				"summarizing": "总结中",
-				"done": "已完成",
-				"failed": "失败",
-				"terminated": "已终止"
+		"actions": {
+			"refreshData": "重新整理資料",
+			"refresh": {
+				"title": "重新整理",
+				"aria-label": "重新整理資料"
+			},
+			"close": {
+				"title": "關閉",
+				"aria-label": "關閉"
 			}
 		},
+		"dashboard": {
+			"title": "儀表板",
+			"description": "選擇角色，檢視其子代理執行與近期生成。",
+			"selectPrompt": "從左側選擇一個角色開始檢視。"
+		},
+		"chars": {
+			"title": "角色",
+			"empty": "暫無角色。",
+			"noMatch": "沒有符合的角色。",
+			"search": {
+				"placeholder": "搜尋角色…"
+			}
+		},
+		"detail": {
+			"subAgents": "子代理執行",
+			"generations": "近期生成",
+			"none": "暫無資料。"
+		},
+		"generation": {
+			"title": "生成詳情",
+			"prompt": "請求聊天紀錄",
+			"response": "回覆",
+			"ok": "正常",
+			"error": "錯誤",
+			"meta": "來源 ${source} · 模型 ${model}",
+			"character": "角色 ${name}",
+			"promptExpired": "請求紀錄已過期或無法使用。"
+		},
+		"run": {
+			"detail": "生成 ${generations} 筆 · 輪次 ${rounds}/${roundLimit}",
+			"state": {
+				"running": "執行中",
+				"summarizing": "總結中",
+				"done": "已完成",
+				"failed": "失敗",
+				"terminated": "已終止"
+			}
+		},
+		"generations": {
+			"title": "生成記錄",
+			"description": "瀏覽所有角色的生成記錄與生成鏈。",
+			"records": "記錄",
+			"chains": "生成鏈",
+			"filterChar": "角色",
+			"allChars": "全部角色",
+			"recordsCount": "共 ${count} 筆記錄",
+			"empty": "暫無生成記錄。",
+			"chainsEmpty": "暫無生成鏈。"
+		},
 		"benchmarks": {
-			"title": "基准测试",
-			"empty": "暂无基准测试。",
+			"title": "基準測試",
+			"description": "定義用例、選擇角色與裁判，執行評分基準。",
+			"empty": "暫無基準測試。",
+			"pick": "選擇或建立一個基準測試。",
 			"new": "新建",
-			"newName": "请输入基准测试名称",
-			"cases": "用例（JSON 数组）",
-			"saveCases": "保存用例",
+			"newName": "請輸入基準測試名稱",
+			"cases": "用例（JSON 陣列）",
+			"saveCases": "儲存用例",
+			"saved": "用例已儲存。",
+			"casesInvalid": "用例 JSON 解析失敗：${message}",
 			"delete": {
-				"title": "删除",
-				"aria-label": "删除"
+				"title": "刪除",
+				"aria-label": "刪除"
 			},
-			"deleteConfirm": "确定删除该基准测试吗？",
-			"selectChar": "运行角色",
-			"selectCharFirst": "请先选择角色。",
-			"judgeSource": "裁判 AI 源（可选）",
-			"run": "运行",
-			"runDone": "运行完成。",
-			"results": "结果",
-			"noResults": "暂无结果。",
-			"notJudged": "未评分",
-			"stats": "共 ${total} 条 · 空回复 ${empty} · 平均长度 ${avgLength} · 已评分 ${judged} · 平均分 ${avgScore}"
+			"deleteConfirm": "確定刪除此基準測試嗎？",
+			"selectChar": "執行角色",
+			"selectCharFirst": "請先選擇角色。",
+			"judgeSource": "裁判 AI 來源（選填）",
+			"run": "執行",
+			"runDone": "執行完成。",
+			"results": "結果",
+			"noResults": "暫無結果。",
+			"notJudged": "未評分",
+			"stats": "共 ${total} 筆 · 空回覆 ${empty} · 平均長度 ${avgLength} · 已評分 ${judged} · 平均分 ${avgScore}"
 		},
 		"retention": {
-			"title": "记录保留策略",
-			"prompt": "请求记录保留（天）",
-			"conversation": "整条记录保留（天）",
-			"save": "保存",
-			"saved": "已保存。"
+			"title": "紀錄保留策略",
+			"hint": "超過請求紀錄保留期後只保留回覆，超過整筆紀錄保留期後整筆刪除。",
+			"prompt": "請求紀錄保留（天）",
+			"conversation": "整筆紀錄保留（天）",
+			"save": "儲存",
+			"saved": "已儲存。"
+		},
+		"settings": {
+			"title": "設定",
+			"description": "調整生成記錄的保留策略。"
 		},
 		"alerts": {
-			"loadFailed": "加载失败：${message}",
-			"saveFailed": "保存失败：${message}",
-			"runFailed": "运行失败：${message}"
+			"loadFailed": "載入失敗：${message}",
+			"saveFailed": "儲存失敗：${message}",
+			"runFailed": "執行失敗：${message}"
+		},
+		"home_function_buttons": {
+			"dev": {
+				"title": "開發",
+				"sub_items": {
+					"open": {
+						"title": "Agent Studio"
+					}
+				}
+			}
+		},
+		"subagent": {
+			"title": "子代理內部對話",
+			"description": "檢視一次子代理執行的狀態、任務與完整內部對話。",
+			"back": "返回生成記錄",
+			"task": "任務",
+			"conversation": "內部對話",
+			"empty": "（暫無對話內容）"
 		}
 	}
 }

@@ -6445,7 +6445,7 @@
 		},
 		"workspaces": {
 			"browse": "Duyệt…",
-			"open": null,
+			"open": "Mở không gian làm việc và phiên",
 			"remove": "Xóa không gian làm việc hiện tại",
 			"removeConfirm": "Bạn có chắc chắn muốn xóa không gian làm việc \"${name}\" không? Các tệp phiên trên đĩa sẽ được giữ lại.",
 			"none": "Chưa chọn không gian làm việc",
@@ -6626,7 +6626,59 @@
 			"viewFiles": "Xem tệp",
 			"addFiles": "Gửi tệp",
 			"callback": "Gọi lại công cụ",
-			"runShell": "Chạy ${lang}"
+			"runShell": "Chạy ${lang}",
+			"subAgent": {
+				"createBatch": "Tạo đợt sub-agent",
+				"run": "Chạy sub-agent",
+				"listAiSources": "Liệt kê nguồn AI",
+				"check": "Xem hội thoại sub-agent",
+				"terminate": "Dừng sub-agent"
+			},
+			"async": {
+				"list": "Liệt kê tác vụ bất đồng bộ",
+				"await": "Chờ tác vụ bất đồng bộ",
+				"notice": "Thông báo tác vụ nền",
+				"run": "Chạy ${kind} trong nền"
+			}
+		},
+		"subagent": {
+			"title": "Sub-agent",
+			"open": "Sub-agent: ${task} (nhấp để xem hội thoại nội bộ)",
+			"working": "Đang chạy ${rounds}/${roundLimit} vòng",
+			"workingUnknown": "Đang chạy",
+			"state": {
+				"running": "Đang chạy",
+				"summarizing": "Đang tóm tắt",
+				"done": "Đã xong",
+				"terminated": "Đã dừng",
+				"failed": "Thất bại"
+			},
+			"check": {
+				"open": "Mở trong Agent Studio",
+				"rounds": "Vòng ${rounds}/${roundLimit}"
+			}
+		},
+		"transcript": {
+			"role": {
+				"tool": "Công cụ",
+				"char": "Nhân vật",
+				"user": "Người dùng",
+				"system": "Hệ thống"
+			}
+		},
+		"asyncTasks": {
+			"title": "Tác vụ nền",
+			"none": "Hiện không có tác vụ bất đồng bộ nào đang chạy.",
+			"timedOut": "Hết thời gian chờ: vẫn còn tác vụ đang chạy.",
+			"open": "Tác vụ nền: ${label}",
+			"working": "Tác vụ nền đang chạy (${kind})",
+			"state": {
+				"running": "Đang chạy",
+				"done": "Đã xong",
+				"failed": "Thất bại",
+				"unknown": "Không tìm thấy",
+				"idle": "Tác vụ nền"
+			}
 		}
 	},
 	"gist": {
@@ -6749,66 +6801,139 @@
 	},
 	"agent_studio": {
 		"title": "Agent Studio",
-		"description": "查看生成记录与子代理运行，并对角色做基准测试。",
-		"chars": {
-			"title": "角色",
-			"empty": "暂无角色。"
+		"description": "Xem lần tạo và lượt chạy sub-agent, đồng thời chấm điểm nhân vật bằng benchmark.",
+		"nav": {
+			"region": {
+				"aria-label": "Điều hướng chính"
+			},
+			"mobile": {
+				"aria-label": "Điều hướng chính (di động)"
+			},
+			"dashboard": "Bảng điều khiển",
+			"generations": "Lần tạo",
+			"benchmarks": "Benchmark",
+			"settings": "Cài đặt"
 		},
-		"detail": {
-			"subAgents": "子代理",
-			"generations": "近期生成",
-			"none": "暂无数据。"
-		},
-		"generation": {
-			"title": "生成详情",
-			"prompt": "请求聊天记录",
-			"response": "回复",
-			"ok": "正常",
-			"error": "出错"
-		},
-		"run": {
-			"detail": "生成 ${generations} 条 · 轮次 ${rounds}/${roundLimit}",
-			"state": {
-				"running": "运行中",
-				"summarizing": "总结中",
-				"done": "已完成",
-				"failed": "失败",
-				"terminated": "已终止"
+		"actions": {
+			"refreshData": "Làm mới dữ liệu",
+			"refresh": {
+				"title": "Làm mới",
+				"aria-label": "Làm mới dữ liệu"
+			},
+			"close": {
+				"title": "Đóng",
+				"aria-label": "Đóng"
 			}
 		},
+		"dashboard": {
+			"title": "Bảng điều khiển",
+			"description": "Chọn một nhân vật để xem các lượt chạy sub-agent và lần tạo gần đây của nhân vật đó.",
+			"selectPrompt": "Chọn một nhân vật ở bên trái để bắt đầu."
+		},
+		"chars": {
+			"title": "Nhân vật",
+			"empty": "Chưa có nhân vật nào.",
+			"noMatch": "Không có nhân vật phù hợp.",
+			"search": {
+				"placeholder": "Tìm kiếm nhân vật…"
+			}
+		},
+		"detail": {
+			"subAgents": "Lượt chạy sub-agent",
+			"generations": "Lần tạo gần đây",
+			"none": "Chưa có dữ liệu."
+		},
+		"generation": {
+			"title": "Chi tiết lần tạo",
+			"prompt": "Nhật ký trò chuyện của yêu cầu",
+			"response": "Phản hồi",
+			"ok": "Bình thường",
+			"error": "Lỗi",
+			"meta": "Nguồn ${source} · Mô hình ${model}",
+			"character": "Nhân vật ${name}",
+			"promptExpired": "Nhật ký yêu cầu đã hết hạn hoặc không khả dụng."
+		},
+		"run": {
+			"detail": "${generations} lần tạo · vòng ${rounds}/${roundLimit}",
+			"state": {
+				"running": "Đang chạy",
+				"summarizing": "Đang tóm tắt",
+				"done": "Đã xong",
+				"failed": "Thất bại",
+				"terminated": "Đã dừng"
+			}
+		},
+		"generations": {
+			"title": "Lần tạo",
+			"description": "Duyệt bản ghi và chuỗi lần tạo của mọi nhân vật.",
+			"records": "Bản ghi",
+			"chains": "Chuỗi tạo",
+			"filterChar": "Nhân vật",
+			"allChars": "Tất cả nhân vật",
+			"recordsCount": "${count} bản ghi",
+			"empty": "Chưa có lần tạo nào.",
+			"chainsEmpty": "Chưa có chuỗi tạo nào."
+		},
 		"benchmarks": {
-			"title": "基准测试",
-			"empty": "暂无基准测试。",
-			"new": "新建",
-			"newName": "请输入基准测试名称",
-			"cases": "用例（JSON 数组）",
-			"saveCases": "保存用例",
+			"title": "Benchmark",
+			"description": "Định nghĩa ca kiểm thử, chọn nhân vật và giám khảo, rồi chạy benchmark có chấm điểm.",
+			"empty": "Chưa có benchmark nào.",
+			"pick": "Chọn hoặc tạo một benchmark.",
+			"new": "Tạo mới",
+			"newName": "Nhập tên benchmark",
+			"cases": "Ca kiểm thử (mảng JSON)",
+			"saveCases": "Lưu ca kiểm thử",
+			"saved": "Đã lưu ca kiểm thử.",
+			"casesInvalid": "Không phân tích được JSON ca kiểm thử: ${message}",
 			"delete": {
-				"title": "删除",
-				"aria-label": "删除"
+				"title": "Xóa",
+				"aria-label": "Xóa"
 			},
-			"deleteConfirm": "确定删除该基准测试吗？",
-			"selectChar": "运行角色",
-			"selectCharFirst": "请先选择角色。",
-			"judgeSource": "裁判 AI 源（可选）",
-			"run": "运行",
-			"runDone": "运行完成。",
-			"results": "结果",
-			"noResults": "暂无结果。",
-			"notJudged": "未评分",
-			"stats": "共 ${total} 条 · 空回复 ${empty} · 平均长度 ${avgLength} · 已评分 ${judged} · 平均分 ${avgScore}"
+			"deleteConfirm": "Xóa benchmark này?",
+			"selectChar": "Nhân vật chạy",
+			"selectCharFirst": "Vui lòng chọn nhân vật trước.",
+			"judgeSource": "Nguồn AI giám khảo (tùy chọn)",
+			"run": "Chạy",
+			"runDone": "Đã chạy xong.",
+			"results": "Kết quả",
+			"noResults": "Chưa có kết quả.",
+			"notJudged": "Chưa chấm điểm",
+			"stats": "tổng ${total} · phản hồi trống ${empty} · độ dài trung bình ${avgLength} · đã chấm ${judged} · điểm trung bình ${avgScore}"
 		},
 		"retention": {
-			"title": "记录保留策略",
-			"prompt": "请求记录保留（天）",
-			"conversation": "整条记录保留（天）",
-			"save": "保存",
-			"saved": "已保存。"
+			"title": "Chính sách lưu giữ bản ghi",
+			"hint": "Sau thời hạn lưu giữ nhật ký yêu cầu, chỉ phản hồi được giữ lại; sau thời hạn lưu giữ toàn bộ bản ghi, cả bản ghi sẽ bị xóa.",
+			"prompt": "Lưu giữ nhật ký yêu cầu (ngày)",
+			"conversation": "Lưu giữ toàn bộ bản ghi (ngày)",
+			"save": "Lưu",
+			"saved": "Đã lưu."
+		},
+		"settings": {
+			"title": "Cài đặt",
+			"description": "Điều chỉnh thời hạn lưu giữ bản ghi tạo."
 		},
 		"alerts": {
-			"loadFailed": "加载失败：${message}",
-			"saveFailed": "保存失败：${message}",
-			"runFailed": "运行失败：${message}"
+			"loadFailed": "Tải thất bại: ${message}",
+			"saveFailed": "Lưu thất bại: ${message}",
+			"runFailed": "Chạy thất bại: ${message}"
+		},
+		"home_function_buttons": {
+			"dev": {
+				"title": "Phát triển",
+				"sub_items": {
+					"open": {
+						"title": "Agent Studio"
+					}
+				}
+			}
+		},
+		"subagent": {
+			"title": "Hội thoại nội bộ của sub-agent",
+			"description": "Xem trạng thái, nhiệm vụ và toàn bộ hội thoại nội bộ của một lượt chạy sub-agent.",
+			"back": "Quay lại lần tạo",
+			"task": "Nhiệm vụ",
+			"conversation": "Hội thoại nội bộ",
+			"empty": "(chưa có nội dung hội thoại)"
 		}
 	}
 }

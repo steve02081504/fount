@@ -6445,7 +6445,7 @@
 		},
 		"workspaces": {
 			"browse": "ब्राउज़ करें…",
-			"open": null,
+			"open": "कार्यक्षेत्र और सत्र खोलें",
 			"remove": "वर्तमान कार्यक्षेत्र हटाएँ",
 			"removeConfirm": "क्या आप वाकई कार्यक्षेत्र \"${name}\" को हटाना चाहते हैं? डिस्क पर मौजूद सत्र फ़ाइलें बनी रहेंगी।",
 			"none": "कोई कार्यक्षेत्र चयनित नहीं",
@@ -6626,7 +6626,59 @@
 			"viewFiles": "फ़ाइलें देखें",
 			"addFiles": "फ़ाइलें भेजें",
 			"callback": "टूल कॉलबैक",
-			"runShell": "${lang} चलाएँ"
+			"runShell": "${lang} चलाएँ",
+			"subAgent": {
+				"createBatch": "उप-एजेंट बैच बनाएँ",
+				"run": "उप-एजेंट चलाएँ",
+				"listAiSources": "AI स्रोत सूचीबद्ध करें",
+				"check": "उप-एजेंट वार्तालाप देखें",
+				"terminate": "उप-एजेंट समाप्त करें"
+			},
+			"async": {
+				"list": "अतुल्यकालिक कार्य सूचीबद्ध करें",
+				"await": "अतुल्यकालिक कार्य की प्रतीक्षा करें",
+				"notice": "पृष्ठभूमि कार्य अधिसूचना",
+				"run": "${kind} पृष्ठभूमि में चलाएँ"
+			}
+		},
+		"subagent": {
+			"title": "उप-एजेंट",
+			"open": "उप-एजेंट: ${task} (आंतरिक वार्तालाप देखने के लिए क्लिक करें)",
+			"working": "${rounds}/${roundLimit} दौर चल रहा है",
+			"workingUnknown": "चल रहा है",
+			"state": {
+				"running": "चल रहा है",
+				"summarizing": "सारांश बन रहा है",
+				"done": "पूरा हुआ",
+				"terminated": "समाप्त",
+				"failed": "विफल"
+			},
+			"check": {
+				"open": "Agent Studio में खोलें",
+				"rounds": "दौर ${rounds}/${roundLimit}"
+			}
+		},
+		"transcript": {
+			"role": {
+				"tool": "टूल",
+				"char": "किरदार",
+				"user": "उपयोगकर्ता",
+				"system": "सिस्टम"
+			}
+		},
+		"asyncTasks": {
+			"title": "पृष्ठभूमि कार्य",
+			"none": "फ़िलहाल कोई अतुल्यकालिक कार्य प्रगति पर नहीं है।",
+			"timedOut": "प्रतीक्षा समय समाप्त: अभी भी कुछ कार्य प्रगति पर हैं।",
+			"open": "पृष्ठभूमि कार्य: ${label}",
+			"working": "पृष्ठभूमि कार्य चल रहा है (${kind})",
+			"state": {
+				"running": "चल रहा है",
+				"done": "पूरा हुआ",
+				"failed": "विफल",
+				"unknown": "नहीं मिला",
+				"idle": "पृष्ठभूमि कार्य"
+			}
 		}
 	},
 	"gist": {
@@ -6749,66 +6801,139 @@
 	},
 	"agent_studio": {
 		"title": "Agent Studio",
-		"description": "查看生成记录与子代理运行，并对角色做基准测试。",
-		"chars": {
-			"title": "角色",
-			"empty": "暂无角色。"
+		"description": "जनरेशन रिकॉर्ड और उप-एजेंट रन देखें, और किरदारों का बेंचमार्क लें।",
+		"nav": {
+			"region": {
+				"aria-label": "मुख्य नेविगेशन"
+			},
+			"mobile": {
+				"aria-label": "मुख्य नेविगेशन (मोबाइल)"
+			},
+			"dashboard": "डैशबोर्ड",
+			"generations": "जनरेशन रिकॉर्ड",
+			"benchmarks": "बेंचमार्क",
+			"settings": "सेटिंग"
 		},
-		"detail": {
-			"subAgents": "子代理",
-			"generations": "近期生成",
-			"none": "暂无数据。"
-		},
-		"generation": {
-			"title": "生成详情",
-			"prompt": "请求聊天记录",
-			"response": "回复",
-			"ok": "正常",
-			"error": "出错"
-		},
-		"run": {
-			"detail": "生成 ${generations} 条 · 轮次 ${rounds}/${roundLimit}",
-			"state": {
-				"running": "运行中",
-				"summarizing": "总结中",
-				"done": "已完成",
-				"failed": "失败",
-				"terminated": "已终止"
+		"actions": {
+			"refreshData": "डेटा ताज़ा करें",
+			"refresh": {
+				"title": "ताज़ा करें",
+				"aria-label": "डेटा ताज़ा करें"
+			},
+			"close": {
+				"title": "बंद करें",
+				"aria-label": "बंद करें"
 			}
 		},
+		"dashboard": {
+			"title": "डैशबोर्ड",
+			"description": "किरदार चुनें और उसके उप-एजेंट रन तथा हाल के जनरेशन देखें।",
+			"selectPrompt": "देखना शुरू करने के लिए बाईं ओर से एक किरदार चुनें।"
+		},
+		"chars": {
+			"title": "किरदार",
+			"empty": "अभी कोई किरदार नहीं है।",
+			"noMatch": "कोई मेल खाता किरदार नहीं है।",
+			"search": {
+				"placeholder": "किरदार खोजें…"
+			}
+		},
+		"detail": {
+			"subAgents": "उप-एजेंट रन",
+			"generations": "हाल के जनरेशन",
+			"none": "अभी कोई डेटा नहीं है।"
+		},
+		"generation": {
+			"title": "जनरेशन विवरण",
+			"prompt": "अनुरोध चैट लॉग",
+			"response": "उत्तर",
+			"ok": "ठीक",
+			"error": "त्रुटि",
+			"meta": "स्रोत ${source} · मॉडल ${model}",
+			"character": "किरदार ${name}",
+			"promptExpired": "अनुरोध रिकॉर्ड समाप्त हो गया है या उपलब्ध नहीं है।"
+		},
+		"run": {
+			"detail": "${generations} जनरेशन · दौर ${rounds}/${roundLimit}",
+			"state": {
+				"running": "चल रहा है",
+				"summarizing": "सारांश बन रहा है",
+				"done": "पूरा हुआ",
+				"failed": "विफल",
+				"terminated": "समाप्त"
+			}
+		},
+		"generations": {
+			"title": "जनरेशन रिकॉर्ड",
+			"description": "सभी किरदारों के जनरेशन रिकॉर्ड और जनरेशन शृंखलाएँ ब्राउज़ करें।",
+			"records": "रिकॉर्ड",
+			"chains": "जनरेशन शृंखला",
+			"filterChar": "किरदार",
+			"allChars": "सभी किरदार",
+			"recordsCount": "कुल ${count} रिकॉर्ड",
+			"empty": "अभी कोई जनरेशन रिकॉर्ड नहीं है।",
+			"chainsEmpty": "अभी कोई जनरेशन शृंखला नहीं है।"
+		},
 		"benchmarks": {
-			"title": "基准测试",
-			"empty": "暂无基准测试。",
-			"new": "新建",
-			"newName": "请输入基准测试名称",
-			"cases": "用例（JSON 数组）",
-			"saveCases": "保存用例",
+			"title": "बेंचमार्क",
+			"description": "केस परिभाषित करें, किरदार और निर्णायक चुनें, और स्कोरिंग बेंचमार्क चलाएँ।",
+			"empty": "अभी कोई बेंचमार्क नहीं है।",
+			"pick": "कोई बेंचमार्क चुनें या नया बनाएँ।",
+			"new": "नया",
+			"newName": "बेंचमार्क का नाम दर्ज करें",
+			"cases": "केस (JSON सरणी)",
+			"saveCases": "केस सहेजें",
+			"saved": "केस सहेजे गए।",
+			"casesInvalid": "केस JSON पार्स करने में विफल: ${message}",
 			"delete": {
-				"title": "删除",
-				"aria-label": "删除"
+				"title": "हटाएँ",
+				"aria-label": "हटाएँ"
 			},
-			"deleteConfirm": "确定删除该基准测试吗？",
-			"selectChar": "运行角色",
-			"selectCharFirst": "请先选择角色。",
-			"judgeSource": "裁判 AI 源（可选）",
-			"run": "运行",
-			"runDone": "运行完成。",
-			"results": "结果",
-			"noResults": "暂无结果。",
-			"notJudged": "未评分",
-			"stats": "共 ${total} 条 · 空回复 ${empty} · 平均长度 ${avgLength} · 已评分 ${judged} · 平均分 ${avgScore}"
+			"deleteConfirm": "क्या आप वाकई इस बेंचमार्क को हटाना चाहते हैं?",
+			"selectChar": "चलाने के लिए किरदार",
+			"selectCharFirst": "कृपया पहले एक किरदार चुनें।",
+			"judgeSource": "निर्णायक AI स्रोत (वैकल्पिक)",
+			"run": "चलाएँ",
+			"runDone": "चलाना पूरा हुआ।",
+			"results": "परिणाम",
+			"noResults": "अभी कोई परिणाम नहीं है।",
+			"notJudged": "मूल्यांकित नहीं",
+			"stats": "कुल ${total} · खाली उत्तर ${empty} · औसत लंबाई ${avgLength} · मूल्यांकित ${judged} · औसत स्कोर ${avgScore}"
 		},
 		"retention": {
-			"title": "记录保留策略",
-			"prompt": "请求记录保留（天）",
-			"conversation": "整条记录保留（天）",
-			"save": "保存",
-			"saved": "已保存。"
+			"title": "रिकॉर्ड प्रतिधारण नीति",
+			"hint": "अनुरोध रिकॉर्ड की प्रतिधारण अवधि बीतने के बाद केवल उत्तर रखा जाता है, और पूरे रिकॉर्ड की प्रतिधारण अवधि बीतने के बाद पूरा रिकॉर्ड हटा दिया जाता है।",
+			"prompt": "अनुरोध रिकॉर्ड प्रतिधारण (दिन)",
+			"conversation": "पूर्ण रिकॉर्ड प्रतिधारण (दिन)",
+			"save": "सहेजें",
+			"saved": "सहेजा गया।"
+		},
+		"settings": {
+			"title": "सेटिंग",
+			"description": "जनरेशन रिकॉर्ड की प्रतिधारण नीति समायोजित करें।"
 		},
 		"alerts": {
-			"loadFailed": "加载失败：${message}",
-			"saveFailed": "保存失败：${message}",
-			"runFailed": "运行失败：${message}"
+			"loadFailed": "लोड करने में विफल: ${message}",
+			"saveFailed": "सहेजने में विफल: ${message}",
+			"runFailed": "चलाने में विफल: ${message}"
+		},
+		"home_function_buttons": {
+			"dev": {
+				"title": "विकास",
+				"sub_items": {
+					"open": {
+						"title": "Agent Studio"
+					}
+				}
+			}
+		},
+		"subagent": {
+			"title": "उप-एजेंट आंतरिक वार्तालाप",
+			"description": "किसी उप-एजेंट रन की स्थिति, कार्य और पूरा आंतरिक वार्तालाप देखें।",
+			"back": "जनरेशन रिकॉर्ड पर वापस जाएँ",
+			"task": "कार्य",
+			"conversation": "आंतरिक वार्तालाप",
+			"empty": "(कोई वार्तालाप सामग्री नहीं)"
 		}
 	}
 }

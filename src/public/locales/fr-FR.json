@@ -6451,7 +6451,7 @@
 		},
 		"workspaces": {
 			"browse": "Parcourir…",
-			"open": null,
+			"open": "Ouvrir les espaces de travail et les sessions",
 			"remove": "Retirer l'espace de travail actuel",
 			"removeConfirm": "Êtes-vous sûr de vouloir retirer l'espace de travail « ${name} » ? Les fichiers de session sur le disque seront conservés.",
 			"none": "Aucun espace de travail sélectionné",
@@ -6632,7 +6632,59 @@
 			"viewFiles": "Afficher les fichiers",
 			"addFiles": "Envoyer des fichiers",
 			"callback": "Rappel d'outil",
-			"runShell": "Exécuter ${lang}"
+			"runShell": "Exécuter ${lang}",
+			"subAgent": {
+				"createBatch": "Créer un lot de sous-agents",
+				"run": "Exécuter le sous-agent",
+				"listAiSources": "Lister les sources d'IA",
+				"check": "Voir la conversation du sous-agent",
+				"terminate": "Arrêter le sous-agent"
+			},
+			"async": {
+				"list": "Lister les tâches asynchrones",
+				"await": "Attendre une tâche asynchrone",
+				"notice": "Notification de tâche en arrière-plan",
+				"run": "Exécuter ${kind} en arrière-plan"
+			}
+		},
+		"subagent": {
+			"title": "Sous-agent",
+			"open": "Sous-agent : ${task} (cliquez pour voir la conversation interne)",
+			"working": "En cours : ${rounds}/${roundLimit} tours",
+			"workingUnknown": "En cours",
+			"state": {
+				"running": "En cours",
+				"summarizing": "Synthèse en cours",
+				"done": "Terminé",
+				"terminated": "Arrêté",
+				"failed": "Échoué"
+			},
+			"check": {
+				"open": "Ouvrir dans Agent Studio",
+				"rounds": "Tours ${rounds}/${roundLimit}"
+			}
+		},
+		"transcript": {
+			"role": {
+				"tool": "Outil",
+				"char": "Personnage",
+				"user": "Utilisateur",
+				"system": "Système"
+			}
+		},
+		"asyncTasks": {
+			"title": "Tâches en arrière-plan",
+			"none": "Aucune tâche asynchrone en cours.",
+			"timedOut": "Délai d'attente dépassé : des tâches sont toujours en cours.",
+			"open": "Tâche en arrière-plan : ${label}",
+			"working": "Tâche en arrière-plan en cours (${kind})",
+			"state": {
+				"running": "En cours",
+				"done": "Terminé",
+				"failed": "Échoué",
+				"unknown": "Introuvable",
+				"idle": "Tâche en arrière-plan"
+			}
 		}
 	},
 	"gist": {
@@ -6755,66 +6807,139 @@
 	},
 	"agent_studio": {
 		"title": "Agent Studio",
-		"description": "查看生成记录与子代理运行，并对角色做基准测试。",
-		"chars": {
-			"title": "角色",
-			"empty": "暂无角色。"
+		"description": "Consultez les enregistrements de génération et les exécutions de sous-agents, et évaluez les personnages à l'aide de benchmarks.",
+		"nav": {
+			"region": {
+				"aria-label": "Navigation principale"
+			},
+			"mobile": {
+				"aria-label": "Navigation principale (mobile)"
+			},
+			"dashboard": "Tableau de bord",
+			"generations": "Générations",
+			"benchmarks": "Benchmarks",
+			"settings": "Paramètres"
 		},
-		"detail": {
-			"subAgents": "子代理",
-			"generations": "近期生成",
-			"none": "暂无数据。"
-		},
-		"generation": {
-			"title": "生成详情",
-			"prompt": "请求聊天记录",
-			"response": "回复",
-			"ok": "正常",
-			"error": "出错"
-		},
-		"run": {
-			"detail": "生成 ${generations} 条 · 轮次 ${rounds}/${roundLimit}",
-			"state": {
-				"running": "运行中",
-				"summarizing": "总结中",
-				"done": "已完成",
-				"failed": "失败",
-				"terminated": "已终止"
+		"actions": {
+			"refreshData": "Rafraîchir les données",
+			"refresh": {
+				"title": "Rafraîchir",
+				"aria-label": "Rafraîchir les données"
+			},
+			"close": {
+				"title": "Fermer",
+				"aria-label": "Fermer"
 			}
 		},
+		"dashboard": {
+			"title": "Tableau de bord",
+			"description": "Choisissez un personnage pour consulter ses exécutions de sous-agents et ses générations récentes.",
+			"selectPrompt": "Sélectionnez un personnage à gauche pour commencer."
+		},
+		"chars": {
+			"title": "Personnages",
+			"empty": "Aucun personnage pour le moment.",
+			"noMatch": "Aucun personnage correspondant.",
+			"search": {
+				"placeholder": "Rechercher des personnages…"
+			}
+		},
+		"detail": {
+			"subAgents": "Exécutions de sous-agents",
+			"generations": "Générations récentes",
+			"none": "Aucune donnée."
+		},
+		"generation": {
+			"title": "Détail de la génération",
+			"prompt": "Journal de chat de la requête",
+			"response": "Réponse",
+			"ok": "Correct",
+			"error": "Erreur",
+			"meta": "Source ${source} · Modèle ${model}",
+			"character": "Personnage ${name}",
+			"promptExpired": "Le journal de la requête a expiré ou est indisponible."
+		},
+		"run": {
+			"detail": "Générations ${generations} · tours ${rounds}/${roundLimit}",
+			"state": {
+				"running": "En cours",
+				"summarizing": "Synthèse en cours",
+				"done": "Terminé",
+				"failed": "Échoué",
+				"terminated": "Arrêté"
+			}
+		},
+		"generations": {
+			"title": "Générations",
+			"description": "Parcourez les enregistrements et les chaînes de génération de tous les personnages.",
+			"records": "Enregistrements",
+			"chains": "Chaînes",
+			"filterChar": "Personnage",
+			"allChars": "Tous les personnages",
+			"recordsCount": "${count} enregistrements",
+			"empty": "Aucune génération pour le moment.",
+			"chainsEmpty": "Aucune chaîne pour le moment."
+		},
 		"benchmarks": {
-			"title": "基准测试",
-			"empty": "暂无基准测试。",
-			"new": "新建",
-			"newName": "请输入基准测试名称",
-			"cases": "用例（JSON 数组）",
-			"saveCases": "保存用例",
+			"title": "Benchmarks",
+			"description": "Définissez des cas, choisissez un personnage et un juge, puis lancez des benchmarks notés.",
+			"empty": "Aucun benchmark pour le moment.",
+			"pick": "Sélectionnez ou créez un benchmark.",
+			"new": "Nouveau",
+			"newName": "Saisissez un nom de benchmark",
+			"cases": "Cas (tableau JSON)",
+			"saveCases": "Enregistrer les cas",
+			"saved": "Cas enregistrés.",
+			"casesInvalid": "Échec de l'analyse du JSON des cas : ${message}",
 			"delete": {
-				"title": "删除",
-				"aria-label": "删除"
+				"title": "Supprimer",
+				"aria-label": "Supprimer"
 			},
-			"deleteConfirm": "确定删除该基准测试吗？",
-			"selectChar": "运行角色",
-			"selectCharFirst": "请先选择角色。",
-			"judgeSource": "裁判 AI 源（可选）",
-			"run": "运行",
-			"runDone": "运行完成。",
-			"results": "结果",
-			"noResults": "暂无结果。",
-			"notJudged": "未评分",
-			"stats": "共 ${total} 条 · 空回复 ${empty} · 平均长度 ${avgLength} · 已评分 ${judged} · 平均分 ${avgScore}"
+			"deleteConfirm": "Supprimer ce benchmark ?",
+			"selectChar": "Personnage à exécuter",
+			"selectCharFirst": "Sélectionnez d'abord un personnage.",
+			"judgeSource": "Source d'IA du juge (facultatif)",
+			"run": "Exécuter",
+			"runDone": "Exécution terminée.",
+			"results": "Résultats",
+			"noResults": "Aucun résultat pour le moment.",
+			"notJudged": "Non noté",
+			"stats": "Total ${total} · vides ${empty} · longueur moyenne ${avgLength} · notés ${judged} · score moyen ${avgScore}"
 		},
 		"retention": {
-			"title": "记录保留策略",
-			"prompt": "请求记录保留（天）",
-			"conversation": "整条记录保留（天）",
-			"save": "保存",
-			"saved": "已保存。"
+			"title": "Politique de conservation des enregistrements",
+			"hint": "Au-delà du délai de conservation du journal de la requête, seules les réponses sont conservées ; au-delà du délai de conservation de l'enregistrement complet, l'enregistrement entier est supprimé.",
+			"prompt": "Conservation du journal de la requête (jours)",
+			"conversation": "Conservation de l'enregistrement complet (jours)",
+			"save": "Enregistrer",
+			"saved": "Enregistré."
+		},
+		"settings": {
+			"title": "Paramètres",
+			"description": "Ajustez la conservation des enregistrements de génération."
 		},
 		"alerts": {
-			"loadFailed": "加载失败：${message}",
-			"saveFailed": "保存失败：${message}",
-			"runFailed": "运行失败：${message}"
+			"loadFailed": "Échec du chargement : ${message}",
+			"saveFailed": "Échec de l'enregistrement : ${message}",
+			"runFailed": "Échec de l'exécution : ${message}"
+		},
+		"home_function_buttons": {
+			"dev": {
+				"title": "Développement",
+				"sub_items": {
+					"open": {
+						"title": "Agent Studio"
+					}
+				}
+			}
+		},
+		"subagent": {
+			"title": "Conversation interne du sous-agent",
+			"description": "Consultez l'état, la tâche et la conversation interne complète d'une exécution de sous-agent.",
+			"back": "Retour aux générations",
+			"task": "Tâche",
+			"conversation": "Conversation interne",
+			"empty": "(Aucune conversation pour le moment)"
 		}
 	}
 }
