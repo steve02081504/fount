@@ -6445,6 +6445,7 @@
 		},
 		"workspaces": {
 			"browse": "찾아보기…",
+			"open": null,
 			"remove": "현재 작업 영역 제거",
 			"removeConfirm": "\"${name}\" 작업 영역을 제거하시겠습니까? 디스크의 세션 파일은 유지됩니다.",
 			"none": "작업 영역 선택 안 됨",
@@ -6775,13 +6776,6 @@
 				"terminated": "已终止"
 			}
 		},
-		"retention": {
-			"title": "记录保留策略",
-			"prompt": "请求记录保留（天）",
-			"conversation": "整条记录保留（天）",
-			"save": "保存",
-			"saved": "已保存。"
-		},
 		"benchmarks": {
 			"title": "基准测试",
 			"empty": "暂无基准测试。",
@@ -6803,6 +6797,13 @@
 			"noResults": "暂无结果。",
 			"notJudged": "未评分",
 			"stats": "共 ${total} 条 · 空回复 ${empty} · 平均长度 ${avgLength} · 已评分 ${judged} · 平均分 ${avgScore}"
+		},
+		"retention": {
+			"title": "记录保留策略",
+			"prompt": "请求记录保留（天）",
+			"conversation": "整条记录保留（天）",
+			"save": "保存",
+			"saved": "已保存。"
 		},
 		"alerts": {
 			"loadFailed": "加载失败：${message}",

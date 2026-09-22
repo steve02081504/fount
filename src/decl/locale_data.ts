@@ -5293,7 +5293,9 @@ export type LocaleData = {
 		copied: string
 		generateApiKeyButton: string
 		home_function_buttons: {
-			integration_related: string
+			integration_related: {
+				title: string
+			}
 			ide_integration_config: {
 				title: string
 			}
@@ -6405,6 +6407,7 @@ export type LocaleData = {
 		}
 		workspaces: {
 			browse: string
+			open: string
 			remove: string
 			removeConfirm: string
 			none: string
@@ -6586,6 +6589,58 @@ export type LocaleData = {
 			addFiles: string
 			callback: string
 			runShell: string
+			subAgent: {
+				createBatch: string
+				run: string
+				listAiSources: string
+				check: string
+				terminate: string
+			}
+			async: {
+				list: string
+				await: string
+				notice: string
+				run: string
+			}
+		}
+		subagent: {
+			title: string
+			open: string
+			working: string
+			workingUnknown: string
+			state: {
+				running: string
+				summarizing: string
+				done: string
+				terminated: string
+				failed: string
+			}
+			check: {
+				open: string
+				rounds: string
+			}
+		}
+		transcript: {
+			role: {
+				tool: string
+				char: string
+				user: string
+				system: string
+			}
+		}
+		asyncTasks: {
+			title: string
+			none: string
+			timedOut: string
+			open: string
+			working: string
+			state: {
+				running: string
+				done: string
+				failed: string
+				unknown: string
+				idle: string
+			}
 		}
 	}
 	gist: {
@@ -6706,6 +6761,143 @@ export type LocaleData = {
 			}
 		}
 	}
+	agent_studio: {
+		title: string
+		description: string
+		nav: {
+			region: {
+				'aria-label': string
+			}
+			mobile: {
+				'aria-label': string
+			}
+			dashboard: string
+			generations: string
+			benchmarks: string
+			settings: string
+		}
+		actions: {
+			refreshData: string
+			refresh: {
+				title: string
+				'aria-label': string
+			}
+			close: {
+				title: string
+				'aria-label': string
+			}
+		}
+		dashboard: {
+			title: string
+			description: string
+			selectPrompt: string
+		}
+		chars: {
+			title: string
+			empty: string
+			noMatch: string
+			search: {
+				placeholder: string
+			}
+		}
+		detail: {
+			subAgents: string
+			generations: string
+			none: string
+		}
+		generation: {
+			title: string
+			prompt: string
+			response: string
+			ok: string
+			error: string
+			meta: string
+			character: string
+			promptExpired: string
+		}
+		run: {
+			detail: string
+			state: {
+				running: string
+				summarizing: string
+				done: string
+				failed: string
+				terminated: string
+			}
+		}
+		generations: {
+			title: string
+			description: string
+			records: string
+			chains: string
+			filterChar: string
+			allChars: string
+			recordsCount: string
+			empty: string
+			chainsEmpty: string
+		}
+		benchmarks: {
+			title: string
+			description: string
+			empty: string
+			pick: string
+			new: string
+			newName: string
+			cases: string
+			saveCases: string
+			saved: string
+			casesInvalid: string
+			delete: {
+				title: string
+				'aria-label': string
+			}
+			deleteConfirm: string
+			selectChar: string
+			selectCharFirst: string
+			judgeSource: string
+			run: string
+			runDone: string
+			results: string
+			noResults: string
+			notJudged: string
+			stats: string
+		}
+		retention: {
+			title: string
+			hint: string
+			prompt: string
+			conversation: string
+			save: string
+			saved: string
+		}
+		settings: {
+			title: string
+			description: string
+		}
+		alerts: {
+			loadFailed: string
+			saveFailed: string
+			runFailed: string
+		}
+		home_function_buttons: {
+			dev: {
+				title: string
+				sub_items: {
+					open: {
+						title: string
+					}
+				}
+			}
+		}
+		subagent: {
+			title: string
+			description: string
+			back: string
+			task: string
+			conversation: string
+			empty: string
+		}
+	}
 }
 /**
  * i18n switch 叶子（singular / plural 等），由 geti18n 按 params[switch] 解析。
@@ -6755,6 +6947,15 @@ export type LocaleKeyParams = {
 	'achievements.error.load_failed': { message: string | number }
 	'achievements.error.unlock_failed': { error: string | number }
 	'achievements.unlocked_on': { date: string | number }
+	'agent_studio.alerts.loadFailed': { message: string | number }
+	'agent_studio.alerts.runFailed': { message: string | number }
+	'agent_studio.alerts.saveFailed': { message: string | number }
+	'agent_studio.benchmarks.casesInvalid': { message: string | number }
+	'agent_studio.benchmarks.stats': { avgLength: string | number; avgScore: string | number; empty: string | number; judged: string | number; total: string | number }
+	'agent_studio.generation.character': { name: string | number }
+	'agent_studio.generation.meta': { model: string | number; source: string | number }
+	'agent_studio.generations.recordsCount': { count: string | number }
+	'agent_studio.run.detail': { generations: string | number; roundLimit: string | number; rounds: string | number }
 	'auth.error.accountLockedRetry': { timeLeft: string | number }
 	'badges_maker.copy_error': { error: string | number }
 	'browser_integration.csp_warning': { browser: string | number; link: string | number }
@@ -7004,6 +7205,8 @@ export type LocaleKeyParams = {
 	'chat.stickers.sticker.count': { count: string | number }
 	'chat.typingIndicator.isTyping': { names: string | number }
 	'chat.voiceRecording.speechRecognitionFailed': { error: string | number }
+	'code.asyncTasks.open': { label: string | number }
+	'code.asyncTasks.working': { kind: string | number }
 	'code.attach.tooLarge': { name: string | number }
 	'code.char.recommend.installed': { charname: string | number }
 	'code.char.recommend.main': { charname: string | number }
@@ -7012,6 +7215,10 @@ export type LocaleKeyParams = {
 	'code.power.armedAria': { count: string | number }
 	'code.power.armedCount': { count: string | number }
 	'code.sessions.deleteConfirm': { title: string | number }
+	'code.subagent.check.rounds': { roundLimit: string | number; rounds: string | number }
+	'code.subagent.open': { task: string | number }
+	'code.subagent.working': { roundLimit: string | number; rounds: string | number }
+	'code.tool.async.run': { kind: string | number }
 	'code.tool.runShell': { lang: string | number }
 	'code.workspaces.removeConfirm': { name: string | number }
 	'debug_info.linksCount': { count: string | number }
