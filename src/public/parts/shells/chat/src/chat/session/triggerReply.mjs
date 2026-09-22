@@ -289,6 +289,8 @@ export async function executeGeneration(groupId, request, stream, placeholderEnt
 
 		let charReply
 		try {
+			// 提前写入本轮生成 id：子代理据此把运行记录经 parentId 回链到父代生成
+			request.extension = { ...request.extension, generationId }
 			// world 可代角色回复（GetCharReply 返回 null 表示放行给 char 本体）
 			charReply = await request.world.interfaces.chat.GetCharReply?.(request, request.char_id)
 				?? await request.char.interfaces.chat.GetReply(request)

@@ -46,4 +46,8 @@ export const icons = {
 	plus: 'mdi/plus',
 	close: 'mdi/close',
 	trash: 'mdi/trash-can-outline',
+	robot: 'mdi/robot-outline',
+	loading: 'mdi/loading',
+	stopCircle: 'mdi/stop-circle-outline',
+	alertCircle: 'mdi/alert-circle-outline',
 }

@@ -12,7 +12,7 @@ import { localhostLocales } from '../../../../../scripts/i18n/bare.mjs'
 import { pickLocalizedSlice } from '../../../../../scripts/locale.mjs'
 import { getAllCachedPartDetails, getPartDetails, getPartList, loadAnyPreferredDefaultPart, loadPart } from '../../../../../server/parts_loader.mjs'
 import { loadShellData, saveShellData } from '../../../../../server/setting_loader.mjs'
-import { listBatches as listLiveBatches, listRuns as listLiveRuns } from '../../../plugins/sub-agent/state.mjs'
+import { getRun as getLiveRun, listBatches as listLiveBatches, listRuns as listLiveRuns } from '../../../plugins/sub-agent/state.mjs'
 import { BUILTIN_PERSONA, BUILTIN_WORLD } from '../../chat/src/chat/session/builtinParts.mjs'
 
 import { buildJudgePrompt, computeStats, normalizeBenchmark, parseJudgeResponse } from './benchmark.mjs'
@@ -53,7 +53,7 @@ export async function getCharOverview(username, charId, { limit = 50 } = {}) {
 	if (!charId) throw httpError(400, 'charId is required')
 	const details = await getPartDetails(username, 'chars/' + charId)
 	const recentGenerations = await listGenerations(username, { charId, limit })
-	const { runs, batches } = await listSubAgents(username, charId)
+	const { runs, batches } = await listSubAgents(username, { charId })
 	return {
 		char: { id: charId, ...details.info },
 		supportedInterfaces: details.supportedInterfaces,
@@ -66,13 +66,54 @@ export async function getCharOverview(username, charId, { limit = 50 } = {}) {
 /**
  * 由历史记录 + 实时注册表推导子代理运行与批次。
  * @param {string} username 用户
- * @param {string} charId 角色 id
+ * @param {{ charId?: string, chatId?: string } | string} filter 过滤条件（字符串视为 charId）
  * @returns {Promise<{ runs: object[], batches: object[] }>} 运行与批次
  */
-export async function listSubAgents(username, charId) {
-	if (!charId) throw httpError(400, 'charId is required')
-	const records = await listGenerations(username, { charId, limit: 1000 })
-	return summarizeSubAgentRuns(records, listLiveRuns({ username, charId }), listLiveBatches(username, charId))
+export async function listSubAgents(username, filter = {}) {
+	const { charId, chatId } = typeof filter === 'string' ? { charId: filter } : filter
+	if (!charId && !chatId) throw httpError(400, 'charId or chatId is required')
+	const records = await listGenerations(username, {
+		...charId ? { charId } : {},
+		...chatId ? { chatId } : {},
+		limit: 1000,
+	})
+	let liveRuns = listLiveRuns(charId ? { username, charId } : { username })
+	if (chatId) liveRuns = liveRuns.filter(run => run.chat_name === chatId)
+	const batches = charId ? listLiveBatches(username, charId) : []
+	return summarizeSubAgentRuns(records, liveRuns, batches)
+}
+
+/**
+ * 读取单次子代理运行的完整状态与内部对话（实时注册表优先，否则回落落盘记录）。
+ * @param {string} username 用户
+ * @param {string} runId 运行 id
+ * @returns {Promise<object>} 运行详情
+ */
+export async function getSubAgentRun(username, runId) {
+	if (!runId) throw httpError(400, 'runId is required')
+	const live = getLiveRun(runId)
+	const summaries = await listGenerations(username, { runId, limit: 10 })
+	const record = summaries[0] ? await getGeneration(username, summaries[0].id) : null
+	if (!live && !record) throw httpError(404, `subagent run not found: ${runId}`)
+	return {
+		runId,
+		charId: live?.charId ?? record?.charId ?? null,
+		charname: record?.charname ?? null,
+		chatId: live?.chat_name ?? record?.chatId ?? null,
+		batchId: live?.batchId ?? record?.subAgent?.batchId ?? null,
+		parentRunId: live?.parentRunId ?? record?.subAgent?.parentRunId ?? null,
+		parentId: record?.parentId ?? null,
+		state: live?.state ?? record?.metadata?.status ?? (record?.error ? 'failed' : 'done'),
+		rounds: live?.rounds ?? record?.metadata?.rounds ?? 0,
+		roundLimit: live?.roundLimit ?? null,
+		depth: live?.depth ?? record?.subAgent?.depth ?? 0,
+		isAsync: live?.isAsync ?? record?.subAgent?.isAsync ?? false,
+		task: live?.task ?? record?.metadata?.task ?? null,
+		startedAt: live?.startedAt ?? record?.startedAt ?? null,
+		finishedAt: live?.finishedAt ?? record?.finishedAt ?? null,
+		error: record?.error?.message ?? live?.error?.message ?? null,
+		conversation: live?.conversation ?? record?.conversation ?? [],
+	}
 }
 
 /**

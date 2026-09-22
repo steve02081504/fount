@@ -34,6 +34,7 @@ Deno.test('setEndpoints registers the full agent_studio REST surface', async () 
 		`GET ${PREFIX}/chars`,
 		`GET ${PREFIX}/char/:id/overview`,
 		`GET ${PREFIX}/subagents`,
+		`GET ${PREFIX}/subagent/:runId`,
 		`GET ${PREFIX}/generations`,
 		`GET ${PREFIX}/generation/:id`,
 		`GET ${PREFIX}/chains`,

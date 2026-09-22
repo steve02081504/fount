@@ -6626,6 +6626,19 @@
 			"addFiles": "Send files",
 			"callback": "Tool callback",
 			"runShell": "Run ${lang}"
+		},
+		"subagent": {
+			"title": "Sub-agent",
+			"open": "Sub-agent: ${task} (open internal conversation)",
+			"working": "Running ${rounds}/${roundLimit}",
+			"workingUnknown": "Running",
+			"state": {
+				"running": "Running",
+				"summarizing": "Summarizing",
+				"done": "Done",
+				"terminated": "Terminated",
+				"failed": "Failed"
+			}
 		}
 	},
 	"gist": {
@@ -6863,6 +6876,14 @@
 			"loadFailed": "Load failed: ${message}",
 			"saveFailed": "Save failed: ${message}",
 			"runFailed": "Run failed: ${message}"
+		},
+		"subagent": {
+			"title": "Sub-agent conversation",
+			"description": "Inspect a sub-agent run: status, task and full internal conversation.",
+			"back": "Back to generations",
+			"task": "Task",
+			"conversation": "Internal conversation",
+			"empty": "(no conversation yet)"
 		}
 	}
 }

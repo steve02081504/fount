@@ -16,8 +16,14 @@
 - 用途：角色基本信息 + 最近生成记录 + 子代理运行与批次。
 
 ### GET /api/parts/shells:agent_studio/subagents
-- 查询：`charId`（必填）
-- 用途：该角色的子代理运行视图（由生成记录的 `subAgent.runId` 聚合，进度/状态合并 `plugins/sub-agent` 内存注册表）与批次列表。
+- 查询：`charId` 或 `chatId`（二者至少一个；`chatId` 形如 `code-<sessionId>`）
+- 用途：子代理运行视图（由生成记录的 `subAgent.runId` 聚合，进度/状态合并 `plugins/sub-agent` 内存注册表）与批次列表；按 `chatId` 过滤某会话派生的运行。
+
+### GET /api/parts/shells:agent_studio/subagent/:runId
+- 用途：单次子代理运行的完整状态与内部对话（`conversation`）：运行中取实时注册表，已结束回落落盘记录。缺失实时与记录时 404。
+
+### 服务端事件 `subagent-run`
+- 经用户事件通道推送（前端 `onServerEvent('subagent-run', cb)`）。负载：`{ runId, backgroundId, parentRunId, batchId, chat_name, charId, state, rounds, roundLimit, depth, isAsync, task, startedAt, finishedAt, error }`；运行开始、每轮、结束各推送一次。
 
 ---
 
@@ -28,7 +34,7 @@
 - 用途：生成记录摘要列表（按开始时间倒序）。
 
 ### GET /api/parts/shells:agent_studio/generation/:id
-- 用途：单条生成记录完整内容（含 `input`/`response`，受保留策略约束）。
+- 用途：单条生成记录完整内容（含 `input`/`response`/`conversation`，受保留策略约束）。
 
 ### GET /api/parts/shells:agent_studio/chains
 - 查询：同 `generations`

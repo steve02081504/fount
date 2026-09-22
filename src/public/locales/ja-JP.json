@@ -6626,6 +6626,19 @@
 			"addFiles": "ファイル送信",
 			"callback": "ツールコールバック",
 			"runShell": "${lang} を実行"
+		},
+		"subagent": {
+			"title": "サブエージェント",
+			"open": "サブエージェント：${task}（内部会話を開く）",
+			"working": "実行中 ${rounds}/${roundLimit}",
+			"workingUnknown": "実行中",
+			"state": {
+				"running": "実行中",
+				"summarizing": "要約中",
+				"done": "完了",
+				"terminated": "終了",
+				"failed": "失敗"
+			}
 		}
 	},
 	"gist": {
@@ -6863,6 +6876,14 @@
 			"loadFailed": "読み込みに失敗しました：${message}",
 			"saveFailed": "保存に失敗しました：${message}",
 			"runFailed": "実行に失敗しました：${message}"
+		},
+		"subagent": {
+			"title": "サブエージェント内部会話",
+			"description": "サブエージェント実行の状態・タスク・内部会話を表示します。",
+			"back": "生成記録に戻る",
+			"task": "タスク",
+			"conversation": "内部会話",
+			"empty": "（会話がありません）"
 		}
 	}
 }

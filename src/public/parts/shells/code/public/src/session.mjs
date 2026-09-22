@@ -18,6 +18,7 @@ import { iconElement, icons } from './icons.mjs'
 import { appendEntryBubble, backToBottom, nearBottom, renderMessages, scrollMessagesBottom, updateEntryBubble, updateRegenButtons, updateShellStreamBubble, updateEmptyMode } from './messages.mjs'
 import { refreshShutdownState, renderAiSourcePillLabel, renderModePillLabel, selectWorkspace, updateCharMenu } from './pills.mjs'
 import { elements, richInput, store, TAB_SAVE_DEBOUNCE, target } from './store.mjs'
+import { refreshSubAgents } from './subagents.mjs'
 
 /** 标签页保存防抖定时器句柄。 */
 let tabSaveTimer = 0
@@ -605,6 +606,7 @@ export async function activateTab(tab) {
 	syncCodeUrl(tab)
 	renderTabs()
 	renderMessages()
+	void refreshSubAgents({ force: true })
 	updateCharMenu()
 	renderModePillLabel()
 	renderAiSourcePillLabel()
@@ -897,7 +899,8 @@ export function startGeneratingBubble() {
 	elements.messages.insertBefore(bubble, backToBottom)
 	updateEmptyMode()
 	if (nearBottom()) scrollMessagesBottom()
-	generatingBubble = { bubble, renderer: new StreamRenderer(body, { allowDangerousHtml: false }) }
+	// 可信档：本地 code 会话（与会话落盘后的正文渲染一致），让推理 details 在流式期可见
+	generatingBubble = { bubble, renderer: new StreamRenderer(body, { allowDangerousHtml: true }) }
 }
 
 /** 移除生成中的气泡。 */
@@ -934,6 +937,7 @@ async function finishGeneration(entries, memory, aborted = false) {
 		for (const entry of freshEntries) appendEntryBubble(entry)
 		if (aborted) showToastI18n('info', 'code.error.aborted')
 	}
+	void refreshSubAgents({ force: true })
 	await markSessionDirty(session)
 	renderTabs()
 	void refreshAllSessions()

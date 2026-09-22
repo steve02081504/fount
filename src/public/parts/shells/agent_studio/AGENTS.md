@@ -38,6 +38,13 @@ alwaysApply: false
 - Delivery is channel-scoped: the notification goes back to the channel that spawned the run (from the plugin's own channel registry, keyed `${username}|${char_id}`). It prefers a timer-style proactive trigger (parent channel `Update()` → `char.GetReply` → `AddChatLogEntry`) and falls back to a pending queue injected via `GetPrompt` on the parent's next generation.
 - Nested runs notify their own parent run, never the root channel.
 
+## Sub-agent observability (live + history)
+
+- `runtime.mjs` pushes a `subagent-run` user event (`sendEventToUser`, injectable as `deps.notifyRun`) at start / each round / finish; the code shell subscribes via `onServerEvent('subagent-run', …)` and filters by `chat_name === 'code-<sessionId>'`. Payload shape is in `public/llms.txt`.
+- `recordRunGeneration` persists the run's own `conversation` (file buffers stripped, per-entry capped) plus `conversationId: 'subagent:<runId>'`; `generation_history` keeps `conversation` for the whole-record TTL and strips only `input` at `promptMs`.
+- Parent linkage: `parentId = run.parentGenerationId`, read from `args.extension.generationId` (chat `triggerReply` and code `request.mjs` now set it before generation). `sub-agent` tool logs carry `extension.subAgent` so a shell can render a run chip.
+- `GET /subagents?chatId=` and `GET /subagent/:runId` (live registry → fallback record) back the code shell's buttons and the `#subagent/<runId>` deep link.
+
 ## Benchmarks
 
 - `src/benchmark.mjs` is pure (`computeStats` / `parseJudgeResponse` / `buildJudgePrompt`) so it tests without a server.
@@ -46,12 +53,12 @@ alwaysApply: false
 
 ## Endpoints
 
-`/api/parts/shells:agent_studio/` — `/chars`, `/char/:id/overview`, `/subagents?charId=`, `/generations`, `/generation/:id`, `/chains`, `/retention`, `/benchmarks` CRUD, `/benchmarks/:id/run`, `/runs`. Sub-agent views derive from generation records grouped by `subAgent.runId` / `batchId`; live state is imported from `plugins/sub-agent/state.mjs`.
+`/api/parts/shells:agent_studio/` — `/chars`, `/char/:id/overview`, `/subagents?charId=|chatId=`, `/subagent/:runId`, `/generations`, `/generation/:id`, `/chains`, `/retention`, `/benchmarks` CRUD, `/benchmarks/:id/run`, `/runs`. Sub-agent views derive from generation records grouped by `subAgent.runId` / `batchId`; live state is imported from `plugins/sub-agent/state.mjs`.
 
 ## Frontend views
 
 - `public/index.mjs` boots the shell: `applyTheme` → `initTranslations('agent_studio')` → preload shared data (`src/data.mjs`) → enter the hash view. A ready gate (`src/gate.mjs`, id `agent-studio`) is exposed for Playwright.
-- Four main views, each `<section id="<view>View" class="view">` in `public/index.html`: `dashboard` (char list + overview), `generations` (records + chains, char filter), `benchmarks` (defs + runner + results), `settings` (retention). `src/viewChrome.mjs` toggles visibility/highlight; `src/navigation.mjs` maps view → loader, syncs `location.hash`, and wraps switches in a View Transition.
+- Four main views, each `<section id="<view>View" class="view">` in `public/index.html`: `dashboard` (char list + overview), `generations` (records + chains, char filter), `benchmarks` (defs + runner + results), `settings` (retention). Plus the non-nav deep-link view `subagent` (`#subagent/<runId>` → `views/subagent.mjs`), entered only via `applyIncomingNavigation`. `src/viewChrome.mjs` toggles visibility/highlight; `src/navigation.mjs` maps view → loader, syncs `location.hash`, and wraps switches in a View Transition.
 - `src/views/*.mjs` own rendering; loaders are safe to re-run (language change re-invokes the active view). Templates live in `public/src/templates/`; `public/src/lib/` holds `format` / `emptyState` / `generationDialog` / `activate` helpers. No view imports `navigation.mjs` (avoids a cycle).
 - Nav chrome (sidebar + mobile dock) shares `.nav-btn[data-view]`, bound once by `wireNavigation`.
 - UI rules: Iconify mask icons only (no emoji), theme tokens only, no hardcoded radius / border / color, animate `transform` / `opacity` / colors only.

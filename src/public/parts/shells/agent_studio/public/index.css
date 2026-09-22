@@ -861,6 +861,57 @@
 	color: var(--text-muted);
 }
 
+/* Sub-agent conversation */
+.subagent-view {
+	display: flex;
+	flex-direction: column;
+	gap: 0.9rem;
+}
+
+.subagent-conversation {
+	display: flex;
+	flex-direction: column;
+	gap: 0.6rem;
+}
+
+.subagent-entry {
+	border: var(--border) solid var(--border-color);
+	border-radius: var(--radius-field);
+	background: var(--surface-sunken);
+	padding: 0.5rem 0.7rem;
+}
+
+.subagent-entry-head {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.75rem;
+	margin-bottom: 0.3rem;
+}
+
+.subagent-entry-name {
+	font-size: 0.76rem;
+	font-weight: 700;
+	color: var(--text-muted);
+}
+
+.subagent-entry-time {
+	font-size: 0.7rem;
+	color: var(--text-muted);
+	opacity: 0.8;
+}
+
+.subagent-entry-body {
+	margin: 0;
+	font-family: var(--font-code);
+	font-size: 0.78rem;
+	line-height: 1.55;
+	white-space: pre-wrap;
+	word-break: break-word;
+	max-height: 20rem;
+	overflow: auto;
+}
+
 /* Mobile */
 .mobile-tabbar {
 	display: none;

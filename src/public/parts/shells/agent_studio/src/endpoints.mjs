@@ -15,6 +15,7 @@ import {
 	getBenchmark,
 	getBenchmarkRun,
 	getCharOverview,
+	getSubAgentRun,
 	listBenchmarkRuns,
 	listBenchmarks,
 	listChars,
@@ -70,7 +71,12 @@ export function setEndpoints(router) {
 
 	router.get(`${PREFIX}/subagents`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		res.status(200).json(await listSubAgents(username, req.query.charId))
+		res.status(200).json(await listSubAgents(username, { charId: req.query.charId, chatId: req.query.chatId }))
+	})
+
+	router.get(`${PREFIX}/subagent/:runId`, authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		res.status(200).json(await getSubAgentRun(username, req.params.runId))
 	})
 
 	router.get(`${PREFIX}/generations`, authenticate, async (req, res) => {

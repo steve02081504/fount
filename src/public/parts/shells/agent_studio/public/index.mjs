@@ -17,6 +17,7 @@ import { initBenchmarksView } from './src/views/benchmarks.mjs'
 import { initDashboardView } from './src/views/dashboard.mjs'
 import { initGenerationsView } from './src/views/generations.mjs'
 import { initSettingsView } from './src/views/settings.mjs'
+import { initSubAgentView } from './src/views/subagent.mjs'
 
 /**
  * 绑定侧栏 / 移动端底栏的视图按钮与全局刷新。
@@ -62,6 +63,7 @@ async function boot() {
 		initGenerationsView()
 		initBenchmarksView()
 		initSettingsView()
+		initSubAgentView()
 		onLanguageChange(() => {
 			const view = currentMainView()
 			if (view) void switchView(view, { skipHash: true })

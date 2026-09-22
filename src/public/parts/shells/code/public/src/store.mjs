@@ -76,6 +76,10 @@ export const store = {
 	markdownCache: {},
 	/** 有未读通知的标签键集合（tabKey → true）。 */
 	tabUnread: new Set(),
+	/** 当前会话的子代理运行（runId → 状态摘要，来自实时事件与历史查询）。 */
+	subAgents: new Map(),
+	/** 子代理历史查询节流：{ chatId, at }。 */
+	subAgentFetch: null,
 }
 
 /**

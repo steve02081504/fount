@@ -46,12 +46,25 @@ export function getCharOverview(charId, options = {}) {
 }
 
 /**
- * 列出角色的子代理运行与批次。
- * @param {string} charId 角色 id
+ * 列出角色的子代理运行与批次，或某会话（chatId）的子代理运行。
+ * @param {{ charId?: string, chatId?: string } | string} filter 过滤条件（字符串视为 charId）
  * @returns {Promise<{ runs: object[], batches: object[] }>} 运行与批次
  */
-export function listSubAgents(charId) {
-	return requestJson(`/subagents?charId=${encodeURIComponent(charId)}`)
+export function listSubAgents(filter) {
+	const { charId, chatId } = typeof filter === 'string' ? { charId: filter } : filter ?? {}
+	const params = new URLSearchParams()
+	if (charId) params.set('charId', charId)
+	if (chatId) params.set('chatId', chatId)
+	return requestJson(`/subagents?${params.toString()}`)
+}
+
+/**
+ * 读取单次子代理运行的完整状态与内部对话。
+ * @param {string} runId 运行 id
+ * @returns {Promise<object>} 运行详情（含 conversation）
+ */
+export function getSubAgent(runId) {
+	return requestJson(`/subagent/${encodeURIComponent(runId)}`)
 }
 
 /**

@@ -3,6 +3,7 @@
  */
 import { whoami } from '/scripts/endpoints/base.mjs'
 import { getAnyPreferredDefaultPart } from '/scripts/endpoints/parts.mjs'
+import { onServerEvent } from '/scripts/endpoints/server_events.mjs'
 import { renderMarkdownAsString } from '/scripts/features/markdown/index.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
 import { geti18n, initTranslations, onLanguageChange } from '/scripts/i18n/index.mjs'
@@ -52,6 +53,7 @@ import {
 	updateSendButton,
 } from './session.mjs'
 import { elements, getPref, initComposer, richInput, setPref, store } from './store.mjs'
+import { handleSubAgentEvent } from './subagents.mjs'
 
 /** 语言切换时的动态文案重渲染。 */
 function rerenderDynamicText() {
@@ -78,12 +80,11 @@ function rerenderDynamicText() {
 
 /**
  * 预热 Markdown 渲染管线（注册表 + 动态扩展加载为一次性冷启动；不预热会拖过首个流式预览窗口）。
- * 可信档（气泡正文）与安全档（StreamRenderer 预览）各一档。
+ * 气泡正文与流式预览都用可信档。
  * @returns {void}
  */
 function warmupMarkdownPipeline() {
 	void renderMarkdownAsString('', store.markdownCache)
-	void renderMarkdownAsString('', store.markdownCache, { allowDangerousHtml: false })
 }
 
 /**
@@ -100,6 +101,7 @@ export async function boot() {
 	store.username = (await whoami()).username
 	await initTranslations('code')
 	await mountPillChrome()
+	onServerEvent('subagent-run', handleSubAgentEvent)
 	// createMarkdownRichInput 初始化即聚焦 composer：待 pill 镀铬挂载后再建，避免早聚焦触发与装载的竞态
 	initComposer()
 	wireComposerEvents()
