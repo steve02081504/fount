@@ -1,5 +1,5 @@
-import { escapeRegExp } from '../../../../../scripts/regex.mjs'
 import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../shells/chat/src/prompt_struct/index.mjs'
+import { cleanupResponseText } from '../proxy/src/responseFormat.mjs'
 import { buildSourceInfo } from '../proxy/src/sourceInfo.mjs'
 
 import { GrokAPI } from './grokAPI.mjs'
@@ -141,18 +141,7 @@ async function GetSource(config) {
 			 * @returns {object} - 清理后的响应对象。
 			 */
 			function clearFormat(res) {
-				let text = res.content
-				if (text.match(/<\/sender>\s*<content>/))
-					text = (text.match(/<\/sender>\s*<content>([\S\s]*)/)?.[1] ?? text).split(new RegExp(
-						`(${(prompt_struct.alternative_charnames || []).map(
-							s => s instanceof RegExp ? s.source : escapeRegExp(s)
-						).join('|')})\\s*<\\/sender>\\s*<content>`
-					)).pop().split(/<\/content>\s*<\/message/).shift()
-				if (text.match(/<\/content>\s*<\/message[^>]*>\s*$/))
-					text = text.split(/<\/content>\s*<\/message[^>]*>\s*$/).shift()
-				text = text.replace(/^\s*<message[^>]*>\s*/, '').replace(/^\s*<content>\s*/, '')
-				text = text.replace(/<\/content\s*>/, '').replace(/<\/message[^>]*>/, '').replace(/<\/\s*$/, '')
-				res.content = text
+				res.content = cleanupResponseText(res.content, prompt_struct)
 				return res
 			}
 
