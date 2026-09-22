@@ -973,6 +973,11 @@ async function finishGeneration(entries, memory, aborted = false) {
 	renderTabs()
 	void refreshAllSessions()
 	void refreshShutdownState()
+	// 生成期间到达、本轮未被轮次刷新消费的通知：补一次生成，避免通知被漏掉
+	if (session.awaitingAsyncTrigger && session === store.session && !aborted) {
+		session.awaitingAsyncTrigger = false
+		void triggerGeneration()
+	}
 }
 
 /** 更新发送按钮（生成中变停止图标）。 */
@@ -1031,6 +1036,71 @@ export async function regenerateLastReply() {
 		updateSendButton()
 		showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
 	}
+}
+
+/**
+ * 按当前会话原样触发一次生成（不新增用户消息）；用于异步通知到达时让角色作出回应。
+ * @returns {Promise<void>}
+ */
+async function triggerGeneration() {
+	const session = store.session
+	if (!session || store.generating || !session.charname) return
+	store.generatingSession = session
+	store.generating = true
+	updateSendButton()
+	startGeneratingBubble()
+	markSessionDirty(session)
+	try {
+		const ws = await getSocket()
+		ws.send(JSON.stringify({
+			type: 'trigger',
+			session,
+			...target(),
+			ai_source: store.aiSource || '',
+			profile: store.profile,
+		}))
+	}
+	catch (error) {
+		store.generating = false
+		endGeneratingBubble()
+		store.generatingSession = null
+		updateSendButton()
+		showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
+	}
+}
+
+/**
+ * 处理服务端 `code-async-entry` 事件（异步完成通知，仅当前会话）：
+ * 追加条目；若当前未在生成则触发一次生成，生成中则记「待补触发」，
+ * 由后端轮次刷新（`code-async-consumed`）清除，或在生成结束时补触发。
+ * @param {object} payload - 事件负载（`{ chatName, entry }`）。
+ * @returns {void}
+ */
+export function handleAsyncEntryEvent(payload) {
+	const { chatName, entry } = payload || {}
+	const session = store.session
+	if (!session || !entry || chatName !== 'code-' + session.id) return
+	const knownIds = new Set(session.entries.map(e => String(e.id)))
+	if (!knownIds.has(String(entry.id))) {
+		session.entries.push(entry)
+		if (session === store.session && isEntryVisible(entry)) appendEntryBubble(entry)
+	}
+	markSessionDirty(session)
+	updateEmptyMode()
+	if (!store.generating) void triggerGeneration()
+	else session.awaitingAsyncTrigger = true
+}
+
+/**
+ * 处理服务端 `code-async-consumed` 事件：本轮刷新已让角色看到新内容，清除「待补触发」标记。
+ * @param {object} payload - 事件负载（`{ chatName }`）。
+ * @returns {void}
+ */
+export function handleAsyncConsumedEvent(payload) {
+	const { chatName } = payload || {}
+	const session = store.session
+	if (!session || chatName !== 'code-' + session.id) return
+	session.awaitingAsyncTrigger = false
 }
 
 /** 消息中的 `@[gist:id]` token。 */

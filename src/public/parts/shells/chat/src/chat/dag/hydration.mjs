@@ -17,6 +17,7 @@ import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 import { handleError } from 'fount/scripts/errorHandlers.mjs'
 
+import { greetingEntryType, isGreetingEntry } from '../../../../../../../decl/chatLog.ts'
 import { geti18nForUser } from '../../../../../../../scripts/i18n/index.mjs'
 import {
 	chatExtensionOf,
@@ -361,13 +362,13 @@ async function buildChatLogEntryFromDagMessage(
 		entry.extension.timeSlice = slice.copy()
 	}
 	// 问候语事实源：wire `extension.chat.isGreeting` 持久化在频道消息里；
-	// 重建条目时还原 `greeting_type`，否则重启/运行时重建后 prelude 过滤与开场重 roll 都会丢掉问候。
+	// 重建条目时还原为 `entry.type = greeting:<subtype>`，否则重启/运行时重建后 prelude 过滤与开场重 roll 都会丢掉问候。
 	const wireGreeting = chatExtensionOf(content)
 	if (wireGreeting?.isGreeting)
-		entry.extension.timeSlice.greeting_type = wireGreeting.greetingType
+		entry.type = greetingEntryType(wireGreeting.greetingType
 			|| (charId
 				? Object.keys(state?.session?.chars || {}).length > 1 ? 'group' : 'single'
-				: 'world_single')
+				: 'world_single'))
 	entry.uid = resolveSpeakerUid(line, content, state)
 	entry.time_stamp = new Date(line.hlc?.wall ?? Date.now()).toISOString()
 
@@ -397,7 +398,7 @@ export async function hydrateChatLogFromDag(username, groupId, chatMetadata) {
 	const i18n = await loadDagHydrationI18n(username)
 	const { getState } = await import('./materialize.mjs')
 	const { state } = await getState(username, groupId)
-	const prelude = chatMetadata.chatLog.filter(entry => entry.extension.timeSlice?.greeting_type)
+	const prelude = chatMetadata.chatLog.filter(entry => isGreetingEntry(entry))
 	const dagEntries = await buildChatLogEntriesFromChannelLines(
 		lines,
 		chatMetadata.LastTimeSlice,

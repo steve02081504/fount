@@ -6,6 +6,7 @@
  * @typedef {import('./sessions.mjs').codeSession_t} codeSession_t
  */
 import { Buffer } from 'node:buffer'
+import { randomUUID } from 'node:crypto'
 
 import { localhostLocales } from '../../../../../scripts/i18n/bare.mjs'
 import { getPartInfo } from '../../../../../scripts/locale.mjs'
@@ -126,6 +127,55 @@ async function buildCodeChatRequest({ username, session, requestSession, machine
 		extension: {
 			code: { profile },
 			...generationId ? { generationId } : {},
+		},
+		/**
+		 * 重读会话条目并重建请求（供轮次刷新 `injectRoundEntries` 采集新条目）。
+		 * @returns {Promise<object>} 刷新后的请求
+		 */
+		Update: () => buildCodeChatRequest({ username, session, machine, workdir, ai_source, profile, generationId, onPreview, onToolOutput, signal }),
+		/**
+		 * 追加一条日志条目。`role === 'char'`（或缺省）作为角色回复写入；其余 role（异步完成通知等）额外
+		 * 推送 `code-async-entry` 事件，让前端持久化并在空闲时触发生成。
+		 * @param {object} entry 条目
+		 * @returns {Promise<void>}
+		 */
+		AddChatLogEntry: async entry => {
+			const role = entry?.role ?? 'char'
+			const content = String(entry?.content ?? '')
+			const show = entry?.content_for_show
+			const edit = entry?.content_for_edit
+			const normalized = {
+				id: entry?.id ?? randomUUID(),
+				uid: entry?.uid ?? (role === 'char' ? 'char' : role === 'user' ? 'user' : 'system'),
+				role,
+				name: entry?.name ?? (role === 'char' ? 'char' : 'system'),
+				content,
+				...show != null && show !== content ? { content_for_show: String(show) } : {},
+				...edit != null && edit !== content ? { content_for_edit: String(edit) } : {},
+				...Array.isArray(entry?.charVisibility) && entry.charVisibility.length ? { charVisibility: entry.charVisibility.map(String) } : {},
+				time: entry?.time_stamp instanceof Date ? entry.time_stamp.toISOString() : String(entry?.time_stamp ?? new Date().toISOString()),
+				files: [],
+			}
+			session.entries.push(normalized)
+			if (role === 'char') return
+			try {
+				const { sendEventToUser } = await import('../../../../../server/web_server/event_dispatcher.mjs')
+				sendEventToUser(username, 'code-async-entry', { chatName: 'code-' + session.id, entry: normalized })
+			}
+			catch (error) {
+				console.warn('code shell: 异步通知事件发送失败', error)
+			}
+		},
+		/**
+		 * 轮次刷新已让角色看到新内容：通知前端清除「待补触发」标记，避免生成结束再补一次。
+		 * @returns {void}
+		 */
+		ClearPendingMessages: () => {
+			void import('../../../../../server/web_server/event_dispatcher.mjs').then(({ sendEventToUser }) => {
+				sendEventToUser(username, 'code-async-consumed', { chatName: 'code-' + session.id })
+			}).catch(error => {
+				console.warn('code shell: 异步通知消费事件发送失败', error)
+			})
 		},
 		ai_source: aiSourceInstance,
 		workdir: session.memory.workdir ?? { machine: String(machine ?? '0'), path: workdir },

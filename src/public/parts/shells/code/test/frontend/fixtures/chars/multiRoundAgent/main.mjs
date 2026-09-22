@@ -1,4 +1,6 @@
 import { runReplyHandlers } from 'fount/public/parts/shells/chat/src/reply/handlerPipeline.mjs'
+import { injectRoundEntries } from 'fount/public/parts/shells/chat/src/reply/roundContext.mjs'
+
 /**
  * 角色 API 类型别名。
  * @typedef {import('../../../../../../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t
@@ -90,7 +92,7 @@ export default {
 				const oriPreviewUpdater = previewUpdater
 				// 与真实模板一致：把本轮 result 暴露为 base_result，供后端在预览时读取累积日志
 				args.generation_options.base_result = result
-				const prompt_struct = { char_prompt: { additional_chat_log: [] } }
+				const prompt_struct = { chat_log: [], char_prompt: { additional_chat_log: [] } }
 				/**
 				 * 追加长时间日志。
 				 * @param {object} entry - 日志条目。
@@ -112,8 +114,10 @@ export default {
 						result.content += chunk
 						oriPreviewUpdater?.(result)
 					}
-					if (await runReplyHandlers(result, { ...args, prompt_struct, AddLongTimeLog }, handlers))
+					if (await runReplyHandlers(result, { ...args, prompt_struct, AddLongTimeLog }, handlers)) {
+						await injectRoundEntries(args, prompt_struct)
 						continue regen
+					}
 					break
 				}
 				return result

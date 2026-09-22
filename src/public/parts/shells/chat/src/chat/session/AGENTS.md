@@ -43,7 +43,7 @@ World shared state / `WorldChatHost`: [docs/world-host.md](docs/world-host.md).
 ## member_roles / greeting
 
 - Inject `state.members[*].roles` into top-level and `extension.member_roles`. Resolve char via `resolveActiveAgentMemberKeyByCharname`; local user via `resolveActiveMemberKeyForLocalUser`. Do not look up `state.members` by `extension.memberId` (operator entity hash).
-- Skip greeting when hooks are missing. Keep `timeSlice.greeting_type` (and mirrors) — deleting breaks re-roll / `greetingLog`. `bindWorld` greeting uses `resolveWorld(channelId)`, not only `LastTimeSlice.world`.
+- Skip greeting when hooks are missing. Keep the greeting marker on `entry.type` (`greeting:<subtype>`, helpers `isGreetingEntry` / `greetingSubtypeOf`) — deleting breaks re-roll / `greetingLog`. Wire side stays `extension.chat.isGreeting` / `greetingType`. `bindWorld` greeting uses `resolveWorld(channelId)`, not only `LastTimeSlice.world`.
 
 ## Write / edit path
 
@@ -53,4 +53,5 @@ World shared state / `WorldChatHost`: [docs/world-host.md](docs/world-host.md).
 - DAG `charId` = `extension.timeSlice.charname` only (`charIdFromChatLogEntry`); never fall back to display `name`. World greeting has no char — `getPartDetails('chars/…')` only when charname is set.
 - Edit/delete Hub path: `PUT/DELETE …/messages/:eventId` → `channel/channelUserHooks.mjs` → `messageMutations`. `triggerReply`: `world.GetCharReply?.(…) ?? char.GetReply(…)`.
 - **Streaming placeholder entries are never pushed to `chatLog`** (`triggerCharReply` → `executeGeneration`; finalize only `push`es the final entry). So `getChannelForCharStream` must read the placeholder's own `extension.chat.channelId` — scanning `chatLog` for the preceding user message always falls to `'default'`, which would drop stream preview on non-default channels.
+- **Char/plugin appends (`AddChatLogEntry`)**: `role === 'char'` (or absent) is normalized as a reply; any other role is written as-is and the shell schedules a generation (`requestCharReply`): idle → trigger now, in-flight → `pendingCharTriggers`, consumed by `injectRoundEntries` (`ClearPendingMessages`) or drained after the generation. Entries with `charVisibility` are local-only — `chatLogAppend.addChatLogEntry` skips the DAG sync.
 - Pure projection tests: import `viewerLogProject.mjs` only (not the full session I/O graph).

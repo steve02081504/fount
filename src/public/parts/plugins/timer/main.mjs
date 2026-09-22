@@ -14,7 +14,7 @@ import { getChannels, setPendingNotification } from './state.mjs'
 const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /**
- * 通过活跃频道（level 1）触发角色回复。
+ * 通过活跃频道（level 1）触发角色回复：把定时器系统条目追加进该频道，由 shell 安排生成。
  * @param {object} channel - 活跃的 chatReplyRequest_t。
  * @param {string} char_id 角色 ID
  * @param {string} reason 定时器到期原因
@@ -22,15 +22,8 @@ const { info } = (await import('./locales.json', { with: { type: 'json' } })).de
  * @returns {Promise<boolean>} 是否成功触发
  */
 async function replyViaChannel(channel, char_id, reason, chatLogSnip) {
-	const updatedChannel = await channel.Update()
-	const logEntry = makeTimerSystemEntry(reason, chatLogSnip, char_id)
-	const result = await updatedChannel.char.interfaces.chat.GetReply({
-		...updatedChannel,
-		chat_log: [...updatedChannel.chat_log, logEntry],
-	})
-	if (!result) return false
-	result.logContextBefore.push(logEntry)
-	await updatedChannel.AddChatLogEntry({ name: updatedChannel.Charname, ...result })
+	// 只角色可见（charVisibility），shell 仅写内存 chatLog 并安排一次生成；空闲即触发，生成中由轮次刷新消费
+	await channel.AddChatLogEntry(makeTimerSystemEntry(reason, chatLogSnip, char_id))
 	return true
 }
 

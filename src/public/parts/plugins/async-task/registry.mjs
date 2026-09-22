@@ -2,11 +2,12 @@
  * 【文件】src/public/parts/plugins/async-task/registry.mjs
  * 【职责】通用异步任务注册表的纯内存实现：登记后台任务、列出/等待（all|any）、完成后投递通知并即刻释放。
  * 【原理】任意生产者（sub-agent、code-execution）把后台 Promise 交给 registerTask 换取统一 id；任务完成时若尚未被 <await-async> 消费，
- *   就按其所属频道投递完成通知（根频道尝试主动触发角色回复，子代落入待注入队列），随后从注册表删除——已完成任务不留存。
+ *   就按其所属频道投递完成通知（根频道经 shell 的 `AddChatLogEntry` 追加只角色可见的系统条目并安排生成，子代落入待注入队列），随后从注册表删除——已完成任务不留存。
  *   本模块不 import `src/server/**`，只依赖全局 `AbortController` / `crypto`，因此可在 `test/pure` 零 I/O 直接测试。
  * 【数据结构】asyncTask_t；任务表 `Map<id, task>`；频道注册表 `Map<agentKey, args[]>`；待注入通知 `Map<queueKey, entry[]>`。
  * 【关联】prompt.mjs 注入工具说明与通知；handler.mjs 解析 `<list-async>` / `<await-async>`；sub-agent/runtime.mjs 与 code-execution/handler.mjs 注册任务。
  */
+import { chatScopeId } from '../../shells/chat/src/lib/chatScopeId.mjs'
 
 /**
  * @typedef {object} asyncTaskOwner_t
@@ -116,10 +117,14 @@ export function isAsyncToolingEnabled() {
  * @returns {asyncTaskOwner_t} 归属
  */
 export function ownerFromArgs(args) {
+	const chatName = args?.chat_name ?? ''
+	const channelId = args?.extension?.channelId ?? null
 	return {
 		username: args?.username,
 		charId: args?.char_id,
-		chatName: args?.chat_name ?? '',
+		chatName,
+		channelId,
+		chatScopeId: chatScopeId(chatName, channelId),
 		parentRunId: args?.extension?.subAgent?.runId ?? null,
 	}
 }
@@ -243,12 +248,17 @@ function makeNotificationEntry(task) {
 	catch {
 		text = defaultNotificationText(task)
 	}
+	const charId = task.owner?.charId
 	return {
+		id: crypto.randomUUID(),
 		name: 'async-task',
 		uid: 'system',
 		role: 'system',
 		content: text,
+		content_for_show: text,
 		files: [],
+		time_stamp: new Date(),
+		...charId ? { charVisibility: [charId] } : {},
 	}
 }
 
@@ -276,38 +286,32 @@ function inspectValue(value) {
 }
 
 /**
- * 投递任务完成通知：根任务优先尝试主动触发其所属聊天线程的角色回复，子任务或找不到该线程的活跃频道时落入待注入队列。
+ * 投递任务完成通知：根任务把通知作为只角色可见的系统条目追加进其所属频道（`AddChatLogEntry`）。
+ * 条目带 `charVisibility`，故 shell 只写内存 chatLog、不入 DAG。空闲时 shell 会立即触发生成；
+ * 生成中则记入待触发队列，由运行中的轮次刷新（`Update` / container 封存）消费，否则本轮结束补一次。
+ * 子任务或找不到频道时落入待注入队列兜底。
  * @param {asyncTask_t} task 任务
  * @returns {Promise<void>}
  */
 async function deliverNotification(task) {
 	const entry = makeNotificationEntry(task)
-	const { username, charId, chatName, parentRunId } = task.owner ?? {}
+	const { username, charId, chatName, channelId, parentRunId } = task.owner ?? {}
+	const scope = task.owner?.chatScopeId ?? chatScopeId(chatName, channelId)
 
 	if (!parentRunId) {
-		const channel = getChannels(username, charId).find(candidate => candidate.chat_name === chatName) ?? null
-		if (channel) try {
-			const updated = await channel.Update?.() ?? channel
-			if (updated?.AddChatLogEntry && updated?.char?.interfaces?.chat?.GetReply) {
-				const reply = await updated.char.interfaces.chat.GetReply({
-					...updated,
-					chat_log: [...updated.chat_log ?? [], entry],
-				})
-				if (reply) {
-					reply.logContextBefore ??= []
-					reply.logContextBefore.push(entry)
-					await updated.AddChatLogEntry({ name: updated.Charname, ...reply })
-					task.notified = true
-					return
-				}
-			}
+		const channel = getChannels(username, charId).find(candidate =>
+			chatScopeId(candidate.chat_name, candidate.extension?.channelId) === scope) ?? null
+		if (channel?.AddChatLogEntry) try {
+			await channel.AddChatLogEntry(entry)
+			task.notified = true
+			return
 		}
 		catch (error) {
 			console.warn('async-task: 主动通知失败，回退待注入队列', error)
 		}
 	}
 
-	pushPendingNotification({ username, charId, chatName, parentRunId: parentRunId ?? null }, entry)
+	pushPendingNotification({ username, charId, chatName, channelId, chatScopeId: scope, parentRunId: parentRunId ?? null }, entry)
 	task.notified = true
 }
 
@@ -370,7 +374,7 @@ export async function awaitTasks(ids, { mode = 'all', timeoutMs = null, signal }
 		}
 		else unknown.push(id)
 	}
-	if (!known.length) return { settled: [], pending: [...unique], unknown, timedOut: false }
+	if (!known.length) return { settled: [], pending: [], unknown, timedOut: false }
 
 	/** @type {Promise<unknown>[]} */
 	const waits = known.map(task => Promise.resolve(task.done).then(() => task, () => task))
@@ -407,8 +411,8 @@ export async function awaitTasks(ids, { mode = 'all', timeoutMs = null, signal }
 /**
  * 注册（或刷新）一个活跃频道。
  *
- * 按用户/角色分桶、桶内按 `chat_name` 去重并保留最近 5 个聊天线程；投递时按 `chat_name` 精确取用，
- * 找不到对应线程的频道则退回该线程的待注入队列（见 `deliverNotification`），故无需按线程建键。
+ * 按用户/角色分桶、桶内按频道级作用域 `chatScopeId(chat_name, channelId)` 去重并保留最近 5 个聊天线程；
+ * 投递时按同一作用域精确取用，找不到对应线程的频道则退回该线程的待注入队列（见 `deliverNotification`）。
  * @param {string} username 用户
  * @param {string} charId 角色 id
  * @param {object} channel chatReplyRequest 请求上下文
@@ -417,7 +421,8 @@ export async function awaitTasks(ids, { mode = 'all', timeoutMs = null, signal }
 export function registerChannel(username, charId, channel) {
 	const key = `${username}|${charId}`
 	const channels = channelRegistry.get(key) ?? []
-	const deduped = channels.filter(candidate => candidate.chat_name !== channel.chat_name)
+	const scope = chatScopeId(channel.chat_name, channel.extension?.channelId)
+	const deduped = channels.filter(candidate => chatScopeId(candidate.chat_name, candidate.extension?.channelId) !== scope)
 	deduped.unshift(channel)
 	channelRegistry.set(key, deduped.slice(0, 5))
 }
@@ -439,8 +444,9 @@ export function getChannels(username, charId) {
  */
 export function notificationQueueKey(target) {
 	if (target?.parentRunId) return `run|${target.parentRunId}`
+	const scope = target?.chatScopeId ?? chatScopeId(target?.chatName, target?.channelId)
 	return target?.chatName
-		? `root|${target.username}|${target.charId}|${target.chatName}`
+		? `root|${target.username}|${target.charId}|${scope}`
 		: `root|${target.username}|${target.charId}`
 }
 

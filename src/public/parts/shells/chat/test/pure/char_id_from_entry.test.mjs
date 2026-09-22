@@ -9,13 +9,15 @@ import { charIdFromChatLogEntry } from '../../src/chat/lib/charIdFromEntry.mjs'
 Deno.test('world greeting（无 charname）→ charId null，即使 name 为 undefined 伪影', () => {
 	assertEquals(charIdFromChatLogEntry({
 		role: 'char',
+		type: 'greeting:world_single',
 		name: 'undefined',
-		extension: { timeSlice: { greeting_type: 'world_single', charname: undefined } },
+		extension: { timeSlice: { charname: undefined } },
 	}), null)
 	assertEquals(charIdFromChatLogEntry({
 		role: 'char',
+		type: 'greeting:world_single',
 		name: 'Unknown',
-		extension: { timeSlice: { greeting_type: 'world_single' } },
+		extension: { timeSlice: {} },
 	}), null)
 })
 

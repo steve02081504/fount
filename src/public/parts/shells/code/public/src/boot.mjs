@@ -44,6 +44,8 @@ import {
 	activeTab,
 	createDraftTab,
 	execShellMode,
+	handleAsyncConsumedEvent,
+	handleAsyncEntryEvent,
 	loadTabPrefs,
 	refreshAllSessions,
 	renderTabs,
@@ -104,6 +106,8 @@ export async function boot() {
 	await mountPillChrome()
 	onServerEvent('subagent-run', handleSubAgentEvent)
 	onServerEvent('async-task', handleAsyncTaskEvent)
+	onServerEvent('code-async-entry', handleAsyncEntryEvent)
+	onServerEvent('code-async-consumed', handleAsyncConsumedEvent)
 	// createMarkdownRichInput 初始化即聚焦 composer：待 pill 镀铬挂载后再建，避免早聚焦触发与装载的竞态
 	initComposer()
 	wireComposerEvents()

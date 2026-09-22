@@ -180,7 +180,7 @@
 	"suites": [
 		{
 			"name": "pure",
-			"expected": "5m38s",
+			"expected": "5m49s",
 			"trigger": [
 				"shellBackend",
 				"shellPureExtra",
@@ -200,7 +200,7 @@
 		},
 		{
 			"name": "integration",
-			"expected": "18m18s",
+			"expected": "3m50s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -793,7 +793,7 @@
 		},
 		{
 			"name": "frontend",
-			"expected": "33m41s",
+			"expected": "46m44s",
 			"dependsOn": [
 				"server:live",
 				"e2e_single"
@@ -821,7 +821,7 @@
 				},
 				{
 					"name": "composer",
-					"expected": "1m12s",
+					"expected": "3m4s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/composer.spec.mjs",
 						"src/public/parts/shells/chat/public/hub/composerExtras.mjs",

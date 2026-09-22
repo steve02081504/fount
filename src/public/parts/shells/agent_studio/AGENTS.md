@@ -35,7 +35,7 @@ alwaysApply: false
 ## Sub-agent async notifications
 
 - `run({ async: true })` returns `{ backgroundId }`; sub-agent keeps its own in-memory run registry and registers the background promise with `plugins/async-task` (task id = `backgroundId`, kind `subagent`).
-- Completion delivery is owned by `plugins/async-task/registry.mjs`: channel-scoped (keyed `${username}|${charId}`, nested runs by `parentRunId`). It prefers a timer-style proactive trigger (parent channel `Update()` → `char.GetReply` → `AddChatLogEntry`) and falls back to a pending queue injected via `GetPrompt` on the parent's next generation.
+- Completion delivery is owned by `plugins/async-task/registry.mjs`: channel-scoped (keyed `${username}|${charId}`, nested runs by `parentRunId`). It appends a char-visible notice via the parent channel's `AddChatLogEntry` (the shell's pending-trigger queue decides when to generate) and falls back to a pending queue injected via `GetPrompt` on the parent's next generation.
 - `getSubAgentPrompt` and `getAsyncTaskPrompt` drain the same unified queue (first caller wins); an async task awaited via `<await-async>` is marked consumed, so it is not notified twice.
 - Nested runs notify their own parent run, never the root channel.
 

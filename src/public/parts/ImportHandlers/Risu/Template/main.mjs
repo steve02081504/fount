@@ -8,6 +8,7 @@ import { runRegex } from 'fount/public/parts/ImportHandlers/SillyTavern/engine/r
 import { needsCompression, compressContext } from 'fount/public/parts/shells/chat/src/chat/session/summarize.mjs'
 import { buildPromptStruct } from 'fount/public/parts/shells/chat/src/prompt_struct/index.mjs'
 import { runReplyHandlers } from 'fount/public/parts/shells/chat/src/reply/handlerPipeline.mjs'
+import { injectRoundEntries } from 'fount/public/parts/shells/chat/src/reply/roundContext.mjs'
 import { saveJsonFile } from 'fount/scripts/json_loader.mjs'
 import { loadAnyPreferredDefaultPart, loadPart } from 'fount/server/parts_loader.mjs'
 
@@ -359,10 +360,14 @@ const charAPI_definition = {
 					await AIsource.StructCall(prompt_struct, args.generation_options)
 					// 达到 72.9% 上下文阈值时压缩历史后重新生成
 					if (needsCompression(args, { prompt_struct }) &&
-						await compressContext({ args, aiSource: AIsource, prompt_struct, result }))
+						await compressContext({ args, aiSource: AIsource, prompt_struct, result })) {
+						await injectRoundEntries(args, prompt_struct)
 						continue regen
-					if (await runReplyHandlers(result, { ...args, prompt_struct, AddLongTimeLog }, handlers))
+					}
+					if (await runReplyHandlers(result, { ...args, prompt_struct, AddLongTimeLog }, handlers)) {
+						await injectRoundEntries(args, prompt_struct)
 						continue regen
+					}
 					break
 				}
 

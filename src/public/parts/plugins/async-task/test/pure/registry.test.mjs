@@ -223,6 +223,15 @@ Deno.test('awaitTasks reports pending and unknown ids on timeout', async () => {
 	assertEquals(result.unknown, ['missing-id'])
 })
 
+Deno.test('awaitTasks puts unknown-only ids in unknown, never in pending', async () => {
+	resetAsyncTaskState()
+	const result = await awaitTasks(['bogus-1', 'bogus-2'], { mode: 'all', timeoutMs: 20 })
+	assertEquals(result.settled, [])
+	assertEquals(result.pending, [], '未知 id 不应同时被报为进行中')
+	assertEquals(result.unknown, ['bogus-1', 'bogus-2'])
+	assertEquals(result.timedOut, false)
+})
+
 Deno.test('listTasks filters by owner, parentRunId and kind', () => {
 	resetAsyncTaskState()
 	const root = owner()
@@ -289,6 +298,65 @@ Deno.test('deliverNotification never posts to another chat thread', async () => 
 	assertEquals(takePendingNotifications(target).length, 1, '应落入本线程待注入队列')
 })
 
+/**
+ * 构造一个记录 `AddChatLogEntry` 的假频道。
+ * @param {object} [options] 选项
+ * @param {string} [options.chatName] 频道名
+ * @param {string} [options.channelId] 频道 id
+ * @returns {{channel: object, appended: object[]}} 假频道与捕获数组
+ */
+function deliveryChannel({ chatName = 'chat-1', channelId = undefined } = {}) {
+	const appended = []
+	/**
+	 * 记录追加条目。
+	 * @param {object} entry 条目
+	 * @returns {Promise<void>}
+	 */
+	const addChatLogEntry = async entry => { appended.push(entry) }
+	const channel = {
+		chat_name: chatName,
+		extension: channelId ? { channelId } : {},
+		AddChatLogEntry: addChatLogEntry,
+	}
+	return { channel, appended }
+}
+
+/**
+ * 等待微任务链排空（deliverNotification 为 fire-and-forget）。
+ * @returns {Promise<void>}
+ */
+async function flushAsync() {
+	for (let i = 0; i < 8; i++) await Promise.resolve()
+}
+
+Deno.test('deliverNotification appends a char-visible notice via AddChatLogEntry', async () => {
+	resetAsyncTaskState()
+	const fake = deliveryChannel()
+	registerChannel('u', 'c', fake.channel)
+	const target = owner()
+	const task = registerTask({ kind: 'js', owner: target, run: resolveWith('done') })
+	await task.done
+	await flushAsync()
+	assertEquals(fake.appended.length, 1, '应把通知作为条目追加进频道')
+	assertEquals(fake.appended[0].role, 'system')
+	assertEquals(fake.appended[0].charVisibility, ['c'], '通知只对目标角色可见（不入 DAG）')
+	assertEquals(takePendingNotifications(target), [], '已投递则为空')
+})
+
+Deno.test('deliverNotification matches the channel by channel-scoped id', async () => {
+	resetAsyncTaskState()
+	const wrong = deliveryChannel({ chatName: 'chat-1', channelId: 'other' })
+	const right = deliveryChannel({ chatName: 'chat-1', channelId: 'general' })
+	registerChannel('u', 'c', wrong.channel)
+	registerChannel('u', 'c', right.channel)
+	const target = owner({ channelId: 'general', chatScopeId: 'chat-1::general' })
+	const task = registerTask({ kind: 'js', owner: target, run: resolveWith('done') })
+	await task.done
+	await flushAsync()
+	assertEquals(wrong.appended.length, 0, '同群不同频道不应串台')
+	assertEquals(right.appended.length, 1)
+})
+
 Deno.test('listTasksForOwner expands an owner into filter fields', () => {
 	resetAsyncTaskState()
 	const chatA = owner({ chatName: 'chat-a' })
@@ -307,7 +375,10 @@ Deno.test('ownerFromArgs derives the owner from a request', () => {
 		username: 'u',
 		charId: 'c',
 		chatName: 'chat-1',
+		channelId: null,
+		chatScopeId: 'chat-1',
 		parentRunId: null,
 	})
 	assertEquals(ownerFromArgs({ username: 'u', char_id: 'c', chat_name: 'chat-1', extension: { subAgent: { runId: 'p' } } }).parentRunId, 'p')
+	assertEquals(ownerFromArgs({ username: 'u', char_id: 'c', chat_name: 'chat-1', extension: { channelId: 'general' } }).chatScopeId, 'chat-1::general')
 })

@@ -57,7 +57,9 @@ export async function addChatLogEntry(groupId, entry) {
 	}
 
 	const owner = groupMetadatas.get(groupId)?.username
-	await syncChatLogEntryToDag(groupId, entry, owner)
+	// 仅本地角色可见（charVisibility 白名单）的条目留在内存 chatLog，不入 DAG / 不联邦
+	if (!entry.charVisibility?.length)
+		await syncChatLogEntryToDag(groupId, entry, owner)
 
 	return entry
 }

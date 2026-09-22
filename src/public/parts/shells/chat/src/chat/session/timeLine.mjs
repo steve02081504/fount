@@ -1,7 +1,7 @@
 /**
  * 【文件】timeLine.mjs — 聊天时间线分支切换与再生
  * 【职责】getChatTimelineCursor 返回当前分支索引；modifyTimeLine 按 delta 在 timeLines 间切换，必要时新建分支并触发生成或问候重 roll。
- * 【原理】切换前 abortAllGenerations；越界新建占位条目替换 chatLog 末条并 broadcast message_replaced；greeting_type 分支走 GetGreeting/GetGroupGreeting，否则 executeGeneration；已有分支仅恢复 LastTimeSlice 与末条日志。
+ * 【原理】切换前 abortAllGenerations；越界新建占位条目替换 chatLog 末条并 broadcast message_replaced；问候条目（`entry.type = greeting:<subtype>`）分支走 GetGreeting/GetGroupGreeting，否则 executeGeneration；已有分支仅恢复 LastTimeSlice 与末条日志。
  * 【数据结构】chatMetadata.timeLines、timeLineIndex、与 chatLog 末条同步的 entry。
  * 【关联】generationAbort、triggerReply、chatRequest、logEntries、broadcast。
  */
@@ -10,6 +10,8 @@
 /** @typedef {import('../../../../../../../decl/userAPI.ts').UserAPI_t} UserAPI_t */
 /** @typedef {import('../../../../../../../decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t */
 /** @typedef {import('../../../../../../../decl/basedefs.ts').locale_t} locale_t */
+
+import { greetingEntryType, greetingSubtypeOf } from '../../../../../../../decl/chatLog.ts'
 
 import { broadcastGroupEvent } from './broadcast.mjs'
 import { getChatRequest } from './chatRequest.mjs'
@@ -61,13 +63,13 @@ export async function modifyTimeLine(groupId, channelId, delta) {
 	if (newTimeLineIndex >= chatMetadata.timeLines.length) {
 		const previousEntry = chatMetadata.chatLog[chatMetadata.chatLog.length - 1]
 		const { timeSlice } = previousEntry.extension
-		const greeting_type = timeSlice.greeting_type
+		const greetingType = greetingSubtypeOf(previousEntry)
 
 		const newEntry = new chatLogEntry_t()
 		newEntry.id = crypto.randomUUID()
 		newEntry.extension.timeSlice = timeSlice.copy()
-		if (greeting_type)
-			newEntry.extension.timeSlice.greeting_type = greeting_type
+		if (greetingType)
+			newEntry.type = greetingEntryType(greetingType)
 		newEntry.extension.timeSlice.charname = timeSlice.charname
 
 		newEntry.role = previousEntry.role
@@ -91,7 +93,7 @@ export async function modifyTimeLine(groupId, channelId, delta) {
 			payload: { index: chatMetadata.chatLog.length - 1, entry: await newEntry.toData(chatMetadata.username) },
 		})
 
-		if (greeting_type)
+		if (greetingType)
 			try {
 				const { charname } = timeSlice
 				const request = await getChatRequest(groupId, charname || undefined, getChannelForCharStream(chatMetadata, newEntry))
@@ -100,7 +102,7 @@ export async function modifyTimeLine(groupId, channelId, delta) {
 				const { world, chars } = timeSlice
 				const char = charname ? chars[charname] : null
 
-				switch (greeting_type) {
+				switch (greetingType) {
 					case 'single':
 						result = await char.interfaces.chat.GetGreeting(request, newTimeLineIndex)
 						break
@@ -121,20 +123,18 @@ export async function modifyTimeLine(groupId, channelId, delta) {
 				if (!result) throw new Error('No greeting result')
 
 				const newTimeSlice = timeSlice.copy()
-				newTimeSlice.greeting_type = greeting_type
 
 				const finalEntry = await buildChatLogEntryFromCharReply(
 					result,
 					newTimeSlice,
-					greeting_type.startsWith('world_') ? undefined : charname,
+					greetingType.startsWith('world_') ? undefined : charname,
 					chatMetadata.username,
+					greetingType,
 				)
 
 				Object.assign(newEntry, finalEntry)
 				newEntry.is_generating = false
 				newEntry.id = entry.id
-				if (greeting_type)
-					newEntry.extension.timeSlice.greeting_type = greeting_type
 
 				chatMetadata.timeLines[newTimeLineIndex] = newEntry
 				chatMetadata.chatLog[chatMetadata.chatLog.length - 1] = newEntry

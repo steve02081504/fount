@@ -5,6 +5,7 @@
  * 【数据结构】chatLogEntry_t 字段（role/content/extension.timeSlice/files/extension/logContext*）。
  * 【关联】models、channelContent、messages、triggerReply、chatRequest.AddChatLogEntry。
  */
+import { greetingEntryType } from '../../../../../../../decl/chatLog.ts'
 import { getPartDetails } from '../../../../../../../server/parts_loader.mjs'
 import { ensureLocalAgentEntityHash } from '../../entity/member.mjs'
 import { resolveChannelId } from '../lib/channelId.mjs'
@@ -40,9 +41,10 @@ export function getChannelForCharStream(chatMetadata, placeholderEntry) {
  * @param {timeSlice_t} timeSlice 快照时间切片
  * @param {string | undefined} charname 角色名
  * @param {string} username 用户
+ * @param {string | null} [greetingType] 问候子类型（提供时写入 `entry.type = greeting:<subtype>`）
  * @returns {Promise<chatLogEntry_t>} 新日志条目
  */
-export async function buildChatLogEntryFromCharReply(result, timeSlice, charname, username) {
+export async function buildChatLogEntryFromCharReply(result, timeSlice, charname, username, greetingType = null) {
 	timeSlice.charname = charname || undefined
 	const { info } = charname && await getPartDetails(username, `chars/${charname}`) || {}
 	const { timeSlice: _drop, ...extensionRest } = result.extension || {}
@@ -59,6 +61,7 @@ export async function buildChatLogEntryFromCharReply(result, timeSlice, charname
 		content_for_show: result.content_for_show,
 		content_for_edit: result.content_for_edit,
 		role: 'char',
+		type: greetingType ? greetingEntryType(greetingType) : result.type,
 		time_stamp: new Date(),
 		files: result.files || [],
 		logContextBefore: result.logContextBefore,

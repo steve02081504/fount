@@ -10,6 +10,7 @@ import { createHash } from 'node:crypto'
 
 import { handleError } from 'fount/scripts/errorHandlers.mjs'
 
+import { isGreetingEntry } from '../../../../../../../decl/chatLog.ts'
 import { channelMessage, normalizeChannelMessage } from '../../../public/shared/channelContent.mjs'
 import { commitChannelMessageEvent } from '../channel/messageCommit.mjs'
 import { replicateChunkToFederation } from '../federation/chunks.mjs'
@@ -77,7 +78,7 @@ async function resolveMirrorContext(entry, username, groupId) {
 export async function appendDagGeneratingPlaceholder(groupId, entry, username) {
 	try {
 		if (!username || !entry?.id) return null
-		if (entry.extension.timeSlice?.greeting_type) return null
+		if (isGreetingEntry(entry)) return null
 		const { channelIdForDag, timestamp, charId } = await resolveMirrorContext(entry, username, groupId)
 		const event = await commitChannelMessageEvent({
 			username,
@@ -189,7 +190,7 @@ export async function appendFinalEditWithRetry(username, groupId, eventBody, app
 export async function finalizeDagGeneratingMessage(groupId, entry, username, dagEventId) {
 	try {
 		if (!username) return
-		if (entry.extension.timeSlice?.greeting_type) return
+		if (isGreetingEntry(entry)) return
 		const targetId = dagEventId ?? entry.extension?.chat?.eventId
 		if (!targetId) return
 		const text = entry.content
@@ -257,7 +258,7 @@ export async function syncChatLogEntryToDag(groupId, entry, username) {
 		if (!text.trim() && !hasFiles) return
 		const { channelIdForDag, timestamp, charId } = await resolveMirrorContext(entry, username, groupId)
 		const content = await buildFinalMessageContent(username, groupId, entry, text)
-		const isGreeting = !!entry.extension.timeSlice?.greeting_type
+		const isGreeting = isGreetingEntry(entry)
 		await commitChannelMessageEvent({
 			username,
 			groupId,
@@ -284,7 +285,7 @@ export async function syncChatLogEntryToDag(groupId, entry, username) {
 export async function mirrorDeleteToDag(groupId, deletedEntry, username) {
 	try {
 		if (!deletedEntry?.id || !username) return
-		if (deletedEntry.extension.timeSlice?.greeting_type) return
+		if (isGreetingEntry(deletedEntry)) return
 		await ensureGroup(username, groupId)
 		const targetId = deletedEntry.extension?.chat?.eventId
 		if (!targetId) return
@@ -317,7 +318,7 @@ export async function mirrorDeleteToDag(groupId, deletedEntry, username) {
 export async function mirrorEditToDag(groupId, originalEntryId, entry, username) {
 	try {
 		if (!originalEntryId || !username) return
-		if (entry.extension.timeSlice?.greeting_type) return
+		if (isGreetingEntry(entry)) return
 		const targetId = entry.extension?.chat?.eventId
 		if (!targetId) return
 		const { channelIdForDag, sender, charId } = await resolveMirrorContext(entry, username, groupId)

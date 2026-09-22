@@ -715,7 +715,8 @@ export function setEndpoints(router) {
 				controller?.abort()
 				return
 			}
-			if (msg.type !== 'send' && msg.type !== 'regen') return
+			// trigger：按当前会话原样生成（不新增用户消息），供异步通知空闲时由前端触发
+			if (msg.type !== 'send' && msg.type !== 'regen' && msg.type !== 'trigger') return
 
 			const { session, machine = 0, workdir, ai_source, profile, content } = msg
 			if (!session || (msg.type === 'send' && !content)) {

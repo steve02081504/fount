@@ -16,6 +16,7 @@ import crypto from 'node:crypto'
 import { putFileManifest } from 'npm:@steve02081504/fount-p2p/files/evfs'
 import { formatEvfsRef, parseEvfsRef } from 'npm:@steve02081504/fount-p2p/files/evfs_ref'
 
+import { isGreetingEntry } from '../../../../../../../decl/chatLog.ts'
 import { resolveOperatorEntityHash } from '../lib/replica.mjs'
 
 /**
@@ -54,8 +55,6 @@ export class timeSlice_t {
 	charname
 	/** @type {string} */
 	playername
-	/** @type {string} */
-	greeting_type
 
 	/**
 	 * 深拷贝时间切片（角色名等瞬态字段会重置）。
@@ -65,7 +64,6 @@ export class timeSlice_t {
 		const next = Object.assign(new timeSlice_t(), this, {
 			charname: undefined,
 			playername: undefined,
-			greeting_type: undefined,
 		})
 		next.chars_speaking_frequency = structuredClone(this.chars_speaking_frequency)
 		return next
@@ -301,7 +299,7 @@ export class chatMetadata_t {
 	toJSON() {
 		return {
 			username: this.username,
-			greetingLog: this.chatLog.filter(e => e.extension.timeSlice?.greeting_type).map(log => log.toJSON()),
+			greetingLog: this.chatLog.filter(e => isGreetingEntry(e)).map(log => log.toJSON()),
 			persistedTimeSlice: this.LastTimeSlice.toJSON?.() ?? {},
 			chatLog: [],
 			timeLines: [],
@@ -314,7 +312,7 @@ export class chatMetadata_t {
 	 * @returns {Promise<object>} 持久化数据对象
 	 */
 	async toData() {
-		const prelude = this.chatLog.filter(e => e.extension.timeSlice?.greeting_type)
+		const prelude = this.chatLog.filter(e => isGreetingEntry(e))
 		return {
 			username: this.username,
 			greetingLog: await Promise.all(prelude.map(async log => log.toData(this.username))),

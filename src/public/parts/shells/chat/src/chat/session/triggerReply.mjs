@@ -1,8 +1,8 @@
 /**
  * 【文件】triggerReply.mjs — 角色回复触发、生成执行与多轮自动对话
  * 【职责】triggerCharReply 启动占位条目与 DAG generating 占位；executeGeneration 调用 char.GetReply 并 finalize；getCharReplyFrequency/handleAutoReply 实现发言顺序与加权轮询；跨机角色走 invokeGroupRpc。
- * 【原理】charReplyInFlight 防同 group+channel+char 并发；流式经 charPreviewStream 发签名 stream_chunk（slices）；结束后走 handleAutoReply（AfterAddChatLogEntry 已收归 DAG persist）；本机 bind 外发 RPC 带 buildSerializableRequest。
- * 【数据结构】charReplyInFlight（Set）、占位 chatLogEntry_t（is_generating、`extension.chat.eventId`/`channelId`）、replyFrequency 表。
+ * 【原理】charReplyInFlight 防同 group+channel+char 并发；requestCharReply 生成中记入 pendingCharTriggers，生成结束 drain 补一次；流式经 charPreviewStream 发签名 stream_chunk（slices）；结束后走 handleAutoReply（AfterAddChatLogEntry 已收归 DAG persist）；本机 bind 外发 RPC 带 buildSerializableRequest。
+ * 【数据结构】charReplyInFlight（Set）、pendingCharTriggers（Set，见 pendingCharTriggers.mjs）、占位 chatLogEntry_t（is_generating、`extension.chat.eventId`/`channelId`）、replyFrequency 表。
  * 【关联】generationAbort、charPreviewStream、chatRequest、logEntries、dag/chatLogMirror、rpcInvoke。
  */
 /** @typedef {import('../../../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
@@ -44,6 +44,7 @@ import {
 import { deleteMessage } from './messages.mjs'
 import { chatLogEntry_t } from './models.mjs'
 import { addchar } from './partConfig.mjs'
+import { charReplyFlightKey, clearPendingCharTrigger, markPendingCharTrigger, takePendingCharTrigger } from './pendingCharTriggers.mjs'
 import { getActiveGroupRuntime } from './persistence.mjs'
 import {
 	autoReplyBucketKey,
@@ -65,20 +66,42 @@ const charReplyInFlight = new Set()
  * @param {string} groupId 群 ID
  * @param {string | null | undefined} channelId 频道 ID
  * @param {string} charname 角色名
- * @returns {string} 去重键
- */
-function charReplyFlightKey(groupId, channelId, charname) {
-	return `${groupId}\0${channelId || 'default'}\0${charname}`
-}
-
-/**
- * @param {string} groupId 群 ID
- * @param {string | null | undefined} channelId 频道 ID
- * @param {string} charname 角色名
  * @returns {boolean} 是否已有同槽位生成在进行
  */
 export function isCharReplyInFlight(groupId, channelId, charname) {
 	return charReplyInFlight.has(charReplyFlightKey(groupId, channelId, charname))
+}
+
+/**
+ * 请求在指定槽位触发一次角色生成：空闲则立即触发，生成中则记入待触发队列，
+ * 由当前生成结束时的 drain 或轮次刷新（`ClearPendingMessages`）消费。
+ * @param {string} groupId 群 ID
+ * @param {string | null | undefined} channelId 频道 ID
+ * @param {string | null | undefined} charname 角色名
+ * @returns {void}
+ */
+export function requestCharReply(groupId, channelId, charname) {
+	if (!charname) return
+	const key = charReplyFlightKey(groupId, channelId, charname)
+	if (charReplyInFlight.has(key)) {
+		markPendingCharTrigger(key)
+		return
+	}
+	void triggerCharReply(groupId, channelId, charname).catch(error => {
+		console.error('requestCharReply failed:', error)
+	})
+}
+
+/**
+ * 清除指定槽位的待触发标记（角色已通过 Update / container 封存看到新内容）。
+ * @param {string} groupId 群 ID
+ * @param {string | null | undefined} channelId 频道 ID
+ * @param {string | null | undefined} charname 角色名
+ * @returns {void}
+ */
+export function clearPendingCharTriggers(groupId, channelId, charname) {
+	if (!charname) return
+	clearPendingCharTrigger(charReplyFlightKey(groupId, channelId, charname))
 }
 
 /**
@@ -380,11 +403,14 @@ export async function executeGeneration(groupId, request, stream, placeholderEnt
 		if (Object.keys(values).length)
 			await saveScopedState(chatMetadata.username, groupId, channelForStream, request.char_id, values)
 				.catch(console.error)
-		charReplyInFlight.delete(charReplyFlightKey(
-			groupId,
-			placeholderEntry.extension?.chat?.channelId || channelForStream,
-			request.char_id,
-		))
+		const flightChannelId = placeholderEntry.extension?.chat?.channelId || channelForStream
+		const flightKey = charReplyFlightKey(groupId, flightChannelId, request.char_id)
+		charReplyInFlight.delete(flightKey)
+		// 生成中收到但本轮未消费的触发：补一次生成，保证外部追加的消息不会被漏掉
+		if (takePendingCharTrigger(flightKey))
+			void triggerCharReply(groupId, flightChannelId, request.char_id).catch(error => {
+				console.error('pending char trigger drain failed:', error)
+			})
 	}
 }
 
@@ -492,7 +518,6 @@ async function buildCharReplyPlaceholder(chatMetadata, groupId, charname, channe
 	placeholder.role = 'char'
 	placeholder.is_generating = true
 	placeholder.extension.timeSlice = chatMetadata.LastTimeSlice.copy()
-	delete placeholder.extension.timeSlice.greeting_type
 	placeholder.time_stamp = new Date()
 	const { info } = await getPartDetails(chatMetadata.username, `chars/${charname}`) || {}
 	placeholder.name = info?.name || charname

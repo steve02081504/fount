@@ -9,7 +9,7 @@
  */
 import { buildPromptStruct } from '../../shells/chat/src/prompt_struct/index.mjs'
 import { runReplyHandlers } from '../../shells/chat/src/reply/handlerPipeline.mjs'
-import { registerTask } from '../async-task/registry.mjs'
+import { ownerFromArgs, registerTask } from '../async-task/registry.mjs'
 
 import { cleanupExpiredArchives, projectArchiveEntries, removeParentArchive, writeParentArchive } from './archive.mjs'
 import { makeRoundBudgetEntry } from './prompt.mjs'
@@ -326,6 +326,8 @@ function buildChildArgs(run) {
 		 * @returns {Promise<object>} 规范化后的日志条目
 		 */
 		AddChatLogEntry: async entry => appendChildConversationEntry(run, entry),
+		/** 子代理对话独立于父频道，不触碰父请求的待触发队列。 */
+		ClearPendingMessages: () => { },
 	}
 	/**
 	 * 返回当前子请求上下文。
@@ -681,7 +683,7 @@ export async function runSubAgent(args, request, deps = defaultSubAgentDeps) {
 			id: run.backgroundId,
 			kind: 'subagent',
 			label: taskPreview(run.task),
-			owner: { username, charId, chatName: run.chat_name, parentRunId },
+			owner: ownerFromArgs(args),
 			/**
 			 * 后台执行子代理运行；run 失败时以 rejected Promise 让统一异步任务结算为 failed。
 			 * @returns {Promise<object>} 运行对象

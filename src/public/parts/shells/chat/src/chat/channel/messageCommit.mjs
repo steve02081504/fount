@@ -5,6 +5,7 @@
  * 【数据结构】canonical message content：全员 displayName/displayAvatar；生成类另附 sessionSnapshot、`extension.chat.entryId`。
  * 【关联】postMessage、chatLogMirror、eventPersist、session/chatRequest、archive/postSnapshot。
  */
+import { greetingSubtypeOf } from '../../../../../../../decl/chatLog.ts'
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import {
 	channelMessage,
@@ -134,7 +135,7 @@ export async function buildCanonicalMessageContent(username, groupId, channelId,
 		chat.sessionSnapshot = await exportSessionSnapshot(username, groupId, channelId)
 		if (origin === 'greeting') {
 			chat.isGreeting = true
-			const greetingType = entry?.extension?.timeSlice?.greeting_type
+			const greetingType = greetingSubtypeOf(entry)
 			if (greetingType) chat.greetingType = greetingType
 		}
 		if (entry?.role) canonical.role = entry.role

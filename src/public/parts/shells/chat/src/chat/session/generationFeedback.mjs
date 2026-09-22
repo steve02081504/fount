@@ -11,6 +11,7 @@
 /** @typedef {import('../../../../../../../decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t */
 /** @typedef {import('../../../../../../../decl/basedefs.ts').locale_t} locale_t */
 
+import { isGreetingEntry } from '../../../../../../../decl/chatLog.ts'
 import { appendSignedLocalEvent } from '../dag/append.mjs'
 import { ensureGroup } from '../dag/lifecycle.mjs'
 import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
@@ -27,7 +28,7 @@ import { resolveGroupChannelId } from '../lib/channelId.mjs'
 export async function mirrorFeedbackToDag(groupId, entry, feedback, username) {
 	try {
 		if (!entry?.id || !username) return
-		if (entry.extension.timeSlice?.greeting_type) return
+		if (isGreetingEntry(entry)) return
 		if (!feedback?.type) return
 		const targetId = entry.extension?.chat?.eventId
 		if (!targetId) return

@@ -11,6 +11,7 @@
 /** @typedef {import('../../../../../../../decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t */
 /** @typedef {import('../../../../../../../decl/basedefs.ts').locale_t} locale_t */
 
+import { isGreetingEntry } from '../../../../../../../decl/chatLog.ts'
 import { localhostLocales } from '../../../../../../../scripts/i18n/bare.mjs'
 import { getPartInfo } from '../../../../../../../scripts/locale.mjs'
 import { getUserByUsername } from '../../../../../../../server/auth/index.mjs'
@@ -38,6 +39,7 @@ import {
 	buildChatLogEntryFromCharReply,
 } from './logEntries.mjs'
 import { chatLogEntry_t } from './models.mjs'
+import { charReplyFlightKey, clearPendingCharTrigger } from './pendingCharTriggers.mjs'
 import { resolveChar, resolveLocalPlugins, resolvePersona, resolveWorld } from './resolvePart.mjs'
 import { getGroupRuntime } from './runtime.mjs'
 import { getScopedCharState } from './scopedState.mjs'
@@ -132,7 +134,7 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 	const localPlugins = await resolveLocalPlugins(groupId, replicaUsername)
 
 	const i18n = await loadDagHydrationI18n(replicaUsername)
-	const prelude = chatMetadata.chatLog.filter(entry => entry.extension.timeSlice?.greeting_type)
+	const prelude = chatMetadata.chatLog.filter(entry => isGreetingEntry(entry))
 	const channelEntries = await buildChatLogEntriesFromChannelLines(
 		lines,
 		chatMetadata.LastTimeSlice,
@@ -142,7 +144,11 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 		groupId,
 		state,
 	)
-	const chatLogForRequest = [...prelude, ...channelEntries].sort((a, b) =>
+	// 仅本地角色可见（charVisibility）的条目不入 DAG，正文不在 channelEntries 里，须从内存 chatLog 补入
+	const knownIds = new Set([...prelude, ...channelEntries].map(entry => String(entry.id)))
+	const localOnlyEntries = chatMetadata.chatLog.filter(entry =>
+		entry.charVisibility?.length && !knownIds.has(String(entry.id)))
+	const chatLogForRequest = [...prelude, ...channelEntries, ...localOnlyEntries].sort((a, b) =>
 		new Date(a.time_stamp).getTime() - new Date(b.time_stamp).getTime())
 
 	// 用户消息的实际语言（UI locale）按出现次数排序，作为 user.locales 之后的次要提示：
@@ -205,23 +211,58 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 		timelines: chatMetadata.timeLines,
 		member_roles,
 		/**
+		 * 刷新请求上下文；并清除本槽位待触发标记（轮次刷新即代表角色已看到新内容）。
 		 * @returns {Promise<object>} 刷新后的请求上下文
 		 */
-		Update: () => getChatRequest(groupId, charname, channelId, options),
+		Update: () => {
+			clearPendingCharTrigger(charReplyFlightKey(groupId, effectiveChannelId, charname))
+			return getChatRequest(groupId, charname, channelId, options)
+		},
 		/**
-		 * @param {object} entry 角色回复结果
+		 * 清除本槽位待触发标记（`Update` / container 封存让角色看到新内容后调用）。
+		 * @returns {void}
+		 */
+		ClearPendingMessages: () => {
+			clearPendingCharTrigger(charReplyFlightKey(groupId, effectiveChannelId, charname))
+		},
+		/**
+		 * 追加一条日志条目。`role === 'char'`（或缺省）走角色回复规整；其余 role 按原样写入，
+		 * 并请求 shell 安排一次生成（空闲即触发，生成中则等本轮结束或轮次刷新消费）。
+		 * 带 `charVisibility` 的条目仅本地角色可见，`chatLogAppend` 不会将其写入 DAG。
+		 * @param {object} entry 条目（chatLogEntry_t 形状，缺省补全）
 		 * @returns {Promise<chatLogEntry_t>} 写入后的日志条目
 		 */
 		AddChatLogEntry: async entry => {
 			if (!charname) throw new Error('Char not in this chat')
 			if (!await resolveChar(groupId, charname, replicaUsername)) throw new Error('Char not in this chat')
 			const { addChatLogEntry } = await import('./chatLogAppend.mjs')
-			return addChatLogEntry(groupId, await buildChatLogEntryFromCharReply(
-				entry,
-				chatMetadata.LastTimeSlice.copy(),
-				charname,
-				replicaUsername,
-			))
+			if (!entry?.role || entry.role === 'char')
+				return addChatLogEntry(groupId, await buildChatLogEntryFromCharReply(
+					entry,
+					chatMetadata.LastTimeSlice.copy(),
+					charname,
+					replicaUsername,
+				))
+			const appended = {
+				id: entry.id ?? crypto.randomUUID(),
+				name: entry.name ?? 'system',
+				uid: entry.uid ?? 'system',
+				role: entry.role,
+				...entry.type ? { type: entry.type } : {},
+				content: String(entry.content ?? ''),
+				content_for_show: entry.content_for_show ?? entry.content ?? '',
+				...entry.content_for_edit != null ? { content_for_edit: entry.content_for_edit } : {},
+				files: entry.files ?? [],
+				...Array.isArray(entry.charVisibility) && entry.charVisibility.length ? { charVisibility: entry.charVisibility } : {},
+				...entry.visibility ? { visibility: entry.visibility } : {},
+				time_stamp: entry.time_stamp ?? new Date(),
+				extension: { ...entry.extension, timeSlice: chatMetadata.LastTimeSlice.copy() },
+			}
+			appended.extension.chat = { ...appended.extension.chat, channelId: effectiveChannelId }
+			const written = await addChatLogEntry(groupId, appended)
+			const { requestCharReply } = await import('./triggerReply.mjs')
+			requestCharReply(groupId, effectiveChannelId, charname)
+			return written
 		},
 		world: resolvedWorld,
 		char: charPart,

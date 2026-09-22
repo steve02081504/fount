@@ -32,6 +32,20 @@ export class chatReply_t {
 }
 
 /**
+ * `AddChatLogEntry` 的可追加条目：在角色回复形状之上允许携带任意条目字段（`role` / `type` / `uid` / `charVisibility` 等），
+ * 使角色与插件能追加任意日志条目，而非一律被规整为角色回复。
+ */
+export type chatLogAppendInput_t = chatReply_t & {
+	id?: string
+	uid?: string
+	role?: role_t
+	type?: string
+	visibility?: { roles?: string[], members?: string[] }
+	time_stamp?: timeStamp_t
+	is_generating?: boolean
+}
+
+/**
  * 最终 AI 源处理的回复预览更新器。
  */
 export type ReplyPreviewUpdater_t = (reply: chatReply_t) => void
@@ -116,7 +130,6 @@ export interface ChatLogTimeSlice {
 	chars_speaking_frequency?: Record<string, number>
 	charname?: string
 	playername?: string
-	greeting_type?: string
 	summary?: string
 }
 
@@ -193,8 +206,16 @@ export class chatReplyRequest_t {
 	timelines: chatLogEntry_t[]
 	/** 当前 viewer 在群内的角色 id 列表（供 prompt visibility 等使用） */
 	member_roles?: string[]
-	AddChatLogEntry?: (entry: chatReply_t) => Promise<chatLogEntry_t>
+	/**
+	 * 追加一条日志条目。`role === 'char'`（或缺省）走角色回复规整；其余 role 按原样追加，并通知 shell 安排一次生成。
+	 * 条目带 `charVisibility` 时仅本地角色可见，shell 不应写入 DAG。
+	 */
+	AddChatLogEntry?: (entry: chatLogAppendInput_t) => Promise<chatLogEntry_t>
 	Update?: () => Promise<chatReplyRequest_t>
+	/**
+	 * 清除本频道待触发的生成队列：shell 的轮次刷新（`Update` / container 封存）已让角色看到新内容，无需再补一次生成。
+	 */
+	ClearPendingMessages?: () => void
 	world: WorldAPI_t
 	user: UserAPI_t
 	char: CharAPI_t
@@ -256,12 +277,60 @@ export class chatLogEntry_t {
 export const SUMMARY_ENTRY_TYPE = 'summary'
 
 /**
+ * 容器条目的模型标记：自身不贡献 chat log，只展开其 `logContextBefore` / `logContextAfter`。
+ * 用于在轮次刷新时把已累积的追加上下文“封存”为一个锚点，保证后续新条目的时序正确。
+ */
+export const CONTAINER_ENTRY_TYPE = 'container'
+
+/**
+ * 问候条目的模型标记前缀：`type` 形如 `greeting:<subtype>`（subtype 为 `single` / `group` / `world_single` / `world_group`）。
+ * 取代旧的 `extension.timeSlice.greeting_type`，使特殊条目统一由 `type` 判定。
+ */
+export const GREETING_ENTRY_TYPE = 'greeting'
+
+/**
+ * 由问候子类型构造条目的 `type` 值。
+ * @param {string} subtype 问候子类型
+ * @returns {string} `greeting:<subtype>`
+ */
+export function greetingEntryType(subtype: string): string {
+	return `${GREETING_ENTRY_TYPE}:${subtype}`
+}
+
+/**
  * 判断条目是否为摘要条目。
  * @param {chatLogEntry_t} entry 日志条目
  * @returns {boolean} 是否为摘要条目
  */
 export function isSummaryEntry(entry: chatLogEntry_t): boolean {
 	return entry.type === SUMMARY_ENTRY_TYPE
+}
+
+/**
+ * 判断条目是否为容器条目（自身不贡献 log，只展开前后追加内容）。
+ * @param {chatLogEntry_t} entry 日志条目
+ * @returns {boolean} 是否为容器条目
+ */
+export function isContainerEntry(entry: chatLogEntry_t): boolean {
+	return entry.type === CONTAINER_ENTRY_TYPE
+}
+
+/**
+ * 判断条目是否为问候条目。
+ * @param {chatLogEntry_t} entry 日志条目
+ * @returns {boolean} 是否为问候条目
+ */
+export function isGreetingEntry(entry: chatLogEntry_t): boolean {
+	return typeof entry?.type === 'string' && entry.type.startsWith(`${GREETING_ENTRY_TYPE}:`)
+}
+
+/**
+ * 取问候条目的子类型。
+ * @param {chatLogEntry_t} entry 日志条目
+ * @returns {string | null} 子类型；非问候条目为 null
+ */
+export function greetingSubtypeOf(entry: chatLogEntry_t): string | null {
+	return isGreetingEntry(entry) ? entry.type.slice(GREETING_ENTRY_TYPE.length + 1) : null
 }
 
 /** 聊天日志条目数组。 */

@@ -13,6 +13,7 @@
 /** @typedef {import('../../../../../../decl/chatLog.ts').chatLogEntry_t} chatLogEntry_t */
 /** @typedef {import('../../../../../../decl/chatLog.ts').chatReplyRequest_t} chatReplyRequest_t */
 
+import { isContainerEntry } from '../../../../../../decl/chatLog.ts'
 import { entryVisibleToViewer } from '../chat/lib/visibility.mjs'
 
 import { applySummaryBoundary } from './summaryBoundary.mjs'
@@ -259,7 +260,8 @@ export function mergeStructPromptChatLog(/** @type {prompt_struct_t} */ prompt) 
 	const mergedChatLog = []
 	for (const entry of result) {
 		if (entry.logContextBefore) mergedChatLog.push(...entry.logContextBefore)
-		mergedChatLog.push(entry)
+		// 容器条目自身不贡献 log，只展开其前后追加内容
+		if (!isContainerEntry(entry)) mergedChatLog.push(entry)
 		const feedback = entry.extension?.feedback
 		if (feedback) {
 			const label = feedback.type === 'up' ? 'upvote' : 'downvote'

@@ -82,8 +82,7 @@ async function runDeferredCharGreeting(groupId, charname, username, greetingType
 		const chatMetadata = await getGroupRuntime(groupId, username)
 		if (!chatMetadata.LastTimeSlice.chars[charname]) return
 		const liveTimeSlice = chatMetadata.LastTimeSlice.copy()
-		liveTimeSlice.greeting_type = greetingType
-		await insertCharGreeting(groupId, charname, username, chatMetadata, liveTimeSlice)
+		await insertCharGreeting(groupId, charname, username, chatMetadata, liveTimeSlice, greetingType)
 	}
 	catch (error) {
 		if (!isExpectedTeardownRace(error))
@@ -148,15 +147,17 @@ export async function bindWorld(groupId, channelId, worldname, replicaUsername) 
 	chatMetadata.LastTimeSlice.world_id = worldname
 
 	const timeSlice = chatMetadata.LastTimeSlice.copy()
+	/** @type {string | null} */
+	let greetingType = null
 	if (world.interfaces.chat.GetGreeting && !chatMetadata.chatLog.length)
-		timeSlice.greeting_type = 'world_single'
+		greetingType = 'world_single'
 	else if (world.interfaces.chat.GetGroupGreeting && chatMetadata.chatLog.length)
-		timeSlice.greeting_type = 'world_group'
+		greetingType = 'world_group'
 
 	try {
 		const request = await getChatRequest(groupId, undefined, channelId, { replicaUsername: username })
 		let result
-		switch (timeSlice.greeting_type) {
+		switch (greetingType) {
 			case 'world_single':
 				result = await world.interfaces.chat.GetGreeting(request, 0)
 				break
@@ -166,7 +167,7 @@ export async function bindWorld(groupId, channelId, worldname, replicaUsername) 
 		}
 		if (!result) return null
 
-		const greetingEntry = await buildChatLogEntryFromCharReply(result, timeSlice, undefined, username)
+		const greetingEntry = await buildChatLogEntryFromCharReply(result, timeSlice, undefined, username, greetingType)
 		await addChatLogEntry(groupId, greetingEntry)
 		return greetingEntry
 	}
@@ -190,12 +191,13 @@ export async function bindWorld(groupId, channelId, worldname, replicaUsername) 
  * @param {string} username replica 所有者
  * @param {import('./models.mjs').chatMetadata_t} chatMetadata 群运行时
  * @param {object} timeSlice 时间片副本
+ * @param {string | null} [greetingType] 问候子类型
  * @returns {Promise<chatLogEntry_t | null>} 问候日志条目或 null
  */
-async function insertCharGreeting(groupId, charname, username, chatMetadata, timeSlice) {
+async function insertCharGreeting(groupId, charname, username, chatMetadata, timeSlice, greetingType = null) {
 	const char = timeSlice.chars[charname]
 	if (!char) return null
-	const getGreeting = timeSlice.greeting_type === 'group'
+	const getGreeting = greetingType === 'group'
 		? char.interfaces?.chat?.GetGroupGreeting || char.interfaces?.chat?.GetGreeting
 		: char.interfaces?.chat?.GetGreeting
 	if (!getGreeting) return null
@@ -206,8 +208,8 @@ async function insertCharGreeting(groupId, charname, username, chatMetadata, tim
 	try {
 		const result = await getGreeting(request, 0)
 		if (!result) return null
-		const greetingEntry = await buildChatLogEntryFromCharReply(result, timeSlice, charname, username)
-		// 问候事实源统一为 timeSlice.greeting_type：modifyTimeLine 靠它重 roll 开场；greetingLog 也按此过滤
+		const greetingEntry = await buildChatLogEntryFromCharReply(result, timeSlice, charname, username, greetingType)
+		// 问候事实源统一为 entry.type（`greeting:<subtype>`）：modifyTimeLine 靠它重 roll 开场；greetingLog 也按此过滤
 		await addChatLogEntry(groupId, greetingEntry)
 		return greetingEntry
 	}
@@ -243,10 +245,7 @@ export async function addchar(groupId, charname, replicaUsername, options = {}) 
 	})
 	const chatMetadata = await rebuildGroupRuntime(groupId, username)
 	const timeSlice = chatMetadata.LastTimeSlice.copy()
-	if (Object.keys(timeSlice.chars).length > 1)
-		timeSlice.greeting_type = 'group'
-	else
-		timeSlice.greeting_type = 'single'
+	const greetingType = Object.keys(timeSlice.chars).length > 1 ? 'group' : 'single'
 
 	const char = timeSlice.chars[name]
 	if (!char) return null
@@ -254,10 +253,10 @@ export async function addchar(groupId, charname, replicaUsername, options = {}) 
 	broadcastGroupEvent(groupId, { type: 'char_added', payload: { charname: name } })
 
 	if (options.deferGreeting) {
-		void runDeferredCharGreeting(groupId, name, username, timeSlice.greeting_type)
+		void runDeferredCharGreeting(groupId, name, username, greetingType)
 		return null
 	}
-	return insertCharGreeting(groupId, name, username, chatMetadata, timeSlice)
+	return insertCharGreeting(groupId, name, username, chatMetadata, timeSlice, greetingType)
 }
 
 /**

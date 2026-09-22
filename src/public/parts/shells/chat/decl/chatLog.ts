@@ -6,6 +6,7 @@ export {
 	chatReplyRequest_t,
 	chatLogEntry_t,
 	type chatLog_t,
+	type chatLogAppendInput_t,
 	type chatViewer_t,
 	type chatLogChatExtension_t,
 	type file_t,
