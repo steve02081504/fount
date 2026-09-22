@@ -349,6 +349,23 @@ function sanitizeEntry(entry) {
 }
 
 /**
+ * 进行中的生成运行：`username\0sessionId` → `{ runId, controller, socket }`。
+ * 后端持有运行身份：WS 断开不再立即中断生成，运行照常收尾并落盘，避免页面重置丢结果。
+ * @type {Map<string, {runId: string, controller: AbortController, socket: object|null}>}
+ */
+const activeCodeRuns = new Map()
+
+/**
+ * 生成运行键（用户 + 会话）。
+ * @param {string} username - 用户名。
+ * @param {string} sessionId - 会话 id。
+ * @returns {string} 键。
+ */
+function codeRunKey(username, sessionId) {
+	return username + '\u0000' + sessionId
+}
+
+/**
  * 设置 API 端点。
  * @param {object} router - Express 的路由实例。
  */
@@ -655,7 +672,7 @@ export function setEndpoints(router) {
 		res.json({ tasks })
 	})
 
-	// 会话存取（前端为唯一写入方；存于工作区 .fount/code/sessions）
+	// 会话存取（编辑/`!` 结果由前端写；生成期间由 WS 处理方写权威会话；存于工作区 .fount/code/sessions）
 	router.get('/api/parts/shells\\:code/sessions', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		const { machine, path } = parseWorkdir(req.query)
@@ -692,15 +709,18 @@ export function setEndpoints(router) {
 		res.json({})
 	})
 
-	// AI 会话 WS：send（追加用户消息）/ regen（重新生成最后一条角色回复）/ abort → preview / done / error
+	// AI 会话 WS：send（追加用户消息）/ regen（重新生成最后一条角色回复）/ trigger（按当前会话原样生成）
+	// → run-start / preview / tool-output / entries-append / done / aborted / error
+	// 后端持有生成运行身份（runId/sessionId）：WS 断开不中断生成，收尾时把权威会话写回工作区磁盘，
+	// 页面重置后可从磁盘恢复；帧携带 runId，前端据此丢弃过期运行的事件，避免跨轮串写。
 	router.ws('/ws/parts/shells\\:code/session', authenticate, async (ws, req) => {
 		const { username } = getUserByReq(req)
-		/** @type {AbortController|null} */
-		let controller = null
+		/** 本连接当前运行（断开时仅解绑 socket，不中断生成）。 */
+		let currentRun = null
 
 		ws.on('close', () => {
-			controller?.abort()
-			controller = null
+			if (currentRun) currentRun.socket = null
+			currentRun = null
 		})
 
 		ws.on('message', async raw => {
@@ -712,7 +732,9 @@ export function setEndpoints(router) {
 				return
 			}
 			if (msg.type === 'abort') {
-				controller?.abort()
+				const targetKey = msg.sessionId ? codeRunKey(username, msg.sessionId) : null
+				const run = targetKey ? activeCodeRuns.get(targetKey) : currentRun
+				run?.controller.abort()
 				return
 			}
 			// trigger：按当前会话原样生成（不新增用户消息），供异步通知空闲时由前端触发
@@ -720,14 +742,78 @@ export function setEndpoints(router) {
 
 			const { session, machine = 0, workdir, ai_source, profile, content } = msg
 			if (!session || (msg.type === 'send' && !content)) {
-				ws.send(JSON.stringify({ type: 'error', error: 'session and content are required.' }))
+				ws.send(JSON.stringify({ type: 'error', sessionId: session?.id, runId: msg.runId, error: 'session and content are required.' }))
 				return
 			}
+			const runKey = codeRunKey(username, session.id)
+			// 同一会话已有进行中的生成：中止旧运行（各自收尾落盘），避免事件串台
+			const previous = activeCodeRuns.get(runKey)
+			if (previous) {
+				previous.controller.abort()
+				activeCodeRuns.delete(runKey)
+			}
+			const runId = typeof msg.runId === 'string' && msg.runId ? msg.runId : randomUUID()
 			const thisRequestController = new AbortController()
-			controller = thisRequestController
-			/** 已确定条目（send = 用户消息；regen 开始为空，失败/中断时原样返回）。 */
+			/** @type {{runId: string, controller: AbortController, socket: object|null}} */
+			const run = { runId, controller: thisRequestController, socket: ws }
+			activeCodeRuns.set(runKey, run)
+			currentRun = run
+			const workPath = String(workdir || '')
+			const workTarget = { machine: String(machine ?? '0'), path: workPath }
+			/**
+			 * 向本连接发送一帧（自动附带 runId/sessionId；socket 已断开时静默跳过）。
+			 * @param {object} payload - 帧负载（需含 type）。
+			 * @returns {void}
+			 */
+			const send = payload => {
+				if (!run.socket) return
+				try { run.socket.send(JSON.stringify({ runId, sessionId: session.id, ...payload })) }
+				catch { /* 连接已关闭 */ }
+			}
+			/** 前端送来的会话条目（含乐观用户消息）；最终以它为基础合并本轮新条目。 */
+			const baseEntries = [...session.entries || []]
+			const baseIds = new Set(baseEntries.map(entry => String(entry?.id)))
+			const requestSession = { ...session, entries: [...baseEntries] }
+			/** 本轮新增条目（持久化用；按 id 去重、保持顺序）。 */
+			const allNewEntries = []
+			/**
+			 * 规整并登记一条本轮新条目；已存在于基础会话或本轮时返回 null。
+			 * @param {object} rawEntry - 原始条目。
+			 * @returns {object|null} 规整后的条目（重复时为 null）。
+			 */
+			const addNewEntry = rawEntry => {
+				const entry = sanitizeEntry(rawEntry)
+				const id = String(entry.id)
+				if (baseIds.has(id) || allNewEntries.some(item => item.id === id)) return null
+				allNewEntries.push(entry)
+				return entry
+			}
+			/**
+			 * 合并本轮权威会话条目：基础条目 + 本轮新增 + 请求侧追加（异步通知等）。
+			 * @returns {object[]} 去重后的完整条目列表。
+			 */
+			const buildFinalEntries = () => {
+				const seen = new Set()
+				const out = []
+				/**
+				 * 按 id 去重后追加一条条目。
+				 * @param {object} entry - 待追加的条目。
+				 * @returns {void}
+				 */
+				const push = entry => {
+					if (!entry || entry.id == null) return
+					const id = String(entry.id)
+					if (seen.has(id)) return
+					seen.add(id)
+					out.push(entry)
+				}
+				for (const entry of baseEntries) push(entry)
+				for (const entry of allNewEntries) push(entry)
+				for (const entry of requestSession.entries || []) push(entry)
+				return out
+			}
+			/** 已确定条目（send = 用户消息；失败/中断时原样返回）。 */
 			const entries = []
-			const requestSession = { ...session, entries: [...session.entries || []] }
 			/**
 			 * 增量条目发送水位：本轮已推给前端的 tool 日志条目数。
 			 * `done`/`error` 只需补发剩余部分，避免前端重复插入。
@@ -742,45 +828,83 @@ export function setEndpoints(router) {
 			const flushIncrementalEntries = () => {
 				const log = requestSession.generationResult?.logContextBefore || []
 				if (log.length <= emittedLogCount) return
-				const fresh = log.slice(emittedLogCount).map(sanitizeEntry)
+				const fresh = []
+				for (const rawEntry of log.slice(emittedLogCount)) {
+					const entry = addNewEntry(rawEntry)
+					if (entry) fresh.push(entry)
+				}
 				emittedLogCount = log.length
-				try { ws.send(JSON.stringify({ type: 'entries-append', entries: fresh })) }
-				catch { /* 连接已关闭 */ }
+				if (fresh.length) send({ type: 'entries-append', entries: fresh })
+			}
+			/**
+			 * 持久化本轮会话到工作区磁盘（无工作区时跳过；失败不影响生成流程）。
+			 * @param {object} [memory] - 更新后的 chat_scoped_char_memory。
+			 * @param {object[]} [extraEntries] - 额外写入的条目（如生成中占位）。
+			 * @returns {Promise<void>}
+			 */
+			const persist = async (memory, extraEntries = []) => {
+				if (!workPath) return
+				try {
+					const finalEntries = [...buildFinalEntries(), ...extraEntries]
+					await saveSession(username, workTarget, {
+						...session,
+						entries: finalEntries,
+						...memory ? { memory } : {},
+						updated: new Date().toISOString(),
+					})
+				}
+				catch (error) {
+					console.warn('shells/code: 生成会话持久化失败', error)
+				}
 			}
 			if (msg.type === 'send') {
 				// 前端已乐观插入用户条目（clientEntryId）时不再重复追加/回传，避免 AI 看到两条、UI 重复
 				const alreadyInSession = msg.clientEntryId && requestSession.entries.some(entry => entry?.id === msg.clientEntryId)
 				if (!alreadyInSession) {
-					const userEntry = sanitizeEntry({ id: msg.clientEntryId || undefined, role: 'user', name: username, content, uid: 'user', time_stamp: new Date(), files: Array.isArray(msg.files) ? msg.files : [] })
-					entries.push(userEntry)
-					requestSession.entries.push({ ...userEntry, time: userEntry.time })
+					const userEntry = addNewEntry({ id: msg.clientEntryId || undefined, role: 'user', name: username, content, uid: 'user', time_stamp: new Date(), files: Array.isArray(msg.files) ? msg.files : [] })
+					if (userEntry) {
+						entries.push(userEntry)
+						requestSession.entries.push(userEntry)
+					}
 				}
 			}
 			beginCodeGeneration(username)
 			const generationId = randomUUID()
 			const generationStartedAt = Date.now()
+			// 生成运行身份：带回 runId 的 run-start 帧（前端据此接纳本运行的事件）
+			send({ type: 'run-start' })
+			// 先落盘一个生成中占位，页面在生成期间重置时磁盘仍有「进行中」标记可供恢复
+			const placeholderEntry = {
+				id: randomUUID(),
+				uid: 'char',
+				role: 'char',
+				name: session.charname || '',
+				content: '',
+				is_generating: true,
+				time: new Date().toISOString(),
+			}
+			await persist(undefined, [placeholderEntry])
 			try {
 				// 把本轮 result 暴露到 requestSession 上，供预览回调增量读取已累计日志
 				const { reply, memory } = await triggerCodeReply({
 					requestSession,
 					username,
 					session: requestSession,
-					machine: String(machine ?? '0'),
-					workdir: String(workdir || ''),
+					machine: workTarget.machine,
+					workdir: workPath,
 					ai_source: ai_source || undefined,
 					profile,
 					generationId,
 					signal: thisRequestController.signal,
 					/**
 					 * 转发流式预览到 WS（优先展示层 `content_for_show`，含工具调用替换）。
-					 * @param {object} reply - 预览回复。
+					 * @param {object} preview - 预览回复。
 					 * @returns {void}
 					 */
-					onPreview: reply => {
+					onPreview: preview => {
 						// 先把本轮已完成的工具日志增量追加出来，再更新生成中气泡（保持文本顺序）
 						flushIncrementalEntries()
-						try { ws.send(JSON.stringify({ type: 'preview', content: reply.content_for_show ?? reply.content ?? '' })) }
-						catch { /* 连接已关闭 */ }
+						send({ type: 'preview', content: preview.content_for_show ?? preview.content ?? '' })
 					},
 					/**
 					 * 转发工具执行实时输出到 WS。
@@ -788,32 +912,41 @@ export function setEndpoints(router) {
 					 * @returns {void}
 					 */
 					onToolOutput: event => {
-						try { ws.send(JSON.stringify({ type: 'tool-output', ...event })) }
-						catch { /* 连接已关闭 */ }
+						send({ type: 'tool-output', ...event })
 					},
 				})
 				// 已在预览期增量推送的 tool 日志只补发剩余部分，避免前端重复插入
-				for (const entry of (reply?.logContextBefore || []).slice(emittedLogCount))
-					entries.push(sanitizeEntry(entry))
-				if (reply)
-					entries.push(sanitizeEntry({ ...reply, role: 'char', uid: 'char', name: reply.name || session.charname, time_stamp: new Date() }))
+				for (const rawEntry of (reply?.logContextBefore || []).slice(emittedLogCount)) {
+					const entry = addNewEntry(rawEntry)
+					if (entry) entries.push(entry)
+				}
+				if (reply) {
+					const replyEntry = addNewEntry({ ...reply, role: 'char', uid: 'char', name: reply.name || session.charname, time_stamp: new Date() })
+					if (replyEntry) entries.push(replyEntry)
+				}
 				if (reply)
 					void recordCodeGeneration(username, { generationId, session, requestSession, reply, startedAt: generationStartedAt })
-				ws.send(JSON.stringify({ type: 'done', entries, memory }))
+				// 权威结果先落盘，再广播完成帧：页面/连接丢失也不会丢内容
+				await persist(memory)
+				send({ type: 'done', entries, memory })
 				void notifyCodeCompletion(username, session)
 			}
 			catch (error) {
 				// 中断/报错：补发尚未增量推送的 tool 日志（截断到水位，避免重复）
 				flushIncrementalEntries()
 				const pending = (requestSession.generationResult?.logContextBefore || []).slice(emittedLogCount)
-				for (const entry of pending) entries.push(sanitizeEntry(entry))
+				for (const rawEntry of pending) {
+					const entry = addNewEntry(rawEntry)
+					if (entry) entries.push(entry)
+				}
+				await persist(undefined)
 				if (thisRequestController.signal.aborted)
-					ws.send(JSON.stringify({ type: 'aborted', entries }))
+					send({ type: 'aborted', entries })
 				else
-					ws.send(JSON.stringify({ type: 'error', entries, error: String(error?.stack || error) }))
+					send({ type: 'error', entries, error: String(error?.stack || error) })
 			}
 			finally {
-				if (controller === thisRequestController) controller = null
+				if (activeCodeRuns.get(runKey) === run) activeCodeRuns.delete(runKey)
 				finishCodeGeneration(username)
 			}
 		})

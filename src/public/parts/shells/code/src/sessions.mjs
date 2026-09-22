@@ -1,6 +1,7 @@
 /**
  * code shell 会话存储：会话以 JSON 文件形式存放在目标机器的工作区 `.fount/code/sessions/` 下。
- * 以前端为唯一写入方（本地缓存策略：焦点移出且生成结束后才 flush），本模块只提供存取原语。
+ * 写入方：非生成期的编辑/`!` 结果由前端 flush 写；生成运行由 WS 处理方写权威会话（起始占位、收尾替换）。
+ * 本模块只提供存取原语。
  * @typedef {import('../../../../../decl/chatLog.ts').chatLogEntry_t} chatLogEntry_t
  */
 import { createTargetExecutor, joinWorkdir } from '../../../plugins/file-operations/src/target.mjs'

@@ -2,7 +2,7 @@
 
 AI 编码会话 shell：与任意角色就工作区对话，在本机或已连接 subfount 上执行代码与读写文件。
 
-- 工作区（workspace）= 一个目录（本机或某台 subfount），保存于用户 shell data；会话存于目标机器工作区 `.fount/code/sessions/<id>.json`。
+- 工作区（workspace）= 一个目录（本机或某台 subfount），保存于用户 shell data；会话存于目标机器工作区 `.fount/code/sessions/<id>.json`。生成期间由服务端把权威会话写入该文件（先写生成中占位，收尾时替换为最终条目），页面重置/断线后可从磁盘恢复，不再整轮丢失。
 - 打开的标签页列表与各标签未发送草稿保存于用户 shell data（`code.tabs`）。
 - 机器 id `"0"` = 本机，其他为已连接 subfount；执行/文件读写默认使用请求的 `workdir`（`{ machine, path }`）。
 - `!` 模式：以 shell 命令执行用户输入，命令在目标机器工作目录执行，输出作为 tool 日志条目进入会话；执行期间逐块实时回显（WS `/exec`），本机直连、远程经分机回调通道（未支持回调时结束一次性返回）。
@@ -42,8 +42,11 @@ AI 编码会话 shell：与任意角色就工作区对话，在本机或已连�
   - `ws.close()` 后不再回显（命令可能继续运行；本机进程不随之终止）。
 
 - `WS /ws/parts/shells:code/session`（登录后连接）
-  - 客户端 → `{ type: 'send', session, machine, workdir, ai_source?, profile?, content, files?, clientEntryId? }`：触发角色回复。`files`（可选）为附件数组 `{ name, mime_type, buffer: base64, description }`，并入用户消息条目（sessionToChatLog 解码后随 chat_log 供角色读取）。`clientEntryId`（可选）为前端已乐观插入 `session.entries` 的用户条目 id；服务端若在该 session 中找到同 id 条目则不再追加/回传用户消息（避免重复）。服务端流式回 `{ type: 'preview', content }`；多轮生成中每轮已完成的 tool 日志 / 角色轮次经 `{ type: 'entries-append', entries }` 增量推送（在对应 `preview` 之前，`done` 只补发剩余条目，不重复）；执行工具（`<run-*>` / `<inline-*>`）时穿插回 `{ type: 'tool-output', callId, phase: 'start'|'chunk'|'end', name, lang?, code?, stream?, data? }` 实时转发工具输出；结束回 `{ type: 'done', entries, memory }`（entries = 用户消息（未带 clientEntryId 时）+ tool 日志 + 角色回复）。会话条目同时保留 agent 层 `content` 与展示层 `content_for_show`/`content_for_edit`、`charVisibility`，重载时据此完整还原。
-  - 客户端 → `{ type: 'regen', session, machine, workdir, ai_source?, profile? }`：以现有 entries 重新生成最后一条角色回复（前端应先弹出旧回复）。服务端同样先流式 `preview`，结束回 `{ type: 'done', entries, memory }`（entries 仅含 tool 日志 + 新角色回复；中断回 `{ type: 'aborted', entries }`，此时旧回复已被弹出、会话暂无该回复）。
-  - 客户端 → `{ type: 'abort' }`：中断当前生成；服务端回 `{ type: 'aborted', entries }`。
+  - 运行身份：客户端可在请求中带 `runId`（缺省由服务端生成）；服务端在每个回帧附带 `runId` 与 `sessionId`，并先回一帧 `{ type: 'run-start' }`。客户端据此丢弃被新请求取代的过期运行的流式事件（避免跨轮串写）。同一会话已有生成运行时，新请求会先中止旧运行（各自收尾落盘）。
+  - 客户端 → `{ type: 'send', runId?, session, machine, workdir, ai_source?, profile?, content, files?, clientEntryId? }`：触发角色回复。`files`（可选）为附件数组 `{ name, mime_type, buffer: base64, description }`，并入用户消息条目（sessionToChatLog 解码后随 chat_log 供角色读取）。`clientEntryId`（可选）为前端已乐观插入 `session.entries` 的用户条目 id；服务端若在该 session 中找到同 id 条目则不再追加/回传用户消息（避免重复）。服务端先回 `{ type: 'run-start' }`，流式回 `{ type: 'preview', content }`；多轮生成中每轮已完成的 tool 日志 / 角色轮次经 `{ type: 'entries-append', entries }` 增量推送（在对应 `preview` 之前，`done` 只补发剩余条目，不重复）；执行工具（`<run-*>` / `<inline-*>`）时穿插回 `{ type: 'tool-output', callId, phase: 'start'|'chunk'|'end', name, lang?, code?, stream?, data? }` 实时转发工具输出；结束回 `{ type: 'done', entries, memory }`（entries = 用户消息（未带 clientEntryId 时）+ tool 日志 + 角色回复）。会话条目同时保留 agent 层 `content` 与展示层 `content_for_show`/`content_for_edit`、`charVisibility`，重载时据此完整还原。
+  - 客户端 → `{ type: 'regen', runId?, session, machine, workdir, ai_source?, profile? }`：以现有 entries 重新生成最后一条角色回复（前端应先弹出旧回复）。服务端同样先流式 `preview`，结束回 `{ type: 'done', entries, memory }`（entries 仅含 tool 日志 + 新角色回复；中断回 `{ type: 'aborted', entries }`，此时旧回复已被弹出、会话暂无该回复）。
+  - 客户端 → `{ type: 'trigger', runId?, session, machine, workdir, ai_source?, profile? }`：按当前会话原样生成（不新增用户消息），供异步完成通知在空闲时让角色回应。
+  - 客户端 → `{ type: 'abort', sessionId? }`：中断该会话当前生成；服务端回 `{ type: 'aborted', entries }`。
+  - 持久化：服务端在运行开始前写一份含「生成中」占位（`is_generating: true`）的会话到工作区磁盘，收尾（`done`/`aborted`/`error`）时用最终条目替换后写回；`ws.close()` 不会中断生成，生成会继续并落盘（旧运行收尾同样落盘）。页面据此可在重载后轮询 `/sessions/:id` 恢复。
   - 出错回 `{ type: 'error', entries, error }`。
   - 每次 `done` 后服务端向用户发送「对话已完成」通知：浏览器在线经 `/ws/notify`，其次 Web Push，均不可达时回退桌面通知（点击打开对应页面）。

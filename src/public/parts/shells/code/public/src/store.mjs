@@ -64,6 +64,10 @@ export const store = {
 	shell: '',
 	shellMode: false,
 	generating: false,
+	/** 当前生成运行 id（随请求发送、由后端回显；用于丢弃过期运行的流式事件）。 */
+	generatingRunId: null,
+	/** 断线/刷新后正在轮询磁盘恢复生成结果。 */
+	recovering: false,
 	/** 待执行电源操作：主机 id → 操作（shutdown / sleep / restart）。 */
 	shutdownActions: {},
 	/** 进行中的 code 生成数（后端统计，跨页面）。 */

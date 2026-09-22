@@ -651,6 +651,122 @@ Deno.test({
 })
 
 Deno.test({
+	name: 'session WS frames carry runId/sessionId and persist the final session to the workspace',
+	timeout: 120_000,
+}, async () => {
+	const fixtureDir = path.join(path.dirname(fileURLToPath(import.meta.url)), 'fixtures', 'wsEchoChar')
+	const node = await launchCodeNode({
+		fixtureCopies: [{ from: fixtureDir, to: 'chars/wsEchoChar' }],
+	})
+	const root = await fs.mkdtemp(path.join(os.tmpdir(), 'fount_code_ws_persist_'))
+	try {
+		const session = {
+			id: 'persist01',
+			title: '',
+			charname: 'wsEchoChar',
+			profile: '',
+			ai_source: '',
+			created: new Date().toISOString(),
+			updated: new Date().toISOString(),
+			memory: {},
+			entries: [{ id: 'persist-u1', uid: 'user', role: 'user', name: node.username, content: 'hello-persist', time: new Date().toISOString(), files: [] }],
+		}
+		const { done, frames } = await sessionStream(node, {
+			type: 'send', runId: 'run-persist-1', session, machine: '0', workdir: root,
+			ai_source: '', profile: '', content: 'hello-persist', files: [], clientEntryId: 'persist-u1',
+		})
+		assertEquals(done.type, 'done', `expected done, got ${JSON.stringify(done).slice(0, 300)}`)
+		// 每帧都携带同一运行身份：前端据此丢弃过期运行的事件，避免跨轮串写
+		assert(frames.some(frame => frame.type === 'run-start'), '应有 run-start 帧')
+		for (const frame of [...frames, done]) {
+			assertEquals(frame.runId, 'run-persist-1', `帧 ${frame.type} 应携带 runId`)
+			assertEquals(frame.sessionId, session.id, `帧 ${frame.type} 应携带 sessionId`)
+		}
+		// 后端把权威结果先落盘：含角色回复、无生成中占位（页面重置可据此恢复）
+		const saved = JSON.parse(await fs.readFile(path.join(root, '.fount', 'code', 'sessions', session.id + '.json'), 'utf8'))
+		assert(saved.entries.some(entry => entry.role === 'char' && entry.content.includes('echo-reply')), '磁盘会话应含角色回复')
+		assert(!saved.entries.some(entry => entry.is_generating), '磁盘会话不应残留生成中占位')
+	}
+	finally {
+		await fs.rm(root, { recursive: true, force: true })
+		await stopNode(node)
+	}
+})
+
+Deno.test({
+	name: 'session WS keeps generating and persists the result after the client disconnects',
+	timeout: 120_000,
+}, async () => {
+	const fixtureDir = path.join(path.dirname(fileURLToPath(import.meta.url)), 'fixtures', 'wsRoundsChar')
+	const node = await launchCodeNode({
+		fixtureCopies: [{ from: fixtureDir, to: 'chars/wsRoundsChar' }],
+	})
+	const root = await fs.mkdtemp(path.join(os.tmpdir(), 'fount_code_ws_disconnect_'))
+	try {
+		await fs.writeFile(path.join(root, 'note.txt'), 'note content', 'utf8')
+		const session = {
+			id: 'disc01',
+			title: '',
+			charname: 'wsRoundsChar',
+			profile: '',
+			ai_source: '',
+			created: new Date().toISOString(),
+			updated: new Date().toISOString(),
+			memory: {},
+			entries: [{ id: 'disc-u1', uid: 'user', role: 'user', name: node.username, content: '读取文件', time: new Date().toISOString(), files: [] }],
+		}
+		const wsUrl = `${node.baseUrl.replace(/^http/, 'ws')}/ws/parts/shells:code/session?fount-apikey=${encodeURIComponent(node.apiKey)}`
+		// 发送后收到首帧即断开连接：后端应继续生成并在收尾时落盘
+		await new Promise((resolve, reject) => {
+			const ws = new WebSocket(wsUrl)
+			const timer = setTimeout(() => { ws.close(); reject(new Error('ws timeout')) }, 30_000)
+			let disconnected = false
+			/**
+			 * 连接建立后发送生成请求。
+			 * @returns {void}
+			 */
+			ws.onopen = () => ws.send(JSON.stringify({
+				type: 'send', runId: 'run-disc-1', session, machine: '0', workdir: root,
+				ai_source: '', profile: '', content: '读取文件', files: [], clientEntryId: 'disc-u1',
+			}))
+			/**
+			 * 收到首帧即断开连接（模拟页面在生成中关闭）。
+			 * @returns {void}
+			 */
+			ws.onmessage = () => {
+				if (disconnected) return
+				disconnected = true
+				clearTimeout(timer)
+				ws.close()
+				resolve()
+			}
+			/**
+			 * 连接错误时拒绝。
+			 * @returns {void}
+			 */
+			ws.onerror = () => { clearTimeout(timer); reject(new Error('ws error')) }
+		})
+		// 断线后生成继续：轮询磁盘直到占位被权威结果替换
+		const sessionFile = path.join(root, '.fount', 'code', 'sessions', session.id + '.json')
+		let saved = null
+		for (let i = 0; i < 100; i++) {
+			await new Promise(resolve => setTimeout(resolve, 100))
+			try { saved = JSON.parse(await fs.readFile(sessionFile, 'utf8')) }
+			catch { continue }
+			if (saved.entries.some(entry => entry.role === 'char' && entry.content.includes('读取完成'))
+				&& !saved.entries.some(entry => entry.is_generating)) break
+		}
+		assert(saved, '断线后应仍写入会话文件')
+		assert(saved.entries.some(entry => entry.role === 'char' && entry.content.includes('读取完成')), '断线后应持久化最终角色回复')
+		assert(!saved.entries.some(entry => entry.is_generating), '不应残留生成中占位')
+	}
+	finally {
+		await fs.rm(root, { recursive: true, force: true })
+		await stopNode(node)
+	}
+})
+
+Deno.test({
 	name: 'exec WS streams output frames then done',
 	timeout: 120_000,
 }, async () => {

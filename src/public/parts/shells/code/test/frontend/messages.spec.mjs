@@ -340,6 +340,30 @@ test.describe('code shell message actions & layout', () => {
 		}
 	})
 
+	test('generation survives a page reload: backend persists and the reloaded page recovers', async ({ page, baseUrl }) => {
+		const dir = makeWorkspace('fe-reload-recover', {})
+		leftoverWorkspaceDirs.add(dir)
+		try {
+			await page.addInitScript(pref => localStorage.setItem(pref + 'charname', 'streamAgent'), PREF_PREFIX)
+			await openCode(page, baseUrl)
+			await selectWorkspaceViaBrowser(page, dir)
+			const composer = page.locator('#composer-input')
+			await composer.click()
+			await page.keyboard.type('重载恢复')
+			await page.keyboard.press('Control+Enter')
+			await expect(page.locator('.code-message.generating')).toBeVisible({ timeout: 30_000 })
+			// 生成中整页重载：前端状态清空，但后端继续生成并把权威结果落盘
+			await page.reload({ waitUntil: 'domcontentloaded' })
+			await page.waitForFunction(() => document.activeElement?.id === 'composer-input')
+			// 恢复轮询取回磁盘上的最终回复，不再整轮丢失
+			await expect(page.locator('.code-message.role-char:not(.generating)')).toContainText('流式第一段。流式第二段。', { timeout: 90_000 })
+			await expect(page.locator('.code-message.generating')).toHaveCount(0)
+		}
+		finally {
+			await removeAllWorkspacesViaApi(page, baseUrl)
+		}
+	})
+
 	test('attachments: + button and paste add pending files, sent as user entry files', async ({ page, baseUrl }) => {
 		await page.addInitScript(pref => localStorage.setItem(pref + 'charname', 'codeBuddy'), PREF_PREFIX)
 		await openCode(page, baseUrl)

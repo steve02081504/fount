@@ -8,6 +8,8 @@ Day-to-day selectors / taxonomy: [AGENTS.md](../AGENTS.md). This file is fixture
 
 Single-config Pages driver (`.github/pages/test/frontend/run.mjs`) has no Playwright projects: it passes spec filenames from `playwrightArgsForSubtests` when `FOUNT_TEST_SUBTESTS` is set (`pages:frontend:wait` → `wait.spec.mjs`). Do not rely on argv slice alone or a named subtest still runs every `*.spec.mjs`.
 
+Same trap for shell frontend drivers (`shells/*/test/frontend/run.mjs`): passing a spec filename as argv does **not** narrow the run (the phase config still matches every `*.spec.mjs`). To run one spec during local debugging, set `FOUNT_TEST_ONLY` to its **repo-relative path** (newline-separated; exact match, e.g. `src/public/parts/shells/code/test/frontend/messages.spec.mjs`), or run the whole suite via `fount test <manifest>:frontend:<subtest>`. Still shut the kernel first (see [operator-tools.md](operator-tools.md)) or a parallel job can fake 120s timeouts.
+
 ## Module logic page (`modulePage`)
 
 Testing a browser module's logic without booting a whole shell UI: every `createFountFixtures` frontend suite exposes a `modulePage` fixture (`src/scripts/test/playwright/module_page.mjs`). It fulfills a **same-origin minimal routed page** with `fount.test.watch.disabled` set (pages `base.mjs` skips the page-watch a11y/locale sweeps; `enabled` stays on to keep Sentry off) and loads the i18n bundle explicitly (`[i18n:missing]` safe), then `run` evaluates a closure-free function in the page. Assertions stay Node-side; rich objects survive the structured-clone boundary.

@@ -105,6 +105,8 @@ async function persistTabs() {
  */
 async function applyRemoteTabs({ tabs, activeTab: remoteActive } = {}) {
 	if (!Array.isArray(tabs)) return
+	// 本页正在生成/恢复时忽略远端标签覆盖，避免把进行中的会话切走或回落为空草稿
+	if (store.generating || store.recovering) return
 	const current = activeTab()
 	const currentKey = current ? tabKeyOf(current) : ''
 	const localDraft = current?.draft
@@ -613,6 +615,8 @@ export async function activateTab(tab) {
 	saveTabPrefs()
 	// 切回生成中的会话：重建流式气泡
 	if (store.generating && store.generatingSession === store.session) startGeneratingBubble()
+	// 会话含后端「生成中」占位（上次页面在生成期间被重置）：轮询磁盘等后端收尾恢复
+	else if (hasGeneratingEntry(store.session)) void recoverGeneration(store.session)
 }
 
 /**
@@ -774,16 +778,98 @@ function getSocket() {
 	return socketOpening
 }
 
-/** socket 断开：结束生成气泡、复位生成态并更新发送按钮（防止流式气泡/停止按钮悬挂）。 */
+/** 恢复轮询间隔（ms）。 */
+const RECOVER_POLL_MS = 1500
+/** 恢复轮询上限（ms）：超时仍未完成则视为失败。 */
+const RECOVER_TIMEOUT_MS = 2 * 60 * 1000
+
+/**
+ * 会话是否含后端写入的「生成中」占位条目（磁盘恢复用）。
+ * @param {object} session - 会话。
+ * @returns {boolean} 是否生成中。
+ */
+export function hasGeneratingEntry(session) {
+	return !!session?.entries?.some(entry => entry?.is_generating)
+}
+
+/**
+ * 判断一帧是否属于当前生成运行：携带 sessionId/runId 时校验，缺失则兼容接纳。
+ * @param {object} msg - 服务端帧。
+ * @returns {boolean} 是否接纳。
+ */
+function isCurrentRunFrame(msg) {
+	if (msg.sessionId && store.generatingSession && msg.sessionId !== store.generatingSession.id) return false
+	if (msg.runId && store.generatingRunId && msg.runId !== store.generatingRunId) return false
+	return true
+}
+
+/**
+ * socket 断开：结束流式气泡但不丢弃后端生成——转为轮询磁盘，待后端收尾落盘后恢复。
+ */
 function handleSocketClose() {
+	const session = store.generatingSession || store.session
 	const interrupted = store.generating
 	endGeneratingBubble()
 	store.generating = false
 	store.generatingSession = null
+	store.generatingRunId = null
 	updateSendButton()
 	if (interrupted) {
 		updateEmptyMode()
+		if (session) void recoverGeneration(session)
+		else showToastI18n('error', 'code.error.generate')
+	}
+}
+
+/**
+ * 断线 / 刷新后从工作区磁盘恢复被中断的生成：轮询会话文件，
+ * 待后端把「生成中」占位替换为权威条目后重建消息流。
+ * @param {object} session - 目标会话。
+ * @returns {Promise<void>}
+ */
+async function recoverGeneration(session) {
+	if (!session || store.recovering) return
+	const workspace = store.workspaces.find(w => w.id === session.workspaceId)
+	const loadTarget = {
+		machine: String(workspace?.machine ?? store.machine),
+		workdir: workspace?.path || target().workdir,
+	}
+	// 无工作区则会话未落盘，无从恢复：直接报错（避免空轮询到超时）
+	if (!loadTarget.workdir) {
 		showToastI18n('error', 'code.error.generate')
+		return
+	}
+	store.recovering = true
+	updateSendButton()
+	const deadline = Date.now() + RECOVER_TIMEOUT_MS
+	try {
+		while (Date.now() < deadline) {
+			// 本轮又开始了新生成：让位给正常流，停止恢复轮询
+			if (store.generating) return
+			await new Promise(resolve => setTimeout(resolve, RECOVER_POLL_MS))
+			let disk = null
+			try { disk = await api.loadSession(loadTarget, session.id) }
+			catch { continue }
+			if (!disk || hasGeneratingEntry(disk)) continue
+			session.entries = disk.entries || []
+			if (disk.memory) session.memory = disk.memory
+			session.updated = disk.updated || session.updated
+			session.title = disk.title || session.title
+			const key = tabKeyOfSession(session)
+			if (key) store.sessionCache.set(key, session)
+			store.dirtyTabKey = ''
+			if (session === store.session) {
+				renderMessages()
+				updateEmptyMode()
+			}
+			void refreshAllSessions()
+			return
+		}
+		showToastI18n('error', 'code.error.generate')
+	}
+	finally {
+		store.recovering = false
+		updateSendButton()
 	}
 }
 
@@ -794,6 +880,13 @@ function handleSocketClose() {
  */
 function onSocketMessage(event) {
 	const msg = JSON.parse(String(event.data))
+	if (msg.type === 'run-start') {
+		// 后端确认运行身份：记录权威 runId，后续过期运行的事件据此丢弃
+		if (msg.runId) store.generatingRunId = msg.runId
+		return
+	}
+	// 过期运行（同一 socket 上被新请求取代）的事件一律丢弃，避免跨轮串写
+	if (!isCurrentRunFrame(msg)) return
 	if (msg.type === 'preview') {
 		if (store.generatingSession === store.session && generatingBubble?.renderer) generatingBubble.renderer.setTarget(msg.content)
 		return
@@ -818,6 +911,7 @@ function onSocketMessage(event) {
 		const session = store.generatingSession || store.session
 		store.generatingSession = null
 		store.generating = false
+		store.generatingRunId = null
 		endGeneratingBubble()
 		// 复位发送按钮（内部同步刷新 regen 按钮），与 finishGeneration 的收尾对齐
 		updateSendButton()
@@ -952,11 +1046,14 @@ async function finishGeneration(entries, memory, aborted = false) {
 	endGeneratingBubble()
 	const session = store.generatingSession || store.session
 	store.generatingSession = null
+	store.generatingRunId = null
 	if (!session) return
 	const isActive = session === store.session
-	// 乐观回显的用户条目 id 可能与服务端回传重复，按 id 去重
+	// 后端已把权威结果落盘；此处只补齐流式期间未落地的条目（按 id 去重）
 	const knownIds = new Set(session.entries.map(entry => String(entry.id)))
-	const freshEntries = entries.filter(entry => !knownIds.has(String(entry.id)))
+	const freshEntries = (entries || []).filter(entry => !knownIds.has(String(entry.id)))
+	// 生成中占位（若从磁盘恢复过）需在收尾时移除
+	session.entries = session.entries.filter(entry => !entry.is_generating)
 	session.entries.push(...freshEntries)
 	if (memory) session.memory = memory
 	session.updated = new Date().toISOString()
@@ -993,7 +1090,8 @@ export function updateSendButton() {
 
 /** 中断当前生成（发送按钮停止态）。 */
 export function abortGeneration() {
-	void getSocket().then(ws => ws.send(JSON.stringify({ type: 'abort' }))).catch(() => { })
+	const sessionId = store.generatingSession?.id || store.session?.id || ''
+	void getSocket().then(ws => ws.send(JSON.stringify({ type: 'abort', sessionId }))).catch(() => { })
 }
 
 /**
@@ -1002,7 +1100,7 @@ export function abortGeneration() {
  */
 export async function regenerateLastReply() {
 	const session = store.session
-	if (!session || store.generating) return
+	if (!session || store.generating || store.recovering) return
 	const last = session.entries.at(-1)
 	if (last?.role !== 'char') return
 	if (!session.charname) {
@@ -1012,6 +1110,7 @@ export async function regenerateLastReply() {
 	session.entries.pop()
 	renderMessages()
 	store.generating = true
+	store.generatingRunId = crypto.randomUUID()
 	store.generatingSession = session
 	updateSendButton()
 	startGeneratingBubble()
@@ -1020,6 +1119,7 @@ export async function regenerateLastReply() {
 		const ws = await getSocket()
 		ws.send(JSON.stringify({
 			type: 'regen',
+			runId: store.generatingRunId,
 			session,
 			...target(),
 			ai_source: store.aiSource || '',
@@ -1028,6 +1128,7 @@ export async function regenerateLastReply() {
 	}
 	catch (error) {
 		store.generating = false
+		store.generatingRunId = null
 		endGeneratingBubble()
 		store.generatingSession = null
 		// 请求未送达服务端，旧回复原样放回
@@ -1044,9 +1145,10 @@ export async function regenerateLastReply() {
  */
 async function triggerGeneration() {
 	const session = store.session
-	if (!session || store.generating || !session.charname) return
+	if (!session || store.generating || store.recovering || !session.charname) return
 	store.generatingSession = session
 	store.generating = true
+	store.generatingRunId = crypto.randomUUID()
 	updateSendButton()
 	startGeneratingBubble()
 	markSessionDirty(session)
@@ -1054,6 +1156,7 @@ async function triggerGeneration() {
 		const ws = await getSocket()
 		ws.send(JSON.stringify({
 			type: 'trigger',
+			runId: store.generatingRunId,
 			session,
 			...target(),
 			ai_source: store.aiSource || '',
@@ -1062,6 +1165,7 @@ async function triggerGeneration() {
 	}
 	catch (error) {
 		store.generating = false
+		store.generatingRunId = null
 		endGeneratingBubble()
 		store.generatingSession = null
 		updateSendButton()
@@ -1134,7 +1238,7 @@ async function resolveGistAttachments(content) {
  * @returns {Promise<void>}
  */
 export async function sendMessage(content) {
-	if (!content?.trim() || store.generating) return
+	if (!content?.trim() || store.generating || store.recovering) return
 	if (!store.session) await startNewSession()
 	store.session.charname = store.charname || store.session.charname
 	if (!store.session.charname) {
@@ -1163,12 +1267,14 @@ export async function sendMessage(content) {
 		store.pendingFiles = []
 		renderAttachmentPreview()
 		store.generating = true
+		store.generatingRunId = crypto.randomUUID()
 		updateSendButton()
 		startGeneratingBubble()
 		markSessionDirty(store.session)
 		const ws = await getSocket()
 		ws.send(JSON.stringify({
 			type: 'send',
+			runId: store.generatingRunId,
 			session: store.session,
 			...target(),
 			ai_source: store.aiSource || '',
@@ -1180,6 +1286,7 @@ export async function sendMessage(content) {
 	}
 	catch (error) {
 		store.generating = false
+		store.generatingRunId = null
 		endGeneratingBubble()
 		store.generatingSession = null
 		updateSendButton()
