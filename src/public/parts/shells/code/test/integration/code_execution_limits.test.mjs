@@ -234,7 +234,7 @@ Deno.test('code-execution run-js async="true" 登记统一异步任务并投递�
 		const deadline = Date.now() + 3000
 		while (getTask(id) && Date.now() < deadline) await new Promise(resolve => setTimeout(resolve, 20))
 		assertEquals(getTask(id), undefined, '任务完成后应从注册表移除')
-		const notes = takePendingNotifications({ username: 'test-user', charId: 'test-char', parentRunId: null })
+		const notes = takePendingNotifications({ username: 'test-user', charId: 'test-char', chatName: 'code-test', parentRunId: null })
 		assert(notes.some(note => note.content.includes('42')), '应投递包含结果的完成通知')
 	}
 	finally {

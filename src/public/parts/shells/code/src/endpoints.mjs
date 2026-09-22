@@ -637,11 +637,15 @@ export function setEndpoints(router) {
 		res.json(schedulePowerAction(username, machine, action))
 	})
 
-	// 进行中的统一异步任务（供前端实时任务卡；已完成任务已从注册表释放）
+	// 进行中的统一异步任务（供前端实时任务卡；已完成任务已从注册表释放）。
+	// 归属按 username + chatName 过滤：多用户同进程下 chatName 可能撞名。
+	// 不限定 parentRunId：实时事件本就不分层级，刷新需覆盖全部进行中任务（含子代理内部任务）。
+	// charId 不参与过滤：仅凭 chatId 无法解析角色（会话散落在各工作区），chatName 已按会话唯一。
 	router.get('/api/parts/shells\\:code/async-tasks', authenticate, (req, res) => {
+		const { username } = getUserByReq(req)
 		const chatId = String(req.query.chatId || '')
 		if (!chatId) throw httpError(400, 'chatId is required.')
-		const tasks = listAsyncTasks({ chatName: chatId, parentRunId: null }).map(task => ({
+		const tasks = listAsyncTasks({ username, chatName: chatId }).map(task => ({
 			id: task.id,
 			kind: task.kind,
 			label: task.label,

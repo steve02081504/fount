@@ -2,11 +2,11 @@
  * 子代理运行：把 `sub-agent` 插件的工具条目渲染为带状态的按钮，订阅实时事件并深链到 Agent Studio 内部对话页。
  */
 import { geti18n } from '/scripts/i18n/index.mjs'
-import { svgInliner } from '/scripts/lib/svgInliner.mjs'
 
 import * as api from './endpoints.mjs'
-import { iconElement, icons } from './icons.mjs'
-import { elements, store } from './store.mjs'
+import { icons } from './icons.mjs'
+import { createRunCard, createRunCardFeed, paintRunCard, registerRunCardFeed } from './runCards.mjs'
+import { store } from './store.mjs'
 
 /** Agent Studio 深链前缀（`#subagent/<runId>`）。 */
 const AGENT_STUDIO_SUBAGENT_URL = '/parts/shells:agent_studio/#subagent/'
@@ -92,9 +92,9 @@ export function openSubAgent(runId) {
 }
 
 /**
- * 按状态刷新单个按钮（图标 / 转圈 / 文案），状态未变则跳过。
+ * 按状态刷新单个按钮（图标 / 转圈 / 文案）。
  * @param {HTMLElement} card - 卡片按钮。
- * @param {object} run - 运行摘要。
+ * @param {object} [run] - 运行摘要。
  * @param {object} [fallback] - 运行未在本地状态表中时的兜底（来自条目扩展）。
  * @returns {void}
  */
@@ -102,24 +102,73 @@ function applySubAgentState(card, run, fallback = {}) {
 	const effective = run ?? fallback
 	const view = runView(effective)
 	const task = effective.task ?? card.dataset.subagentTask ?? ''
-	card.dataset.state = view.state
-	card.classList.toggle('is-working', view.working)
-	card.setAttribute('aria-label', geti18n('code.subagent.open', { task: taskPreview(task) || view.state }))
-	card.title = geti18n('code.subagent.open', { task: taskPreview(task) || view.state })
-
-	const icon = STATE_ICON[view.state] ?? icons.robot
-	const iconKey = `${view.state}:${view.working}`
-	if (card.dataset.iconKey !== iconKey) {
-		card.dataset.iconKey = iconKey
-		const holder = card.querySelector('.code-subagent-icon')
-		if (holder) {
-			holder.replaceChildren(iconElement(icon, { size: 15 }))
-			void svgInliner(holder)
-		}
-	}
-	const status = card.querySelector('.code-subagent-status')
-	if (status) status.textContent = stateLabel(view.state, view)
+	const label = geti18n('code.subagent.open', { task: taskPreview(task) || view.state })
+	paintRunCard(card, {
+		state: view.state,
+		working: view.working,
+		icon: STATE_ICON[view.state] ?? icons.robot,
+		statusText: stateLabel(view.state, view),
+		title: label,
+		ariaLabel: label,
+	})
 }
+
+const feed = createRunCardFeed({
+	cardSelector: '.code-subagent-card[data-subagent-run-id]',
+	/**
+	 * 从卡片取运行 id。
+	 * @param {HTMLElement} card - 卡片。
+	 * @returns {string} 运行 id。
+	 */
+	cardId: card => card.dataset.subagentRunId,
+	chatId: subAgentChatId,
+	/**
+	 * 从事件负载取运行 id。
+	 * @param {object} payload - 事件负载。
+	 * @returns {string} 运行 id。
+	 */
+	eventId: payload => payload.runId,
+	/**
+	 * 从事件负载取 chat id。
+	 * @param {object} payload - 事件负载。
+	 * @returns {string} chat id。
+	 */
+	eventChatId: payload => payload.chat_name,
+	/**
+	 * 合并一条实时运行事件。
+	 * @param {Map} states - 状态表。
+	 * @param {object} payload - 事件负载。
+	 * @returns {void}
+	 */
+	ingest: (states, payload) => states.set(payload.runId, { ...states.get(payload.runId), ...payload }),
+	/**
+	 * 合并一批运行历史（保留已有字段，规范化状态）。
+	 * @param {Map} states - 状态表。
+	 * @param {object[]} runs - 运行摘要列表。
+	 * @returns {void}
+	 */
+	merge: (states, runs) => {
+		for (const run of runs ?? []) {
+			if (!run?.runId) continue
+			states.set(run.runId, { ...states.get(run.runId), ...run, state: runState(run) })
+		}
+	},
+	/**
+	 * 拉取当前会话的子代理运行历史。
+	 * @param {string} chatId - 会话 chat id。
+	 * @returns {Promise<object[]>} 运行摘要列表。
+	 */
+	fetch: chatId => api.getSubAgents(chatId).then(data => data.runs ?? []),
+	/**
+	 * 重绘单个运行按钮。
+	 * @param {HTMLElement} card - 卡片。
+	 * @param {object} run - 运行摘要（空表示无实时状态，走卡片兜底）。
+	 * @returns {void}
+	 */
+	paint: (card, run) => applySubAgentState(card, run),
+})
+
+registerRunCardFeed(feed)
 
 /**
  * 构建子代理按钮（工具条目携带 `extension.subAgent` 时使用）。
@@ -129,71 +178,16 @@ function applySubAgentState(card, run, fallback = {}) {
 export function subAgentCardElement(entry) {
 	const meta = entry.extension?.subAgent ?? {}
 	const runId = meta.runId
-	const card = document.createElement('button')
+	const card = createRunCard({
+		tag: 'button',
+		className: 'code-run-card code-subagent-card',
+		label: taskPreview(meta.task) || geti18n('code.subagent.title'),
+		dataset: { subagentRunId: runId, subagentTask: meta.task || '' },
+	})
 	card.type = 'button'
-	card.className = 'code-subagent-card'
-	card.dataset.subagentRunId = runId
-	card.dataset.subagentTask = meta.task || ''
-
-	const icon = document.createElement('span')
-	icon.className = 'code-subagent-icon'
-	const label = document.createElement('span')
-	label.className = 'code-subagent-label'
-	label.setAttribute('user-content', '')
-	label.textContent = taskPreview(meta.task) || geti18n('code.subagent.title')
-	const status = document.createElement('span')
-	status.className = 'code-subagent-status'
-	card.append(icon, label, status)
-
 	card.addEventListener('click', () => openSubAgent(runId))
-	applySubAgentState(card, store.subAgents.get(runId), meta)
+	applySubAgentState(card, feed.get(runId), meta)
 	return card
-}
-
-/**
- * 刷新消息流中所有子代理按钮的状态。
- * @returns {void}
- */
-export function updateSubAgentCards() {
-	for (const card of elements.messages.querySelectorAll('.code-subagent-card[data-subagent-run-id]'))
-		applySubAgentState(card, store.subAgents.get(card.dataset.subagentRunId))
-}
-
-/**
- * 合并一组运行摘要到本地状态表（保留已有的 task 等字段）。
- * @param {object[]} runs - 运行摘要列表。
- * @returns {void}
- */
-function mergeRuns(runs) {
-	for (const run of runs ?? []) {
-		if (!run?.runId) continue
-		store.subAgents.set(run.runId, { ...store.subAgents.get(run.runId), ...run, state: runState(run) })
-	}
-}
-
-/**
- * 拉取当前会话的子代理运行历史（节流；进行中的运行实时事件优先）。
- * @param {{force?: boolean}} [options] - force 为 true 时忽略节流。
- * @returns {Promise<void>}
- */
-export async function refreshSubAgents({ force = false } = {}) {
-	const chatId = subAgentChatId()
-	if (!chatId) {
-		store.subAgents.clear()
-		updateSubAgentCards()
-		return
-	}
-	const previousChatId = store.subAgentFetch?.chatId
-	if (!force && previousChatId === chatId && Date.now() - store.subAgentFetch.at < 3000) return
-	if (previousChatId && previousChatId !== chatId) store.subAgents.clear()
-	store.subAgentFetch = { chatId, at: Date.now() }
-	try {
-		const { runs } = await api.getSubAgents(chatId)
-		if (subAgentChatId() !== chatId) return
-		mergeRuns(runs)
-		updateSubAgentCards()
-	}
-	catch { /* 历史查询失败不影响按钮的本地兜底状态 */ }
 }
 
 /**
@@ -202,8 +196,5 @@ export async function refreshSubAgents({ force = false } = {}) {
  * @returns {void}
  */
 export function handleSubAgentEvent(payload) {
-	if (!payload?.runId) return
-	if (payload.chat_name && payload.chat_name !== subAgentChatId()) return
-	store.subAgents.set(payload.runId, { ...store.subAgents.get(payload.runId), ...payload })
-	updateSubAgentCards()
+	feed.handle(payload)
 }

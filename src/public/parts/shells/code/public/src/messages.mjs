@@ -8,11 +8,12 @@ import { svgInliner } from '/scripts/lib/svgInliner.mjs'
 import { renderMarkdownAsStandaloneDocument } from '/parts/shells:gist/src/standaloneDocument.mjs'
 import { createGist } from '/parts/shells:gist/src/endpoints.mjs'
 
-import { asyncTaskCardElement, updateAsyncTaskCards } from './asynctasks.mjs'
+import { asyncStateLabel, asyncTaskCardElement } from './asynctasks.mjs'
 import { iconElement, icons } from './icons.mjs'
+import { updateRunCards } from './runCards.mjs'
 import { markSessionDirty, regenerateLastReply } from './session.mjs'
 import { elements, store, SCROLL_TOLERANCE } from './store.mjs'
-import { openSubAgent, subAgentCardElement, updateSubAgentCards } from './subagents.mjs'
+import { openSubAgent, subAgentCardElement } from './subagents.mjs'
 import { renderTemplate } from './templates.mjs'
 
 /**
@@ -109,12 +110,12 @@ function renderTranscriptEntry(item) {
 	role.textContent = TRANSCRIPT_ROLE_I18N[item.role] ? geti18n(TRANSCRIPT_ROLE_I18N[item.role]) : item.role || ''
 	const name = document.createElement('span')
 	name.className = 'code-transcript-name'
-	name.setAttribute('user-content', '')
+	name.setAttribute('prompt-content', '')
 	name.textContent = item.role === 'tool' ? labelForToolName(item.name) : item.name || ''
 	head.append(role, name)
 	const body = document.createElement('div')
 	body.className = 'code-transcript-body'
-	body.setAttribute('user-content', '')
+	body.setAttribute('prompt-content', '')
 	renderMarkdownAsString(messageMarkdown(item.content ?? ''), store.markdownCache).then(html => {
 		body.innerHTML = html
 	})
@@ -134,7 +135,7 @@ function renderSubAgentCheck(entry) {
 	const head = document.createElement('div')
 	head.className = 'code-subagent-check-head'
 	const state = document.createElement('span')
-	state.className = `badge badge-sm code-subagent-check-state state-${meta.state || 'done'}`
+	state.className = 'badge badge-sm code-subagent-check-state'
 	state.textContent = geti18n(`code.subagent.state.${meta.state || 'done'}`)
 	const rounds = document.createElement('span')
 	rounds.className = 'code-subagent-check-meta'
@@ -155,12 +156,13 @@ function renderSubAgentCheck(entry) {
 
 /**
  * 渲染统一异步任务行（类型 / 标签 / id / 状态 / 结果）。
+ * 状态为历史快照：仅当载荷带 `state` 时显示状态徽标 —— `<list-async/>` 与未结算的 `<await-async/>` 不套运行中徽标。
  * @param {object} task - 任务摘要。
  * @returns {HTMLElement} 任务行。
  */
 function renderAsyncTaskRow(task) {
 	const row = document.createElement('div')
-	row.className = `code-async-task-row state-${task.state || 'running'}`
+	row.className = 'code-async-task-row'
 	const head = document.createElement('div')
 	head.className = 'code-async-task-row-head'
 	const kind = document.createElement('span')
@@ -168,21 +170,24 @@ function renderAsyncTaskRow(task) {
 	kind.textContent = task.kind || ''
 	const label = document.createElement('span')
 	label.className = 'code-async-task-label'
-	label.setAttribute('user-content', '')
+	label.setAttribute('prompt-content', '')
 	label.textContent = task.label || ''
 	const id = document.createElement('code')
 	id.className = 'code-async-task-id'
 	id.textContent = task.id || ''
-	const state = document.createElement('span')
-	state.className = 'badge badge-sm code-async-task-state'
-	state.textContent = stateLabelOf(task.state)
-	head.append(kind, label, id, state)
+	head.append(kind, label, id)
+	if (task.state) {
+		const state = document.createElement('span')
+		state.className = 'badge badge-sm code-async-task-state'
+		state.textContent = asyncStateLabel(task.state)
+		head.appendChild(state)
+	}
 	row.appendChild(head)
 	const bodyText = task.state === 'failed' ? task.error : task.result
 	if (bodyText) {
 		const body = document.createElement('div')
 		body.className = 'code-async-task-result'
-		body.setAttribute('user-content', '')
+		body.setAttribute('prompt-content', '')
 		renderMarkdownAsString(messageMarkdown(String(bodyText)), store.markdownCache).then(html => {
 			body.innerHTML = html
 		})
@@ -191,26 +196,8 @@ function renderAsyncTaskRow(task) {
 	return row
 }
 
-/** 异步任务状态的 i18n 键（未知状态回落 idle，避免缺键告警）。 */
-const ASYNC_STATE_I18N = {
-	running: 'code.asyncTasks.state.running',
-	done: 'code.asyncTasks.state.done',
-	failed: 'code.asyncTasks.state.failed',
-	unknown: 'code.asyncTasks.state.unknown',
-	idle: 'code.asyncTasks.state.idle',
-}
-
 /**
- * 异步任务状态文案。
- * @param {string} state - 状态。
- * @returns {string} 文案。
- */
-function stateLabelOf(state) {
-	return geti18n(ASYNC_STATE_I18N[state] ?? ASYNC_STATE_I18N.idle)
-}
-
-/**
- * 渲染 `<list-async/>` 的结构化任务列表。
+ * 渲染 `<list-async/>` 的结构化任务列表（快照：仅列出当时进行中的任务，不推断终态）。
  * @param {object} entry - 会话条目。
  * @returns {HTMLElement} 列表。
  */
@@ -223,12 +210,12 @@ function renderAsyncList(entry) {
 		wrap.textContent = geti18n('code.asyncTasks.none')
 		return wrap
 	}
-	for (const task of meta.tasks) wrap.appendChild(renderAsyncTaskRow({ ...task, state: 'running' }))
+	for (const task of meta.tasks) wrap.appendChild(renderAsyncTaskRow(task))
 	return wrap
 }
 
 /**
- * 渲染 `<await-async/>` 的结构化等待结果。
+ * 渲染 `<await-async/>` 的结构化等待结果（已结算任务带终态；待定 / 未找到为快照）。
  * @param {object} entry - 会话条目。
  * @returns {HTMLElement} 列表。
  */
@@ -237,7 +224,7 @@ function renderAsyncAwait(entry) {
 	const wrap = document.createElement('div')
 	wrap.className = 'code-async-task-list'
 	for (const task of meta.settled ?? []) wrap.appendChild(renderAsyncTaskRow(task))
-	for (const id of meta.pending ?? []) wrap.appendChild(renderAsyncTaskRow({ id, state: 'running' }))
+	for (const id of meta.pending ?? []) wrap.appendChild(renderAsyncTaskRow({ id }))
 	for (const id of meta.unknown ?? []) wrap.appendChild(renderAsyncTaskRow({ id, state: 'unknown' }))
 	if (meta.timedOut) {
 		const note = document.createElement('div')
@@ -521,7 +508,7 @@ function renderEntryBubble(entry, { isLast = false } = {}) {
 	const bubble = document.createElement('div')
 	bubble.className = `code-message role-${entry.role}`
 	bubble.dataset.entryId = entry.id
-	bubble.setAttribute('user-content', '')
+	bubble.setAttribute(entry.role === 'user' || entry.role === 'char' ? 'user-content' : 'prompt-content', '')
 	if (entry.role === 'char' && entry.name) {
 		const name = document.createElement('div')
 		name.className = 'code-message-name'
@@ -643,7 +630,7 @@ function updateBackToBottom() {
 
 /** 消息流滚动后给顶栏加投影（提示上方仍有内容）。 */
 function updateScrollShadow() {
-	document.querySelector('.code-topbar')?.classList.toggle('scrolled', elements.messages.scrollTop > 2)
+	elements.topbar?.classList.toggle('scrolled', elements.messages.scrollTop > 2)
 }
 
 elements.messages.addEventListener('scroll', () => {
@@ -658,7 +645,7 @@ elements.messages.addEventListener('scroll', () => {
 export function updateEmptyMode() {
 	const empty = !(store.session?.entries?.length || 0)
 		&& !(store.generating && store.generatingSession === store.session)
-	document.querySelector('.code-main')?.classList.toggle('empty-mode', empty)
+	elements.main?.classList.toggle('empty-mode', empty)
 }
 
 /** 渲染全部消息。 */
@@ -676,8 +663,7 @@ export function renderMessages() {
 	updateBackToBottom()
 	updateScrollShadow()
 	updateRegenButtons()
-	updateSubAgentCards()
-	updateAsyncTaskCards()
+	updateRunCards()
 }
 
 /**
@@ -694,7 +680,6 @@ export function appendEntryBubble(entry) {
 	if (wasNearBottom) scrollMessagesBottom()
 	updateBackToBottom()
 	updateRegenButtons()
-	updateSubAgentCards()
-	updateAsyncTaskCards()
+	updateRunCards()
 	return bubble
 }
