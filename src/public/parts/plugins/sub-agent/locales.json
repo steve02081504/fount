@@ -1,19 +1,5 @@
 {
 	"info": {
-		"zh-CN": {
-			"name": "子代理",
-			"avatar": "https://api.iconify.design/line-md/account-multiple-plus.svg",
-			"description": "让角色派生隔离的子代理来并行完成复杂任务",
-			"description_markdown": "**子代理**插件让角色能够派生出拥有独立对话与独立预算（工作目录/文件系统与父代共享）的子代理。子代理复用同一个角色人格与世界设定，但运行隔离的工具集与生成循环；支持同步/异步运行、批次共享上下文、层级预算与终止后摘要。",
-			"version": "0.0.0",
-			"author": "steve02081504",
-			"home_page": "",
-			"tags": [
-				"子代理",
-				"多代理",
-				"插件"
-			]
-		},
 		"en-UK": {
 			"name": "Sub-agent",
 			"avatar": "https://api.iconify.design/line-md/account-multiple-plus.svg",
@@ -28,20 +14,28 @@
 				"plugin"
 			]
 		},
-		"zh-TW": {
+		"zh-CN": {
 			"name": "子代理",
 			"avatar": "https://api.iconify.design/line-md/account-multiple-plus.svg",
-			"description": "讓角色派生隔離的子代理來並行完成複雜任務",
-			"description_markdown": "**子代理**外掛讓角色能夠派生出擁有獨立對話與獨立預算（工作目錄/檔案系統與父代共享）的子代理。子代理複用同一個角色人格與世界設定，但執行隔離的工具集與生成迴圈；支援同步/非同步執行、批次共享上下文、層級預算與終止後摘要。",
+			"description": "让角色派生隔离的子代理来并行完成复杂任务",
+			"description_markdown": "**子代理**插件让角色能够派生出拥有独立对话与独立预算（工作目录/文件系统与父代共享）的子代理。子代理复用同一个角色人格与世界设定，但运行隔离的工具集与生成循环；支持同步/异步运行、批次共享上下文、层级预算与终止后摘要。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
 				"子代理",
 				"多代理",
-				"外掛"
+				"插件"
 			]
 		},
+		"ar-SA": {},
+		"de-DE": {},
+		"emoji": {},
+		"es-ES": {},
+		"fr-FR": {},
+		"hi-IN": {},
+		"is-IS": {},
+		"it-IT": {},
 		"ja-JP": {
 			"name": "サブエージェント",
 			"avatar": "https://api.iconify.design/line-md/account-multiple-plus.svg",
@@ -54,6 +48,27 @@
 				"サブエージェント",
 				"マルチエージェント",
 				"プラグイン"
+			]
+		},
+		"ko-KR": {},
+		"lzh": {},
+		"nl-NL": {},
+		"pt-PT": {},
+		"ru-RU": {},
+		"uk-UA": {},
+		"vi-VN": {},
+		"zh-TW": {
+			"name": "子代理",
+			"avatar": "https://api.iconify.design/line-md/account-multiple-plus.svg",
+			"description": "讓角色派生隔離的子代理來並行完成複雜任務",
+			"description_markdown": "**子代理**外掛讓角色能夠派生出擁有獨立對話與獨立預算（工作目錄/檔案系統與父代共享）的子代理。子代理複用同一個角色人格與世界設定，但執行隔離的工具集與生成迴圈；支援同步/非同步執行、批次共享上下文、層級預算與終止後摘要。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"子代理",
+				"多代理",
+				"外掛"
 			]
 		}
 	}
