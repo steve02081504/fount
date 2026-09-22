@@ -58,6 +58,39 @@ function remarkDisable(options = {}) {
 }
 
 /**
+ * 判定标签名是否为「未知 HTML 标签」。
+ * 本应用不注册任何自定义元素，故带连字符的自定义元素与 `HTMLUnknownElement`（如工具标签
+ * `<run-subagent>` / `<list-ai-sources/>`）均无实际渲染行为。
+ * @param {string} tagName 小写标签名
+ * @returns {boolean} 是否未知
+ */
+function isUnknownHtmlTag(tagName) {
+	const element = document.createElement(tagName)
+	if (globalThis.HTMLUnknownElement && Object(element) instanceof globalThis.HTMLUnknownElement) return true
+	return tagName.includes('-') && element.constructor === globalThis.HTMLElement
+}
+
+/**
+ * 把正文里的未知 HTML 标签从 raw HTML 降级为字面文本（remark 阶段）。
+ * 未处理时它们会被下游当 HTML 吞掉、在浏览器里渲染为空，导致推理正文等出现空洞；
+ * 字面化后由 Markdown 正常转义显示。已知标签与代码节点（行内/围栏代码是 code 节点）不受影响。
+ * @returns {(tree: object) => void} remark 插件
+ */
+function remarkLiteralizeUnknownHtmlTags() {
+	return tree => {
+		visit(tree, 'html', (node, index, parent) => {
+			if (!parent) return
+			const value = String(node.value || '')
+			const hasUnknown = [...value.matchAll(/<\/?([a-zA-Z][\w-]*)/g)]
+				.some(match => isUnknownHtmlTag(match[1].toLowerCase()))
+			if (!hasUnknown) return
+			const text = { type: 'text', value }
+			parent.children.splice(index, 1, parent.type === 'root' ? { type: 'paragraph', children: [text] } : text)
+		})
+	}
+}
+
+/**
  * 剧透文本插件（rehype 阶段）。
  * 支持 ||文本|| 语法，将其转换为剧透文本。
  * @returns {Function} - Unified.js 插件。
@@ -1209,6 +1242,7 @@ export async function GetMarkdownConvertor({
 		.use(remarkCjkFriendlyGfmStrikethrough)
 	for (const plugin of [...registered.remarkPlugins, ...extraRemarkPlugins])
 		processor = processor.use(plugin)
+	processor = processor.use(remarkLiteralizeUnknownHtmlTags)
 	processor = processor.use(remarkRehype, { allowDangerousHtml })
 	// markdown 语法生成的 `<img>` 一律标记 `svg-inliner-ignore`（内联远程 `.svg` 会激活其中脚本）
 	processor = processor.use(() => {

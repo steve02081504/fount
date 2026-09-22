@@ -23,6 +23,10 @@ Copy / download / execute must be a rehype plugin **after** `rehype-pretty-code`
 
 Do not use Shiki `transformers.root` wrapping — it breaks inline `{:lang}` (expects `root>pre`). Plain `` `code` `` stays bare `<code>`; `` `code{:js}` `` → `span>code`. HTML `document.write` preview is trusted-only.
 
+## Unknown HTML tags
+
+`remarkLiteralizeUnknownHtmlTags`（remark 阶段、`remarkRehype` 前）把正文里的未知 HTML 标签（`HTMLUnknownElement`，或未注册的自定义元素——本项目不注册任何自定义元素）从 raw HTML 降级为字面文本。否则它们会被当 HTML 吞掉：信任档渲染为空（推理正文里的 `<run-subagent>` / `<list-ai-sources/>` 会留空洞），未信任档被 `remarkRehype` 直接丢弃。已知标签（`details` / `summary` / `b` / `img` / `script` …）与代码节点（行内/围栏代码是 `code` 节点，不是 `html` 节点）不受影响，故不会二次转义 `` `Array<T>` ``。
+
 ## URL safety
 
 `isSafeHtmlUrl` (Markdown sanitize + mediaRefs) rejects `javascript:` / `data:` and protocol-relative `//…`.

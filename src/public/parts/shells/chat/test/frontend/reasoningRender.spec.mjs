@@ -24,6 +24,21 @@ function reasoningJoined(body) {
 }
 
 /**
+ * 镜像 buildReasoningDetailsMarkdown：给定推理正文，拼出 details 块 + 其后的角色正文。
+ * @param {string} reasoning 推理正文
+ * @param {string} [body] details 之后的角色正文
+ * @returns {string} 展示文本
+ */
+function reasoningWithInner(reasoning, body = '') {
+	return '<details class="fount-reasoning-details collapse collapse-arrow my-2 mb-3 rounded-box border border-base-content/20 bg-base-200/30">\n\n'
+		+ '<summary class="fount-reasoning-summary collapse-title min-h-0 py-2 text-sm font-semibold opacity-80 select-none"><span>推理</span></summary>\n\n'
+		+ '<div class="collapse-content">\n\n'
+		+ reasoning + '\n\n'
+		+ '</div>\n\n</details>\n\n'
+		+ body
+}
+
+/**
  * 在模块逻辑页里渲染 markdown。
  * @param {import('fount/scripts/test/playwright/module_page.mjs').ModulePage} modulePage 模块逻辑页
  * @param {string} markdown 原文
@@ -59,5 +74,26 @@ test.describe('reasoning render', () => {
 		const html = await renderMarkdown(modulePage,
 			'<details class="fount-reasoning-details collapse"><summary>推理</summary></details>\n你好，**fount前端**卡??', TRUSTED)
 		expect(html).toContain('**fount前端**')
+	})
+
+	test('unknown tool tags in reasoning render as literal text, not swallowed (trusted)', async ({ modulePage }) => {
+		const reasoning = '先跑 <list-ai-sources/> 和几个测试。\n\n<run-subagent plugins="code-execution" round-limit="6">\n子代理任务正文\n</run-subagent>'
+		const html = await renderMarkdown(modulePage, reasoningWithInner(reasoning), TRUSTED)
+		expect(html).toContain('list-ai-sources')
+		expect(html).toContain('先跑')
+		expect(html).toContain('和几个测试。')
+		expect(html).not.toContain('<list-ai-sources')
+		expect(html).toContain('run-subagent')
+		expect(html).not.toContain('<run-subagent')
+		expect(html).toContain('子代理任务正文')
+	})
+
+	test('unknown tool tags in reasoning render as literal text (untrusted)', async ({ modulePage }) => {
+		const html = await renderMarkdown(modulePage, reasoningWithInner('先跑 <list-ai-sources/> 后'))
+		expect(html).toContain('list-ai-sources')
+		expect(html).toContain('先跑')
+		expect(html).toContain('后')
+		expect(html).not.toContain('<list-ai-sources')
+		expect(html).not.toContain('<details')
 	})
 })
