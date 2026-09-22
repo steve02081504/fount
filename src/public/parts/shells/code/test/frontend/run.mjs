@@ -20,6 +20,7 @@ process.exit(await runShellFrontendTests({
 		{ from: join(testDir, 'fixtures/chars/testAgent'), to: 'chars/testAgent' },
 		{ from: join(testDir, 'fixtures/chars/streamAgent'), to: 'chars/streamAgent' },
 		{ from: join(testDir, 'fixtures/chars/toolAgent'), to: 'chars/toolAgent' },
+		{ from: join(testDir, 'fixtures/chars/multiRoundAgent'), to: 'chars/multiRoundAgent' },
 		{ from: join(testDir, 'fixtures/chars/static_char.mjs'), to: 'chars/shared/static_char.mjs' },
 		{ from: join(testDir, 'fixtures/serviceSources/AI/stubAI'), to: 'serviceSources/AI/stubAI' },
 	],

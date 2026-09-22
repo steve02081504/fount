@@ -13,7 +13,7 @@ import { launchNode, stopNode } from 'fount/scripts/test/node/launch.mjs'
 
 import { parseVolumeLabels } from '../../../../plugins/file-operations/src/target.mjs'
 
-import { codeFetch, execStream } from './helpers/code_http.mjs'
+import { codeFetch, execStream, sessionStream } from './helpers/code_http.mjs'
 
 /**
  * 启动仅加载 code shell 的测试节点。
@@ -603,6 +603,49 @@ Deno.test({
 		assert(withoutId.entries.some(entry => entry.role === 'user' && entry.content === 'hello-legacy'), '无 clientEntryId 时用户条目应被回传')
 	}
 	finally {
+		await stopNode(node)
+	}
+})
+
+Deno.test({
+	name: 'session WS emits entries-append for completed rounds before done',
+	timeout: 120_000,
+}, async () => {
+	const fixtureDir = path.join(path.dirname(fileURLToPath(import.meta.url)), 'fixtures', 'wsRoundsChar')
+	const node = await launchCodeNode({
+		fixtureCopies: [{ from: fixtureDir, to: 'chars/wsRoundsChar' }],
+	})
+	const root = await fs.mkdtemp(path.join(os.tmpdir(), 'fount_code_http_incremental_'))
+	try {
+		await fs.writeFile(path.join(root, 'note.txt'), 'note content', 'utf8')
+		const session = {
+			id: 'incr001',
+			title: '',
+			charname: 'wsRoundsChar',
+			profile: '',
+			ai_source: '',
+			created: new Date().toISOString(),
+			updated: new Date().toISOString(),
+			memory: {},
+			entries: [{ id: 'incr-u1', uid: 'user', role: 'user', name: node.username, content: '读取文件', time: new Date().toISOString(), files: [] }],
+		}
+		const { done, frames } = await sessionStream(node, {
+			type: 'send', session, machine: '0', workdir: root,
+			ai_source: '', profile: '', content: '读取文件', files: [], clientEntryId: 'incr-u1',
+		})
+		assertEquals(done.type, 'done', `expected done, got ${JSON.stringify(done).slice(0, 300)}`)
+		// 增量帧须在 done 之前到达，且包含工具日志与已完成的 char 轮次
+		const appended = frames.filter(frame => frame.type === 'entries-append').flatMap(frame => frame.entries)
+		assert(appended.length > 0, '应有 entries-append 增量帧')
+		assert(appended.some(entry => entry.role === 'tool'), '增量帧应含工具日志条目')
+		assert(appended.some(entry => entry.role === 'char'), '增量帧应含已完成的角色轮次')
+		// 增量推送过的条目不应在 done 里重复回传
+		const appendedIds = new Set(appended.map(entry => entry.id))
+		assert(!done.entries.some(entry => appendedIds.has(entry.id)), 'done 不应重复回传已增量推送的条目')
+		assert(done.entries.some(entry => entry.role === 'char' && entry.content.includes('读取完成')), 'done 应含最终角色回复')
+	}
+	finally {
+		await fs.rm(root, { recursive: true, force: true })
 		await stopNode(node)
 	}
 })

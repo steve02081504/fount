@@ -241,7 +241,7 @@ function renderAsyncAwait(entry) {
  * @param {object} entry - 会话条目。
  * @returns {boolean} 是否渲染。
  */
-function isEntryVisible(entry) {
+export function isEntryVisible(entry) {
 	if (entry.role === 'tool' || entry.role === 'system') return true
 	if (entry.files?.length) return true
 	return Boolean(entryShowText(entry).trim())
@@ -504,7 +504,7 @@ function bindMessageDragExport(entry, bubble) {
  * @param {{isLast?: boolean}} [options] - 是否为会话最后一条（角色消息显示重新生成）。
  * @returns {HTMLElement} 气泡元素。
  */
-function renderEntryBubble(entry, { isLast = false } = {}) {
+export function renderEntryBubble(entry, { isLast = false } = {}) {
 	const bubble = document.createElement('div')
 	bubble.className = `code-message role-${entry.role}`
 	bubble.dataset.entryId = entry.id
@@ -624,7 +624,7 @@ export const backToBottom = (() => {
 })()
 
 /** 更新回到底部浮标可见性。 */
-function updateBackToBottom() {
+export function updateBackToBottom() {
 	backToBottom.classList.toggle('show', !nearBottom() && (store.session?.entries?.length || 0) > 0)
 }
 

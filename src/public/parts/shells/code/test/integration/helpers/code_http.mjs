@@ -53,3 +53,42 @@ export function execStream(node, payload) {
 		ws.onerror = () => { clearTimeout(timer); reject(new Error('exec ws error')) }
 	})
 }
+
+/**
+ * 经会话 WS 发送一条消息，按到达顺序收集全部帧直到 done/error。
+ * @param {object} node - launchNode 返回值
+ * @param {object} payload - `send` / `regen` 负载
+ * @returns {Promise<{done: object, frames: object[]}>} 终止帧与中间帧列表
+ */
+export function sessionStream(node, payload) {
+	return new Promise((resolve, reject) => {
+		const ws = new WebSocket(`${node.baseUrl.replace(/^http/, 'ws')}/ws/parts/shells:code/session?fount-apikey=${encodeURIComponent(node.apiKey)}`)
+		const frames = []
+		const timer = setTimeout(() => { ws.close(); reject(new Error('session ws timeout')) }, 60_000)
+		/**
+		 * 连接建立后发送负载。
+		 * @returns {void}
+		 */
+		ws.onopen = () => ws.send(JSON.stringify(payload))
+		/**
+		 * 收集中间帧；done 时结束等待。
+		 * @param {MessageEvent} event - 入站消息事件。
+		 * @returns {void}
+		 */
+		ws.onmessage = event => {
+			const frame = JSON.parse(String(event.data))
+			if (frame.type === 'done' || frame.type === 'error' || frame.type === 'aborted') {
+				clearTimeout(timer)
+				ws.close()
+				resolve({ done: frame, frames })
+				return
+			}
+			frames.push(frame)
+		}
+		/**
+		 * 连接错误时拒绝。
+		 * @returns {void}
+		 */
+		ws.onerror = () => { clearTimeout(timer); reject(new Error('session ws error')) }
+	})
+}

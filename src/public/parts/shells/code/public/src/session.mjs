@@ -15,9 +15,9 @@ import { svgInliner } from '/scripts/lib/svgInliner.mjs'
 import { appendLocalHistory, removeGhost, renderAttachmentPreview } from './composer.mjs'
 import * as api from './endpoints.mjs'
 import { iconElement, icons } from './icons.mjs'
-import { appendEntryBubble, backToBottom, nearBottom, renderMessages, scrollMessagesBottom, updateEntryBubble, updateRegenButtons, updateShellStreamBubble, updateEmptyMode } from './messages.mjs'
+import { appendEntryBubble, backToBottom, isEntryVisible, nearBottom, renderEntryBubble, renderMessages, scrollMessagesBottom, updateBackToBottom, updateEntryBubble, updateRegenButtons, updateShellStreamBubble, updateEmptyMode } from './messages.mjs'
 import { refreshShutdownState, renderAiSourcePillLabel, renderModePillLabel, selectWorkspace, updateCharMenu } from './pills.mjs'
-import { refreshRunCards } from './runCards.mjs'
+import { refreshRunCards, updateRunCards } from './runCards.mjs'
 import { elements, richInput, store, TAB_SAVE_DEBOUNCE, target } from './store.mjs'
 
 /** 标签页保存防抖定时器句柄。 */
@@ -802,6 +802,10 @@ function onSocketMessage(event) {
 		handleToolOutput(msg)
 		return
 	}
+	if (msg.type === 'entries-append') {
+		insertIncrementalEntries(msg.entries || [])
+		return
+	}
 	if (msg.type === 'done') {
 		void finishGeneration(msg.entries, msg.memory)
 		return
@@ -833,6 +837,33 @@ function onSocketMessage(event) {
 let generatingBubble = null
 /** 生成中气泡内的实时工具卡：callId → { root, output }。 */
 let liveToolCards = null
+
+/**
+ * 插入生成过程中增量推送的已完成条目（工具日志 / 已完成轮次），
+ * 依次追加到生成中气泡之前，保持文本顺序；已在会话中的条目按 id 去重。
+ * @param {object[]} entries - 服务端增量条目。
+ * @returns {void}
+ */
+function insertIncrementalEntries(entries) {
+	const session = store.generatingSession || store.session
+	if (!session || !entries.length) return
+	const knownIds = new Set(session.entries.map(entry => String(entry.id)))
+	const fresh = entries.filter(entry => !knownIds.has(String(entry.id)))
+	if (!fresh.length) return
+	session.entries.push(...fresh)
+	if (session !== store.session) return
+	const anchor = generatingBubble?.bubble || backToBottom
+	const wasNearBottom = nearBottom()
+	for (const entry of fresh) {
+		if (!isEntryVisible(entry)) continue
+		const bubble = renderEntryBubble(entry, { isLast: false })
+		elements.messages.insertBefore(bubble, anchor)
+	}
+	updateEmptyMode()
+	if (wasNearBottom) scrollMessagesBottom()
+	updateBackToBottom()
+	updateRunCards()
+}
 
 /**
  * 处理服务端转发的工具执行实时输出（AI `<run-*>` / `<inline-*>`）。

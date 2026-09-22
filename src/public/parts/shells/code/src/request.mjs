@@ -68,6 +68,7 @@ async function sessionToChatLog(entries) {
  * @param {object} options - 构建参数。
  * @param {string} options.username - 用户名。
  * @param {codeSession_t} options.session - 会话（entries 需已包含本次用户消息）。
+ * @param {codeSession_t} [options.requestSession] - 请求侧会话；提供时把本轮 `result` 暴露到 `requestSession.generationResult`，供 WS 预览增量读取已累计的工具日志。
  * @param {string} options.machine - 目标机器标识（"0" = 本机）。
  * @param {string} options.workdir - 工作目录（工作区根）。
  * @param {string} [options.ai_source] - 请求级 AI 源 partname（"shells/code 前端下拉值"；空 = 角色自带），构造时 loadPart 为实例。
@@ -78,7 +79,7 @@ async function sessionToChatLog(entries) {
  * @param {AbortSignal} [options.signal] - 中断信号。
  * @returns {Promise<chatReplyRequest_t>} 构建好的请求。
  */
-async function buildCodeChatRequest({ username, session, machine, workdir, ai_source, profile, generationId, onPreview, onToolOutput, signal }) {
+async function buildCodeChatRequest({ username, session, requestSession, machine, workdir, ai_source, profile, generationId, onPreview, onToolOutput, signal }) {
 	const char = await loadPart(username, 'chars/' + session.charname)
 	const personaName = getAnyPreferredDefaultPart(username, 'personas')
 	const user = personaName ? await loadPart(username, 'personas/' + personaName) : null
@@ -135,7 +136,11 @@ async function buildCodeChatRequest({ username, session, machine, workdir, ai_so
 			 * @param {import('../../../../../decl/chatLog.ts').chatReply_t} reply - 预览回复。
 			 * @returns {void}
 			 */
-			replyPreviewUpdater: reply => onPreview?.(reply),
+			replyPreviewUpdater: reply => {
+				// 把本轮 result 暴露给调用方（WS）以增量读取 logContextBefore；角色实现应填充 base_result
+				if (requestSession && reply) requestSession.generationResult = reply
+				onPreview?.(reply)
+			},
 			/** 工具执行实时输出（code-execution 插件回调），远程流式回显经 `shells/code` 的 RemoteCallBack。 */
 			onToolOutput,
 			remoteToolCallbackPartpath: onToolOutput ? 'shells/code' : undefined,

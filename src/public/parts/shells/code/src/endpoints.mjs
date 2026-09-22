@@ -727,6 +727,25 @@ export function setEndpoints(router) {
 			/** 已确定条目（send = 用户消息；regen 开始为空，失败/中断时原样返回）。 */
 			const entries = []
 			const requestSession = { ...session, entries: [...session.entries || []] }
+			/**
+			 * 增量条目发送水位：本轮已推给前端的 tool 日志条目数。
+			 * `done`/`error` 只需补发剩余部分，避免前端重复插入。
+			 * @type {number}
+			 */
+			let emittedLogCount = 0
+			/**
+			 * 把本轮已累计但尚未推送的 tool 日志条目增量发给前端（生成中即可追加气泡）。
+			 * 只读 `base_result.logContextBefore`，不依赖角色/插件是否实现了 `onToolOutput`。
+			 * @returns {void}
+			 */
+			const flushIncrementalEntries = () => {
+				const log = requestSession.generationResult?.logContextBefore || []
+				if (log.length <= emittedLogCount) return
+				const fresh = log.slice(emittedLogCount).map(sanitizeEntry)
+				emittedLogCount = log.length
+				try { ws.send(JSON.stringify({ type: 'entries-append', entries: fresh })) }
+				catch { /* 连接已关闭 */ }
+			}
 			if (msg.type === 'send') {
 				// 前端已乐观插入用户条目（clientEntryId）时不再重复追加/回传，避免 AI 看到两条、UI 重复
 				const alreadyInSession = msg.clientEntryId && requestSession.entries.some(entry => entry?.id === msg.clientEntryId)
@@ -740,7 +759,9 @@ export function setEndpoints(router) {
 			const generationId = randomUUID()
 			const generationStartedAt = Date.now()
 			try {
+				// 把本轮 result 暴露到 requestSession 上，供预览回调增量读取已累计日志
 				const { reply, memory } = await triggerCodeReply({
+					requestSession,
 					username,
 					session: requestSession,
 					machine: String(machine ?? '0'),
@@ -755,6 +776,8 @@ export function setEndpoints(router) {
 					 * @returns {void}
 					 */
 					onPreview: reply => {
+						// 先把本轮已完成的工具日志增量追加出来，再更新生成中气泡（保持文本顺序）
+						flushIncrementalEntries()
 						try { ws.send(JSON.stringify({ type: 'preview', content: reply.content_for_show ?? reply.content ?? '' })) }
 						catch { /* 连接已关闭 */ }
 					},
@@ -768,7 +791,8 @@ export function setEndpoints(router) {
 						catch { /* 连接已关闭 */ }
 					},
 				})
-				for (const entry of reply?.logContextBefore || [])
+				// 已在预览期增量推送的 tool 日志只补发剩余部分，避免前端重复插入
+				for (const entry of (reply?.logContextBefore || []).slice(emittedLogCount))
 					entries.push(sanitizeEntry(entry))
 				if (reply)
 					entries.push(sanitizeEntry({ ...reply, role: 'char', uid: 'char', name: reply.name || session.charname, time_stamp: new Date() }))
@@ -778,6 +802,10 @@ export function setEndpoints(router) {
 				void notifyCodeCompletion(username, session)
 			}
 			catch (error) {
+				// 中断/报错：补发尚未增量推送的 tool 日志（截断到水位，避免重复）
+				flushIncrementalEntries()
+				const pending = (requestSession.generationResult?.logContextBefore || []).slice(emittedLogCount)
+				for (const entry of pending) entries.push(sanitizeEntry(entry))
 				if (thisRequestController.signal.aborted)
 					ws.send(JSON.stringify({ type: 'aborted', entries }))
 				else

@@ -304,6 +304,42 @@ test.describe('code shell message actions & layout', () => {
 		}
 	})
 
+	test('agentic rounds append as messages while the reply is still streaming', async ({ page, baseUrl }) => {
+		const dir = makeWorkspace('fe-incremental', { 'note.txt': 'note content' })
+		leftoverWorkspaceDirs.add(dir)
+		try {
+			await page.addInitScript(pref => localStorage.setItem(pref + 'charname', 'multiRoundAgent'), PREF_PREFIX)
+			await openCode(page, baseUrl)
+			await selectWorkspaceViaBrowser(page, dir)
+			const composer = page.locator('#composer-input')
+			await composer.click()
+			await page.keyboard.type('开始多轮任务')
+			await page.keyboard.press('Control+Enter')
+			// 生成期间轮询 DOM：记录是否在任何一刻「生成中气泡与已完成条目并存」
+			const observed = await page.evaluate(async () => {
+				const state = { toolWhileGenerating: false, charWhileGenerating: false }
+				const deadline = Date.now() + 30_000
+				while (Date.now() < deadline) {
+					if (!document.querySelector('.code-message.generating')) break
+					if (document.querySelectorAll('.code-message.role-tool').length) state.toolWhileGenerating = true
+					if (document.querySelectorAll('.code-message.role-char:not(.generating)').length) state.charWhileGenerating = true
+					await new Promise(resolve => setTimeout(resolve, 20))
+				}
+				return state
+			})
+			// 流式期间已完成的工具条目与角色条目必须先追加出来，而不是等 done 后一次性刷出
+			expect(observed.toolWhileGenerating).toBe(true)
+			expect(observed.charWhileGenerating).toBe(true)
+			// 结束后仍是同一批条目，无重复
+			await expect(page.locator('.code-message.generating')).toHaveCount(0)
+			await expect(page.locator('.code-message.role-tool')).toHaveCount(1)
+			await expect(page.locator('.code-message.role-char')).toHaveCount(2)
+		}
+		finally {
+			await removeAllWorkspacesViaApi(page, baseUrl)
+		}
+	})
+
 	test('attachments: + button and paste add pending files, sent as user entry files', async ({ page, baseUrl }) => {
 		await page.addInitScript(pref => localStorage.setItem(pref + 'charname', 'codeBuddy'), PREF_PREFIX)
 		await openCode(page, baseUrl)
