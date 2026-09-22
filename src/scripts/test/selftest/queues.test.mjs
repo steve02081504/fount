@@ -1,5 +1,5 @@
 /**
- * CLI 同优先级 LIFO / FS LIFO / 预备 debounce / viewer 移除 / CLI 完成剔 FS。
+ * CLI 同优先级 FIFO / FS LIFO / 预备 debounce / viewer 移除 / CLI 完成剔 FS。
  */
 /* global Deno */
 import { assertEquals } from 'jsr:@std/assert'
@@ -28,14 +28,14 @@ function mutableClock(start = 0) {
 	}
 }
 
-Deno.test('CLI queue is LIFO among equal priority', () => {
+Deno.test('CLI queue is FIFO among equal priority (no cross-job starvation)', () => {
 	const queues = new TestQueues()
 	queues.enqueueCli({ key: 'earlier', viewerId: 'viewer' })
 	queues.enqueueCli({ key: 'later', viewerId: 'viewer' })
 	const first = queues.peekReady(() => true)
-	assertEquals(first?.item.key, 'later')
+	assertEquals(first?.item.key, 'earlier')
 	queues.dequeue(first)
-	assertEquals(queues.peekReady(() => true)?.item.key, 'earlier')
+	assertEquals(queues.peekReady(() => true)?.item.key, 'later')
 })
 
 Deno.test('CLI imperfect priority still beats a later normal item', () => {

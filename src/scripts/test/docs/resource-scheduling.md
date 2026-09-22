@@ -6,7 +6,7 @@ Suite parallelism is governed by `ResourceRunGate` (`runner/scheduler.mjs`):
 - **`heavy: true`** — machine-exclusive (today: `p2p/sim` only).
 - **All other suites** — 2D bin packing on free memory (`freemem × 0.7`) and CPU budget (85% cap). Ready suites acquire in BFD order; waiters wake by fill score `min(memUtil, cpuUtil)`.
 - **Module-check mutex** — at most one Deno process may be in the spawn→JS-ready window against the shared `node_modules` ([denoland/deno#35804](https://github.com/denoland/deno/issues/35804)). Parent `acquire`s before spawn; child `env.mjs` or `--preload module_check_ready.mjs` POSTs ready (so `deno test` files that do not import `env.mjs` still signal). Exit without ready is a framework error (`ModuleCheckMissedReadyError`), not a silent release. Spawn failure only abandons the ticket. After ready, wall-clock overlap is allowed. Playwright `node` is not gated. `launchNode` `{ ready, baseUrl }` is too late to use as the signal.
-  - Hold without ready longer than idle (`10m`) → release the mutex so later Deno suites can acquire; missed-ready stays on the ticket until the suite exits (or a late ready arrives).
+  - Hold without ready longer than the spawn→ready cap (`3m`, override `FOUNT_TEST_MODULE_CHECK_HOLD_MS`) → release the mutex so later Deno suites can acquire; missed-ready stays on the ticket until the suite exits (or a late ready arrives). Kicking a suite (viewer gone / preempted) releases its ticket **immediately**, without waiting for a possibly-hung child to exit.
   - HTTP `acquire` waiters are cancelled if the client disconnects (aborted fetch / killed `serial.mjs`); a ticket assigned to a dead response is abandoned immediately.
 
 No CLI concurrency knob: suite packing and `serial.mjs` inner file parallelism both use `computeGlobalBudget()`. `serial.mjs` still forces `DENO_JOBS=1` so one file cannot stack parallel `launchNode`s.
@@ -29,7 +29,7 @@ Displayed "remaining"/ETA is not monotonic: it is recomputed from an ideal timel
 
 ## Ordering
 
-- **Manifest list / `report.md` slots / dispatch**: same topo + tie-break (`listManifestIds` / `topoSortSuites`). Ready set re-sorted by `suiteSchedulePriority` then bin-packed. CLI queue: later equal-`priority` items first.
+- **Manifest list / `report.md` slots / dispatch**: same topo + tie-break (`listManifestIds` / `topoSortSuites`). Ready set re-sorted by `suiteSchedulePriority` then bin-packed. CLI queue: earlier equal-`priority` items first (FIFO — prevents a later job from starving an earlier one when several CLIs share the kernel).
 
 ## Per-suite footprint
 

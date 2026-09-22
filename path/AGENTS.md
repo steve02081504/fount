@@ -56,7 +56,7 @@ The server's idle runtime update (`src/server/autoupdate.mjs`) invokes the stand
 
 A committed `.deno-version` at the repo root (single line, e.g. `pr 36606` / `canary` / `2.9.5`) temporarily pins the deno build.
 
-- Path CLI: `deno_upgrade` (keepalive auto-repair + `fount test`) upgrades to the pinned spec, overriding the default channel; a package-managed Deno is upgraded via its manager instead (pin not honored).
+- Path CLI: `deno_upgrade` (keepalive auto-repair) upgrades to the pinned spec, overriding the default channel; a package-managed Deno is upgraded via its manager instead (pin not honored). `fount test` no longer upgrades Deno here — the test kernel owns that (startup / queue-drained, self-update only).
 - CI (`run_tests` / `verify_server` / `verify_shells`): `.github/workflows/scripts/resolve_deno_version.sh` resolves the pin at install time — a supported channel/semver/hash goes straight into `denoland/setup-deno`'s `deno-version`; a `pr N` spec (which setup-deno can't parse) installs `canary` then applies `deno upgrade` post-install.
 - CI `polyglot_nop_tests` uses `install.sh` (latest-only), so it always applies the pin via `.github/workflows/scripts/apply_deno_version.sh` after install.
 

@@ -69,22 +69,46 @@ export async function spawnDetachedKernel(port = TEST_HUB_PORT, { env = {}, args
 	})
 }
 
+/** 冷启动内核健康等待上限（毫秒）；慢机器 / 高负载下 5s 过短，会误报 `did not become healthy`。 */
+export const DEFAULT_ENSURE_TIMEOUT_MS = 30_000
+
 /**
  * health 失败则 spawn，轮询直到可连。
+ *
+ * 预算默认 30s（`FOUNT_TEST_KERNEL_ENSURE_MS` 覆盖）。监听端口已被占但 `/health` 不是本内核时，
+ * 先杀掉那个监听者（多半是上一代正在退出的内核或外来进程），而不是盲目再 spawn。
  * @param {object} [options] 选项
  * @param {number} [options.port] 端口
+ * @param {number} [options.timeoutMs] 健康等待上限
  * @returns {Promise<string>} hub URL
  */
-export async function ensureTestKernel({ port = TEST_HUB_PORT } = {}) {
+export async function ensureTestKernel({ port = TEST_HUB_PORT, timeoutMs = DEFAULT_ENSURE_TIMEOUT_MS } = {}) {
 	const url = testHubUrl(port)
 	if (await kernelHealthy(url)) return url
 	await spawnDetachedKernel(port)
-	for (let i = 0; i < 50; i++) {
+	const startedAt = Date.now()
+	const deadline = startedAt + timeoutMs
+	let nextSpawnAt = startedAt + timeoutMs / 2
+	let killedForeign = false
+	for (;;) {
 		if (await kernelHealthy(url)) return url
-		if (i === 24) await spawnDetachedKernel(port)
+		const now = Date.now()
+		if (now >= deadline) break
+		const listening = await isPortListening(port)
+		if (listening) {
+			// 端口有监听但不是我们的内核；给它 3s 体面退出，然后杀掉再等 spawn。
+			if (!killedForeign && now - startedAt >= 3000) {
+				killedForeign = true
+				await killPortListener(port)
+			}
+		}
+		else if (now >= nextSpawnAt) {
+			nextSpawnAt = now + timeoutMs / 2
+			await spawnDetachedKernel(port)
+		}
 		await delay(100)
 	}
-	throw new Error(`test kernel did not become healthy at ${url}`)
+	throw new Error(`test kernel did not become healthy at ${url} (waited ${timeoutMs}ms)`)
 }
 
 /**

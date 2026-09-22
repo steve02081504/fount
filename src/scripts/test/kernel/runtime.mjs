@@ -100,6 +100,8 @@ export class TestKernel {
 	 * @param {number} [options.idleAllMs] watch 闲置自动补跑 --all 的静置毫秒
 	 * @param {boolean} [options.autoUpdateExpected] 跑完是否按漂移自动回写 manifest `expected`
 	 * @param {number} [options.idleExitGraceMs] 空闲且无 watcher 后自动退出的宽限毫秒
+	 * @param {((reason: string) => Promise<{ changed?: boolean }>) | null} [options.denoUpdater]
+	 *        Deno 更新器：仅在内核启动 / 队列清空并完成时调用；返回 `changed` 时请求重启内核。
 	 */
 	constructor({
 		repoRoot,
@@ -111,7 +113,9 @@ export class TestKernel {
 		idleAllMs = DEFAULT_IDLE_ALL_MS,
 		autoUpdateExpected = true,
 		idleExitGraceMs = DEFAULT_IDLE_EXIT_GRACE_MS,
+		denoUpdater = null,
 	}) {
+		this.denoUpdater = denoUpdater
 		this.idleAllMs = idleAllMs
 		this.autoUpdateExpected = autoUpdateExpected
 		this.idleExitGraceMs = idleExitGraceMs
@@ -173,6 +177,8 @@ export class TestKernel {
 		this.#watcher = null
 		/** 内核关闭时回调（由 server 接 HTTP 停机）。 */
 		this.onClose = () => { }
+		/** Deno 升级成功后请求重启内核（由 index 接 spawn 新内核 + 退出）。 */
+		this.onRestartRequested = () => { }
 	}
 
 	#wake
@@ -184,6 +190,8 @@ export class TestKernel {
 	#idleExitDueAt = null
 	/** @type {Promise<void>} 模块检查累计记录写入链（串行化持久化）。 */
 	#moduleCheckWriteChain = Promise.resolve()
+	/** Deno 更新检查是否进行中（并发调用去重）。 */
+	#denoUpdateInFlight = false
 
 	/** 唤醒调度循环。 */
 	wake() {
@@ -200,6 +208,39 @@ export class TestKernel {
 	resetIdleExitGrace() {
 		this.#idleExitDueAt = null
 		this.wake()
+	}
+
+	/**
+	 * 触发一次 Deno 更新检查（去重）。仅在该检查返回 `changed` 且当前完全空闲、无 watcher 时
+	 * 请求重启内核；有任务在跑则放弃本次重启（二进制已更新，下一个内核自然使用新版本）。
+	 * @param {string} [reason] 触发原因（startup / drain）
+	 * @returns {Promise<void>}
+	 */
+	async checkDenoUpdate(reason = 'manual') {
+		if (!this.denoUpdater || this.#denoUpdateInFlight || this.closed) return
+		this.#denoUpdateInFlight = true
+		try {
+			const result = await this.denoUpdater(reason)
+			if (result?.changed && this.#canRestartForDenoUpdate())
+				this.onRestartRequested()
+		}
+		catch (error) {
+			console.warn(`deno update check failed: ${String(error?.message ?? error)}`)
+		}
+		finally {
+			this.#denoUpdateInFlight = false
+		}
+	}
+
+	/**
+	 * 是否可以安全重启内核（无在跑 / 无排队 / 无活跃 job / 无 watcher 消费者）。
+	 * @returns {boolean} 是否可重启
+	 */
+	#canRestartForDenoUpdate() {
+		return this.running.size === 0
+			&& this.jobs.size === 0
+			&& this.queues.allEmpty()
+			&& this.viewers.watchCount() === 0
 	}
 
 	/**
@@ -860,7 +901,11 @@ export class TestKernel {
 		while (!this.closed) {
 			// watch 闲置计时从运行队列清空这一刻起算（不是从改动或内核启动）。
 			if (this.queues.allEmpty() && this.running.size === 0) {
-				if (!this.#wasIdle) this.lastIdleAt = Date.now()
+				if (!this.#wasIdle) {
+					this.lastIdleAt = Date.now()
+					// 队列清空并完成：检查一次 Deno 更新（成功且仍空闲则重启内核）。
+					void this.checkDenoUpdate('drain')
+				}
 				this.#wasIdle = true
 			}
 			else
@@ -1054,6 +1099,16 @@ export class TestKernel {
 		let endEvent = null
 		/** @type {string | null} */
 		let ticket = null
+		/**
+		 * 立即释放 module-check 租约（幂等）。viewer 断开 / 新任务抢占会 abort 本套件，但
+		 * `runSuite` 可能因 Windows Deno 子进程不退出而挂住；不能等它结算才释放，否则整个
+		 * spawn→ready 互斥窗被拖满 hold 超时，冻结后续所有 Deno 套件。
+		 * @returns {void}
+		 */
+		const releaseModuleCheckTicket = () => {
+			if (ticket) this.moduleCheck.consumeMissedReady(ticket)
+		}
+		abort.signal.addEventListener('abort', releaseModuleCheckTicket, { once: true })
 		try {
 			const skip = await this.#evalSkip(suite, item.subtests)
 			if (skip) {
@@ -1162,6 +1217,7 @@ export class TestKernel {
 			}
 		}
 		finally {
+			abort.signal.removeEventListener('abort', releaseModuleCheckTicket)
 			if (ticket) this.moduleCheck.abandon(ticket)
 			this.running.delete(key)
 			this.#syncKeepAwake()
