@@ -5,6 +5,7 @@
 import { assert, assertEquals, assertRejects } from 'jsr:@std/assert'
 
 import { runReplyHandlers } from '../../../../shells/chat/src/reply/handlerPipeline.mjs'
+import { checkSubAgentHandler } from '../../handler.mjs'
 import { runSubAgent, SubAgentError } from '../../runtime.mjs'
 import { createRun, getRun, resetSubAgentState } from '../../state.mjs'
 
@@ -290,6 +291,36 @@ Deno.test('runSubAgent persists the internal conversation and emits live status'
 	assertEquals(last.runId, outcome.run.runId)
 	assertEquals(last.chat_name, 'test_chat')
 	assert(deps.notifications.some(payload => payload.state === 'running'), 'expected a running notification')
+})
+
+Deno.test('check-subagent writes a structured conversation card', async () => {
+	resetSubAgentState()
+	const ai = createFakeAi(['checked-result'])
+	const deps = createDeps(ai, createRegenPlugin(0))
+	const outcome = await runSubAgent(
+		createParentArgs(),
+		{ body: 'inspect me', roundLimit: 3, timeLimitMs: 60_000 },
+		deps,
+	)
+	/** 捕获的工具日志。 */
+	const logs = []
+	/**
+	 * 收集工具日志。
+	 * @param {object} entry 日志条目
+	 * @returns {void}
+	 */
+	const collectLog = entry => { logs.push(entry) }
+	const args = { username: 'user-1', char_id: 'char-1', chat_name: 'test_chat', extension: {}, AddLongTimeLog: collectLog }
+	await checkSubAgentHandler.handle(null, args, { params: { id: outcome.run.runId } })
+	const log = logs.at(-1)
+	assertEquals(log.name, 'sub-agent.check')
+	assertEquals(log.extension?.subAgentCheck?.runId, outcome.run.runId)
+	assertEquals(log.extension.subAgentCheck.state, 'done')
+	assert(Array.isArray(log.extension.subAgentCheck.entries))
+	assert(log.extension.subAgentCheck.entries.length > 0, 'expected conversation entries')
+	assert(log.extension.subAgentCheck.entries.every(entry =>
+		typeof entry.role === 'string' && typeof entry.name === 'string' && typeof entry.content === 'string'
+	))
 })
 
 Deno.test('runSubAgent rejects over-depth and missing-limit spawns', async () => {

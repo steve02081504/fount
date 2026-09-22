@@ -171,7 +171,8 @@ ${hasCodeBlock ? `\
 		const styleLink = document.createElement('link')
 		styleLink.rel = 'stylesheet'
 		styleLink.crossOrigin = 'anonymous'
-		document.documentElement.colorScheme = 'only ' + (document.documentElement.dataset.theme = isDarkMode ? 'dark' : 'light')
+		const colorScheme = 'only ' + (document.documentElement.dataset.theme = isDarkMode ? 'dark' : 'light')
+		document.documentElement.setAttribute('color-scheme', document.documentElement.style.colorScheme = colorScheme)
 		styleLink.href = 'https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown-' + (isDarkMode ? 'dark' : 'light') + '.min.css'
 		document.head.appendChild(styleLink)
 ${attachmentsHtml ? `

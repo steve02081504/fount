@@ -7,24 +7,43 @@
  */
 import { asyncTaskReplyHandlers } from './handler.mjs'
 import { getAsyncTaskPrompt } from './prompt.mjs'
-import { setAsyncToolingEnabled } from './registry.mjs'
+import { setAsyncTaskNotifier, setAsyncToolingEnabled } from './registry.mjs'
 
 const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /**
- * 插件加载钩子：启用统一异步工具。
+ * 默认任务生命周期通知实现：经用户事件通道推送给宿主 shell（尽力而为）。
+ * @param {{ phase: 'start' | 'settle', task: object }} event 生命周期事件
+ * @returns {Promise<void>}
+ */
+async function notifyAsyncTask(event) {
+	const username = event?.task?.owner?.username
+	if (!username) return
+	try {
+		const { sendEventToUser } = await import('../../../../server/web_server/event_dispatcher.mjs')
+		sendEventToUser(username, 'async-task', { phase: event.phase, ...event.task })
+	}
+	catch (error) {
+		console.warn('async-task: notifyAsyncTask 失败', error)
+	}
+}
+
+/**
+ * 插件加载钩子：启用统一异步工具并接入生命周期通知。
  * @returns {Promise<void>}
  */
 export async function Load() {
 	setAsyncToolingEnabled(true)
+	setAsyncTaskNotifier(notifyAsyncTask)
 }
 
 /**
- * 插件卸载钩子：停用统一异步工具。
+ * 插件卸载钩子：停用统一异步工具并断开通知。
  * @returns {Promise<void>}
  */
 export async function Unload() {
 	setAsyncToolingEnabled(false)
+	setAsyncTaskNotifier(null)
 }
 
 /**

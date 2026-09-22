@@ -3,12 +3,13 @@
  * 【职责】sub-agent 插件的 ReplyHandler 组：解析 `<create-subagent-batch>` / `<run-subagent>` / `<list-ai-sources>` / `<check-subagent>` / `<terminate-subagent>` 五个工具标签。
  * 【原理】标签层只做参数解析与工具回执；真正的解析、限额校验、生成循环在 runtime.mjs。严格错误（缺限额、深度超限、找不到批次/AI 源）以错误工具日志回报并建议下一轮生成。
  * 【数据结构】handler = defineReplyHandler(...)；批次 id 形如 `batch-<uuid>`。
- * 【关联】runtime.mjs 的 runSubAgent / terminateSubAgentRun / listAvailableAiSources / describeRunConversation / SubAgentError；state.mjs 的 createBatch / parsePluginListAttr / parsePluginListAttr；main.mjs 汇总为 ReplyHandler。
+ * 【关联】runtime.mjs 的 runSubAgent / terminateSubAgentRun / listAvailableAiSources / describeRunConversation / describeRunEntries / SubAgentError；state.mjs 的 createBatch / parsePluginListAttr；main.mjs 汇总为 ReplyHandler。
  */
 import { defineReplyHandler, defineReplyHandlers } from '../../shells/chat/src/reply/defineReplyHandler.mjs'
 
 import {
 	describeRunConversation,
+	describeRunEntries,
 	listAvailableAiSources,
 	parseBooleanAttr,
 	parseDurationMs,
@@ -36,14 +37,15 @@ function echo(text, limit = TOOL_ECHO_LIMIT) {
 /**
  * 写一条 sub-agent 工具回执。
  * @param {object} args 请求上下文
+ * @param {string} name 工具名（点分命名，供宿主 shell 映射人类可读标题）
  * @param {string} content 回执文本
  * @param {boolean} [isError] 是否为错误
  * @param {object} [extra] 额外字段（如 `extension.subAgent`，供宿主 shell 定位运行）
  * @returns {void}
  */
-function writeToolLog(args, content, isError = false, extra = {}) {
+function writeToolLog(args, name, content, isError = false, extra = {}) {
 	args.AddLongTimeLog?.({
-		name: 'sub-agent',
+		name,
 		role: 'tool',
 		content,
 		content_for_show: content,
@@ -107,7 +109,7 @@ export const createSubAgentBatchHandler = defineReplyHandler({
 			defaultTimeLimitMs: timeLimitMs,
 			defaultAiSource: call.params['ai-source'] || null,
 		})
-		writeToolLog(args, `已创建子代理批次：${batch.batchId}（共享上下文 ${batch.commonContext.length} 字符）。后续用 batch="${batch.batchId}" 派生子代理。`)
+		writeToolLog(args, 'sub-agent.create-batch', `已创建子代理批次：${batch.batchId}（共享上下文 ${batch.commonContext.length} 字符）。后续用 batch="${batch.batchId}" 派生子代理。`)
 		return { regen: true }
 	},
 })
@@ -146,16 +148,16 @@ export const runSubAgentHandler = defineReplyHandler({
 		try {
 			const outcome = await runSubAgent(args, request)
 			if (request.async)
-				writeToolLog(args, `子代理已在后台运行，backgroundId=${outcome.backgroundId}。可用 <await-async ids="${outcome.backgroundId}"/> 等待，或用 <list-async/> 查看；未被等待时完成后会以系统消息通知你。`, false, runToolMeta(outcome.run, true))
+				writeToolLog(args, 'sub-agent.run', `子代理已在后台运行，backgroundId=${outcome.backgroundId}。可用 <await-async ids="${outcome.backgroundId}"/> 等待，或用 <list-async/> 查看；未被等待时完成后会以系统消息通知你。`, false, runToolMeta(outcome.run, true))
 			else
-				writeToolLog(args, `子代理已完成，最终结果：\n\n${echo(outcome.text)}`, false, runToolMeta(outcome.run, false))
+				writeToolLog(args, 'sub-agent.run', `子代理已完成，最终结果：\n\n${echo(outcome.text)}`, false, runToolMeta(outcome.run, false))
 		}
 		catch (error) {
 			if (error instanceof SubAgentError)
-				writeToolLog(args, `子代理未启动（${error.code}）：${error.message}`, true)
+				writeToolLog(args, 'sub-agent.run', `子代理未启动（${error.code}）：${error.message}`, true)
 			else {
 				console.error('sub-agent: run-subagent 失败', error)
-				writeToolLog(args, `子代理运行失败：${error?.message ?? error}`, true)
+				writeToolLog(args, 'sub-agent.run', `子代理运行失败：${error?.message ?? error}`, true)
 			}
 		}
 		return { regen: true }
@@ -188,11 +190,11 @@ export const listAiSourcesHandler = defineReplyHandler({
 					return head + suffix + desc
 				}).join('\n')
 				: '（无可用 AI 源）'
-			writeToolLog(args, `可用 AI 源：\n${lines}`)
+			writeToolLog(args, 'sub-agent.list-ai-sources', `可用 AI 源：\n${lines}`)
 		}
 		catch (error) {
 			console.error('sub-agent: list-ai-sources 失败', error)
-			writeToolLog(args, `枚举 AI 源失败：${error?.message ?? error}`, true)
+			writeToolLog(args, 'sub-agent.list-ai-sources', `枚举 AI 源失败：${error?.message ?? error}`, true)
 		}
 		return { regen: true }
 	},
@@ -216,11 +218,27 @@ export const checkSubAgentHandler = defineReplyHandler({
 		const id = call.params.id
 		const run = getRun(id) ?? getRunByBackgroundId(id)
 		if (!run) {
-			writeToolLog(args, `未找到子代理运行 "${id}"。`, true)
+			writeToolLog(args, 'sub-agent.check', `未找到子代理运行 "${id}"。`, true)
 			return { regen: true }
 		}
 		const conversationText = describeRunConversation(run, 3) || '（暂无对话）'
-		writeToolLog(args, `子代理 ${run.runId} 状态：${run.state}（轮次 ${run.rounds}/${run.roundLimit}）。最近对话：\n\n${echo(conversationText)}`)
+		writeToolLog(
+			args,
+			'sub-agent.check',
+			`子代理 ${run.runId} 状态：${run.state}（轮次 ${run.rounds}/${run.roundLimit}）。最近对话：\n\n${echo(conversationText)}`,
+			false,
+			{
+				extension: {
+					subAgentCheck: {
+						runId: run.runId,
+						state: run.state,
+						rounds: run.rounds,
+						roundLimit: run.roundLimit,
+						entries: describeRunEntries(run, 3, 4000),
+					},
+				},
+			},
+		)
 		return { regen: true }
 	},
 })
@@ -242,9 +260,9 @@ export const terminateSubAgentHandler = defineReplyHandler({
 	handle: async (reply, args, call) => {
 		const outcome = terminateSubAgentRun(call.params.id)
 		if (!outcome.ok)
-			writeToolLog(args, `未找到子代理运行 "${call.params.id}"。`, true)
+			writeToolLog(args, 'sub-agent.terminate', `未找到子代理运行 "${call.params.id}"。`, true)
 		else
-			writeToolLog(args, `已请求终止子代理 ${outcome.run.runId}（软取消：在当前工具调用结束后、下一轮开始前生效并进入摘要；若它正卡在不可中断的进程内任务中，可能仍需等其自然结束，超时后也会强制收尾）。`)
+			writeToolLog(args, 'sub-agent.terminate', `已请求终止子代理 ${outcome.run.runId}（软取消：在当前工具调用结束后、下一轮开始前生效并进入摘要；若它正卡在不可中断的进程内任务中，可能仍需等其自然结束，超时后也会强制收尾）。`)
 		return { regen: true }
 	},
 })

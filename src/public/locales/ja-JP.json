@@ -6625,7 +6625,20 @@
 			"viewFiles": "ファイル表示",
 			"addFiles": "ファイル送信",
 			"callback": "ツールコールバック",
-			"runShell": "${lang} を実行"
+			"runShell": "${lang} を実行",
+			"subAgent": {
+				"createBatch": "サブエージェントのバッチを作成",
+				"run": "サブエージェントを実行",
+				"listAiSources": "AI ソースを一覧",
+				"check": "サブエージェントの会話を表示",
+				"terminate": "サブエージェントを終了"
+			},
+			"async": {
+				"list": "非同期タスクを一覧",
+				"await": "非同期タスクを待機",
+				"notice": "バックグラウンドタスク通知",
+				"run": "${kind} をバックグラウンド実行"
+			}
 		},
 		"subagent": {
 			"title": "サブエージェント",
@@ -6638,6 +6651,32 @@
 				"done": "完了",
 				"terminated": "終了",
 				"failed": "失敗"
+			},
+			"check": {
+				"open": "Agent Studio で開く",
+				"rounds": "ラウンド ${rounds}/${roundLimit}"
+			}
+		},
+		"transcript": {
+			"role": {
+				"tool": "ツール",
+				"char": "キャラクター",
+				"user": "ユーザー",
+				"system": "システム"
+			}
+		},
+		"asyncTasks": {
+			"title": "バックグラウンドタスク",
+			"none": "進行中の非同期タスクはありません。",
+			"timedOut": "タイムアウト：まだ実行中のタスクがあります。",
+			"open": "バックグラウンドタスク：${label}",
+			"working": "バックグラウンドタスク実行中（${kind}）",
+			"state": {
+				"running": "実行中",
+				"done": "完了",
+				"failed": "失敗",
+				"unknown": "見つかりません",
+				"idle": "バックグラウンドタスク"
 			}
 		}
 	},

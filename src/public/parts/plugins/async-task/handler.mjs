@@ -38,19 +38,37 @@ function formatElapsed(ms) {
 /**
  * 写一条 async-task 工具回执。
  * @param {object} args 请求上下文
+ * @param {string} name 工具名（点分命名，供宿主 shell 映射人类可读标题）
  * @param {string} content 回执文本
  * @param {boolean} [isError] 是否为错误
+ * @param {object} [extra] 额外字段（结构化载荷，供宿主 shell 渲染可读 UI）
  * @returns {void}
  */
-function writeToolLog(args, content, isError = false) {
+function writeToolLog(args, name, content, isError = false, extra = {}) {
 	args.AddLongTimeLog?.({
-		name: 'async-task',
+		name,
 		role: 'tool',
 		content,
 		content_for_show: content,
 		files: [],
 		...isError ? { extension: { error: true } } : {},
+		...extra,
 	})
+}
+
+/**
+ * 取任务结果的可读文本（子代理运行取 `finalText`，其余按字符串/JSON 兜底）。
+ * @param {object} task 任务
+ * @returns {string} 结果文本
+ */
+function taskResultText(task) {
+	const result = task?.result
+	if (result == null) return ''
+	if (typeof result === 'string') return result
+	if (typeof result.finalText === 'string') return result.finalText
+	if (typeof result.text === 'string') return result.text
+	try { return JSON.stringify(result, null, '\t') }
+	catch { return String(result) }
 }
 
 /**
@@ -66,7 +84,7 @@ function formatAwaitResult(result, mode) {
 		for (const task of result.settled) {
 			const detail = task.state === 'failed'
 				? `失败：${task.error?.message ?? '未知错误'}`
-				: `结果：${echo(String(task.result ?? ''), 2000)}`
+				: `结果：${echo(taskResultText(task), 2000)}`
 			lines.push(`- ${task.id}（${task.kind}）：${detail}`)
 		}
 	}
@@ -101,15 +119,25 @@ export const listAsyncHandler = defineReplyHandler({
 			parentRunId: owner.parentRunId,
 			kind,
 		})
+		const view = tasks.map(task => ({
+			id: task.id,
+			kind: task.kind,
+			label: task.label,
+			startedAt: task.startedAt,
+		}))
 		if (!tasks.length) {
-			writeToolLog(args, '当前没有进行中的异步任务。')
+			writeToolLog(args, 'async-task.list', '当前没有进行中的异步任务。', false, {
+				extension: { asyncList: { kind: kind ?? null, tasks: [] } },
+			})
 			return { regen: true }
 		}
 		const now = Date.now()
 		const lines = tasks.map(task =>
 			`- [${task.kind}] ${task.id}（已运行 ${formatElapsed(now - task.startedAt)}）${task.label ? `：${task.label}` : ''}`
 		)
-		writeToolLog(args, `进行中的异步任务（${tasks.length}）：\n${lines.join('\n')}`)
+		writeToolLog(args, 'async-task.list', `进行中的异步任务（${tasks.length}）：\n${lines.join('\n')}`, false, {
+			extension: { asyncList: { kind: kind ?? null, tasks: view } },
+		})
 		return { regen: true }
 	},
 })
@@ -131,18 +159,34 @@ export const awaitAsyncHandler = defineReplyHandler({
 	handle: async (reply, args, call) => {
 		const ids = String(call.params.ids ?? '').split(',').map(id => id.trim()).filter(Boolean)
 		if (!ids.length) {
-			writeToolLog(args, 'await-async 需要 ids（逗号分隔的任务 id）。', true)
+			writeToolLog(args, 'async-task.await', 'await-async 需要 ids（逗号分隔的任务 id）。', true)
 			return { regen: true }
 		}
 		const mode = String(call.params.mode ?? '').trim().toLowerCase() === 'any' ? 'any' : 'all'
 		const timeoutMs = parseDurationMs(call.params['time-limit']) ?? DEFAULT_AWAIT_TIMEOUT_MS
 		try {
 			const result = await awaitTasks(ids, { mode, timeoutMs, signal: args.generation_options?.signal })
-			writeToolLog(args, formatAwaitResult(result, mode))
+			writeToolLog(args, 'async-task.await', formatAwaitResult(result, mode), false, {
+				extension: {
+					asyncAwait: {
+						mode,
+						timedOut: result.timedOut,
+						settled: result.settled.map(task => ({
+							id: task.id,
+							kind: task.kind,
+							state: task.state,
+							result: task.state === 'failed' ? '' : echo(taskResultText(task), 4000),
+							error: task.state === 'failed' ? task.error?.message ?? '未知错误' : '',
+						})),
+						pending: result.pending,
+						unknown: result.unknown,
+					},
+				},
+			})
 		}
 		catch (error) {
 			console.error('async-task: await-async 失败', error)
-			writeToolLog(args, `等待异步任务失败：${error?.message ?? error}`, true)
+			writeToolLog(args, 'async-task.await', `等待异步任务失败：${error?.message ?? error}`, true)
 		}
 		return { regen: true }
 	},

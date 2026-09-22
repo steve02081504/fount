@@ -6625,7 +6625,20 @@
 			"viewFiles": "查看文件",
 			"addFiles": "发送文件",
 			"callback": "工具回调",
-			"runShell": "运行 ${lang}"
+			"runShell": "运行 ${lang}",
+			"subAgent": {
+				"createBatch": "创建子代理批次",
+				"run": "运行子代理",
+				"listAiSources": "列出 AI 源",
+				"check": "查看子代理对话",
+				"terminate": "终止子代理"
+			},
+			"async": {
+				"list": "列出异步任务",
+				"await": "等待异步任务",
+				"notice": "后台任务通知",
+				"run": "后台运行 ${kind}"
+			}
 		},
 		"subagent": {
 			"title": "子代理",
@@ -6638,6 +6651,32 @@
 				"done": "已完成",
 				"terminated": "已终止",
 				"failed": "已失败"
+			},
+			"check": {
+				"open": "在 Agent Studio 打开",
+				"rounds": "轮次 ${rounds}/${roundLimit}"
+			}
+		},
+		"transcript": {
+			"role": {
+				"tool": "工具",
+				"char": "角色",
+				"user": "用户",
+				"system": "系统"
+			}
+		},
+		"asyncTasks": {
+			"title": "后台任务",
+			"none": "当前没有进行中的异步任务。",
+			"timedOut": "等待超时：仍有任务在进行中。",
+			"open": "后台任务：${label}",
+			"working": "后台任务运行中（${kind}）",
+			"state": {
+				"running": "运行中",
+				"done": "已完成",
+				"failed": "已失败",
+				"unknown": "未找到",
+				"idle": "后台任务"
 			}
 		}
 	},

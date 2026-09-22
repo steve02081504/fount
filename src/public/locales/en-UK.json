@@ -6625,7 +6625,20 @@
 			"viewFiles": "View files",
 			"addFiles": "Send files",
 			"callback": "Tool callback",
-			"runShell": "Run ${lang}"
+			"runShell": "Run ${lang}",
+			"subAgent": {
+				"createBatch": "Create sub-agent batch",
+				"run": "Run sub-agent",
+				"listAiSources": "List AI sources",
+				"check": "Inspect sub-agent conversation",
+				"terminate": "Terminate sub-agent"
+			},
+			"async": {
+				"list": "List async tasks",
+				"await": "Await async tasks",
+				"notice": "Background task notice",
+				"run": "Run ${kind} in background"
+			}
 		},
 		"subagent": {
 			"title": "Sub-agent",
@@ -6638,6 +6651,32 @@
 				"done": "Done",
 				"terminated": "Terminated",
 				"failed": "Failed"
+			},
+			"check": {
+				"open": "Open in Agent Studio",
+				"rounds": "Round ${rounds}/${roundLimit}"
+			}
+		},
+		"transcript": {
+			"role": {
+				"tool": "Tool",
+				"char": "Character",
+				"user": "User",
+				"system": "System"
+			}
+		},
+		"asyncTasks": {
+			"title": "Background task",
+			"none": "No async tasks in progress.",
+			"timedOut": "Timed out: some tasks are still running.",
+			"open": "Background task: ${label}",
+			"working": "Background task running (${kind})",
+			"state": {
+				"running": "Running",
+				"done": "Done",
+				"failed": "Failed",
+				"unknown": "Not found",
+				"idle": "Background task"
 			}
 		}
 	},

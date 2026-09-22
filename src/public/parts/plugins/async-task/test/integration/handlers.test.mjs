@@ -59,12 +59,17 @@ Deno.test('list-async reports in-flight tasks for the current owner', async () =
 
 	await listAsyncHandler.handle(null, args, { params: {} })
 	assertEquals(args.logs.length, 1)
+	assertEquals(args.logs[0].name, 'async-task.list')
 	assert(args.logs[0].content.includes('do a thing'))
 	assert(args.logs[0].content.includes(task.id))
+	assertEquals(args.logs[0].extension?.asyncList?.tasks?.length, 1)
+	assertEquals(args.logs[0].extension.asyncList.tasks[0].id, task.id)
 
 	args.logs.length = 0
 	await listAsyncHandler.handle(null, args, { params: { kind: 'js' } })
+	assertEquals(args.logs[0].name, 'async-task.list')
 	assert(args.logs[0].content.includes('没有进行中'))
+	assertEquals(args.logs[0].extension?.asyncList?.tasks, [])
 })
 
 Deno.test('await-async waits and returns the settled result', async () => {
@@ -74,8 +79,13 @@ Deno.test('await-async waits and returns the settled result', async () => {
 
 	await awaitAsyncHandler.handle(null, args, { params: { ids: task.id, mode: 'all' } })
 	const last = args.logs.at(-1)
+	assertEquals(last.name, 'async-task.await')
 	assert(last.content.includes('RESULT-TEXT'))
 	assert(last.content.includes('已完成'))
+	assertEquals(last.extension?.asyncAwait?.mode, 'all')
+	assertEquals(last.extension.asyncAwait.settled.length, 1)
+	assertEquals(last.extension.asyncAwait.settled[0].state, 'done')
+	assert(last.extension.asyncAwait.settled[0].result.includes('RESULT-TEXT'))
 })
 
 Deno.test('await-async errors without ids', async () => {

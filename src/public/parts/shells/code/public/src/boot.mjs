@@ -8,6 +8,7 @@ import { renderMarkdownAsString } from '/scripts/features/markdown/index.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
 import { geti18n, initTranslations, onLanguageChange } from '/scripts/i18n/index.mjs'
 
+import { handleAsyncTaskEvent } from './asynctasks.mjs'
 import { ensureHistory, updateComposerPlaceholder, wireComposerEvents } from './composer.mjs'
 import * as api from './endpoints.mjs'
 import { registerFountUserApi } from './fountUser.mjs'
@@ -102,6 +103,7 @@ export async function boot() {
 	await initTranslations('code')
 	await mountPillChrome()
 	onServerEvent('subagent-run', handleSubAgentEvent)
+	onServerEvent('async-task', handleAsyncTaskEvent)
 	// createMarkdownRichInput 初始化即聚焦 composer：待 pill 镀铬挂载后再建，避免早聚焦触发与装载的竞态
 	initComposer()
 	wireComposerEvents()

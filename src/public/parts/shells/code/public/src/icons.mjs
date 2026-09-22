@@ -50,4 +50,8 @@ export const icons = {
 	loading: 'mdi/loading',
 	stopCircle: 'mdi/stop-circle-outline',
 	alertCircle: 'mdi/alert-circle-outline',
+	checkCircle: 'mdi/check-circle-outline',
+	clock: 'mdi/timer-sand',
+	javascript: 'mdi/language-javascript',
+	terminal: 'mdi/console-line',
 }

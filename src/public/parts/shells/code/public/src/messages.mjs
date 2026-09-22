@@ -8,10 +8,11 @@ import { svgInliner } from '/scripts/lib/svgInliner.mjs'
 import { renderMarkdownAsStandaloneDocument } from '/parts/shells:gist/src/standaloneDocument.mjs'
 import { createGist } from '/parts/shells:gist/src/endpoints.mjs'
 
+import { asyncTaskCardElement, updateAsyncTaskCards } from './asynctasks.mjs'
 import { iconElement, icons } from './icons.mjs'
 import { markSessionDirty, regenerateLastReply } from './session.mjs'
 import { elements, store, SCROLL_TOLERANCE } from './store.mjs'
-import { subAgentCardElement, updateSubAgentCards } from './subagents.mjs'
+import { openSubAgent, subAgentCardElement, updateSubAgentCards } from './subagents.mjs'
 import { renderTemplate } from './templates.mjs'
 
 /**
@@ -37,6 +38,36 @@ const TOOL_NAME_I18N = {
 	'code-execution.view_files': 'code.tool.viewFiles',
 	'code-execution.add_files': 'code.tool.addFiles',
 	'code-execution.callback': 'code.tool.callback',
+	'sub-agent.create-batch': 'code.tool.subAgent.createBatch',
+	'sub-agent.run': 'code.tool.subAgent.run',
+	'sub-agent.list-ai-sources': 'code.tool.subAgent.listAiSources',
+	'sub-agent.check': 'code.tool.subAgent.check',
+	'sub-agent.terminate': 'code.tool.subAgent.terminate',
+	'async-task.list': 'code.tool.async.list',
+	'async-task.await': 'code.tool.async.await',
+	'async-task': 'code.tool.async.notice',
+}
+
+/** 子代理内部对话的角色标签 i18n 键（未知角色回落原始名）。 */
+const TRANSCRIPT_ROLE_I18N = {
+	tool: 'code.transcript.role.tool',
+	char: 'code.transcript.role.char',
+	user: 'code.transcript.role.user',
+	system: 'code.transcript.role.system',
+}
+
+/**
+ * 由工具名取人类可读标签（无 i18n 映射时回落原始名）。
+ * @param {string} name - 工具名。
+ * @returns {string} 标签。
+ */
+function labelForToolName(name) {
+	if (!name) return ''
+	const key = TOOL_NAME_I18N[name]
+	if (key) return geti18n(key)
+	const run = name.match(/^code-execution\.(?:run|inline)-(.+)$/)
+	if (run) return geti18n('code.tool.runShell', { lang: run[1] })
+	return name
 }
 
 /**
@@ -56,11 +87,165 @@ function toolTagName(entry) {
  */
 function toolDisplayLabel(entry) {
 	const name = entry.name || entry.role
-	const key = TOOL_NAME_I18N[name]
-	if (key) return geti18n(key)
-	const run = name.match(/^code-execution\.(?:run|inline)-(.+)$/)
-	if (run) return geti18n('code.tool.runShell', { lang: run[1] })
-	return toolTagName(entry) ?? name
+	if (name === 'code-execution.async')
+		return geti18n('code.tool.async.run', { kind: entry.extension?.asyncTask?.kind || '' })
+	if (TOOL_NAME_I18N[name] || /^code-execution\.(?:run|inline)-/.test(name))
+		return labelForToolName(name)
+	return toolTagName(entry) ?? labelForToolName(name)
+}
+
+/**
+ * 渲染一条子代理内部对话条目（角色标签 + 名字 + markdown 正文）。
+ * @param {{role: string, name: string, content: string}} item - 条目。
+ * @returns {HTMLElement} 条目元素。
+ */
+function renderTranscriptEntry(item) {
+	const row = document.createElement('div')
+	row.className = `code-transcript-entry role-${item.role || 'system'}`
+	const head = document.createElement('div')
+	head.className = 'code-transcript-entry-head'
+	const role = document.createElement('span')
+	role.className = 'code-transcript-role'
+	role.textContent = TRANSCRIPT_ROLE_I18N[item.role] ? geti18n(TRANSCRIPT_ROLE_I18N[item.role]) : item.role || ''
+	const name = document.createElement('span')
+	name.className = 'code-transcript-name'
+	name.setAttribute('user-content', '')
+	name.textContent = item.role === 'tool' ? labelForToolName(item.name) : item.name || ''
+	head.append(role, name)
+	const body = document.createElement('div')
+	body.className = 'code-transcript-body'
+	body.setAttribute('user-content', '')
+	renderMarkdownAsString(messageMarkdown(item.content ?? ''), store.markdownCache).then(html => {
+		body.innerHTML = html
+	})
+	row.append(head, body)
+	return row
+}
+
+/**
+ * 渲染 `check-subagent` 的结构化对话卡（状态 + 轮次 + 打开 Agent Studio + 最近对话条目）。
+ * @param {object} entry - 会话条目。
+ * @returns {HTMLElement} 卡片。
+ */
+function renderSubAgentCheck(entry) {
+	const meta = entry.extension.subAgentCheck ?? {}
+	const wrap = document.createElement('div')
+	wrap.className = 'code-subagent-check'
+	const head = document.createElement('div')
+	head.className = 'code-subagent-check-head'
+	const state = document.createElement('span')
+	state.className = `badge badge-sm code-subagent-check-state state-${meta.state || 'done'}`
+	state.textContent = geti18n(`code.subagent.state.${meta.state || 'done'}`)
+	const rounds = document.createElement('span')
+	rounds.className = 'code-subagent-check-meta'
+	rounds.textContent = geti18n('code.subagent.check.rounds', { rounds: meta.rounds ?? 0, roundLimit: meta.roundLimit ?? '-' })
+	const open = document.createElement('button')
+	open.type = 'button'
+	open.className = 'btn btn-ghost btn-xs code-subagent-check-open'
+	open.textContent = geti18n('code.subagent.check.open')
+	open.addEventListener('click', () => openSubAgent(meta.runId))
+	head.append(state, rounds, open)
+	wrap.appendChild(head)
+	const list = document.createElement('div')
+	list.className = 'code-transcript'
+	for (const item of meta.entries ?? []) list.appendChild(renderTranscriptEntry(item))
+	wrap.appendChild(list)
+	return wrap
+}
+
+/**
+ * 渲染统一异步任务行（类型 / 标签 / id / 状态 / 结果）。
+ * @param {object} task - 任务摘要。
+ * @returns {HTMLElement} 任务行。
+ */
+function renderAsyncTaskRow(task) {
+	const row = document.createElement('div')
+	row.className = `code-async-task-row state-${task.state || 'running'}`
+	const head = document.createElement('div')
+	head.className = 'code-async-task-row-head'
+	const kind = document.createElement('span')
+	kind.className = 'code-async-task-kind'
+	kind.textContent = task.kind || ''
+	const label = document.createElement('span')
+	label.className = 'code-async-task-label'
+	label.setAttribute('user-content', '')
+	label.textContent = task.label || ''
+	const id = document.createElement('code')
+	id.className = 'code-async-task-id'
+	id.textContent = task.id || ''
+	const state = document.createElement('span')
+	state.className = 'badge badge-sm code-async-task-state'
+	state.textContent = stateLabelOf(task.state)
+	head.append(kind, label, id, state)
+	row.appendChild(head)
+	const bodyText = task.state === 'failed' ? task.error : task.result
+	if (bodyText) {
+		const body = document.createElement('div')
+		body.className = 'code-async-task-result'
+		body.setAttribute('user-content', '')
+		renderMarkdownAsString(messageMarkdown(String(bodyText)), store.markdownCache).then(html => {
+			body.innerHTML = html
+		})
+		row.appendChild(body)
+	}
+	return row
+}
+
+/** 异步任务状态的 i18n 键（未知状态回落 idle，避免缺键告警）。 */
+const ASYNC_STATE_I18N = {
+	running: 'code.asyncTasks.state.running',
+	done: 'code.asyncTasks.state.done',
+	failed: 'code.asyncTasks.state.failed',
+	unknown: 'code.asyncTasks.state.unknown',
+	idle: 'code.asyncTasks.state.idle',
+}
+
+/**
+ * 异步任务状态文案。
+ * @param {string} state - 状态。
+ * @returns {string} 文案。
+ */
+function stateLabelOf(state) {
+	return geti18n(ASYNC_STATE_I18N[state] ?? ASYNC_STATE_I18N.idle)
+}
+
+/**
+ * 渲染 `<list-async/>` 的结构化任务列表。
+ * @param {object} entry - 会话条目。
+ * @returns {HTMLElement} 列表。
+ */
+function renderAsyncList(entry) {
+	const meta = entry.extension.asyncList ?? {}
+	const wrap = document.createElement('div')
+	wrap.className = 'code-async-task-list'
+	if (!meta.tasks?.length) {
+		wrap.classList.add('empty')
+		wrap.textContent = geti18n('code.asyncTasks.none')
+		return wrap
+	}
+	for (const task of meta.tasks) wrap.appendChild(renderAsyncTaskRow({ ...task, state: 'running' }))
+	return wrap
+}
+
+/**
+ * 渲染 `<await-async/>` 的结构化等待结果。
+ * @param {object} entry - 会话条目。
+ * @returns {HTMLElement} 列表。
+ */
+function renderAsyncAwait(entry) {
+	const meta = entry.extension.asyncAwait ?? {}
+	const wrap = document.createElement('div')
+	wrap.className = 'code-async-task-list'
+	for (const task of meta.settled ?? []) wrap.appendChild(renderAsyncTaskRow(task))
+	for (const id of meta.pending ?? []) wrap.appendChild(renderAsyncTaskRow({ id, state: 'running' }))
+	for (const id of meta.unknown ?? []) wrap.appendChild(renderAsyncTaskRow({ id, state: 'unknown' }))
+	if (meta.timedOut) {
+		const note = document.createElement('div')
+		note.className = 'code-async-task-note'
+		note.textContent = geti18n('code.asyncTasks.timedOut')
+		wrap.appendChild(note)
+	}
+	return wrap
 }
 
 /**
@@ -346,13 +531,16 @@ function renderEntryBubble(entry, { isLast = false } = {}) {
 	const body = document.createElement('div')
 	body.className = 'code-message-body'
 	bubble.appendChild(body)
-	if (entry.role === 'tool' && entry.extension?.subAgent?.runId) 
+	if (entry.role === 'tool' && entry.extension?.subAgent?.runId)
 		body.appendChild(subAgentCardElement(entry))
-	
+
+	else if (entry.role === 'tool' && entry.extension?.asyncTask?.id)
+		body.appendChild(asyncTaskCardElement(entry))
+
 	else if (entry.role === 'tool' || entry.role === 'system') {
 		const details = document.createElement('details')
 		details.className = 'code-tool-log'
-		if (entry.name === 'shell' || entry.name?.startsWith('code-execution')) details.open = true
+		if (entry.name === 'shell' || entry.name === 'sub-agent.check' || entry.name?.startsWith('code-execution')) details.open = true
 		const summary = document.createElement('summary')
 		const chevron = document.createElement('span')
 		chevron.className = 'code-tool-log-chevron'
@@ -376,6 +564,12 @@ function renderEntryBubble(entry, { isLast = false } = {}) {
 			output.textContent = stream.output || ''
 			content.append(command, output)
 		}
+		else if (entry.extension?.subAgentCheck)
+			content.appendChild(renderSubAgentCheck(entry))
+		else if (entry.extension?.asyncList)
+			content.appendChild(renderAsyncList(entry))
+		else if (entry.extension?.asyncAwait)
+			content.appendChild(renderAsyncAwait(entry))
 		else
 			renderMarkdownAsString(messageMarkdown(entryShowText(entry)), store.markdownCache).then(html => {
 				content.innerHTML = html
@@ -483,6 +677,7 @@ export function renderMessages() {
 	updateScrollShadow()
 	updateRegenButtons()
 	updateSubAgentCards()
+	updateAsyncTaskCards()
 }
 
 /**
@@ -500,5 +695,6 @@ export function appendEntryBubble(entry) {
 	updateBackToBottom()
 	updateRegenButtons()
 	updateSubAgentCards()
+	updateAsyncTaskCards()
 	return bubble
 }

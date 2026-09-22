@@ -335,3 +335,12 @@ export async function deleteSession(target, id) {
 export async function getSubAgents(chatId) {
 	return requestJson(`/api/parts/shells:agent_studio/subagents?chatId=${encodeURIComponent(chatId)}`)
 }
+
+/**
+ * 列出某 code 会话进行中的统一异步任务（已完成任务已从注册表释放）。
+ * @param {string} chatId - 会话 chat id（`code-<sessionId>`）。
+ * @returns {Promise<{tasks: Array<{id: string, kind: string, label: string, startedAt: number, meta: object}>}>} 进行中的任务。
+ */
+export async function getAsyncTasks(chatId) {
+	return requestJson(`${API_BASE}/async-tasks?chatId=${encodeURIComponent(chatId)}`)
+}
