@@ -4,7 +4,7 @@
  * 【原理】纯文本经 `textContent` 写入，避免注入；元信息经 i18n 插值渲染为小徽章。
  * 【关联】endpoints.mjs、index.html 的 #generationDialog、views/dashboard.mjs、views/generations.mjs。
  */
-import { geti18n } from '/scripts/i18n/index.mjs'
+import { geti18n, primaryLocale } from '/scripts/i18n/index.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
 
 import { getGeneration } from '../endpoints.mjs'
@@ -32,7 +32,7 @@ export async function openGenerationDialog(id) {
 					model: record.model || '-',
 				}),
 				record.charname ? geti18n('agent_studio.generation.character', { name: record.charname }) : '',
-				formatTime(record.startedAt),
+				formatTime(record.startedAt, primaryLocale()),
 			].filter(Boolean)
 			for (const text of chips) {
 				const chip = document.createElement('span')

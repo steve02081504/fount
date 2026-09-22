@@ -11,7 +11,7 @@ import { createReadyGate } from '/scripts/test/ready_gate.mjs'
 
 import { reloadBenchmarks, reloadChars, reloadRetention } from './src/data.mjs'
 import { AGENT_STUDIO_GATE } from './src/gate.mjs'
-import { applyIncomingNavigation, switchView } from './src/navigation.mjs'
+import { applyIncomingNavigation, installNavigationEvents, switchView } from './src/navigation.mjs'
 import { currentMainView } from './src/viewChrome.mjs'
 import { initBenchmarksView } from './src/views/benchmarks.mjs'
 import { initDashboardView } from './src/views/dashboard.mjs'
@@ -59,6 +59,7 @@ async function boot() {
 		applyTheme()
 		await initTranslations('agent_studio')
 		wireNavigation()
+		installNavigationEvents()
 		initDashboardView()
 		initGenerationsView()
 		initBenchmarksView()

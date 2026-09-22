@@ -16,7 +16,7 @@ import { getRun as getLiveRun, listBatches as listLiveBatches, listRuns as listL
 import { BUILTIN_PERSONA, BUILTIN_WORLD } from '../../chat/src/chat/session/builtinParts.mjs'
 
 import { buildJudgePrompt, computeStats, normalizeBenchmark, parseJudgeResponse } from './benchmark.mjs'
-import { buildChains, getGeneration, getRetention, listGenerations, recordGeneration, setRetention } from './generation_history.mjs'
+import { getGeneration, listGenerations, recordGeneration } from './generation_history.mjs'
 
 /** shell data 命名空间。 */
 const SHELL_NAME = 'agent_studio'
@@ -326,7 +326,8 @@ export async function runBenchmark(username, benchmarkId, config = {}) {
 	if (!char?.interfaces?.chat?.GetReply)
 		throw httpError(400, `char "${charId}" does not support chat.GetReply`)
 	const aiSource = config.aiSource ? await loadPart(username, 'serviceSources/AI/' + config.aiSource) : undefined
-	const judgeSource = await resolveJudgeSource(username, config.judgeAiSource)
+	const needsJudge = benchmark.cases.some(caseItem => caseItem.criteria || caseItem.expected !== undefined)
+	const judgeSource = needsJudge ? await resolveJudgeSource(username, config.judgeAiSource) : null
 	const charInfo = pickLocalizedSlice(char.info, localhostLocales) || {}
 	/** @type {object} */
 	const run = {
@@ -372,7 +373,7 @@ async function runBenchmarkCase({ username, benchmark, caseItem, char, charInfo,
 		charname: charInfo.name,
 		conversationId: 'benchmark:' + run.id,
 		source: BENCHMARK_SOURCE,
-		input: caseItem.input,
+		input: request.chat_log,
 		response,
 		metadata: { benchmarkId: benchmark.id, caseId: caseItem.id, runId: run.id },
 	})
@@ -478,8 +479,3 @@ export function buildBenchmarkRequest({ username, charId, benchmark, caseItem, c
 		Update: async function update() { return this },
 	}
 }
-
-/**
- * 重导出生成历史查询接口，便于调用方从 studio 模块统一获取。
- */
-export { buildChains, getGeneration, getRetention, listGenerations, setRetention }

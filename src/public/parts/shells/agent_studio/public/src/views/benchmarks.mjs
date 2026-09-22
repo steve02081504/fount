@@ -19,6 +19,7 @@ import {
 	updateBenchmark,
 } from '../endpoints.mjs'
 import { bindActivate } from '../lib/activate.mjs'
+import { fillCharOptions } from '../lib/charOptions.mjs'
 import { mountEmptyState } from '../lib/emptyState.mjs'
 import { truncate } from '../lib/format.mjs'
 import { state } from '../state.mjs'
@@ -73,7 +74,9 @@ async function renderBenchmarkList() {
 			caseCount: String(benchmark.caseCount ?? 0),
 		})
 		item.classList.toggle('active', benchmark.id === state.activeBenchmarkId)
-		bindActivate(item, () => { void selectBenchmark(benchmark.id) })
+		bindActivate(item, () => {
+			selectBenchmark(benchmark.id).catch(error => showToastI18n('error', 'agent_studio.alerts.loadFailed', { message: error.message }))
+		})
 		list.appendChild(item)
 	}
 	empty.classList.toggle('hidden', state.benchmarks.length > 0)
@@ -147,7 +150,9 @@ async function saveBenchmarkCases() {
 	const textarea = document.getElementById('benchmarkCasesText')
 	let cases
 	try {
-		cases = JSON.parse(textarea instanceof HTMLTextAreaElement ? textarea.value || '[]' : '[]')
+		const parsed = JSON.parse(textarea instanceof HTMLTextAreaElement ? textarea.value || '[]' : '[]')
+		if (!Array.isArray(parsed)) throw new TypeError('用例必须是 JSON 数组')
+		cases = parsed
 	}
 	catch (error) {
 		showToastI18n('error', 'agent_studio.benchmarks.casesInvalid', { message: error.message })
@@ -178,13 +183,7 @@ async function removeBenchmark() {
 function renderRunCharOptions() {
 	const select = document.getElementById('runCharSelect')
 	if (!(select instanceof HTMLSelectElement)) return
-	select.replaceChildren()
-	for (const char of state.chars) {
-		const option = document.createElement('option')
-		option.value = char.id
-		option.textContent = char.info?.name || char.id
-		select.appendChild(option)
-	}
+	fillCharOptions(select)
 	if (state.activeCharId && state.chars.some(char => char.id === state.activeCharId))
 		select.value = state.activeCharId
 }

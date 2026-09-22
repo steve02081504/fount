@@ -39,11 +39,12 @@ export function truncate(value, max = 80) {
 }
 
 /**
- * 把毫秒时间戳本地化为可读字符串。
+ * 把毫秒时间戳按指定 locale 格式化为可读字符串。
  * @param {number} [ms] 毫秒时间戳
+ * @param {string} [locale] BCP 47 locale（缺省用浏览器 locale）
  * @returns {string} 本地时间；无效时为空串
  */
-export function formatTime(ms) {
+export function formatTime(ms, locale) {
 	if (!ms) return ''
-	return new Date(ms).toLocaleString()
+	return new Date(ms).toLocaleString(locale)
 }

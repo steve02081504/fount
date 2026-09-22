@@ -540,36 +540,6 @@
 	border-left: var(--border) solid var(--border-color);
 }
 
-.chain-node-btn {
-	display: flex;
-	width: 100%;
-	align-items: center;
-	gap: 0.65rem;
-	padding: 0.55rem;
-	background: transparent;
-	border: none;
-	border-radius: var(--radius-field);
-	color: inherit;
-	font: inherit;
-	text-align: left;
-	cursor: pointer;
-	transition: background-color var(--transition);
-}
-
-.chain-node-btn:hover {
-	background: var(--surface-hover);
-}
-
-.chain-node-body {
-	flex: 1;
-	min-width: 0;
-}
-
-.chain-node-body .generation-preview,
-.chain-node-body .generation-meta {
-	display: block;
-}
-
 /* Benchmarks */
 .benchmarks-grid {
 	display: grid;
@@ -834,7 +804,7 @@
 	font-weight: 800;
 }
 
-.generation-meta {
+.meta-chips {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 0.4rem;

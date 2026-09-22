@@ -5,6 +5,7 @@
  *   统计只读结果数组与用例数组，故可单元测试；裁判回复优先按 JSON 解析，失败时回退正则提取 `score`。
  * 【关联】src/studio.mjs 运行器调用；test/pure/benchmark.test.mjs。
  */
+import { httpError } from '../../../../../scripts/http_error.mjs'
 
 /** 裁判评分取值区间。 */
 export const JUDGE_SCORE_RANGE = { min: 0, max: 1 }
@@ -40,11 +41,11 @@ export function normalizeCase(input = {}, index = 0) {
  * 归一化基准定义（不含角色字段，角色/模型在运行时选择）。
  * @param {object} [input] 原始基准
  * @returns {{ id: string, name: string, description: string, cases: object[], metadata: object }} 基准
- * @throws {Error} 缺少名称时抛出
+ * @throws {import('../../../../../scripts/http_error.mjs').HttpError} 缺少名称时抛出 400
  */
 export function normalizeBenchmark(input = {}) {
 	const name = String(input.name ?? '').trim()
-	if (!name) throw new Error('benchmark name is required')
+	if (!name) throw httpError(400, 'benchmark name is required')
 	return {
 		id: String(input.id ?? '').trim(),
 		name,

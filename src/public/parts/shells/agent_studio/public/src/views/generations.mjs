@@ -8,12 +8,10 @@ import { geti18n } from '/scripts/i18n/index.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
 
 import { listChains, listGenerations } from '../endpoints.mjs'
-import { bindActivate } from '../lib/activate.mjs'
+import { fillCharOptions } from '../lib/charOptions.mjs'
 import { mountEmptyState } from '../lib/emptyState.mjs'
-import { formatTime, truncate } from '../lib/format.mjs'
-import { openGenerationDialog } from '../lib/generationDialog.mjs'
+import { renderGenerationItem } from '../lib/generationItem.mjs'
 import { state } from '../state.mjs'
-import { renderTemplate } from '../templates.mjs'
 
 /** 每次拉取的最大记录数。 */
 const FETCH_LIMIT = 200
@@ -73,17 +71,7 @@ function renderCharFilter() {
 	const select = document.getElementById('generationCharFilter')
 	if (!(select instanceof HTMLSelectElement)) return
 	const previous = select.value
-	select.replaceChildren()
-	const all = document.createElement('option')
-	all.value = ''
-	all.textContent = geti18n('agent_studio.generations.allChars')
-	select.appendChild(all)
-	for (const char of state.chars) {
-		const option = document.createElement('option')
-		option.value = char.id
-		option.textContent = char.info?.name || char.id
-		select.appendChild(option)
-	}
+	fillCharOptions(select, { allCharsKey: 'agent_studio.generations.allChars' })
 	if (previous && state.chars.some(char => char.id === previous)) select.value = previous
 	else if (charFilter && state.chars.some(char => char.id === charFilter)) select.value = charFilter
 	else {
@@ -134,17 +122,8 @@ async function renderRecords() {
 		await mountEmptyState(empty, { titleKey: 'agent_studio.generations.empty', iconClass: 'icon-branch' })
 		return
 	}
-	for (const record of records) {
-		const item = await renderTemplate('generation_item', {
-			id: record.id,
-			preview: truncate(record.charname || record.conversationId || record.id),
-			meta: [record.source || '', record.model || '', formatTime(record.startedAt)].filter(Boolean).join(' · '),
-			status: record.hasError ? geti18n('agent_studio.generation.error') : geti18n('agent_studio.generation.ok'),
-			badgeClass: record.hasError ? 'badge-error' : 'badge-ghost',
-		})
-		bindActivate(item, () => { void openGenerationDialog(record.id) })
-		list.appendChild(item)
-	}
+	for (const record of records)
+		list.appendChild(await renderGenerationItem(record))
 }
 
 /**
@@ -163,46 +142,26 @@ async function renderChains() {
 		return
 	}
 	for (const root of roots)
-		list.appendChild(renderChainNode(root, 0))
+		list.appendChild(await renderChainNode(root, 0))
 }
 
 /**
  * 递归渲染一个生成链节点。
  * @param {{ record: object, children: object[] }} node 链节点
  * @param {number} depth 深度
- * @returns {HTMLElement} 节点元素
+ * @returns {Promise<HTMLElement>} 节点元素
  */
-function renderChainNode(node, depth) {
-	const item = document.createElement('li')
-	item.className = 'chain-node'
-	if (depth > 0) item.classList.add('chain-node--nested')
-
-	const button = document.createElement('button')
-	button.type = 'button'
-	button.className = 'chain-node-btn'
-	const record = node.record
-	button.innerHTML = `
-		<span class="generation-dot" aria-hidden="true"></span>
-		<span class="chain-node-body">
-			<span class="generation-preview" user-content></span>
-			<span class="generation-meta" user-content></span>
-		</span>
-		<span class="badge ${record.hasError ? 'badge-error' : 'badge-ghost'}"></span>`
-	const preview = button.querySelector('.generation-preview')
-	if (preview) preview.textContent = truncate(record.charname || record.conversationId || record.id)
-	const meta = button.querySelector('.generation-meta')
-	if (meta) meta.textContent = [record.source || '', formatTime(record.startedAt)].filter(Boolean).join(' · ')
-	const badge = button.querySelector('.badge')
-	if (badge) badge.textContent = record.hasError ? geti18n('agent_studio.generation.error') : geti18n('agent_studio.generation.ok')
-	button.addEventListener('click', () => { void openGenerationDialog(record.id) })
-	item.appendChild(button)
-
+async function renderChainNode(node, depth) {
+	const wrapper = document.createElement('li')
+	wrapper.className = 'chain-node'
+	if (depth > 0) wrapper.classList.add('chain-node--nested')
+	wrapper.appendChild(await renderGenerationItem(node.record, { model: false }))
 	if (node.children?.length) {
 		const children = document.createElement('ul')
 		children.className = 'chain-children'
 		for (const child of node.children)
-			children.appendChild(renderChainNode(child, depth + 1))
-		item.appendChild(children)
+			children.appendChild(await renderChainNode(child, depth + 1))
+		wrapper.appendChild(children)
 	}
-	return item
+	return wrapper
 }
