@@ -1,10 +1,10 @@
 /**
- * 【文件】state.mjs — context-compress 插件的内存状态与小工具
- * 【职责】保存插件配置（压缩阈值），并提供请求 locale 到中/英文案选择的判定。
+ * 【文件】state.mjs — context-compress 插件的内存状态
+ * 【职责】保存插件配置（压缩阈值）。
  * 【原理】插件配置为纯内存对象，进程重启即重置为默认值；`parts_loader` 加载后经 `interfaces.config.SetData`
  *   注入持久化的 parts_config，用户修改经 config shell 落盘。阈值仅用于提示何时建议压缩，不参与强制逻辑。
- * 【数据结构】config = { threshold: number }；locale 判定读取 `args.locales` 中是否含 `zh*`。
- * 【关联】main.mjs（config 接口）、prompt.mjs（阈值与文案）、handler.mjs（文案）。
+ * 【数据结构】config = { threshold: number }。
+ * 【关联】main.mjs（config 接口）、prompt.mjs（阈值）、handler.mjs。
  */
 
 /** 默认压缩阈值：估算 token 占用率达到该比例即视为接近上限。 */
@@ -46,14 +46,4 @@ export function setConfig(data) {
  */
 export function getThreshold() {
 	return config.threshold
-}
-
-/**
- * 判断请求首选语言是否包含中文。
- * @param {string[] | undefined} locales 首选 locale 列表
- * @returns {boolean} 是否应使用中文文案
- */
-export function prefersChinese(locales) {
-	if (!Array.isArray(locales) || !locales.length) return true
-	return locales.some(locale => /^zh/i.test(locale))
 }

@@ -185,11 +185,11 @@ Deno.test('GetPrompt nudges when usage reaches threshold', () => {
 	}
 })
 
-Deno.test('GetPrompt uses English copy for non-Chinese locales', () => {
+Deno.test('GetPrompt uses fixed Chinese copy regardless of locale', () => {
 	const prompt = getContextCompressPrompt({
 		locales: ['en-UK'],
 		ai_source: undefined,
 		chat_log: [],
 	})
-	assertStringIncludes(prompt.text[0].content, 'compress an over-long conversation history')
+	assertStringIncludes(prompt.text[0].content, '压缩过长的对话历史')
 })

@@ -14,21 +14,14 @@
 import { compressContext } from '../../shells/chat/src/chat/session/summarize.mjs'
 import { defineReplyHandler } from '../../shells/chat/src/reply/defineReplyHandler.mjs'
 
-import { prefersChinese } from './state.mjs'
-
 /** 工具日志的 name 标签。 */
 const TOOL_NAME = 'context-compress'
 
-/** 面向角色的过程文案（中 / 英）。 */
+/** 面向角色/人类的过程文案（提示词固定中文，不做多语言化）。 */
 const MESSAGES = {
-	zh: {
-		noSource: '上下文压缩未执行：当前会话没有可用的 AI 源，无法生成摘要。',
-		noResult: '上下文压缩未执行：没有可压缩的新对话内容（可能本轮已压缩过、历史为空，或摘要生成失败）。',
-	},
-	en: {
-		noSource: 'Context compression was not run: this session has no available AI source, so no summary can be generated.',
-		noResult: 'Context compression was not run: there is no new compressible history (it may already have been compressed this round, the history may be empty, or summarisation failed).',
-	},
+	noSource: '上下文压缩未执行：当前会话没有可用的 AI 源，无法生成摘要。',
+	noPromptStruct: '上下文压缩未执行：缺少 prompt_struct，无法读取对话历史。',
+	noResult: '上下文压缩未执行：没有可压缩的新对话内容（可能本轮已压缩过、历史为空，或摘要生成失败）。',
 }
 
 /**
@@ -63,14 +56,13 @@ export const compressContextReplyHandler = defineReplyHandler({
 	 * @returns {Promise<{ regen?: boolean } | void>} 成功时 `{ regen: true }`，否则无返回值
 	 */
 	handle: async (reply, args) => {
-		const messages = prefersChinese(args?.locales) ? MESSAGES.zh : MESSAGES.en
 		const aiSource = args?.ai_source
 		if (!aiSource?.Call) {
-			writeToolLog(args, messages.noSource)
+			writeToolLog(args, MESSAGES.noSource)
 			return
 		}
 		if (!args?.prompt_struct) {
-			writeToolLog(args, messages.noResult)
+			writeToolLog(args, MESSAGES.noPromptStruct)
 			return
 		}
 
@@ -81,6 +73,6 @@ export const compressContextReplyHandler = defineReplyHandler({
 			result: reply,
 		})
 		if (entry) return { regen: true }
-		writeToolLog(args, messages.noResult)
+		writeToolLog(args, MESSAGES.noResult)
 	},
 })

@@ -283,21 +283,17 @@ export function mergeStructPromptChatLog(/** @type {prompt_struct_t} */ prompt) 
 			content: `User ${label} an alternate-timeline reply. Reason: ${feedback.content}.`,
 		})
 	}
-	/**
-	 *
-	 * @param entry
-	 */
-	return applySummaryBoundary(mergedChatLog, entry => entryVisibleForPrompt(entry, prompt))
-		.filter(entry => entryVisibleForPrompt(entry, prompt))
+	const isVisible = entryVisibleForPrompt.bind(null, prompt)
+	return applySummaryBoundary(mergedChatLog, isVisible).filter(isVisible)
 }
 
 /**
  * 日志条目是否应对当前 prompt 的视角可见。
- * @param {chatLogEntry_t} entry 日志条目
  * @param {chatReplyRequest_t} prompt 当前请求上下文
+ * @param {chatLogEntry_t} entry 日志条目
  * @returns {boolean} 是否纳入 prompt 聊天记录
  */
-function entryVisibleForPrompt(entry, prompt) {
+function entryVisibleForPrompt(prompt, entry) {
 	if (!entry.visibility && !entry.charVisibility?.length) return true
 	const viewer = {
 		memberId: prompt.extension?.memberId || (prompt.char_id ? `${prompt.username}:${prompt.char_id}` : prompt.username),

@@ -202,6 +202,7 @@ export default {
 				// 请求级 AI 源覆盖：args.ai_source 已是实例化部件，有值则优先使用
 				const activeSource = args.ai_source || AIsource
 				if (!activeSource) return { content: getLocale(args.locales, 'noAISourceFeedback') }
+				args.ai_source ??= activeSource
 				// 注入角色插件
 				args.plugins = Object.assign({}, plugins, args.plugins)
 				// 用fount提供的工具构建提示词结构
@@ -263,7 +264,7 @@ export default {
 					args.generation_options.base_result = result
 					await activeSource.StructCall(prompt_struct, args.generation_options)
 					// 达到 72.9% 上下文阈值时压缩历史后重新生成
-					if (needsCompression(args, { threshold: 0.729, prompt_struct }) &&
+					if (needsCompression(args, { prompt_struct }) &&
 						await compressContext({ args, aiSource: activeSource, prompt_struct, result }))
 						continue regen
 					if (await runReplyHandlers(result, { ...args, prompt_struct, AddLongTimeLog }, handlers))

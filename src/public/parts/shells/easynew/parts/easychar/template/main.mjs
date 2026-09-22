@@ -206,6 +206,7 @@ export default {
 				const activeSource = args.ai_source || AIsource
 				if (!activeSource) return { content: getLocale(args.locales, 'noAISourceFeedback') }
 
+				args.ai_source ??= activeSource
 				args.plugins = Object.assign({}, plugins, args.plugins)
 				const prompt_struct = await buildPromptStruct(args)
 				// 创建回复容器
@@ -263,7 +264,7 @@ export default {
 					args.generation_options.base_result = result
 					await activeSource.StructCall(prompt_struct, args.generation_options)
 					// 达到 72.9% 上下文阈值时压缩历史后重新生成
-					if (needsCompression(args, { threshold: 0.729, prompt_struct }) &&
+					if (needsCompression(args, { prompt_struct }) &&
 						await compressContext({ args, aiSource: activeSource, prompt_struct, result }))
 						continue regen
 					if (await runReplyHandlers(result, { ...args, prompt_struct, AddLongTimeLog }, handlers))
