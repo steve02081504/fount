@@ -5,6 +5,7 @@
 import { assert, assertEquals, assertRejects } from 'jsr:@std/assert'
 
 import { runReplyHandlers } from '../../../../shells/chat/src/reply/handlerPipeline.mjs'
+import { resetAsyncTaskState, setAsyncTaskNotifier } from '../../../async-task/registry.mjs'
 import { checkSubAgentHandler } from '../../handler.mjs'
 import { runSubAgent, SubAgentError } from '../../runtime.mjs'
 import { createRun, getRun, resetSubAgentState } from '../../state.mjs'
@@ -256,7 +257,7 @@ Deno.test('runSubAgent summarizes when the round budget is exceeded', async () =
 	assertEquals(outcome.run.rounds, 2)
 })
 
-Deno.test('runSubAgent async returns a backgroundId and finishes in the background', async () => {
+Deno.test('runSubAgent async returns a backgroundId and releases the run after completion', async () => {
 	resetSubAgentState()
 	const ai = createFakeAi(['async-result'])
 	const deps = createDeps(ai, createRegenPlugin(0))
@@ -266,10 +267,11 @@ Deno.test('runSubAgent async returns a backgroundId and finishes in the backgrou
 		deps,
 	)
 	assert(outcome.backgroundId, 'expected a backgroundId')
-	await waitFor(() => getRun(outcome.backgroundId)?.state !== 'running')
-	const finished = getRun(outcome.backgroundId)
-	assertEquals(finished.state, 'done')
-	assertEquals(finished.finalText, 'async-result')
+	// 生命周期：动作结束、历史落盘并通知父代后，内存中的 run 被释放，只能从生成历史回落。
+	await waitFor(() => getRun(outcome.backgroundId) === undefined)
+	await waitFor(() => deps.records.length === 1)
+	assertEquals(deps.records[0].response, 'async-result')
+	assertEquals(deps.notifications.at(-1).state, 'done')
 })
 
 Deno.test('runSubAgent persists the internal conversation and emits live status', async () => {
@@ -295,13 +297,19 @@ Deno.test('runSubAgent persists the internal conversation and emits live status'
 
 Deno.test('check-subagent writes a structured conversation card', async () => {
 	resetSubAgentState()
-	const ai = createFakeAi(['checked-result'])
-	const deps = createDeps(ai, createRegenPlugin(0))
-	const outcome = await runSubAgent(
-		createParentArgs(),
-		{ body: 'inspect me', roundLimit: 3, timeLimitMs: 60_000 },
-		deps,
-	)
+	// 运行结束后 run 会被生命周期清理，check-subagent 只对内存中仍在进行的运行负责。
+	const run = createRun({
+		runId: 'live-run',
+		backgroundId: 'live-run',
+		state: 'running',
+		rounds: 1,
+		roundLimit: 3,
+		conversation: [
+			{ role: 'system', name: 'system', content: 'opening' },
+			{ role: 'char', name: 'Char', content: 'agent-layer', content_for_show: 'show-layer' },
+		],
+		result: { logContextBefore: [] },
+	})
 	/** 捕获的工具日志。 */
 	const logs = []
 	/**
@@ -311,11 +319,11 @@ Deno.test('check-subagent writes a structured conversation card', async () => {
 	 */
 	const collectLog = entry => { logs.push(entry) }
 	const args = { username: 'user-1', char_id: 'char-1', chat_name: 'test_chat', extension: {}, AddLongTimeLog: collectLog }
-	await checkSubAgentHandler.handle(null, args, { params: { id: outcome.run.runId } })
+	await checkSubAgentHandler.handle(null, args, { params: { id: run.runId } })
 	const log = logs.at(-1)
 	assertEquals(log.name, 'sub-agent.check')
-	assertEquals(log.extension?.subAgentCheck?.runId, outcome.run.runId)
-	assertEquals(log.extension.subAgentCheck.state, 'done')
+	assertEquals(log.extension?.subAgentCheck?.runId, run.runId)
+	assertEquals(log.extension.subAgentCheck.state, 'running')
 	assert(Array.isArray(log.extension.subAgentCheck.entries))
 	assert(log.extension.subAgentCheck.entries.length > 0, 'expected conversation entries')
 	assert(log.extension.subAgentCheck.entries.every(entry =>
@@ -343,4 +351,52 @@ Deno.test('runSubAgent rejects over-depth and missing-limit spawns', async () =>
 		SubAgentError,
 		'round-limit',
 	)
+})
+
+Deno.test('runSubAgent settles the async task failed when the run fails', async () => {
+	resetSubAgentState()
+	resetAsyncTaskState()
+	/** 捕获结算事件。 */
+	const settles = []
+	setAsyncTaskNotifier(event => { if (event.phase === 'settle') settles.push(event.task) })
+	const ai = createFakeAi(['x'])
+	/**
+	 * 模拟 AI 源直接报错。
+	 * @returns {Promise<void>} 始终 reject
+	 */
+	ai.StructCall = async () => { throw new Error('ai boom') }
+	const deps = createDeps(ai, createRegenPlugin(0))
+	const outcome = await runSubAgent(
+		createParentArgs(),
+		{ body: 'fail', roundLimit: 2, timeLimitMs: 60_000, async: true },
+		deps,
+	)
+	await waitFor(() => settles.length === 1)
+	assertEquals(settles[0].state, 'failed')
+	await waitFor(() => getRun(outcome.backgroundId) === undefined)
+	resetAsyncTaskState()
+})
+
+Deno.test('an AI-source error past the deadline fails instead of summarizing', async () => {
+	resetSubAgentState()
+	let clock = 0
+	const ai = createFakeAi(['x'])
+	/**
+	 * 模拟 AI 源在超过 deadline 后报错。
+	 * @returns {Promise<void>} 始终 reject
+	 */
+	ai.StructCall = async () => { clock = 1_000_000; throw new Error('source error') }
+	const deps = createDeps(ai, createRegenPlugin(0))
+	/**
+	 * 受控当前时间。
+	 * @returns {number} 毫秒时间戳
+	 */
+	deps.now = () => clock
+	const outcome = await runSubAgent(
+		createParentArgs(),
+		{ body: 'boom', roundLimit: 2, timeLimitMs: 1000 },
+		deps,
+	)
+	assertEquals(outcome.run.state, 'failed')
+	assertEquals(ai.summaryCalls, 0)
 })

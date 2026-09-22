@@ -4,7 +4,7 @@
  * 【原理】档案目录固定为 `path.join(os.tmpdir(), 'fount-subagent-context')`，文件名为 `<runId>.json`；`projectArchiveEntries` 只保留 role/name/uid/time_stamp/content 五个字段，避免把文件 Buffer 等重对象写盘。
  *   无任何检索 API，子代理拿到的是路径 + 指引；运行结束删除该文件，启动时按 TTL 清理孤儿文件。
  * 【数据结构】投影条目 = `{ role, name, uid, time_stamp, content }`。
- * 【关联】runtime.mjs 在运行开始写、结束删；prompt.mjs 在开场 system 条目中给出路径；测试 test/pure/archive.test.mjs（纯投影）与 test/integration/archive_io.test.mjs（I/O）。
+ * 【关联】runtime.mjs 在运行开始写、结束删；prompt.mjs 在开场 system 条目中给出路径；测试 test/pure/archive_projection.test.mjs（纯投影）与 test/integration/archive_io.test.mjs（I/O）。
  */
 import fs from 'node:fs'
 import os from 'node:os'
@@ -49,9 +49,9 @@ export function archiveDirectory() {
  */
 export function writeParentArchive(runId, entries) {
 	const directory = archiveDirectory()
-	fs.mkdirSync(directory, { recursive: true })
+	fs.mkdirSync(directory, { recursive: true, mode: 0o700 })
 	const filePath = path.join(directory, `${runId}.json`)
-	fs.writeFileSync(filePath, JSON.stringify({ runId, createdAt: Date.now(), entries }, null, '\t'))
+	fs.writeFileSync(filePath, JSON.stringify({ runId, createdAt: Date.now(), entries }, null, '\t'), { mode: 0o600 })
 	return filePath
 }
 

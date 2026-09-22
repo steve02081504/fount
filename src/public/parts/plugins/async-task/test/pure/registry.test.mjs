@@ -8,7 +8,11 @@ import {
 	awaitTasks,
 	getTask,
 	listTasks,
+	listTasksForOwner,
+	notificationQueueKey,
 	ownerFromArgs,
+	pushPendingNotification,
+	registerChannel,
 	registerTask,
 	resetAsyncTaskState,
 	setAsyncTaskNotifier,
@@ -156,6 +160,59 @@ Deno.test('awaitTasks any returns after the first task settles', async () => {
 	await t2.done
 })
 
+Deno.test('awaitTasks any re-arms the unsettled tasks so they still notify later', async () => {
+	resetAsyncTaskState()
+	const target = owner()
+	const d1 = deferred()
+	const d2 = deferred()
+	const t1 = registerTask({ kind: 'js', owner: target, run: d1.run })
+	const t2 = registerTask({ kind: 'js', owner: target, run: d2.run })
+
+	const waiting = awaitTasks([t1.id, t2.id], { mode: 'any', timeoutMs: 1000 })
+	d1.release('a')
+	const result = await waiting
+	assertEquals(result.pending, [t2.id])
+	assertEquals(t2.consumed, false, '未结算任务应复位消费标记')
+
+	d2.release('b')
+	await t2.done
+	const notes = takePendingNotifications(target)
+	assertEquals(notes.length, 1, 'any 返回后仍未结算的任务日后完成应通知')
+	assert(notes[0].content.includes('b'))
+})
+
+Deno.test('awaitTasks timeout re-arms the pending tasks so they still notify later', async () => {
+	resetAsyncTaskState()
+	const target = owner()
+	const d = deferred()
+	const task = registerTask({ kind: 'js', owner: target, run: d.run })
+
+	const result = await awaitTasks([task.id], { mode: 'all', timeoutMs: 20 })
+	assertEquals(result.timedOut, true)
+	assertEquals(result.pending, [task.id])
+	assertEquals(task.consumed, false, '超时后未结算任务应复位消费标记')
+
+	d.release('late')
+	await task.done
+	const notes = takePendingNotifications(target)
+	assertEquals(notes.length, 1, '超时后仍未结算的任务日后完成应通知')
+	assert(notes[0].content.includes('late'))
+})
+
+Deno.test('awaitTasks keeps settled tasks consumed after the wait', async () => {
+	resetAsyncTaskState()
+	const target = owner()
+	const d = deferred()
+	const task = registerTask({ kind: 'js', owner: target, run: d.run })
+
+	const waiting = awaitTasks([task.id], { mode: 'all', timeoutMs: 1000 })
+	d.release('done')
+	const result = await waiting
+	assertEquals(result.settled.length, 1)
+	assertEquals(task.consumed, true, '已结算任务保持消费，不再重复通知')
+	assertEquals(takePendingNotifications(target), [])
+})
+
 Deno.test('awaitTasks reports pending and unknown ids on timeout', async () => {
 	resetAsyncTaskState()
 	const target = owner()
@@ -178,6 +235,71 @@ Deno.test('listTasks filters by owner, parentRunId and kind', () => {
 	assertEquals(listTasks({ username: 'u', charId: 'c', chatName: 'chat-1', parentRunId: null, kind: 'js' }).length, 1)
 	assertEquals(listTasks({ parentRunId: 'run-1' }).length, 1)
 	assertEquals(listTasks({ username: 'nobody' }).length, 0)
+})
+
+Deno.test('pending notifications are scoped per chat thread', () => {
+	resetAsyncTaskState()
+	const chatA = owner({ chatName: 'chat-a' })
+	const chatB = owner({ chatName: 'chat-b' })
+	assertEquals(notificationQueueKey(chatA), 'root|u|c|chat-a')
+	assertEquals(notificationQueueKey(chatB), 'root|u|c|chat-b')
+	assertEquals(notificationQueueKey(owner({ parentRunId: 'p' })), 'run|p')
+
+	pushPendingNotification(chatA, { content: 'note-a' })
+	pushPendingNotification(chatB, { content: 'note-b' })
+	assertEquals(takePendingNotifications(chatA).map(entry => entry.content), ['note-a'])
+	assertEquals(takePendingNotifications(chatB).map(entry => entry.content), ['note-b'])
+})
+
+Deno.test('deliverNotification never posts to another chat thread', async () => {
+	resetAsyncTaskState()
+	const replies = []
+	const channel = {
+		chat_name: 'chat-b',
+		chat_log: [],
+		Charname: 'Char',
+		/**
+		 * 返回自身。
+		 * @returns {Promise<object>} 自身
+		 */
+		Update: async () => channel,
+		/**
+		 * 记录角色回复。
+		 * @param {object} entry 条目
+		 * @returns {Promise<void>}
+		 */
+		AddChatLogEntry: async entry => { replies.push(entry) },
+		char: {
+			interfaces: {
+				chat: {
+					/**
+					 * 模拟角色回复。
+					 * @returns {Promise<{ content: string }>} 回复
+					 */
+					GetReply: async () => ({ content: 'hi' }),
+				},
+			},
+		},
+	}
+	registerChannel('u', 'c', channel)
+	const target = owner({ chatName: 'chat-a' })
+	const task = registerTask({ kind: 'js', owner: target, run: resolveWith('x') })
+	await task.done
+	assertEquals(replies.length, 0, '不应投递到其它聊天线程的活跃频道')
+	assertEquals(takePendingNotifications(target).length, 1, '应落入本线程待注入队列')
+})
+
+Deno.test('listTasksForOwner expands an owner into filter fields', () => {
+	resetAsyncTaskState()
+	const chatA = owner({ chatName: 'chat-a' })
+	const chatB = owner({ chatName: 'chat-b' })
+	registerTask({ kind: 'js', owner: chatA, run: neverResolves() })
+	registerTask({ kind: 'js', owner: chatB, run: neverResolves() })
+	registerTask({ kind: 'js', owner: owner({ chatName: 'chat-a', parentRunId: 'run-1' }), run: neverResolves() })
+
+	assertEquals(listTasksForOwner(chatA).length, 1)
+	assertEquals(listTasksForOwner(chatA, { kind: 'subagent' }).length, 0)
+	assertEquals(listTasksForOwner({ chatName: 'chat-a', parentRunId: 'run-1' }).length, 1)
 })
 
 Deno.test('ownerFromArgs derives the owner from a request', () => {

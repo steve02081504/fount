@@ -4,7 +4,7 @@
  * 【原理】子代理是一条独立生成链：`buildPromptStruct(args)`（仍含 char.GetPrompt，因此保持人格）→ `aiSource.StructCall` → `runReplyHandlers` 循环；
  *   `args.plugins` 严格等于 resolvePluginList 的结果，绝不与父代插件并集。每轮 `propagateRoundsToAncestors` 让当前运行与所有祖先共同消费轮次，任一祖先超限即转摘要。
  *   服务器依赖（parts_loader / agent_studio）通过动态 import 与可注入的 `deps` 提供，便于集成测试在不启动节点的情况下替换。
- * 【数据结构】run_t 见 state.mjs；deps = { loadPart, loadAnyPreferredDefaultPart, listAiSources, recordGeneration, buildPromptStruct, runReplyHandlers, archive, now, config }。
+ * 【数据结构】run_t 见 state.mjs；deps = { loadPart, loadAnyPreferredDefaultPart, listAiSources, recordGeneration, notifyRun, buildPromptStruct, runReplyHandlers, archive, now, config }。
  * 【关联】handler.mjs 解析标签后调用 `runSubAgent` / `terminateSubAgentRun` / `listAvailableAiSources`；prompt.mjs 注入预算；archive.mjs 管理父代档案；state.mjs 保存注册表。
  */
 import { buildPromptStruct } from '../../shells/chat/src/prompt_struct/index.mjs'
@@ -17,13 +17,13 @@ import {
 	countActiveRunsForAgent,
 	countActiveRunsInBatch,
 	createRun,
+	deleteRun,
 	getBatch,
 	getRun,
-	getRunByBackgroundId,
 	getSubAgentConfig,
 	isRunOverLimit,
-	isRunTimeExceeded,
 	propagateRoundsToAncestors,
+	pruneSubAgentState,
 	resolvePluginList,
 } from './state.mjs'
 
@@ -209,7 +209,7 @@ function runStatusPayload(run) {
  */
 function emitRunStatus(run, deps) {
 	try {
-		void deps.notifyRun?.(run.username, runStatusPayload(run))
+		deps.notifyRun?.(run.username, runStatusPayload(run))?.catch(error => console.warn('sub-agent: 推送运行状态失败', error))
 	}
 	catch (error) {
 		console.warn('sub-agent: 推送运行状态失败', error)
@@ -393,16 +393,15 @@ ${transcript}
 }
 
 /**
- * 生成 sub-agent 异步任务的完成通知文本（供 async-task 注册表在结算时调用）。
- * @param {object} task async-task 任务（`result` 为 run）
+ * 生成 sub-agent 异步任务的完成通知文本（由 registerTask 的 format 在结算时调用；run 经闭包提供，失败结算同样可用）。
+ * @param {object} run 运行
  * @returns {string} 通知文本
  */
-function subAgentNotificationText(task) {
-	const run = task.result ?? {}
+function subAgentNotificationText(run) {
 	const batchActive = run.batchId ? countActiveRunsInBatch(run.batchId) : 0
 	const agentActive = run.username ? countActiveRunsForAgent(run.username, run.charId) : 0
 	return `\
-[sub-agent] 后台子代理 ${run.backgroundId ?? task.id} 已完成（状态：${run.state ?? task.state}）。
+[sub-agent] 后台子代理 ${run.backgroundId} 已完成（状态：${run.state}）。
 同批次进行中：${batchActive} 个；该角色剩余活跃子代理：${agentActive} 个。
 
 结果：
@@ -528,7 +527,7 @@ export async function executeSubAgentRun(run, deps = defaultSubAgentDeps) {
 			run.controller.abort()
 		}, run.timeLimitMs)
 
-		regen: while (true) {
+		while (true) {
 			if (run.terminateRequested) {
 				await summarizeRun(run, deps, 'terminated')
 				summarized = true
@@ -556,7 +555,6 @@ export async function executeSubAgentRun(run, deps = defaultSubAgentDeps) {
 			)
 			if (!wantRegen) break
 			promptStruct.char_prompt.additional_chat_log.push(makeRoundBudgetEntry(run, deps.now()))
-			continue regen
 		}
 		if (!summarized) {
 			run.finalText = result.content ?? ''
@@ -568,7 +566,7 @@ export async function executeSubAgentRun(run, deps = defaultSubAgentDeps) {
 			await summarizeRun(run, deps, 'terminated')
 			summarized = true
 		}
-		else if (run.summaryReason === 'time' || isRunTimeExceeded(run, deps.now())) {
+		else if (run.summaryReason === 'time' || run.summaryReason === 'limit') {
 			await summarizeRun(run, deps, 'limit')
 			summarized = true
 		}
@@ -583,7 +581,7 @@ export async function executeSubAgentRun(run, deps = defaultSubAgentDeps) {
 		run.finishedAt = deps.now()
 		deps.archive.removeParentArchive(run.archivePath)
 		emitRunStatus(run, deps)
-		void recordRunGeneration(run, deps)
+		await recordRunGeneration(run, deps)
 	}
 	return run
 }
@@ -606,6 +604,7 @@ export async function runSubAgent(args, request, deps = defaultSubAgentDeps) {
 	const username = args.username
 	const charId = args.char_id
 	const config = getSubAgentConfig()
+	pruneSubAgentState(deps.now())
 	const parentRunId = args.extension?.subAgent?.runId ?? null
 	const parent = parentRunId ? getRun(parentRunId) : null
 	const depth = parent ? (parent.depth ?? 0) + 1 : 0
@@ -678,22 +677,39 @@ export async function runSubAgent(args, request, deps = defaultSubAgentDeps) {
 	createRun(run)
 
 	if (request.async) {
-		registerTask({
+		const task = registerTask({
 			id: run.backgroundId,
 			kind: 'subagent',
 			label: taskPreview(run.task),
 			owner: { username, charId, chatName: run.chat_name, parentRunId },
 			/**
-			 * 后台执行子代理运行。
+			 * 后台执行子代理运行；run 失败时以 rejected Promise 让统一异步任务结算为 failed。
 			 * @returns {Promise<object>} 运行对象
 			 */
-			run: () => executeSubAgentRun(run, deps),
+			run: async () => {
+				const result = await executeSubAgentRun(run, deps)
+				if (result.state === 'failed')
+					throw new Error(result.error?.message ?? '子代理运行失败')
+				return result
+			},
 			meta: { runId: run.runId, batchId: run.batchId, depth },
-			format: subAgentNotificationText,
+			/**
+			 * 生成完成通知文本（结算成功用 task.result，失败结算回落到闭包中的 run）。
+			 * @param {object} task 统一异步任务
+			 * @returns {string} 通知文本
+			 */
+			format: task => subAgentNotificationText(task.result ?? run),
+		})
+		// 生命周期：动作结束、历史落盘并投递完成通知后释放 run；此后复用该 id 属于未定义行为。
+		// 挂在 task.done 之后而非 execute 内删除，确保 format 已生成通知文本。
+		task.done.finally(() => {
+			deleteRun(run.runId)
+			pruneSubAgentState(deps.now())
 		})
 		return { backgroundId: run.backgroundId, run }
 	}
 	await executeSubAgentRun(run, deps)
+	deleteRun(run.runId)
 	return { text: run.finalText ?? '', run }
 }
 
@@ -703,7 +719,7 @@ export async function runSubAgent(args, request, deps = defaultSubAgentDeps) {
  * @returns {{ ok: boolean, run?: object, error?: string }} 结果
  */
 export function terminateSubAgentRun(id) {
-	const run = getRun(id) ?? getRunByBackgroundId(id)
+	const run = getRun(id)
 	if (!run) return { ok: false, error: 'not_found' }
 	run.terminateRequested = true
 	try {

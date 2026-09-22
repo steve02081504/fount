@@ -276,7 +276,7 @@ function inspectValue(value) {
 }
 
 /**
- * 投递任务完成通知：根任务优先尝试主动触发所属频道角色回复，失败或子任务则落入待注入队列。
+ * 投递任务完成通知：根任务优先尝试主动触发其所属聊天线程的角色回复，子任务或找不到该线程的活跃频道时落入待注入队列。
  * @param {asyncTask_t} task 任务
  * @returns {Promise<void>}
  */
@@ -285,8 +285,7 @@ async function deliverNotification(task) {
 	const { username, charId, chatName, parentRunId } = task.owner ?? {}
 
 	if (!parentRunId) {
-		const channels = getChannels(username, charId)
-		const channel = channels.find(candidate => candidate.chat_name === chatName) ?? channels[0] ?? null
+		const channel = getChannels(username, charId).find(candidate => candidate.chat_name === chatName) ?? null
 		if (channel) try {
 			const updated = await channel.Update?.() ?? channel
 			if (updated?.AddChatLogEntry && updated?.char?.interfaces?.chat?.GetReply) {
@@ -308,7 +307,7 @@ async function deliverNotification(task) {
 		}
 	}
 
-	pushPendingNotification({ username, charId, parentRunId: parentRunId ?? null }, entry)
+	pushPendingNotification({ username, charId, chatName, parentRunId: parentRunId ?? null }, entry)
 	task.notified = true
 }
 
@@ -330,6 +329,24 @@ export function listTasks(filter = {}) {
 	return [...tasks.values()]
 		.filter(task => matchesFilter(task, filter))
 		.sort((a, b) => a.startedAt - b.startedAt)
+}
+
+/**
+ * 按归属查询任务：把 owner 的 `username` / `charId` / `chatName` / `parentRunId` 直接展开为过滤条件，
+ * 供 shell 或其它 part 做「某线程/某运行进行中的任务」薄封装，避免各自手拼 `listTasks` 过滤对象。
+ * 未给出的 owner 字段不参与过滤；根归属（`parentRunId` 为空）只返回根任务。
+ * @param {asyncTaskOwner_t} [owner] 归属
+ * @param {object} [filter] 额外过滤条件（`kind` / `state`）
+ * @returns {asyncTask_t[]} 任务列表（按开始时间升序）
+ */
+export function listTasksForOwner(owner = {}, filter = {}) {
+	return listTasks({
+		username: owner.username,
+		charId: owner.charId,
+		chatName: owner.chatName,
+		parentRunId: owner.parentRunId ?? null,
+		...filter,
+	})
 }
 
 /**
@@ -377,6 +394,11 @@ export async function awaitTasks(ids, { mode = 'all', timeoutMs = null, signal }
 		finally { if (timer) clearTimeout(timer) }
 	}
 
+	// 等待期间置 consumed 仅为抑制竞态通知；结束后把仍未结算的任务复位，
+	// 使其日后完成时仍会投递通知（已结算者保持消费，不再重复通知）。
+	for (const task of known)
+		if (task.finishedAt === null) task.consumed = false
+
 	const settled = known.filter(task => task.finishedAt !== null)
 	const pending = known.filter(task => task.finishedAt === null).map(task => task.id)
 	return { settled, pending, unknown, timedOut }
@@ -384,6 +406,9 @@ export async function awaitTasks(ids, { mode = 'all', timeoutMs = null, signal }
 
 /**
  * 注册（或刷新）一个活跃频道。
+ *
+ * 按用户/角色分桶、桶内按 `chat_name` 去重并保留最近 5 个聊天线程；投递时按 `chat_name` 精确取用，
+ * 找不到对应线程的频道则退回该线程的待注入队列（见 `deliverNotification`），故无需按线程建键。
  * @param {string} username 用户
  * @param {string} charId 角色 id
  * @param {object} channel chatReplyRequest 请求上下文
@@ -408,12 +433,15 @@ export function getChannels(username, charId) {
 }
 
 /**
- * 计算待注入队列键。
+ * 计算待注入队列键：子任务按运行 id 隔离，根任务按聊天线程隔离（避免同一角色不同聊天串台）。
  * @param {asyncTaskOwner_t} target 目标
  * @returns {string} 队列键
  */
 export function notificationQueueKey(target) {
-	return target?.parentRunId ? `run|${target.parentRunId}` : `root|${target.username}|${target.charId}`
+	if (target?.parentRunId) return `run|${target.parentRunId}`
+	return target?.chatName
+		? `root|${target.username}|${target.charId}|${target.chatName}`
+		: `root|${target.username}|${target.charId}`
 }
 
 /**
