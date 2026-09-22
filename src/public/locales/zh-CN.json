@@ -6445,6 +6445,7 @@
 		},
 		"workspaces": {
 			"browse": "浏览…",
+			"open": "打开工作区与会话",
 			"remove": "移除当前工作区",
 			"removeConfirm": "确定移除工作区「${name}」？磁盘上的会话文件会保留。",
 			"none": "未选择工作区",

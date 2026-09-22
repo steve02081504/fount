@@ -6445,6 +6445,7 @@
 		},
 		"workspaces": {
 			"browse": "参照…",
+			"open": "ワークスペースと会話を開く",
 			"remove": "現在のワークスペースを削除",
 			"removeConfirm": "ワークスペース「${name}」を削除しますか？ディスク上のセッションファイルは保持されます。",
 			"none": "ワークスペース未選択",
@@ -6915,6 +6916,16 @@
 			"loadFailed": "読み込みに失敗しました：${message}",
 			"saveFailed": "保存に失敗しました：${message}",
 			"runFailed": "実行に失敗しました：${message}"
+		},
+		"home_function_buttons": {
+			"dev": {
+				"title": "開発",
+				"sub_items": {
+					"open": {
+						"title": "Agent Studio"
+					}
+				}
+			}
 		},
 		"subagent": {
 			"title": "サブエージェント内部会話",

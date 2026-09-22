@@ -153,6 +153,14 @@ ${hasCodeBlock ? `\
 
 		.text-icon {
 			color: inherit;
+		}
+
+		:root[color-scheme*="dark"] {
+			color-scheme: only dark;
+		}
+
+		:root[color-scheme*="light"] {
+			color-scheme: only light;
 		}${hasCodeBlock ? `
 
 		[color-scheme*="light"] [style*="--shiki-light"][style*="--shiki-dark"] {
@@ -172,7 +180,8 @@ ${hasCodeBlock ? `\
 		styleLink.rel = 'stylesheet'
 		styleLink.crossOrigin = 'anonymous'
 		const colorScheme = 'only ' + (document.documentElement.dataset.theme = isDarkMode ? 'dark' : 'light')
-		document.documentElement.setAttribute('color-scheme', document.documentElement.style.colorScheme = colorScheme)
+		// 属性供 shiki 双主题选择器 [color-scheme*="…"] 匹配；本文件内联 CSS 由属性派生 CSS color-scheme 属性。
+		document.documentElement.setAttribute('color-scheme', colorScheme)
 		styleLink.href = 'https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown-' + (isDarkMode ? 'dark' : 'light') + '.min.css'
 		document.head.appendChild(styleLink)
 ${attachmentsHtml ? `

@@ -6445,6 +6445,7 @@
 		},
 		"workspaces": {
 			"browse": "Browse…",
+			"open": "Open workspaces & conversations",
 			"remove": "Remove current workspace",
 			"removeConfirm": "Remove the workspace “${name}”? Its session files on disk will be kept.",
 			"none": "No workspace selected",
@@ -6915,6 +6916,16 @@
 			"loadFailed": "Load failed: ${message}",
 			"saveFailed": "Save failed: ${message}",
 			"runFailed": "Run failed: ${message}"
+		},
+		"home_function_buttons": {
+			"dev": {
+				"title": "Development",
+				"sub_items": {
+					"open": {
+						"title": "Agent Studio"
+					}
+				}
+			}
 		},
 		"subagent": {
 			"title": "Sub-agent conversation",

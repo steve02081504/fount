@@ -8,7 +8,7 @@ import { join } from 'node:path'
 import { assertEquals, assert } from 'https://deno.land/std/assert/mod.ts'
 
 import { REPO_ROOT } from '../../test/core/repo_root.mjs'
-import { collectHomeInfoRefs, resolveLocaleKey, scanHomeRegistryData } from '../home_registry.mjs'
+import { AUTHORITATIVE_LOCALES, collectHomeInfoRefs, resolveLocaleKey, scanHomeRegistryData } from '../home_registry.mjs'
 import { listRepoFiles } from '../walk.mjs'
 
 Deno.test('resolveLocaleKey walks dot paths', () => {
@@ -47,7 +47,7 @@ Deno.test('scanHomeRegistryData flags missing key, non-object and missing title'
 			{},
 		],
 		home_drag_in_handlers: [{ info: 'drag' }, { info: 'gone' }],
-	}, locale)
+	}, locale, 'zh-CN')
 	const messages = issues.map(issue => issue.message).join('\n')
 	assert(messages.includes('info.title 缺失或非字符串'))
 	assert(messages.includes('须指向含 title 的对象'))
@@ -70,25 +70,25 @@ Deno.test('scanHomeRegistryData accepts a registry whose keys resolve', () => {
 			info: 'shell.home_function_buttons.component_related',
 			sub_items: [{ info: 'shell.home_function_buttons.component_related.sub_items.open' }],
 		}],
-	}, locale)
+	}, locale, 'zh-CN')
 	assertEquals(issues, [])
 })
 
-Deno.test('repo home_registry info keys resolve in zh-CN', async () => {
+Deno.test('repo home_registry info keys resolve in every authoritative locale', async () => {
 	const files = await listRepoFiles(REPO_ROOT, ['.json'], { under: 'src/public/parts' })
 	const registryPaths = files.filter(path => path.endsWith('/home_registry.json'))
 	assert(registryPaths.length > 0, '未找到 home_registry.json')
-	const locale = JSON.parse(await readFile(join(REPO_ROOT, 'src/public/locales/zh-CN.json'), 'utf8'))
+	const registries = []
+	for (const relPath of registryPaths)
+		registries.push({ relPath, data: JSON.parse(await readFile(join(REPO_ROOT, relPath), 'utf8')) })
 
-	/** @type {{ path: string, message: string }[]} */
-	const issues = []
-	for (const relPath of registryPaths) {
-		const data = JSON.parse(await readFile(join(REPO_ROOT, relPath), 'utf8'))
-		issues.push(...scanHomeRegistryData(relPath, data, locale))
+	for (const localeName of AUTHORITATIVE_LOCALES) {
+		const locale = JSON.parse(await readFile(join(REPO_ROOT, `src/public/locales/${localeName}.json`), 'utf8'))
+		/** @type {{ path: string, message: string }[]} */
+		const issues = []
+		for (const { relPath, data } of registries)
+			issues.push(...scanHomeRegistryData(relPath, data, locale, localeName))
+		const rendered = issues.map(issue => `${issue.path}: ${issue.message}`)
+		assertEquals(rendered, [], `${localeName} 缺键 / 标题异常：\n${rendered.join('\n')}`)
 	}
-	assertEquals(
-		issues.map(issue => `${issue.path}: ${issue.message}`),
-		[],
-		issues.map(issue => `${issue.path}: ${issue.message}`).join('\n'),
-	)
 })
