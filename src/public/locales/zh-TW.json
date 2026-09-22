@@ -6444,6 +6444,7 @@
 		},
 		"workspaces": {
 			"browse": "瀏覽…",
+			"open": null,
 			"remove": "移除目前工作區",
 			"removeConfirm": "確定移除工作區「${name}」嗎？磁碟上的工作階段檔案會保留。",
 			"none": "尚未選擇工作區",
@@ -6774,13 +6775,6 @@
 				"terminated": "已终止"
 			}
 		},
-		"retention": {
-			"title": "记录保留策略",
-			"prompt": "请求记录保留（天）",
-			"conversation": "整条记录保留（天）",
-			"save": "保存",
-			"saved": "已保存。"
-		},
 		"benchmarks": {
 			"title": "基准测试",
 			"empty": "暂无基准测试。",
@@ -6802,6 +6796,13 @@
 			"noResults": "暂无结果。",
 			"notJudged": "未评分",
 			"stats": "共 ${total} 条 · 空回复 ${empty} · 平均长度 ${avgLength} · 已评分 ${judged} · 平均分 ${avgScore}"
+		},
+		"retention": {
+			"title": "记录保留策略",
+			"prompt": "请求记录保留（天）",
+			"conversation": "整条记录保留（天）",
+			"save": "保存",
+			"saved": "已保存。"
 		},
 		"alerts": {
 			"loadFailed": "加载失败：${message}",

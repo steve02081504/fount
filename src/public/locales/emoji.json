@@ -6445,6 +6445,7 @@
 		},
 		"workspaces": {
 			"browse": "🔍",
+			"open": "打开工作区与会话",
 			"remove": "🗑️",
 			"removeConfirm": "🗑️🗂️「${name}」❓💬💾✅",
 			"none": "🚫",
@@ -6625,7 +6626,59 @@
 			"viewFiles": "👁️📄",
 			"addFiles": "📤📄",
 			"callback": "↩️",
-			"runShell": "▶️ ${lang}"
+			"runShell": "▶️ ${lang}",
+			"subAgent": {
+				"createBatch": "创建子代理批次",
+				"run": "运行子代理",
+				"listAiSources": "列出 AI 源",
+				"check": "查看子代理对话",
+				"terminate": "终止子代理"
+			},
+			"async": {
+				"list": "列出异步任务",
+				"await": "等待异步任务",
+				"notice": "后台任务通知",
+				"run": "后台运行 ${kind}"
+			}
+		},
+		"subagent": {
+			"title": "子代理",
+			"open": "子代理：${task}（点击查看内部对话）",
+			"working": "运行中 ${rounds}/${roundLimit} 轮",
+			"workingUnknown": "运行中",
+			"state": {
+				"running": "运行中",
+				"summarizing": "总结中",
+				"done": "已完成",
+				"terminated": "已终止",
+				"failed": "已失败"
+			},
+			"check": {
+				"open": "在 Agent Studio 打开",
+				"rounds": "轮次 ${rounds}/${roundLimit}"
+			}
+		},
+		"transcript": {
+			"role": {
+				"tool": "工具",
+				"char": "角色",
+				"user": "用户",
+				"system": "系统"
+			}
+		},
+		"asyncTasks": {
+			"title": "后台任务",
+			"none": "当前没有进行中的异步任务。",
+			"timedOut": "等待超时：仍有任务在进行中。",
+			"open": "后台任务：${label}",
+			"working": "后台任务运行中（${kind}）",
+			"state": {
+				"running": "运行中",
+				"done": "已完成",
+				"failed": "已失败",
+				"unknown": "未找到",
+				"idle": "后台任务"
+			}
 		}
 	},
 	"gist": {
@@ -6749,9 +6802,41 @@
 	"agent_studio": {
 		"title": "🤖🎛️",
 		"description": "👀✨📜🈂️👤🔬",
+		"nav": {
+			"region": {
+				"aria-label": "主导航"
+			},
+			"mobile": {
+				"aria-label": "主导航（移动端）"
+			},
+			"dashboard": "仪表盘",
+			"generations": "生成记录",
+			"benchmarks": "基准测试",
+			"settings": "设置"
+		},
+		"actions": {
+			"refreshData": "刷新数据",
+			"refresh": {
+				"title": "刷新",
+				"aria-label": "刷新数据"
+			},
+			"close": {
+				"title": "关闭",
+				"aria-label": "关闭"
+			}
+		},
+		"dashboard": {
+			"title": "仪表盘",
+			"description": "选择角色，查看它的子代理运行与近期生成。",
+			"selectPrompt": "从左侧选择一个角色开始查看。"
+		},
 		"chars": {
 			"title": "👤",
-			"empty": "🈳👤"
+			"empty": "🈳👤",
+			"noMatch": "没有匹配的角色。",
+			"search": {
+				"placeholder": "搜索角色…"
+			}
 		},
 		"detail": {
 			"subAgents": "🤖👥",
@@ -6763,7 +6848,10 @@
 			"prompt": "📨💬📜",
 			"response": "🔊",
 			"ok": "✅",
-			"error": "⚠️"
+			"error": "⚠️",
+			"meta": "来源 ${source} · 模型 ${model}",
+			"character": "角色 ${name}",
+			"promptExpired": "请求记录已过期或不可用。"
 		},
 		"run": {
 			"detail": "✨${generations}🔢 ↻${rounds}/${roundLimit}",
@@ -6775,20 +6863,28 @@
 				"terminated": "🛑"
 			}
 		},
-		"retention": {
-			"title": "📜⏳",
-			"prompt": "📨📜⏳🌐",
-			"conversation": "📜⏳🌐",
-			"save": "💾",
-			"saved": "✅💾"
+		"generations": {
+			"title": "生成记录",
+			"description": "浏览所有角色的生成记录与生成链。",
+			"records": "记录",
+			"chains": "生成链",
+			"filterChar": "角色",
+			"allChars": "全部角色",
+			"recordsCount": "共 ${count} 条记录",
+			"empty": "暂无生成记录。",
+			"chainsEmpty": "暂无生成链。"
 		},
 		"benchmarks": {
 			"title": "📊🏁",
+			"description": "定义用例、选择角色与裁判，运行评分基准。",
 			"empty": "🈳📊",
+			"pick": "选择或新建一个基准测试。",
 			"new": "➕",
 			"newName": "✍️📊📛",
 			"cases": "🧪📋",
 			"saveCases": "💾🧪",
+			"saved": "用例已保存。",
+			"casesInvalid": "用例 JSON 解析失败：${message}",
 			"delete": {
 				"title": "🗑️",
 				"aria-label": "🗑️"
@@ -6804,10 +6900,40 @@
 			"notJudged": "🚫⚖️",
 			"stats": "Σ${total}·🈳${empty}·📏${avgLength}·⚖️${judged}·⭐${avgScore}"
 		},
+		"retention": {
+			"title": "📜⏳",
+			"hint": "超过请求记录保留期后只保留回复，超过整条记录保留期后整条删除。",
+			"prompt": "📨📜⏳🌐",
+			"conversation": "📜⏳🌐",
+			"save": "💾",
+			"saved": "✅💾"
+		},
+		"settings": {
+			"title": "设置",
+			"description": "调整生成记录的保留策略。"
+		},
 		"alerts": {
 			"loadFailed": "⚠️📥 ${message}",
 			"saveFailed": "⚠️💾 ${message}",
 			"runFailed": "⚠️🏃 ${message}"
+		},
+		"home_function_buttons": {
+			"dev": {
+				"title": "开发",
+				"sub_items": {
+					"open": {
+						"title": "Agent Studio"
+					}
+				}
+			}
+		},
+		"subagent": {
+			"title": "子代理内部对话",
+			"description": "查看一次子代理运行的状态、任务与完整内部对话。",
+			"back": "返回生成记录",
+			"task": "任务",
+			"conversation": "内部对话",
+			"empty": "（暂无对话内容）"
 		}
 	}
 }
