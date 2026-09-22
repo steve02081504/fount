@@ -370,12 +370,15 @@ export function registerEndpoints(router) {
 		res.status(200).json(getRegistry(username, name, { nocache, resolve: 'url' }))
 	})
 
-	// Static files handler: /parts/partpath/filepath (partpath may contain colons)
-	router.get(/^\/parts\/([^/]+)(.*)$/, authenticate, async (req, res, next) => {
+	// 根部件的 part key 为空：/parts 与 /parts/ 规范化到 /parts//（根部件路径）
+	router.get('/parts', (req, res) => res.redirect(301, '/parts//'))
+
+	// Static files handler: /parts/partpath/filepath (partpath may contain colons；根部件为空)
+	router.get(/^\/parts\/([^/]*)(.*)$/, authenticate, async (req, res, next) => {
 		const { username } = getUserByReq(req)
 		const partKey = req.params[0]
 		const filepath = req.params[1].split('?')[0]
-		const realPath = `${urlPartKeyToPartpath(partKey)}/${PART_PUBLIC_DIR}`
+		const realPath = [urlPartKeyToPartpath(partKey), PART_PUBLIC_DIR].filter(Boolean).join('/')
 		let finalPath
 		for (const directory of [
 			getUserDictionary(username) + '/' + realPath,
