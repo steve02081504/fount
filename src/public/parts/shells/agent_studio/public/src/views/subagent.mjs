@@ -116,7 +116,7 @@ function renderEntry(entry) {
 	head.className = 'subagent-entry-head'
 	const name = document.createElement('span')
 	name.className = 'subagent-entry-name'
-	name.setAttribute('user-content', '')
+	name.setAttribute('prompt-content', '')
 	name.textContent = entryLabel(entry)
 	const time = document.createElement('span')
 	time.className = 'subagent-entry-time'
@@ -124,7 +124,7 @@ function renderEntry(entry) {
 	head.append(name, time)
 	const body = document.createElement('pre')
 	body.className = 'subagent-entry-body'
-	body.setAttribute('user-content', '')
+	body.setAttribute('prompt-content', '')
 	body.textContent = entry.content_for_show ?? entry.content ?? ''
 	row.append(head, body)
 	return row
