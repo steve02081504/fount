@@ -326,3 +326,12 @@ export async function putSession(target, session) {
 export async function deleteSession(target, id) {
 	return requestJson(`${API_BASE}/sessions/${encodeURIComponent(id)}?machine=${target.machine}&workdir=${encodeURIComponent(target.workdir)}`, { method: 'DELETE' })
 }
+
+/**
+ * 列出某 code 会话的全部子代理运行（含历史；由 Agent Studio 提供）。
+ * @param {string} chatId - 会话 chat id（`code-<sessionId>`）。
+ * @returns {Promise<{runs: Array<object>, batches: Array<object>}>} 运行与批次。
+ */
+export async function getSubAgents(chatId) {
+	return requestJson(`/api/parts/shells:agent_studio/subagents?chatId=${encodeURIComponent(chatId)}`)
+}

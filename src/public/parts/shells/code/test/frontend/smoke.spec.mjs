@@ -73,6 +73,30 @@ test.describe('code shell smoke', () => {
 		await expect(page.locator('#shell-pill-wrap')).toBeHidden()
 	})
 
+	test('builds a spinning sub-agent card from a tool entry', async ({ modulePage }) => {
+		const card = await modulePage.run(async () => {
+			const { subAgentCardElement } = await import('/parts/shells:code/src/subagents.mjs')
+			const element = subAgentCardElement({
+				id: 'entry-1',
+				role: 'tool',
+				name: 'sub-agent',
+				extension: { subAgent: { runId: 'run-1', isAsync: true, task: 'do a thing' } },
+			})
+			return {
+				tag: element.tagName,
+				runId: element.dataset.subagentRunId,
+				working: element.classList.contains('is-working'),
+				label: element.querySelector('.code-subagent-label')?.textContent,
+				hasIcon: !!element.querySelector('.code-subagent-icon img, .code-subagent-icon svg'),
+			}
+		})
+		expect(card.tag).toBe('BUTTON')
+		expect(card.runId).toBe('run-1')
+		expect(card.working).toBe(true)
+		expect(card.label).toBe('do a thing')
+		expect(card.hasIcon).toBe(true)
+	})
+
 	test('workspace / machine dropdown menus render', async ({ page, baseUrl }) => {
 		await openCodeSmoke(page, baseUrl)
 		await holdLocale(page)

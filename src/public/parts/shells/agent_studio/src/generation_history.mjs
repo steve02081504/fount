@@ -38,6 +38,7 @@ export const DEFAULT_RETENTION = {
  * @property {number} [finishedAt]
  * @property {any} [input] 请求 chat_log 快照（非组装后 prompt）
  * @property {any} [response]
+ * @property {object[]} [conversation] 内部完整对话（子代理运行时；供 Agent Studio 内部对话页）
  * @property {string} [model]
  * @property {object} [metadata]
  * @property {{ name?: string, message?: string }} [error]
@@ -245,6 +246,7 @@ export async function recordGeneration(username, record) {
 		finishedAt: record.finishedAt ?? now,
 		input: record.input,
 		response: record.response,
+		conversation: record.conversation,
 		model: record.model,
 		metadata: record.metadata,
 		error: record.error,

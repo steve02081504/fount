@@ -11,6 +11,7 @@ import { createGist } from '/parts/shells:gist/src/endpoints.mjs'
 import { iconElement, icons } from './icons.mjs'
 import { markSessionDirty, regenerateLastReply } from './session.mjs'
 import { elements, store, SCROLL_TOLERANCE } from './store.mjs'
+import { subAgentCardElement, updateSubAgentCards } from './subagents.mjs'
 import { renderTemplate } from './templates.mjs'
 
 /**
@@ -345,7 +346,10 @@ function renderEntryBubble(entry, { isLast = false } = {}) {
 	const body = document.createElement('div')
 	body.className = 'code-message-body'
 	bubble.appendChild(body)
-	if (entry.role === 'tool' || entry.role === 'system') {
+	if (entry.role === 'tool' && entry.extension?.subAgent?.runId) 
+		body.appendChild(subAgentCardElement(entry))
+	
+	else if (entry.role === 'tool' || entry.role === 'system') {
 		const details = document.createElement('details')
 		details.className = 'code-tool-log'
 		if (entry.name === 'shell' || entry.name?.startsWith('code-execution')) details.open = true
@@ -468,6 +472,7 @@ export function renderMessages() {
 	scrollMessagesBottom()
 	updateBackToBottom()
 	updateRegenButtons()
+	updateSubAgentCards()
 }
 
 /**
@@ -484,5 +489,6 @@ export function appendEntryBubble(entry) {
 	if (wasNearBottom) scrollMessagesBottom()
 	updateBackToBottom()
 	updateRegenButtons()
+	updateSubAgentCards()
 	return bubble
 }

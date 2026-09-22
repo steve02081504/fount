@@ -39,6 +39,46 @@ import { deleteSession, listSessions, loadSession, saveSession } from './session
 import { readWorkspaceConfig } from './workspace_config.mjs'
 
 /**
+ * 记录一次 code 生成到 Agent Studio 生成历史（尽力而为，失败不影响主流程）。
+ * 父代生成记录与 `request.extension.generationId` 同 id，子代理据此经 `parentId` 回链。
+ * @param {string} username 用户名
+ * @param {object} params 参数
+ * @param {string} params.generationId 本轮生成 id
+ * @param {object} params.session 会话
+ * @param {object} params.requestSession 请求侧会话（含用户消息快照）
+ * @param {object|null} params.reply 角色回复
+ * @param {number} params.startedAt 开始时间
+ * @returns {Promise<void>}
+ */
+async function recordCodeGeneration(username, { generationId, session, requestSession, reply, startedAt }) {
+	try {
+		const { recordGeneration } = await import('../../agent_studio/src/generation_history.mjs')
+		await recordGeneration(username, {
+			id: generationId,
+			charId: session.charname,
+			charname: session.charname,
+			chatId: 'code-' + session.id,
+			conversationId: 'code-' + session.id,
+			source: 'shells/code',
+			startedAt,
+			finishedAt: Date.now(),
+			model: reply?.extension?.model,
+			input: (requestSession.entries || []).map(entry => ({
+				name: entry.name,
+				uid: entry.uid,
+				role: entry.role,
+				content: entry.content,
+				time_stamp: entry.time,
+			})),
+			response: reply?.content ?? '',
+		})
+	}
+	catch (error) {
+		console.warn('shells/code: recordGeneration 失败', error)
+	}
+}
+
+/**
  * 从请求参数解析目标工作区（machine 字符串化，"0" = 本机）。
  * @param {{machine?: string|number, workdir?: string, workspace?: string}} source - 请求数据。
  * @returns {{machine: string, path: string}} 目标工作区。
@@ -301,8 +341,23 @@ function sanitizeEntry(entry) {
 		...Array.isArray(entry.charVisibility) && entry.charVisibility.length ? { charVisibility: entry.charVisibility.map(String) } : {},
 		time: entry.time_stamp instanceof Date ? entry.time_stamp.toISOString() : String(entry.time_stamp ?? new Date().toISOString()),
 		files: (entry.files || []).map(f => ({ name: f.name, mime_type: f.mime_type, buffer: Buffer.isBuffer(f.buffer) ? f.buffer.toString('base64') : String(f.buffer ?? ''), description: f.description || '' })),
-		extension: {},
+		// 仅透传前端渲染所需的白名单字段（历史默认清空，避免把内部结构写进会话）
+		extension: pickEntryExtension(entry.extension),
 	}
+}
+
+/**
+ * 挑选需随会话落盘的前端可见扩展字段（当前仅子代理运行定位）。
+ * @param {object} extension - 条目扩展。
+ * @returns {object} 白名单后的扩展。
+ */
+function pickEntryExtension(extension) {
+	if (!extension || typeof extension !== 'object') return {}
+	/** @type {object} */
+	const picked = {}
+	if (extension.subAgent) picked.subAgent = extension.subAgent
+	if (extension.error) picked.error = extension.error
+	return picked
 }
 
 /**
@@ -676,6 +731,8 @@ export function setEndpoints(router) {
 				}
 			}
 			beginCodeGeneration(username)
+			const generationId = randomUUID()
+			const generationStartedAt = Date.now()
 			try {
 				const { reply, memory } = await triggerCodeReply({
 					username,
@@ -684,6 +741,7 @@ export function setEndpoints(router) {
 					workdir: String(workdir || ''),
 					ai_source: ai_source || undefined,
 					profile,
+					generationId,
 					signal: thisRequestController.signal,
 					/**
 					 * 转发流式预览到 WS（优先展示层 `content_for_show`，含工具调用替换）。
@@ -708,6 +766,8 @@ export function setEndpoints(router) {
 					entries.push(sanitizeEntry(entry))
 				if (reply)
 					entries.push(sanitizeEntry({ ...reply, role: 'char', uid: 'char', name: reply.name || session.charname, time_stamp: new Date() }))
+				if (reply)
+					void recordCodeGeneration(username, { generationId, session, requestSession, reply, startedAt: generationStartedAt })
 				ws.send(JSON.stringify({ type: 'done', entries, memory }))
 				void notifyCodeCompletion(username, session)
 			}

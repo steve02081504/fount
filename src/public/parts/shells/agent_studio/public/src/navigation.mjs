@@ -1,7 +1,7 @@
 /**
  * 【文件】public/src/navigation.mjs — 主视图路由
  * 【职责】按视图名切换页面区块并加载数据；同步 location.hash 与浏览器 hashchange。
- * 【原理】视图懒加载器映射；切换时用 View Transition 做过渡；加载失败经 handleError 提示。
+ * 【原理】视图懒加载器映射；`#subagent/<runId>` 深链到子代理内部对话视图；切换时用 View Transition 做过渡；加载失败经 handleError 提示。
  * 【关联】viewChrome.mjs、views/*、motion/viewTransition.mjs。
  */
 import { handleError } from '/scripts/features/errorHandlers.mjs'
@@ -12,6 +12,10 @@ import { loadBenchmarks } from './views/benchmarks.mjs'
 import { loadDashboard } from './views/dashboard.mjs'
 import { loadGenerations } from './views/generations.mjs'
 import { loadSettings } from './views/settings.mjs'
+import { loadSubAgentView } from './views/subagent.mjs'
+
+/** 全部可进入的视图（主导航 + 仅深链的 subagent）。 */
+const ALL_VIEWS = [...MAIN_NAV_VIEWS, 'subagent']
 
 /** 视图名 → 数据加载器。 */
 const VIEW_LOADERS = {
@@ -19,15 +23,22 @@ const VIEW_LOADERS = {
 	generations: loadGenerations,
 	benchmarks: loadBenchmarks,
 	settings: loadSettings,
+	subagent: loadSubAgentView,
 }
+
+/** 当前深链参数（subagent 视图的 runId）。 */
+let currentParams = {}
 
 /**
  * 把主视图同步到 location.hash（replace，避免历史堆叠）。
  * @param {string} view 视图名
+ * @param {object} [params] 视图参数
  * @returns {void}
  */
-function syncHashForMainView(view) {
-	const next = `#${view}`
+function syncHashForMainView(view, params = {}) {
+	const next = view === 'subagent' && params.runId
+		? `#subagent/${encodeURIComponent(params.runId)}`
+		: `#${view}`
 	if (location.hash === next) return
 	history.replaceState(null, '', `${location.pathname}${location.search}${next}`)
 }
@@ -35,11 +46,11 @@ function syncHashForMainView(view) {
 /**
  * 切换主视图并加载数据。
  * @param {string} view 视图名；非法值回退 dashboard
- * @param {{ skipHash?: boolean }} [options] skipHash 为 true 时不写 URL
+ * @param {{ skipHash?: boolean, params?: object }} [options] skipHash 为 true 时不写 URL
  * @returns {Promise<void>}
  */
 export async function switchView(view, options = {}) {
-	const target = MAIN_NAV_VIEWS.includes(view) ? view : 'dashboard'
+	const target = ALL_VIEWS.includes(view) ? view : 'dashboard'
 	const from = currentMainView()
 	if (from && from !== target)
 		await viewTransition(() => renderSwitchView(target, options))
@@ -50,15 +61,16 @@ export async function switchView(view, options = {}) {
 /**
  * 实际执行视图切换与数据加载（在可能的 View Transition 回调内运行）。
  * @param {string} view 视图名
- * @param {{ skipHash?: boolean }} options 切换选项
+ * @param {{ skipHash?: boolean, params?: object }} options 切换选项
  * @returns {Promise<void>}
  */
 async function renderSwitchView(view, options) {
+	currentParams = options.params ?? {}
 	activateView(view)
 	if (!options.skipHash)
-		syncHashForMainView(view)
+		syncHashForMainView(view, currentParams)
 	try {
-		await VIEW_LOADERS[view]()
+		await VIEW_LOADERS[view](currentParams)
 	}
 	catch (error) {
 		handleError('agent_studio.alerts.loadFailed', { message: error.message }, error)
@@ -66,11 +78,18 @@ async function renderSwitchView(view, options) {
 }
 
 /**
- * 解析 URL hash 并导航。
+ * 解析 URL hash 并导航（支持 `#subagent/<runId>` 深链）。
  * @returns {Promise<boolean>} 是否已处理导航
  */
 export async function applyIncomingNavigation() {
 	const rawHash = window.location.hash.replace(/^#/, '')
+	const subagentMatch = /^subagent\/(.+)$/.exec(rawHash)
+	if (subagentMatch) {
+		const runId = decodeURIComponent(subagentMatch[1])
+		if (currentMainView() === 'subagent' && currentParams.runId === runId) return true
+		await switchView('subagent', { skipHash: true, params: { runId } })
+		return true
+	}
 	if (!MAIN_NAV_VIEWS.includes(rawHash)) return false
 	if (currentMainView() === rawHash) return true
 	await switchView(rawHash, { skipHash: true })

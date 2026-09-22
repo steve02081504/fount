@@ -6626,6 +6626,19 @@
 			"addFiles": "发送文件",
 			"callback": "工具回调",
 			"runShell": "运行 ${lang}"
+		},
+		"subagent": {
+			"title": "子代理",
+			"open": "子代理：${task}（点击查看内部对话）",
+			"working": "运行中 ${rounds}/${roundLimit} 轮",
+			"workingUnknown": "运行中",
+			"state": {
+				"running": "运行中",
+				"summarizing": "总结中",
+				"done": "已完成",
+				"terminated": "已终止",
+				"failed": "已失败"
+			}
 		}
 	},
 	"gist": {
@@ -6873,6 +6886,14 @@
 					}
 				}
 			}
+		},
+		"subagent": {
+			"title": "子代理内部对话",
+			"description": "查看一次子代理运行的状态、任务与完整内部对话。",
+			"back": "返回生成记录",
+			"task": "任务",
+			"conversation": "内部对话",
+			"empty": "（暂无对话内容）"
 		}
 	}
 }

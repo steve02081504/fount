@@ -138,12 +138,29 @@ async function defaultRecordGeneration(username, record) {
 	}
 }
 
+/**
+ * 默认运行状态通知实现：经用户事件通道推送给前端（尽力而为）。
+ * @param {string} username 用户
+ * @param {object} payload 运行状态摘要
+ * @returns {Promise<void>}
+ */
+async function defaultNotifyRun(username, payload) {
+	try {
+		const { sendEventToUser } = await import('../../../../server/web_server/event_dispatcher.mjs')
+		sendEventToUser(username, 'subagent-run', payload)
+	}
+	catch (error) {
+		console.warn('sub-agent: notifyRun 失败', error)
+	}
+}
+
 /** 默认依赖集合；集成测试可传入同形状的替身。 */
 export const defaultSubAgentDeps = {
 	loadPart: defaultLoadPart,
 	loadAnyPreferredDefaultPart: defaultLoadAnyPreferredDefaultPart,
 	listAiSources: defaultListAiSources,
 	recordGeneration: defaultRecordGeneration,
+	notifyRun: defaultNotifyRun,
 	buildPromptStruct,
 	runReplyHandlers,
 	archive: { cleanupExpiredArchives, projectArchiveEntries, removeParentArchive, writeParentArchive },
@@ -152,6 +169,62 @@ export const defaultSubAgentDeps = {
 	 * @returns {number} 毫秒时间戳
 	 */
 	now: () => Date.now(),
+}
+
+/**
+ * 运行状态摘要（推送给宿主 shell 的实时事件负载）。
+ * @param {object} run 运行
+ * @returns {object} 状态摘要
+ */
+function runStatusPayload(run) {
+	return {
+		runId: run.runId,
+		backgroundId: run.backgroundId,
+		parentRunId: run.parentRunId,
+		batchId: run.batchId,
+		chat_name: run.chat_name,
+		charId: run.charId,
+		state: run.state,
+		rounds: run.rounds,
+		roundLimit: run.roundLimit,
+		depth: run.depth,
+		isAsync: run.isAsync,
+		task: run.task,
+		startedAt: run.startedAt,
+		finishedAt: run.finishedAt,
+		error: run.error?.message ?? null,
+	}
+}
+
+/**
+ * 推送一次运行状态（可注入的 deps.notifyRun 缺省时静默跳过）。
+ * @param {object} run 运行
+ * @param {object} deps 依赖
+ * @returns {void}
+ */
+function emitRunStatus(run, deps) {
+	try {
+		void deps.notifyRun?.(run.username, runStatusPayload(run))
+	}
+	catch (error) {
+		console.warn('sub-agent: 推送运行状态失败', error)
+	}
+}
+
+/**
+ * 序列化子代理内部对话供落盘（剥离文件 buffer，逐条限长）。
+ * @param {object[]} conversation 对话
+ * @returns {object[]} 可 JSON 化的条目
+ */
+function serializeConversation(conversation) {
+	return (conversation ?? []).map(entry => ({
+		role: entry.role,
+		name: entry.name,
+		uid: entry.uid,
+		time_stamp: entry.time_stamp,
+		content: truncate(entry.content ?? '', 20000),
+		content_for_show: truncate(entry.content_for_show ?? entry.content ?? '', 20000),
+	}))
 }
 
 /**
@@ -362,6 +435,7 @@ async function recordRunGeneration(run, deps) {
 			charId: run.charId,
 			charname: run.parentArgs?.Charname,
 			chatId: run.chat_name,
+			conversationId: 'subagent:' + run.runId,
 			source: 'plugins/sub-agent',
 			parentId: run.parentGenerationId,
 			subAgent: {
@@ -374,10 +448,12 @@ async function recordRunGeneration(run, deps) {
 			finishedAt: run.finishedAt,
 			model: run.aiSource?.filename,
 			input: run.parentArgs?.chat_log?.slice(-run.archiveTail),
+			conversation: serializeConversation(run.conversation),
 			response: run.finalText,
 			metadata: {
 				status: run.state,
 				rounds: run.rounds,
+				task: run.task,
 				durationMs: (run.finishedAt ?? deps.now()) - (run.startedAt ?? run.createdAt),
 				terminated: run.terminateRequested,
 			},
@@ -440,6 +516,7 @@ ${truncate(run.finalText)}`
 export async function executeSubAgentRun(run, deps = defaultSubAgentDeps) {
 	run.startedAt = deps.now()
 	run.state = 'running'
+	emitRunStatus(run, deps)
 	try {
 		const entries = deps.archive.projectArchiveEntries(run.parentArgs?.chat_log, run.archiveTail)
 		run.archivePath = deps.archive.writeParentArchive(run.runId, entries)
@@ -493,6 +570,7 @@ export async function executeSubAgentRun(run, deps = defaultSubAgentDeps) {
 			generationOptions.base_result = result
 			await run.aiSource.StructCall(promptStruct, generationOptions)
 			propagateRoundsToAncestors(run, getRun)
+			emitRunStatus(run, deps)
 			if (run.terminateRequested) {
 				await summarizeRun(run, deps, 'terminated')
 				summarized = true
@@ -537,6 +615,7 @@ export async function executeSubAgentRun(run, deps = defaultSubAgentDeps) {
 		if (run.timer) clearTimeout(run.timer)
 		run.finishedAt = deps.now()
 		deps.archive.removeParentArchive(run.archivePath)
+		emitRunStatus(run, deps)
 		void recordRunGeneration(run, deps)
 		if (run.isAsync)
 			void deliverNotification(run, deps).catch(error => console.warn('sub-agent: 通知投递失败', error))

@@ -8,6 +8,7 @@ const ENDPOINT_EXPORTS = [
 	'listChars',
 	'getCharOverview',
 	'listSubAgents',
+	'getSubAgent',
 	'listGenerations',
 	'getGeneration',
 	'listChains',
@@ -96,5 +97,15 @@ test.describe('Agent Studio shell boot', () => {
 		await page.locator('.side-nav .nav-btn[data-view="settings"]').click()
 		await expect(page.locator('#settingsView')).toBeVisible()
 		await expect(page.locator('#retentionSave')).toBeVisible()
+	})
+
+	test('deep-links to the sub-agent view through the hash', async ({ page, baseUrl }) => {
+		await openAgentStudio(page, baseUrl)
+		await page.evaluate(() => { window.location.hash = '#subagent/unknown-run-id' })
+		await expect(page.locator('#subagentView')).toBeVisible()
+		await expect(page.locator('#dashboardView')).toBeHidden()
+		await page.locator('#subagentBackButton').click()
+		await expect(page.locator('#generationsView')).toBeVisible()
+		await expect(page.locator('#subagentView')).toBeHidden()
 	})
 })

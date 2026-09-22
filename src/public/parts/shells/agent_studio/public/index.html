@@ -190,6 +190,32 @@
 				</div>
 			</section>
 
+			<section id="subagentView" class="view hidden">
+				<header class="view-header">
+					<div class="view-header-text">
+						<h2 class="view-title" data-i18n="agent_studio.subagent.title"></h2>
+						<p class="view-subtitle" data-i18n="agent_studio.subagent.description"></p>
+					</div>
+					<div class="view-header-actions">
+						<button id="subagentBackButton" type="button" class="btn btn-ghost btn-sm" data-i18n="agent_studio.subagent.back"></button>
+					</div>
+				</header>
+				<div class="subagent-view">
+					<div id="subagentMeta" class="generation-meta"></div>
+					<section class="dialog-section">
+						<h3 class="dialog-section-title" data-i18n="agent_studio.subagent.task"></h3>
+						<pre id="subagentTask" class="code-block" user-content></pre>
+					</section>
+					<section class="dialog-section">
+						<h3 class="dialog-section-title" data-i18n="agent_studio.subagent.conversation"></h3>
+						<div id="subagentConversation" class="subagent-conversation"></div>
+						<div id="subagentConversationEmpty" class="section-empty hidden">
+							<p data-i18n="agent_studio.subagent.empty"></p>
+						</div>
+					</section>
+				</div>
+			</section>
+
 			<section id="settingsView" class="view hidden">
 				<header class="view-header">
 					<div class="view-header-text">

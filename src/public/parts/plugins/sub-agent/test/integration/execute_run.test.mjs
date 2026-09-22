@@ -80,7 +80,13 @@ function createRegenPlugin(regenTimes, onHandle) {
  * @returns {object} deps
  */
 function createDeps(aiSource, plugin) {
+	/** 捕获的生成记录。 */
+	const records = []
+	/** 捕获的运行状态推送。 */
+	const notifications = []
 	return {
+		records,
+		notifications,
 		/**
 		 * 仅 sub-agent 返回带 handler 的假插件。
 		 * @param {string} _username 用户
@@ -100,10 +106,19 @@ function createDeps(aiSource, plugin) {
 		 */
 		listAiSources: async () => [],
 		/**
-		 * 跳过生成历史落盘。
+		 * 捕获生成历史（正常流程为落盘）。
+		 * @param {string} _username 用户
+		 * @param {object} record 记录
 		 * @returns {Promise<void>}
 		 */
-		recordGeneration: async () => { },
+		recordGeneration: async (_username, record) => { records.push(record) },
+		/**
+		 * 捕获运行状态推送。
+		 * @param {string} _username 用户
+		 * @param {object} payload 状态摘要
+		 * @returns {Promise<void>}
+		 */
+		notifyRun: async (_username, payload) => { notifications.push(payload) },
 		/**
 		 * 最小提示结构（避免拉起真实角色图）。
 		 * @param {object} args 子请求
@@ -254,6 +269,27 @@ Deno.test('runSubAgent async returns a backgroundId and finishes in the backgrou
 	const finished = getRun(outcome.backgroundId)
 	assertEquals(finished.state, 'done')
 	assertEquals(finished.finalText, 'async-result')
+})
+
+Deno.test('runSubAgent persists the internal conversation and emits live status', async () => {
+	resetSubAgentState()
+	const ai = createFakeAi(['hello there'])
+	const deps = createDeps(ai, createRegenPlugin(0))
+	const outcome = await runSubAgent(
+		createParentArgs(),
+		{ body: 'collect', roundLimit: 3, timeLimitMs: 60_000 },
+		deps,
+	)
+	await waitFor(() => deps.records.length === 1)
+	const record = deps.records[0]
+	assertEquals(record.conversationId, 'subagent:' + outcome.run.runId)
+	assert(Array.isArray(record.conversation), 'expected conversation in the generation record')
+	assert(record.conversation.some(entry => entry.role === 'system'), 'expected opening entries')
+	const last = deps.notifications.at(-1)
+	assertEquals(last.state, 'done')
+	assertEquals(last.runId, outcome.run.runId)
+	assertEquals(last.chat_name, 'test_chat')
+	assert(deps.notifications.some(payload => payload.state === 'running'), 'expected a running notification')
 })
 
 Deno.test('runSubAgent rejects over-depth and missing-limit spawns', async () => {

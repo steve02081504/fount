@@ -38,9 +38,10 @@ function echo(text, limit = TOOL_ECHO_LIMIT) {
  * @param {object} args 请求上下文
  * @param {string} content 回执文本
  * @param {boolean} [isError] 是否为错误
+ * @param {object} [extra] 额外字段（如 `extension.subAgent`，供宿主 shell 定位运行）
  * @returns {void}
  */
-function writeToolLog(args, content, isError = false) {
+function writeToolLog(args, content, isError = false, extra = {}) {
 	args.AddLongTimeLog?.({
 		name: 'sub-agent',
 		role: 'tool',
@@ -48,7 +49,30 @@ function writeToolLog(args, content, isError = false) {
 		content_for_show: content,
 		files: [],
 		...isError ? { extension: { error: true } } : {},
+		...extra,
 	})
+}
+
+/**
+ * 由运行对象构造工具日志的 `extension.subAgent`（宿主 shell 据此渲染运行按钮并深链）。
+ * @param {object} run 运行
+ * @param {boolean} isAsync 是否异步派生
+ * @returns {{ extension: { subAgent: object } }} 附加字段
+ */
+function runToolMeta(run, isAsync) {
+	return {
+		extension: {
+			subAgent: {
+				runId: run.runId,
+				backgroundId: run.backgroundId,
+				parentRunId: run.parentRunId,
+				batchId: run.batchId,
+				depth: run.depth,
+				isAsync,
+				task: run.task,
+			},
+		},
+	}
 }
 
 /**
@@ -122,9 +146,9 @@ export const runSubAgentHandler = defineReplyHandler({
 		try {
 			const outcome = await runSubAgent(args, request)
 			if (request.async)
-				writeToolLog(args, `子代理已在后台运行，backgroundId=${outcome.backgroundId}。完成后会以系统消息通知你。`)
+				writeToolLog(args, `子代理已在后台运行，backgroundId=${outcome.backgroundId}。完成后会以系统消息通知你。`, false, runToolMeta(outcome.run, true))
 			else
-				writeToolLog(args, `子代理已完成，最终结果：\n\n${echo(outcome.text)}`)
+				writeToolLog(args, `子代理已完成，最终结果：\n\n${echo(outcome.text)}`, false, runToolMeta(outcome.run, false))
 		}
 		catch (error) {
 			if (error instanceof SubAgentError)
