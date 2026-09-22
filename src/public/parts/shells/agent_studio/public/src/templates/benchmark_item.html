@@ -1,7 +1,7 @@
-<li class="benchmark-item list-row cursor-pointer" data-benchmark-id="${id}" tabindex="0" role="button">
-	<div class="min-w-0 flex-grow">
-		<p class="font-semibold truncate" user-content>${name}</p>
-		<p class="text-xs opacity-60 truncate" user-content>${description}</p>
+<li class="benchmark-item" data-benchmark-id="${escapeHtml(id)}" tabindex="0" role="button">
+	<div class="benchmark-item-body">
+		<p class="benchmark-name" user-content>${escapeHtml(name)}</p>
+		<p class="benchmark-desc" user-content>${escapeHtml(description)}</p>
 	</div>
-	<span class="badge badge-ghost">${caseCount}</span>
+	<span class="badge badge-ghost">${escapeHtml(caseCount)}</span>
 </li>

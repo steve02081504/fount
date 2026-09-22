@@ -6746,63 +6746,121 @@
 	},
 	"agent_studio": {
 		"title": "Agent Studio",
-		"description": "查看生成记录与子代理运行，并对角色做基准测试。",
-		"chars": {
-			"title": "角色",
-			"empty": "暂无角色。"
+		"description": "Inspect generations and sub-agent runs, and benchmark characters.",
+		"nav": {
+			"region": {
+				"aria-label": "Main navigation"
+			},
+			"mobile": {
+				"aria-label": "Main navigation (mobile)"
+			},
+			"dashboard": "Dashboard",
+			"generations": "Generations",
+			"benchmarks": "Benchmarks",
+			"settings": "Settings"
 		},
-		"detail": {
-			"subAgents": "子代理",
-			"generations": "近期生成",
-			"none": "暂无数据。"
-		},
-		"generation": {
-			"title": "生成详情",
-			"prompt": "请求聊天记录",
-			"response": "回复",
-			"ok": "正常",
-			"error": "出错"
-		},
-		"run": {
-			"detail": "生成 ${generations} 条 · 轮次 ${rounds}/${roundLimit}",
-			"state": {
-				"running": "运行中",
-				"summarizing": "总结中",
-				"done": "已完成",
-				"failed": "失败",
-				"terminated": "已终止"
+		"actions": {
+			"refreshData": "Refresh data",
+			"refresh": {
+				"title": "Refresh",
+				"aria-label": "Refresh data"
+			},
+			"close": {
+				"title": "Close",
+				"aria-label": "Close"
 			}
 		},
-		"retention": {
-			"title": "记录保留策略",
-			"prompt": "请求记录保留（天）",
-			"conversation": "整条记录保留（天）",
-			"save": "保存",
-			"saved": "已保存。"
+		"dashboard": {
+			"title": "Dashboard",
+			"description": "Pick a character to inspect its sub-agent runs and recent generations.",
+			"selectPrompt": "Select a character on the left to begin."
+		},
+		"chars": {
+			"title": "Characters",
+			"empty": "No characters yet.",
+			"noMatch": "No matching characters.",
+			"search": {
+				"placeholder": "Search characters…"
+			}
+		},
+		"detail": {
+			"subAgents": "Sub-agent runs",
+			"generations": "Recent generations",
+			"none": "No data."
+		},
+		"generation": {
+			"title": "Generation detail",
+			"prompt": "Request chat log",
+			"response": "Response",
+			"ok": "OK",
+			"error": "Error",
+			"meta": "Source ${source} · Model ${model}",
+			"character": "Character ${name}",
+			"promptExpired": "The request log has expired or is unavailable."
+		},
+		"run": {
+			"detail": "generations ${generations} · rounds ${rounds}/${roundLimit}",
+			"state": {
+				"running": "Running",
+				"summarizing": "Summarizing",
+				"done": "Done",
+				"failed": "Failed",
+				"terminated": "Terminated"
+			}
+		},
+		"generations": {
+			"title": "Generations",
+			"description": "Browse generation records and chains across all characters.",
+			"records": "Records",
+			"chains": "Chains",
+			"filterChar": "Character",
+			"allChars": "All characters",
+			"recordsCount": "${count} records",
+			"empty": "No generations yet.",
+			"chainsEmpty": "No chains yet."
 		},
 		"benchmarks": {
-			"title": "基准测试",
-			"empty": "暂无基准测试。",
-			"new": "新建",
-			"newName": "请输入基准测试名称",
-			"cases": "用例（JSON 数组）",
-			"saveCases": "保存用例",
-			"delete": "删除",
-			"deleteConfirm": "确定删除该基准测试吗？",
-			"selectChar": "运行角色",
-			"selectCharFirst": "请先选择角色。",
-			"judgeSource": "裁判 AI 源（可选）",
-			"run": "运行",
-			"runDone": "运行完成。",
-			"results": "结果",
-			"noResults": "暂无结果。",
-			"notJudged": "未评分",
-			"stats": "共 ${total} 条 · 空回复 ${empty} · 平均长度 ${avgLength} · 已评分 ${judged} · 平均分 ${avgScore}"
+			"title": "Benchmarks",
+			"description": "Define cases, pick a character and judge, and run scored benchmarks.",
+			"empty": "No benchmarks yet.",
+			"pick": "Select or create a benchmark.",
+			"new": "New",
+			"newName": "Enter a benchmark name",
+			"cases": "Cases (JSON array)",
+			"saveCases": "Save cases",
+			"saved": "Cases saved.",
+			"casesInvalid": "Failed to parse cases JSON: ${message}",
+			"delete": {
+				"title": "Delete",
+				"aria-label": "Delete"
+			},
+			"deleteConfirm": "Delete this benchmark?",
+			"selectChar": "Run character",
+			"selectCharFirst": "Select a character first.",
+			"judgeSource": "Judge AI source (optional)",
+			"run": "Run",
+			"runDone": "Run complete.",
+			"results": "Results",
+			"noResults": "No results yet.",
+			"notJudged": "Not judged",
+			"stats": "total ${total} · empty ${empty} · avg length ${avgLength} · judged ${judged} · avg score ${avgScore}"
+		},
+		"retention": {
+			"title": "Record retention",
+			"hint": "After the request window only replies are kept; after the record window the whole record is deleted.",
+			"prompt": "Request log retention (days)",
+			"conversation": "Whole record retention (days)",
+			"save": "Save",
+			"saved": "Saved."
+		},
+		"settings": {
+			"title": "Settings",
+			"description": "Adjust generation record retention."
 		},
 		"alerts": {
-			"loadFailed": "加载失败：${message}",
-			"saveFailed": "保存失败：${message}",
-			"runFailed": "运行失败：${message}"
+			"loadFailed": "Load failed: ${message}",
+			"saveFailed": "Save failed: ${message}",
+			"runFailed": "Run failed: ${message}"
 		}
 	}
 }

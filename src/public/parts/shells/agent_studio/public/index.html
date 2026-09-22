@@ -23,109 +23,244 @@
 </head>
 
 <body>
-	<main class="container mx-auto p-4 max-w-7xl">
-		<header class="mb-6">
-			<h1 class="text-3xl font-bold" data-i18n="agent_studio.title"></h1>
-			<p class="opacity-70 mt-1" data-i18n="agent_studio.description"></p>
-		</header>
-
-		<section class="card bg-base-200 shadow-xl mb-6">
-			<div class="card-body">
-				<h2 class="card-title text-lg" data-i18n="agent_studio.retention.title"></h2>
-				<div class="flex flex-wrap gap-4 items-end">
-					<label class="form-control">
-						<span class="label-text" data-i18n="agent_studio.retention.prompt"></span>
-						<input id="retentionPrompt" type="number" min="0" step="0.5" class="input input-bordered input-sm w-40" />
-					</label>
-					<label class="form-control">
-						<span class="label-text" data-i18n="agent_studio.retention.conversation"></span>
-						<input id="retentionConversation" type="number" min="0" step="0.5" class="input input-bordered input-sm w-40" />
-					</label>
-					<button id="retentionSave" class="btn btn-sm btn-primary" data-i18n="agent_studio.retention.save"></button>
-				</div>
+	<div id="shell" class="shell">
+		<nav class="side-nav" data-i18n="agent_studio.nav.region">
+			<div class="brand">
+				<span class="brand-mark icon icon-flask" aria-hidden="true"></span>
+				<span class="brand-title" data-i18n="agent_studio.title"></span>
 			</div>
-		</section>
+			<div class="side-nav-links">
+				<button type="button" data-view="dashboard" class="nav-btn btn btn-ghost justify-start active">
+					<span class="icon icon-dashboard" aria-hidden="true"></span>
+					<span class="nav-label" data-i18n="agent_studio.nav.dashboard"></span>
+				</button>
+				<button type="button" data-view="generations" class="nav-btn btn btn-ghost justify-start">
+					<span class="icon icon-branch" aria-hidden="true"></span>
+					<span class="nav-label" data-i18n="agent_studio.nav.generations"></span>
+				</button>
+				<button type="button" data-view="benchmarks" class="nav-btn btn btn-ghost justify-start">
+					<span class="icon icon-benchmark" aria-hidden="true"></span>
+					<span class="nav-label" data-i18n="agent_studio.nav.benchmarks"></span>
+				</button>
+				<button type="button" data-view="settings" class="nav-btn btn btn-ghost justify-start">
+					<span class="icon icon-settings" aria-hidden="true"></span>
+					<span class="nav-label" data-i18n="agent_studio.nav.settings"></span>
+				</button>
+			</div>
+			<button type="button" id="globalRefreshButton" class="side-refresh btn btn-ghost justify-start">
+				<span class="icon icon-refresh" aria-hidden="true"></span>
+				<span class="nav-label" data-i18n="agent_studio.actions.refreshData"></span>
+			</button>
+		</nav>
 
-		<div class="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
-			<section class="lg:col-span-1 card bg-base-200 shadow-xl">
-				<div class="card-body p-4 gap-2">
-					<h2 class="card-title text-lg" data-i18n="agent_studio.chars.title"></h2>
-					<ul id="charList" class="list flex flex-col gap-1 max-h-[60vh] overflow-y-auto"></ul>
-					<p id="charListEmpty" class="text-center text-sm opacity-60 py-6 hidden" data-i18n="agent_studio.chars.empty"></p>
+		<main class="content-col">
+			<h1 class="sr-only" data-i18n="agent_studio.title"></h1>
+
+			<section id="dashboardView" class="view">
+				<header class="view-header">
+					<div class="view-header-text">
+						<h2 class="view-title" data-i18n="agent_studio.dashboard.title"></h2>
+						<p class="view-subtitle" data-i18n="agent_studio.dashboard.description"></p>
+					</div>
+					<div class="view-header-actions">
+						<button id="dashboardRefreshButton" type="button" class="btn btn-ghost btn-sm btn-square" data-i18n="agent_studio.actions.refresh">
+							<span class="icon icon-refresh" aria-hidden="true"></span>
+						</button>
+					</div>
+				</header>
+				<div class="dashboard-grid">
+					<aside class="char-panel surface">
+						<h3 class="panel-title" data-i18n="agent_studio.chars.title"></h3>
+						<div class="search-wrap">
+							<span class="icon icon-search search-icon" aria-hidden="true"></span>
+							<input id="charSearchInput" type="search" class="search-input" data-i18n="agent_studio.chars.search" placeholder="" autocomplete="off" />
+						</div>
+						<ul id="charList" class="char-list"></ul>
+						<div id="charListEmpty" class="panel-empty hidden"></div>
+					</aside>
+
+					<section class="detail-panel surface">
+						<div id="charDetail" class="char-detail hidden">
+							<header class="char-hero">
+								<img id="charHeroAvatar" class="char-hero-avatar" src="" alt="" aria-hidden="true" />
+								<div class="char-hero-body">
+									<h3 id="charHeroName" class="char-hero-name" user-content></h3>
+									<p id="charHeroDescription" class="char-hero-desc" user-content></p>
+									<div id="charHeroInterfaces" class="char-hero-interfaces"></div>
+								</div>
+							</header>
+							<section class="detail-section">
+								<h4 class="section-heading" data-i18n="agent_studio.detail.subAgents"></h4>
+								<div id="subAgentList" class="run-grid"></div>
+								<div id="subAgentEmpty" class="section-empty hidden"></div>
+							</section>
+							<section class="detail-section">
+								<h4 class="section-heading" data-i18n="agent_studio.detail.generations"></h4>
+								<ul id="generationList" class="generation-list"></ul>
+								<div id="generationEmpty" class="section-empty hidden"></div>
+							</section>
+						</div>
+						<div id="charDetailPlaceholder" class="detail-placeholder"></div>
+					</section>
 				</div>
 			</section>
 
-			<section class="lg:col-span-3 card bg-base-200 shadow-xl">
-				<div class="card-body gap-4">
-					<div>
-						<h2 id="charDetailTitle" class="card-title text-xl" user-content></h2>
-						<p id="charDetailDescription" class="text-sm opacity-70" user-content></p>
+			<section id="generationsView" class="view hidden">
+				<header class="view-header">
+					<div class="view-header-text">
+						<h2 class="view-title" data-i18n="agent_studio.generations.title"></h2>
+						<p class="view-subtitle" data-i18n="agent_studio.generations.description"></p>
 					</div>
-
-					<div>
-						<h3 class="font-semibold mb-2" data-i18n="agent_studio.detail.subAgents"></h3>
-						<ul id="subAgentList" class="grid grid-cols-1 md:grid-cols-2 gap-2"></ul>
-						<p id="subAgentEmpty" class="text-sm opacity-60 hidden" data-i18n="agent_studio.detail.none"></p>
+					<div class="view-header-actions">
+						<label class="field field-inline">
+							<span class="field-label" data-i18n="agent_studio.generations.filterChar"></span>
+							<select id="generationCharFilter" class="select select-bordered select-sm"></select>
+						</label>
+						<button id="generationsRefreshButton" type="button" class="btn btn-ghost btn-sm btn-square" data-i18n="agent_studio.actions.refresh">
+							<span class="icon icon-refresh" aria-hidden="true"></span>
+						</button>
 					</div>
-
-					<div>
-						<h3 class="font-semibold mb-2" data-i18n="agent_studio.detail.generations"></h3>
-						<ul id="generationList" class="list flex flex-col gap-1 max-h-[40vh] overflow-y-auto"></ul>
-						<p id="generationEmpty" class="text-sm opacity-60 hidden" data-i18n="agent_studio.detail.none"></p>
-					</div>
-
-					<div id="generationDetail" class="hidden">
-						<h3 class="font-semibold mb-2" data-i18n="agent_studio.generation.title"></h3>
-						<p class="text-sm opacity-70" data-i18n="agent_studio.generation.prompt"></p>
-						<pre id="generationPrompt" class="bg-base-300 rounded-box p-2 text-xs whitespace-pre-wrap max-h-40 overflow-auto" user-content></pre>
-						<p class="text-sm opacity-70 mt-2" data-i18n="agent_studio.generation.response"></p>
-						<pre id="generationResponse" class="bg-base-300 rounded-box p-2 text-xs whitespace-pre-wrap max-h-40 overflow-auto" user-content></pre>
-					</div>
+				</header>
+				<div class="view-tabs tabs tabs-box tabs-sm" role="tablist">
+					<button type="button" class="tab tab-active" role="tab" aria-selected="true" data-generation-tab="records" data-i18n="agent_studio.generations.records"></button>
+					<button type="button" class="tab" role="tab" aria-selected="false" data-generation-tab="chains" data-i18n="agent_studio.generations.chains"></button>
 				</div>
+				<div id="generationRecordsPanel" class="generation-panel">
+					<p id="generationRecordsCount" class="list-count"></p>
+					<ul id="generationRecordsList" class="generation-list"></ul>
+					<div id="generationRecordsEmpty" class="section-empty hidden"></div>
+				</div>
+				<div id="generationChainsPanel" class="generation-panel hidden">
+					<ul id="generationChainsList" class="chain-list"></ul>
+					<div id="generationChainsEmpty" class="section-empty hidden"></div>
+				</div>
+			</section>
+
+			<section id="benchmarksView" class="view hidden">
+				<header class="view-header">
+					<div class="view-header-text">
+						<h2 class="view-title" data-i18n="agent_studio.benchmarks.title"></h2>
+						<p class="view-subtitle" data-i18n="agent_studio.benchmarks.description"></p>
+					</div>
+					<div class="view-header-actions">
+						<button id="newBenchmarkButton" type="button" class="btn btn-primary btn-sm" data-i18n="agent_studio.benchmarks.new"></button>
+					</div>
+				</header>
+				<div class="benchmarks-grid">
+					<aside class="benchmark-panel surface">
+						<ul id="benchmarkList" class="benchmark-list"></ul>
+						<div id="benchmarkEmpty" class="panel-empty hidden"></div>
+					</aside>
+					<section class="benchmark-editor surface">
+						<div id="benchmarkDetail" class="hidden">
+							<header class="editor-head">
+								<h3 id="benchmarkTitle" class="editor-title" user-content></h3>
+								<button id="deleteBenchmarkButton" type="button" class="btn btn-ghost btn-sm btn-error btn-square" data-i18n="agent_studio.benchmarks.delete">
+									<span class="icon icon-delete" aria-hidden="true"></span>
+								</button>
+							</header>
+							<div class="run-config">
+								<label class="field">
+									<span class="field-label" data-i18n="agent_studio.benchmarks.selectChar"></span>
+									<select id="runCharSelect" class="select select-bordered select-sm"></select>
+								</label>
+								<label class="field">
+									<span class="field-label" data-i18n="agent_studio.benchmarks.judgeSource"></span>
+									<input id="runJudgeSource" type="text" class="input input-bordered input-sm" />
+								</label>
+								<button id="runBenchmarkButton" type="button" class="btn btn-primary btn-sm">
+									<span class="icon icon-play" aria-hidden="true"></span>
+									<span data-i18n="agent_studio.benchmarks.run"></span>
+								</button>
+							</div>
+							<label class="field field-block">
+								<span class="field-label" data-i18n="agent_studio.benchmarks.cases"></span>
+								<textarea id="benchmarkCasesText" class="textarea textarea-bordered cases-editor" spellcheck="false"></textarea>
+							</label>
+							<button id="saveBenchmarkButton" type="button" class="btn btn-outline btn-sm" data-i18n="agent_studio.benchmarks.saveCases"></button>
+							<section class="results-block">
+								<h4 class="section-heading" data-i18n="agent_studio.benchmarks.results"></h4>
+								<div id="benchmarkStats" class="stats-line"></div>
+								<ul id="benchmarkResults" class="result-list"></ul>
+								<div id="benchmarkResultsEmpty" class="section-empty hidden"></div>
+							</section>
+						</div>
+						<div id="benchmarkPlaceholder" class="detail-placeholder"></div>
+					</section>
+				</div>
+			</section>
+
+			<section id="settingsView" class="view hidden">
+				<header class="view-header">
+					<div class="view-header-text">
+						<h2 class="view-title" data-i18n="agent_studio.settings.title"></h2>
+						<p class="view-subtitle" data-i18n="agent_studio.settings.description"></p>
+					</div>
+				</header>
+				<div class="settings-panel">
+					<section class="settings-card surface">
+						<h3 class="settings-card-title" data-i18n="agent_studio.retention.title"></h3>
+						<p class="settings-hint" data-i18n="agent_studio.retention.hint"></p>
+						<div class="retention-fields">
+							<label class="field">
+								<span class="field-label" data-i18n="agent_studio.retention.prompt"></span>
+								<input id="retentionPrompt" type="number" min="0" step="0.5" class="input input-bordered input-sm" />
+							</label>
+							<label class="field">
+								<span class="field-label" data-i18n="agent_studio.retention.conversation"></span>
+								<input id="retentionConversation" type="number" min="0" step="0.5" class="input input-bordered input-sm" />
+							</label>
+							<button id="retentionSave" type="button" class="btn btn-primary btn-sm" data-i18n="agent_studio.retention.save"></button>
+						</div>
+					</section>
+				</div>
+			</section>
+		</main>
+
+		<nav class="mobile-tabbar dock dock-sm" data-i18n="agent_studio.nav.mobile">
+			<button type="button" data-view="dashboard" class="nav-btn dock-active">
+				<span class="icon icon-dashboard" aria-hidden="true"></span>
+				<span class="dock-label" data-i18n="agent_studio.nav.dashboard"></span>
+			</button>
+			<button type="button" data-view="generations" class="nav-btn">
+				<span class="icon icon-branch" aria-hidden="true"></span>
+				<span class="dock-label" data-i18n="agent_studio.nav.generations"></span>
+			</button>
+			<button type="button" data-view="benchmarks" class="nav-btn">
+				<span class="icon icon-benchmark" aria-hidden="true"></span>
+				<span class="dock-label" data-i18n="agent_studio.nav.benchmarks"></span>
+			</button>
+			<button type="button" data-view="settings" class="nav-btn">
+				<span class="icon icon-settings" aria-hidden="true"></span>
+				<span class="dock-label" data-i18n="agent_studio.nav.settings"></span>
+			</button>
+		</nav>
+	</div>
+
+	<dialog id="generationDialog" class="modal" aria-labelledby="generationDialogTitle">
+		<div class="modal-box generation-dialog-box">
+			<header class="dialog-head">
+				<h2 id="generationDialogTitle" class="dialog-title" data-i18n="agent_studio.generation.title"></h2>
+				<form method="dialog">
+					<button class="btn btn-ghost btn-sm btn-square" data-i18n="agent_studio.actions.close">
+						<span class="icon icon-close" aria-hidden="true"></span>
+					</button>
+				</form>
+			</header>
+			<div id="generationDialogMeta" class="generation-meta"></div>
+			<section class="dialog-section">
+				<h3 class="dialog-section-title" data-i18n="agent_studio.generation.prompt"></h3>
+				<pre id="generationDialogPrompt" class="code-block" user-content></pre>
+			</section>
+			<section class="dialog-section">
+				<h3 class="dialog-section-title" data-i18n="agent_studio.generation.response"></h3>
+				<pre id="generationDialogResponse" class="code-block" user-content></pre>
 			</section>
 		</div>
-
-		<section class="card bg-base-200 shadow-xl mt-6">
-			<div class="card-body gap-4">
-				<div class="flex justify-between items-center">
-					<h2 class="card-title text-xl" data-i18n="agent_studio.benchmarks.title"></h2>
-					<button id="newBenchmarkButton" class="btn btn-sm btn-primary" data-i18n="agent_studio.benchmarks.new"></button>
-				</div>
-				<ul id="benchmarkList" class="list flex flex-col gap-1"></ul>
-				<p id="benchmarkEmpty" class="text-sm opacity-60 hidden" data-i18n="agent_studio.benchmarks.empty"></p>
-
-				<div id="benchmarkDetail" class="hidden border-t border-base-300 pt-4">
-					<div class="flex justify-between items-center gap-2">
-						<h3 id="benchmarkTitle" class="font-semibold" user-content></h3>
-						<button id="deleteBenchmarkButton" class="btn btn-xs btn-error btn-outline" data-i18n="agent_studio.benchmarks.delete"></button>
-					</div>
-
-					<div class="flex flex-wrap gap-3 items-end mt-3">
-						<label class="form-control">
-							<span class="label-text" data-i18n="agent_studio.benchmarks.selectChar"></span>
-							<select id="runCharSelect" class="select select-bordered select-sm"></select>
-						</label>
-						<label class="form-control">
-							<span class="label-text" data-i18n="agent_studio.benchmarks.judgeSource"></span>
-							<input id="runJudgeSource" type="text" class="input input-bordered input-sm" />
-						</label>
-						<button id="runBenchmarkButton" class="btn btn-sm btn-primary" data-i18n="agent_studio.benchmarks.run"></button>
-					</div>
-
-					<label class="form-control w-full mt-3">
-						<span class="label-text mb-1" data-i18n="agent_studio.benchmarks.cases"></span>
-						<textarea id="benchmarkCasesText" class="textarea textarea-bordered w-full h-40 font-mono text-xs"></textarea>
-					</label>
-					<button id="saveBenchmarkButton" class="btn btn-sm btn-outline mt-2" data-i18n="agent_studio.benchmarks.saveCases"></button>
-
-					<h4 class="font-semibold mt-4" data-i18n="agent_studio.benchmarks.results"></h4>
-					<div id="benchmarkStats" class="text-sm opacity-70"></div>
-					<ul id="benchmarkResults" class="list flex flex-col gap-2 mt-2"></ul>
-					<p id="benchmarkResultsEmpty" class="text-sm opacity-60 hidden" data-i18n="agent_studio.benchmarks.noResults"></p>
-				</div>
-			</div>
-		</section>
-	</main>
+		<form method="dialog" class="modal-backdrop">
+			<button data-i18n="agent_studio.actions.close"></button>
+		</form>
+	</dialog>
 
 	<script type="module" src="./index.mjs"></script>
 </body>

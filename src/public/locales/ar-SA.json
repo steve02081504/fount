@@ -6797,7 +6797,10 @@
 			"newName": "请输入基准测试名称",
 			"cases": "用例（JSON 数组）",
 			"saveCases": "保存用例",
-			"delete": "删除",
+			"delete": {
+				"title": "删除",
+				"aria-label": "删除"
+			},
 			"deleteConfirm": "确定删除该基准测试吗？",
 			"selectChar": "运行角色",
 			"selectCharFirst": "请先选择角色。",

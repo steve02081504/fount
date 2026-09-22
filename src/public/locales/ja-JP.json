@@ -6746,63 +6746,121 @@
 	},
 	"agent_studio": {
 		"title": "Agent Studio",
-		"description": "查看生成记录与子代理运行，并对角色做基准测试。",
-		"chars": {
-			"title": "角色",
-			"empty": "暂无角色。"
+		"description": "生成記録とサブエージェント実行を確認し、キャラクターをベンチマークします。",
+		"nav": {
+			"region": {
+				"aria-label": "メインナビゲーション"
+			},
+			"mobile": {
+				"aria-label": "メインナビゲーション（モバイル）"
+			},
+			"dashboard": "ダッシュボード",
+			"generations": "生成記録",
+			"benchmarks": "ベンチマーク",
+			"settings": "設定"
 		},
-		"detail": {
-			"subAgents": "子代理",
-			"generations": "近期生成",
-			"none": "暂无数据。"
-		},
-		"generation": {
-			"title": "生成详情",
-			"prompt": "请求聊天记录",
-			"response": "回复",
-			"ok": "正常",
-			"error": "出错"
-		},
-		"run": {
-			"detail": "生成 ${generations} 条 · 轮次 ${rounds}/${roundLimit}",
-			"state": {
-				"running": "运行中",
-				"summarizing": "总结中",
-				"done": "已完成",
-				"failed": "失败",
-				"terminated": "已终止"
+		"actions": {
+			"refreshData": "データを更新",
+			"refresh": {
+				"title": "更新",
+				"aria-label": "データを更新"
+			},
+			"close": {
+				"title": "閉じる",
+				"aria-label": "閉じる"
 			}
 		},
-		"retention": {
-			"title": "记录保留策略",
-			"prompt": "请求记录保留（天）",
-			"conversation": "整条记录保留（天）",
-			"save": "保存",
-			"saved": "已保存。"
+		"dashboard": {
+			"title": "ダッシュボード",
+			"description": "キャラクターを選び、サブエージェント実行と直近の生成を確認します。",
+			"selectPrompt": "左の一覧からキャラクターを選択してください。"
+		},
+		"chars": {
+			"title": "キャラクター",
+			"empty": "キャラクターがありません。",
+			"noMatch": "一致するキャラクターがありません。",
+			"search": {
+				"placeholder": "キャラクターを検索…"
+			}
+		},
+		"detail": {
+			"subAgents": "サブエージェント実行",
+			"generations": "直近の生成",
+			"none": "データがありません。"
+		},
+		"generation": {
+			"title": "生成の詳細",
+			"prompt": "リクエストチャットログ",
+			"response": "応答",
+			"ok": "正常",
+			"error": "エラー",
+			"meta": "ソース ${source} · モデル ${model}",
+			"character": "キャラクター ${name}",
+			"promptExpired": "リクエストログは期限切れか利用できません。"
+		},
+		"run": {
+			"detail": "生成 ${generations} 件 · ラウンド ${rounds}/${roundLimit}",
+			"state": {
+				"running": "実行中",
+				"summarizing": "要約中",
+				"done": "完了",
+				"failed": "失敗",
+				"terminated": "終了"
+			}
+		},
+		"generations": {
+			"title": "生成記録",
+			"description": "全キャラクターの生成記録と生成チェーンを閲覧します。",
+			"records": "記録",
+			"chains": "チェーン",
+			"filterChar": "キャラクター",
+			"allChars": "すべてのキャラクター",
+			"recordsCount": "全 ${count} 件",
+			"empty": "生成記録がありません。",
+			"chainsEmpty": "チェーンがありません。"
 		},
 		"benchmarks": {
-			"title": "基准测试",
-			"empty": "暂无基准测试。",
-			"new": "新建",
-			"newName": "请输入基准测试名称",
-			"cases": "用例（JSON 数组）",
-			"saveCases": "保存用例",
-			"delete": "删除",
-			"deleteConfirm": "确定删除该基准测试吗？",
-			"selectChar": "运行角色",
-			"selectCharFirst": "请先选择角色。",
-			"judgeSource": "裁判 AI 源（可选）",
-			"run": "运行",
-			"runDone": "运行完成。",
-			"results": "结果",
-			"noResults": "暂无结果。",
-			"notJudged": "未评分",
-			"stats": "共 ${total} 条 · 空回复 ${empty} · 平均长度 ${avgLength} · 已评分 ${judged} · 平均分 ${avgScore}"
+			"title": "ベンチマーク",
+			"description": "ケースを定義し、キャラクターと審査員を選んでスコア付きベンチマークを実行します。",
+			"empty": "ベンチマークがありません。",
+			"pick": "ベンチマークを選択または作成してください。",
+			"new": "新規",
+			"newName": "ベンチマーク名を入力",
+			"cases": "ケース（JSON 配列）",
+			"saveCases": "ケースを保存",
+			"saved": "ケースを保存しました。",
+			"casesInvalid": "ケース JSON の解析に失敗しました：${message}",
+			"delete": {
+				"title": "削除",
+				"aria-label": "削除"
+			},
+			"deleteConfirm": "このベンチマークを削除しますか？",
+			"selectChar": "実行キャラクター",
+			"selectCharFirst": "先にキャラクターを選択してください。",
+			"judgeSource": "審査 AI ソース（任意）",
+			"run": "実行",
+			"runDone": "実行が完了しました。",
+			"results": "結果",
+			"noResults": "結果がありません。",
+			"notJudged": "未採点",
+			"stats": "全 ${total} 件 · 空応答 ${empty} · 平均長 ${avgLength} · 採点済み ${judged} · 平均スコア ${avgScore}"
+		},
+		"retention": {
+			"title": "記録の保持ポリシー",
+			"hint": "リクエスト保持期間を過ぎると応答のみを保持し、記録保持期間を過ぎると記録全体を削除します。",
+			"prompt": "リクエストログ保持（日）",
+			"conversation": "記録全体の保持（日）",
+			"save": "保存",
+			"saved": "保存しました。"
+		},
+		"settings": {
+			"title": "設定",
+			"description": "生成記録の保持ポリシーを調整します。"
 		},
 		"alerts": {
-			"loadFailed": "加载失败：${message}",
-			"saveFailed": "保存失败：${message}",
-			"runFailed": "运行失败：${message}"
+			"loadFailed": "読み込みに失敗しました：${message}",
+			"saveFailed": "保存に失敗しました：${message}",
+			"runFailed": "実行に失敗しました：${message}"
 		}
 	}
 }
