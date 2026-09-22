@@ -7,6 +7,7 @@
  * 【数据结构】batch_t / run_t。
  * 【关联】runtime.mjs 负责真正的生成与 I/O；handler.mjs 解析标签后调用；prompt.mjs 读取轮次；测试 test/pure/state.test.mjs。
  */
+import { ms } from '../../../../scripts/ms.mjs'
 
 /** 未显式指定插件集时的默认工具集（`context-compress` 缺失时由 runtime 容错跳过）。 */
 export const DEFAULT_SUBAGENT_PLUGINS = ['code-execution', 'file-operations', 'sub-agent', 'context-compress', 'async-task']
@@ -98,7 +99,7 @@ const batches = new Map()
 const runs = new Map()
 
 /** 兜底 TTL：异常路径漏删的终态运行与无运行引用的批次按此时长淘汰。 */
-const STATE_TTL_MS = 2 * 60 * 60 * 1000
+const STATE_TTL_MS = ms('2h')
 
 /**
  * 解析插件集声明（`plugins="a,b,c"` 或名称数组）。
