@@ -6939,18 +6939,21 @@ export type LocaleData = {
 			plainView: string
 			markdownView: string
 			switchView: string
-			cacheSummary: string
-			cacheMissing: string
-			cacheRate: string
-			cacheNoRate: string
-			cacheHint: string
 			replayProgress: {
 				'aria-label': string
 			}
-			cacheChart: {
-				'aria-label': string
-			}
 			programRate: string
+			cache: {
+				chart: {
+					'aria-label': string
+				}
+				hint: string
+				lowest: string
+				missing: string
+				noRate: string
+				rate: string
+				summary: string
+			}
 		}
 	}
 }
@@ -7010,8 +7013,9 @@ export type LocaleKeyParams = {
 	'agent_studio.clear.confirmChar': { name: string | number }
 	'agent_studio.clear.done': { count: string | number }
 	'agent_studio.clear.failed': { message: string | number }
-	'agent_studio.conversation.cacheRate': { rate: string | number }
-	'agent_studio.conversation.cacheSummary': { rate: string | number }
+	'agent_studio.conversation.cache.lowest': { rate: string | number }
+	'agent_studio.conversation.cache.rate': { rate: string | number }
+	'agent_studio.conversation.cache.summary': { rate: string | number }
 	'agent_studio.conversation.generationsCount': { count: string | number }
 	'agent_studio.conversation.programRate': { rate: string | number }
 	'agent_studio.conversation.requestsExpired': { count: string | number }

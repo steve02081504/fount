@@ -9,6 +9,7 @@ import { geti18n, primaryLocale } from '/scripts/i18n/index.mjs'
 import { renderTemplate } from '../templates.mjs'
 
 import { bindActivate } from './activate.mjs'
+import { createCacheBadge } from './cacheBadge.mjs'
 import { formatTime, truncate } from './format.mjs'
 import { requestNavigate } from './navigationEvents.mjs'
 
@@ -39,6 +40,8 @@ function conversationFields(conversation) {
  */
 export async function renderConversationItem(conversation) {
 	const item = await renderTemplate('conversation_item', conversationFields(conversation))
+	const cacheBadge = createCacheBadge(conversation.minCacheRate)
+	if (cacheBadge) item.appendChild(cacheBadge)
 	bindActivate(item, () => { requestNavigate('conversation', { key: conversation.key }) })
 	return item
 }

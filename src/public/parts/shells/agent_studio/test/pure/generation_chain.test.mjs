@@ -4,7 +4,7 @@
  */
 import { assertEquals } from 'jsr:@std/assert'
 
-import { buildChains, conversationKey, groupByConversation, summarizeConversations } from '../../public/shared/generationChain.mjs'
+import { buildChains, conversationKey, groupByConversation, minCacheRateByChar, summarizeConversations } from '../../public/shared/generationChain.mjs'
 
 Deno.test('groupByConversation falls back to chatId and keeps empty key', () => {
 	const groups = groupByConversation([
@@ -56,4 +56,26 @@ Deno.test('summarizeConversations groups by key and orders by latest activity', 
 	assertEquals(conv.startedAt, 90)
 	assertEquals(conv.finishedAt, 200)
 	assertEquals(summaries[1].generationCount, 1)
+})
+
+Deno.test('summarizeConversations keeps the lowest cache rate per conversation', () => {
+	const summaries = summarizeConversations([
+		{ id: 'g1', charId: 'c', conversationId: 'conv', cacheRate: 0.8 },
+		{ id: 'g2', charId: 'c', conversationId: 'conv', cacheRate: 0.35 },
+		{ id: 'g3', charId: 'c', conversationId: 'conv' },
+		{ id: 'g4', charId: 'c', chatId: 'chat' },
+	])
+	assertEquals(summaries.find(summary => summary.key === 'conv').minCacheRate, 0.35)
+	assertEquals(summaries.find(summary => summary.key === 'chat').minCacheRate, null)
+})
+
+Deno.test('minCacheRateByChar picks the lowest finite rate per character', () => {
+	const result = minCacheRateByChar([
+		{ charId: 'a', cacheRate: 0.7 },
+		{ charId: 'a', cacheRate: 0.2 },
+		{ charId: 'a', cacheRate: null },
+		{ charId: 'b' },
+		{ charId: 'b', cacheRate: 0.9 },
+	])
+	assertEquals(result, { a: 0.2, b: 0.9 })
 })

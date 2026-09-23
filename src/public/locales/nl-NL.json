@@ -1,4 +1,10 @@
 {
+	"404": {
+		"title": "Pagina niet gevonden",
+		"description": "Het pad dat je zocht is opgelost in mist. Was het een misstap, een vergeten afslag? Sta ons toe u terug naar de kust te begeleiden, of misschien even te pauzeren voor een spelletje te midden van de stille leegte.",
+		"pageNotFoundText": "Oeps! Het lijkt erop dat je op een pagina bent beland die niet bestaat.",
+		"homepageButton": "Terug naar startpagina"
+	},
 	"lang": "nl-NL",
 	"name": "Nederlands",
 	"tips": {
@@ -6117,12 +6123,6 @@
 		"copy_error": "Kan tekst niet kopiëren: ${error}",
 		"copy_fail_alert": "Kopiëren mislukt!"
 	},
-	"404": {
-		"title": "Pagina niet gevonden",
-		"description": "Het pad dat je zocht is opgelost in mist. Was het een misstap, een vergeten afslag? Sta ons toe u terug naar de kust te begeleiden, of misschien even te pauzeren voor een spelletje te midden van de stille leegte.",
-		"pageNotFoundText": "Oeps! Het lijkt erop dat je op een pagina bent beland die niet bestaat.",
-		"homepageButton": "Terug naar startpagina"
-	},
 	"directoryListing": {
 		"title": "directory-index",
 		"description": "Blader en verken de bestanden en mappen in de fount-werkruimte.",
@@ -6904,8 +6904,8 @@
 			"noResults": "Nog geen resultaten.",
 			"notJudged": "Niet beoordeeld",
 			"stats": "Totaal ${total} · leeg ${empty} · gem. lengte ${avgLength} · beoordeeld ${judged} · gem. score ${avgScore}",
-			"import": null,
-			"export": null
+			"import": "JSON importeren",
+			"export": "JSON exporteren"
 		},
 		"retention": {
 			"title": "Bewaring van records",
@@ -6950,7 +6950,11 @@
 			"back": "Terug naar generaties",
 			"task": "Taak",
 			"conversation": "Intern gesprek",
-			"empty": "(nog geen gesprek)"
+			"empty": "(nog geen gesprek)",
+			"messagePlaceholder": {
+				"placeholder": "Bericht toevoegen aan de actieve subagent…"
+			},
+			"send": "Verzenden"
 		},
 		"conversation": {
 			"title": "Gesprek",
@@ -6975,6 +6979,24 @@
 				"user": "Gebruiker",
 				"char": "Personage",
 				"tool": "Hulpmiddel"
+			},
+			"plainView": "Platte tekst",
+			"markdownView": "Markdown",
+			"switchView": "Schakelen tussen Markdown en platte tekst",
+			"replayProgress": {
+				"aria-label": "Voortgang van gespreksweergave"
+			},
+			"programRate": "Programmaslagingspercentage ${rate}%",
+			"cache": {
+				"chart": {
+					"aria-label": "Hergebruik van promptvoorvoegsel per generatie"
+				},
+				"hint": "Geschat gemeenschappelijk promptvoorvoegsel ten opzichte van het vorige verzoek (tekens, geen gefactureerde tokens)",
+				"lowest": "Laagste cache ≈${rate}%",
+				"missing": "Geen gegevens over hergebruik van promptvoorvoegsel",
+				"noRate": "Cache —",
+				"rate": "Cache ≈${rate}%",
+				"summary": "Geschat hergebruik van promptvoorvoegsel ${rate}% (tekens)"
 			}
 		}
 	}

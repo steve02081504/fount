@@ -1,4 +1,10 @@
 {
+	"404": {
+		"title": "Page non trouvée",
+		"description": "Le chemin que vous cherchiez s'est dissous dans la brume. Était-ce un faux pas, un virage oublié ? Laissez-nous vous guider vers le rivage, ou peut-être faites une pause pour jouer dans le vide tranquille.",
+		"pageNotFoundText": "Oups ! Il semble que vous soyez arrivé sur une page qui n'existe pas.",
+		"homepageButton": "Retour à la page d'accueil"
+	},
 	"lang": "fr-FR",
 	"name": "Français",
 	"tips": {
@@ -6117,12 +6123,6 @@
 		"copy_error": "Impossible de copier le texte : ${error}",
 		"copy_fail_alert": "La copie a échoué !"
 	},
-	"404": {
-		"title": "Page non trouvée",
-		"description": "Le chemin que vous cherchiez s'est dissous dans la brume. Était-ce un faux pas, un virage oublié ? Laissez-nous vous guider vers le rivage, ou peut-être faites une pause pour jouer dans le vide tranquille.",
-		"pageNotFoundText": "Oups ! Il semble que vous soyez arrivé sur une page qui n'existe pas.",
-		"homepageButton": "Retour à la page d'accueil"
-	},
 	"directoryListing": {
 		"title": "Index du répertoire",
 		"description": "Parcourez et explorez les fichiers et dossiers dans l'espace de travail de fount.",
@@ -6904,8 +6904,8 @@
 			"noResults": "Aucun résultat pour le moment.",
 			"notJudged": "Non noté",
 			"stats": "Total ${total} · vides ${empty} · longueur moyenne ${avgLength} · notés ${judged} · score moyen ${avgScore}",
-			"import": null,
-			"export": null
+			"import": "Importer JSON",
+			"export": "Exporter JSON"
 		},
 		"retention": {
 			"title": "Politique de conservation des enregistrements",
@@ -6950,7 +6950,11 @@
 			"back": "Retour aux générations",
 			"task": "Tâche",
 			"conversation": "Conversation interne",
-			"empty": "(Aucune conversation pour le moment)"
+			"empty": "(Aucune conversation pour le moment)",
+			"messagePlaceholder": {
+				"placeholder": "Ajouter un message au sous-agent en cours…"
+			},
+			"send": "Envoyer"
 		},
 		"conversation": {
 			"title": "Conversation",
@@ -6975,6 +6979,24 @@
 				"user": "Utilisateur",
 				"char": "Personnage",
 				"tool": "Outil"
+			},
+			"plainView": "Texte brut",
+			"markdownView": "Markdown",
+			"switchView": "Basculer Markdown / texte brut",
+			"replayProgress": {
+				"aria-label": "Progression de la relecture de la conversation"
+			},
+			"programRate": "Taux de réussite du programme ${rate} %",
+			"cache": {
+				"chart": {
+					"aria-label": "Réutilisation du préfixe du prompt par génération"
+				},
+				"hint": "Préfixe commun estimé du prompt par rapport à la requête précédente (caractères, pas de jetons facturés)",
+				"lowest": "Cache minimale ≈${rate} %",
+				"missing": "Aucune donnée de réutilisation du préfixe du prompt",
+				"noRate": "Cache —",
+				"rate": "Cache ≈${rate} %",
+				"summary": "Réutilisation estimée du préfixe du prompt ${rate} % (caractères)"
 			}
 		}
 	}

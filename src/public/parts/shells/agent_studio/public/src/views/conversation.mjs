@@ -155,7 +155,7 @@ function renderReplay(items, metrics, onChange) {
 	}))
 	const total = metrics.reduce((sum, metric) => sum + metric.total, 0)
 	const reused = metrics.reduce((sum, metric) => sum + metric.reused, 0)
-	summary.textContent = total ? geti18n('agent_studio.conversation.cacheSummary', { rate: Math.round(reused / total * 100) }) : geti18n('agent_studio.conversation.cacheMissing')
+	summary.textContent = total ? geti18n('agent_studio.conversation.cache.summary', { rate: Math.round(reused / total * 100) }) : geti18n('agent_studio.conversation.cache.missing')
 	paintCacheChart(chart, metrics)
 	update()
 }
@@ -304,8 +304,8 @@ function renderGeneration(generation, cache = {}) {
 	head.append(title, badge)
 	const cacheBadge = document.createElement('span')
 	cacheBadge.className = `badge ${cache.rate == null ? 'badge-ghost' : cache.rate >= 0.6 ? 'badge-success' : 'badge-error'}`
-	cacheBadge.textContent = cache.rate == null ? geti18n('agent_studio.conversation.cacheNoRate') : geti18n('agent_studio.conversation.cacheRate', { rate: Math.round(cache.rate * 100) })
-	cacheBadge.title = geti18n('agent_studio.conversation.cacheHint')
+	cacheBadge.textContent = cache.rate == null ? geti18n('agent_studio.conversation.cache.noRate') : geti18n('agent_studio.conversation.cache.rate', { rate: Math.round(cache.rate * 100) })
+	cacheBadge.title = geti18n('agent_studio.conversation.cache.hint')
 	head.append(cacheBadge)
 	const meta = document.createElement('p')
 	meta.className = 'conversation-generation-meta'

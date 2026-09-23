@@ -1,4 +1,10 @@
 {
+	"404": {
+		"title": "Không tìm thấy trang",
+		"description": "Con đường bạn tìm kiếm đã tan thành sương mù. Đó có phải là một bước đi sai lầm, một ngã rẽ bị lãng quên? Hãy để chúng tôi hướng dẫn bạn quay trở lại bờ, hoặc có lẽ, tạm dừng một trò chơi giữa khoảng trống yên tĩnh.",
+		"pageNotFoundText": "Ối! Có vẻ như bạn đã truy cập vào một trang không tồn tại.",
+		"homepageButton": "Quay lại trang chủ"
+	},
 	"lang": "vi-VN",
 	"name": "Tiếng Việt",
 	"tips": {
@@ -6111,12 +6117,6 @@
 		"copy_error": "Không thể sao chép văn bản: ${error}",
 		"copy_fail_alert": "Sao chép không thành công!"
 	},
-	"404": {
-		"title": "Không tìm thấy trang",
-		"description": "Con đường bạn tìm kiếm đã tan thành sương mù. Đó có phải là một bước đi sai lầm, một ngã rẽ bị lãng quên? Hãy để chúng tôi hướng dẫn bạn quay trở lại bờ, hoặc có lẽ, tạm dừng một trò chơi giữa khoảng trống yên tĩnh.",
-		"pageNotFoundText": "Ối! Có vẻ như bạn đã truy cập vào một trang không tồn tại.",
-		"homepageButton": "Quay lại trang chủ"
-	},
 	"directoryListing": {
 		"title": "chỉ mục thư mục",
 		"description": "Duyệt và khám phá các tệp và thư mục trong không gian làm việc của fount.",
@@ -6898,8 +6898,8 @@
 			"noResults": "Chưa có kết quả.",
 			"notJudged": "Chưa chấm điểm",
 			"stats": "tổng ${total} · phản hồi trống ${empty} · độ dài trung bình ${avgLength} · đã chấm ${judged} · điểm trung bình ${avgScore}",
-			"import": null,
-			"export": null
+			"import": "Nhập JSON",
+			"export": "Xuất JSON"
 		},
 		"retention": {
 			"title": "Chính sách lưu giữ bản ghi",
@@ -6944,7 +6944,11 @@
 			"back": "Quay lại lần tạo",
 			"task": "Nhiệm vụ",
 			"conversation": "Hội thoại nội bộ",
-			"empty": "(chưa có nội dung hội thoại)"
+			"empty": "(chưa có nội dung hội thoại)",
+			"messagePlaceholder": {
+				"placeholder": "Thêm tin nhắn cho tác nhân phụ đang chạy…"
+			},
+			"send": "Gửi"
 		},
 		"conversation": {
 			"title": "Chi tiết hội thoại",
@@ -6969,6 +6973,24 @@
 				"user": "Người dùng",
 				"char": "Nhân vật",
 				"tool": "Công cụ"
+			},
+			"plainView": "Văn bản thuần",
+			"markdownView": "Markdown",
+			"switchView": "Chuyển Markdown / văn bản thuần",
+			"replayProgress": {
+				"aria-label": "Tiến trình phát lại hội thoại"
+			},
+			"programRate": "Tỷ lệ đạt của chương trình ${rate}%",
+			"cache": {
+				"chart": {
+					"aria-label": "Tỷ lệ tái sử dụng tiền tố prompt theo từng lần tạo"
+				},
+				"hint": "Ước tính tiền tố prompt chung so với yêu cầu trước đó (theo ký tự, không phải token tính phí)",
+				"lowest": "Đệm thấp nhất ≈${rate}%",
+				"missing": "Chưa có dữ liệu tái sử dụng tiền tố prompt",
+				"noRate": "Tỷ lệ đệm —",
+				"rate": "Tỷ lệ đệm ≈${rate}%",
+				"summary": "Ước tính tái sử dụng tiền tố prompt ${rate}% (theo ký tự)"
 			}
 		}
 	}

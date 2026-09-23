@@ -1,4 +1,10 @@
 {
+	"404": {
+		"title": "Página no encontrada",
+		"description": "El camino que buscabas se ha disuelto en la niebla. ¿Fue un paso en falso, un giro olvidado? Permítanos guiarlo de regreso a la costa, o tal vez haga una pausa para jugar en medio del tranquilo vacío.",
+		"pageNotFoundText": "¡Vaya! Parece que has llegado a una página que no existe.",
+		"homepageButton": "Volver a la página de inicio"
+	},
 	"lang": "es-ES",
 	"name": "Español",
 	"tips": {
@@ -6117,12 +6123,6 @@
 		"copy_error": "Error al copiar el texto: ${error}",
 		"copy_fail_alert": "¡Error al copiar!"
 	},
-	"404": {
-		"title": "Página no encontrada",
-		"description": "El camino que buscabas se ha disuelto en la niebla. ¿Fue un paso en falso, un giro olvidado? Permítanos guiarlo de regreso a la costa, o tal vez haga una pausa para jugar en medio del tranquilo vacío.",
-		"pageNotFoundText": "¡Vaya! Parece que has llegado a una página que no existe.",
-		"homepageButton": "Volver a la página de inicio"
-	},
 	"directoryListing": {
 		"title": "Índice del directorio",
 		"description": "Busque y explore los archivos y carpetas en el espacio de trabajo de fount.",
@@ -6904,8 +6904,8 @@
 			"noResults": "Aún no hay resultados.",
 			"notJudged": "Sin puntuar",
 			"stats": "Total ${total} · vacías ${empty} · longitud media ${avgLength} · puntuados ${judged} · puntuación media ${avgScore}",
-			"import": null,
-			"export": null
+			"import": "Importar JSON",
+			"export": "Exportar JSON"
 		},
 		"retention": {
 			"title": "Política de retención de registros",
@@ -6950,7 +6950,11 @@
 			"back": "Volver a las generaciones",
 			"task": "Tarea",
 			"conversation": "Conversación interna",
-			"empty": "(Aún no hay conversación)"
+			"empty": "(Aún no hay conversación)",
+			"messagePlaceholder": {
+				"placeholder": "Añadir un mensaje al subagente en ejecución…"
+			},
+			"send": "Enviar"
 		},
 		"conversation": {
 			"title": "Conversación",
@@ -6975,6 +6979,24 @@
 				"user": "Usuario",
 				"char": "Personaje",
 				"tool": "Herramienta"
+			},
+			"plainView": "Texto sin formato",
+			"markdownView": "Markdown",
+			"switchView": "Cambiar entre Markdown y texto sin formato",
+			"replayProgress": {
+				"aria-label": "Progreso de reproducción de la conversación"
+			},
+			"programRate": "Tasa de aprobación del programa ${rate}%",
+			"cache": {
+				"chart": {
+					"aria-label": "Reutilización del prefijo del prompt por generación"
+				},
+				"hint": "Prefijo común estimado del prompt respecto a la petición anterior (caracteres, no tokens facturados)",
+				"lowest": "Caché más baja ≈${rate}%",
+				"missing": "No hay datos de reutilización del prefijo del prompt",
+				"noRate": "Caché —",
+				"rate": "Caché ≈${rate}%",
+				"summary": "Reutilización estimada del prefijo del prompt ${rate}% (caracteres)"
 			}
 		}
 	}

@@ -1,4 +1,10 @@
 {
+	"404": {
+		"title": "蹤跡難尋",
+		"description": "君所尋之跡，已沒於迷霧之中。差之毫釐，謬以千里。容吾引君歸返本陣；亦或留步此太虛幻境，自得其樂。",
+		"pageNotFoundText": "嗚呼！君誤入無何有之鄉矣。",
+		"homepageButton": "歸去來兮"
+	},
 	"lang": "lzh",
 	"name": "文言",
 	"tips": {
@@ -6111,12 +6117,6 @@
 		"copy_error": "謄錄有失: ${error}",
 		"copy_fail_alert": "謄錄未遂！"
 	},
-	"404": {
-		"title": "蹤跡難尋",
-		"description": "君所尋之跡，已沒於迷霧之中。差之毫釐，謬以千里。容吾引君歸返本陣；亦或留步此太虛幻境，自得其樂。",
-		"pageNotFoundText": "嗚呼！君誤入無何有之鄉矣。",
-		"homepageButton": "歸去來兮"
-	},
 	"directoryListing": {
 		"title": "目錄",
 		"description": "閱覽 fount 案頭之文檔。",
@@ -6898,8 +6898,8 @@
 			"noResults": "尚無結果。",
 			"notJudged": "未評",
 			"stats": "共 ${total} 條 · 空覆 ${empty} · 均長 ${avgLength} · 已評 ${judged} · 均分 ${avgScore}",
-			"import": "导入 JSON",
-			"export": "导出 JSON"
+			"import": "導入 JSON",
+			"export": "導出 JSON"
 		},
 		"retention": {
 			"title": "錄之存留方略",
@@ -6946,9 +6946,9 @@
 			"conversation": "內對話",
 			"empty": "（尚無內對話）",
 			"messagePlaceholder": {
-				"placeholder": "向运行中的子代理追加消息…"
+				"placeholder": "向方行之子代理續言…"
 			},
-			"send": "发送"
+			"send": "遣"
 		},
 		"conversation": {
 			"title": "會話之詳",
@@ -6974,21 +6974,24 @@
 				"char": "角色",
 				"tool": "工具"
 			},
-			"plainView": "纯文字",
-			"markdownView": "Markdown",
-			"switchView": "切换 Markdown / 纯文字",
-			"cacheSummary": "Prompt 前缀复用估算 ${rate}%（字符口径）",
-			"cacheMissing": "Prompt 前缀复用率暂无数据",
-			"cacheRate": "缓存率 ≈${rate}%",
-			"cacheNoRate": "缓存率 —",
-			"cacheHint": "与上一轮请求比较的 prompt 公共前缀估算（字符口径，非计费 token）",
+			"plainView": "白文",
+			"markdownView": "墨記",
+			"switchView": "易墨記與白文",
 			"replayProgress": {
-				"aria-label": "会话回放进度"
+				"aria-label": "會話復播之進度"
 			},
-			"cacheChart": {
-				"aria-label": "每次生成的 prompt 前缀复用率折线图"
-			},
-			"programRate": "程序通过率 ${rate}%"
+			"programRate": "程序通過之率 ${rate}%",
+			"cache": {
+				"chart": {
+					"aria-label": "每生成所求前綴復用之折線圖"
+				},
+				"hint": "與前輪所求相校，其共同前綴之約計（以字數，非計費之符節）",
+				"lowest": "緩存之最低 ≈${rate}%",
+				"missing": "求之前綴復用之數，尚無可考",
+				"noRate": "緩存之率 —",
+				"rate": "緩存之率 ≈${rate}%",
+				"summary": "求之前綴復用，約計 ${rate}%（以字數）"
+			}
 		}
 	}
 }

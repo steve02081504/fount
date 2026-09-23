@@ -16,7 +16,7 @@ import { getRun as getLiveRun, listBatches as listLiveBatches, listRuns as listL
 import { BUILTIN_PERSONA, BUILTIN_WORLD } from '../../chat/src/chat/session/builtinParts.mjs'
 
 import { buildJudgePrompt, checkResponse, computeStats, normalizeBenchmark, parseJudgeResponse } from './benchmark.mjs'
-import { getGeneration, listConversations, listGenerations } from './generation_history.mjs'
+import { getGeneration, listConversations, listGenerations, minCacheRateByChar } from './generation_history.mjs'
 
 /** shell data 命名空间。 */
 const SHELL_NAME = 'agent_studio'
@@ -35,10 +35,12 @@ const MAX_RUNS = 200
 export async function listChars(username) {
 	const names = getPartList(username, 'chars')
 	const { cachedDetails } = await getAllCachedPartDetails(username, 'chars')
+	const minByChar = minCacheRateByChar(await listGenerations(username, { limit: Number.MAX_SAFE_INTEGER }))
 	return names.map(id => ({
 		id,
 		info: cachedDetails[id]?.info ?? null,
 		supportedInterfaces: cachedDetails[id]?.supportedInterfaces ?? [],
+		minCacheRate: minByChar[id] ?? null,
 	}))
 }
 
@@ -162,11 +164,14 @@ export function summarizeSubAgentRuns(records = [], liveRuns = [], liveBatches =
 			startedAt,
 			finishedAt,
 			hasError: false,
+			minCacheRate: null,
 		}
 		entry.generationIds.push(record.id)
 		if (startedAt != null) entry.startedAt = Math.min(entry.startedAt ?? startedAt, startedAt)
 		if (finishedAt != null) entry.finishedAt = Math.max(entry.finishedAt ?? finishedAt, finishedAt)
 		entry.hasError ||= !!record.hasError
+		if (typeof record.cacheRate === 'number')
+			entry.minCacheRate = entry.minCacheRate == null ? record.cacheRate : Math.min(entry.minCacheRate, record.cacheRate)
 		runsById.set(subAgent.runId, entry)
 	}
 	for (const live of liveRuns || []) {
@@ -179,6 +184,7 @@ export function summarizeSubAgentRuns(records = [], liveRuns = [], liveBatches =
 			startedAt: live.startedAt ?? live.createdAt ?? null,
 			finishedAt: live.finishedAt ?? null,
 			hasError: !!live.error,
+			minCacheRate: null,
 		}
 		entry.live = {
 			state: live.state,

@@ -1,4 +1,10 @@
 {
+	"404": {
+		"title": "Seite nicht gefunden",
+		"description": "Der Weg, den Sie gesucht haben, hat sich in Nebel aufgelöst. War es ein Fehltritt, eine vergessene Wendung? Erlauben Sie uns, Sie zurück ans Ufer zu begleiten, oder machen Sie vielleicht eine Pause für ein Spiel inmitten der stillen Leere.",
+		"pageNotFoundText": "Hoppla! Sie scheinen auf einer Seite gelandet zu sein, die nicht existiert.",
+		"homepageButton": "Zur Startseite zurückkehren"
+	},
 	"lang": "de-DE",
 	"name": "Deutsch",
 	"tips": {
@@ -6111,12 +6117,6 @@
 		"copy_error": "Text konnte nicht kopiert werden: ${error}",
 		"copy_fail_alert": "Kopieren fehlgeschlagen!"
 	},
-	"404": {
-		"title": "Seite nicht gefunden",
-		"description": "Der Weg, den Sie gesucht haben, hat sich in Nebel aufgelöst. War es ein Fehltritt, eine vergessene Wendung? Erlauben Sie uns, Sie zurück ans Ufer zu begleiten, oder machen Sie vielleicht eine Pause für ein Spiel inmitten der stillen Leere.",
-		"pageNotFoundText": "Hoppla! Sie scheinen auf einer Seite gelandet zu sein, die nicht existiert.",
-		"homepageButton": "Zur Startseite zurückkehren"
-	},
 	"directoryListing": {
 		"title": "Verzeichnisindex",
 		"description": "Durchsuchen und erkunden Sie die Dateien und Ordner im fount-Arbeitsbereich.",
@@ -6898,8 +6898,8 @@
 			"noResults": "Noch keine Ergebnisse.",
 			"notJudged": "Nicht bewertet",
 			"stats": "Gesamt ${total} · Leer ${empty} · Ø Länge ${avgLength} · Bewertet ${judged} · Ø Punktzahl ${avgScore}",
-			"import": null,
-			"export": null
+			"import": "JSON importieren",
+			"export": "JSON exportieren"
 		},
 		"retention": {
 			"title": "Aufbewahrung von Datensätzen",
@@ -6944,7 +6944,11 @@
 			"back": "Zurück zu den Generierungen",
 			"task": "Aufgabe",
 			"conversation": "Interne Unterhaltung",
-			"empty": "(noch keine Unterhaltung)"
+			"empty": "(noch keine Unterhaltung)",
+			"messagePlaceholder": {
+				"placeholder": "Nachricht an den laufenden Sub-Agenten anhängen…"
+			},
+			"send": "Senden"
 		},
 		"conversation": {
 			"title": "Unterhaltung",
@@ -6969,6 +6973,24 @@
 				"user": "Benutzer",
 				"char": "Charakter",
 				"tool": "Werkzeug"
+			},
+			"plainView": "Nur Text",
+			"markdownView": "Markdown",
+			"switchView": "Markdown / Nur Text umschalten",
+			"replayProgress": {
+				"aria-label": "Fortschritt der Gesprächswiedergabe"
+			},
+			"programRate": "Programmbestehensquote ${rate}%",
+			"cache": {
+				"chart": {
+					"aria-label": "Wiederverwendung des Prompt-Präfixes je Generierung"
+				},
+				"hint": "Geschätzter gemeinsamer Prompt-Präfix gegenüber der vorherigen Anfrage (Zeichen, keine abgerechneten Token)",
+				"lowest": "Niedrigster Cache ≈${rate}%",
+				"missing": "Keine Daten zur Wiederverwendung des Prompt-Präfixes",
+				"noRate": "Cache —",
+				"rate": "Cache ≈${rate}%",
+				"summary": "Geschätzte Wiederverwendung des Prompt-Präfixes ${rate}% (Zeichen)"
 			}
 		}
 	}

@@ -9,6 +9,7 @@ import { showToastI18n } from '/scripts/features/toast.mjs'
 
 import { getCharOverview } from '../endpoints.mjs'
 import { bindActivate } from '../lib/activate.mjs'
+import { createCacheBadge } from '../lib/cacheBadge.mjs'
 import { renderConversationItem } from '../lib/conversationItem.mjs'
 import { mountEmptyState } from '../lib/emptyState.mjs'
 import { requestNavigate } from '../lib/navigationEvents.mjs'
@@ -80,6 +81,8 @@ async function renderCharList() {
 			name: info.name || char.id,
 			description: info.description || '',
 		})
+		const cacheBadge = createCacheBadge(char.minCacheRate)
+		if (cacheBadge) item.appendChild(cacheBadge)
 		item.classList.toggle('active', char.id === state.activeCharId)
 		bindActivate(item, () => { void selectChar(char.id) })
 		list.appendChild(item)
@@ -183,6 +186,8 @@ async function renderSubAgents(runs) {
 			badgeClass: stateBadge(runState),
 			detail,
 		})
+		const cacheBadge = createCacheBadge(run.minCacheRate)
+		if (cacheBadge) item.querySelector('.run-item-head')?.appendChild(cacheBadge)
 		item.addEventListener('click', () => { requestNavigate('conversation', { key: `subagent:${run.runId}` }) })
 		list.appendChild(item)
 	}

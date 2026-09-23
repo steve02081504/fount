@@ -1,4 +1,10 @@
 {
+	"404": {
+		"title": "🤷‍♂️📄",
+		"description": "🌫️❓🤷‍♂️🎮",
+		"pageNotFoundText": "😢 ➡️ 🤷‍♂️📄",
+		"homepageButton": "➡️🏠"
+	},
 	"lang": "emoji",
 	"name": "🤓",
 	"tips": {
@@ -6111,12 +6117,6 @@
 		"copy_error": "📋❌: ${error}",
 		"copy_fail_alert": "📋❌❗️"
 	},
-	"404": {
-		"title": "🤷‍♂️📄",
-		"description": "🌫️❓🤷‍♂️🎮",
-		"pageNotFoundText": "😢 ➡️ 🤷‍♂️📄",
-		"homepageButton": "➡️🏠"
-	},
 	"directoryListing": {
 		"title": "📂📇",
 		"description": "👀🔭 fount 📦📂📄",
@@ -6898,8 +6898,8 @@
 			"noResults": "🈳📊",
 			"notJudged": "🚫⚖️",
 			"stats": "Σ${total}·🈳${empty}·📏${avgLength}·⚖️${judged}·⭐${avgScore}",
-			"import": "导入 JSON",
-			"export": "导出 JSON"
+			"import": "📥📊",
+			"export": "📤📊"
 		},
 		"retention": {
 			"title": "📜⏳",
@@ -6946,9 +6946,9 @@
 			"conversation": "💬",
 			"empty": "🈳💬",
 			"messagePlaceholder": {
-				"placeholder": "向运行中的子代理追加消息…"
+				"placeholder": "💬➕🤖▶️…"
 			},
-			"send": "发送"
+			"send": "📤"
 		},
 		"conversation": {
 			"title": "💬🔍",
@@ -6974,21 +6974,24 @@
 				"char": "🎭",
 				"tool": "🛠️"
 			},
-			"plainView": "纯文字",
+			"plainView": "🔤",
 			"markdownView": "Markdown",
-			"switchView": "切换 Markdown / 纯文字",
-			"cacheSummary": "Prompt 前缀复用估算 ${rate}%（字符口径）",
-			"cacheMissing": "Prompt 前缀复用率暂无数据",
-			"cacheRate": "缓存率 ≈${rate}%",
-			"cacheNoRate": "缓存率 —",
-			"cacheHint": "与上一轮请求比较的 prompt 公共前缀估算（字符口径，非计费 token）",
+			"switchView": "🔁 🔤 / Markdown",
 			"replayProgress": {
-				"aria-label": "会话回放进度"
+				"aria-label": "♻️💬📈"
 			},
-			"cacheChart": {
-				"aria-label": "每次生成的 prompt 前缀复用率折线图"
-			},
-			"programRate": "程序通过率 ${rate}%"
+			"programRate": "⚙️✅ ${rate}%",
+			"cache": {
+				"chart": {
+					"aria-label": "📈♻️✨"
+				},
+				"hint": "💬🔁♻️ (🔤, ⚖️🪙)",
+				"lowest": "⬇️♻️ ≈${rate}%",
+				"missing": "🈳♻️",
+				"noRate": "♻️ —",
+				"rate": "♻️ ≈${rate}%",
+				"summary": "🔁♻️ ≈${rate}% (🔤)"
+			}
 		}
 	}
 }

@@ -64,7 +64,8 @@ alwaysApply: false
 - `src/benchmark.mjs` is pure (`computeStats` / `parseJudgeResponse` / `buildJudgePrompt`) so it tests without a server.
 - Definitions carry no char field; char / config / model are chosen at run time. Runner builds a `chatReplyRequest` with `BUILTIN_WORLD` / `BUILTIN_PERSONA` and calls `char.GetReply`, recording with `source: 'shells/agent_studio/benchmark'`.
 - Judge: `check` runs deterministic `exact`/`contains`/`regex` or reverses the output before the LLM judge; failures short-circuit the judge. Cases with `criteria`, or `expected` without `check`, call the configured judge AI source directly (`Call`, no tools). Import/export exchanges complete benchmark definition JSON; `examples/LLM唐b测试.json` exercises all three modes.
-- Prompt cache UI is an **estimate** based on the character length of contiguous common prefixes across serialized prompt snapshots, not provider-reported billed cached tokens. When `requests` are stripped there is no metric. `public/shared/promptCache.mjs` is the pure source of this metric.
+- Prompt cache UI is an **estimate** based on the character length of contiguous common prefixes across serialized prompt snapshots, not provider-reported billed cached tokens. `public/shared/promptCache.mjs` is the pure source of this metric (`estimatePromptCache` for a conversation view, `estimateGenerationCache` for one generation against a supplied previous prompt).
+- `recordGeneration` precomputes each record's `cacheRate` (reading the conversation's previous record's last prompt) and stores it in the index summary, so list badges survive `requests` stripping. Aggregates: `summarizeConversations` → `minCacheRate`, `summarizeSubAgentRuns` → `minCacheRate`, `minCacheRateByChar` → per-char `minCacheRate` in `/chars`. The frontend `lib/cacheBadge.mjs` renders these on char / conversation / run list items.
 
 ## Endpoints
 

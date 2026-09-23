@@ -1,4 +1,10 @@
 {
+	"404": {
+		"title": "Síða fannst ekki",
+		"description": "Leiðin sem þú leitaðir hefur leyst upp í þoku. Var það mistök, gleymd beygja? Leyfðu okkur að leiðbeina þér aftur að landi, eða kannski staldra við í leik í rólegu tóminu.",
+		"pageNotFoundText": "Úps! Svo virðist sem þú hafir lent á síðu sem er ekki til.",
+		"homepageButton": "Aftur á forsíðu"
+	},
 	"lang": "is-IS",
 	"name": "Íslenska",
 	"tips": {
@@ -6111,12 +6117,6 @@
 		"copy_error": "Gat ekki afritað texta: ${error}",
 		"copy_fail_alert": "Afritun mistókst!"
 	},
-	"404": {
-		"title": "Síða fannst ekki",
-		"description": "Leiðin sem þú leitaðir hefur leyst upp í þoku. Var það mistök, gleymd beygja? Leyfðu okkur að leiðbeina þér aftur að landi, eða kannski staldra við í leik í rólegu tóminu.",
-		"pageNotFoundText": "Úps! Svo virðist sem þú hafir lent á síðu sem er ekki til.",
-		"homepageButton": "Aftur á forsíðu"
-	},
 	"directoryListing": {
 		"title": "Skráayfirlit",
 		"description": "Skoðaðu og skoðaðu skrárnar og möppurnar á vinnusvæðinu.",
@@ -6898,8 +6898,8 @@
 			"noResults": "Engar niðurstöður ennþá.",
 			"notJudged": "Ekki metið",
 			"stats": "Alls ${total} · tóm svör ${empty} · meðallengd ${avgLength} · metið ${judged} · meðaleinkunn ${avgScore}",
-			"import": null,
-			"export": null
+			"import": "Flytja inn JSON",
+			"export": "Flytja út JSON"
 		},
 		"retention": {
 			"title": "Varðveisla færslna",
@@ -6944,7 +6944,11 @@
 			"back": "Aftur í myndanir",
 			"task": "Verk",
 			"conversation": "Innra samtal",
-			"empty": "(ekkert samtal ennþá)"
+			"empty": "(ekkert samtal ennþá)",
+			"messagePlaceholder": {
+				"placeholder": "Bæta skilaboðum við keyrandi undirumboð…"
+			},
+			"send": "Senda"
 		},
 		"conversation": {
 			"title": "Samtal",
@@ -6969,6 +6973,24 @@
 				"user": "Notandi",
 				"char": "Persóna",
 				"tool": "Verkfæri"
+			},
+			"plainView": "Hreinn texti",
+			"markdownView": "Markdown",
+			"switchView": "Skipta milli Markdown / hreins texta",
+			"replayProgress": {
+				"aria-label": "Framvinda endursýningar samtals"
+			},
+			"programRate": "Hlutfall stæðra prógramma ${rate}%",
+			"cache": {
+				"chart": {
+					"aria-label": "Endurnýting forskeytis kvaðar eftir hverri myndun"
+				},
+				"hint": "Áætlað sameiginlegt forskeyti kvaðar miðað við fyrri beiðni (stafir, ekki gjaldtökutókar)",
+				"lowest": "Lægsta skyndiminni ≈${rate}%",
+				"missing": "Engin gögn um endurnýtingu forskeytis kvaðar",
+				"noRate": "Skyndiminni —",
+				"rate": "Skyndiminni ≈${rate}%",
+				"summary": "Áætluð endurnýting forskeytis kvaðar ${rate}% (stafir)"
 			}
 		}
 	}

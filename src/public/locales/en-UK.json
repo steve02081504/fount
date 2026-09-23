@@ -6977,18 +6977,21 @@
 			"plainView": "Plain text",
 			"markdownView": "Markdown",
 			"switchView": "Switch Markdown / plain text",
-			"cacheSummary": "Estimated prompt prefix reuse ${rate}% (characters)",
-			"cacheMissing": "Prompt prefix reuse unavailable",
-			"cacheRate": "Cache ≈${rate}%",
-			"cacheNoRate": "Cache —",
-			"cacheHint": "Estimated shared prompt prefix vs previous request (characters, not billed tokens)",
 			"replayProgress": {
 				"aria-label": "Conversation replay progress"
 			},
-			"cacheChart": {
-				"aria-label": "Estimated prompt prefix reuse by generation"
-			},
-			"programRate": "Program pass rate ${rate}%"
+			"programRate": "Program pass rate ${rate}%",
+			"cache": {
+				"chart": {
+					"aria-label": "Estimated prompt prefix reuse by generation"
+				},
+				"hint": "Estimated shared prompt prefix vs previous request (characters, not billed tokens)",
+				"lowest": "Lowest cache ≈${rate}%",
+				"missing": "Prompt prefix reuse unavailable",
+				"noRate": "Cache —",
+				"rate": "Cache ≈${rate}%",
+				"summary": "Estimated prompt prefix reuse ${rate}% (characters)"
+			}
 		}
 	}
 }

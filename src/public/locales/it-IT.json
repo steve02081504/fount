@@ -1,4 +1,10 @@
 {
+	"404": {
+		"title": "Pagina non trovata",
+		"description": "Il percorso che cercavi si è dissolto nella nebbia. È stato un passo falso, una svolta dimenticata? Permettici di riportarti a riva o, magari, di fermarti per un gioco nel vuoto silenzioso.",
+		"pageNotFoundText": "Ops! Sembra che tu sia finito in una pagina inesistente.",
+		"homepageButton": "Torna alla Homepage"
+	},
 	"lang": "it-IT",
 	"name": "Italiano",
 	"tips": {
@@ -6117,12 +6123,6 @@
 		"copy_error": "Impossibile copiare il testo: ${error}",
 		"copy_fail_alert": "Copia fallita!"
 	},
-	"404": {
-		"title": "Pagina non trovata",
-		"description": "Il percorso che cercavi si è dissolto nella nebbia. È stato un passo falso, una svolta dimenticata? Permettici di riportarti a riva o, magari, di fermarti per un gioco nel vuoto silenzioso.",
-		"pageNotFoundText": "Ops! Sembra che tu sia finito in una pagina inesistente.",
-		"homepageButton": "Torna alla Homepage"
-	},
 	"directoryListing": {
 		"title": "Indice della directory",
 		"description": "Sfoglia ed esplora i file e le cartelle nell'area di lavoro di fount.",
@@ -6904,8 +6904,8 @@
 			"noResults": "Nessun risultato.",
 			"notJudged": "Non valutato",
 			"stats": "Totale ${total} · vuote ${empty} · lunghezza media ${avgLength} · valutati ${judged} · punteggio medio ${avgScore}",
-			"import": null,
-			"export": null
+			"import": "Importa JSON",
+			"export": "Esporta JSON"
 		},
 		"retention": {
 			"title": "Criterio di conservazione dei record",
@@ -6950,7 +6950,11 @@
 			"back": "Torna alle generazioni",
 			"task": "Attività",
 			"conversation": "Conversazione interna",
-			"empty": "(Nessuna conversazione)"
+			"empty": "(Nessuna conversazione)",
+			"messagePlaceholder": {
+				"placeholder": "Aggiungi un messaggio al sotto-agente in esecuzione…"
+			},
+			"send": "Invia"
 		},
 		"conversation": {
 			"title": "Conversazione",
@@ -6975,6 +6979,24 @@
 				"user": "Utente",
 				"char": "Personaggio",
 				"tool": "Strumento"
+			},
+			"plainView": "Testo semplice",
+			"markdownView": "Markdown",
+			"switchView": "Passa da Markdown a testo semplice",
+			"replayProgress": {
+				"aria-label": "Avanzamento della riproduzione della conversazione"
+			},
+			"programRate": "Tasso di superamento del programma ${rate}%",
+			"cache": {
+				"chart": {
+					"aria-label": "Riutilizzo del prefisso del prompt per generazione"
+				},
+				"hint": "Prefisso comune stimato del prompt rispetto alla richiesta precedente (caratteri, non token fatturati)",
+				"lowest": "Cache minima ≈${rate}%",
+				"missing": "Nessun dato sul riutilizzo del prefisso del prompt",
+				"noRate": "Cache —",
+				"rate": "Cache ≈${rate}%",
+				"summary": "Riutilizzo stimato del prefisso del prompt ${rate}% (caratteri)"
 			}
 		}
 	}

@@ -6977,18 +6977,21 @@
 			"plainView": "プレーンテキスト",
 			"markdownView": "Markdown",
 			"switchView": "Markdown / テキストを切り替え",
-			"cacheSummary": "プロンプトの共通接頭辞（推定）${rate}%（文字数）",
-			"cacheMissing": "プロンプト再利用率のデータなし",
-			"cacheRate": "キャッシュ率 ≈${rate}%",
-			"cacheNoRate": "キャッシュ率 —",
-			"cacheHint": "前のリクエストとのプロンプト共通接頭辞の推定（文字数、課金トークンではない）",
 			"replayProgress": {
 				"aria-label": "会話の再生進捗"
 			},
-			"cacheChart": {
-				"aria-label": "生成ごとのプロンプト再利用率"
-			},
-			"programRate": "プログラムの合格率 ${rate}%"
+			"programRate": "プログラムの合格率 ${rate}%",
+			"cache": {
+				"chart": {
+					"aria-label": "生成ごとのプロンプト再利用率"
+				},
+				"hint": "前のリクエストとのプロンプト共通接頭辞の推定（文字数、課金トークンではない）",
+				"lowest": "最低キャッシュ ≈${rate}%",
+				"missing": "プロンプト再利用率のデータなし",
+				"noRate": "キャッシュ率 —",
+				"rate": "キャッシュ率 ≈${rate}%",
+				"summary": "プロンプトの共通接頭辞（推定）${rate}%（文字数）"
+			}
 		}
 	}
 }

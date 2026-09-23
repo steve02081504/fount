@@ -1,4 +1,10 @@
 {
+	"404": {
+		"title": "페이지를 찾을 수 없습니다",
+		"description": "당신이 찾던 길은 안개 속으로 사라졌습니다. 실수였나요, 잊혀진 방향이었나요? 우리가 당신을 해안으로 다시 안내해 드리거나, 아니면 이 고요한 공간에 잠시 머물며 미니게임을 즐겨보시는 건 어떨까요?",
+		"pageNotFoundText": "이런! 존재하지 않는 페이지에 접속한 것 같습니다.",
+		"homepageButton": "홈페이지로 돌아가기"
+	},
 	"lang": "ko-KR",
 	"name": "한국어",
 	"tips": {
@@ -6111,12 +6117,6 @@
 		"copy_error": "텍스트를 복사할 수 없습니다: ${error}",
 		"copy_fail_alert": "복사 실패!"
 	},
-	"404": {
-		"title": "페이지를 찾을 수 없습니다",
-		"description": "당신이 찾던 길은 안개 속으로 사라졌습니다. 실수였나요, 잊혀진 방향이었나요? 우리가 당신을 해안으로 다시 안내해 드리거나, 아니면 이 고요한 공간에 잠시 머물며 미니게임을 즐겨보시는 건 어떨까요?",
-		"pageNotFoundText": "이런! 존재하지 않는 페이지에 접속한 것 같습니다.",
-		"homepageButton": "홈페이지로 돌아가기"
-	},
 	"directoryListing": {
 		"title": "디렉토리 인덱스",
 		"description": "fount 작업 공간에서 파일과 폴더를 탐색하고 탐색하세요.",
@@ -6898,8 +6898,8 @@
 			"noResults": "아직 결과가 없습니다.",
 			"notJudged": "평가되지 않음",
 			"stats": "총 ${total}건 · 빈 응답 ${empty} · 평균 길이 ${avgLength} · 평가됨 ${judged} · 평균 점수 ${avgScore}",
-			"import": null,
-			"export": null
+			"import": "JSON 가져오기",
+			"export": "JSON 내보내기"
 		},
 		"retention": {
 			"title": "기록 보존 정책",
@@ -6944,7 +6944,11 @@
 			"back": "생성 기록으로 돌아가기",
 			"task": "작업",
 			"conversation": "내부 대화",
-			"empty": "(대화 내용이 없습니다)"
+			"empty": "(대화 내용이 없습니다)",
+			"messagePlaceholder": {
+				"placeholder": "실행 중인 하위 에이전트에 메시지 추가…"
+			},
+			"send": "보내기"
 		},
 		"conversation": {
 			"title": "대화 상세",
@@ -6969,6 +6973,24 @@
 				"user": "사용자",
 				"char": "캐릭터",
 				"tool": "도구"
+			},
+			"plainView": "일반 텍스트",
+			"markdownView": "Markdown",
+			"switchView": "Markdown / 일반 텍스트 전환",
+			"replayProgress": {
+				"aria-label": "대화 재생 진행률"
+			},
+			"programRate": "프로그램 통과율 ${rate}%",
+			"cache": {
+				"chart": {
+					"aria-label": "생성별 프롬프트 접두사 재사용률"
+				},
+				"hint": "이전 요청과 비교한 공통 프롬프트 접두사 추정치 (문자 기준, 과금 토큰 아님)",
+				"lowest": "최저 캐시 ≈${rate}%",
+				"missing": "프롬프트 접두사 재사용 데이터 없음",
+				"noRate": "캐시 —",
+				"rate": "캐시 ≈${rate}%",
+				"summary": "프롬프트 접두사 재사용 추정 ${rate}% (문자 기준)"
 			}
 		}
 	}

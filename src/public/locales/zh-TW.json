@@ -1,4 +1,10 @@
 {
+	"404": {
+		"title": "頁面未找到",
+		"description": "你所尋找的道路已消散在迷霧之中。這是一個錯誤，一個被遺忘的轉彎嗎？讓我們帶您回到岸邊，或者在安靜的虛空中停下來玩一場遊戲。",
+		"pageNotFoundText": "糟糕！您似乎來到了一個不存在的頁面。",
+		"homepageButton": "返回首頁"
+	},
 	"lang": "zh-TW",
 	"name": "繁體中文",
 	"tips": {
@@ -6110,12 +6116,6 @@
 		"copy_error": "無法複製文字: ${error}",
 		"copy_fail_alert": "複製失敗！"
 	},
-	"404": {
-		"title": "頁面未找到",
-		"description": "你所尋找的道路已消散在迷霧之中。這是一個錯誤，一個被遺忘的轉彎嗎？讓我們帶您回到岸邊，或者在安靜的虛空中停下來玩一場遊戲。",
-		"pageNotFoundText": "糟糕！您似乎來到了一個不存在的頁面。",
-		"homepageButton": "返回首頁"
-	},
 	"directoryListing": {
 		"title": "目錄索引",
 		"description": "瀏覽並探索 fount 工作區中的檔案和資料夾。",
@@ -6897,8 +6897,8 @@
 			"noResults": "暫無結果。",
 			"notJudged": "未評分",
 			"stats": "共 ${total} 筆 · 空回覆 ${empty} · 平均長度 ${avgLength} · 已評分 ${judged} · 平均分 ${avgScore}",
-			"import": null,
-			"export": null
+			"import": "匯入 JSON",
+			"export": "匯出 JSON"
 		},
 		"retention": {
 			"title": "紀錄保留策略",
@@ -6943,7 +6943,11 @@
 			"back": "返回生成記錄",
 			"task": "任務",
 			"conversation": "內部對話",
-			"empty": "（暫無對話內容）"
+			"empty": "（暫無對話內容）",
+			"messagePlaceholder": {
+				"placeholder": "向執行中的子代理追加訊息…"
+			},
+			"send": "傳送"
 		},
 		"conversation": {
 			"title": "對話詳情",
@@ -6968,6 +6972,24 @@
 				"user": "使用者",
 				"char": "角色",
 				"tool": "工具"
+			},
+			"plainView": "純文字",
+			"markdownView": "Markdown",
+			"switchView": "切換 Markdown / 純文字",
+			"replayProgress": {
+				"aria-label": "會話回放進度"
+			},
+			"programRate": "程式通過率 ${rate}%",
+			"cache": {
+				"chart": {
+					"aria-label": "每次生成的 prompt 前綴複用率折線圖"
+				},
+				"hint": "與上一輪請求相比的 prompt 共用前綴估算（字元計，非計費 token）",
+				"lowest": "最低快取 ≈${rate}%",
+				"missing": "Prompt 前綴複用率暫無資料",
+				"noRate": "快取率 —",
+				"rate": "快取率 ≈${rate}%",
+				"summary": "Prompt 前綴複用估算 ${rate}%（字元計）"
 			}
 		}
 	}

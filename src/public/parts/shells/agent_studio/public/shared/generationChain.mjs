@@ -18,6 +18,7 @@
  * @property {number} startedAt
  * @property {number} [finishedAt]
  * @property {string} [model]
+ * @property {number | null} [cacheRate] 该生成相对上一轮 prompt 的估算缓存复用率
  * @property {boolean} [hasError]
  */
 
@@ -48,7 +49,7 @@ export function conversationKey(record) {
 /**
  * 把生成记录摘要聚合为会话摘要列表（按最近活动倒序）。
  * @param {generationRecordSummary_t[]} records 生成记录摘要
- * @returns {Array<{ key: string, conversationId: string, chatId: string, source: string, charId: string, charname: string, startedAt: number|null, finishedAt: number|null, generationCount: number, errorCount: number, requestCount: number, lastModel: string|null }>} 会话摘要
+ * @returns {Array<{ key: string, conversationId: string, chatId: string, source: string, charId: string, charname: string, startedAt: number|null, finishedAt: number|null, generationCount: number, errorCount: number, requestCount: number, lastModel: string|null, minCacheRate: number|null }>} 会话摘要
  */
 export function summarizeConversations(records) {
 	const groups = new Map()
@@ -67,11 +68,14 @@ export function summarizeConversations(records) {
 			errorCount: 0,
 			requestCount: 0,
 			lastModel: record.model || null,
+			minCacheRate: null,
 		})
 		const group = groups.get(key)
 		group.generationCount++
 		if (record.hasError) group.errorCount++
 		group.requestCount += record.requestCount ?? 0
+		if (typeof record.cacheRate === 'number')
+			group.minCacheRate = group.minCacheRate == null ? record.cacheRate : Math.min(group.minCacheRate, record.cacheRate)
 		const startedAt = record.startedAt ?? null
 		const finishedAt = record.finishedAt ?? record.startedAt ?? null
 		if (startedAt != null) group.startedAt = group.startedAt == null ? startedAt : Math.min(group.startedAt, startedAt)
@@ -80,6 +84,21 @@ export function summarizeConversations(records) {
 		if (record.charname) group.charname = record.charname
 	}
 	return [...groups.values()].sort((a, b) => (b.finishedAt ?? b.startedAt ?? 0) - (a.finishedAt ?? a.startedAt ?? 0))
+}
+
+/**
+ * 汇总每个角色的最低缓存命中率（跳过无数据或非有限值）。
+ * @param {generationRecordSummary_t[]} records 生成记录摘要
+ * @returns {Record<string, number>} 角色 id → 最低缓存复用率
+ */
+export function minCacheRateByChar(records) {
+	const result = {}
+	for (const record of records || []) {
+		if (typeof record.cacheRate !== 'number' || !Number.isFinite(record.cacheRate) || !record.charId) continue
+		const current = result[record.charId]
+		if (current == null || record.cacheRate < current) result[record.charId] = record.cacheRate
+	}
+	return result
 }
 
 /**

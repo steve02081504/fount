@@ -9,6 +9,7 @@ import { geti18n, primaryLocale } from '/scripts/i18n/index.mjs'
 import { renderTemplate } from '../templates.mjs'
 
 import { bindActivate } from './activate.mjs'
+import { createCacheBadge } from './cacheBadge.mjs'
 import { formatTime, truncate } from './format.mjs'
 import { openGenerationDialog } from './generationDialog.mjs'
 
@@ -36,6 +37,8 @@ function generationItemFields(record, { model = true } = {}) {
  */
 export async function renderGenerationItem(record, options) {
 	const item = await renderTemplate('generation_item', generationItemFields(record, options))
+	const cacheBadge = createCacheBadge(record.cacheRate)
+	if (cacheBadge) item.appendChild(cacheBadge)
 	bindActivate(item, () => { void openGenerationDialog(record.id) })
 	return item
 }

@@ -14,11 +14,12 @@ import { getUserDictionary } from '../../../../../server/auth/index.mjs'
 import { events } from '../../../../../server/events.mjs'
 import { replayDialogue } from '../public/shared/dialogueReplay.mjs'
 import { conversationKey, summarizeConversations } from '../public/shared/generationChain.mjs'
+import { estimateGenerationCache, serializeRequest } from '../public/shared/promptCache.mjs'
 
 /**
  * 重导出生成链 / 会话聚合纯函数，供调用方从本模块统一获取。
  */
-export { buildChains, conversationKey, groupByConversation, summarizeConversations } from '../public/shared/generationChain.mjs'
+export { buildChains, conversationKey, groupByConversation, minCacheRateByChar, summarizeConversations } from '../public/shared/generationChain.mjs'
 
 /** 默认保留策略：prompt（input）2 天，conversation（整条记录）7 天。 */
 export const DEFAULT_RETENTION = {
@@ -42,6 +43,7 @@ export const DEFAULT_RETENTION = {
  * @property {object[]} [requests] 逐轮 AI 请求快照 `{ index, startedAt, finishedAt, model, systemPrompt, messages }`
  * @property {number} [requestCount] 采集到的轮次数（requests 被 TTL 清除后仍保留）
  * @property {{ rounds: number, events: object[] }} [dialogue] 由逐轮请求复原的对话事件流（独立于 requests，保留至整条记录 TTL）
+ * @property {number | null} [cacheRate] 该生成相对上一轮 prompt 的估算缓存复用率（记录时预计算，requests 被清除后仍保留）
  * @property {any} [response]
  * @property {object[]} [conversation] 内部完整对话（子代理运行时；供 Agent Studio 内部对话页）
  * @property {string} [model]
@@ -165,8 +167,32 @@ function toSummary(record) {
 		finishedAt: record.finishedAt,
 		model: record.model,
 		requestCount: record.requestCount ?? record.requests?.length ?? 0,
+		cacheRate: record.cacheRate ?? null,
 		hasError: !!record.error,
 	}
+}
+
+/**
+ * 读取同一会话中在本条记录之前、时序最近的上一轮序列化 prompt（用于跨生成估算缓存复用）。
+ * @param {string} username 用户
+ * @param {{ records: object[] }} index 生成索引（尚未写入本条摘要）
+ * @param {generationRecord_t} record 当前记录
+ * @returns {string | null} 上一轮序列化 prompt；无则 null
+ */
+function previousConversationPrompt(username, index, record) {
+	const key = conversationKey(record)
+	const startedAt = record.startedAt ?? 0
+	let best = null
+	for (const summary of index.records) {
+		if (summary.id === record.id || conversationKey(summary) !== key) continue
+		const summaryStartedAt = summary.startedAt ?? 0
+		if (summaryStartedAt >= startedAt) continue
+		if (!best || summaryStartedAt > (best.startedAt ?? 0)) best = summary
+	}
+	if (!best) return null
+	const previous = loadJsonFileIfExists(recordPath(username, best.id), null)
+	const last = previous?.requests?.at(-1)
+	return last ? serializeRequest(last) : null
 }
 
 /**
@@ -283,8 +309,11 @@ export async function recordGeneration(username, record) {
 	}
 	return enqueue(username, async () => {
 		ensureUser(username)
-		saveJsonFile(recordPath(username, full.id), full)
 		const index = loadIndex(username)
+		full.cacheRate = full.requests?.length
+			? estimateGenerationCache(previousConversationPrompt(username, index, full), full.requests).rate
+			: null
+		saveJsonFile(recordPath(username, full.id), full)
 		index.records = index.records.filter(summary => summary.id !== full.id)
 		index.records.push(toSummary(full))
 		saveIndex(username, index)
