@@ -5,6 +5,16 @@
 import { getProfile, loadWorkspaceAgentsMd } from './context.mjs'
 
 /**
+ * 选择足够长的围栏，避免内容里的 ``` 提前闭合代码块。
+ * @param {string} content - 待包裹内容。
+ * @returns {string} 反引号围栏。
+ */
+function fenceFor(content) {
+	const longest = (content.match(/`+/g) || []).reduce((max, run) => Math.max(max, run.length), 0)
+	return '`'.repeat(Math.max(3, longest + 1))
+}
+
+/**
  * code world 实例（无状态，按请求 args 读取 profile/工作区）。
  * @type {import('../../../../../decl/worldAPI.ts').WorldAPI_t}
  */
@@ -36,8 +46,21 @@ export const codeWorld = {
 						texts.push({ content: profile.content, description: `Profile: ${profile.name}`, important: 0 })
 				}
 				const agentsMd = await loadWorkspaceAgentsMd(args.username, args.workdir)
-				if (agentsMd)
-					texts.push({ content: agentsMd.content, description: `AGENTS.md (${agentsMd.path})`, important: 0 })
+				if (agentsMd) {
+					const fence = fenceFor(agentsMd.content)
+					texts.push({
+						content: `\
+# 项目 AGENTS.md（工作区约定）
+以下是工作区项目根目录的 \`${agentsMd.path}\`，请遵循其中的约定：
+
+${fence}markdown
+${agentsMd.content.trimEnd()}
+${fence}
+`,
+						description: `AGENTS.md (${agentsMd.path})`,
+						important: 0,
+					})
+				}
 				// 当前工作目录：让模型无需执行 shell 即可知道 cwd（执行器默认即以此为 cwd）
 				const workdir = args.workdir || {}
 				const machineLabel = String(workdir.machine ?? '0') === '0' ? '本机' : `#${workdir.machine}`

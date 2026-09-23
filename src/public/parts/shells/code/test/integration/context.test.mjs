@@ -124,7 +124,8 @@ Deno.test('code world GetPrompt injects profile and AGENTS.md first', async () =
 		})
 		assertEquals(prompt.text.length, 3, 'profile + AGENTS.md + cwd 三条')
 		assert(prompt.text[0].content.includes('复查正文'))
-		assert(prompt.text[1].content.includes('# 工作区规则'))
+		assert(prompt.text[1].content.includes('项目 AGENTS.md'), '标注为项目 AGENTS.md')
+		assert(prompt.text[1].content.includes('```markdown\n# 工作区规则\n```'), 'AGENTS.md 以代码块包裹')
 		assert(prompt.text[2].content.includes(root), 'cwd 注入当前工作目录')
 		assertEquals(prompt.text[0].important, 0)
 	}
