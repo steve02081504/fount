@@ -6636,7 +6636,7 @@
 			"async": {
 				"list": "Asynchrone Aufgaben auflisten",
 				"await": "Auf asynchrone Aufgaben warten",
-				"inspect": null,
+				"inspect": "Asynchrone Aufgaben inspizieren",
 				"notice": "Benachrichtigung zu Hintergrundaufgaben",
 				"run": "${kind} im Hintergrund ausführen"
 			}
@@ -6869,7 +6869,9 @@
 			"recordsCount": "${count} Datensätze",
 			"empty": "Noch keine Generierungen.",
 			"chainsEmpty": "Noch keine Generierungsketten.",
-			"conversations": null
+			"conversations": "Unterhaltungen",
+			"conversationsCount": "${count} Unterhaltungen",
+			"conversationsEmpty": "Noch keine Unterhaltungen."
 		},
 		"benchmarks": {
 			"title": "Benchmarks",
@@ -6905,6 +6907,16 @@
 			"save": "Speichern",
 			"saved": "Gespeichert."
 		},
+		"clear": {
+			"title": "Generierungsverlauf löschen",
+			"hint": "Löscht alle Generierungsdatensätze im ausgewählten Bereich. Dies kann nicht rückgängig gemacht werden.",
+			"label": "Löschen",
+			"all": "Alle Generierungsdatensätze löschen",
+			"confirmChar": "Alle Generierungsdatensätze von Charakter „${name}“ löschen? Dies kann nicht rückgängig gemacht werden.",
+			"confirmAll": "Alle Generierungsdatensätze löschen? Dies kann nicht rückgängig gemacht werden.",
+			"done": "${count} Generierungsdatensätze gelöscht.",
+			"failed": "Löschen fehlgeschlagen: ${message}"
+		},
 		"settings": {
 			"title": "Einstellungen",
 			"description": "Die Aufbewahrung von Generierungsdatensätzen anpassen."
@@ -6931,6 +6943,31 @@
 			"task": "Aufgabe",
 			"conversation": "Interne Unterhaltung",
 			"empty": "(noch keine Unterhaltung)"
+		},
+		"conversation": {
+			"title": "Unterhaltung",
+			"description": "Alle Generierungen einer Unterhaltung und die Prompt-Anfrage jeder Runde einsehen.",
+			"back": "Zurück zu den Unterhaltungen",
+			"empty": "(Diese Unterhaltung enthält keine Generierungen)",
+			"generationsCount": "${count} Generierungen",
+			"rounds": "${count} Runden",
+			"response": "Antwort",
+			"requests": "Prompt-Anfragen pro Runde",
+			"requestsMissing": "(Für diese Generierung wurden keine Prompt-Anfragen pro Runde erfasst)",
+			"requestsExpired": "(Prompt-Anfragen pro Runde abgelaufen; ursprünglich ${count} Runden)",
+			"replay": "Rekonstruierter Dialog",
+			"replayUpto": "Wiedergeben bis",
+			"replayAll": "Alle Runden",
+			"roundIndex": "Runde ${index}",
+			"round": "Runde ${index} · Modell ${model} · ${time}",
+			"systemPrompt": "System-Prompt",
+			"messages": "Nachrichten",
+			"role": {
+				"system": "System",
+				"user": "Benutzer",
+				"char": "Charakter",
+				"tool": "Werkzeug"
+			}
 		}
 	}
 }

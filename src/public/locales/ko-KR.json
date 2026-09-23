@@ -6636,7 +6636,7 @@
 			"async": {
 				"list": "비동기 작업 나열",
 				"await": "비동기 작업 대기",
-				"inspect": null,
+				"inspect": "비동기 작업 검사",
 				"notice": "백그라운드 작업 알림",
 				"run": "${kind} 백그라운드로 실행"
 			}
@@ -6869,7 +6869,9 @@
 			"recordsCount": "총 ${count}건의 기록",
 			"empty": "아직 생성 기록이 없습니다.",
 			"chainsEmpty": "아직 생성 체인이 없습니다.",
-			"conversations": null
+			"conversations": "대화",
+			"conversationsCount": "대화 ${count}개",
+			"conversationsEmpty": "아직 대화가 없습니다."
 		},
 		"benchmarks": {
 			"title": "벤치마크",
@@ -6905,6 +6907,16 @@
 			"save": "저장",
 			"saved": "저장되었습니다."
 		},
+		"clear": {
+			"title": "생성 기록 지우기",
+			"hint": "선택한 범위의 모든 생성 기록을 삭제합니다. 이 작업은 되돌릴 수 없습니다.",
+			"label": "지우기",
+			"all": "모든 생성 기록 지우기",
+			"confirmChar": "캐릭터 「${name}」의 모든 생성 기록을 지울까요? 이 작업은 되돌릴 수 없습니다.",
+			"confirmAll": "모든 생성 기록을 지울까요? 이 작업은 되돌릴 수 없습니다.",
+			"done": "생성 기록 ${count}건을 지웠습니다.",
+			"failed": "지우기 실패: ${message}"
+		},
 		"settings": {
 			"title": "설정",
 			"description": "생성 기록의 보존 정책을 조정합니다."
@@ -6931,6 +6943,31 @@
 			"task": "작업",
 			"conversation": "내부 대화",
 			"empty": "(대화 내용이 없습니다)"
+		},
+		"conversation": {
+			"title": "대화 상세",
+			"description": "한 대화의 모든 생성 기록과 각 라운드의 프롬프트 요청을 확인합니다.",
+			"back": "대화 목록으로 돌아가기",
+			"empty": "(이 대화에는 생성 기록이 없습니다)",
+			"generationsCount": "생성 ${count}건",
+			"rounds": "라운드 ${count}개",
+			"response": "응답",
+			"requests": "라운드별 프롬프트 요청",
+			"requestsMissing": "(이 생성 기록에는 라운드별 프롬프트가 수집되지 않았습니다)",
+			"requestsExpired": "(라운드별 프롬프트가 만료되었습니다. 원래 ${count}라운드)",
+			"replay": "복원된 대화",
+			"replayUpto": "다음까지 재생",
+			"replayAll": "전체 라운드",
+			"roundIndex": "${index}라운드",
+			"round": "${index}라운드 · 모델 ${model} · ${time}",
+			"systemPrompt": "시스템 프롬프트",
+			"messages": "메시지",
+			"role": {
+				"system": "시스템",
+				"user": "사용자",
+				"char": "캐릭터",
+				"tool": "도구"
+			}
 		}
 	}
 }

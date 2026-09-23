@@ -6642,7 +6642,7 @@
 			"async": {
 				"list": "Listar tareas asíncronas",
 				"await": "Esperar tarea asíncrona",
-				"inspect": null,
+				"inspect": "Inspeccionar tareas asíncronas",
 				"notice": "Notificación de tarea en segundo plano",
 				"run": "Ejecutar ${kind} en segundo plano"
 			}
@@ -6875,7 +6875,9 @@
 			"recordsCount": "${count} registros",
 			"empty": "Aún no hay generaciones.",
 			"chainsEmpty": "Aún no hay cadenas.",
-			"conversations": null
+			"conversations": "Conversaciones",
+			"conversationsCount": "${count} conversaciones",
+			"conversationsEmpty": "Aún no hay conversaciones."
 		},
 		"benchmarks": {
 			"title": "Benchmarks",
@@ -6911,6 +6913,16 @@
 			"save": "Guardar",
 			"saved": "Guardado."
 		},
+		"clear": {
+			"title": "Borrar historial de generaciones",
+			"hint": "Elimina todos los registros de generación del ámbito seleccionado. Esta acción no se puede deshacer.",
+			"label": "Borrar",
+			"all": "Borrar todos los registros de generación",
+			"confirmChar": "¿Borrar todos los registros de generación del personaje «${name}»? Esta acción no se puede deshacer.",
+			"confirmAll": "¿Borrar todos los registros de generación? Esta acción no se puede deshacer.",
+			"done": "Se borraron ${count} registros de generación.",
+			"failed": "Error al borrar: ${message}"
+		},
 		"settings": {
 			"title": "Ajustes",
 			"description": "Ajusta la retención de los registros de generación."
@@ -6937,6 +6949,31 @@
 			"task": "Tarea",
 			"conversation": "Conversación interna",
 			"empty": "(Aún no hay conversación)"
+		},
+		"conversation": {
+			"title": "Conversación",
+			"description": "Consulta todas las generaciones de una conversación y la solicitud de prompt de cada ronda.",
+			"back": "Volver a las conversaciones",
+			"empty": "(Esta conversación no tiene generaciones)",
+			"generationsCount": "${count} generaciones",
+			"rounds": "${count} rondas",
+			"response": "Respuesta",
+			"requests": "Solicitudes de prompt por ronda",
+			"requestsMissing": "(No se capturaron prompts por ronda para esta generación)",
+			"requestsExpired": "(Prompts por ronda caducados; originalmente ${count} rondas)",
+			"replay": "Diálogo reconstruido",
+			"replayUpto": "Reproducir hasta",
+			"replayAll": "Todas las rondas",
+			"roundIndex": "Ronda ${index}",
+			"round": "Ronda ${index} · Modelo ${model} · ${time}",
+			"systemPrompt": "Prompt del sistema",
+			"messages": "Mensajes",
+			"role": {
+				"system": "Sistema",
+				"user": "Usuario",
+				"char": "Personaje",
+				"tool": "Herramienta"
+			}
 		}
 	}
 }

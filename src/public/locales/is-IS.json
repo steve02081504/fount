@@ -6636,7 +6636,7 @@
 			"async": {
 				"list": "Lista ósamstillt verk",
 				"await": "Bíða eftir ósamstilltum verkum",
-				"inspect": null,
+				"inspect": "Skoða ósamstillt verk",
 				"notice": "Tilkynning um bakgrunnsverk",
 				"run": "Keyra ${kind} í bakgrunni"
 			}
@@ -6869,7 +6869,9 @@
 			"recordsCount": "${count} færslur",
 			"empty": "Engar myndanir ennþá.",
 			"chainsEmpty": "Engar keðjur ennþá.",
-			"conversations": null
+			"conversations": "Samtöl",
+			"conversationsCount": "${count} samtöl",
+			"conversationsEmpty": "Engin samtöl ennþá."
 		},
 		"benchmarks": {
 			"title": "Viðmið",
@@ -6905,6 +6907,16 @@
 			"save": "Vista",
 			"saved": "Vistað."
 		},
+		"clear": {
+			"title": "Hreinsa myndunarsögu",
+			"hint": "Eyðir öllum myndunarskrám innan valda sviðsins. Ekki er hægt að afturkalla þetta.",
+			"label": "Hreinsa",
+			"all": "Hreinsa allar myndunarskrár",
+			"confirmChar": "Hreinsa allar myndunarskrár persónunnar „${name}“? Ekki er hægt að afturkalla þetta.",
+			"confirmAll": "Hreinsa allar myndunarskrár? Ekki er hægt að afturkalla þetta.",
+			"done": "Hreinsaði ${count} myndunarskrár.",
+			"failed": "Hreinsun mistókst: ${message}"
+		},
 		"settings": {
 			"title": "Stillingar",
 			"description": "Stilla varðveislu myndunarskráa."
@@ -6931,6 +6943,31 @@
 			"task": "Verk",
 			"conversation": "Innra samtal",
 			"empty": "(ekkert samtal ennþá)"
+		},
+		"conversation": {
+			"title": "Samtal",
+			"description": "Skoðaðu allar myndanir í samtali og prompt-beiðni hverrar umferðar.",
+			"back": "Til baka í samtöl",
+			"empty": "(Þetta samtal hefur engar myndanir)",
+			"generationsCount": "${count} myndanir",
+			"rounds": "${count} umferðir",
+			"response": "Svar",
+			"requests": "Prompt-beiðnir fyrir hverja umferð",
+			"requestsMissing": "(Engar prompt-beiðnir fyrir hverja umferð voru skráðar fyrir þessa myndun)",
+			"requestsExpired": "(Prompt-beiðnir fyrir hverja umferð eru útrunnar; upphaflega ${count} umferðir)",
+			"replay": "Endurskapað samtal",
+			"replayUpto": "Spila til",
+			"replayAll": "Allar umferðir",
+			"roundIndex": "Umferð ${index}",
+			"round": "Umferð ${index} · Líkan ${model} · ${time}",
+			"systemPrompt": "Kerfisprompt",
+			"messages": "Skilaboð",
+			"role": {
+				"system": "Kerfi",
+				"user": "Notandi",
+				"char": "Persóna",
+				"tool": "Verkfæri"
+			}
 		}
 	}
 }

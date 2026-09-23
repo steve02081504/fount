@@ -6642,7 +6642,7 @@
 			"async": {
 				"list": "Elenca attività asincrone",
 				"await": "Attendi attività asincrona",
-				"inspect": null,
+				"inspect": "Ispeziona attività asincrone",
 				"notice": "Notifica attività in background",
 				"run": "Esegui ${kind} in background"
 			}
@@ -6874,7 +6874,10 @@
 			"allChars": "Tutti i personaggi",
 			"recordsCount": "${count} record",
 			"empty": "Nessuna generazione.",
-			"chainsEmpty": "Nessuna catena."
+			"chainsEmpty": "Nessuna catena.",
+			"conversations": "Conversazioni",
+			"conversationsCount": "${count} conversazioni",
+			"conversationsEmpty": "Nessuna conversazione."
 		},
 		"benchmarks": {
 			"title": "Benchmark",
@@ -6910,6 +6913,16 @@
 			"save": "Salva",
 			"saved": "Salvato."
 		},
+		"clear": {
+			"title": "Cancella cronologia delle generazioni",
+			"hint": "Elimina tutti i record di generazione nell'ambito selezionato. L'operazione non può essere annullata.",
+			"label": "Cancella",
+			"all": "Cancella tutti i record di generazione",
+			"confirmChar": "Cancellare tutti i record di generazione del personaggio «${name}»? L'operazione non può essere annullata.",
+			"confirmAll": "Cancellare tutti i record di generazione? L'operazione non può essere annullata.",
+			"done": "Cancellati ${count} record di generazione.",
+			"failed": "Cancellazione non riuscita: ${message}"
+		},
 		"settings": {
 			"title": "Impostazioni",
 			"description": "Regola la conservazione dei record di generazione."
@@ -6936,6 +6949,31 @@
 			"task": "Attività",
 			"conversation": "Conversazione interna",
 			"empty": "(Nessuna conversazione)"
+		},
+		"conversation": {
+			"title": "Conversazione",
+			"description": "Esamina tutte le generazioni di una conversazione e la richiesta di prompt di ogni round.",
+			"back": "Torna alle conversazioni",
+			"empty": "(Questa conversazione non ha generazioni)",
+			"generationsCount": "${count} generazioni",
+			"rounds": "${count} round",
+			"response": "Risposta",
+			"requests": "Richieste di prompt per round",
+			"requestsMissing": "(Nessun prompt per round acquisito per questa generazione)",
+			"requestsExpired": "(Prompt per round scaduti; in origine ${count} round)",
+			"replay": "Dialogo ricostruito",
+			"replayUpto": "Riproduci fino a",
+			"replayAll": "Tutti i round",
+			"roundIndex": "Round ${index}",
+			"round": "Round ${index} · Modello ${model} · ${time}",
+			"systemPrompt": "Prompt di sistema",
+			"messages": "Messaggi",
+			"role": {
+				"system": "Sistema",
+				"user": "Utente",
+				"char": "Personaggio",
+				"tool": "Strumento"
+			}
 		}
 	}
 }

@@ -6635,7 +6635,7 @@
 			"async": {
 				"list": "列出非同步任務",
 				"await": "等待非同步任務",
-				"inspect": null,
+				"inspect": "檢視非同步任務",
 				"notice": "背景任務通知",
 				"run": "在背景執行 ${kind}"
 			}
@@ -6868,7 +6868,9 @@
 			"recordsCount": "共 ${count} 筆記錄",
 			"empty": "暫無生成記錄。",
 			"chainsEmpty": "暫無生成鏈。",
-			"conversations": null
+			"conversations": "對話",
+			"conversationsCount": "共 ${count} 個對話",
+			"conversationsEmpty": "暫無對話。"
 		},
 		"benchmarks": {
 			"title": "基準測試",
@@ -6904,6 +6906,16 @@
 			"save": "儲存",
 			"saved": "已儲存。"
 		},
+		"clear": {
+			"title": "清除生成紀錄",
+			"hint": "刪除所選範圍內的全部生成紀錄，此操作無法復原。",
+			"label": "清除",
+			"all": "清除全部生成紀錄",
+			"confirmChar": "確定要清除角色「${name}」的全部生成紀錄嗎？此操作無法復原。",
+			"confirmAll": "確定要清除全部生成紀錄嗎？此操作無法復原。",
+			"done": "已清除 ${count} 筆生成紀錄。",
+			"failed": "清除失敗：${message}"
+		},
 		"settings": {
 			"title": "設定",
 			"description": "調整生成記錄的保留策略。"
@@ -6930,6 +6942,31 @@
 			"task": "任務",
 			"conversation": "內部對話",
 			"empty": "（暫無對話內容）"
+		},
+		"conversation": {
+			"title": "對話詳情",
+			"description": "檢視一個對話的全部生成紀錄與每一輪的 prompt 請求。",
+			"back": "返回對話列表",
+			"empty": "（此對話尚無生成紀錄）",
+			"generationsCount": "生成 ${count} 筆",
+			"rounds": "輪次 ${count}",
+			"response": "回覆",
+			"requests": "逐輪 prompt 請求",
+			"requestsMissing": "（此生成未擷取逐輪 prompt）",
+			"requestsExpired": "（逐輪 prompt 已過期，原有 ${count} 輪）",
+			"replay": "還原對話",
+			"replayUpto": "重播至",
+			"replayAll": "全部輪次",
+			"roundIndex": "第 ${index} 輪",
+			"round": "輪次 ${index} · 模型 ${model} · ${time}",
+			"systemPrompt": "系統提示",
+			"messages": "訊息",
+			"role": {
+				"system": "系統",
+				"user": "使用者",
+				"char": "角色",
+				"tool": "工具"
+			}
 		}
 	}
 }

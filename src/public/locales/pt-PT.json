@@ -6642,7 +6642,7 @@
 			"async": {
 				"list": "Listar tarefas assíncronas",
 				"await": "Aguardar tarefa assíncrona",
-				"inspect": null,
+				"inspect": "Inspecionar tarefas assíncronas",
 				"notice": "Notificação de tarefa em segundo plano",
 				"run": "Executar ${kind} em segundo plano"
 			}
@@ -6875,7 +6875,9 @@
 			"recordsCount": "${count} registos",
 			"empty": "Ainda não há gerações.",
 			"chainsEmpty": "Ainda não há cadeias.",
-			"conversations": null
+			"conversations": "Conversas",
+			"conversationsCount": "${count} conversas",
+			"conversationsEmpty": "Ainda não há conversas."
 		},
 		"benchmarks": {
 			"title": "Benchmarks",
@@ -6911,6 +6913,16 @@
 			"save": "Guardar",
 			"saved": "Guardado."
 		},
+		"clear": {
+			"title": "Limpar histórico de gerações",
+			"hint": "Elimina todos os registos de geração no âmbito selecionado. Esta ação não pode ser anulada.",
+			"label": "Limpar",
+			"all": "Limpar todos os registos de geração",
+			"confirmChar": "Limpar todos os registos de geração do personagem «${name}»? Esta ação não pode ser anulada.",
+			"confirmAll": "Limpar todos os registos de geração? Esta ação não pode ser anulada.",
+			"done": "${count} registos de geração eliminados.",
+			"failed": "Falha ao limpar: ${message}"
+		},
 		"settings": {
 			"title": "Definições",
 			"description": "Ajuste a retenção dos registos de geração."
@@ -6937,6 +6949,31 @@
 			"task": "Tarefa",
 			"conversation": "Conversa interna",
 			"empty": "(Ainda não há conversa)"
+		},
+		"conversation": {
+			"title": "Conversa",
+			"description": "Consulte todas as gerações de uma conversa e o pedido de prompt de cada ronda.",
+			"back": "Voltar às conversas",
+			"empty": "(Esta conversa não tem gerações)",
+			"generationsCount": "${count} gerações",
+			"rounds": "${count} rondas",
+			"response": "Resposta",
+			"requests": "Pedidos de prompt por ronda",
+			"requestsMissing": "(Não foram capturados prompts por ronda para esta geração)",
+			"requestsExpired": "(Prompts por ronda expirados; originalmente ${count} rondas)",
+			"replay": "Diálogo reconstruído",
+			"replayUpto": "Reproduzir até",
+			"replayAll": "Todas as rondas",
+			"roundIndex": "Ronda ${index}",
+			"round": "Ronda ${index} · Modelo ${model} · ${time}",
+			"systemPrompt": "Prompt do sistema",
+			"messages": "Mensagens",
+			"role": {
+				"system": "Sistema",
+				"user": "Utilizador",
+				"char": "Personagem",
+				"tool": "Ferramenta"
+			}
 		}
 	}
 }

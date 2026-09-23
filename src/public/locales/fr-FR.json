@@ -6642,7 +6642,7 @@
 			"async": {
 				"list": "Lister les tâches asynchrones",
 				"await": "Attendre une tâche asynchrone",
-				"inspect": null,
+				"inspect": "Inspecter les tâches asynchrones",
 				"notice": "Notification de tâche en arrière-plan",
 				"run": "Exécuter ${kind} en arrière-plan"
 			}
@@ -6875,7 +6875,9 @@
 			"recordsCount": "${count} enregistrements",
 			"empty": "Aucune génération pour le moment.",
 			"chainsEmpty": "Aucune chaîne pour le moment.",
-			"conversations": null
+			"conversations": "Conversations",
+			"conversationsCount": "${count} conversations",
+			"conversationsEmpty": "Aucune conversation pour le moment."
 		},
 		"benchmarks": {
 			"title": "Benchmarks",
@@ -6911,6 +6913,16 @@
 			"save": "Enregistrer",
 			"saved": "Enregistré."
 		},
+		"clear": {
+			"title": "Effacer l'historique des générations",
+			"hint": "Supprime tous les enregistrements de génération dans la portée sélectionnée. Cette action est irréversible.",
+			"label": "Effacer",
+			"all": "Effacer tous les enregistrements de génération",
+			"confirmChar": "Effacer tous les enregistrements de génération du personnage « ${name} » ? Cette action est irréversible.",
+			"confirmAll": "Effacer tous les enregistrements de génération ? Cette action est irréversible.",
+			"done": "${count} enregistrements de génération effacés.",
+			"failed": "Échec de l'effacement : ${message}"
+		},
 		"settings": {
 			"title": "Paramètres",
 			"description": "Ajustez la conservation des enregistrements de génération."
@@ -6937,6 +6949,31 @@
 			"task": "Tâche",
 			"conversation": "Conversation interne",
 			"empty": "(Aucune conversation pour le moment)"
+		},
+		"conversation": {
+			"title": "Conversation",
+			"description": "Consultez toutes les générations d'une conversation et la requête de prompt de chaque tour.",
+			"back": "Retour aux conversations",
+			"empty": "(Cette conversation ne contient aucune génération)",
+			"generationsCount": "${count} générations",
+			"rounds": "${count} tours",
+			"response": "Réponse",
+			"requests": "Requêtes de prompt par tour",
+			"requestsMissing": "(Aucun prompt par tour n'a été capturé pour cette génération)",
+			"requestsExpired": "(Prompts par tour expirés ; ${count} tours à l'origine)",
+			"replay": "Dialogue reconstitué",
+			"replayUpto": "Rejouer jusqu'à",
+			"replayAll": "Tous les tours",
+			"roundIndex": "Tour ${index}",
+			"round": "Tour ${index} · Modèle ${model} · ${time}",
+			"systemPrompt": "Prompt système",
+			"messages": "Messages",
+			"role": {
+				"system": "Système",
+				"user": "Utilisateur",
+				"char": "Personnage",
+				"tool": "Outil"
+			}
 		}
 	}
 }

@@ -6636,7 +6636,7 @@
 			"async": {
 				"list": "Liệt kê tác vụ bất đồng bộ",
 				"await": "Chờ tác vụ bất đồng bộ",
-				"inspect": null,
+				"inspect": "Kiểm tra tác vụ bất đồng bộ",
 				"notice": "Thông báo tác vụ nền",
 				"run": "Chạy ${kind} trong nền"
 			}
@@ -6869,7 +6869,9 @@
 			"recordsCount": "${count} bản ghi",
 			"empty": "Chưa có lần tạo nào.",
 			"chainsEmpty": "Chưa có chuỗi tạo nào.",
-			"conversations": null
+			"conversations": "Hội thoại",
+			"conversationsCount": "${count} hội thoại",
+			"conversationsEmpty": "Chưa có hội thoại nào."
 		},
 		"benchmarks": {
 			"title": "Benchmark",
@@ -6905,6 +6907,16 @@
 			"save": "Lưu",
 			"saved": "Đã lưu."
 		},
+		"clear": {
+			"title": "Xóa lịch sử tạo",
+			"hint": "Xóa toàn bộ bản ghi tạo trong phạm vi đã chọn. Thao tác này không thể hoàn tác.",
+			"label": "Xóa",
+			"all": "Xóa toàn bộ bản ghi tạo",
+			"confirmChar": "Xóa toàn bộ bản ghi tạo của nhân vật «${name}»? Thao tác này không thể hoàn tác.",
+			"confirmAll": "Xóa toàn bộ bản ghi tạo? Thao tác này không thể hoàn tác.",
+			"done": "Đã xóa ${count} bản ghi tạo.",
+			"failed": "Xóa thất bại: ${message}"
+		},
 		"settings": {
 			"title": "Cài đặt",
 			"description": "Điều chỉnh thời hạn lưu giữ bản ghi tạo."
@@ -6931,6 +6943,31 @@
 			"task": "Nhiệm vụ",
 			"conversation": "Hội thoại nội bộ",
 			"empty": "(chưa có nội dung hội thoại)"
+		},
+		"conversation": {
+			"title": "Chi tiết hội thoại",
+			"description": "Xem toàn bộ lần tạo trong một hội thoại và yêu cầu prompt của mỗi vòng.",
+			"back": "Quay lại danh sách hội thoại",
+			"empty": "(Hội thoại này chưa có lần tạo nào)",
+			"generationsCount": "${count} lần tạo",
+			"rounds": "${count} vòng",
+			"response": "Phản hồi",
+			"requests": "Yêu cầu prompt theo từng vòng",
+			"requestsMissing": "(Lần tạo này không thu thập prompt theo từng vòng)",
+			"requestsExpired": "(Prompt theo từng vòng đã hết hạn; ban đầu có ${count} vòng)",
+			"replay": "Hội thoại phục dựng",
+			"replayUpto": "Phát lại đến",
+			"replayAll": "Tất cả vòng",
+			"roundIndex": "Vòng ${index}",
+			"round": "Vòng ${index} · Mô hình ${model} · ${time}",
+			"systemPrompt": "Prompt hệ thống",
+			"messages": "Tin nhắn",
+			"role": {
+				"system": "Hệ thống",
+				"user": "Người dùng",
+				"char": "Nhân vật",
+				"tool": "Công cụ"
+			}
 		}
 	}
 }

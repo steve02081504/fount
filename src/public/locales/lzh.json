@@ -6636,7 +6636,7 @@
 			"async": {
 				"list": "列異步之務",
 				"await": "待異步之務",
-				"inspect": "检视异步任务",
+				"inspect": "觀異步之務",
 				"notice": "後臺務之告",
 				"run": "幕後行 ${kind}"
 			}
@@ -6869,9 +6869,9 @@
 			"recordsCount": "共 ${count} 錄",
 			"empty": "尚無生成之錄。",
 			"chainsEmpty": "尚無生成之鏈。",
-			"conversations": "会话",
-			"conversationsCount": "共 ${count} 个会话",
-			"conversationsEmpty": "暂无会话。"
+			"conversations": "會話",
+			"conversationsCount": "共 ${count} 會話",
+			"conversationsEmpty": "尚無會話。"
 		},
 		"benchmarks": {
 			"title": "基準試",
@@ -6908,14 +6908,14 @@
 			"saved": "已存。"
 		},
 		"clear": {
-			"title": "清空生成记录",
-			"hint": "删除所选范围内的全部生成记录，此操作不可撤销。",
+			"title": "清空生成之錄",
+			"hint": "刪所選範圍內生成之錄，此舉不可復。",
 			"label": "清空",
-			"all": "清空全部生成记录",
-			"confirmChar": "确定清空角色「${name}」的全部生成记录吗？此操作不可撤销。",
-			"confirmAll": "确定清空全部生成记录吗？此操作不可撤销。",
-			"done": "已清空 ${count} 条生成记录。",
-			"failed": "清空失败：${message}"
+			"all": "清空生成之錄",
+			"confirmChar": "確清角色「${name}」生成之錄乎？此舉不可復。",
+			"confirmAll": "確清生成之錄乎？此舉不可復。",
+			"done": "已清 ${count} 條生成之錄。",
+			"failed": "清之不成：${message}"
 		},
 		"settings": {
 			"title": "樞機",
@@ -6945,26 +6945,26 @@
 			"empty": "（尚無內對話）"
 		},
 		"conversation": {
-			"title": "会话详情",
-			"description": "查看一个对话的全部生成记录与每轮 prompt 请求。",
-			"back": "返回会话列表",
-			"empty": "（会话暂无生成记录）",
-			"generationsCount": "生成 ${count} 条",
-			"rounds": "轮次 ${count}",
-			"response": "回复",
-			"requests": "逐轮 prompt 请求",
-			"requestsMissing": "（该生成未采集逐轮 prompt）",
-			"requestsExpired": "（逐轮 prompt 已过期，原有 ${count} 轮）",
-			"replay": "复原对话",
-			"replayUpto": "复播至",
-			"replayAll": "全部轮次",
-			"roundIndex": "第 ${index} 轮",
-			"round": "轮次 ${index} · 模型 ${model} · ${time}",
-			"systemPrompt": "系统提示",
-			"messages": "消息",
+			"title": "會話之詳",
+			"description": "覽一會話全部生成之錄，及每輪 prompt 之求。",
+			"back": "返會話之列",
+			"empty": "（此會話尚無生成之錄）",
+			"generationsCount": "生成 ${count} 條",
+			"rounds": "輪次 ${count}",
+			"response": "覆",
+			"requests": "逐輪 prompt 之求",
+			"requestsMissing": "（此生成未錄逐輪 prompt）",
+			"requestsExpired": "（逐輪 prompt 已過期，原 ${count} 輪）",
+			"replay": "復原對話",
+			"replayUpto": "復播至",
+			"replayAll": "全輪",
+			"roundIndex": "第 ${index} 輪",
+			"round": "輪次 ${index} · 模 ${model} · ${time}",
+			"systemPrompt": "系統之示",
+			"messages": "訊息",
 			"role": {
-				"system": "系统",
-				"user": "用户",
+				"system": "系統",
+				"user": "客",
 				"char": "角色",
 				"tool": "工具"
 			}

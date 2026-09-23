@@ -6642,7 +6642,7 @@
 			"async": {
 				"list": "Asynchrone taken weergeven",
 				"await": "Wachten op asynchrone taken",
-				"inspect": null,
+				"inspect": "Asynchrone taken inspecteren",
 				"notice": "Melding van achtergrondtaak",
 				"run": "${kind} op de achtergrond uitvoeren"
 			}
@@ -6875,7 +6875,9 @@
 			"recordsCount": "${count} records",
 			"empty": "Nog geen generaties.",
 			"chainsEmpty": "Nog geen ketens.",
-			"conversations": null
+			"conversations": "Gesprekken",
+			"conversationsCount": "${count} gesprekken",
+			"conversationsEmpty": "Nog geen gesprekken."
 		},
 		"benchmarks": {
 			"title": "Benchmarks",
@@ -6911,6 +6913,16 @@
 			"save": "Opslaan",
 			"saved": "Opgeslagen."
 		},
+		"clear": {
+			"title": "Generatiegeschiedenis wissen",
+			"hint": "Verwijdert alle generatierecords binnen het geselecteerde bereik. Dit kan niet ongedaan worden gemaakt.",
+			"label": "Wissen",
+			"all": "Alle generatierecords wissen",
+			"confirmChar": "Alle generatierecords van personage «${name}» wissen? Dit kan niet ongedaan worden gemaakt.",
+			"confirmAll": "Alle generatierecords wissen? Dit kan niet ongedaan worden gemaakt.",
+			"done": "${count} generatierecords gewist.",
+			"failed": "Wissen mislukt: ${message}"
+		},
 		"settings": {
 			"title": "Instellingen",
 			"description": "Pas de bewaring van generatierecords aan."
@@ -6937,6 +6949,31 @@
 			"task": "Taak",
 			"conversation": "Intern gesprek",
 			"empty": "(nog geen gesprek)"
+		},
+		"conversation": {
+			"title": "Gesprek",
+			"description": "Bekijk alle generaties in een gesprek en de promptaanvraag van elke ronde.",
+			"back": "Terug naar gesprekken",
+			"empty": "(Dit gesprek heeft geen generaties)",
+			"generationsCount": "${count} generaties",
+			"rounds": "${count} rondes",
+			"response": "Antwoord",
+			"requests": "Promptaanvragen per ronde",
+			"requestsMissing": "(Geen prompts per ronde vastgelegd voor deze generatie)",
+			"requestsExpired": "(Prompts per ronde verlopen; oorspronkelijk ${count} rondes)",
+			"replay": "Hersteld gesprek",
+			"replayUpto": "Afspelen tot",
+			"replayAll": "Alle rondes",
+			"roundIndex": "Ronde ${index}",
+			"round": "Ronde ${index} · Model ${model} · ${time}",
+			"systemPrompt": "Systeemprompt",
+			"messages": "Berichten",
+			"role": {
+				"system": "Systeem",
+				"user": "Gebruiker",
+				"char": "Personage",
+				"tool": "Hulpmiddel"
+			}
 		}
 	}
 }
