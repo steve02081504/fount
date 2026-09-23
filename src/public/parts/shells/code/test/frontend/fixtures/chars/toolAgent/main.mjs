@@ -73,6 +73,7 @@ export default {
 			GetReply: async args => {
 				const prompt_struct = { char_prompt: { additional_chat_log: [] } }
 				const result = { content: REPLY, logContextBefore: [], logContextAfter: [], files: [], extension: {} }
+				const continueAfterTool = args.chat_log.some(entry => entry.role === 'user' && entry.content === '工具后继续生成')
 				/**
 				 * 追加长时间日志。
 				 * @param {object} entry - 日志条目。
@@ -88,6 +89,11 @@ export default {
 				args.generation_options ??= {}
 				args.generation_options.replyPreviewUpdater?.(result)
 				await runReplyHandlers(result, { ...args, prompt_struct, AddLongTimeLog }, handlers)
+				if (continueAfterTool) {
+					result.content_for_show = '工具已经执行完，正在继续生成正文。'
+					args.generation_options.replyPreviewUpdater?.(result)
+					await new Promise(resolve => setTimeout(resolve, 6000))
+				}
 				return result
 			},
 		},

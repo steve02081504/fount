@@ -961,7 +961,7 @@ function insertIncrementalEntries(entries) {
 
 /**
  * 处理服务端转发的工具执行实时输出（AI `<run-*>` / `<inline-*>`）。
- * `start` 建卡、`chunk` 追加输出、`end` 保留至生成气泡结束统一移除。
+ * `start` 建卡、`chunk` 追加输出、`end` 移除实时卡；正式工具日志由会话条目渲染。
  * @param {object} msg - `tool-output` 消息。
  * @returns {void}
  */
@@ -978,6 +978,10 @@ function handleToolOutput(msg) {
 	const card = liveToolCards.get(msg.callId)
 	if (card && msg.phase === 'chunk' && msg.data)
 		card.output.textContent += msg.data
+	if (card && msg.phase === 'end') {
+		card.root.remove()
+		liveToolCards.delete(msg.callId)
+	}
 }
 
 /**

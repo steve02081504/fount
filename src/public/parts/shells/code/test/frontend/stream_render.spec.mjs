@@ -48,6 +48,21 @@ test('actual multi-round stream appends a repaired report before the final answe
 	}
 })
 
+test('completed run-js does not remain below later streaming text', async ({ page, baseUrl }) => {
+	await page.addInitScript(pref => localStorage.setItem(pref + 'charname', 'toolAgent'), PREF_PREFIX)
+	await openCode(page, baseUrl)
+	await page.locator('#composer-input').click()
+	await page.keyboard.type('工具后继续生成')
+	await page.keyboard.press('Control+Enter')
+	await expect(page.locator('.code-message.generating .code-tool-live')).toBeVisible({ timeout: 60_000 })
+	await expect.poll(() => page.locator('#messages').evaluate(flow => ({
+		preview: flow.querySelector('.code-message.generating .code-message-body')?.textContent.includes('工具已经执行完') || false,
+		live: flow.querySelectorAll('.code-message.generating .code-tool-live').length,
+	})), { timeout: 60_000 }).toEqual({ preview: true, live: 0 })
+	await expect(page.locator('.code-message.generating')).toHaveCount(0)
+	await expect(page.locator('.code-message.role-tool')).toContainText('live-tool-output')
+})
+
 test('persisted multi-round transcript renders the report outside its orphan fence', async ({ page, baseUrl }) => {
 	// 取自真实会话 9df34984.json 的条目形态：第一轮原文含孤立的裸围栏，
 	// 后续有两个 async-task.list 工具条目与另一轮带 reasoning 的回复。
