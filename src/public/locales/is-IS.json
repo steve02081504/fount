@@ -6631,12 +6631,12 @@
 				"createBatch": "Búa til hóp undiragenta",
 				"run": "Keyra undiragent",
 				"listAiSources": "Lista gervigreindargjafa",
-				"check": "Skoða samtal undiragents",
 				"terminate": "Stöðva undiragent"
 			},
 			"async": {
 				"list": "Lista ósamstillt verk",
 				"await": "Bíða eftir ósamstilltum verkum",
+				"inspect": null,
 				"notice": "Tilkynning um bakgrunnsverk",
 				"run": "Keyra ${kind} í bakgrunni"
 			}
@@ -6652,10 +6652,6 @@
 				"done": "Lokið",
 				"terminated": "Stöðvað",
 				"failed": "Mistókst"
-			},
-			"check": {
-				"open": "Opna í Agent Studio",
-				"rounds": "Umferð ${rounds}/${roundLimit}"
 			}
 		},
 		"transcript": {
@@ -6872,7 +6868,8 @@
 			"allChars": "Allar persónur",
 			"recordsCount": "${count} færslur",
 			"empty": "Engar myndanir ennþá.",
-			"chainsEmpty": "Engar keðjur ennþá."
+			"chainsEmpty": "Engar keðjur ennþá.",
+			"conversations": null
 		},
 		"benchmarks": {
 			"title": "Viðmið",

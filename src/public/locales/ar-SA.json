@@ -6641,12 +6641,12 @@
 				"createBatch": "إنشاء دفعة وكلاء فرعيين",
 				"run": "تشغيل وكيل فرعي",
 				"listAiSources": "عرض مصادر الذكاء الاصطناعي",
-				"check": "عرض محادثة الوكيل الفرعي",
 				"terminate": "إنهاء الوكيل الفرعي"
 			},
 			"async": {
 				"list": "عرض المهام غير المتزامنة",
 				"await": "انتظار المهام غير المتزامنة",
+				"inspect": null,
 				"notice": "إشعار المهام في الخلفية",
 				"run": "تشغيل ${kind} في الخلفية"
 			}
@@ -6662,10 +6662,6 @@
 				"done": "مكتمل",
 				"terminated": "تم الإنهاء",
 				"failed": "فشل"
-			},
-			"check": {
-				"open": "فتح في Agent Studio",
-				"rounds": "الجولات ${rounds}/${roundLimit}"
 			}
 		},
 		"transcript": {
@@ -6882,7 +6878,8 @@
 			"allChars": "كل الشخصيات",
 			"recordsCount": "إجمالي ${count} سجل",
 			"empty": "لا توجد سجلات توليد بعد.",
-			"chainsEmpty": "لا توجد سلاسل توليد بعد."
+			"chainsEmpty": "لا توجد سلاسل توليد بعد.",
+			"conversations": null
 		},
 		"benchmarks": {
 			"title": "الاختبارات المعيارية",

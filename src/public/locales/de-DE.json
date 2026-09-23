@@ -6631,12 +6631,12 @@
 				"createBatch": "Subagenten-Batch erstellen",
 				"run": "Subagent ausführen",
 				"listAiSources": "KI-Quellen auflisten",
-				"check": "Subagenten-Unterhaltung anzeigen",
 				"terminate": "Subagent beenden"
 			},
 			"async": {
 				"list": "Asynchrone Aufgaben auflisten",
 				"await": "Auf asynchrone Aufgaben warten",
+				"inspect": null,
 				"notice": "Benachrichtigung zu Hintergrundaufgaben",
 				"run": "${kind} im Hintergrund ausführen"
 			}
@@ -6652,10 +6652,6 @@
 				"done": "Abgeschlossen",
 				"terminated": "Beendet",
 				"failed": "Fehlgeschlagen"
-			},
-			"check": {
-				"open": "In Agent Studio öffnen",
-				"rounds": "Runde ${rounds}/${roundLimit}"
 			}
 		},
 		"transcript": {
@@ -6872,7 +6868,8 @@
 			"allChars": "Alle Charaktere",
 			"recordsCount": "${count} Datensätze",
 			"empty": "Noch keine Generierungen.",
-			"chainsEmpty": "Noch keine Generierungsketten."
+			"chainsEmpty": "Noch keine Generierungsketten.",
+			"conversations": null
 		},
 		"benchmarks": {
 			"title": "Benchmarks",

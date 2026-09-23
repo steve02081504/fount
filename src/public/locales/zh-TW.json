@@ -6630,12 +6630,12 @@
 				"createBatch": "建立子代理批次",
 				"run": "執行子代理",
 				"listAiSources": "列出 AI 來源",
-				"check": "檢視子代理對話",
 				"terminate": "終止子代理"
 			},
 			"async": {
 				"list": "列出非同步任務",
 				"await": "等待非同步任務",
+				"inspect": null,
 				"notice": "背景任務通知",
 				"run": "在背景執行 ${kind}"
 			}
@@ -6651,10 +6651,6 @@
 				"done": "已完成",
 				"terminated": "已終止",
 				"failed": "已失敗"
-			},
-			"check": {
-				"open": "在 Agent Studio 開啟",
-				"rounds": "輪次 ${rounds}/${roundLimit}"
 			}
 		},
 		"transcript": {
@@ -6871,7 +6867,8 @@
 			"allChars": "全部角色",
 			"recordsCount": "共 ${count} 筆記錄",
 			"empty": "暫無生成記錄。",
-			"chainsEmpty": "暫無生成鏈。"
+			"chainsEmpty": "暫無生成鏈。",
+			"conversations": null
 		},
 		"benchmarks": {
 			"title": "基準測試",

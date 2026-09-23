@@ -6631,12 +6631,12 @@
 				"createBatch": "하위 에이전트 배치 만들기",
 				"run": "하위 에이전트 실행",
 				"listAiSources": "AI 소스 나열",
-				"check": "하위 에이전트 대화 보기",
 				"terminate": "하위 에이전트 종료"
 			},
 			"async": {
 				"list": "비동기 작업 나열",
 				"await": "비동기 작업 대기",
+				"inspect": null,
 				"notice": "백그라운드 작업 알림",
 				"run": "${kind} 백그라운드로 실행"
 			}
@@ -6652,10 +6652,6 @@
 				"done": "완료됨",
 				"terminated": "종료됨",
 				"failed": "실패함"
-			},
-			"check": {
-				"open": "Agent Studio에서 열기",
-				"rounds": "라운드 ${rounds}/${roundLimit}"
 			}
 		},
 		"transcript": {
@@ -6872,7 +6868,8 @@
 			"allChars": "전체 캐릭터",
 			"recordsCount": "총 ${count}건의 기록",
 			"empty": "아직 생성 기록이 없습니다.",
-			"chainsEmpty": "아직 생성 체인이 없습니다."
+			"chainsEmpty": "아직 생성 체인이 없습니다.",
+			"conversations": null
 		},
 		"benchmarks": {
 			"title": "벤치마크",

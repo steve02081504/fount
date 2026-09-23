@@ -6637,12 +6637,12 @@
 				"createBatch": "Crea batch di sotto-agenti",
 				"run": "Esegui sotto-agente",
 				"listAiSources": "Elenca fonti AI",
-				"check": "Visualizza conversazione del sotto-agente",
 				"terminate": "Termina sotto-agente"
 			},
 			"async": {
 				"list": "Elenca attività asincrone",
 				"await": "Attendi attività asincrona",
+				"inspect": null,
 				"notice": "Notifica attività in background",
 				"run": "Esegui ${kind} in background"
 			}
@@ -6658,10 +6658,6 @@
 				"done": "Completato",
 				"terminated": "Terminato",
 				"failed": "Fallito"
-			},
-			"check": {
-				"open": "Apri in Agent Studio",
-				"rounds": "Round ${rounds}/${roundLimit}"
 			}
 		},
 		"transcript": {

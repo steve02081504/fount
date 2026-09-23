@@ -6631,12 +6631,12 @@
 				"createBatch": "Tạo đợt sub-agent",
 				"run": "Chạy sub-agent",
 				"listAiSources": "Liệt kê nguồn AI",
-				"check": "Xem hội thoại sub-agent",
 				"terminate": "Dừng sub-agent"
 			},
 			"async": {
 				"list": "Liệt kê tác vụ bất đồng bộ",
 				"await": "Chờ tác vụ bất đồng bộ",
+				"inspect": null,
 				"notice": "Thông báo tác vụ nền",
 				"run": "Chạy ${kind} trong nền"
 			}
@@ -6652,10 +6652,6 @@
 				"done": "Đã xong",
 				"terminated": "Đã dừng",
 				"failed": "Thất bại"
-			},
-			"check": {
-				"open": "Mở trong Agent Studio",
-				"rounds": "Vòng ${rounds}/${roundLimit}"
 			}
 		},
 		"transcript": {
@@ -6872,7 +6868,8 @@
 			"allChars": "Tất cả nhân vật",
 			"recordsCount": "${count} bản ghi",
 			"empty": "Chưa có lần tạo nào.",
-			"chainsEmpty": "Chưa có chuỗi tạo nào."
+			"chainsEmpty": "Chưa có chuỗi tạo nào.",
+			"conversations": null
 		},
 		"benchmarks": {
 			"title": "Benchmark",

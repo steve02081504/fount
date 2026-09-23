@@ -6631,12 +6631,12 @@
 				"createBatch": "उप-एजेंट बैच बनाएँ",
 				"run": "उप-एजेंट चलाएँ",
 				"listAiSources": "AI स्रोत सूचीबद्ध करें",
-				"check": "उप-एजेंट वार्तालाप देखें",
 				"terminate": "उप-एजेंट समाप्त करें"
 			},
 			"async": {
 				"list": "अतुल्यकालिक कार्य सूचीबद्ध करें",
 				"await": "अतुल्यकालिक कार्य की प्रतीक्षा करें",
+				"inspect": null,
 				"notice": "पृष्ठभूमि कार्य अधिसूचना",
 				"run": "${kind} पृष्ठभूमि में चलाएँ"
 			}
@@ -6652,10 +6652,6 @@
 				"done": "पूरा हुआ",
 				"terminated": "समाप्त",
 				"failed": "विफल"
-			},
-			"check": {
-				"open": "Agent Studio में खोलें",
-				"rounds": "दौर ${rounds}/${roundLimit}"
 			}
 		},
 		"transcript": {
@@ -6872,7 +6868,8 @@
 			"allChars": "सभी किरदार",
 			"recordsCount": "कुल ${count} रिकॉर्ड",
 			"empty": "अभी कोई जनरेशन रिकॉर्ड नहीं है।",
-			"chainsEmpty": "अभी कोई जनरेशन शृंखला नहीं है।"
+			"chainsEmpty": "अभी कोई जनरेशन शृंखला नहीं है।",
+			"conversations": null
 		},
 		"benchmarks": {
 			"title": "बेंचमार्क",

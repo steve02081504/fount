@@ -6639,12 +6639,12 @@
 				"createBatch": "Создать партию субагентов",
 				"run": "Запустить субагента",
 				"listAiSources": "Показать источники ИИ",
-				"check": "Просмотреть диалог субагента",
 				"terminate": "Завершить субагента"
 			},
 			"async": {
 				"list": "Показать асинхронные задачи",
 				"await": "Дождаться асинхронных задач",
+				"inspect": null,
 				"notice": "Уведомление о фоновой задаче",
 				"run": "Запустить ${kind} в фоне"
 			}
@@ -6660,10 +6660,6 @@
 				"done": "Завершено",
 				"terminated": "Остановлено",
 				"failed": "Ошибка"
-			},
-			"check": {
-				"open": "Открыть в Agent Studio",
-				"rounds": "Раунд ${rounds}/${roundLimit}"
 			}
 		},
 		"transcript": {
@@ -6880,7 +6876,8 @@
 			"allChars": "Все персонажи",
 			"recordsCount": "Записей: ${count}",
 			"empty": "Генераций пока нет.",
-			"chainsEmpty": "Цепочек пока нет."
+			"chainsEmpty": "Цепочек пока нет.",
+			"conversations": null
 		},
 		"benchmarks": {
 			"title": "Бенчмарки",

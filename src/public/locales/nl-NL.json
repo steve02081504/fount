@@ -6637,12 +6637,12 @@
 				"createBatch": "Subagent-batch aanmaken",
 				"run": "Subagent uitvoeren",
 				"listAiSources": "AI-bronnen weergeven",
-				"check": "Subagent-gesprek bekijken",
 				"terminate": "Subagent beëindigen"
 			},
 			"async": {
 				"list": "Asynchrone taken weergeven",
 				"await": "Wachten op asynchrone taken",
+				"inspect": null,
 				"notice": "Melding van achtergrondtaak",
 				"run": "${kind} op de achtergrond uitvoeren"
 			}
@@ -6658,10 +6658,6 @@
 				"done": "Voltooid",
 				"terminated": "Beëindigd",
 				"failed": "Mislukt"
-			},
-			"check": {
-				"open": "Openen in Agent Studio",
-				"rounds": "Ronde ${rounds}/${roundLimit}"
 			}
 		},
 		"transcript": {
@@ -6878,7 +6874,8 @@
 			"allChars": "Alle personages",
 			"recordsCount": "${count} records",
 			"empty": "Nog geen generaties.",
-			"chainsEmpty": "Nog geen ketens."
+			"chainsEmpty": "Nog geen ketens.",
+			"conversations": null
 		},
 		"benchmarks": {
 			"title": "Benchmarks",

@@ -6593,12 +6593,12 @@ export type LocaleData = {
 				createBatch: string
 				run: string
 				listAiSources: string
-				check: string
 				terminate: string
 			}
 			async: {
 				list: string
 				await: string
+				inspect: string
 				notice: string
 				run: string
 			}
@@ -6614,10 +6614,6 @@ export type LocaleData = {
 				done: string
 				terminated: string
 				failed: string
-			}
-			check: {
-				open: string
-				rounds: string
 			}
 		}
 		transcript: {
@@ -6835,6 +6831,9 @@ export type LocaleData = {
 			recordsCount: string
 			empty: string
 			chainsEmpty: string
+			conversations: string
+			conversationsCount: string
+			conversationsEmpty: string
 		}
 		benchmarks: {
 			title: string
@@ -6870,6 +6869,16 @@ export type LocaleData = {
 			save: string
 			saved: string
 		}
+		clear: {
+			title: string
+			hint: string
+			label: string
+			all: string
+			confirmChar: string
+			confirmAll: string
+			done: string
+			failed: string
+		}
 		settings: {
 			title: string
 			description: string
@@ -6896,6 +6905,31 @@ export type LocaleData = {
 			task: string
 			conversation: string
 			empty: string
+		}
+		conversation: {
+			title: string
+			description: string
+			back: string
+			empty: string
+			generationsCount: string
+			rounds: string
+			response: string
+			requests: string
+			requestsMissing: string
+			requestsExpired: string
+			replay: string
+			replayUpto: string
+			replayAll: string
+			roundIndex: string
+			round: string
+			systemPrompt: string
+			messages: string
+			role: {
+				system: string
+				user: string
+				char: string
+				tool: string
+			}
 		}
 	}
 }
@@ -6952,8 +6986,17 @@ export type LocaleKeyParams = {
 	'agent_studio.alerts.saveFailed': { message: string | number }
 	'agent_studio.benchmarks.casesInvalid': { message: string | number }
 	'agent_studio.benchmarks.stats': { avgLength: string | number; avgScore: string | number; empty: string | number; judged: string | number; total: string | number }
+	'agent_studio.clear.confirmChar': { name: string | number }
+	'agent_studio.clear.done': { count: string | number }
+	'agent_studio.clear.failed': { message: string | number }
+	'agent_studio.conversation.generationsCount': { count: string | number }
+	'agent_studio.conversation.requestsExpired': { count: string | number }
+	'agent_studio.conversation.round': { index: string | number; model: string | number; time: string | number }
+	'agent_studio.conversation.roundIndex': { index: string | number }
+	'agent_studio.conversation.rounds': { count: string | number }
 	'agent_studio.generation.character': { name: string | number }
 	'agent_studio.generation.meta': { model: string | number; source: string | number }
+	'agent_studio.generations.conversationsCount': { count: string | number }
 	'agent_studio.generations.recordsCount': { count: string | number }
 	'agent_studio.run.detail': { generations: string | number; roundLimit: string | number; rounds: string | number }
 	'auth.error.accountLockedRetry': { timeLeft: string | number }
@@ -7215,7 +7258,6 @@ export type LocaleKeyParams = {
 	'code.power.armedAria': { count: string | number }
 	'code.power.armedCount': { count: string | number }
 	'code.sessions.deleteConfirm': { title: string | number }
-	'code.subagent.check.rounds': { roundLimit: string | number; rounds: string | number }
 	'code.subagent.open': { task: string | number }
 	'code.subagent.working': { roundLimit: string | number; rounds: string | number }
 	'code.tool.async.run': { kind: string | number }

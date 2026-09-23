@@ -6637,12 +6637,12 @@
 				"createBatch": "Criar lote de subagentes",
 				"run": "Executar subagente",
 				"listAiSources": "Listar fontes de IA",
-				"check": "Ver conversa do subagente",
 				"terminate": "Terminar subagente"
 			},
 			"async": {
 				"list": "Listar tarefas assíncronas",
 				"await": "Aguardar tarefa assíncrona",
+				"inspect": null,
 				"notice": "Notificação de tarefa em segundo plano",
 				"run": "Executar ${kind} em segundo plano"
 			}
@@ -6658,10 +6658,6 @@
 				"done": "Concluído",
 				"terminated": "Terminado",
 				"failed": "Falhado"
-			},
-			"check": {
-				"open": "Abrir no Agent Studio",
-				"rounds": "Rondas ${rounds}/${roundLimit}"
 			}
 		},
 		"transcript": {
@@ -6878,7 +6874,8 @@
 			"allChars": "Todos os personagens",
 			"recordsCount": "${count} registos",
 			"empty": "Ainda não há gerações.",
-			"chainsEmpty": "Ainda não há cadeias."
+			"chainsEmpty": "Ainda não há cadeias.",
+			"conversations": null
 		},
 		"benchmarks": {
 			"title": "Benchmarks",

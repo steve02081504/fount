@@ -6631,12 +6631,12 @@
 				"createBatch": "立子代理之批",
 				"run": "行子代理",
 				"listAiSources": "列 AI 源",
-				"check": "觀子代理之對話",
 				"terminate": "止子代理"
 			},
 			"async": {
 				"list": "列異步之務",
 				"await": "待異步之務",
+				"inspect": "检视异步任务",
 				"notice": "後臺務之告",
 				"run": "幕後行 ${kind}"
 			}
@@ -6652,10 +6652,6 @@
 				"done": "已成",
 				"terminated": "已止",
 				"failed": "已敗"
-			},
-			"check": {
-				"open": "於 Agent Studio 啟之",
-				"rounds": "輪 ${rounds}/${roundLimit}"
 			}
 		},
 		"transcript": {
@@ -6872,7 +6868,10 @@
 			"allChars": "諸角色",
 			"recordsCount": "共 ${count} 錄",
 			"empty": "尚無生成之錄。",
-			"chainsEmpty": "尚無生成之鏈。"
+			"chainsEmpty": "尚無生成之鏈。",
+			"conversations": "会话",
+			"conversationsCount": "共 ${count} 个会话",
+			"conversationsEmpty": "暂无会话。"
 		},
 		"benchmarks": {
 			"title": "基準試",
@@ -6908,6 +6907,16 @@
 			"save": "存",
 			"saved": "已存。"
 		},
+		"clear": {
+			"title": "清空生成记录",
+			"hint": "删除所选范围内的全部生成记录，此操作不可撤销。",
+			"label": "清空",
+			"all": "清空全部生成记录",
+			"confirmChar": "确定清空角色「${name}」的全部生成记录吗？此操作不可撤销。",
+			"confirmAll": "确定清空全部生成记录吗？此操作不可撤销。",
+			"done": "已清空 ${count} 条生成记录。",
+			"failed": "清空失败：${message}"
+		},
 		"settings": {
 			"title": "樞機",
 			"description": "調生成錄之存留方略。"
@@ -6934,6 +6943,31 @@
 			"task": "務",
 			"conversation": "內對話",
 			"empty": "（尚無內對話）"
+		},
+		"conversation": {
+			"title": "会话详情",
+			"description": "查看一个对话的全部生成记录与每轮 prompt 请求。",
+			"back": "返回会话列表",
+			"empty": "（会话暂无生成记录）",
+			"generationsCount": "生成 ${count} 条",
+			"rounds": "轮次 ${count}",
+			"response": "回复",
+			"requests": "逐轮 prompt 请求",
+			"requestsMissing": "（该生成未采集逐轮 prompt）",
+			"requestsExpired": "（逐轮 prompt 已过期，原有 ${count} 轮）",
+			"replay": "复原对话",
+			"replayUpto": "复播至",
+			"replayAll": "全部轮次",
+			"roundIndex": "第 ${index} 轮",
+			"round": "轮次 ${index} · 模型 ${model} · ${time}",
+			"systemPrompt": "系统提示",
+			"messages": "消息",
+			"role": {
+				"system": "系统",
+				"user": "用户",
+				"char": "角色",
+				"tool": "工具"
+			}
 		}
 	}
 }
