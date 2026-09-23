@@ -15,7 +15,7 @@ import { svgInliner } from '/scripts/lib/svgInliner.mjs'
 import { appendLocalHistory, removeGhost, renderAttachmentPreview } from './composer.mjs'
 import * as api from './endpoints.mjs'
 import { iconElement, icons } from './icons.mjs'
-import { appendEntryBubble, backToBottom, isEntryVisible, nearBottom, renderEntryBubble, renderMessages, scrollMessagesBottom, updateBackToBottom, updateEntryBubble, updateRegenButtons, updateShellStreamBubble, updateEmptyMode } from './messages.mjs'
+import { appendEntryBubble, backToBottom, isEntryVisible, renderEntryBubble, renderMessages, updateBackToBottom, updateEntryBubble, updateRegenButtons, updateShellStreamBubble, updateEmptyMode } from './messages.mjs'
 import { refreshShutdownState, renderAiSourcePillLabel, renderModePillLabel, selectWorkspace, updateCharMenu } from './pills.mjs'
 import { refreshRunCards, updateRunCards } from './runCards.mjs'
 import { elements, richInput, store, TAB_SAVE_DEBOUNCE, target } from './store.mjs'
@@ -947,14 +947,12 @@ function insertIncrementalEntries(entries) {
 	session.entries.push(...fresh)
 	if (session !== store.session) return
 	const anchor = generatingBubble?.bubble || backToBottom
-	const wasNearBottom = nearBottom()
 	for (const entry of fresh) {
 		if (!isEntryVisible(entry)) continue
 		const bubble = renderEntryBubble(entry, { isLast: false })
 		elements.messages.insertBefore(bubble, anchor)
 	}
 	updateEmptyMode()
-	if (wasNearBottom) scrollMessagesBottom()
 	updateBackToBottom()
 	updateRunCards()
 }
@@ -972,7 +970,6 @@ function handleToolOutput(msg) {
 		const card = createLiveToolCard(msg)
 		liveToolCards.set(msg.callId, card)
 		generatingBubble.bubble.appendChild(card.root)
-		if (nearBottom()) scrollMessagesBottom()
 		return
 	}
 	const card = liveToolCards.get(msg.callId)
@@ -1027,7 +1024,6 @@ export function startGeneratingBubble() {
 	bubble.append(name, body)
 	elements.messages.insertBefore(bubble, backToBottom)
 	updateEmptyMode()
-	if (nearBottom()) scrollMessagesBottom()
 	// 可信档：本地 code 会话（与会话落盘后的正文渲染一致），让推理 details 在流式期可见
 	generatingBubble = { bubble, renderer: new StreamRenderer(body, { allowDangerousHtml: true }) }
 }

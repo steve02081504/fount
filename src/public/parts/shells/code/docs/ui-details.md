@@ -40,7 +40,7 @@ The dialog opens **immediately with a loading placeholder** (`util.folderBrowser
 
 - **Send / stop**: `#send-button` is an icon button (`updateSendButton` swaps arrow-up ↔ stop square + `stop` class). **Ctrl/Cmd+Enter sends**. Tab accepts a ghost when present, else cycles mode (message mode only).
 - **Empty states**: `renderEmpty()` inside `#messages` — no workspace → guidance card with CTA that opens `openFolderBrowser()`; workspace but no session → "start a new coding session". No empty `div` black hole.
-- **Scrolling**: stick-to-bottom auto-scroll (tolerance `SCROLL_TOLERANCE`), "back to bottom" floating button (`#code-back-to-bottom`) appears when scrolled up.
+- **Scrolling**: stick-to-bottom is a `pinned` flag owned by the user — only a user scroll intent (wheel up / ArrowUp / PageUp / Home / touch / dragging the scroller) unpins it, and only scrolling back near the bottom re-pins it; content growth never changes it, so streaming always follows. The flow is re-aligned to the bottom on every mutation / resize (MutationObserver + ResizeObserver, plus a per-frame loop while generating) so frames never paint with a gap; `#messages` is `overflow-anchor: none` and has no `scroll-behavior: smooth` (smooth is only used when the user clicks "back to bottom"). "back to bottom" floating button (`#code-back-to-bottom`) appears when unpinned. `body` is `overflow: clip` so a browser-extension overlay after the `h-dvh` layout cannot add a page scrollbar (guarded by page-watch `[test:viewport]` via `<body data-app-shell>`).
 
 ## Slash / mention
 

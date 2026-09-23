@@ -5,7 +5,7 @@
 import { getProfile, loadWorkspaceAgentsMd } from './context.mjs'
 
 /**
- * 选择足够长的围栏，避免内容里的 ``` 提前闭合代码块。
+ * 选择足够长的反引号围栏，避免内容里的围栏提前闭合代码块。
  * @param {string} content - 待包裹内容。
  * @returns {string} 反引号围栏。
  */

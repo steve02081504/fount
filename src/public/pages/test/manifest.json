@@ -44,6 +44,17 @@
 						"src/public/pages/test/frontend/fixtures.mjs",
 						"src/public/pages/scripts/test/watch/layout.mjs"
 					]
+				},
+				{
+					"name": "pageWatchViewport",
+					"expected": "20s",
+					"triggers": [
+						"src/public/pages/test/frontend/pageWatchViewport.spec.mjs",
+						"src/public/pages/test/frontend/fixtures.mjs",
+						"src/public/pages/scripts/test/watch/viewport.mjs",
+						"src/public/pages/scripts/test/watch/flicker.mjs",
+						"src/public/pages/scripts/test/watch/mutation_gate.mjs"
+					]
 				}
 			],
 			"run": [

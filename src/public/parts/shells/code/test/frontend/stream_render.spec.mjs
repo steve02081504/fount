@@ -111,6 +111,48 @@ test('persisted multi-round transcript renders the report outside its orphan fen
 	}
 })
 
+test('streaming reply keeps the message flow pinned to the bottom without page overflow', async ({ page, baseUrl }) => {
+	await page.setViewportSize({ width: 1280, height: 720 })
+	await page.addInitScript(pref => localStorage.setItem(pref + 'charname', 'streamAgent'), PREF_PREFIX)
+	await openCode(page, baseUrl)
+	// 语种轮换会重建 DOM 并复位滚动，滚动断言前冻结（body 末尾还有 page-watch 的仿扩展浮层探针，见 viewport.mjs）
+	await page.evaluate(() => globalThis.fount.test.watch.holdLocale())
+	await page.locator('#composer-input').click()
+	await page.keyboard.type('贴底测试')
+	await page.keyboard.press('Control+Enter')
+	await expect(page.locator('.code-message.generating')).toHaveCount(1, { timeout: 60_000 })
+	// 在 rAF 里逐帧采样（= 该帧的绘制状态，不是宏任务间未绘制的中间态）：内容超出一屏后，
+	// 流式期间离底距离不得积累（贴底跟随），文档不得比视口高。
+	await page.evaluate(() => {
+		const flow = document.getElementById('messages')
+		const samples = globalThis.__followSamples = []
+		/** 采样一帧并约下一帧。 */
+		const tick = () => {
+			const generating = !!flow.querySelector('.code-message.generating')
+			samples.push({
+				generating,
+				overflowing: flow.scrollHeight > flow.clientHeight + 4,
+				gap: flow.scrollHeight - flow.scrollTop - flow.clientHeight,
+				clientHeight: flow.clientHeight,
+				// 视口被裁剪（overflow hidden/clip）时溢出不产生滚动条
+				pageOverflow: ['hidden', 'clip'].includes(getComputedStyle(document.body).overflowY) ? 0 : document.documentElement.scrollHeight - document.documentElement.clientHeight,
+			})
+			if (generating) requestAnimationFrame(tick)
+		}
+		requestAnimationFrame(tick)
+	})
+	await expect(page.locator('.code-message.role-char:not(.generating)')).toContainText('第 36 段', { timeout: 60_000 })
+	const samples = await page.evaluate(() => globalThis.__followSamples)
+	const streaming = samples.filter(sample => sample.generating && sample.overflowing)
+	expect(streaming.length, '流式期间内容应超出一屏').toBeGreaterThan(20)
+	const lagging = streaming.filter(sample => sample.gap > sample.clientHeight / 3)
+	expect(lagging.length, `离底超过 1/3 屏的帧：${JSON.stringify(lagging.slice(0, 3))}`).toBe(0)
+	expect(Math.max(...samples.map(sample => sample.pageOverflow))).toBeLessThanOrEqual(0)
+	await expect(page.locator('.code-message.generating')).toHaveCount(0, { timeout: 60_000 })
+	await expect.poll(() => page.locator('#messages').evaluate(flow => flow.scrollHeight - flow.scrollTop - flow.clientHeight)).toBeLessThan(8)
+	await expect(page.locator('#code-back-to-bottom')).not.toHaveClass(/\bshow\b/)
+})
+
 for (const width of [1600, 390])
 	test(`streaming long report keeps code contained and restores markdown at ${width}px`, async ({ page, baseUrl }) => {
 		const frames = []

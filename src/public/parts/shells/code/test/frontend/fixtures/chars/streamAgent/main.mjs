@@ -11,6 +11,13 @@ const RENDER_CHUNKS = [
 	'```\n\n',
 	'## 修复计划\n\n- 第一项\n- 第二项\n\n报告结束。',
 ]
+/** 贴底：远超一屏的快速增量，流式期间消息流须持续跟随到底。 */
+const FOLLOW_CHUNKS = Array.from({ length: 36 }, (_, index) => `第 ${index + 1} 段：${'贴底跟随的流式内容。'.repeat(6)}\n\n`)
+/** 各触发消息对应的分片与间隔。 */
+const CHUNK_PLANS = {
+	渲染边界测试: { chunks: RENDER_CHUNKS, interval: 800 },
+	贴底测试: { chunks: FOLLOW_CHUNKS, interval: 150 },
+}
 
 /**
  * 等待指定毫秒。
@@ -105,9 +112,9 @@ export default {
 					return result
 				}
 				// 无请求级 AI 源（角色自带）：角色自行分片推送预览
-				const chunks = args.chat_log.at(-1)?.content === '渲染边界测试' ? RENDER_CHUNKS : STREAM_CHUNKS
+				const { chunks, interval } = CHUNK_PLANS[args.chat_log.at(-1)?.content] || { chunks: STREAM_CHUNKS, interval: 800 }
 				for (const chunk of chunks) {
-					await delay(800)
+					await delay(interval)
 					result.content += chunk
 					args.generation_options.replyPreviewUpdater({ ...result })
 					if (chunks === RENDER_CHUNKS && chunk === RENDER_CHUNKS[1]) await delay(1600)

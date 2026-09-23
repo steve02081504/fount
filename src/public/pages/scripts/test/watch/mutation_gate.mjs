@@ -21,6 +21,14 @@ function ensureObserver() {
 }
 
 /**
+ * 当前是否处于 `ignore` / `ignoreAsync` 期间（watch 自身在刻意改 DOM）。
+ * @returns {boolean} 忽略期为 true
+ */
+export function isIgnoring() {
+	return depth > 0
+}
+
+/**
  * 注册非忽略期的突变回调。
  * @param {(() => void) | null} handler 回调
  * @returns {void}

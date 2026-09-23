@@ -6,12 +6,14 @@ import { requestRefresh, task as a11yTask } from './a11y.mjs'
 import { markActivity } from './activity.mjs'
 import { task as cssvarTask } from './cssvar.mjs'
 import { task as emojiTask } from './emoji_chrome.mjs'
+import { installFlickerWatch } from './flicker.mjs'
 import { task as layoutTask } from './layout.mjs'
 import { bootstrap, task as localeTask } from './locale.mjs'
 import { holdLocale, releaseLocale } from './locale_hold.mjs'
 import { drain, register, start, started } from './loop.mjs'
 import { observe } from './mutations.mjs'
 import { task as svgThemeTask } from './svg_theme.mjs'
+import { task as viewportTask } from './viewport.mjs'
 
 globalThis.fount ??= {}
 globalThis.fount.test ??= {}
@@ -20,6 +22,7 @@ register(a11yTask)
 register(cssvarTask)
 register(emojiTask)
 register(layoutTask)
+register(viewportTask)
 register(svgThemeTask)
 register(localeTask)
 observe(document.documentElement, {
@@ -28,6 +31,7 @@ observe(document.documentElement, {
 	attributes: true,
 	characterData: true,
 })
+installFlickerWatch()
 // 用户/测试活动时暂停会重建 DOM 的检查（locale 轮换），静默窗口后再恢复
 for (const type of ['pointerdown', 'pointerup', 'pointermove', 'keydown', 'input'])
 	document.addEventListener(type, markActivity, { capture: true, passive: true })

@@ -8,6 +8,7 @@ import { markDirty as markEmojiDirty } from './emoji_chrome.mjs'
 import { markDirty as markLayoutDirty } from './layout.mjs'
 import { ignore, ignoreAsync, observe, setDirtyHandler } from './mutation_gate.mjs'
 import { markDirty as markSvgThemeDirty } from './svg_theme.mjs'
+import { markDirty as markViewportDirty } from './viewport.mjs'
 
 /**
  * 非忽略期的突变回调：记录活动并依次标记各 watch 任务脏。
@@ -20,6 +21,7 @@ function markAllDirty() {
 	markEmojiDirty()
 	markLayoutDirty()
 	markSvgThemeDirty()
+	markViewportDirty()
 }
 
 setDirtyHandler(markAllDirty)

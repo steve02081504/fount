@@ -2,6 +2,12 @@
 
 /* ---------------- 主区 ---------------- */
 
+/* 满屏应用壳：只有消息流 / 输入框自己滚。body 直属的隐藏浮层（浏览器扩展的划词 tooltip 等，
+   `position: absolute` 却不设 top，落在 h-dvh 布局之后）会把文档撑高几像素，冒出几乎滚不动的页面滚动条 */
+body {
+	overflow: clip;
+}
+
 .code-topbar {
 	z-index: 10;
 }
@@ -212,7 +218,9 @@
 	display: flex;
 	flex-direction: column;
 	gap: 0.875rem;
-	scroll-behavior: smooth;
+	/* 贴底跟随要求一次性对齐：既不设 scroll-behavior: smooth（平滑只用于点「回到底部」），
+	   也关掉滚动锚定——否则流式重渲上方气泡时锚定会改写 scrollTop，跟贴底逻辑打架 */
+	overflow-anchor: none;
 }
 
 /* 角色消息贴列左，用户消息贴列右（70% 列右缘，而非页面右缘） */

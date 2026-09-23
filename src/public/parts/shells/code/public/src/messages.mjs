@@ -448,10 +448,7 @@ export function updateShellStreamBubble(entry) {
 export function updateEntryBubble(entry) {
 	const bubble = bubbleOfEntry(entry)
 	if (!bubble) return
-	const wasNearBottom = nearBottom()
 	bubble.replaceWith(renderEntryBubble(entry, { isLast: true }))
-	if (wasNearBottom) scrollMessagesBottom()
-	updateBackToBottom()
 }
 
 /**
@@ -601,17 +598,45 @@ export function updateRegenButtons() {
 }
 
 /**
- * 消息流是否接近底部。
+ * 贴底状态：只由用户滚动改变（向上滚 → 脱离；滚回底部附近 → 重新贴底），
+ * 内容增长不会改变它，从而流式期间始终跟随；不依据「当前是否在底部附近」临时判断——
+ * 那在平滑滚动中途 / 大段增量后会误判脱离，导致不跟随与浮标闪烁。
+ */
+let pinned = true
+/** 最近一次用户滚动意图（滚轮上滚 / 方向键 / 触摸 / 拖滚动条）的时间。 */
+let lastUserScrollAt = -Infinity
+/** 用户滚动意图宽限期（毫秒）：期间只在真正到底时才重新贴底。 */
+const USER_SCROLL_GRACE_MS = 400
+/** 最近一次用户在消息流内展开 / 点击的时间：此后短时间内上方气泡的尺寸变化不拉到底。 */
+let lastUserToggleAt = -Infinity
+/** 用户展开宽限期（毫秒）。 */
+const USER_TOGGLE_GRACE_MS = 1000
+
+/**
+ * 消息流当前是否贴底跟随。
  * @returns {boolean} 是否贴底。
  */
-export function nearBottom() {
-	const el = elements.messages
-	return el.scrollHeight - el.scrollTop - el.clientHeight < SCROLL_TOLERANCE
+export function isPinnedToBottom() {
+	return pinned
 }
 
-/** 滚动消息流到底部。 */
-export function scrollMessagesBottom() {
-	elements.messages.scrollTop = elements.messages.scrollHeight
+/** 无动画地对齐到底部（贴底跟随用）。 */
+function alignBottom() {
+	const el = elements.messages
+	el.scrollTop = el.scrollHeight - el.clientHeight
+}
+
+/**
+ * 滚动消息流到底部并恢复贴底跟随。
+ * @param {{smooth?: boolean}} [options] - 是否平滑滚动（仅用户点击「回到底部」时）。
+ * @returns {void}
+ */
+export function scrollMessagesBottom({ smooth = false } = {}) {
+	pinned = true
+	const el = elements.messages
+	if (smooth) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
+	else alignBottom()
+	updateBackToBottom()
 }
 
 /** 回到底部浮标（sticky 于消息流末尾，贴底时隐藏）。 */
@@ -622,13 +647,13 @@ export const backToBottom = (() => {
 	button.className = 'btn btn-square btn-ghost btn-sm shadow-lg code-back-to-bottom'
 	button.appendChild(iconElement(icons.chevronDown, { size: 16 }))
 	void svgInliner(button)
-	button.addEventListener('click', scrollMessagesBottom)
+	button.addEventListener('click', () => scrollMessagesBottom({ smooth: true }))
 	return button
 })()
 
 /** 更新回到底部浮标可见性。 */
 export function updateBackToBottom() {
-	backToBottom.classList.toggle('show', !nearBottom() && (store.session?.entries?.length || 0) > 0)
+	backToBottom.classList.toggle('show', !pinned && (store.session?.entries?.length || 0) > 0)
 }
 
 /** 消息流滚动后给顶栏加投影（提示上方仍有内容）。 */
@@ -637,9 +662,80 @@ function updateScrollShadow() {
 }
 
 elements.messages.addEventListener('scroll', () => {
+	const el = elements.messages
+	const gap = el.scrollHeight - el.scrollTop - el.clientHeight
+	// 只在滚到底部附近时重新贴底；脱离只由用户滚动意图触发（见下方输入监听）——
+	// 显隐切换 / 内容重建导致的 scrollTop 钳位或归零不是用户意图，不能据此脱离
+	const userScrolling = performance.now() - lastUserScrollAt < USER_SCROLL_GRACE_MS
+	if (gap < (userScrolling ? 8 : SCROLL_TOLERANCE)) pinned = true
 	updateBackToBottom()
 	updateScrollShadow()
 }, { passive: true })
+
+/**
+ * 用户滚动意图：立即脱离贴底（先于 scroll 事件生效，否则流式每帧的对齐会把滚动拽回去）。
+ * @returns {void}
+ */
+function releasePin() {
+	pinned = false
+	lastUserScrollAt = performance.now()
+	updateBackToBottom()
+}
+elements.messages.addEventListener('wheel', event => {
+	if (event.deltaY < 0) releasePin()
+}, { passive: true })
+elements.messages.addEventListener('keydown', event => {
+	if (['ArrowUp', 'PageUp', 'Home'].includes(event.key)) releasePin()
+})
+elements.messages.addEventListener('touchmove', releasePin, { passive: true })
+elements.messages.addEventListener('pointerdown', event => {
+	// 直接按在消息流自身上 = 拖滚动条
+	if (event.target === elements.messages) releasePin()
+})
+elements.messages.addEventListener('toggle', () => { lastUserToggleAt = performance.now() }, { capture: true })
+elements.messages.addEventListener('click', () => { lastUserToggleAt = performance.now() }, { capture: true })
+
+/**
+ * 贴底跟随：贴底状态下，消息流内任何内容变化（流式增量、markdown 异步落定、工具输出）
+ * 或消息流自身尺寸变化（composer 伸缩挤压）都在绘制前重新对齐到底部，不会先画出错位的一帧。
+ * 用 MutationObserver 而非只靠 ResizeObserver：气泡增高发生在 JS 里，MO 微任务先于绘制执行，
+ * RO 要等下一帧，快速流式时会稳定落后一帧。用户刚展开上方气泡时不拉走视线。
+ */
+function followIfPinned() {
+	if (!pinned) return
+	if (performance.now() - lastUserToggleAt < USER_TOGGLE_GRACE_MS) return
+	alignBottom()
+	if (store.generating) ensureFollowLoop()
+}
+
+/** 生成期间的逐帧贴底循环句柄。 */
+let followFrame = 0
+/**
+ * 生成期间每帧对齐一次：MutationObserver 在微任务里对齐，但 markdown 异步落定 / 字体换行可能让
+ * scrollHeight 在绘制前再次变化，逐帧兜底保证画面始终停在底部。
+ * @returns {void}
+ */
+function followTick() {
+	followFrame = 0
+	if (pinned && store.generating) {
+		alignBottom()
+		ensureFollowLoop()
+	}
+}
+/**
+ * 确保生成期间的逐帧贴底循环在跑。
+ * @returns {void}
+ */
+function ensureFollowLoop() {
+	followFrame ||= requestAnimationFrame(followTick)
+}
+const followObserver = new ResizeObserver(followIfPinned)
+followObserver.observe(elements.messages)
+new MutationObserver(followIfPinned).observe(elements.messages, {
+	childList: true,
+	subtree: true,
+	characterData: true,
+})
 
 /**
  * 空态布局开关：无条目且未在生成时 composer 垂直居中 + wordmark。
@@ -676,12 +772,12 @@ export function renderMessages() {
  */
 export function appendEntryBubble(entry) {
 	if (!isEntryVisible(entry)) return null
-	const wasNearBottom = nearBottom()
 	const bubble = renderEntryBubble(entry, { isLast: true })
 	elements.messages.insertBefore(bubble, backToBottom)
 	updateEmptyMode()
-	if (wasNearBottom) scrollMessagesBottom()
-	updateBackToBottom()
+	// 用户自己发出的消息总要看见：恢复贴底
+	if (entry.role === 'user') scrollMessagesBottom()
+	else updateBackToBottom()
 	updateRegenButtons()
 	updateRunCards()
 	return bubble
