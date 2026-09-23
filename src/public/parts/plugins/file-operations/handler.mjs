@@ -381,6 +381,9 @@ export const globReplyHandler = defineReplyHandler({
 				system_content += result.files.length
 					? renderMarkdownCodeBlock(result.files.join('\n'), { lang: 'text' }) + '\n'
 					: '（无匹配）\n'
+				const zeroHit = (result.patterns || []).filter(item => item.count === 0).map(item => item.pattern)
+				if (zeroHit.length)
+					system_content += `注意：以下模式 0 命中，可能写法有误——含 / 的模式相对起始目录解析（如应写 \`test/*.mjs\` 而非 \`src/scripts/test/*.mjs\`）：${zeroHit.join('、')}\n`
 				if (result.truncated)
 					system_content += '结果过多，请使用更精确的 glob 模式或更小的 path。\n'
 			}

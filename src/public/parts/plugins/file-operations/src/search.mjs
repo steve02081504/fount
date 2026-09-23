@@ -24,6 +24,7 @@
  * @property {boolean} truncated - 是否因超过 limit 而截断。
  * @property {number} total - 截断前的命中总数。
  * @property {string[]} [files] - glob 模式的文件列表。
+ * @property {Array<{pattern: string, count: number}>} [patterns] - glob 模式下每个模式各自的命中数（仅多个模式时返回，供零命中提示）。
  * @property {ripgrepMatch_t[]} [matches] - grep 模式的匹配行。
  * @property {string} [error] - 失败原因。
  */
@@ -72,11 +73,12 @@ export async function runRipgrep(params) {
 			: { code: 0, stdout: '', stderr: '' }
 		if (code > 1) return { ok: false, mode: 'glob', truncated: false, total: 0, error: stderr || `ripgrep exited with code ${code}` }
 		const fileMatches = filePatterns.map(glob => picomatch(glob, { basename: !glob.includes('/') }))
+		const dirMatches = dirPatterns.map(glob => picomatch(glob.slice(0, -1), { dot: false }))
 		const files = stdout.split('\n').map(line => line.trim()).filter(Boolean).map(toRelative)
 			.filter(file => !filePatterns.length || fileMatches.some(match => match(file)))
 		if (dirPatterns.length) {
 			const { default: fs } = await import('node:fs/promises')
-			const matches = dirPatterns.map(glob => picomatch(glob.slice(0, -1), { dot: false }))
+			const matches = dirMatches
 			const maxDepth = dirPatterns.some(glob => glob.includes('**'))
 				? Infinity
 				: Math.max(...dirPatterns.map(glob => glob.slice(0, -1).split('/').length))
@@ -126,7 +128,19 @@ export async function runRipgrep(params) {
 			await visit(root)
 		}
 		files.sort()
-		return { ok: true, mode: 'glob', truncated: files.length > limit, total: files.length, files: files.slice(0, limit) }
+		// 多模式时按模式分别统计命中，供上层对 0 命中的模式单独警示（含 / 的模式相对起始目录解析，易写错）。
+		const patternStats = patterns.length > 1 ? (() => {
+			const fileEntries = files.filter(file => !file.endsWith('/'))
+			const dirEntries = files.filter(file => file.endsWith('/')).map(file => file.slice(0, -1))
+			return [
+				...filePatterns.map((pattern, i) => ({ pattern, count: fileEntries.filter(file => fileMatches[i](file)).length })),
+				...dirPatterns.map((pattern, i) => ({ pattern, count: dirEntries.filter(dir => dirMatches[i](dir)).length })),
+			]
+		})() : undefined
+		return {
+			ok: true, mode: 'glob', truncated: files.length > limit, total: files.length,
+			files: files.slice(0, limit), ...patternStats ? { patterns: patternStats } : {},
+		}
 	}
 
 	const globArgs = []

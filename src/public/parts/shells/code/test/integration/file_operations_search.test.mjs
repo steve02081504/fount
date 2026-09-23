@@ -132,6 +132,49 @@ Deno.test('runRipgrep glob matches relative paths, unions patterns, and lists fi
 	}
 })
 
+Deno.test('runRipgrep glob reports per-pattern hit counts for multi-pattern searches', async () => {
+	const root = await tempDir()
+	try {
+		await seedWorkspace(root)
+		const result = await runRipgrep({ mode: 'glob', root, patterns: ['**/*.mjs', 'nope/*.mjs'], limit: 20 })
+		assertEquals(result.ok, true)
+		assertEquals(result.patterns, [
+			{ pattern: '**/*.mjs', count: 2 },
+			{ pattern: 'nope/*.mjs', count: 0 },
+		])
+	}
+	finally {
+		await fs.rm(root, { recursive: true, force: true })
+	}
+})
+
+Deno.test('runRipgrep glob keeps a single pattern free of per-pattern stats', async () => {
+	const root = await tempDir()
+	try {
+		await seedWorkspace(root)
+		const result = await runRipgrep({ mode: 'glob', root, patterns: ['**/*.mjs'], limit: 20 })
+		assertEquals(result.patterns, undefined)
+	}
+	finally {
+		await fs.rm(root, { recursive: true, force: true })
+	}
+})
+
+Deno.test('file-operations handler warns on glob patterns with zero hits', async () => {
+	const root = await tempDir()
+	try {
+		await seedWorkspace(root)
+		const run = createHandlerArgs(root)
+		assertEquals(await runFileOps('<glob path=".">**/*.mjs\nnope/*.mjs</glob>', run.args), true)
+		const content = run.logs.map(entry => entry.content).join('\n')
+		assert(content.includes('0 命中'), `glob output should warn zero-hit patterns: ${content}`)
+		assert(content.includes('nope/*.mjs'), `glob warning should name the pattern: ${content}`)
+	}
+	finally {
+		await fs.rm(root, { recursive: true, force: true })
+	}
+})
+
 Deno.test('runRipgrep glob truncates at limit', async () => {
 	const root = await tempDir()
 	try {
