@@ -6911,6 +6911,16 @@
 			"save": "Save",
 			"saved": "Saved."
 		},
+		"clear": {
+			"title": "Clear generation history",
+			"hint": "Delete all generation records in the selected scope. This cannot be undone.",
+			"label": "Clear",
+			"all": "Clear all generation records",
+			"confirmChar": "Clear all generation records for character “${name}”? This cannot be undone.",
+			"confirmAll": "Clear all generation records? This cannot be undone.",
+			"done": "Cleared ${count} generation record(s).",
+			"failed": "Clear failed: ${message}"
+		},
 		"settings": {
 			"title": "Settings",
 			"description": "Adjust generation record retention."

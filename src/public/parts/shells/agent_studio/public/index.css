@@ -730,6 +730,11 @@
 	line-height: 1.5;
 }
 
+.settings-danger {
+	margin-top: 1rem;
+	border-left: 0.2rem solid var(--border-color);
+}
+
 .retention-fields {
 	display: flex;
 	flex-wrap: wrap;

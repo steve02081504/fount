@@ -293,6 +293,22 @@ export async function recordGeneration(username, record) {
 }
 
 /**
+ * 判断记录摘要是否满足过滤条件（`limit` 不参与匹配）。
+ * @param {object} record 记录摘要
+ * @param {{ charId?: string, source?: string, conversationId?: string, chatId?: string, runId?: string, since?: number }} [filter] 过滤条件
+ * @returns {boolean} 是否匹配
+ */
+function matchesGenerationFilter(record, filter = {}) {
+	if (filter.charId && record.charId !== filter.charId) return false
+	if (filter.source && record.source !== filter.source) return false
+	if (filter.conversationId && record.conversationId !== filter.conversationId) return false
+	if (filter.chatId && record.chatId !== filter.chatId) return false
+	if (filter.runId && record.subAgent?.runId !== filter.runId) return false
+	if (filter.since && (record.startedAt || 0) < filter.since) return false
+	return true
+}
+
+/**
  * 列出生成记录摘要（按开始时间倒序）。
  * @param {string} username 用户
  * @param {{ charId?: string, source?: string, conversationId?: string, chatId?: string, runId?: string, since?: number, limit?: number }} [filter] 过滤条件
@@ -302,15 +318,38 @@ export async function listGenerations(username, filter = {}) {
 	ensureUser(username)
 	const index = loadIndex(username)
 	pruneGenerations(username, { index })
-	let records = index.records
-	if (filter.charId) records = records.filter(record => record.charId === filter.charId)
-	if (filter.source) records = records.filter(record => record.source === filter.source)
-	if (filter.conversationId) records = records.filter(record => record.conversationId === filter.conversationId)
-	if (filter.chatId) records = records.filter(record => record.chatId === filter.chatId)
-	if (filter.runId) records = records.filter(record => record.subAgent?.runId === filter.runId)
-	if (filter.since) records = records.filter(record => (record.startedAt || 0) >= filter.since)
+	let records = index.records.filter(record => matchesGenerationFilter(record, filter))
 	records = records.slice().sort((a, b) => (b.startedAt || 0) - (a.startedAt || 0))
 	return records.slice(0, filter.limit ?? 100)
+}
+
+/**
+ * 清空匹配的生成记录（删除索引项与记录文件）。不传过滤条件时清空该用户的全部生成记录。
+ * @param {string} username 用户
+ * @param {{ charId?: string, source?: string, conversationId?: string, chatId?: string, runId?: string, since?: number }} [filter] 过滤条件
+ * @returns {Promise<{ removed: number }>} 删除的记录数
+ */
+export async function clearGenerations(username, filter = {}) {
+	if (!username) throw new Error('username is required')
+	return enqueue(username, async () => {
+		ensureUser(username)
+		const index = loadIndex(username)
+		const kept = []
+		let removed = 0
+		for (const summary of index.records) {
+			if (!matchesGenerationFilter(summary, filter)) {
+				kept.push(summary)
+				continue
+			}
+			try { fs.rmSync(recordPath(username, summary.id), { force: true }) } catch { /* 忽略删除失败 */ }
+			removed++
+		}
+		if (removed) {
+			index.records = kept
+			saveIndex(username, index)
+		}
+		return { removed }
+	})
 }
 
 /**

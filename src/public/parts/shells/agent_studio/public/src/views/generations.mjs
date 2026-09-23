@@ -5,9 +5,10 @@
  * 【关联】endpoints.mjs、state.mjs、lib/generationDialog.mjs、index.html。
  */
 import { geti18n } from '/scripts/i18n/index.mjs'
+import { confirmAction } from '/scripts/features/promptDialog.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
 
-import { listChains, listConversations } from '../endpoints.mjs'
+import { clearGenerations, listChains, listConversations } from '../endpoints.mjs'
 import { fillCharOptions } from '../lib/charOptions.mjs'
 import { renderConversationItem } from '../lib/conversationItem.mjs'
 import { mountEmptyState } from '../lib/emptyState.mjs'
@@ -40,6 +41,27 @@ export function initGenerationsView() {
 		void reloadActiveTab()
 	})
 	document.getElementById('generationsRefreshButton')?.addEventListener('click', () => { void reloadActiveTab() })
+	document.getElementById('generationsClearButton')?.addEventListener('click', () => {
+		void clearCurrentScope().catch(error => showToastI18n('error', 'agent_studio.clear.failed', { message: error.message }))
+	})
+}
+
+/**
+ * 清空当前筛选范围内的生成记录（有角色筛选时只清该角色，否则清空全部）。
+ * @returns {Promise<void>}
+ */
+async function clearCurrentScope() {
+	const charId = charFilter
+	if (charId) {
+		const char = state.chars.find(candidate => candidate.id === charId)
+		const name = char?.info?.name || charId
+		if (!await confirmAction('agent_studio.clear.confirmChar', { name })) return
+	}
+	else if (!await confirmAction('agent_studio.clear.confirmAll')) return
+
+	const { removed } = await clearGenerations(charId ? { charId } : {})
+	await reloadActiveTab()
+	showToastI18n('success', 'agent_studio.clear.done', { count: removed })
 }
 
 /**

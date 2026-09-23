@@ -90,6 +90,19 @@ export function getGeneration(id) {
 }
 
 /**
+ * 清空匹配的生成记录；不传过滤条件时清空全部。
+ * @param {object} [filter] 过滤条件（如 `{ charId }`）
+ * @returns {Promise<{ removed: number }>} 删除的记录数
+ */
+export function clearGenerations(filter = {}) {
+	const params = new URLSearchParams()
+	for (const [key, value] of Object.entries(filter))
+		if (value !== undefined && value !== null && value !== '') params.set(key, String(value))
+	const query = params.toString()
+	return requestJson(`/generations${query ? '?' + query : ''}`, { method: 'DELETE' })
+}
+
+/**
  * 列出会话摘要。
  * @param {object} [filter] 过滤条件
  * @returns {Promise<object[]>} 会话摘要列表

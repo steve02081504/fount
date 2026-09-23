@@ -44,6 +44,10 @@ Agent Studio 经 shell 的 `ArgumentsHandler` 暴露 CLI，便于 agent dump 数
 - 查询：`charId`、`source`、`conversationId`、`chatId`、`runId`、`since`、`limit`
 - 用途：生成记录摘要列表（按开始时间倒序）。
 
+### DELETE /api/parts/shells:agent_studio/generations
+- 查询：同 `generations`（`limit` 不参与匹配）；不传过滤条件时清空该用户全部生成记录。
+- 用途：清空匹配的生成记录（删除索引项与记录文件），返回 `{ removed }`。用于清空某个角色（`charId`）或全部记录。
+
 ### GET /api/parts/shells:agent_studio/generation/:id
 - 用途：单条生成记录完整内容（含 `requests`/`dialogue`/`response`/`conversation`，受保留策略约束）。
 - 记录内的 `requests` 为该次生成逐轮 AI 请求快照 `{ index, startedAt, finishedAt, model, systemPrompt, messages }`：`systemPrompt` 为合并后的系统提示，`messages` 为可见聊天记录（含附加日志与摘要边界），每条消息带 `id`；`requestCount` 为采集轮次数。

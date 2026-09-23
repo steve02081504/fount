@@ -119,6 +119,10 @@
 						<button id="generationsRefreshButton" type="button" class="btn btn-ghost btn-sm btn-square" data-i18n="agent_studio.actions.refresh">
 							<span class="icon icon-refresh" aria-hidden="true"></span>
 						</button>
+						<button id="generationsClearButton" type="button" class="btn btn-error btn-outline btn-sm">
+							<span class="icon icon-delete" aria-hidden="true"></span>
+							<span data-i18n="agent_studio.clear.label"></span>
+						</button>
 					</div>
 				</header>
 				<div class="view-tabs tabs tabs-box tabs-sm" role="tablist">
@@ -257,6 +261,14 @@
 							</label>
 							<button id="retentionSave" type="button" class="btn btn-primary btn-sm" data-i18n="agent_studio.retention.save"></button>
 						</div>
+					</section>
+					<section class="settings-card surface settings-danger">
+						<h3 class="settings-card-title" data-i18n="agent_studio.clear.title"></h3>
+						<p class="settings-hint" data-i18n="agent_studio.clear.hint"></p>
+						<button id="clearAllGenerationsButton" type="button" class="btn btn-error btn-sm">
+							<span class="icon icon-delete" aria-hidden="true"></span>
+							<span data-i18n="agent_studio.clear.all"></span>
+						</button>
 					</section>
 				</div>
 			</section>

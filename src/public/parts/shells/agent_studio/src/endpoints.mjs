@@ -10,6 +10,7 @@ import { authenticate, getUserByReq } from '../../../../../server/auth/index.mjs
 
 import {
 	buildChains,
+	clearGenerations,
 	getConversation,
 	getGeneration,
 	getRetention,
@@ -90,6 +91,11 @@ export function setEndpoints(router) {
 	router.get(`${PREFIX}/generations`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		res.status(200).json(await listGenerations(username, generationFilter(req.query)))
+	})
+
+	router.delete(`${PREFIX}/generations`, authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		res.status(200).json(await clearGenerations(username, generationFilter(req.query)))
 	})
 
 	router.get(`${PREFIX}/conversations`, authenticate, async (req, res) => {

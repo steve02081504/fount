@@ -11,6 +11,7 @@ const ENDPOINT_EXPORTS = [
 	'getSubAgent',
 	'listGenerations',
 	'getGeneration',
+	'clearGenerations',
 	'listConversations',
 	'getConversation',
 	'listChains',

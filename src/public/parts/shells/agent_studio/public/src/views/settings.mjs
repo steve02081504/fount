@@ -4,9 +4,10 @@
  * 【原理】读取共享 `state.retention` 填充表单，保存时经 `/retention` 回写。
  * 【关联】endpoints.mjs、data.mjs、lib/format.mjs、index.html。
  */
+import { confirmAction } from '/scripts/features/promptDialog.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
 
-import { setRetention } from '../endpoints.mjs'
+import { clearGenerations, setRetention } from '../endpoints.mjs'
 import { daysToMs, msToDays } from '../lib/format.mjs'
 import { state } from '../state.mjs'
 
@@ -18,6 +19,19 @@ export function initSettingsView() {
 	document.getElementById('retentionSave')?.addEventListener('click', () => {
 		void saveRetention().catch(error => showToastI18n('error', 'agent_studio.alerts.saveFailed', { message: error.message }))
 	})
+	document.getElementById('clearAllGenerationsButton')?.addEventListener('click', () => {
+		void clearAllGenerations().catch(error => showToastI18n('error', 'agent_studio.clear.failed', { message: error.message }))
+	})
+}
+
+/**
+ * 清空全部角色的生成记录。
+ * @returns {Promise<void>}
+ */
+async function clearAllGenerations() {
+	if (!await confirmAction('agent_studio.clear.confirmAll')) return
+	const { removed } = await clearGenerations()
+	showToastI18n('success', 'agent_studio.clear.done', { count: removed })
 }
 
 /**
