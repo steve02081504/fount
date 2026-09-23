@@ -165,7 +165,7 @@ export async function runReplyHandlers(result, args, handlers) {
 	let stopped = false
 	let handledCount = 0
 	const originalContent = result.content
-	/** @type {Array<{ raw: string, displayText: string, inline: boolean }>} 已处理调用段的展示替换。 */
+	/** @type {Array<{ raw: string, start: number, source: string, displayText: string, inline: boolean }>} 已处理调用段的展示替换。 */
 	const handledSpans = []
 
 	for (const group of groups) {
@@ -227,7 +227,7 @@ export async function runReplyHandlers(result, args, handlers) {
 					const displayText = renderCallDisplay(handler, call, {
 						stage: 'final', open: false, value: call.value, error: call.error,
 					}, handlerArgs)
-					handledSpans.push({ raw: call.raw, displayText, inline: Boolean(handler.evaluate) && Boolean(displayText) })
+					handledSpans.push({ raw: call.raw, start: call.start, source: content, displayText, inline: Boolean(handler.evaluate) && Boolean(displayText) })
 					handledCount++
 					if (outcome.stop) batchStop = true
 				}
@@ -253,7 +253,7 @@ export async function runReplyHandlers(result, args, handlers) {
 			const displayText = renderCallDisplay(handler, call, {
 				stage: 'final', open: false, value: call.value, error: call.error,
 			}, handlerArgs)
-			handledSpans.push({ raw: call.raw, displayText, inline: Boolean(handler.evaluate) && Boolean(displayText) })
+			handledSpans.push({ raw: call.raw, start: call.start, source: content, displayText, inline: Boolean(handler.evaluate) && Boolean(displayText) })
 
 			if (outcome.stop) { stopped = true; break }
 			if (result.content !== beforeContent) { content = result.content ?? ''; cursor = 0 }
@@ -270,8 +270,19 @@ export async function runReplyHandlers(result, args, handlers) {
 	const contentReplaced = result.content !== originalContent
 	if (handledSpans.length || contentReplaced) {
 		let show = contentReplaced ? result.content ?? '' : result.content_for_show ?? result.content ?? ''
-		for (const span of handledSpans)
-			show = show.replace(span.raw, (raw, index) => padBlockRendered(show, index, index + raw.length, span.displayText))
+		// 完整正文仍在 show 中时，按解析得到的原文偏移从右往左替换；
+		// 推理前缀可能也引用同一段标签，不能用 String.replace 的首次命中。
+		const bodyStart = contentReplaced ? -1 : show.lastIndexOf(originalContent ?? '')
+		const spans = bodyStart < 0 ? handledSpans : [...handledSpans].reverse()
+		for (const span of spans) {
+			const anchored = span.source === originalContent ? bodyStart + span.start : -1
+			const index = bodyStart >= 0 && anchored >= bodyStart && show.slice(anchored, anchored + span.raw.length) === span.raw
+				? anchored : show.indexOf(span.raw)
+			if (index < 0) continue
+			show = show.slice(0, index)
+				+ padBlockRendered(show, index, index + span.raw.length, span.displayText)
+				+ show.slice(index + span.raw.length)
+		}
 		result.content_for_show = show
 	}
 

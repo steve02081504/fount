@@ -241,6 +241,56 @@ Deno.test('管线：互相声明兼容的不同工具可并发执行', async () 
 	assertEquals(probe.max, 2, '互相兼容的不同工具应并发')
 })
 
+Deno.test('管线：三段相邻并行调用只替换正文中的原文，不误替推理前缀', async () => {
+	const calls = [
+		'<glob path="docs/design">**/*.md</glob>',
+		'<view-file>\ndocs/AGENTS.md\n</view-file>',
+		'<grep include="*.mjs" path="src/server">\nsaveShellData\n</grep>',
+	]
+	const prefix = `<details>引用原始调用：${calls[0]}</details>\n\n`
+	const content = `先并行测文件工具。\n\n${calls.join('\n\n')}`
+	const result = makeResult(content)
+	result.content_for_show = prefix + content
+	const seen = []
+	/**
+	 * 构造固定展示文本。
+	 * @param {string} tag 标签名
+	 * @returns {Function} 展示函数
+	 */
+	const displayFor = tag => () => `[${tag}]`
+	await runReplyHandlers(result, makeArgs(), ['glob', 'view-file', 'grep'].map(tag =>
+		defineReplyHandler({ tag, parallel: true, display: displayFor(tag), handle: recordingHandle(tag, seen, false) })
+	))
+	assertEquals(seen.map(item => item.split(':')[0]), ['glob', 'view-file', 'grep'])
+	assertEquals(result.content_for_show, prefix + '先并行测文件工具。\n\n[glob]\n\n[view-file]\n\n[grep]')
+	for (const raw of calls) assertEquals(result.content_for_show.slice(prefix.length).includes(raw), false)
+})
+
+Deno.test('管线：三个相邻并行工具调用的最终展示没有任何原始标签', async () => {
+	const content = '<glob path="docs/design">**/*.md</glob>\n<view-file>\ndocs/AGENTS.md\n</view-file>\n<grep include="*.mjs" path="src/server">\nsaveShellData\n</grep>'
+	const result = makeResult(content)
+	result.content_for_show = `<details>推理过程</details>\n${content}`
+	await runReplyHandlers(result, makeArgs(), ['glob', 'view-file', 'grep'].map(tag =>
+		defineReplyHandler({ tag, parallel: true, display: emptyDisplay, handle: noopHandle })
+	))
+	for (const tag of ['glob', 'view-file', 'grep'])
+		assertEquals(result.content_for_show.includes(`<${tag}`), false)
+})
+
+Deno.test('管线：串行重复调用按原文顺序替换，推理前缀不参与匹配', async () => {
+	const raw = '<p>same</p>'
+	const prefix = `<details>${raw}</details>\n`
+	const result = makeResult(`${raw} ${raw}`)
+	result.content_for_show = prefix + result.content
+	let displayCount = 0
+	/** @returns {string} 按调用顺序生成展示文本 */
+	const nextDisplay = () => `result-${++displayCount}`
+	await runReplyHandlers(result, makeArgs(), [
+		defineReplyHandler({ tag: 'p', display: nextDisplay, handle: noopHandle }),
+	])
+	assertEquals(result.content_for_show, `${prefix}result-1 result-2`)
+})
+
 Deno.test('管线：内容型 handler 先于同组标签执行，stop 短路且不 regen', async () => {
 	const result = makeResult('<a>1</a>')
 	const order = []
