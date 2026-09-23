@@ -74,6 +74,7 @@ export async function replyViaChat(username, charPartName, char, messageEvent) {
 			fount_themes: false,
 		},
 		chat_name: 'social:post',
+		chat_id: 'social:post:' + (messageEvent.post?.id ?? crypto.randomUUID()),
 		char_id: charPartName,
 		username,
 		Charname: charInfo.name || charPartName,

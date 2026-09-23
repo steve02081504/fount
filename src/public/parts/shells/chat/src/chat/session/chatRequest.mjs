@@ -198,6 +198,8 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 			fount_themes: true,
 		},
 		chat_name: 'common_chat_' + groupId,
+		// 稳定且按频道唯一的会话标识：Agent Studio 据此归组与复原对话
+		chat_id: `common_chat_${groupId}::${effectiveChannelId}`,
 		char_id: charname,
 		username: replicaUsername,
 		UserCharname,

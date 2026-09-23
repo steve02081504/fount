@@ -189,6 +189,11 @@ export class chatReplyRequest_t {
 		fount_themes: boolean
 	}
 	chat_name: string
+	/**
+	 * 稳定且频道唯一的会话标识，由请求构造方（shell）负责保证：
+	 * 用于 Agent Studio 把生成记录归入同一对话并按消息 id 复原。未提供时主动记录 API 只告警、不记录。
+	 */
+	chat_id?: string
 	char_id: string
 	username: string
 	Charname: string

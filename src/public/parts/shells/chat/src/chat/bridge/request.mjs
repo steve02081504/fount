@@ -57,6 +57,7 @@ export async function buildVirtualBridgeChatRequest(username, groupId, channelId
 			fount_themes: true,
 		},
 		chat_name: session.name || groupId,
+		chat_id: `bridge_${groupId}::${channelId}`,
 		char_id: charname,
 		username,
 		Charname: charInfo.name || charname,

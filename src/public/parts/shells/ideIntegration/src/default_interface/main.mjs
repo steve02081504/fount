@@ -109,6 +109,7 @@ export async function createDefaultIDEInterface(charAPI, username, charname) {
 				add_message: false,
 			},
 			chat_name: 'ide-integration-' + Date.now(),
+			chat_id: 'ide-integration-' + (sessionId || crypto.randomUUID()),
 			char_id: charname,
 			username,
 			Charname,

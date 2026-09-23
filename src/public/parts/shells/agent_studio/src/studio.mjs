@@ -14,10 +14,9 @@ import { getAllCachedPartDetails, getPartDetails, getPartList, loadAnyPreferredD
 import { loadShellData, saveShellData } from '../../../../../server/setting_loader.mjs'
 import { getRun as getLiveRun, listBatches as listLiveBatches, listRuns as listLiveRuns } from '../../../plugins/sub-agent/state.mjs'
 import { BUILTIN_PERSONA, BUILTIN_WORLD } from '../../chat/src/chat/session/builtinParts.mjs'
-import { createPromptRequestRecorder } from '../../chat/src/prompt_struct/snapshot.mjs'
 
 import { buildJudgePrompt, computeStats, normalizeBenchmark, parseJudgeResponse } from './benchmark.mjs'
-import { getGeneration, listGenerations, recordGeneration } from './generation_history.mjs'
+import { getGeneration, listGenerations } from './generation_history.mjs'
 
 /** shell data 命名空间。 */
 const SHELL_NAME = 'agent_studio'
@@ -366,30 +365,13 @@ export async function runBenchmark(username, benchmarkId, config = {}) {
  * @returns {Promise<object>} 结果条目
  */
 async function runBenchmarkCase({ username, benchmark, caseItem, char, charInfo, run, aiSource, judgeSource }) {
-	const request = buildBenchmarkRequest({ username, charId: run.charId, benchmark, caseItem, char, charInfo, run, aiSource })
-	const promptRecorder = createPromptRequestRecorder()
-	/**
-	 * 每轮 AI 调用前的 prompt 快照回调。
-	 * @param {object} prompt 提示结构
-	 * @returns {void}
-	 */
-	const onPromptRequest = prompt => { promptRecorder.record(prompt, { model: aiSource?.filename }) }
-	request.generation_options = { onPromptRequest }
+	const generationId = crypto.randomUUID()
+	const request = buildBenchmarkRequest({ username, charId: run.charId, benchmark, caseItem, char, charInfo, run, aiSource, generationId })
+	// 生成记录由角色模板主动调用 Agent Studio API 写入；此处只负责触发并关联结果
 	const reply = await char.interfaces.chat.GetReply(request)
 	const response = String(reply?.content ?? '')
-	const generation = await recordGeneration(username, {
-		charId: run.charId,
-		charname: charInfo.name,
-		conversationId: 'benchmark:' + run.id,
-		source: BENCHMARK_SOURCE,
-		input: request.chat_log,
-		requests: promptRecorder.requests,
-		requestCount: promptRecorder.requests.length,
-		response,
-		metadata: { benchmarkId: benchmark.id, caseId: caseItem.id, runId: run.id },
-	})
 	/** @type {{ caseId: string, generationId: string, response: string, judge?: object }} */
-	const result = { caseId: caseItem.id, generationId: generation.id, response }
+	const result = { caseId: caseItem.id, generationId, response }
 	if (judgeSource && (caseItem.criteria || caseItem.expected !== undefined))
 		result.judge = await judgeBenchmarkCase({ judgeSource, caseItem, response })
 	return result
@@ -438,9 +420,10 @@ async function judgeBenchmarkCase({ judgeSource, caseItem, response }) {
  * @param {object} params.charInfo 本地化角色信息
  * @param {object} params.run 运行
  * @param {object} [params.aiSource] 请求级 AI 源实例
+ * @param {string} [params.generationId] 预分配的生成 id（供基准结果关联；实际记录由角色主动写入）
  * @returns {chatReplyRequest_t} 请求
  */
-export function buildBenchmarkRequest({ username, charId, benchmark, caseItem, char, charInfo, run, aiSource }) {
+export function buildBenchmarkRequest({ username, charId, benchmark, caseItem, char, charInfo, run, aiSource, generationId }) {
 	const now = new Date()
 	const entry = {
 		name: username,
@@ -465,6 +448,7 @@ export function buildBenchmarkRequest({ username, charId, benchmark, caseItem, c
 	return {
 		supported_functions,
 		chat_name: 'agent_studio:benchmark:' + run.id,
+		chat_id: 'benchmark:' + run.id,
 		char_id: charId,
 		username,
 		Charname: charInfo.name || charId,
@@ -482,7 +466,14 @@ export function buildBenchmarkRequest({ username, charId, benchmark, caseItem, c
 		timelines: [entry],
 		chat_summary: '',
 		chat_scoped_char_memory: {},
-		extension: { agent_studio: { benchmarkId: benchmark.id, runId: run.id } },
+		extension: {
+			agent_studio: { benchmarkId: benchmark.id, runId: run.id },
+			...generationId ? { generationId } : {},
+			agentStudio: {
+				source: BENCHMARK_SOURCE,
+				metadata: { benchmarkId: benchmark.id, caseId: caseItem.id, runId: run.id },
+			},
+		},
 		ai_source: aiSource,
 		/** @returns {Promise<null>} 基准请求不追加消息 */
 		AddChatLogEntry: async () => null,

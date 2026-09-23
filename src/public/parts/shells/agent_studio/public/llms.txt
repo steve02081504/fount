@@ -45,15 +45,18 @@ Agent Studio 经 shell 的 `ArgumentsHandler` 暴露 CLI，便于 agent dump 数
 - 用途：生成记录摘要列表（按开始时间倒序）。
 
 ### GET /api/parts/shells:agent_studio/generation/:id
-- 用途：单条生成记录完整内容（含 `requests`/`response`/`conversation`，受保留策略约束）。
-- 记录内的 `requests` 为该次生成逐轮 AI 请求快照 `{ index, startedAt, finishedAt, model, systemPrompt, messages }`：`systemPrompt` 为合并后的系统提示，`messages` 为可见聊天记录（含附加日志与摘要边界）；`requestCount` 为采集轮次数。`promptMs` 超期后 `requests` 被清除并置 `requestsStripped`。旧格式记录的 `input` 仅为请求 `chat_log` 快照，非完整 prompt。
+- 用途：单条生成记录完整内容（含 `requests`/`dialogue`/`response`/`conversation`，受保留策略约束）。
+- 记录内的 `requests` 为该次生成逐轮 AI 请求快照 `{ index, startedAt, finishedAt, model, systemPrompt, messages }`：`systemPrompt` 为合并后的系统提示，`messages` 为可见聊天记录（含附加日志与摘要边界），每条消息带 `id`；`requestCount` 为采集轮次数。
+- `dialogue` 为按消息 `id` 从 `requests` 复原的对话事件流 `{ rounds, events }`：首次出现的消息记 `insert`，同一 id 内容变化记 `update`（编辑）并保留其发生轮次，可在客户端按轮次复播；末轮角色回复作为最后一条事件。`dialogue` 独立于请求保留期，跟随整条记录（`conversationMs`）存活。
+- `promptMs` 超期后 `requests` 被清除并置 `requestsStripped`（`dialogue` 仍在）。旧格式记录的 `input` 仅为请求 `chat_log` 快照，非完整 prompt。
 
 ### GET /api/parts/shells:agent_studio/conversations
 - 查询：`charId`、`source`、`since`、`limit`
 - 用途：会话摘要列表（按最近活动倒序）。会话键优先 `conversationId`，其次 `chatId`，都缺失时以记录自身 id 独立成组。每项含 `key`、`generationCount`、`errorCount`、`requestCount`、`startedAt`、`finishedAt`、`charname`、`lastModel`。
 
 ### GET /api/parts/shells:agent_studio/conversation/:key
-- 用途：一个会话的全部现存生成记录（按开始时间升序）`{ key, generations }`；无匹配时 404。`key` 为 `/conversations` 返回的会话键（URL 编码）。
+- 用途：一个会话的全部现存生成记录（按开始时间升序）`{ key, generations, dialogue }`；无匹配时 404。`key` 为 `/conversations` 返回的会话键（URL 编码）。
+- `dialogue` 为把各生成的对话事件按开始顺序、轮次顺延合并后的连续对话 `{ rounds, events, messages }`；同 id 消息不重复，编辑按轮次替换。
 
 ### GET /api/parts/shells:agent_studio/chains
 - 查询：同 `generations`

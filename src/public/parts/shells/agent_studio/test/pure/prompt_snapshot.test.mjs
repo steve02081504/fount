@@ -2,7 +2,7 @@
 /**
  * prompt snapshot 纯函数测试：JSON 收敛、请求投影与轮次采集。
  */
-import { assertEquals } from 'jsr:@std/assert'
+import { assert, assertEquals } from 'jsr:@std/assert'
 
 import { createPromptRequestRecorder, recordPromptRequest, sanitizeForJson } from '../../../chat/src/prompt_struct/snapshot.mjs'
 
@@ -59,7 +59,13 @@ Deno.test('createPromptRequestRecorder projects system prompt, messages and roun
 	assertEquals(request.model, 'demo-model')
 	assertEquals(typeof request.systemPrompt, 'string')
 	assertEquals(request.systemPrompt.includes('you are demo'), true)
-	assertEquals(request.messages, [{ role: 'user', name: 'alice', uid: 'user', content: 'hi' }])
+	assertEquals(request.messages.length, 1)
+	assertEquals(typeof request.messages[0].id, 'string')
+	assert(request.messages[0].id.length > 0)
+	assertEquals(
+		{ ...request.messages[0], id: undefined },
+		{ id: undefined, role: 'user', name: 'alice', uid: 'user', content: 'hi' },
+	)
 	assertEquals(typeof request.finishedAt, 'number')
 
 	recorder.record(makePromptStruct())

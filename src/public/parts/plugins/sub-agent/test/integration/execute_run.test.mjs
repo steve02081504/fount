@@ -128,6 +128,10 @@ function createDeps(aiSource, plugin) {
 		 */
 		buildPromptStruct: async args => ({
 			char_prompt: { text: [], additional_chat_log: [], extension: {} },
+			user_prompt: { text: [], additional_chat_log: [], extension: {} },
+			world_prompt: { text: [], additional_chat_log: [], extension: {} },
+			other_chars_prompts: {},
+			other_personas_prompts: {},
 			chat_log: args.chat_log,
 			plugin_prompts: {},
 			timelines: [],

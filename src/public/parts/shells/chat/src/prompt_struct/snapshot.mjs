@@ -55,7 +55,7 @@ function clampText(value) {
 /**
  * 把 prompt_struct 投影为请求快照：系统提示 + 可见聊天记录。
  * @param {prompt_struct_t} prompt 提示结构
- * @returns {{ systemPrompt: string, messages: Array<{ role: string, name: string, uid: string, content: string }> }} 投影
+ * @returns {{ systemPrompt: string, messages: Array<{ id: string, role: string, name: string, uid: string, content: string }> }} 投影
  */
 export function projectPromptStruct(prompt) {
 	let systemPrompt = ''
@@ -72,12 +72,17 @@ export function projectPromptStruct(prompt) {
 	catch (error) {
 		console.warn('snapshot: 聊天记录投影失败', error)
 	}
-	const messages = entries.map(entry => ({
-		role: entry.role ?? 'system',
-		name: entry.name ?? '',
-		uid: entry.uid ?? '',
-		content: clampText(entry.content),
-	}))
+	const messages = entries.map(entry => {
+		// 对传入的实际消息对象补齐稳定 id：Agent Studio 依赖消息 id 在不同轮次间定位同一消息以复原对话。
+		entry.id ??= crypto.randomUUID()
+		return {
+			id: entry.id,
+			role: entry.role ?? 'system',
+			name: entry.name ?? '',
+			uid: entry.uid ?? '',
+			content: clampText(entry.content),
+		}
+	})
 	return { systemPrompt: clampText(systemPrompt), messages }
 }
 

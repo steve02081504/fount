@@ -19,7 +19,6 @@ import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { getPartDetails } from '../../../../../../../server/parts_loader.mjs'
 import { ensureChatExtension } from '../../../public/shared/messageFields.mjs'
 import { ensureLocalAgentEntityHash, memberEntityHash } from '../../entity/member.mjs'
-import { createPromptRequestRecorder } from '../../prompt_struct/snapshot.mjs'
 import {
 	appendDagGeneratingPlaceholder,
 	cancelGeneratingPlaceholder,
@@ -210,50 +209,6 @@ export async function executeGeneration(groupId, request, stream, placeholderEnt
 	const pendingStreamId = placeholderEntry.extension?.chat?.eventId || entryId
 	const channelForStream = getChannelForCharStream(chatMetadata, placeholderEntry)
 	const generationId = crypto.randomUUID()
-	const generationStartedAt = Date.now()
-	// 逐轮请求快照：char 模板在每个 StructCall 前经 generation_options.onPromptRequest 回调采集
-	const promptRecorder = createPromptRequestRecorder()
-	/**
-	 * 每轮 AI 调用前的 prompt 快照回调。
-	 * @param {object} prompt 提示结构
-	 * @returns {void}
-	 */
-	const onPromptRequest = prompt => { promptRecorder.record(prompt, { model: request.ai_source?.filename }) }
-
-	/**
-	 * 记录本次生成到 Agent Studio 生成历史（尽力而为，失败不影响主流程）。
-	 * @param {object} [payload] 额外记录字段
-	 * @returns {Promise<void>}
-	 */
-	const recordGenerationHistory = async payload => {
-		try {
-			const { recordGeneration } = await import('../../../../agent_studio/src/generation_history.mjs')
-			await recordGeneration(chatMetadata.username, {
-				id: generationId,
-				charId: request.char_id,
-				charname: request.Charname || placeholderEntry.name,
-				chatId: groupId,
-				conversationId: channelForStream,
-				source: 'shells/chat',
-				startedAt: generationStartedAt,
-				finishedAt: Date.now(),
-				model: request.ai_source?.filename,
-				input: (request.chat_log || []).map(entry => ({
-					name: entry.name,
-					uid: entry.uid,
-					role: entry.role,
-					content: entry.content,
-					time_stamp: entry.time_stamp,
-				})),
-				requests: promptRecorder.requests,
-				requestCount: promptRecorder.requests.length,
-				...payload,
-			})
-		}
-		catch (error) {
-			console.warn('recordGeneration failed:', error)
-		}
-	}
 
 	/**
 		 * 结束流：DAG `message_edit` 终稿（§6.4；无 `stream_end`）。
@@ -304,7 +259,6 @@ export async function executeGeneration(groupId, request, stream, placeholderEnt
 			replyPreviewUpdater: previewStream.update,
 			signal: stream.signal,
 			supported_functions: request.supported_functions,
-			onPromptRequest,
 		}
 
 		let typingTimer = null
@@ -367,7 +321,6 @@ export async function executeGeneration(groupId, request, stream, placeholderEnt
 		)
 
 		const savedEntry = await finalizeEntry(finalEntry, false)
-		await recordGenerationHistory({ response: finalEntry.content })
 		const replyFrequency = await getCharReplyFrequency(groupId)
 		const savedChannelId = savedEntry.extension?.chat?.channelId || null
 		await handleAutoReply(groupId, savedChannelId, replyFrequency, savedEntry.extension.timeSlice.charname ?? null)
@@ -377,7 +330,6 @@ export async function executeGeneration(groupId, request, stream, placeholderEnt
 			placeholderEntry.is_generating = false
 			ensureChatExtension(placeholderEntry).aborted = true
 			await finalizeEntry(placeholderEntry, false)
-			await recordGenerationHistory({ response: placeholderEntry.content, metadata: { aborted: true } })
 		}
 		else {
 			const handled = await dispatchCharError(request.char, error, {
@@ -391,19 +343,11 @@ export async function executeGeneration(groupId, request, stream, placeholderEnt
 				placeholderEntry.is_generating = false
 				const logIndex = chatMetadata.chatLog.findIndex(entry => entry.id === entryId)
 				if (logIndex !== -1) await deleteMessage(groupId, logIndex)
-				await recordGenerationHistory({
-					error: { name: error?.name, message: error?.message },
-					metadata: { handled: true },
-				})
 				return
 			}
 			stream.abort(error?.message)
 			placeholderEntry.content = `\`\`\`\nError:\n${formatGenerationError(error)}\n\`\`\``
 			await finalizeEntry(placeholderEntry, true)
-			await recordGenerationHistory({
-				response: placeholderEntry.content,
-				error: { name: error?.name, message: error?.message },
-			})
 		}
 	}
 	finally {

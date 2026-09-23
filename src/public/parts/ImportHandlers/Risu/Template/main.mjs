@@ -5,6 +5,7 @@ import { regex_placement } from 'fount/public/parts/ImportHandlers/SillyTavern/e
 import { evaluateMacros } from 'fount/public/parts/ImportHandlers/SillyTavern/engine/marco.mjs'
 import { promptBuilder } from 'fount/public/parts/ImportHandlers/SillyTavern/engine/prompt_builder.mjs'
 import { runRegex } from 'fount/public/parts/ImportHandlers/SillyTavern/engine/regex.mjs'
+import { beginPromptRequest, finishGeneration, finishPromptRequest } from 'fount/public/parts/shells/agent_studio/src/request_record.mjs'
 import { needsCompression, compressContext } from 'fount/public/parts/shells/chat/src/chat/session/summarize.mjs'
 import { buildPromptStruct } from 'fount/public/parts/shells/chat/src/prompt_struct/index.mjs'
 import { runReplyHandlers } from 'fount/public/parts/shells/chat/src/reply/handlerPipeline.mjs'
@@ -354,32 +355,46 @@ const charAPI_definition = {
 				const handlers = [
 					...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)
 				].filter(Boolean)
-				// 在重新生成循环中检查插件触发
-				regen: while (true) {
-					args.generation_options.base_result = result
-					args.generation_options.onPromptRequest?.(prompt_struct)
-					await AIsource.StructCall(prompt_struct, args.generation_options)
-					// 达到 72.9% 上下文阈值时压缩历史后重新生成
-					if (needsCompression(args, { prompt_struct }) &&
-						await compressContext({ args, aiSource: AIsource, prompt_struct, result })) {
-						await injectRoundEntries(args, prompt_struct)
-						continue regen
+				try {
+					// 在重新生成循环中检查插件触发
+					regen: while (true) {
+						args.generation_options.base_result = result
+						// 主动记录本轮 prompt：由角色自己调用 Agent Studio API，不依赖 shell 注入回调
+						const promptRequest = beginPromptRequest(args, prompt_struct, { model: AIsource?.filename })
+						try {
+							await AIsource.StructCall(prompt_struct, args.generation_options)
+						}
+						finally {
+							finishPromptRequest(promptRequest)
+						}
+						// 达到 72.9% 上下文阈值时压缩历史后重新生成
+						if (needsCompression(args, { prompt_struct }) &&
+							await compressContext({ args, aiSource: AIsource, prompt_struct, result })) {
+							await injectRoundEntries(args, prompt_struct)
+							continue regen
+						}
+						if (await runReplyHandlers(result, { ...args, prompt_struct, AddLongTimeLog }, handlers)) {
+							await injectRoundEntries(args, prompt_struct)
+							continue regen
+						}
+						break
 					}
-					if (await runReplyHandlers(result, { ...args, prompt_struct, AddLongTimeLog }, handlers)) {
-						await injectRoundEntries(args, prompt_struct)
-						continue regen
-					}
-					break
+				}
+				catch (error) {
+					await finishGeneration(args, { error: { name: error?.name, message: error?.message } })
+					throw error
 				}
 
 				result.content = parseMacro(result.content)
 
-				return {
+				const finalReply = {
 					content: runRegex(chardata, result.content, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.markdownOnly && !e.promptOnly),
 					content_for_show: formatRisuOutput(runRegex(chardata, result.content, e => e.placement.includes(regex_placement.AI_OUTPUT) && !e.promptOnly)),
 					files: result.files,
 					extension: result.extension,
 				}
+				await finishGeneration(args, { response: finalReply.content })
+				return finalReply
 			},
 			/**
 			 * 新消息到达时，决定是否主动发言（OnMessage）

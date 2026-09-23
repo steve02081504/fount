@@ -12,6 +12,7 @@ import { loadJsonFileIfExists, saveJsonFile } from '../../../../../scripts/json_
 import { ms } from '../../../../../scripts/ms.mjs'
 import { getUserDictionary } from '../../../../../server/auth/index.mjs'
 import { events } from '../../../../../server/events.mjs'
+import { replayDialogue } from '../public/shared/dialogueReplay.mjs'
 import { conversationKey, summarizeConversations } from '../public/shared/generationChain.mjs'
 
 /**
@@ -40,6 +41,7 @@ export const DEFAULT_RETENTION = {
  * @property {any} [input] 请求 chat_log 快照（非组装后 prompt；旧格式兼容字段）
  * @property {object[]} [requests] 逐轮 AI 请求快照 `{ index, startedAt, finishedAt, model, systemPrompt, messages }`
  * @property {number} [requestCount] 采集到的轮次数（requests 被 TTL 清除后仍保留）
+ * @property {{ rounds: number, events: object[] }} [dialogue] 由逐轮请求复原的对话事件流（独立于 requests，保留至整条记录 TTL）
  * @property {any} [response]
  * @property {object[]} [conversation] 内部完整对话（子代理运行时；供 Agent Studio 内部对话页）
  * @property {string} [model]
@@ -271,6 +273,7 @@ export async function recordGeneration(username, record) {
 		input: record.input,
 		requests: record.requests,
 		requestCount: record.requestCount ?? record.requests?.length ?? 0,
+		dialogue: record.dialogue,
 		response: record.response,
 		conversation: record.conversation,
 		model: record.model,
@@ -393,5 +396,30 @@ export async function getConversation(username, key) {
 		if (record) generations.push(record)
 	}
 	if (!generations.length) return null
-	return { key, generations }
+	return { key, generations, dialogue: mergeConversationDialogue(generations) }
+}
+
+/**
+ * 把一次会话内各生成的复原对话合并为一条连续对话（同 id 消息不重复，编辑按轮次替换）。
+ * 各生成的轮次依次顺延：把每个生成的事件轮次整体平移后合并复播。
+ * @param {object[]} generations 生成记录（按开始时间升序）
+ * @returns {{ rounds: number, events: object[], messages: object[] }} 合并后的对话
+ */
+function mergeConversationDialogue(generations) {
+	const events = []
+	let offset = 0
+	let rounds = 0
+	for (const generation of generations) {
+		const dialogue = generation.dialogue
+		if (!dialogue?.events?.length) continue
+		let span = 0
+		for (const event of dialogue.events) {
+			const round = (event.round ?? 0) + offset
+			events.push({ ...event, round })
+			span = Math.max(span, event.round ?? 0)
+		}
+		offset += span
+		rounds = Math.max(rounds, offset)
+	}
+	return { rounds, events, messages: replayDialogue(events) }
 }

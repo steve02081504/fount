@@ -93,6 +93,8 @@ export async function runEasyChar(options) {
 
 	const stub = makePromptStub()
 	const requestBase = {
+		username,
+		chat_id: 'easynew-test-' + charName,
 		char_id: charName,
 		Charname: charName,
 		UserCharname: 'Tester',

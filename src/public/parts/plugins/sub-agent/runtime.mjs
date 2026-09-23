@@ -7,8 +7,8 @@
  * 【数据结构】run_t 见 state.mjs；deps = { loadPart, loadAnyPreferredDefaultPart, listAiSources, recordGeneration, notifyRun, buildPromptStruct, runReplyHandlers, archive, now, config }。
  * 【关联】handler.mjs 解析标签后调用 `runSubAgent` / `terminateSubAgentRun` / `listAvailableAiSources`；prompt.mjs 注入预算；archive.mjs 管理父代档案；state.mjs 保存注册表。
  */
+import { beginPromptRequest, collectGenerationRecord, finishPromptRequest } from '../../shells/agent_studio/src/request_record.mjs'
 import { buildPromptStruct } from '../../shells/chat/src/prompt_struct/index.mjs'
-import { createPromptRequestRecorder } from '../../shells/chat/src/prompt_struct/snapshot.mjs'
 import { runReplyHandlers } from '../../shells/chat/src/reply/handlerPipeline.mjs'
 import { ownerFromArgs, registerTask } from '../async-task/registry.mjs'
 
@@ -312,6 +312,8 @@ function buildChildArgs(run) {
 	const parentArgs = run.parentArgs
 	const childArgs = {
 		...parentArgs,
+		// 子代理是独立会话：自己的 chat_id 与生成 id，父代生成 id 仅作 parentId 回链
+		chat_id: 'subagent:' + run.runId,
 		chat_log: run.conversation,
 		timelines: [],
 		chat_summary: '',
@@ -320,7 +322,22 @@ function buildChildArgs(run) {
 		plugins: run.plugins,
 		ai_source: run.aiSource,
 		generation_options: {},
-		extension: { ...parentArgs.extension, subAgent: run.subAgent },
+		extension: {
+			...parentArgs.extension,
+			generationId: run.runId,
+			subAgent: run.subAgent,
+			agentStudio: {
+				source: 'plugins/sub-agent',
+				parentId: run.parentGenerationId,
+				subAgent: {
+					runId: run.runId,
+					parentRunId: run.parentRunId,
+					batchId: run.batchId,
+					backgroundId: run.backgroundId,
+				},
+				metadata: { task: run.task },
+			},
+		},
 		/**
 		 * 把条目写入子代理自己的对话。
 		 * @param {object} entry 回复条目
@@ -443,27 +460,10 @@ async function summarizeRun(run, deps, reason) {
  */
 async function recordRunGeneration(run, deps) {
 	try {
-		await deps.recordGeneration(run.username, {
-			charId: run.charId,
-			charname: run.parentArgs?.Charname,
-			chatId: run.chat_name,
-			conversationId: 'subagent:' + run.runId,
-			source: 'plugins/sub-agent',
-			parentId: run.parentGenerationId,
-			subAgent: {
-				runId: run.runId,
-				parentRunId: run.parentRunId,
-				batchId: run.batchId,
-				backgroundId: run.backgroundId,
-			},
-			startedAt: run.startedAt,
-			finishedAt: run.finishedAt,
-			model: run.aiSource?.filename,
-			input: run.parentArgs?.chat_log?.slice(-run.archiveTail),
-			conversation: serializeConversation(run.conversation),
-			requests: run.promptRequests,
-			requestCount: run.promptRequests?.length ?? 0,
+		const record = collectGenerationRecord(run.childArgs, {
 			response: run.finalText,
+			finishedAt: run.finishedAt,
+			error: run.error,
 			metadata: {
 				status: run.state,
 				rounds: run.rounds,
@@ -472,6 +472,10 @@ async function recordRunGeneration(run, deps) {
 				terminated: run.terminateRequested,
 			},
 		})
+		if (!record) return
+		// 运行内部对话（含开场与工具结果）另存，供 subagent 深链展示
+		record.conversation = serializeConversation(run.conversation)
+		await deps.recordGeneration(run.username, record)
 	}
 	catch (error) {
 		console.warn('sub-agent: 记录生成失败', error)
@@ -501,9 +505,7 @@ export async function executeSubAgentRun(run, deps = defaultSubAgentDeps) {
 	const batch = run.batchId ? getBatch(run.batchId) : undefined
 	run.conversation.push(...buildOpeningEntries(run, batch))
 	const childArgs = buildChildArgs(run)
-	// 逐轮请求快照：每轮 StructCall 前采集完整 prompt，供 Agent Studio 展示
-	const promptRecorder = createPromptRequestRecorder()
-	run.promptRequests = promptRecorder.requests
+	run.childArgs = childArgs
 
 	let summarized = false
 	try {
@@ -528,12 +530,6 @@ export async function executeSubAgentRun(run, deps = defaultSubAgentDeps) {
 		const generationOptions = {
 			signal: run.controller.signal,
 			supported_functions: childArgs.supported_functions,
-			/**
-			 * 每轮 AI 调用前的 prompt 快照回调。
-			 * @param {object} prompt 提示结构
-			 * @returns {void}
-			 */
-			onPromptRequest: prompt => { promptRecorder.record(prompt, { model: run.aiSource?.filename }) },
 		}
 		childArgs.generation_options = generationOptions
 		run.timer = setTimeout(() => {
@@ -548,7 +544,14 @@ export async function executeSubAgentRun(run, deps = defaultSubAgentDeps) {
 				break
 			}
 			generationOptions.base_result = result
-			await run.aiSource.StructCall(promptStruct, generationOptions)
+			// 主动记录本轮 prompt（sub-agent 不经过 char 模板，由运行时直接调用 Agent Studio API）
+			const promptRequest = beginPromptRequest(childArgs, promptStruct, { model: run.aiSource?.filename })
+			try {
+				await run.aiSource.StructCall(promptStruct, generationOptions)
+			}
+			finally {
+				finishPromptRequest(promptRequest)
+			}
 			propagateRoundsToAncestors(run, getRun)
 			emitRunStatus(run, deps)
 			if (run.terminateRequested) {

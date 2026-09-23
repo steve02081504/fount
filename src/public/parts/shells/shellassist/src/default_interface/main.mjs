@@ -121,6 +121,7 @@ ${args.screen}
 				add_message: false,
 			},
 			chat_name: 'shell-assist-' + new Date().getTime(),
+			chat_id: 'shell-assist-' + crypto.randomUUID(),
 			char_id: char_name,
 			Charname,
 			CharUid: 'char',

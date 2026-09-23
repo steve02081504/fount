@@ -7,6 +7,7 @@
 import { geti18n, geti18n_nowarn, primaryLocale } from '/scripts/i18n/index.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
 
+import { dialogueRounds, replayDialogue } from '../../shared/dialogueReplay.mjs'
 import { getConversation } from '../endpoints.mjs'
 import { formatTime } from '../lib/format.mjs'
 import { requestNavigate } from '../lib/navigationEvents.mjs'
@@ -118,6 +119,10 @@ function renderGeneration(generation) {
 	head.appendChild(meta)
 	article.appendChild(head)
 
+	// 由逐轮请求复原的连续对话（可按轮次复播，编辑随轮次推进呈现）
+	if (generation.dialogue?.events?.length)
+		article.appendChild(buildDialogueSection(generation.dialogue))
+
 	article.appendChild(buildSection(geti18n('agent_studio.conversation.response'), generation.response ?? ''))
 
 	const requestsSection = document.createElement('section')
@@ -195,6 +200,70 @@ function renderRequest(request) {
 		round.appendChild(list)
 	}
 	return round
+}
+
+/**
+ * 构建复原对话段落：含轮次选择器与按轮次复播的消息列表。
+ * @param {{ rounds: number, events: object[] }} dialogue 对话
+ * @returns {HTMLElement} 段落
+ */
+function buildDialogueSection(dialogue) {
+	const section = document.createElement('section')
+	section.className = 'conversation-dialogue'
+	const heading = document.createElement('h4')
+	heading.className = 'dialog-section-title'
+	heading.textContent = geti18n('agent_studio.conversation.replay')
+	section.appendChild(heading)
+
+	const row = document.createElement('label')
+	row.className = 'conversation-request-head'
+	row.textContent = geti18n('agent_studio.conversation.replayUpto') + ' '
+	const select = document.createElement('select')
+	select.className = 'select select-sm'
+	const all = document.createElement('option')
+	all.value = '0'
+	all.textContent = geti18n('agent_studio.conversation.replayAll')
+	select.appendChild(all)
+	for (const round of dialogueRounds(dialogue.events)) {
+		const option = document.createElement('option')
+		option.value = String(round)
+		option.textContent = geti18n('agent_studio.conversation.roundIndex', { index: round })
+		select.appendChild(option)
+	}
+	row.appendChild(select)
+	section.appendChild(row)
+
+	const list = document.createElement('div')
+	list.className = 'conversation-messages'
+	list.replaceChildren(...renderMessages(replayDialogue(dialogue.events)))
+	section.appendChild(list)
+	select.addEventListener('change', () => {
+		const upToRound = Number(select.value) || 0
+		list.replaceChildren(...renderMessages(replayDialogue(dialogue.events, { upToRound: upToRound > 0 ? upToRound : undefined })))
+	})
+	return section
+}
+
+/**
+ * 渲染一组消息行。
+ * @param {object[]} messages 消息
+ * @returns {HTMLElement[]} 行元素
+ */
+function renderMessages(messages) {
+	return (messages || []).map(message => {
+		const row = document.createElement('div')
+		row.className = `conversation-message role-${message.role || 'system'}`
+		const name = document.createElement('span')
+		name.className = 'conversation-message-name'
+		const key = ROLE_LABEL_KEYS[message.role]
+		name.textContent = message.name || (key && geti18n_nowarn(key)) || message.role || ''
+		const body = document.createElement('pre')
+		body.className = 'conversation-message-body'
+		body.setAttribute('prompt-content', '')
+		body.textContent = message.content ?? ''
+		row.append(name, body)
+		return row
+	})
 }
 
 /**

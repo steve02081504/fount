@@ -95,6 +95,8 @@ export async function importAndRunChar(options) {
 
 	const promptStub = makePromptStub()
 	const requestBase = {
+		username,
+		chat_id: 'import-test-' + charName,
 		char_id: charName,
 		Charname: charName,
 		UserCharname: 'Tester',

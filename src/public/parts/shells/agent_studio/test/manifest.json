@@ -16,6 +16,8 @@
 			"src/public/parts/plugins/sub-agent/state.mjs",
 			"src/public/parts/shells/chat/src/chat/session/builtinParts.mjs",
 			"src/public/parts/shells/chat/src/prompt_struct/**",
+			"src/public/parts/shells/easynew/parts/easychar/template/**",
+			"src/public/parts/ImportHandlers/*/Template/**",
 			"src/server/parts_loader.mjs",
 			"src/server/setting_loader.mjs"
 		],
