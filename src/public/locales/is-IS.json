@@ -1,10 +1,4 @@
 {
-	"404": {
-		"title": "Síða fannst ekki",
-		"description": "Leiðin sem þú leitaðir hefur leyst upp í þoku. Var það mistök, gleymd beygja? Leyfðu okkur að leiðbeina þér aftur að landi, eða kannski staldra við í leik í rólegu tóminu.",
-		"pageNotFoundText": "Úps! Svo virðist sem þú hafir lent á síðu sem er ekki til.",
-		"homepageButton": "Aftur á forsíðu"
-	},
 	"lang": "is-IS",
 	"name": "Íslenska",
 	"tips": {
@@ -6116,6 +6110,12 @@
 		},
 		"copy_error": "Gat ekki afritað texta: ${error}",
 		"copy_fail_alert": "Afritun mistókst!"
+	},
+	"404": {
+		"title": "Síða fannst ekki",
+		"description": "Leiðin sem þú leitaðir hefur leyst upp í þoku. Var það mistök, gleymd beygja? Leyfðu okkur að leiðbeina þér aftur að landi, eða kannski staldra við í leik í rólegu tóminu.",
+		"pageNotFoundText": "Úps! Svo virðist sem þú hafir lent á síðu sem er ekki til.",
+		"homepageButton": "Aftur á forsíðu"
 	},
 	"directoryListing": {
 		"title": "Skráayfirlit",

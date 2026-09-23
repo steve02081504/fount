@@ -1,10 +1,4 @@
 {
-	"404": {
-		"title": "🤷‍♂️📄",
-		"description": "🌫️❓🤷‍♂️🎮",
-		"pageNotFoundText": "😢 ➡️ 🤷‍♂️📄",
-		"homepageButton": "➡️🏠"
-	},
 	"lang": "emoji",
 	"name": "🤓",
 	"tips": {
@@ -6116,6 +6110,12 @@
 		},
 		"copy_error": "📋❌: ${error}",
 		"copy_fail_alert": "📋❌❗️"
+	},
+	"404": {
+		"title": "🤷‍♂️📄",
+		"description": "🌫️❓🤷‍♂️🎮",
+		"pageNotFoundText": "😢 ➡️ 🤷‍♂️📄",
+		"homepageButton": "➡️🏠"
 	},
 	"directoryListing": {
 		"title": "📂📇",

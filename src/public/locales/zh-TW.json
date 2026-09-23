@@ -1,10 +1,4 @@
 {
-	"404": {
-		"title": "頁面未找到",
-		"description": "你所尋找的道路已消散在迷霧之中。這是一個錯誤，一個被遺忘的轉彎嗎？讓我們帶您回到岸邊，或者在安靜的虛空中停下來玩一場遊戲。",
-		"pageNotFoundText": "糟糕！您似乎來到了一個不存在的頁面。",
-		"homepageButton": "返回首頁"
-	},
 	"lang": "zh-TW",
 	"name": "繁體中文",
 	"tips": {
@@ -6115,6 +6109,12 @@
 		},
 		"copy_error": "無法複製文字: ${error}",
 		"copy_fail_alert": "複製失敗！"
+	},
+	"404": {
+		"title": "頁面未找到",
+		"description": "你所尋找的道路已消散在迷霧之中。這是一個錯誤，一個被遺忘的轉彎嗎？讓我們帶您回到岸邊，或者在安靜的虛空中停下來玩一場遊戲。",
+		"pageNotFoundText": "糟糕！您似乎來到了一個不存在的頁面。",
+		"homepageButton": "返回首頁"
 	},
 	"directoryListing": {
 		"title": "目錄索引",

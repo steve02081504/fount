@@ -1,10 +1,4 @@
 {
-	"404": {
-		"title": "Seite nicht gefunden",
-		"description": "Der Weg, den Sie gesucht haben, hat sich in Nebel aufgelöst. War es ein Fehltritt, eine vergessene Wendung? Erlauben Sie uns, Sie zurück ans Ufer zu begleiten, oder machen Sie vielleicht eine Pause für ein Spiel inmitten der stillen Leere.",
-		"pageNotFoundText": "Hoppla! Sie scheinen auf einer Seite gelandet zu sein, die nicht existiert.",
-		"homepageButton": "Zur Startseite zurückkehren"
-	},
 	"lang": "de-DE",
 	"name": "Deutsch",
 	"tips": {
@@ -6116,6 +6110,12 @@
 		},
 		"copy_error": "Text konnte nicht kopiert werden: ${error}",
 		"copy_fail_alert": "Kopieren fehlgeschlagen!"
+	},
+	"404": {
+		"title": "Seite nicht gefunden",
+		"description": "Der Weg, den Sie gesucht haben, hat sich in Nebel aufgelöst. War es ein Fehltritt, eine vergessene Wendung? Erlauben Sie uns, Sie zurück ans Ufer zu begleiten, oder machen Sie vielleicht eine Pause für ein Spiel inmitten der stillen Leere.",
+		"pageNotFoundText": "Hoppla! Sie scheinen auf einer Seite gelandet zu sein, die nicht existiert.",
+		"homepageButton": "Zur Startseite zurückkehren"
 	},
 	"directoryListing": {
 		"title": "Verzeichnisindex",

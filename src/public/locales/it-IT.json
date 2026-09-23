@@ -1,10 +1,4 @@
 {
-	"404": {
-		"title": "Pagina non trovata",
-		"description": "Il percorso che cercavi si è dissolto nella nebbia. È stato un passo falso, una svolta dimenticata? Permettici di riportarti a riva o, magari, di fermarti per un gioco nel vuoto silenzioso.",
-		"pageNotFoundText": "Ops! Sembra che tu sia finito in una pagina inesistente.",
-		"homepageButton": "Torna alla Homepage"
-	},
 	"lang": "it-IT",
 	"name": "Italiano",
 	"tips": {
@@ -6122,6 +6116,12 @@
 		},
 		"copy_error": "Impossibile copiare il testo: ${error}",
 		"copy_fail_alert": "Copia fallita!"
+	},
+	"404": {
+		"title": "Pagina non trovata",
+		"description": "Il percorso che cercavi si è dissolto nella nebbia. È stato un passo falso, una svolta dimenticata? Permettici di riportarti a riva o, magari, di fermarti per un gioco nel vuoto silenzioso.",
+		"pageNotFoundText": "Ops! Sembra che tu sia finito in una pagina inesistente.",
+		"homepageButton": "Torna alla Homepage"
 	},
 	"directoryListing": {
 		"title": "Indice della directory",

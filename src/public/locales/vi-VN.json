@@ -1,10 +1,4 @@
 {
-	"404": {
-		"title": "Không tìm thấy trang",
-		"description": "Con đường bạn tìm kiếm đã tan thành sương mù. Đó có phải là một bước đi sai lầm, một ngã rẽ bị lãng quên? Hãy để chúng tôi hướng dẫn bạn quay trở lại bờ, hoặc có lẽ, tạm dừng một trò chơi giữa khoảng trống yên tĩnh.",
-		"pageNotFoundText": "Ối! Có vẻ như bạn đã truy cập vào một trang không tồn tại.",
-		"homepageButton": "Quay lại trang chủ"
-	},
 	"lang": "vi-VN",
 	"name": "Tiếng Việt",
 	"tips": {
@@ -6116,6 +6110,12 @@
 		},
 		"copy_error": "Không thể sao chép văn bản: ${error}",
 		"copy_fail_alert": "Sao chép không thành công!"
+	},
+	"404": {
+		"title": "Không tìm thấy trang",
+		"description": "Con đường bạn tìm kiếm đã tan thành sương mù. Đó có phải là một bước đi sai lầm, một ngã rẽ bị lãng quên? Hãy để chúng tôi hướng dẫn bạn quay trở lại bờ, hoặc có lẽ, tạm dừng một trò chơi giữa khoảng trống yên tĩnh.",
+		"pageNotFoundText": "Ối! Có vẻ như bạn đã truy cập vào một trang không tồn tại.",
+		"homepageButton": "Quay lại trang chủ"
 	},
 	"directoryListing": {
 		"title": "chỉ mục thư mục",

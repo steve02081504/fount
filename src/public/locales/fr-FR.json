@@ -1,10 +1,4 @@
 {
-	"404": {
-		"title": "Page non trouvée",
-		"description": "Le chemin que vous cherchiez s'est dissous dans la brume. Était-ce un faux pas, un virage oublié ? Laissez-nous vous guider vers le rivage, ou peut-être faites une pause pour jouer dans le vide tranquille.",
-		"pageNotFoundText": "Oups ! Il semble que vous soyez arrivé sur une page qui n'existe pas.",
-		"homepageButton": "Retour à la page d'accueil"
-	},
 	"lang": "fr-FR",
 	"name": "Français",
 	"tips": {
@@ -6122,6 +6116,12 @@
 		},
 		"copy_error": "Impossible de copier le texte : ${error}",
 		"copy_fail_alert": "La copie a échoué !"
+	},
+	"404": {
+		"title": "Page non trouvée",
+		"description": "Le chemin que vous cherchiez s'est dissous dans la brume. Était-ce un faux pas, un virage oublié ? Laissez-nous vous guider vers le rivage, ou peut-être faites une pause pour jouer dans le vide tranquille.",
+		"pageNotFoundText": "Oups ! Il semble que vous soyez arrivé sur une page qui n'existe pas.",
+		"homepageButton": "Retour à la page d'accueil"
 	},
 	"directoryListing": {
 		"title": "Index du répertoire",

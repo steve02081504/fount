@@ -1,10 +1,4 @@
 {
-	"404": {
-		"title": "蹤跡難尋",
-		"description": "君所尋之跡，已沒於迷霧之中。差之毫釐，謬以千里。容吾引君歸返本陣；亦或留步此太虛幻境，自得其樂。",
-		"pageNotFoundText": "嗚呼！君誤入無何有之鄉矣。",
-		"homepageButton": "歸去來兮"
-	},
 	"lang": "lzh",
 	"name": "文言",
 	"tips": {
@@ -6116,6 +6110,12 @@
 		},
 		"copy_error": "謄錄有失: ${error}",
 		"copy_fail_alert": "謄錄未遂！"
+	},
+	"404": {
+		"title": "蹤跡難尋",
+		"description": "君所尋之跡，已沒於迷霧之中。差之毫釐，謬以千里。容吾引君歸返本陣；亦或留步此太虛幻境，自得其樂。",
+		"pageNotFoundText": "嗚呼！君誤入無何有之鄉矣。",
+		"homepageButton": "歸去來兮"
 	},
 	"directoryListing": {
 		"title": "目錄",

@@ -1,10 +1,4 @@
 {
-	"404": {
-		"title": "Página no encontrada",
-		"description": "El camino que buscabas se ha disuelto en la niebla. ¿Fue un paso en falso, un giro olvidado? Permítanos guiarlo de regreso a la costa, o tal vez haga una pausa para jugar en medio del tranquilo vacío.",
-		"pageNotFoundText": "¡Vaya! Parece que has llegado a una página que no existe.",
-		"homepageButton": "Volver a la página de inicio"
-	},
 	"lang": "es-ES",
 	"name": "Español",
 	"tips": {
@@ -6122,6 +6116,12 @@
 		},
 		"copy_error": "Error al copiar el texto: ${error}",
 		"copy_fail_alert": "¡Error al copiar!"
+	},
+	"404": {
+		"title": "Página no encontrada",
+		"description": "El camino que buscabas se ha disuelto en la niebla. ¿Fue un paso en falso, un giro olvidado? Permítanos guiarlo de regreso a la costa, o tal vez haga una pausa para jugar en medio del tranquilo vacío.",
+		"pageNotFoundText": "¡Vaya! Parece que has llegado a una página que no existe.",
+		"homepageButton": "Volver a la página de inicio"
 	},
 	"directoryListing": {
 		"title": "Índice del directorio",

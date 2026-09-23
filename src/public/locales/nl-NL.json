@@ -1,10 +1,4 @@
 {
-	"404": {
-		"title": "Pagina niet gevonden",
-		"description": "Het pad dat je zocht is opgelost in mist. Was het een misstap, een vergeten afslag? Sta ons toe u terug naar de kust te begeleiden, of misschien even te pauzeren voor een spelletje te midden van de stille leegte.",
-		"pageNotFoundText": "Oeps! Het lijkt erop dat je op een pagina bent beland die niet bestaat.",
-		"homepageButton": "Terug naar startpagina"
-	},
 	"lang": "nl-NL",
 	"name": "Nederlands",
 	"tips": {
@@ -6122,6 +6116,12 @@
 		},
 		"copy_error": "Kan tekst niet kopiëren: ${error}",
 		"copy_fail_alert": "Kopiëren mislukt!"
+	},
+	"404": {
+		"title": "Pagina niet gevonden",
+		"description": "Het pad dat je zocht is opgelost in mist. Was het een misstap, een vergeten afslag? Sta ons toe u terug naar de kust te begeleiden, of misschien even te pauzeren voor een spelletje te midden van de stille leegte.",
+		"pageNotFoundText": "Oeps! Het lijkt erop dat je op een pagina bent beland die niet bestaat.",
+		"homepageButton": "Terug naar startpagina"
 	},
 	"directoryListing": {
 		"title": "directory-index",
