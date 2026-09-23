@@ -439,6 +439,22 @@
 	display: flex;
 	flex-direction: column;
 	gap: 0.35rem;
+	width: 100%;
+	text-align: left;
+	cursor: pointer;
+	color: var(--text);
+}
+
+.run-item:hover {
+	background: var(--surface-hover);
+}
+
+.run-task {
+	min-width: 0;
+	font-size: 0.9rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .run-item-head {
@@ -837,10 +853,33 @@
 }
 
 /* Sub-agent conversation */
-.subagent-view {
+.subagent-composer {
 	display: flex;
 	flex-direction: column;
-	gap: 0.9rem;
+	align-items: flex-end;
+	gap: 0.5rem;
+	margin-top: 1rem;
+}
+
+.subagent-composer textarea {
+	width: 100%;
+}
+
+.message-view-toggle {
+	float: right;
+}
+
+.message-view-body {
+	clear: both;
+	min-width: 0;
+	word-break: break-word;
+}
+
+.message-view-plain {
+	white-space: pre-wrap;
+	word-break: break-word;
+	font-family: var(--font-code);
+	font-size: 0.78rem;
 }
 
 .subagent-conversation {
@@ -939,6 +978,40 @@
 	display: flex;
 	flex-direction: column;
 	gap: 0.9rem;
+}
+
+.conversation-replay {
+	padding: 0.8rem;
+}
+
+.conversation-replay input[type="range"] {
+	width: 100%;
+}
+
+.conversation-timeline {
+	display: flex;
+	justify-content: space-around;
+	gap: 0.2rem;
+}
+
+.conversation-timeline-node {
+	border: var(--border) solid var(--border-color);
+	border-radius: var(--radius-selector);
+	background: var(--surface-sunken);
+	color: var(--text);
+	min-width: 1.5rem;
+	cursor: pointer;
+}
+
+.conversation-timeline-node.active {
+	background: var(--color-primary);
+	color: var(--color-primary-content);
+}
+
+.conversation-cache-chart {
+	display: block;
+	width: 100%;
+	height: 5rem;
 }
 
 .conversation-generations {

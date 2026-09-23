@@ -1,7 +1,8 @@
-<li class="run-item surface">
+<button type="button" class="run-item surface">
 	<div class="run-item-head">
-		<span class="run-id" user-content>${escapeHtml(runId)}</span>
+		<strong class="run-task" user-content>${escapeHtml(task)}</strong>
 		<span class="badge ${badgeClass}">${escapeHtml(state)}</span>
 	</div>
+	<span class="run-id" user-content>${escapeHtml(runId)}</span>
 	<p class="run-detail" prompt-content>${escapeHtml(detail)}</p>
-</li>
+</button>

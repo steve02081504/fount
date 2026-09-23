@@ -6897,7 +6897,9 @@
 			"results": "结果",
 			"noResults": "暂无结果。",
 			"notJudged": "未评分",
-			"stats": "共 ${total} 条 · 空回复 ${empty} · 平均长度 ${avgLength} · 已评分 ${judged} · 平均分 ${avgScore}"
+			"stats": "共 ${total} 条 · 空回复 ${empty} · 平均长度 ${avgLength} · 已评分 ${judged} · 平均分 ${avgScore}",
+			"import": "导入 JSON",
+			"export": "导出 JSON"
 		},
 		"retention": {
 			"title": "记录保留策略",
@@ -6942,7 +6944,11 @@
 			"back": "返回生成记录",
 			"task": "任务",
 			"conversation": "内部对话",
-			"empty": "（暂无对话内容）"
+			"empty": "（暂无对话内容）",
+			"messagePlaceholder": {
+				"placeholder": "向运行中的子代理追加消息…"
+			},
+			"send": "发送"
 		},
 		"conversation": {
 			"title": "会话详情",
@@ -6967,7 +6973,22 @@
 				"user": "用户",
 				"char": "角色",
 				"tool": "工具"
-			}
+			},
+			"plainView": "纯文字",
+			"markdownView": "Markdown",
+			"switchView": "切换 Markdown / 纯文字",
+			"cacheSummary": "Prompt 前缀复用估算 ${rate}%（字符口径）",
+			"cacheMissing": "Prompt 前缀复用率暂无数据",
+			"cacheRate": "缓存率 ≈${rate}%",
+			"cacheNoRate": "缓存率 —",
+			"cacheHint": "与上一轮请求比较的 prompt 公共前缀估算（字符口径，非计费 token）",
+			"replayProgress": {
+				"aria-label": "会话回放进度"
+			},
+			"cacheChart": {
+				"aria-label": "每次生成的 prompt 前缀复用率折线图"
+			},
+			"programRate": "程序通过率 ${rate}%"
 		}
 	}
 }

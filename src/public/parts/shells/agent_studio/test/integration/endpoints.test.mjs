@@ -4,7 +4,8 @@
  */
 import { assertEquals } from 'jsr:@std/assert'
 
-import { buildBenchmarkRequest, summarizeSubAgentRuns } from '../../src/studio.mjs'
+import { createRun, resetSubAgentState } from '../../../../plugins/sub-agent/state.mjs'
+import { buildBenchmarkRequest, sendSubAgentMessage, summarizeSubAgentRuns } from '../../src/studio.mjs'
 
 const PREFIX = '/api/parts/shells\\:agent_studio'
 
@@ -35,6 +36,7 @@ Deno.test('setEndpoints registers the full agent_studio REST surface', async () 
 		`GET ${PREFIX}/char/:id/overview`,
 		`GET ${PREFIX}/subagents`,
 		`GET ${PREFIX}/subagent/:runId`,
+		`POST ${PREFIX}/subagent/:runId/messages`,
 		`GET ${PREFIX}/generations`,
 		`DELETE ${PREFIX}/generations`,
 		`GET ${PREFIX}/generation/:id`,
@@ -77,6 +79,29 @@ Deno.test('summarizeSubAgentRuns merges history, live state and batches', () => 
 	assertEquals(r2.live.state, 'running')
 	assertEquals(r2.generationIds, ['g3'])
 	assertEquals(batches, [{ batchId: 'b1', commonContext: 'ctx', runIds: ['r1'] }])
+})
+
+Deno.test('sub-agent message endpoint only appends to the owned active run', async () => {
+	const entries = []
+	createRun({ runId: 'send-run', username: 'alice', state: 'running', childArgs: {
+		UserUid: 'user',
+		/**
+		 * 保存消息的替身。
+		 * @param {object} entry 消息
+		 * @returns {Promise<object>} 已保存的消息
+		 */
+		AddChatLogEntry: async entry => { entries.push(entry); return entry },
+	} })
+	try {
+		await sendSubAgentMessage('alice', 'send-run', 'hello')
+		assertEquals(entries[0].role, 'user')
+		assertEquals(entries[0].content, 'hello')
+		let denied = false
+		try { await sendSubAgentMessage('bob', 'send-run', 'hello') }
+		catch { denied = true }
+		assertEquals(denied, true)
+	}
+	finally { resetSubAgentState() }
 })
 
 Deno.test('buildBenchmarkRequest keeps the operator as User* and puts the case in chat_log', () => {

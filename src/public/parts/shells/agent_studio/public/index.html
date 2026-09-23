@@ -95,7 +95,7 @@
 								<div id="subAgentEmpty" class="section-empty hidden"></div>
 							</section>
 							<section class="detail-section">
-								<h4 class="section-heading" data-i18n="agent_studio.detail.generations"></h4>
+								<h4 class="section-heading" data-i18n="agent_studio.generations.conversations"></h4>
 								<div id="generationList" class="generation-list"></div>
 								<div id="generationEmpty" class="section-empty hidden"></div>
 							</section>
@@ -147,6 +147,8 @@
 						<p class="view-subtitle" data-i18n="agent_studio.benchmarks.description"></p>
 					</div>
 					<div class="view-header-actions">
+						<label class="btn btn-outline btn-sm" for="importBenchmarkFile" data-i18n="agent_studio.benchmarks.import"></label>
+						<input id="importBenchmarkFile" class="sr-only" type="file" accept=".json,.txt,application/json,text/plain" />
 						<button id="newBenchmarkButton" type="button" class="btn btn-primary btn-sm" data-i18n="agent_studio.benchmarks.new"></button>
 					</div>
 				</header>
@@ -159,6 +161,7 @@
 						<div id="benchmarkDetail" class="hidden">
 							<header class="editor-head">
 								<h3 id="benchmarkTitle" class="editor-title" user-content></h3>
+								<button id="exportBenchmarkButton" type="button" class="btn btn-outline btn-sm" data-i18n="agent_studio.benchmarks.export"></button>
 								<button id="deleteBenchmarkButton" type="button" class="btn btn-ghost btn-sm btn-error btn-square" data-i18n="agent_studio.benchmarks.delete">
 									<span class="icon icon-delete" aria-hidden="true"></span>
 								</button>
@@ -194,32 +197,6 @@
 				</div>
 			</section>
 
-			<section id="subagentView" class="view hidden">
-				<header class="view-header">
-					<div class="view-header-text">
-						<h2 class="view-title" data-i18n="agent_studio.subagent.title"></h2>
-						<p class="view-subtitle" data-i18n="agent_studio.subagent.description"></p>
-					</div>
-					<div class="view-header-actions">
-						<button id="subagentBackButton" type="button" class="btn btn-ghost btn-sm" data-i18n="agent_studio.subagent.back"></button>
-					</div>
-				</header>
-				<div class="subagent-view">
-					<div id="subagentMeta" class="meta-chips"></div>
-					<section class="dialog-section">
-						<h3 class="dialog-section-title" data-i18n="agent_studio.subagent.task"></h3>
-						<pre id="subagentTask" class="code-block" prompt-content></pre>
-					</section>
-					<section class="dialog-section">
-						<h3 class="dialog-section-title" data-i18n="agent_studio.subagent.conversation"></h3>
-						<div id="subagentConversation" class="subagent-conversation"></div>
-						<div id="subagentConversationEmpty" class="section-empty hidden">
-							<p data-i18n="agent_studio.subagent.empty"></p>
-						</div>
-					</section>
-				</div>
-			</section>
-
 			<section id="conversationView" class="view hidden">
 				<header class="view-header">
 					<div class="view-header-text">
@@ -232,6 +209,26 @@
 				</header>
 				<div class="conversation-view">
 					<div id="conversationMeta" class="meta-chips"></div>
+					<div id="conversationReplay" class="conversation-replay surface">
+						<p id="conversationCacheSummary" class="stats-line" user-content></p>
+						<div id="conversationTimeline" class="conversation-timeline"></div>
+						<input id="conversationReplaySlider" type="range" min="0" max="0" value="0" data-i18n="agent_studio.conversation.replayProgress" aria-label="" />
+						<canvas id="conversationCacheChart" class="conversation-cache-chart" role="img" data-i18n="agent_studio.conversation.cacheChart" aria-label=""></canvas>
+						<span id="conversationReplaySelection" class="meta-chip"></span>
+					</div>
+					<div id="conversationSubagent" class="hidden">
+						<section class="dialog-section">
+							<h3 class="dialog-section-title" data-i18n="agent_studio.subagent.task"></h3>
+							<pre id="subagentConversationTask" class="code-block" prompt-content></pre>
+						</section>
+						<div id="subagentTranscript" class="subagent-conversation"></div>
+						<pre id="subagentLivePreview" class="code-block hidden" prompt-content></pre>
+						<form id="subagentMessageForm" class="subagent-composer hidden">
+							<textarea id="subagentMessageInput" class="textarea textarea-bordered" rows="3" maxlength="20000" required data-i18n="agent_studio.subagent.messagePlaceholder" placeholder=""></textarea>
+							<button class="btn btn-primary btn-sm" type="submit" data-i18n="agent_studio.subagent.send"></button>
+						</form>
+					</div>
+					<div id="conversationTranscript" class="conversation-messages"></div>
 					<div id="conversationGenerations" class="conversation-generations"></div>
 					<div id="conversationEmpty" class="section-empty hidden">
 						<p data-i18n="agent_studio.conversation.empty"></p>

@@ -68,6 +68,18 @@ export function getSubAgent(runId) {
 }
 
 /**
+ * 向活跃子代理追加用户消息。
+ * @param {string} runId 运行 id
+ * @param {string} content 消息
+ * @returns {Promise<object>} 条目
+ */
+export function sendSubAgentMessage(runId, content) {
+	return requestJson(`/subagent/${encodeURIComponent(runId)}/messages`, {
+		method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content }),
+	})
+}
+
+/**
  * 列出生成记录。
  * @param {object} [filter] 过滤条件
  * @returns {Promise<object[]>} 记录摘要

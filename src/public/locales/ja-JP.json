@@ -6897,7 +6897,9 @@
 			"results": "結果",
 			"noResults": "結果がありません。",
 			"notJudged": "未採点",
-			"stats": "全 ${total} 件 · 空応答 ${empty} · 平均文字数 ${avgLength} · 採点済み ${judged} · 平均スコア ${avgScore}"
+			"stats": "全 ${total} 件 · 空応答 ${empty} · 平均文字数 ${avgLength} · 採点済み ${judged} · 平均スコア ${avgScore}",
+			"import": "JSON をインポート",
+			"export": "JSON をエクスポート"
 		},
 		"retention": {
 			"title": "記録の保持ポリシー",
@@ -6942,7 +6944,11 @@
 			"back": "生成記録に戻る",
 			"task": "タスク",
 			"conversation": "内部会話",
-			"empty": "（会話がありません）"
+			"empty": "（会話がありません）",
+			"send": "送信",
+			"messagePlaceholder": {
+				"placeholder": "実行中のサブエージェントにメッセージを追加…"
+			}
 		},
 		"conversation": {
 			"title": "会話の詳細",
@@ -6967,7 +6973,22 @@
 				"user": "ユーザー",
 				"char": "キャラクター",
 				"tool": "ツール"
-			}
+			},
+			"plainView": "プレーンテキスト",
+			"markdownView": "Markdown",
+			"switchView": "Markdown / テキストを切り替え",
+			"cacheSummary": "プロンプトの共通接頭辞（推定）${rate}%（文字数）",
+			"cacheMissing": "プロンプト再利用率のデータなし",
+			"cacheRate": "キャッシュ率 ≈${rate}%",
+			"cacheNoRate": "キャッシュ率 —",
+			"cacheHint": "前のリクエストとのプロンプト共通接頭辞の推定（文字数、課金トークンではない）",
+			"replayProgress": {
+				"aria-label": "会話の再生進捗"
+			},
+			"cacheChart": {
+				"aria-label": "生成ごとのプロンプト再利用率"
+			},
+			"programRate": "プログラムの合格率 ${rate}%"
 		}
 	}
 }

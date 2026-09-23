@@ -15,8 +15,8 @@ import { loadShellData, saveShellData } from '../../../../../server/setting_load
 import { getRun as getLiveRun, listBatches as listLiveBatches, listRuns as listLiveRuns } from '../../../plugins/sub-agent/state.mjs'
 import { BUILTIN_PERSONA, BUILTIN_WORLD } from '../../chat/src/chat/session/builtinParts.mjs'
 
-import { buildJudgePrompt, computeStats, normalizeBenchmark, parseJudgeResponse } from './benchmark.mjs'
-import { getGeneration, listGenerations } from './generation_history.mjs'
+import { buildJudgePrompt, checkResponse, computeStats, normalizeBenchmark, parseJudgeResponse } from './benchmark.mjs'
+import { getGeneration, listConversations, listGenerations } from './generation_history.mjs'
 
 /** shell data 命名空间。 */
 const SHELL_NAME = 'agent_studio'
@@ -52,12 +52,12 @@ export async function listChars(username) {
 export async function getCharOverview(username, charId, { limit = 50 } = {}) {
 	if (!charId) throw httpError(400, 'charId is required')
 	const details = await getPartDetails(username, 'chars/' + charId)
-	const recentGenerations = await listGenerations(username, { charId, limit })
+	const conversations = await listConversations(username, { charId, limit })
 	const { runs, batches } = await listSubAgents(username, { charId })
 	return {
 		char: { id: charId, ...details.info },
 		supportedInterfaces: details.supportedInterfaces,
-		recentGenerations,
+		conversations,
 		subAgents: runs,
 		batches,
 	}
@@ -91,7 +91,8 @@ export async function listSubAgents(username, filter = {}) {
  */
 export async function getSubAgentRun(username, runId) {
 	if (!runId) throw httpError(400, 'runId is required')
-	const live = getLiveRun(runId)
+	const candidate = getLiveRun(runId)
+	const live = candidate?.username === username ? candidate : null
 	const summaries = await listGenerations(username, { runId, limit: 10 })
 	const record = summaries[0] ? await getGeneration(username, summaries[0].id) : null
 	if (!live && !record) throw httpError(404, `subagent run not found: ${runId}`)
@@ -112,8 +113,29 @@ export async function getSubAgentRun(username, runId) {
 		startedAt: live?.startedAt ?? record?.startedAt ?? null,
 		finishedAt: live?.finishedAt ?? record?.finishedAt ?? null,
 		error: record?.error?.message ?? live?.error?.message ?? null,
-		conversation: live?.conversation ?? record?.conversation ?? [],
+		conversation: live?.conversation ? live.conversation.map(entry => ({
+			id: entry.id, role: entry.role, name: entry.name, time_stamp: entry.time_stamp,
+			content: entry.content, content_for_show: entry.content_for_show,
+		})) : record?.conversation ?? [],
+		canSend: typeof live?.childArgs?.AddChatLogEntry === 'function',
 	}
+}
+
+/**
+ * 向仍在执行的子代理追加用户消息（运行上下文只驻留到结束/服务器重启）。
+ * @param {string} username 用户
+ * @param {string} runId 运行 id
+ * @param {string} content 消息文本
+ * @returns {Promise<object>} 追加的条目
+ */
+export async function sendSubAgentMessage(username, runId, content) {
+	const run = getLiveRun(runId)
+	if (!run || run.username !== username) throw httpError(404, 'subagent run not found')
+	if (typeof run.childArgs?.AddChatLogEntry !== 'function')
+		throw httpError(409, 'subagent is no longer accepting messages')
+	if (typeof content !== 'string' || !content.trim() || content.length > 20000)
+		throw httpError(400, 'message must contain 1-20000 characters')
+	return run.childArgs.AddChatLogEntry({ role: 'user', name: username, uid: run.childArgs.UserUid, content, time_stamp: new Date() })
 }
 
 /**
@@ -133,6 +155,7 @@ export function summarizeSubAgentRuns(records = [], liveRuns = [], liveBatches =
 		const finishedAt = record.finishedAt ?? null
 		const entry = runsById.get(subAgent.runId) ?? {
 			runId: subAgent.runId,
+			task: record.task ?? null,
 			parentRunId: subAgent.parentRunId ?? null,
 			batchId: subAgent.batchId ?? null,
 			generationIds: [],
@@ -165,6 +188,7 @@ export function summarizeSubAgentRuns(records = [], liveRuns = [], liveBatches =
 			isAsync: !!live.isAsync,
 			deadline: live.deadline ?? null,
 		}
+		entry.task = live.task
 		runsById.set(live.runId, entry)
 	}
 	const runs = [...runsById.values()].sort((a, b) => (b.startedAt ?? 0) - (a.startedAt ?? 0))
@@ -326,8 +350,9 @@ export async function runBenchmark(username, benchmarkId, config = {}) {
 	if (!char?.interfaces?.chat?.GetReply)
 		throw httpError(400, `char "${charId}" does not support chat.GetReply`)
 	const aiSource = config.aiSource ? await loadPart(username, 'serviceSources/AI/' + config.aiSource) : undefined
-	const needsJudge = benchmark.cases.some(caseItem => caseItem.criteria || caseItem.expected !== undefined)
+	const needsJudge = benchmark.cases.some(caseItem => caseItem.criteria || (!caseItem.check && caseItem.expected !== undefined))
 	const judgeSource = needsJudge ? await resolveJudgeSource(username, config.judgeAiSource) : null
+	if (needsJudge && !judgeSource) throw httpError(400, 'judge AI source is required for criteria-based cases')
 	const charInfo = pickLocalizedSlice(char.info, localhostLocales) || {}
 	/** @type {object} */
 	const run = {
@@ -372,8 +397,12 @@ async function runBenchmarkCase({ username, benchmark, caseItem, char, charInfo,
 	const response = String(reply?.content ?? '')
 	/** @type {{ caseId: string, generationId: string, response: string, judge?: object }} */
 	const result = { caseId: caseItem.id, generationId, response }
-	if (judgeSource && (caseItem.criteria || caseItem.expected !== undefined))
-		result.judge = await judgeBenchmarkCase({ judgeSource, caseItem, response })
+	const program = checkResponse(caseItem, response)
+	if (program) result.program = { score: program.score, reason: program.reason, ...program.response !== response ? { transformed: program.response } : {} }
+	if (judgeSource && (caseItem.criteria || (!caseItem.check && caseItem.expected !== undefined)))
+		if (program?.score === 0) result.judge = { score: 0, reason: 'program check failed; judge skipped', model: null }
+		else result.judge = await judgeBenchmarkCase({ judgeSource, caseItem, response: program?.response ?? response, originalResponse: program?.response !== response ? response : undefined })
+
 	return result
 }
 
@@ -400,10 +429,11 @@ async function resolveJudgeSource(username, name) {
  * @param {object} params.judgeSource 裁判 AI 源实例
  * @param {object} params.caseItem 用例
  * @param {string} params.response 待评分回复
+ * @param {string} [params.originalResponse] 程序反转前的原文
  * @returns {Promise<{ score: number | null, reason: string, model: string | null }>} 评分
  */
-async function judgeBenchmarkCase({ judgeSource, caseItem, response }) {
-	const prompt = buildJudgePrompt({ case: caseItem, response })
+async function judgeBenchmarkCase({ judgeSource, caseItem, response, originalResponse }) {
+	const prompt = buildJudgePrompt({ case: caseItem, response, originalResponse })
 	const text = await judgeSource.Call(prompt)
 	const { score, reason } = parseJudgeResponse(text)
 	return { score, reason, model: judgeSource.info?.provider ?? null }

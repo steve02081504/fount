@@ -6897,7 +6897,9 @@
 			"results": "Results",
 			"noResults": "No results yet.",
 			"notJudged": "Not judged",
-			"stats": "Total ${total} · Empty ${empty} · Avg. length ${avgLength} · Judged ${judged} · Avg. score ${avgScore}"
+			"stats": "Total ${total} · Empty ${empty} · Avg. length ${avgLength} · Judged ${judged} · Avg. score ${avgScore}",
+			"import": "Import JSON",
+			"export": "Export JSON"
 		},
 		"retention": {
 			"title": "Record retention",
@@ -6942,7 +6944,11 @@
 			"back": "Back to generations",
 			"task": "Task",
 			"conversation": "Internal conversation",
-			"empty": "(no conversation yet)"
+			"empty": "(no conversation yet)",
+			"send": "Send",
+			"messagePlaceholder": {
+				"placeholder": "Add a message to the running sub-agent…"
+			}
 		},
 		"conversation": {
 			"title": "Conversation",
@@ -6967,7 +6973,22 @@
 				"user": "User",
 				"char": "Character",
 				"tool": "Tool"
-			}
+			},
+			"plainView": "Plain text",
+			"markdownView": "Markdown",
+			"switchView": "Switch Markdown / plain text",
+			"cacheSummary": "Estimated prompt prefix reuse ${rate}% (characters)",
+			"cacheMissing": "Prompt prefix reuse unavailable",
+			"cacheRate": "Cache ≈${rate}%",
+			"cacheNoRate": "Cache —",
+			"cacheHint": "Estimated shared prompt prefix vs previous request (characters, not billed tokens)",
+			"replayProgress": {
+				"aria-label": "Conversation replay progress"
+			},
+			"cacheChart": {
+				"aria-label": "Estimated prompt prefix reuse by generation"
+			},
+			"programRate": "Program pass rate ${rate}%"
 		}
 	}
 }

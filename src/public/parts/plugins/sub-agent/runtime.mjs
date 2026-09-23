@@ -218,6 +218,22 @@ function emitRunStatus(run, deps) {
 }
 
 /**
+ * 把运行中生成的消息、预览及工具输出推送到同一用户事件通道。
+ * @param {object} run 运行
+ * @param {object} deps 依赖
+ * @param {object} change 变更
+ * @returns {void}
+ */
+function emitRunChange(run, deps, change) {
+	try {
+		deps.notifyRun?.(run.username, { runId: run.runId, ...change })?.catch(error => console.warn('sub-agent: 推送对话失败', error))
+	}
+	catch (error) {
+		console.warn('sub-agent: 推送对话失败', error)
+	}
+}
+
+/**
  * 序列化子代理内部对话供落盘（剥离文件 buffer，逐条限长）。
  * @param {object[]} conversation 对话
  * @returns {object[]} 可 JSON 化的条目
@@ -284,9 +300,10 @@ async function loadPluginMap(username, names, deps) {
  * 写入子代理自己的对话（绝不写父代）。
  * @param {object} run 运行
  * @param {object} entry 条目
+ * @param {boolean} [addToPrompt] 是否写入 prompt 的聊天历史（工具日志已由 additional_chat_log 提供）
  * @returns {object} 规范化后的条目
  */
-function appendChildConversationEntry(run, entry) {
+function appendChildConversationEntry(run, entry, addToPrompt = true) {
 	const logEntry = {
 		id: entry.id ?? crypto.randomUUID(),
 		name: entry.name ?? run.parentArgs?.Charname ?? '',
@@ -300,6 +317,8 @@ function appendChildConversationEntry(run, entry) {
 		extension: entry.extension ?? {},
 	}
 	run.conversation.push(logEntry)
+	if (addToPrompt) run.promptConversation?.push(logEntry)
+	emitRunChange(run, run.deps ?? defaultSubAgentDeps, { entry: serializeConversation([logEntry])[0] })
 	return logEntry
 }
 
@@ -314,7 +333,7 @@ function buildChildArgs(run) {
 		...parentArgs,
 		// 子代理是独立会话：自己的 chat_id 与生成 id，父代生成 id 仅作 parentId 回链
 		chat_id: 'subagent:' + run.runId,
-		chat_log: run.conversation,
+		chat_log: run.promptConversation = [...run.conversation],
 		timelines: [],
 		chat_summary: '',
 		chat_scoped_char_memory: {},
@@ -503,7 +522,8 @@ export async function executeSubAgentRun(run, deps = defaultSubAgentDeps) {
 	}
 
 	const batch = run.batchId ? getBatch(run.batchId) : undefined
-	run.conversation.push(...buildOpeningEntries(run, batch))
+	run.deps = deps
+	for (const entry of buildOpeningEntries(run, batch)) appendChildConversationEntry(run, entry)
 	const childArgs = buildChildArgs(run)
 	run.childArgs = childArgs
 
@@ -530,6 +550,18 @@ export async function executeSubAgentRun(run, deps = defaultSubAgentDeps) {
 		const generationOptions = {
 			signal: run.controller.signal,
 			supported_functions: childArgs.supported_functions,
+			/**
+			 * 推送模型流式预览。
+			 * @param {object} preview 模型的流式预览
+			 * @returns {void} 无需等待事件推送
+			 */
+			replyPreviewUpdater: preview => emitRunChange(run, deps, { preview: { content: preview.content ?? '', content_for_show: preview.content_for_show } }),
+			/**
+			 * 推送工具流式输出。
+			 * @param {object} event 工具的流式输出
+			 * @returns {void} 无需等待事件推送
+			 */
+			onToolOutput: event => emitRunChange(run, deps, { toolOutput: event }),
 		}
 		childArgs.generation_options = generationOptions
 		run.timer = setTimeout(() => {
@@ -537,7 +569,10 @@ export async function executeSubAgentRun(run, deps = defaultSubAgentDeps) {
 			run.controller.abort()
 		}, run.timeLimitMs)
 
+		let shownLogCount = 0
 		while (true) {
+			// 预览仅属于当前轮；下一轮工具结果先进入正式对话。
+			emitRunChange(run, deps, { preview: null })
 			if (run.terminateRequested) {
 				await summarizeRun(run, deps, 'terminated')
 				summarized = true
@@ -570,11 +605,15 @@ export async function executeSubAgentRun(run, deps = defaultSubAgentDeps) {
 				{ ...childArgs, prompt_struct: promptStruct, AddLongTimeLog },
 				handlers,
 			)
+			for (const entry of result.logContextBefore.slice(shownLogCount)) appendChildConversationEntry(run, entry, false)
+			shownLogCount = result.logContextBefore.length
 			if (!wantRegen) break
 			promptStruct.char_prompt.additional_chat_log.push(makeRoundBudgetEntry(run, deps.now()))
 		}
 		if (!summarized) {
 			run.finalText = result.content ?? ''
+			if (run.finalText && !run.conversation.some(entry => entry.role === 'char' && entry.content === run.finalText))
+				appendChildConversationEntry(run, { role: 'char', content: run.finalText }, false)
 			run.state = 'done'
 		}
 	}
@@ -594,6 +633,7 @@ export async function executeSubAgentRun(run, deps = defaultSubAgentDeps) {
 		}
 	}
 	finally {
+		emitRunChange(run, deps, { preview: null })
 		if (run.timer) clearTimeout(run.timer)
 		finishAsyncGeneration(run.runId)
 		run.finishedAt = deps.now()

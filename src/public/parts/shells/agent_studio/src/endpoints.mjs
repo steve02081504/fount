@@ -30,6 +30,7 @@ import {
 	listChars,
 	listSubAgents,
 	runBenchmark,
+	sendSubAgentMessage,
 	updateBenchmark,
 } from './studio.mjs'
 
@@ -86,6 +87,11 @@ export function setEndpoints(router) {
 	router.get(`${PREFIX}/subagent/:runId`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		res.status(200).json(await getSubAgentRun(username, req.params.runId))
+	})
+
+	router.post(`${PREFIX}/subagent/:runId/messages`, authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		res.status(201).json(await sendSubAgentMessage(username, req.params.runId, req.body?.content))
 	})
 
 	router.get(`${PREFIX}/generations`, authenticate, async (req, res) => {

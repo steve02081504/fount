@@ -1,7 +1,7 @@
 /**
  * 【文件】public/src/navigation.mjs — 主视图路由
  * 【职责】按视图名切换页面区块并加载数据；同步 location.hash 与浏览器 hashchange。
- * 【原理】视图懒加载器映射；`#subagent/<runId>` 深链到子代理内部对话视图；切换时用 View Transition 做过渡；加载失败经 handleError 提示。
+ * 【原理】视图懒加载器映射；`#conversation/subagent%3A<runId>` 与普通会话共用会话视图；切换时用 View Transition 做过渡；加载失败经 handleError 提示。
  * 【关联】viewChrome.mjs、views/*、motion/viewTransition.mjs。
  */
 import { handleError } from '/scripts/features/errorHandlers.mjs'
@@ -14,10 +14,9 @@ import { loadConversationView } from './views/conversation.mjs'
 import { loadDashboard } from './views/dashboard.mjs'
 import { loadGenerations } from './views/generations.mjs'
 import { loadSettings } from './views/settings.mjs'
-import { loadSubAgentView } from './views/subagent.mjs'
 
-/** 全部可进入的视图（主导航 + 仅深链的 subagent / conversation）。 */
-const ALL_VIEWS = [...MAIN_NAV_VIEWS, 'subagent', 'conversation']
+/** 全部可进入的视图（主导航 + 会话深链）。 */
+const ALL_VIEWS = [...MAIN_NAV_VIEWS, 'conversation']
 
 /** 视图名 → 数据加载器。 */
 const VIEW_LOADERS = {
@@ -25,11 +24,10 @@ const VIEW_LOADERS = {
 	generations: loadGenerations,
 	benchmarks: loadBenchmarks,
 	settings: loadSettings,
-	subagent: loadSubAgentView,
 	conversation: loadConversationView,
 }
 
-/** 当前深链参数（subagent 视图的 runId）。 */
+/** 当前深链参数（会话键等）。 */
 let currentParams = {}
 
 /**
@@ -51,8 +49,7 @@ export function installNavigationEvents() {
  */
 function syncHashForMainView(view, params = {}) {
 	let next = `#${view}`
-	if (view === 'subagent' && params.runId) next = `#subagent/${encodeURIComponent(params.runId)}`
-	else if (view === 'conversation' && params.key) next = `#conversation/${encodeURIComponent(params.key)}`
+	if (view === 'conversation' && params.key) next = `#conversation/${encodeURIComponent(params.key)}`
 	if (location.hash === next) return
 	history.replaceState(null, '', `${location.pathname}${location.search}${next}`)
 }
@@ -100,8 +97,7 @@ export async function applyIncomingNavigation() {
 	const subagentMatch = /^subagent\/(.+)$/.exec(rawHash)
 	if (subagentMatch) {
 		const runId = decodeURIComponent(subagentMatch[1])
-		if (currentMainView() === 'subagent' && currentParams.runId === runId) return true
-		await switchView('subagent', { skipHash: true, params: { runId } })
+		await switchView('conversation', { params: { key: 'subagent:' + runId } })
 		return true
 	}
 	const conversationMatch = /^conversation\/(.+)$/.exec(rawHash)

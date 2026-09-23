@@ -6,6 +6,7 @@ import { assertEquals, assertThrows } from 'jsr:@std/assert'
 
 import {
 	buildJudgePrompt,
+	checkResponse,
 	computeStats,
 	normalizeBenchmark,
 	normalizeCase,
@@ -95,4 +96,24 @@ Deno.test('computeStats omits optional fields when not applicable', () => {
 	assertEquals('exactMatch' in stats, false)
 	assertEquals('avgScore' in stats, false)
 	assertEquals(stats.judged, 0)
+})
+
+Deno.test('program checks score exact, regex, contains and reverse before judge', () => {
+	assertEquals(checkResponse({ check: { type: 'exact', expected: 'abc' } }, ' abc ').score, 1)
+	assertEquals(checkResponse({ check: { type: 'regex', pattern: '^1[0]{3}$' } }, '1000').score, 1)
+	assertEquals(checkResponse({ check: { type: 'contains', expected: '42' } }, 'the answer is 42').score, 1)
+	assertEquals(checkResponse({ check: { type: 'reverse', pattern: '^[ -~]+$' } }, '.retaW'), {
+		score: 1, response: 'Water.', reason: 'program check passed',
+	})
+	assertEquals(checkResponse({ check: { type: 'reverse', pattern: '^[ -~]+$' } }, '水').score, 0)
+})
+
+Deno.test('demo benchmark imports and preserves mixed scoring cases', async () => {
+	const file = new URL('../../examples/LLM唐b测试.json', import.meta.url)
+	const benchmark = normalizeBenchmark(JSON.parse(await Deno.readTextFile(file)))
+	assertEquals(benchmark.cases.length, 10)
+	assertEquals(benchmark.cases.some(item => item.check && item.criteria), true)
+	assertEquals(benchmark.cases.some(item => item.check && !item.criteria), true)
+	assertEquals(benchmark.cases.some(item => !item.check && item.criteria), true)
+	assertEquals(checkResponse(benchmark.cases.find(item => item.id === 'base64-easy'), 'キツネせんこ').score, 1)
 })

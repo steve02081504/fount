@@ -8,8 +8,8 @@ import { icons } from './icons.mjs'
 import { createRunCard, createRunCardFeed, paintRunCard, registerRunCardFeed } from './runCards.mjs'
 import { store } from './store.mjs'
 
-/** Agent Studio 深链前缀（`#subagent/<runId>`）。 */
-const AGENT_STUDIO_SUBAGENT_URL = '/parts/shells:agent_studio/#subagent/'
+/** Agent Studio 子代理会话深链前缀。 */
+const AGENT_STUDIO_SUBAGENT_URL = '/parts/shells:agent_studio/#conversation/subagent%3A'
 
 /** 运行中的状态集合（显示转圈）。 */
 const ACTIVE_STATES = new Set(['running', 'summarizing'])

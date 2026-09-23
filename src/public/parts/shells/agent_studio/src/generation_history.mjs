@@ -157,6 +157,7 @@ function toSummary(record) {
 		charId: record.charId,
 		charname: record.charname,
 		subAgent: record.subAgent,
+		task: record.subAgent?.runId ? record.metadata?.task : undefined,
 		chatId: record.chatId,
 		conversationId: record.conversationId,
 		source: record.source,

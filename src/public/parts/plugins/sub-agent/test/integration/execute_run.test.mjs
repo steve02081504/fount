@@ -334,7 +334,19 @@ Deno.test('completed async sub-agent is retrievable before the parent regen loop
 Deno.test('runSubAgent persists the internal conversation and emits live status', async () => {
 	resetSubAgentState()
 	const ai = createFakeAi(['hello there'])
-	const deps = createDeps(ai, createRegenPlugin(0))
+	/**
+	 * 用于验证流式消息推送的假 AI 回复。
+	 * @param {object} _prompt 提示
+	 * @param {object} options 生成选项
+	 * @returns {Promise<object>} 假回复
+	 */
+	ai.StructCall = async (_prompt, options) => {
+		options.replyPreviewUpdater?.({ content: 'partial' })
+		options.onToolOutput?.({ phase: 'chunk', data: 'tool output' })
+		options.base_result.content = 'hello there'
+		return { content: 'hello there' }
+	}
+	const deps = createDeps(ai, createRegenPlugin(0, args => args.AddLongTimeLog({ role: 'tool', content: 'tool log' })))
 	const outcome = await runSubAgent(
 		createParentArgs(),
 		{ body: 'collect', roundLimit: 3, timeLimitMs: 60_000 },
@@ -345,6 +357,10 @@ Deno.test('runSubAgent persists the internal conversation and emits live status'
 	assertEquals(record.conversationId, 'subagent:' + outcome.run.runId)
 	assert(Array.isArray(record.conversation), 'expected conversation in the generation record')
 	assert(record.conversation.some(entry => entry.role === 'system'), 'expected opening entries')
+	assert(record.conversation.some(entry => entry.role === 'tool' && entry.content === 'tool log'), 'expected tool transcript')
+	assertEquals(outcome.run.promptConversation.some(entry => entry.role === 'tool'), false)
+	assert(deps.notifications.some(payload => payload.preview?.content === 'partial'), 'expected stream preview event')
+	assert(deps.notifications.some(payload => payload.toolOutput?.data === 'tool output'), 'expected tool output event')
 	const last = deps.notifications.at(-1)
 	assertEquals(last.state, 'done')
 	assertEquals(last.runId, outcome.run.runId)

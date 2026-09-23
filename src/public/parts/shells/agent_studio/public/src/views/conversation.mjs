@@ -6,15 +6,20 @@
  */
 import { geti18n, geti18n_nowarn, primaryLocale } from '/scripts/i18n/index.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
+import { onServerEvent } from '/scripts/endpoints/server_events.mjs'
 
 import { dialogueRounds, replayDialogue } from '../../shared/dialogueReplay.mjs'
-import { getConversation } from '../endpoints.mjs'
+import { estimatePromptCache } from '../../shared/promptCache.mjs'
+import { getConversation, getSubAgent, sendSubAgentMessage } from '../endpoints.mjs'
 import { formatTime } from '../lib/format.mjs'
+import { messageBody } from '../lib/messageBody.mjs'
 import { requestNavigate } from '../lib/navigationEvents.mjs'
 import { stateBadge } from '../lib/stateBadge.mjs'
 
 /** 当前深链的会话键（语言切换重载时复用）。 */
 let currentKey = ''
+/** 当前子代理运行的状态刷新定时器。 */
+let refreshTimer = null
 
 /**
  * 内部对话角色标签的 i18n 键（缺失时回落原始角色名）。
@@ -33,6 +38,37 @@ const ROLE_LABEL_KEYS = {
  */
 export function initConversationView() {
 	document.getElementById('conversationBackButton')?.addEventListener('click', () => { requestNavigate('generations') })
+	document.getElementById('subagentMessageForm')?.addEventListener('submit', event => {
+		event.preventDefault()
+		const input = document.getElementById('subagentMessageInput')
+		if (!(input instanceof HTMLTextAreaElement) || !input.value.trim()) return
+		const text = input.value
+		const key = currentKey
+		void sendSubAgentMessage(key.slice('subagent:'.length), text).then(() => {
+			input.value = ''
+			if (currentKey === key) void loadConversationView({ key })
+		}).catch(error => showToastI18n('error', 'agent_studio.alerts.saveFailed', { message: error.message }))
+	})
+	onServerEvent('subagent-run', event => {
+		if (currentKey !== `subagent:${event.runId}` || document.getElementById('conversationView')?.classList.contains('hidden')) return
+		if (event.preview !== undefined || event.toolOutput) {
+			const preview = document.getElementById('subagentLivePreview')
+			if (preview) {
+				preview.textContent = event.preview?.content_for_show ?? event.preview?.content ?? event.toolOutput?.data ?? ''
+				preview.classList.toggle('hidden', !preview.textContent)
+			}
+		}
+		if (event.entry || event.state) scheduleRefresh()
+	})
+}
+
+/** 合并短时间内的运行事件，避免每个分片重复拉取历史。 */
+function scheduleRefresh() {
+	if (refreshTimer) return
+	refreshTimer = setTimeout(() => {
+		refreshTimer = null
+		if (currentKey.startsWith('subagent:')) void loadConversationView({ key: currentKey })
+	}, 250)
 }
 
 /**
@@ -42,6 +78,12 @@ export function initConversationView() {
  */
 export async function loadConversationView({ key } = {}) {
 	if (key) currentKey = key
+	const runPanel = document.getElementById('conversationSubagent')
+	const isSubagent = currentKey.startsWith('subagent:')
+	runPanel?.classList.toggle('hidden', !isSubagent)
+	document.getElementById('conversationTranscript')?.classList.toggle('hidden', isSubagent)
+	document.getElementById('conversationReplay')?.classList.remove('hidden')
+	if (isSubagent) return loadSubagentConversation(currentKey)
 	const meta = document.getElementById('conversationMeta')
 	const generations = document.getElementById('conversationGenerations')
 	const empty = document.getElementById('conversationEmpty')
@@ -57,10 +99,162 @@ export async function loadConversationView({ key } = {}) {
 		renderMeta(meta, conversation)
 		const items = conversation.generations ?? []
 		empty.classList.toggle('hidden', items.length > 0)
-		generations.replaceChildren(...items.map(renderGeneration))
+		const metrics = estimatePromptCache(items)
+		const transcript = document.getElementById('conversationTranscript')
+		renderReplay(items, metrics, count => {
+			generations.replaceChildren(...items.slice(0, count).map((item, index) => renderGeneration(item, metrics[index])))
+			if (transcript) {
+				const rounds = items.slice(0, count).reduce((sum, item) => sum + Math.max(0, ...item.dialogue?.events?.map(event => event.round ?? 0) ?? []), 0)
+				transcript.replaceChildren(...renderMessages(replayDialogue(conversation.dialogue?.events ?? [], { upToRound: rounds })))
+			}
+		})
 	}
 	catch (error) {
 		empty.classList.remove('hidden')
+		showToastI18n('error', 'agent_studio.alerts.loadFailed', { message: error.message })
+	}
+}
+
+/**
+ * 各种会话共用的逐生成回放控制和缓存图。
+ * @param {object[]} items 生成
+ * @param {object[]} metrics 每次生成缓存数据
+ * @param {(count: number) => void} onChange 回放变化
+ * @returns {void}
+ */
+function renderReplay(items, metrics, onChange) {
+	const timeline = document.getElementById('conversationTimeline')
+	const chart = document.getElementById('conversationCacheChart')
+	const summary = document.getElementById('conversationCacheSummary')
+	const slider = document.getElementById('conversationReplaySlider')
+	const selection = document.getElementById('conversationReplaySelection')
+	if (!(slider instanceof HTMLInputElement) || !timeline || !chart || !summary || !selection) return
+	const previous = slider.dataset.key !== currentKey || Number(slider.value) === Number(slider.max)
+		? items.length : Number(slider.value)
+	slider.dataset.key = currentKey
+	slider.max = String(items.length)
+	slider.value = String(Math.min(previous, items.length))
+	/** @returns {void} 更新回放进度和消息。 */
+	const update = () => {
+		const count = Number(slider.value)
+		selection.textContent = `${count}/${items.length}`
+		onChange(count)
+		for (const node of timeline.children) node.classList.toggle('active', Number(node.dataset.index) === count)
+	}
+	slider.oninput = update
+	timeline.replaceChildren(...items.map((item, index) => {
+		const node = document.createElement('button')
+		node.type = 'button'
+		node.className = 'conversation-timeline-node'
+		node.dataset.index = String(index + 1)
+		node.title = `${index + 1} · ${formatTime(item.startedAt, primaryLocale())}`
+		node.textContent = String(index + 1)
+		/** @returns {void} 跳转到指定生成节点。 */
+		node.onclick = () => { slider.value = String(index + 1); update() }
+		return node
+	}))
+	const total = metrics.reduce((sum, metric) => sum + metric.total, 0)
+	const reused = metrics.reduce((sum, metric) => sum + metric.reused, 0)
+	summary.textContent = total ? geti18n('agent_studio.conversation.cacheSummary', { rate: Math.round(reused / total * 100) }) : geti18n('agent_studio.conversation.cacheMissing')
+	paintCacheChart(chart, metrics)
+	update()
+}
+
+/**
+ * @param {HTMLCanvasElement} canvas 画布
+ * @param {object[]} metrics 缓存指标
+ * @returns {void}
+ */
+function paintCacheChart(canvas, metrics) {
+	if (!(canvas instanceof HTMLCanvasElement)) return
+	const ratio = window.devicePixelRatio || 1
+	canvas.width = Math.round(canvas.clientWidth * ratio)
+	canvas.height = Math.round(canvas.clientHeight * ratio)
+	const ctx = canvas.getContext('2d')
+	if (!ctx) return
+	ctx.scale(ratio, ratio)
+	const width = canvas.clientWidth
+	const height = canvas.clientHeight
+	const points = metrics.map((metric, index) => metric.rate == null ? null : {
+		x: (index + 0.5) * width / metrics.length,
+		y: height - 10 - metric.rate * (height - 20), rate: metric.rate,
+	})
+	const style = getComputedStyle(canvas)
+	ctx.strokeStyle = style.getPropertyValue('--color-primary')
+	ctx.lineWidth = 2
+	ctx.beginPath()
+	let connected = false
+	for (const point of points) {
+		if (!point) { connected = false; continue }
+		if (connected) ctx.lineTo(point.x, point.y)
+		else ctx.moveTo(point.x, point.y)
+		connected = true
+	}
+	ctx.stroke()
+	for (const point of points) {
+		if (!point) continue
+		ctx.beginPath()
+		ctx.fillStyle = style.getPropertyValue(point.rate >= 0.6 ? '--color-success' : '--color-error')
+		ctx.arc(point.x, point.y, 4, 0, 2 * Math.PI)
+		ctx.fill()
+	}
+}
+
+/**
+ * 子代理的会话深链：运行中从内存取得对话，完成后从记录恢复。
+ * @param {string} key 会话键
+ * @returns {Promise<void>}
+ */
+async function loadSubagentConversation(key) {
+	const meta = document.getElementById('conversationMeta')
+	const list = document.getElementById('conversationGenerations')
+	const transcriptView = document.getElementById('conversationTranscript')
+	transcriptView?.replaceChildren()
+	const empty = document.getElementById('conversationEmpty')
+	const transcript = document.getElementById('subagentTranscript')
+	if (!meta || !list || !empty || !transcript) return
+	meta.replaceChildren()
+	list.replaceChildren()
+	empty.classList.add('hidden')
+	try {
+		const run = await getSubAgent(key.slice('subagent:'.length))
+		if (currentKey !== key) return
+		const chip = document.createElement('span')
+		chip.className = `badge ${stateBadge(run.state)}`
+		chip.textContent = geti18n(`agent_studio.run.state.${run.state}`)
+		meta.append(chip)
+		for (const text of [run.charname || run.charId, run.runId, `${run.rounds}/${run.roundLimit ?? '-'}`, formatTime(run.startedAt, primaryLocale())].filter(Boolean)) {
+			const item = document.createElement('span')
+			item.className = 'meta-chip'
+			item.textContent = text
+			meta.append(item)
+		}
+		const task = document.getElementById('subagentConversationTask')
+		if (task) task.textContent = run.task || ''
+		const form = document.getElementById('subagentMessageForm')
+		const record = await getConversation(key).catch(() => null)
+		if (currentKey !== key) return
+		const items = record?.generations?.length ? record.generations : [{ id: run.runId, startedAt: run.startedAt }]
+		const metrics = estimatePromptCache(items)
+		renderReplay(items, metrics, count => {
+			// 子代理运行时的增量对话只属于当前生成；回放期间不显示未来消息或允许注入。
+			transcript.classList.toggle('hidden', count !== items.length)
+			form?.classList.toggle('hidden', !run.canSend || count !== items.length)
+			list.replaceChildren(...items.slice(0, count).filter(item => item.requests?.length).map((item, index) => renderGeneration(item, metrics[index])))
+		})
+		transcript.replaceChildren(...(run.conversation || []).map(message => {
+			const row = document.createElement('article')
+			row.className = `subagent-entry role-${message.role || 'char'}`
+			const title = document.createElement('strong')
+			title.className = 'subagent-entry-name'
+			title.textContent = message.name || message.role || ''
+			row.append(title, messageBody(message.content_for_show ?? message.content ?? ''))
+			return row
+		}))
+		const preview = document.getElementById('subagentLivePreview')
+		if (!run.canSend && preview) { preview.textContent = ''; preview.classList.add('hidden') }
+	}
+	catch (error) {
 		showToastI18n('error', 'agent_studio.alerts.loadFailed', { message: error.message })
 	}
 }
@@ -90,9 +284,10 @@ function renderMeta(container, conversation) {
 /**
  * 渲染一条生成记录及其逐轮请求。
  * @param {object} generation 生成记录
+ * @param {object} cache 缓存复用估算
  * @returns {HTMLElement} 元素
  */
-function renderGeneration(generation) {
+function renderGeneration(generation, cache = {}) {
 	const article = document.createElement('article')
 	article.className = 'conversation-generation surface'
 
@@ -107,6 +302,11 @@ function renderGeneration(generation) {
 	badge.className = `badge ${stateBadge(state)}`
 	badge.textContent = geti18n(`agent_studio.run.state.${state}`)
 	head.append(title, badge)
+	const cacheBadge = document.createElement('span')
+	cacheBadge.className = `badge ${cache.rate == null ? 'badge-ghost' : cache.rate >= 0.6 ? 'badge-success' : 'badge-error'}`
+	cacheBadge.textContent = cache.rate == null ? geti18n('agent_studio.conversation.cacheNoRate') : geti18n('agent_studio.conversation.cacheRate', { rate: Math.round(cache.rate * 100) })
+	cacheBadge.title = geti18n('agent_studio.conversation.cacheHint')
+	head.append(cacheBadge)
 	const meta = document.createElement('p')
 	meta.className = 'conversation-generation-meta'
 	meta.setAttribute('user-content', '')
@@ -120,16 +320,21 @@ function renderGeneration(generation) {
 	article.appendChild(head)
 
 	// 由逐轮请求复原的连续对话（可按轮次复播，编辑随轮次推进呈现）
-	if (generation.dialogue?.events?.length)
-		article.appendChild(buildDialogueSection(generation.dialogue))
+	if (generation.dialogue?.events?.length) {
+		const replay = document.createElement('details')
+		const title = document.createElement('summary')
+		title.textContent = geti18n('agent_studio.conversation.replay')
+		replay.append(title, buildDialogueSection(generation.dialogue))
+		article.appendChild(replay)
+	}
 
 	article.appendChild(buildSection(geti18n('agent_studio.conversation.response'), generation.response ?? ''))
 
-	const requestsSection = document.createElement('section')
+	const requestsSection = document.createElement('details')
 	requestsSection.className = 'conversation-requests'
-	const requestsTitle = document.createElement('h4')
+	const requestsTitle = document.createElement('summary')
 	requestsTitle.className = 'dialog-section-title'
-	requestsTitle.textContent = geti18n('agent_studio.conversation.requests')
+	requestsTitle.textContent = `${geti18n('agent_studio.conversation.requests')} · ${generation.requestCount ?? generation.requests?.length ?? 0}`
 	requestsSection.appendChild(requestsTitle)
 	if (generation.requests?.length) 
 		for (const request of generation.requests)
@@ -190,10 +395,7 @@ function renderRequest(request) {
 			name.className = 'conversation-message-name'
 			const key = ROLE_LABEL_KEYS[message.role]
 			name.textContent = message.name || (key && geti18n_nowarn(key)) || message.role || ''
-			const body = document.createElement('pre')
-			body.className = 'conversation-message-body'
-			body.setAttribute('prompt-content', '')
-			body.textContent = message.content ?? ''
+			const body = messageBody(message.content ?? '')
 			row.append(name, body)
 			list.appendChild(row)
 		}
@@ -210,7 +412,7 @@ function renderRequest(request) {
 function buildDialogueSection(dialogue) {
 	const section = document.createElement('section')
 	section.className = 'conversation-dialogue'
-	const heading = document.createElement('h4')
+	const heading = document.createElement('h3')
 	heading.className = 'dialog-section-title'
 	heading.textContent = geti18n('agent_studio.conversation.replay')
 	section.appendChild(heading)
@@ -257,10 +459,7 @@ function renderMessages(messages) {
 		name.className = 'conversation-message-name'
 		const key = ROLE_LABEL_KEYS[message.role]
 		name.textContent = message.name || (key && geti18n_nowarn(key)) || message.role || ''
-		const body = document.createElement('pre')
-		body.className = 'conversation-message-body'
-		body.setAttribute('prompt-content', '')
-		body.textContent = message.content ?? ''
+		const body = messageBody(message.content ?? '')
 		row.append(name, body)
 		return row
 	})
@@ -275,13 +474,10 @@ function renderMessages(messages) {
 function buildSection(title, text) {
 	const section = document.createElement('section')
 	section.className = 'conversation-section'
-	const heading = document.createElement('h4')
+	const heading = document.createElement('h3')
 	heading.className = 'dialog-section-title'
 	heading.textContent = title
-	const body = document.createElement('pre')
-	body.className = 'code-block'
-	body.setAttribute('prompt-content', '')
-	body.textContent = text
+	const body = messageBody(text)
 	section.append(heading, body)
 	return section
 }

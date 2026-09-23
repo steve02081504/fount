@@ -24,17 +24,21 @@ Agent Studio 经 shell 的 `ArgumentsHandler` 暴露 CLI，便于 agent dump 数
 
 ### GET /api/parts/shells:agent_studio/char/:id/overview
 - 查询：`limit`（最近生成条数，默认 50）
-- 用途：角色基本信息 + 最近生成记录 + 子代理运行与批次。
+- 用途：角色基本信息 + 最近会话摘要（`conversations`）+ 子代理运行与批次。
 
 ### GET /api/parts/shells:agent_studio/subagents
 - 查询：`charId` 或 `chatId`（二者至少一个；`chatId` 形如 `code-<sessionId>`）
 - 用途：子代理运行视图（由生成记录的 `subAgent.runId` 聚合，进度/状态合并 `plugins/sub-agent` 内存注册表）与批次列表；按 `chatId` 过滤某会话派生的运行。
 
 ### GET /api/parts/shells:agent_studio/subagent/:runId
-- 用途：单次子代理运行的完整状态与内部对话（`conversation`）：运行中取实时注册表，已结束回落落盘记录。缺失实时与记录时 404。
+- 用途：单次子代理运行的完整状态与内部对话（`conversation`）及 `canSend`：运行中取实时注册表，已结束回落落盘记录。缺失实时与记录时 404。
+
+### POST /api/parts/shells:agent_studio/subagent/:runId/messages
+- Body：`{ content: string }`，非空且不超过 20000 字符。
+- 用途：运行中的子代理仍保有 `AddChatLogEntry` 时追加用户消息；仅运行所有者可写。已结束或运行上下文因重启丢失时不可写。
 
 ### 服务端事件 `subagent-run`
-- 经用户事件通道推送（前端 `onServerEvent('subagent-run', cb)`）。负载：`{ runId, backgroundId, parentRunId, batchId, chat_name, charId, state, rounds, roundLimit, depth, isAsync, task, startedAt, finishedAt, error }`；运行开始、每轮、结束各推送一次。
+- 经用户事件通道推送（前端 `onServerEvent('subagent-run', cb)`）。状态负载：`{ runId, backgroundId, parentRunId, batchId, chat_name, charId, state, rounds, roundLimit, depth, isAsync, task, startedAt, finishedAt, error }`；运行开始、每轮、结束各推送一次；同一事件还可携带 `{ runId, entry }`（新增对话）、`{ runId, preview }`（流式回复）或 `{ runId, toolOutput }`（工具输出）。
 
 ---
 
@@ -81,7 +85,7 @@ Agent Studio 经 shell 的 `ArgumentsHandler` 暴露 CLI，便于 agent dump 数
 - 用途：列出基准定义（附 `caseCount`）。
 
 ### POST /api/parts/shells:agent_studio/benchmarks
-- Body：`{ name, description?, cases?, metadata? }`；用例为 `{ id?, input, expected?, criteria?, metadata? }`
+- Body：`{ name, description?, cases?, metadata? }`；用例为 `{ id?, input, expected?, criteria?, check?, metadata? }`。`check` 支持 `{type:'exact'|'contains',expected}`、`{type:'regex',pattern,flags?}` 或 `{type:'reverse',pattern?}`；`reverse` 将原回答按字符顺序倒转后送入 LLM 裁判。
 - 用途：创建基准定义。定义不含角色字段，角色/模型在运行时选择。
 
 ### GET /api/parts/shells:agent_studio/benchmarks/:id
@@ -96,7 +100,8 @@ Agent Studio 经 shell 的 `ArgumentsHandler` 暴露 CLI，便于 agent dump 数
 
 ### POST /api/parts/shells:agent_studio/benchmarks/:id/run
 - Body：`{ charId, aiSource?, judgeAiSource?, model? }`
-- 用途：运行基准。逐用例以 `BUILTIN_WORLD`/`BUILTIN_PERSONA` 手构请求并调用角色 `chat.GetReply`，写入生成记录（source `shells/agent_studio/benchmark`）；当用例含 `criteria` 或 `expected` 时，用裁判 AI 源（`judgeAiSource`，缺省取首选默认 AI 源）评分。
+- 用途：运行基准。逐用例调用角色 `chat.GetReply` 并写入生成记录（source `shells/agent_studio/benchmark`）；有 `check` 时先运行程序评分；有 `criteria`（或无 `check` 但有 `expected`）时再用裁判 AI 源评分，程序失败则跳过裁判。裁判源缺失时拒绝运行含裁判用例的基准。
+- JSON 文件可直接作为 `POST /benchmarks` 请求体导入；`GET /benchmarks/:id` 可导出定义；演示定义见仓库 `src/public/parts/shells/agent_studio/examples/LLM唐b测试.json`。
 - 返回：`benchmarkRun_t`（`results` / `stats`）。
 
 ---

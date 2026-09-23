@@ -30,6 +30,12 @@ import { renderTemplate } from '../templates.mjs'
  * @returns {void}
  */
 export function initBenchmarksView() {
+	document.getElementById('importBenchmarkFile')?.addEventListener('change', event => {
+		void importBenchmark(event.target).catch(error => showToastI18n('error', 'agent_studio.alerts.saveFailed', { message: error.message }))
+	})
+	document.getElementById('exportBenchmarkButton')?.addEventListener('click', () => {
+		void exportBenchmark().catch(error => showToastI18n('error', 'agent_studio.alerts.loadFailed', { message: error.message }))
+	})
 	document.getElementById('newBenchmarkButton')?.addEventListener('click', () => {
 		void newBenchmark().catch(error => showToastI18n('error', 'agent_studio.alerts.saveFailed', { message: error.message }))
 	})
@@ -40,6 +46,32 @@ export function initBenchmarksView() {
 		void removeBenchmark().catch(error => showToastI18n('error', 'agent_studio.alerts.saveFailed', { message: error.message }))
 	})
 	document.getElementById('runBenchmarkButton')?.addEventListener('click', () => { void runCurrentBenchmark() })
+}
+
+/** @param {EventTarget | null} input 文件输入框 @returns {Promise<void>} */
+async function importBenchmark(input) {
+	if (!(input instanceof HTMLInputElement) || !input.files?.[0]) return
+	try {
+		const parsed = JSON.parse(await input.files[0].text())
+		const created = await createBenchmark({ ...parsed, id: undefined })
+		await reloadBenchmarks()
+		await selectBenchmark(created.id)
+		showToastI18n('success', 'agent_studio.benchmarks.saved')
+	}
+	finally { input.value = '' }
+}
+
+/** @returns {Promise<void>} 下载当前基准定义的完整 JSON。 */
+async function exportBenchmark() {
+	if (!state.activeBenchmarkId) return
+	const benchmark = await getBenchmark(state.activeBenchmarkId)
+	const blob = new Blob([JSON.stringify(benchmark, null, 2)], { type: 'application/json' })
+	const url = URL.createObjectURL(blob)
+	const link = document.createElement('a')
+	link.href = url
+	link.download = `${benchmark.name.replace(/[\\/:*?"<>|]/g, '_')}.json`
+	link.click()
+	setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
 
 /**
@@ -234,6 +266,7 @@ async function renderRunResults(run) {
 				avgScore: run.stats?.avgScore ?? '-',
 				judged: run.stats?.judged ?? 0,
 			})
+			+ (run?.stats?.programPassRate == null ? '' : ` · ${geti18n('agent_studio.conversation.programRate', { rate: Math.round(run.stats.programPassRate * 100) })}`)
 			: ''
 	const list = document.getElementById('benchmarkResults')
 	const empty = document.getElementById('benchmarkResultsEmpty')
@@ -246,13 +279,13 @@ async function renderRunResults(run) {
 		return
 	}
 	for (const result of results) {
-		const score = result.judge?.score
+		const score = result.judge?.score ?? result.program?.score
 		list.appendChild(await renderTemplate('result_item', {
 			caseId: result.caseId,
 			status: score == null ? geti18n('agent_studio.benchmarks.notJudged') : String(score),
 			badgeClass: score == null ? 'badge-ghost' : 'badge-primary',
 			response: truncate(result.response, 500),
-			judgeText: result.judge?.reason || '',
+			judgeText: [result.program?.reason, result.judge?.reason].filter(Boolean).join(' · '),
 		}))
 	}
 }

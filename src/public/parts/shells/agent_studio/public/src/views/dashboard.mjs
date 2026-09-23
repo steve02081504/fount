@@ -9,8 +9,9 @@ import { showToastI18n } from '/scripts/features/toast.mjs'
 
 import { getCharOverview } from '../endpoints.mjs'
 import { bindActivate } from '../lib/activate.mjs'
+import { renderConversationItem } from '../lib/conversationItem.mjs'
 import { mountEmptyState } from '../lib/emptyState.mjs'
-import { renderGenerationItem } from '../lib/generationItem.mjs'
+import { requestNavigate } from '../lib/navigationEvents.mjs'
 import { stateBadge } from '../lib/stateBadge.mjs'
 import { state } from '../state.mjs'
 import { renderTemplate } from '../templates.mjs'
@@ -121,7 +122,7 @@ export async function selectChar(charId) {
 		const overview = await getCharOverview(charId, { limit: 50 })
 		renderCharHero(overview)
 		await renderSubAgents(overview.subAgents)
-		await renderGenerations(overview.recentGenerations)
+		await renderGenerations(overview.conversations)
 	}
 	catch (error) {
 		showToastI18n('error', 'agent_studio.alerts.loadFailed', { message: error.message })
@@ -175,12 +176,15 @@ async function renderSubAgents(runs) {
 			rounds: run.live?.rounds ?? 0,
 			roundLimit: run.live?.roundLimit ?? '-',
 		})
-		list.appendChild(await renderTemplate('run_item', {
+		const item = await renderTemplate('run_item', {
 			runId: run.runId,
+			task: run.task || run.runId,
 			state: geti18n(`agent_studio.run.state.${runState}`),
 			badgeClass: stateBadge(runState),
 			detail,
-		}))
+		})
+		item.addEventListener('click', () => { requestNavigate('conversation', { key: `subagent:${run.runId}` }) })
+		list.appendChild(item)
 	}
 }
 
@@ -201,5 +205,5 @@ async function renderGenerations(records) {
 		return
 	}
 	for (const record of items)
-		list.appendChild(await renderGenerationItem(record))
+		list.appendChild(await renderConversationItem(record))
 }
