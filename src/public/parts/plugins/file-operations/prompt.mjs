@@ -75,7 +75,8 @@ export async function getFileOperationsPrompt(args) {
 </glob>
 
 - 每行一个 glob 模式（\`**\` 递归、\`*\` 通配、\`{a,b}\` 多选）；内容留空则列出起始目录下所有文件
-- 返回相对起始目录的路径，最多 100 条；结果过多时用更精确的模式或更小的 path
+- 多行取并集；含 / 的模式匹配相对起始目录的路径，裸文件名递归匹配同名文件；末尾 / 匹配目录（如 \`*/\` 列出一级目录，含空目录）
+- 返回相对起始目录的路径，最多 100 条
 
 **搜索文件内容（grep）**：
 <grep path="可选起始目录" include="可选的文件名过滤，如 *.mjs，多个用空格分隔" mode="可选，填 files 时只列出命中的文件">
@@ -83,8 +84,9 @@ export async function getFileOperationsPrompt(args) {
 </grep>
 
 - 自动递归、遵守 .gitignore，使用 ripgrep 正则语法（不支持反向引用与环视）
-- 返回按文件分组的行号与匹配行，最多 200 处；结果过多时用更精确的模式或 include
+- 返回按文件分组的行号与匹配行，最多 200 处
 - 找文件用 <glob>、找代码用 <grep>，比用 shell 的 find/rg/Get-ChildItem 更省上下文
+- 搜索结果过多时，请缩小 path 或收窄模式
 
 **替换文件内容**：
 <replace-file>
@@ -119,7 +121,6 @@ ${getConnectedSubfounts(args.username).length !== 1 ? `\
 **列出可用机器**：
 <list-machines></list-machines>
 
-- 所有标签都支持可选属性 machine="机器id" 以单次指定目标机器
 - 需要操作其他机器时，先用 <list-machines> 查询目标id。
 - 如：
 [
@@ -134,15 +135,12 @@ ${args.Charname}: <view-file machine="1">~/Desktop/新建文本文件.txt</view-
 - 用户对接其他 subfount 后，你也可以操作其他机器里的数据。
 `
 }
+文件读写与搜索标签支持 machine="机器id"、workdir="目录" 单次指定目标；相对路径基于目标工作目录解析。
 **设置默认工作目录**：
 <set-workdir machine="机器id" path="目录"></set-workdir>
 - 该设置持续有效，影响任何操作机器内容的插件
 
 **注意事项**：
-- 文件路径可以是相对路径或绝对路径；相对路径基于当前的工作目录解析
-- 使用 <replace-file> 时，可以指定多个 <replacement> 块；\`<search>\` 不能为空且默认须唯一命中
-- 设置 regex="true" 可以使用正则表达式进行搜索替换
-- 覆写文件的改动幅度过大（>70%）会被拒绝，确认整体重写时使用 force="true"
 - 操作文件时请谨慎，避免误删除或覆盖重要文件
 `
 

@@ -71,14 +71,15 @@ return Array.from({ length: 201 }, (_, i) => toEnglishWord(i)).join(', ')
 - expect="时长" 为预期时长，tolerance="时长" 为额外容错，有效超时 = expect + tolerance；只给 tolerance 时基于默认值累加。时长支持 30s / 5m / 1h 或纯秒数，如 <run-${defaultShell} expect="5m" tolerance="1m">。
 - wait="forever" 强制干等、不设超时；请仅在确实需要长时间挂起时使用。
 - 正常结束会在结果里标注耗时，便于你预估后续命令。
+- <run-js> 返回 \`output\`（console 文本）和 \`result\`（返回值）；出错时为 \`output\` 与 \`error\`。
 - 单个输出过大时只保留开头与结尾，完整内容会写入临时文件并在结果中给出路径；你可以用 <view-file> 分页查看，或用 <grep> 搜索匹配行。超过约 ${Math.round(OUTPUT_GUARD_LIMIT / 1000)}KB 的输出请优先用 <run-*> 而不是 <inline-*>（内联结果会直接插入消息）。
+- 执行标签支持 machine="机器id"、workdir="目录" 单次指定目标；未指定时使用当前目标。
 - 在解决简单问题时使用<inline-js>，并使用大数类型。
 - 在解决复杂数学相关问题时使用<run-js>。
 - 在操作电脑、查看文件、更改设置、播放音乐时使用<run-${defaultShell}>。
 ${getConnectedSubfounts(args.username).length === 1 ? `\
 - 用户对接其他 subfount 后，你也可以在其他机器上运行代码。
 ` : `\
-- 所有标签都支持可选属性 machine="机器id" 与 workdir="目录" 来单次指定目标机器和工作目录，如<run-pwsh machine="2" workdir="D:\\proj">
 - 需要在其他机器上执行时，先用 <list-machines> 查询目标id。
 - 远程机器上的js代码没有workspace/chat_log/callback等本地上下文，需要这些能力时请在本机执行。
 `}
@@ -95,18 +96,7 @@ js代码相关：
 - 复杂情况下，考虑有什么npm包可以满足你的需求，参照例子使用<run-js>+import。
   * 导入包需要符合deno的包名规范（追加\`npm|node|jsr:\`前缀），如\`npm:mathjs\`或\`node:fs\`。
 - 鼓励你在复杂情况下用workspace变量来存储工作数据，便于后续使用。
-  * 你可以设置workspace.XXX来存储变量，变量将持续到未来的run-js中直到你使用workspace.clear()清除。
-	如：[
-${args.UserCharname}: 帮我下载https://example.com/test.zip并解压到D盘
-${args.Charname}: <run-js>
-workspace.clear() // 新任务，清除之前的数据
-workspace.zip = await fetch('https://example.com/test.zip').then(res => res.arrayBuffer()) // 如果unzip出错的话也不用重新下载啦
-function unzip(buffer, path) {
-	//...
-}
-await unzip(workspace.zip, 'D:\\\\')
-</run-js>
-]
+  * \`workspace.data = ...\` 会跨 <run-js> 调用保留；开始新任务时可用 \`workspace.clear()\` 清空。
 - 你可以通过chat_log访问对话记录来获取/操作你无法直接查看的文件，其结构如下：
 {
 	name: string;
@@ -128,66 +118,9 @@ ${args.supported_functions?.add_message ? `\
   * 例子：<run-js>callback('unzip result', super_slow_async_function())</run-js>
   * 返回值：callback是异步的，你无法在<run-js>的当场看到callback结果。
 `: ''}
-- 你可以通过在js中使用\`view_files\`函数来查看但不发送文件，其可以传递代表文件路径或url的string或自buffer构建带有附加信息的结构体。
-  * 格式：await view_files(file1: {
-	name: string;
-	mime_type: string;
-	buffer: global.Buffer<ArrayBufferLike>;
-	description?: string;
-}, file2: string, ...)
-  * 例子：[
-${args.UserCharname}: 帮我用摄像头看看家里。
-${args.Charname}: <run-js>
-	import Webcam from 'npm:node-webcam'
-	import fs from 'node:fs'
-	const cam = Webcam.create({
-		//...
-	})
-	const imageBuffer = await new Promise((resolve, reject) => {
-		const tempFilePath = 'test_shot'
-		cam.capture(tempFilePath, (err, data) => {
-			try { fs.unlinkSync(\`./\${tempFilePath}.jpg\`) } catch {} // 这个库必定会创建临时文件，需要清理
-			if (data) resolve(data)
-			else reject(err)
-		})
-	})
-	if (imageBuffer)
-		await view_files({
-			name: 'captured_image.jpg',
-			mime_type: 'image/jpeg',
-			buffer: imageBuffer,
-			description: '让角色看看哦...'
-		})
-	else
-		console.error('Failed to capture image')
-</run-js>
-]
+- \`await view_files(file1, file2, ...)\` 只让你查看，不发送给用户；参数可为本地路径、URL 或 \`{ name, mime_type, buffer, description? }\`。
 ${args.supported_functions?.files ? `\
-- 你可以通过在js中使用\`add_files\`函数来查看并发送文件，其和上述view_files函数的格式一样。
-  * 例子：[
-${args.UserCharname}: 发我屏幕截图看看？
-${args.Charname}: <run-js>
-	import { Monitor } from 'npm:node-screenshots'
-	async function captureScreen() {
-		if (process.platform === 'linux' && !process.env.DISPLAY)
-			throw new Error('Cannot capture screen: No DISPLAY environment variable.')
-		const image = await Monitor.all()[0].captureImage()
-		return await image.toPng()
-	}
-	await add_files({
-		name: 'screenShot.png',
-		mime_type: 'image/png',
-		buffer: await captureScreen(),
-		description: '用户需要的屏幕截图'
-	})
-</run-js>
-${args.UserCharname}: 把E盘下的paper.pdf和我桌面的data.zip发来。
-${args.Charname}: <run-js>await add_files('E:\\paper.pdf','~/Desktop/data.zip')</run-js>
-${args.UserCharname}: 帮我下载http://host/file.txt然后发来。
-${args.Charname}: <run-js>await add_files('http://host/file.txt')</run-js>
-]
-  * 返回值：返回值必须被await。若使用string进行文件或url发送，可能抛出文件或网络错误。
-  * 除非明确要求发送文件，否则有关摄像头或屏幕截图等内容时你更应该使用view_files。
+- \`await add_files(file1, file2, ...)\` 用相同格式把文件发送给用户；例如 \`await add_files('~/Desktop/report.pdf')\`。仅需自己查看截图等内容时用 \`view_files\`。
 `: ''}
 ${codePluginPrompts}
 执行代码后若没得到想要的结果，鼓励反思原因并给出不同的解决方案。

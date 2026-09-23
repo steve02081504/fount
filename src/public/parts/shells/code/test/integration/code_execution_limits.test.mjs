@@ -224,7 +224,7 @@ Deno.test('code-execution run-js async="true" 登记统一异步任务并投递�
 	try {
 		const { logs, result, args } = createHandlerArgs()
 		args.chat_name = 'code-test'
-		result.content = '<run-js async="true">return 21 * 2</run-js>'
+		result.content = '<run-js async="true">console.log("async-output"); return 21 * 2</run-js>'
 		assertEquals(await runReplyHandlers(result, args, getCodeExecutionReplyHandlers()), true)
 		const dispatch = logs.find(entry => entry.name === 'code-execution.async')
 		assert(dispatch, '应写异步派发回执')
@@ -235,7 +235,7 @@ Deno.test('code-execution run-js async="true" 登记统一异步任务并投递�
 		while (getTask(id) && Date.now() < deadline) await new Promise(resolve => setTimeout(resolve, 20))
 		assertEquals(getTask(id), undefined, '任务完成后应从注册表移除')
 		const notes = takePendingNotifications({ username: 'test-user', charId: 'test-char', chatName: 'code-test', parentRunId: null })
-		assert(notes.some(note => note.content.includes('42')), '应投递包含结果的完成通知')
+		assert(notes.some(note => note.content.includes('output:') && note.content.includes('async-output') && note.content.includes('result: 42')), '应投递包含输出与结果的完成通知')
 	}
 	finally {
 		setAsyncToolingEnabled(false)
@@ -385,6 +385,21 @@ Deno.test('code-execution run-js 正常完成附耗时与结果', async () => {
 	assertStringIncludes(entry.content, '耗时')
 	assertStringIncludes(entry.content, '2')
 	assertStringIncludes(entry.content_for_show, '1 + 1', '人类展示层应含执行代码')
+})
+
+Deno.test('code-execution run-js 将 console 和返回值归为 output/result，错误归为 output/error', async () => {
+	for (const [code, expected] of [
+		['console.log("hello", 42); return { answer: 42 }', ['output:', 'hello 42', 'result:', 'answer: 42']],
+		['console.log("before error"); throw new Error("failed")', ['output:', 'before error', 'error:', 'failed']],
+	]) {
+		const { logs, result, args } = createHandlerArgs()
+		result.content = `<run-js>${code}</run-js>`
+		assertEquals(await runReplyHandlers(result, args, getCodeExecutionReplyHandlers()), true)
+		const entry = findToolEntry(logs)
+		for (const part of expected) assertStringIncludes(entry.content, part)
+		assert(!entry.content.includes('outputEntries'), '不应向模型展开 EvalResult 内部结构')
+		assert(!entry.content.includes('LogEntry'), '不应向模型展开 console 日志对象')
+	}
 })
 
 Deno.test('code-execution inline-js 结果就地替换展示层且不改 content', async () => {

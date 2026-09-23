@@ -622,25 +622,33 @@ function createInlineHandle(lang) {
  */
 async function executeRunJs({ runtime, args, call, limits, remote, stream }) {
 	const collecting = createCollectingConsole(stream ?? undefined)
+	const remoteOutput = []
+	/**
+	 * 收集远程控制台文本并转发实时输出。
+	 * @param {'stdout'|'stderr'} channel - 输出通道。
+	 * @param {string} data - 输出分片。
+	 * @returns {void} 无返回值。
+	 */
+	const onRemoteOutput = (channel, data) => { remoteOutput.push(String(data ?? '')); stream?.(channel, data) }
 	const { evalResult, timedOut, elapsedMs } = remote
-		? await runJsWithTimeout(() => runtime.executorFor(call.params).execJsWithTimeout(call.inner, limits.timeoutMs, { onOutput: stream ?? undefined, callbackPartpath: remoteToolCallbackPartpath(args) }), limits.timeoutMs)
+		? await runJsWithTimeout(() => runtime.executorFor(call.params).execJsWithTimeout(call.inner, limits.timeoutMs, { onOutput: onRemoteOutput, callbackPartpath: remoteToolCallbackPartpath(args) }), limits.timeoutMs)
 		: await runJsWithTimeout(() => runtime.runJscodeForAI(call.inner, collecting.console), limits.timeoutMs)
 	runtime.execedCodes[call.inner] = evalResult ?? { timedOut: true }
 	const elapsedText = formatElapsed(elapsedMs)
 	const parts = []
 	let html = ''
+	const output = remote ? remoteOutput.join('') : collecting.text()
 	if (timedOut) {
 		parts.push(`执行超时（耗时 ${elapsedText}）：JS 无法强制终止，代码可能仍在后台运行。`)
-		const partial = collecting.text()
-		if (partial) parts.push('超时前捕获的输出：', partial)
+		if (output) parts.push('超时前捕获的输出：', output)
 	}
-	else if (evalResult?.error) 
-		parts.push('执行出错：', evalResult.error.stack || String(evalResult.error))
-	
+	else if (evalResult?.error)
+		parts.push('执行出错：', util.inspect({ output, error: evalResult.error }, { depth: 4 }))
 	else {
-		parts.push('执行结果：', util.inspect(evalResult, { depth: 4 }))
+		const summary = { output, result: remote ? evalResult : evalResult?.result }
+		parts.push('执行结果：', util.inspect(summary, { depth: 4 }))
 		if (elapsedText) parts.push(`（耗时 ${elapsedText}）`)
-		html = renderValueHtml(evalResult)
+		html = renderValueHtml(summary)
 	}
 	const notice = formatTimeoutNotice({ timedOut, elapsedMs, waitForever: limits.waitForever, expectMs: limits.expectMs, toleranceMs: limits.toleranceMs, kind: 'js' })
 	if (notice) parts.push(notice.trim())
@@ -716,7 +724,6 @@ export const runJsReplyHandler = defineReplyHandler({
 		emit?.({ callId, phase: 'start', name, lang: 'js', code: call.inner })
 		const { fullOutput, html, suffix } = await executeRunJs({ runtime, args, call, limits, remote, stream })
 		emit?.({ callId, phase: 'end', name })
-		console.info(`${args.Charname} JS result:`, runtime.execedCodes[call.inner])
 		const guarded = await guardOutput(fullOutput, { name: 'run-js', label: 'JS 结果' })
 		const body = html && !guarded.truncated
 			? `执行结果：\n\n${html}${suffix ? `\n\n${suffix}` : ''}`

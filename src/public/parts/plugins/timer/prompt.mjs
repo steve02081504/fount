@@ -12,29 +12,20 @@ import { takePendingNotification } from './state.mjs'
 const TIMER_PROMPT = `\
 你可以设置定时器，在指定时间或条件满足时自动触发一次新回复。
 
-**设置定时器**（每个 <item> 为一条，可以一次设多条）：
+定时器操作：<set-timer> 设置（可含多个 <item>）；<list-timers/> 列出；<remove-timer> 每行一个 reason 删除。
+
+设置示例：
 <set-timer>
 <item>
-  <reason>提醒事项或定时器用途（用于识别和删除）</reason>
+  <reason>提醒事项</reason>
   <time>3小时</time>
-  <!-- 或 <trigger>Date.now() >= 1234567890000</trigger> -->
-  <repeat>false</repeat>
 </item>
 </set-timer>
 
-- <reason>：必填，定时器的唯一说明，用于后续列出或删除。
-- <time>：自然语言时长，如 \`30秒\`、\`5分钟\`、\`2小时\`、\`3天\`、\`1周\`、\`2 hours\`、\`3 days\`。
-- <trigger>：JS 表达式字符串，每 500ms 求值一次，结果为 truthy 时触发（边沿触发）。
-- <repeat>：\`true\` 表示重复触发，\`false\`（默认）表示仅触发一次。
-- <time> 和 <trigger> 二选一，不可同时使用。
+- <reason> 必填，作为识别与删除用的唯一说明；<time> 为自然语言时长（如 \`30秒\`、\`2 hours\`），或改用 <trigger>JS 条件表达式</trigger>（每 500ms 检查一次，边沿触发），二选一。
+- <repeat>true</repeat> 表示重复触发，省略或为 false 时仅触发一次。
 
-**查看当前定时器**：
-<list-timers></list-timers>
-
-**删除定时器**（每行一个 reason）：
-<remove-timer>
-定时器说明
-</remove-timer>
+查看：<list-timers/>；删除：<remove-timer>提醒事项</remove-timer>（可分行填写多个 reason）。
 `
 
 /**

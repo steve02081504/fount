@@ -96,6 +96,42 @@ Deno.test('runRipgrep glob lists matching files relative to root', async () => {
 	}
 })
 
+Deno.test('runRipgrep glob matches relative paths, unions patterns, and lists first-level directories', async () => {
+	const root = await tempDir()
+	try {
+		await seedWorkspace(root)
+		await fs.mkdir(path.join(root, 'chat'))
+		await fs.mkdir(path.join(root, 'social'))
+		await fs.mkdir(path.join(root, 'empty'))
+		await fs.mkdir(path.join(root, 'sub', 'nested'))
+		await fs.mkdir(path.join(root, 'ignored'))
+		await fs.writeFile(path.join(root, '.gitignore'), 'ignored/\n')
+		await fs.writeFile(path.join(root, 'ignored', 'main.mjs'), '')
+		await fs.writeFile(path.join(root, 'chat', 'main.mjs'), '')
+		await fs.writeFile(path.join(root, 'social', 'main.mjs'), '')
+		await fs.writeFile(path.join(root, 'main.mjs'), '')
+		for (const pattern of ['*/main.mjs', '{chat,social}/main.mjs']) {
+			const result = await runRipgrep({ mode: 'glob', root, patterns: [pattern], limit: 20 })
+			assertEquals(result.files, ['chat/main.mjs', 'social/main.mjs'], pattern)
+		}
+		const literal = await runRipgrep({ mode: 'glob', root, patterns: ['chat/main.mjs', 'social/main.mjs'], limit: 20 })
+		assertEquals(literal.files, ['chat/main.mjs', 'social/main.mjs'])
+		const basename = await runRipgrep({ mode: 'glob', root, patterns: ['main.mjs'], limit: 20 })
+		assertEquals(basename.files, ['chat/main.mjs', 'main.mjs', 'social/main.mjs'])
+		const union = await runRipgrep({ mode: 'glob', root, patterns: ['*/main.mjs', '*/fount.json'], limit: 20 })
+		assertEquals(union.files, ['chat/main.mjs', 'social/main.mjs'])
+		const dirs = await runRipgrep({ mode: 'glob', root, patterns: ['*/'], limit: 20 })
+		assertEquals(dirs.files, ['chat/', 'empty/', 'social/', 'sub/'])
+		const deep = await runRipgrep({ mode: 'glob', root, patterns: ['**/'], limit: 20 })
+		assertEquals(deep.files, ['chat/', 'empty/', 'social/', 'sub/', 'sub/nested/'])
+		const nested = await runRipgrep({ mode: 'glob', root, patterns: ['sub/*/'], limit: 20 })
+		assertEquals(nested.files, ['sub/nested/'])
+	}
+	finally {
+		await fs.rm(root, { recursive: true, force: true })
+	}
+})
+
 Deno.test('runRipgrep glob truncates at limit', async () => {
 	const root = await tempDir()
 	try {
@@ -169,6 +205,9 @@ Deno.test('file-operations handler executes <glob> and <grep> tags', async () =>
 		assertEquals(await runFileOps('<glob path=".">**/*.mjs</glob>', globRun.args), true)
 		const globContent = globRun.logs.map(entry => entry.content).join('\n')
 		assert(globContent.includes('a.mjs') && globContent.includes('sub/c.mjs'), `glob output: ${globContent}`)
+		const mixedRun = createHandlerArgs(root)
+		assertEquals(await runFileOps('<glob path=".">*/\nsub/c.mjs</glob>', mixedRun.args), true)
+		assert(mixedRun.logs[0].content.includes('sub/\nsub/c.mjs'), `glob multi-line output: ${mixedRun.logs[0].content}`)
 
 		const grepRun = createHandlerArgs(root)
 		assertEquals(await runFileOps('<grep include="*.mjs">hello</grep>', grepRun.args), true)

@@ -325,7 +325,7 @@ export function isContainerEntry(entry: chatLogEntry_t): boolean {
  * @param {chatLogEntry_t} entry 日志条目
  * @returns {boolean} 是否为问候条目
  */
-export function isGreetingEntry(entry: chatLogEntry_t): boolean {
+export function isGreetingEntry(entry: chatLogEntry_t): entry is chatLogEntry_t & { type: string } {
 	return typeof entry?.type === 'string' && entry.type.startsWith(`${GREETING_ENTRY_TYPE}:`)
 }
 

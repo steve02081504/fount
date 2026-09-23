@@ -7,7 +7,7 @@
  * @typedef {object} ripgrepParams_t
  * @property {'glob'|'grep'} mode - 搜索模式。
  * @property {string} [root] - 搜索根目录（绝对路径；缺省为进程工作目录）。
- * @property {string[]} [patterns] - glob 模式列表（mode='glob'，多模式为“或”关系）。
+ * @property {string[]} [patterns] - 相对 root 的 glob 模式列表（mode='glob'，多模式为“或”关系；末尾 / 匹配目录）。
  * @property {string} [pattern] - 正则表达式（mode='grep'，Rust regex 语法）。
  * @property {string[]} [includes] - 文件名 glob 过滤器（mode='grep'）。
  * @property {boolean} [filesOnly] - 仅返回命中的文件路径（mode='grep'）。
@@ -41,29 +41,91 @@ export async function runRipgrep(params) {
 	const root = params.root || '.'
 	const limit = params.limit > 0 ? params.limit : 100
 	/**
-	 * 将 ripgrep 输出的绝对路径转为相对 root 的 `/` 分隔路径。
-	 * @param {string} p - 绝对路径。
+	 * 将 ripgrep 输出路径转为相对 root 的 `/` 分隔路径。
+	 * @param {string} p - 绝对或相对路径。
 	 * @returns {string} 相对路径。
 	 */
-	const toRelative = p => (path.relative(root, p) || p).replace(/\\/g, '/')
+	const toRelative = p => (path.relative(path.isAbsolute(p) ? root : '.', p) || p).replace(/\\/g, '/')
 
 	/**
 	 * 执行 ripgrep 并返回 { code, stdout, stderr }。
 	 * @param {string[]} args - ripgrep 参数。
+	 * @param {object} [options] - WASI 预打开目录等选项。
 	 * @returns {Promise<{code: number, stdout: string, stderr: string}>} 执行结果。
 	 */
-	const exec = async args => {
-		const { code, stdout, stderr } = await ripgrep(args, { buffer: true })
+	const exec = async (args, options = {}) => {
+		const { code, stdout, stderr } = await ripgrep(args, { buffer: true, ...options })
 		return { code, stdout: String(stdout || ''), stderr: String(stderr || '') }
 	}
 
 	if (params.mode === 'glob') {
-		const args = ['--files']
-		for (const glob of params.patterns || []) args.push('--glob', glob)
-		args.push(root)
-		const { code, stdout, stderr } = await exec(args)
+		const patterns = params.patterns || []
+		const filePatterns = patterns.filter(glob => !glob.endsWith('/'))
+		const dirPatterns = patterns.filter(glob => glob.endsWith('/'))
+		const { default: picomatch } = await import('npm:picomatch')
+		const args = ['--files', '--no-require-git', '.']
+		// WASI 的 `.` 指向搜索根：传绝对 root 作为位置参数会让含目录段的 glob
+		// 从进程工作目录而非搜索根开始匹配（`*/main.mjs` 等因此失效）。
+		// 让 rg 负责忽略规则，随后按相对路径匹配；正向 -g 会越过 .gitignore。
+		const { code, stdout, stderr } = filePatterns.length || !dirPatterns.length
+			? await exec(args, { preopens: { '.': root } })
+			: { code: 0, stdout: '', stderr: '' }
 		if (code > 1) return { ok: false, mode: 'glob', truncated: false, total: 0, error: stderr || `ripgrep exited with code ${code}` }
-		const files = stdout.split('\n').map(line => line.trim()).filter(Boolean).map(toRelative).sort()
+		const fileMatches = filePatterns.map(glob => picomatch(glob, { basename: !glob.includes('/') }))
+		const files = stdout.split('\n').map(line => line.trim()).filter(Boolean).map(toRelative)
+			.filter(file => !filePatterns.length || fileMatches.some(match => match(file)))
+		if (dirPatterns.length) {
+			const { default: fs } = await import('node:fs/promises')
+			const matches = dirPatterns.map(glob => picomatch(glob.slice(0, -1), { dot: false }))
+			const maxDepth = dirPatterns.some(glob => glob.includes('**'))
+				? Infinity
+				: Math.max(...dirPatterns.map(glob => glob.slice(0, -1).split('/').length))
+			/**
+			 * 遍历目录并沿用父级忽略规则，包含空目录。
+			 * @param {string} dir - 当前绝对目录。
+			 * @param {string} relative - 相对搜索根的目录。
+			 * @param {Array<{base: string, negated: boolean, matches: (candidate: string) => boolean}>} inherited - 上层忽略规则。
+			 * @returns {Promise<void>} 遍历完成。
+			 */
+			const visit = async (dir, relative = '', inherited = []) => {
+				const rules = [...inherited]
+				for (const filename of ['.gitignore', '.ignore']) {
+					const contents = await fs.readFile(path.join(dir, filename), 'utf8').catch(() => '')
+					for (const raw of contents.split(/\r?\n/)) {
+						const line = raw.trim()
+						if (!line || line.startsWith('#')) continue
+						const negated = line.startsWith('!')
+						const pattern = (negated ? line.slice(1) : line).replace(/\/$/, '')
+						const anchored = pattern.startsWith('/') || pattern.includes('/')
+						const normalized = pattern.replace(/^\//, '')
+						const match = picomatch(normalized, { dot: true })
+						rules.push({
+							negated,
+							base: relative,
+							/**
+							 * 判断规则是否命中相对于其所在目录的路径。
+							 * @param {string} candidate - 待判断的相对路径。
+							 * @returns {boolean} 是否匹配。
+							 */
+							matches: candidate => match(anchored ? candidate : candidate.split('/').at(-1)),
+						})
+					}
+				}
+				for (const entry of await fs.readdir(dir, { withFileTypes: true })) {
+					if (!entry.isDirectory() || entry.name.startsWith('.')) continue
+					const rel = relative ? `${relative}/${entry.name}` : entry.name
+					let ignored = false
+					for (const rule of rules)
+						if ((!rule.base || rel.startsWith(`${rule.base}/`)) && rule.matches(rule.base ? rel.slice(rule.base.length + 1) : rel))
+							ignored = !rule.negated
+					if (ignored) continue
+					if (matches.some(match => match(rel))) files.push(`${rel}/`)
+					if (rel.split('/').length < maxDepth) await visit(path.join(dir, entry.name), rel, rules)
+				}
+			}
+			await visit(root)
+		}
+		files.sort()
 		return { ok: true, mode: 'glob', truncated: files.length > limit, total: files.length, files: files.slice(0, limit) }
 	}
 
