@@ -1,8 +1,8 @@
 /**
  * 【文件】src/public/parts/plugins/async-task/registry.mjs
- * 【职责】通用异步任务注册表的纯内存实现：登记后台任务、列出/等待（all|any）、完成后投递通知并即刻释放。
+ * 【职责】通用异步任务注册表的纯内存实现：登记后台任务、列出/等待（all|any）、完成通知与父生成内的结果回捞。
  * 【原理】任意生产者（sub-agent、code-execution）把后台 Promise 交给 registerTask 换取统一 id；任务完成时若尚未被 <await-async> 消费，
- *   就按其所属频道投递完成通知（根频道经 shell 的 `AddChatLogEntry` 追加只角色可见的系统条目并安排生成，子代落入待注入队列），随后从注册表删除——已完成任务不留存。
+ *   就按其所属频道投递完成通知（根频道经 shell 的 `AddChatLogEntry` 追加只角色可见的系统条目并安排生成，子代落入待注入队列）；已结算结果在父生成结束或被 await 取走时释放。
  *   本模块不 import `src/server/**`，只依赖全局 `AbortController` / `crypto`，因此可在 `test/pure` 零 I/O 直接测试。
  * 【数据结构】asyncTask_t；任务表 `Map<id, task>`；频道注册表 `Map<agentKey, args[]>`；待注入通知 `Map<queueKey, entry[]>`。
  * 【关联】prompt.mjs 注入工具说明与通知；handler.mjs 解析 `<list-async>` / `<await-async>`；sub-agent/runtime.mjs 与 code-execution/handler.mjs 注册任务。
@@ -15,6 +15,7 @@ import { chatScopeId } from '../../shells/chat/src/lib/chatScopeId.mjs'
  * @property {string} [charId] 所属角色
  * @property {string} [chatName] 派生该任务的频道名
  * @property {string | null} [parentRunId] 父异步任务 id（根任务为 null）
+ * @property {string | null} [generationId] 派生任务的父生成 id
  */
 
 /**
@@ -30,6 +31,7 @@ import { chatScopeId } from '../../shells/chat/src/lib/chatScopeId.mjs'
  * @property {number | null} finishedAt 结束时间
  * @property {boolean} consumed 是否已被 `<await-async>` 消费（消费后不再投递通知）
  * @property {boolean} notified 是否已投递完成通知
+ * @property {boolean} generationEnded 父生成循环是否已结束
  * @property {Promise<asyncTask_t>} done 完成 Promise（结算为任务自身）
  * @property {object} meta 生产者附加数据
  * @property {(task: asyncTask_t) => string} [format] 自定义完成通知文本
@@ -127,6 +129,7 @@ export function ownerFromArgs(args) {
 		channelId,
 		chatScopeId: chatScopeId(chatName, channelId),
 		parentRunId: args?.extension?.subAgent?.runId ?? null,
+		generationId: args?.extension?.generationId ?? null,
 	}
 }
 
@@ -186,6 +189,7 @@ export function registerTask({ id, kind, label = '', owner = {}, run, meta = {},
 		finishedAt: null,
 		consumed: false,
 		notified: false,
+		generationEnded: false,
 		done: /** @type {any} */ null,
 		meta,
 		format,
@@ -203,7 +207,7 @@ export function registerTask({ id, kind, label = '', owner = {}, run, meta = {},
 }
 
 /**
- * 结算任务：写入终态，（未被消费时）投递通知，然后从注册表移除。
+ * 结算任务：写入终态、（未被消费时）投递通知，保留到父生成结束或结束后 await。
  * @param {asyncTask_t} task 任务
  * @param {'done' | 'failed'} state 终态
  * @param {unknown} result 结果
@@ -218,7 +222,7 @@ function finishTask(task, state, result, error) {
 	task.finishedAt = Date.now()
 	if (!task.consumed)
 		void deliverNotification(task).catch(err => console.warn('async-task: 完成通知投递失败', err))
-	tasks.delete(task.id)
+	if (task.consumed || task.generationEnded || !task.owner?.generationId) tasks.delete(task.id)
 	emitTaskEvent('settle', task)
 	return task
 }
@@ -319,12 +323,26 @@ async function deliverNotification(task) {
 }
 
 /**
- * 读取一个任务（已完成并被回收则返回 undefined）。
+ * 读取一个任务（已释放则返回 undefined）。
  * @param {string} id 任务 id
  * @returns {asyncTask_t | undefined} 任务
  */
 export function getTask(id) {
 	return tasks.get(id)
+}
+
+/**
+ * 父生成（含 regen loop）结束：释放已结算结果；运行中的任务在日后结算时释放。
+ * @param {string | null | undefined} generationId 父生成 id
+ * @returns {void}
+ */
+export function finishAsyncGeneration(generationId) {
+	if (!generationId) return
+	for (const task of tasks.values()) {
+		if (task.owner?.generationId !== generationId) continue
+		task.generationEnded = true
+		if (task.finishedAt !== null) tasks.delete(task.id)
+	}
 }
 
 /**
@@ -342,7 +360,7 @@ function canInspect(taskOwner = {}, requester = {}) {
 }
 
 /**
- * 检视一个**运行中**的异步任务（只读：不消费、不抑制完成通知；已结算任务不入注册表故不可检视）。
+ * 检视一个**运行中**的异步任务（只读：不消费、不抑制完成通知）。
  * @param {string} id 任务 id
  * @param {asyncTaskOwner_t} [requester] 请求者归属
  * @returns {{ok: true, task: asyncTask_t, preview: unknown} | {ok: false, reason: 'not_found'|'settled'|'forbidden'|'unsupported'}} 检视结果
@@ -369,7 +387,7 @@ export function inspectTask(id, requester = {}) {
  */
 export function listTasks(filter = {}) {
 	return [...tasks.values()]
-		.filter(task => matchesFilter(task, filter))
+		.filter(task => task.finishedAt === null && matchesFilter(task, filter))
 		.sort((a, b) => a.startedAt - b.startedAt)
 }
 
@@ -398,15 +416,17 @@ export function listTasksForOwner(owner = {}, filter = {}) {
  * @param {'all' | 'any'} [options.mode='all'] 等待模式
  * @param {number | null} [options.timeoutMs=null] 超时毫秒；null 表示不限时
  * @param {AbortSignal} [options.signal] 中断信号
+ * @param {asyncTaskOwner_t} [options.requester] 请求者归属
  * @returns {Promise<{ settled: asyncTask_t[], pending: string[], unknown: string[], timedOut: boolean }>} 等待结果
  */
-export async function awaitTasks(ids, { mode = 'all', timeoutMs = null, signal } = {}) {
+export async function awaitTasks(ids, { mode = 'all', timeoutMs = null, signal, requester } = {}) {
 	const unique = [...new Set((ids ?? []).map(String).filter(Boolean))]
 	const known = []
 	const unknown = []
 	for (const id of unique) {
 		const task = tasks.get(id)
-		if (task) {
+		if (task && (!requester || (canInspect(task.owner, requester) &&
+			(task.finishedAt === null || task.owner?.generationId === requester.generationId)))) {
 			task.consumed = true
 			known.push(task)
 		}
@@ -442,6 +462,7 @@ export async function awaitTasks(ids, { mode = 'all', timeoutMs = null, signal }
 		if (task.finishedAt === null) task.consumed = false
 
 	const settled = known.filter(task => task.finishedAt !== null)
+	for (const task of settled) tasks.delete(task.id)
 	const pending = known.filter(task => task.finishedAt === null).map(task => task.id)
 	return { settled, pending, unknown, timedOut }
 }

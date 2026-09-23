@@ -19,7 +19,7 @@ const ASYNC_TASK_PROMPT = `\
 **检视一个运行中的异步任务的最新进展（只读，不等待、不消费）：**
 <inspect-async id="任务id"/>
 - 子代理返回最近的对话；JS 返回控制台输出的最后一段；shell 返回 stdall 的最后一段。
-- 只对**运行中**的任务有效；已结束的任务请查看完成通知，或用 \`<await-async>\` 取回结果。
+- 只对**运行中**的任务有效；已结束的任务可在本次生成结束前用 \`<await-async>\` 取回结果。
 
 **等待一个或多个异步任务：**
 <await-async ids="id1,id2" mode="all" time-limit="5m"/>
@@ -27,6 +27,7 @@ const ASYNC_TASK_PROMPT = `\
 - \`mode="all"\`（默认）等全部完成；\`mode="any"\` 等任一完成。
 - \`time-limit\`（可选）：最长等待时长，如 \`90s\`、\`5m\`；缺省 3 分钟。超时会返回已完成任务的结果与仍在进行的任务 id。
 - 被 \`<await-async>\` 等待的任务完成时不会再单独发通知；未被等待的任务完成后会以系统消息通知你。
+- 已结束的任务在本次生成循环内仍可按 id 取回一次；取回或生成结束后释放结果。
 
 产生异步任务：\`<run-subagent async="true">\`、\`<run-js async="true">\`、\`<run-<shell> async="true">\`。
 `

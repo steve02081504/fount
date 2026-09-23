@@ -7,7 +7,7 @@ import { defineReplyHandler } from '../../shells/chat/src/reply/defineReplyHandl
 import { defaultDisplay } from '../../shells/chat/src/reply/display.mjs'
 import { getChatI18n, inferCodeLanguageFromPath, renderMarkdownCodeBlock } from '../../shells/chat/src/streaming/index.mjs'
 
-import { collectLoadedHashes, collectUpwardContext, formatUpwardContext } from './src/context_files.mjs'
+import { collectLoadedHashes, collectUpwardContext, formatUpwardContext, hashContent } from './src/context_files.mjs'
 import { applyEol, applyReplacement, detectTextStyle, renderLineDiff, restoreBom, similarityRatio, stripBom, toLf } from './src/edit_safety.mjs'
 import { formatReadWindowNotice, isProbablyTextBuffer, parseReadWindow, windowText } from './src/read_window.mjs'
 import { runRipgrep } from './src/search.mjs'
@@ -64,6 +64,10 @@ function resolveKnownContextHashes(args) {
 	if (!record || record.summaryKey !== summaryKey)
 		record = { summaryKey, hashes: new Set() }
 	for (const hash of collectLoadedHashes(merged)) record.hashes.add(hash)
+	// code world 已把工作区根 AGENTS.md 放在 system prompt；不再由 view-file 复制一次。
+	for (const text of args?.prompt_struct?.world_prompt?.text ?? [])
+		if (text?.description?.startsWith('AGENTS.md (') && typeof text.content === 'string')
+			record.hashes.add(hashContent(text.content))
 	inFlightContextHashes.set(key, record)
 	return record.hashes
 }
@@ -316,7 +320,11 @@ export const viewFileReplyHandler = defineReplyHandler({
 				}
 				const buffer = await executor.readFileBuffer(filepath)
 				if (isProbablyTextBuffer(buffer)) {
-					file_content += renderReadResult(filepath, buffer.toString('utf-8'), readWindow)
+					const text = buffer.toString('utf-8')
+					file_content += renderReadResult(filepath, text, readWindow)
+					const shown = windowText(text, readWindow)
+					if (shown.startLine === 1 && shown.endLine === shown.totalLines && !shown.truncatedLineCount)
+						knownContextHashes.add(hashContent(text))
 					// 向上收集 AGENTS.md 与触发的 .agents/docs 文档，按内容 hash 去重：生效窗口内已注入过的跳过
 					const context = await collectUpwardContext(executor, target.workdir, filepath)
 					const freshAgents = context.agents.filter(item => !knownContextHashes.has(item.hash))

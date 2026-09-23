@@ -17,6 +17,7 @@ import { isEntityHash128, parseEntityHash } from 'npm:@steve02081504/fount-p2p/c
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { getPartDetails } from '../../../../../../../server/parts_loader.mjs'
+import { finishAsyncGeneration } from '../../../../../plugins/async-task/registry.mjs'
 import { ensureChatExtension } from '../../../public/shared/messageFields.mjs'
 import { ensureLocalAgentEntityHash, memberEntityHash } from '../../entity/member.mjs'
 import {
@@ -286,6 +287,7 @@ export async function executeGeneration(groupId, request, stream, placeholderEnt
 		}
 		finally {
 			if (typingTimer) clearInterval(typingTimer)
+			finishAsyncGeneration(generationId)
 		}
 
 		if (charReply === null) {

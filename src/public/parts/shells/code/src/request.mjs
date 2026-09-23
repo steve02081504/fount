@@ -12,6 +12,7 @@ import { localhostLocales } from '../../../../../scripts/i18n/bare.mjs'
 import { getPartInfo } from '../../../../../scripts/locale.mjs'
 import { guardOutput } from '../../../../../scripts/shell_guard.mjs'
 import { getAnyPreferredDefaultPart, loadPart } from '../../../../../server/parts_loader.mjs'
+import { finishAsyncGeneration } from '../../../plugins/async-task/registry.mjs'
 
 import { codeWorld } from './world.mjs'
 
@@ -214,7 +215,12 @@ async function buildCodeChatRequest({ username, session, requestSession, machine
  */
 export async function triggerCodeReply(options) {
 	const request = await buildCodeChatRequest(options)
-	const worldReply = await request.world.interfaces.chat.GetCharReply?.(request, request.char_id)
-	const reply = worldReply ?? await request.char.interfaces.chat.GetReply(request)
-	return { reply, memory: request.chat_scoped_char_memory }
+	try {
+		const worldReply = await request.world.interfaces.chat.GetCharReply?.(request, request.char_id)
+		const reply = worldReply ?? await request.char.interfaces.chat.GetReply(request)
+		return { reply, memory: request.chat_scoped_char_memory }
+	}
+	finally {
+		finishAsyncGeneration(request.extension?.generationId)
+	}
 }

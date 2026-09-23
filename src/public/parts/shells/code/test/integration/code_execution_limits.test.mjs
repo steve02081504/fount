@@ -402,6 +402,8 @@ Deno.test('code-execution inline-js 结果就地替换展示层且不改 content
 	assertStringIncludes(String(toolCard.content_for_show), '1 + 1')
 	assertStringIncludes(String(toolCard.content_for_show), '2')
 	assert(!logs.some(log => log.role === 'char'), 'handler 不应以 char 角色重放工具调用')
+	assertStringIncludes(toolCard.content, '2', '角色应直接在内联工具卡回执中拿到结果')
+	assert(!logs.some(log => log.name === 'inline-rendered'), '已在工具回执包含结果时无需第二份汇总')
 })
 
 Deno.test('runReplyHandlers 中 run-* 容器整段消耗，不触发内层 inline-js', async () => {

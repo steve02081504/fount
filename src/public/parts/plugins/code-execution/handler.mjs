@@ -19,6 +19,7 @@ import {
 	runJsWithTimeout,
 	SHELL_DEFAULT_TIMEOUT_MS,
 	OUTPUT_GUARD_LIMIT,
+	truncateOutput,
 } from '../../../../scripts/shell_guard.mjs'
 import { defineReplyHandler } from '../../shells/chat/src/reply/defineReplyHandler.mjs'
 import { defaultDisplay } from '../../shells/chat/src/reply/display.mjs'
@@ -594,14 +595,16 @@ function createInlineHandle(lang) {
 			})
 			return { regen: true }
 		}
+		const { text, truncated, omitted } = truncateOutput(String(call.value ?? ''), { limit: 4000, head: 2000, tail: 2000 })
 		args.AddLongTimeLog({
 			name: `code-execution.inline-${lang}`,
 			role: 'tool',
-			content: `内联${lang}代码执行和替换完毕\n`,
+			content: `内联${lang}结果：${text}${truncated ? `\n（中间省略 ${omitted} 字符）` : ''}`,
 			content_for_show: buildInlineToolCard([{ code: call.inner, result: call.value }], lang),
 			files: [],
 			charVisibility: [args.char_id],
 		})
+		call.inlineResultLogged = true
 		return {}
 	}
 }

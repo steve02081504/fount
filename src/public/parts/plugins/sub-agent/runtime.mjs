@@ -10,7 +10,7 @@
 import { beginPromptRequest, collectGenerationRecord, finishPromptRequest } from '../../shells/agent_studio/src/request_record.mjs'
 import { buildPromptStruct } from '../../shells/chat/src/prompt_struct/index.mjs'
 import { runReplyHandlers } from '../../shells/chat/src/reply/handlerPipeline.mjs'
-import { ownerFromArgs, registerTask } from '../async-task/registry.mjs'
+import { finishAsyncGeneration, ownerFromArgs, registerTask } from '../async-task/registry.mjs'
 
 import { cleanupExpiredArchives, projectArchiveEntries, removeParentArchive, writeParentArchive } from './archive.mjs'
 import { makeRoundBudgetEntry } from './prompt.mjs'
@@ -595,6 +595,7 @@ export async function executeSubAgentRun(run, deps = defaultSubAgentDeps) {
 	}
 	finally {
 		if (run.timer) clearTimeout(run.timer)
+		finishAsyncGeneration(run.runId)
 		run.finishedAt = deps.now()
 		deps.archive.removeParentArchive(run.archivePath)
 		emitRunStatus(run, deps)

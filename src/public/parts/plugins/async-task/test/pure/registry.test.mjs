@@ -6,6 +6,7 @@ import { assert, assertEquals } from 'jsr:@std/assert'
 
 import {
 	awaitTasks,
+	finishAsyncGeneration,
 	getTask,
 	inspectTask,
 	listTasks,
@@ -93,6 +94,71 @@ Deno.test('registerTask settles, notifies, and releases the task', async () => {
 	assertEquals(notes.length, 1)
 	assert(notes[0].content.includes('hello'))
 	assertEquals(takePendingNotifications(target), [])
+})
+
+Deno.test('settled tasks remain awaitable until consumed or their parent generation ends', async () => {
+	resetAsyncTaskState()
+	const target = owner({ generationId: 'generation-1' })
+	const task = registerTask({ kind: 'js', owner: target, run: resolveWith('late result') })
+	await task.done
+	const result = await awaitTasks([task.id], { requester: target })
+	assertEquals(result.settled[0].result, 'late result')
+	assertEquals(getTask(task.id), undefined, '结束后 await 应释放结果')
+	assertEquals((await awaitTasks([task.id], { requester: target })).unknown, [task.id])
+})
+
+Deno.test('parent generation end releases settled tasks and late-settling tasks', async () => {
+	resetAsyncTaskState()
+	const target = owner({ generationId: 'generation-end' })
+	const settled = registerTask({ kind: 'js', owner: target, run: resolveWith('early') })
+	const late = deferred()
+	const running = registerTask({ kind: 'js', owner: target, run: late.run })
+	await settled.done
+	assertEquals(listTasks({ username: 'u' }).map(task => task.id), [running.id])
+	finishAsyncGeneration('generation-end')
+	assertEquals(getTask(settled.id), undefined)
+	assertEquals(getTask(running.id)?.state, 'running')
+	late.release('later')
+	await running.done
+	assertEquals(getTask(running.id), undefined)
+})
+
+Deno.test('failed tasks are also retrievable after settlement within the parent generation', async () => {
+	resetAsyncTaskState()
+	const target = owner({ generationId: 'failed-generation' })
+	const task = registerTask({ kind: 'js', owner: target, run: alwaysThrow() })
+	await task.done
+	const result = await awaitTasks([task.id], { requester: target })
+	assertEquals(result.settled[0].state, 'failed')
+	assertEquals(result.settled[0].error.message, 'boom')
+	assertEquals(getTask(task.id), undefined)
+})
+
+Deno.test('await-async cannot consume a foreign task or another generation result', async () => {
+	resetAsyncTaskState()
+	const target = owner({ generationId: 'generation-owner' })
+	const task = registerTask({ kind: 'js', owner: target, run: resolveWith('secret') })
+	await task.done
+	assertEquals((await awaitTasks([task.id], { requester: owner({ chatName: 'foreign' }) })).unknown, [task.id])
+	assertEquals((await awaitTasks([task.id], { requester: owner({ generationId: 'different' }) })).unknown, [task.id])
+	assertEquals(getTask(task.id)?.result, 'secret')
+	finishAsyncGeneration(target.generationId)
+})
+
+Deno.test('a later generation can still inspect and await a running task in the same conversation', async () => {
+	resetAsyncTaskState()
+	const original = owner({ generationId: 'original' })
+	const later = owner({ generationId: 'later' })
+	const deferredRun = deferred()
+	const task = registerTask({
+		kind: 'js', owner: original, run: deferredRun.run,
+		/** @returns {string} Running task preview. */
+		inspect: () => 'still running',
+	})
+	assertEquals(inspectTask(task.id, later).ok, true)
+	const waiting = awaitTasks([task.id], { requester: later })
+	deferredRun.release('done in later generation')
+	assertEquals((await waiting).settled[0].result, 'done in later generation')
 })
 
 Deno.test('registerTask emits start and settle lifecycle events', async () => {
@@ -423,6 +489,7 @@ Deno.test('ownerFromArgs derives the owner from a request', () => {
 		channelId: null,
 		chatScopeId: 'chat-1',
 		parentRunId: null,
+		generationId: null,
 	})
 	assertEquals(ownerFromArgs({ username: 'u', char_id: 'c', chat_name: 'chat-1', extension: { subAgent: { runId: 'p' } } }).parentRunId, 'p')
 	assertEquals(ownerFromArgs({ username: 'u', char_id: 'c', chat_name: 'chat-1', extension: { channelId: 'general' } }).chatScopeId, 'chat-1::general')

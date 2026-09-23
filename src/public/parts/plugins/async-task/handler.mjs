@@ -150,7 +150,7 @@ export const awaitAsyncHandler = defineReplyHandler({
 		const mode = String(call.params.mode ?? '').trim().toLowerCase() === 'any' ? 'any' : 'all'
 		const timeoutMs = parseDurationMs(call.params['time-limit']) ?? DEFAULT_AWAIT_TIMEOUT_MS
 		try {
-			const result = await awaitTasks(ids, { mode, timeoutMs, signal: args.generation_options?.signal })
+			const result = await awaitTasks(ids, { mode, timeoutMs, signal: args.generation_options?.signal, requester: ownerFromArgs(args) })
 			writeToolLog(args, 'async-task.await', formatAwaitResult(result, mode), false, {
 				extension: {
 					asyncAwait: {
@@ -201,10 +201,10 @@ function inspectPreviewText(preview) {
  */
 function inspectFailureText(reason, id) {
 	switch (reason) {
-		case 'settled': return `异步任务 "${id}" 已结束，请查看完成通知或用 <await-async ids="${id}"/> 取回结果。`
+		case 'settled': return `异步任务 "${id}" 已结束，请在父生成循环结束前用 <await-async ids="${id}"/> 取回结果。`
 		case 'forbidden': return `异步任务 "${id}" 不属于当前会话，无法检视。`
 		case 'unsupported': return `异步任务 "${id}" 暂不支持检视。`
-		default: return `未找到运行中的异步任务 "${id}"（可能已完成并释放，或 id 有误）。已完成的结果请查看完成通知，或用 <await-async ids="${id}"/> 取回。`
+		default: return `未找到异步任务 "${id}"（可能已被取回、父生成已结束，或 id 有误）。`
 	}
 }
 

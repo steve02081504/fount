@@ -4,8 +4,6 @@ import { getConnectedSubfounts } from '../../shells/subfounts/src/api.mjs'
 import { collectMentionedFiles } from './src/mentioned_files.mjs'
 import { createArgsExecutorResolver, resolveTarget } from './src/target.mjs'
 
-/** 预读扫描的最近聊天记录条数。 */
-const PRELOAD_LOG_WINDOW = 6
 /** 单次预读的文件数上限。 */
 const PRELOAD_MAX_FILES = 5
 
@@ -17,10 +15,10 @@ const PRELOAD_MAX_FILES = 5
 async function preloadMentionedFiles(args) {
 	const target = resolveTarget(args)
 	if (!target.workdir) return []
-	const recent = (args.chat_log || [])
-		.filter(entry => entry.role === 'user' || entry.role === 'char')
-		.slice(-PRELOAD_LOG_WINDOW)
-	const text = recent.map(entry => entry.content || '').join('\n')
+	// 后台通知触发的新生成没有新用户提及；旧的路径已在历史对话/工具日志中，无需反复预读。
+	const latest = args.chat_log?.at(-1)
+	if (latest?.role !== 'user') return []
+	const text = latest.content || ''
 	if (!text.trim()) return []
 
 	const executor = createArgsExecutorResolver(args)()
@@ -68,7 +66,7 @@ export async function getFileOperationsPrompt(args) {
 - 大文件分页读取：\`offset\` 为起始行（默认 1），\`limit\` 为最多读取行数（默认 2000）
 - 单行超过 \`max-line-chars\`（默认 2000 字符）会被截断；整体超过 \`max-chars\`（默认 50000 字符）会提前停止并提示续读
 - 结果被截断时按提示用 \`offset\`/\`limit\` 续读；避免反复读取同样的小片段，编辑请用 <replace-file> 而不是重复查看
-- 对话中提及的、能按当前工作目录解析的本地文件会被自动预读并注入，无需再次 <view-file>
+- 最新用户消息中提及的、能按当前工作目录解析的本地文件会被自动预读并注入，无需再次 <view-file>
 
 **查找文件（glob）**：
 <glob path="可选起始目录，默认当前工作目录">

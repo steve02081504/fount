@@ -13,6 +13,7 @@
 
 import path from 'node:path'
 
+import { finishAsyncGeneration } from 'fount/public/parts/plugins/async-task/registry.mjs'
 import { beginPromptRequest, finishGeneration, finishPromptRequest } from 'fount/public/parts/shells/agent_studio/src/request_record.mjs'
 import { needsCompression, compressContext } from 'fount/public/parts/shells/chat/src/chat/session/summarize.mjs'
 import { buildPromptStruct } from 'fount/public/parts/shells/chat/src/prompt_struct/index.mjs'
@@ -209,6 +210,8 @@ export default {
 				if (!activeSource) return { content: getLocale(args.locales, 'noAISourceFeedback') }
 
 				args.ai_source ??= activeSource
+				args.extension ??= {}
+				args.extension.generationId ??= crypto.randomUUID()
 				args.plugins = Object.assign({}, plugins, args.plugins)
 				const prompt_struct = await buildPromptStruct(args)
 				// 创建回复容器
@@ -289,6 +292,9 @@ export default {
 				catch (error) {
 					await finishGeneration(args, { error: { name: error?.name, message: error?.message } })
 					throw error
+				}
+				finally {
+					finishAsyncGeneration(args.extension.generationId)
 				}
 				await finishGeneration(args, { response: result.content })
 				// 返回构建好的回复

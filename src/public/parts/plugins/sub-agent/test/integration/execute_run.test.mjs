@@ -5,7 +5,7 @@
 import { assert, assertEquals, assertRejects } from 'jsr:@std/assert'
 
 import { runReplyHandlers } from '../../../../shells/chat/src/reply/handlerPipeline.mjs'
-import { inspectTask, resetAsyncTaskState, setAsyncTaskNotifier, ownerFromArgs } from '../../../async-task/registry.mjs'
+import { awaitTasks, finishAsyncGeneration, inspectTask, ownerFromArgs, resetAsyncTaskState, setAsyncTaskNotifier } from '../../../async-task/registry.mjs'
 import { runSubAgent, SubAgentError } from '../../runtime.mjs'
 import { createRun, getRun, resetSubAgentState } from '../../state.mjs'
 
@@ -313,6 +313,22 @@ Deno.test('runSubAgent async returns a backgroundId and releases the run after c
 	await waitFor(() => deps.records.length === 1)
 	assertEquals(deps.records[0].response, 'async-result')
 	assertEquals(deps.notifications.at(-1).state, 'done')
+})
+
+Deno.test('completed async sub-agent is retrievable before the parent regen loop ends', async () => {
+	resetSubAgentState()
+	resetAsyncTaskState()
+	const parentArgs = createParentArgs({ generationId: 'parent-regen' })
+	const outcome = await runSubAgent(
+		parentArgs,
+		{ body: 'background', roundLimit: 3, timeLimitMs: 60_000, async: true },
+		createDeps(createFakeAi(['subagent-final-answer']), createRegenPlugin(0)),
+	)
+	await waitFor(() => getRun(outcome.backgroundId) === undefined)
+	const result = await awaitTasks([outcome.backgroundId], { requester: ownerFromArgs(parentArgs) })
+	assertEquals(result.settled[0].result.finalText, 'subagent-final-answer')
+	finishAsyncGeneration('parent-regen')
+	assertEquals((await awaitTasks([outcome.backgroundId], { requester: ownerFromArgs(parentArgs) })).unknown, [outcome.backgroundId])
 })
 
 Deno.test('runSubAgent persists the internal conversation and emits live status', async () => {

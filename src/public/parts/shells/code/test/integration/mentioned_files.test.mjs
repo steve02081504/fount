@@ -8,6 +8,7 @@ import path from 'node:path'
 
 import { assert, assertEquals } from 'jsr:@std/assert'
 
+import { getFileOperationsPrompt } from '../../../../plugins/file-operations/prompt.mjs'
 import { collectMentionedFiles, extractPathCandidates } from '../../../../plugins/file-operations/src/mentioned_files.mjs'
 import { createTargetExecutor } from '../../../../plugins/file-operations/src/target.mjs'
 
@@ -32,6 +33,40 @@ Deno.test('collectMentionedFiles preloads existing relative files under workdir'
 	finally {
 		await fs.rm(root, { recursive: true, force: true })
 	}
+})
+
+Deno.test('collectMentionedFiles deduplicates equivalent absolute and relative paths, including directories', async () => {
+	const root = await fs.mkdtemp(path.join(os.tmpdir(), 'fount_code_mention_'))
+	try {
+		await fs.mkdir(path.join(root, 'docs'))
+		await fs.writeFile(path.join(root, 'docs', 'a.md'), 'only-once', 'utf8')
+		const executor = createTargetExecutor('u', { machine: '0', workdir: root })
+		const text = `看 \`docs/a.md\` 和 \`${path.join(root, 'docs', 'a.md')}\`；目录 \`docs\` 和 \`${path.join(root, 'docs')}\``
+		const result = await collectMentionedFiles(executor, text)
+		assertEquals(result.textFiles.length, 1)
+		assertEquals(result.dirs.length, 1)
+	}
+	finally { await fs.rm(root, { recursive: true, force: true }) }
+})
+
+Deno.test('file-operations only preloads paths in the newest user message', async () => {
+	const root = await fs.mkdtemp(path.join(os.tmpdir(), 'fount_code_mention_'))
+	try {
+		await fs.writeFile(path.join(root, 'old.md'), 'old-context', 'utf8')
+		await fs.writeFile(path.join(root, 'new.md'), 'new-context', 'utf8')
+		const args = {
+			username: 'u', Charname: 'Char', UserCharname: 'User',
+			workdir: { machine: '0', path: root },
+			chat_log: [{ role: 'user', content: '读 `old.md`' }, { role: 'char', content: '读 `old.md`' }, { role: 'user', content: '读 `new.md`' }],
+		}
+		const current = await getFileOperationsPrompt(args)
+		assertEquals(current.additional_chat_log.length, 1)
+		assert(current.additional_chat_log[0].content.includes('new-context'))
+		assert(!current.additional_chat_log[0].content.includes('old-context'))
+		args.chat_log.push({ role: 'char', content: '处理中 `new.md`' })
+		assertEquals((await getFileOperationsPrompt(args)).additional_chat_log, [])
+	}
+	finally { await fs.rm(root, { recursive: true, force: true }) }
 })
 
 Deno.test('collectMentionedFiles lists mentioned directories', async () => {

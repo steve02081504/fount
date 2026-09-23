@@ -125,6 +125,33 @@ Deno.test('view-file 首次读取注入两级 AGENTS.md 并在 extension 预存�
 	}
 })
 
+Deno.test('view-file does not repeat the opened AGENTS.md as its own upward context', async () => {
+	const root = await tempDir()
+	try {
+		await seedWorkspace(root)
+		const run = createHandlerArgs(root)
+		await runFileOps(`<view-file>${path.join(root, 'AGENTS.md')}</view-file>`, run.args)
+		const entry = viewEntry(run.logs)
+		assertEquals(entry.content.split('# root rules').length - 1, 1)
+		assert(!entry.content.includes('随文件一并加载的上下文'))
+	}
+	finally { await fs.rm(root, { recursive: true, force: true }) }
+})
+
+Deno.test('view-file skips workspace rules already injected by the code world', async () => {
+	const root = await tempDir()
+	try {
+		const file = await seedWorkspace(root)
+		const run = createHandlerArgs(root)
+		run.args.prompt_struct.world_prompt.text = [{ description: `AGENTS.md (${path.join(root, 'AGENTS.md')})`, content: '# root rules' }]
+		await runFileOps(`<view-file>${file}</view-file>`, run.args)
+		const entry = viewEntry(run.logs)
+		assert(!entry.content.includes('# root rules'))
+		assert(entry.content.includes('# src rules'))
+	}
+	finally { await fs.rm(root, { recursive: true, force: true }) }
+})
+
 Deno.test('view-file 跨轮读取同一文件：生效窗口内已注入过的上下文不再重复注入', async () => {
 	const root = await tempDir()
 	try {

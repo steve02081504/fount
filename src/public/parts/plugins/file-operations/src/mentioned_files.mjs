@@ -70,11 +70,11 @@ export async function collectMentionedFiles(executor, text, options = {}) {
 
 	for (const candidate of extractPathCandidates(text)) {
 		if (textFiles.length + binaryFiles.length >= maxFiles) break
-		if (seen.has(candidate)) continue
-		seen.add(candidate)
-
 		const stat = await executor.statEntry(candidate).catch(() => null)
 		if (!stat) continue
+		const canonical = await executor.resolvePath(candidate).catch(() => candidate)
+		if (seen.has(canonical)) continue
+		seen.add(canonical)
 
 		if (stat.isDirectory) {
 			if (dirs.length >= maxFiles) continue

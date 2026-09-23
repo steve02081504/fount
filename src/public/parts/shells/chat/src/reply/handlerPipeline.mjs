@@ -227,7 +227,7 @@ export async function runReplyHandlers(result, args, handlers) {
 					const displayText = renderCallDisplay(handler, call, {
 						stage: 'final', open: false, value: call.value, error: call.error,
 					}, handlerArgs)
-					handledSpans.push({ raw: call.raw, start: call.start, source: content, displayText, inline: Boolean(handler.evaluate) && Boolean(displayText) })
+					handledSpans.push({ raw: call.raw, start: call.start, source: content, displayText, inline: Boolean(handler.evaluate) && Boolean(displayText), inlineResultLogged: call.inlineResultLogged })
 					handledCount++
 					if (outcome.stop) batchStop = true
 				}
@@ -253,7 +253,7 @@ export async function runReplyHandlers(result, args, handlers) {
 			const displayText = renderCallDisplay(handler, call, {
 				stage: 'final', open: false, value: call.value, error: call.error,
 			}, handlerArgs)
-			handledSpans.push({ raw: call.raw, start: call.start, source: content, displayText, inline: Boolean(handler.evaluate) && Boolean(displayText) })
+			handledSpans.push({ raw: call.raw, start: call.start, source: content, displayText, inline: Boolean(handler.evaluate) && Boolean(displayText), inlineResultLogged: call.inlineResultLogged })
 
 			if (outcome.stop) { stopped = true; break }
 			if (result.content !== beforeContent) { content = result.content ?? ''; cursor = 0 }
@@ -288,7 +288,7 @@ export async function runReplyHandlers(result, args, handlers) {
 
 	// inline 回执：声明 `evaluate` 的 handler 视为 inline 类；把每个 inline 结果分别截断后告知角色其消息变成了什么样子。
 	// 结果与原文相同（无可见变化）的块不回执；全部无变化则整条省略。
-	const inlineSpans = handledSpans.filter(span => span.inline && span.displayText !== span.raw)
+	const inlineSpans = handledSpans.filter(span => span.inline && !span.inlineResultLogged && span.displayText !== span.raw)
 	if (inlineSpans.length) {
 		const lines = inlineSpans.map(span => {
 			const { text, truncated, omitted } = truncateOutput(span.displayText, {

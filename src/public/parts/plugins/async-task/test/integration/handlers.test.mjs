@@ -88,6 +88,16 @@ Deno.test('await-async waits and returns the settled result', async () => {
 	assert(last.extension.asyncAwait.settled[0].result.includes('RESULT-TEXT'))
 })
 
+Deno.test('await-async retrieves a task completed before the parent generation ends', async () => {
+	resetAsyncTaskState()
+	const args = createArgs({ extension: { generationId: 'parent-generation' } })
+	const task = registerTask({ kind: 'subagent', owner: ownerFromArgs(args), run: resolveWith({ finalText: 'CHILD-ANSWER' }) })
+	await task.done
+	await awaitAsyncHandler.handle(null, args, { params: { ids: task.id } })
+	assert(args.logs.at(-1).content.includes('CHILD-ANSWER'))
+	assertEquals(args.logs.at(-1).extension.asyncAwait.settled[0].id, task.id)
+})
+
 Deno.test('await-async errors without ids', async () => {
 	resetAsyncTaskState()
 	const args = createArgs()
