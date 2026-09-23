@@ -6897,7 +6897,9 @@
 			"results": "परिणाम",
 			"noResults": "अभी कोई परिणाम नहीं है।",
 			"notJudged": "मूल्यांकित नहीं",
-			"stats": "कुल ${total} · खाली उत्तर ${empty} · औसत लंबाई ${avgLength} · मूल्यांकित ${judged} · औसत स्कोर ${avgScore}"
+			"stats": "कुल ${total} · खाली उत्तर ${empty} · औसत लंबाई ${avgLength} · मूल्यांकित ${judged} · औसत स्कोर ${avgScore}",
+			"import": null,
+			"export": null
 		},
 		"retention": {
 			"title": "रिकॉर्ड प्रतिधारण नीति",

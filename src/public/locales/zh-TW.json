@@ -6896,7 +6896,9 @@
 			"results": "結果",
 			"noResults": "暫無結果。",
 			"notJudged": "未評分",
-			"stats": "共 ${total} 筆 · 空回覆 ${empty} · 平均長度 ${avgLength} · 已評分 ${judged} · 平均分 ${avgScore}"
+			"stats": "共 ${total} 筆 · 空回覆 ${empty} · 平均長度 ${avgLength} · 已評分 ${judged} · 平均分 ${avgScore}",
+			"import": null,
+			"export": null
 		},
 		"retention": {
 			"title": "紀錄保留策略",

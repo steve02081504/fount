@@ -6897,7 +6897,9 @@
 			"results": "Kết quả",
 			"noResults": "Chưa có kết quả.",
 			"notJudged": "Chưa chấm điểm",
-			"stats": "tổng ${total} · phản hồi trống ${empty} · độ dài trung bình ${avgLength} · đã chấm ${judged} · điểm trung bình ${avgScore}"
+			"stats": "tổng ${total} · phản hồi trống ${empty} · độ dài trung bình ${avgLength} · đã chấm ${judged} · điểm trung bình ${avgScore}",
+			"import": null,
+			"export": null
 		},
 		"retention": {
 			"title": "Chính sách lưu giữ bản ghi",

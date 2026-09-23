@@ -6945,10 +6945,10 @@
 			"task": "Task",
 			"conversation": "Internal conversation",
 			"empty": "(no conversation yet)",
-			"send": "Send",
 			"messagePlaceholder": {
 				"placeholder": "Add a message to the running sub-agent…"
-			}
+			},
+			"send": "Send"
 		},
 		"conversation": {
 			"title": "Conversation",

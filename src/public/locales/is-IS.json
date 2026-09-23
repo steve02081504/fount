@@ -6897,7 +6897,9 @@
 			"results": "Niðurstöður",
 			"noResults": "Engar niðurstöður ennþá.",
 			"notJudged": "Ekki metið",
-			"stats": "Alls ${total} · tóm svör ${empty} · meðallengd ${avgLength} · metið ${judged} · meðaleinkunn ${avgScore}"
+			"stats": "Alls ${total} · tóm svör ${empty} · meðallengd ${avgLength} · metið ${judged} · meðaleinkunn ${avgScore}",
+			"import": null,
+			"export": null
 		},
 		"retention": {
 			"title": "Varðveisla færslna",

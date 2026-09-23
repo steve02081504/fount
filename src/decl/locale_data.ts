@@ -6860,6 +6860,8 @@ export type LocaleData = {
 			noResults: string
 			notJudged: string
 			stats: string
+			import: string
+			export: string
 		}
 		retention: {
 			title: string
@@ -6905,6 +6907,10 @@ export type LocaleData = {
 			task: string
 			conversation: string
 			empty: string
+			messagePlaceholder: {
+				placeholder: string
+			}
+			send: string
 		}
 		conversation: {
 			title: string
@@ -6930,6 +6936,21 @@ export type LocaleData = {
 				char: string
 				tool: string
 			}
+			plainView: string
+			markdownView: string
+			switchView: string
+			cacheSummary: string
+			cacheMissing: string
+			cacheRate: string
+			cacheNoRate: string
+			cacheHint: string
+			replayProgress: {
+				'aria-label': string
+			}
+			cacheChart: {
+				'aria-label': string
+			}
+			programRate: string
 		}
 	}
 }
@@ -6989,7 +7010,10 @@ export type LocaleKeyParams = {
 	'agent_studio.clear.confirmChar': { name: string | number }
 	'agent_studio.clear.done': { count: string | number }
 	'agent_studio.clear.failed': { message: string | number }
+	'agent_studio.conversation.cacheRate': { rate: string | number }
+	'agent_studio.conversation.cacheSummary': { rate: string | number }
 	'agent_studio.conversation.generationsCount': { count: string | number }
+	'agent_studio.conversation.programRate': { rate: string | number }
 	'agent_studio.conversation.requestsExpired': { count: string | number }
 	'agent_studio.conversation.round': { index: string | number; model: string | number; time: string | number }
 	'agent_studio.conversation.roundIndex': { index: string | number }

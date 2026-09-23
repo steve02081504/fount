@@ -6907,7 +6907,9 @@
 			"results": "النتائج",
 			"noResults": "لا توجد نتائج بعد.",
 			"notJudged": "بدون تقييم",
-			"stats": "إجمالي ${total} · ردود فارغة ${empty} · متوسط الطول ${avgLength} · مُقيَّم ${judged} · متوسط الدرجة ${avgScore}"
+			"stats": "إجمالي ${total} · ردود فارغة ${empty} · متوسط الطول ${avgLength} · مُقيَّم ${judged} · متوسط الدرجة ${avgScore}",
+			"import": null,
+			"export": null
 		},
 		"retention": {
 			"title": "سياسة الاحتفاظ بالسجلات",

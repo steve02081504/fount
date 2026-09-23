@@ -6897,7 +6897,9 @@
 			"results": "결과",
 			"noResults": "아직 결과가 없습니다.",
 			"notJudged": "평가되지 않음",
-			"stats": "총 ${total}건 · 빈 응답 ${empty} · 평균 길이 ${avgLength} · 평가됨 ${judged} · 평균 점수 ${avgScore}"
+			"stats": "총 ${total}건 · 빈 응답 ${empty} · 평균 길이 ${avgLength} · 평가됨 ${judged} · 평균 점수 ${avgScore}",
+			"import": null,
+			"export": null
 		},
 		"retention": {
 			"title": "기록 보존 정책",

@@ -6897,7 +6897,8 @@
 			"results": "Результати",
 			"noResults": "Результатів поки немає.",
 			"notJudged": "Без оцінки",
-			"stats": "усього ${total} · порожніх відповідей ${empty} · середня довжина ${avgLength} · оцінено ${judged} · середній бал ${avgScore}"
+			"stats": "усього ${total} · порожніх відповідей ${empty} · середня довжина ${avgLength} · оцінено ${judged} · середній бал ${avgScore}",
+			"import": null
 		},
 		"retention": {
 			"title": "Зберігання записів",

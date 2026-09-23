@@ -6903,7 +6903,9 @@
 			"results": "Resultados",
 			"noResults": "Aún no hay resultados.",
 			"notJudged": "Sin puntuar",
-			"stats": "Total ${total} · vacías ${empty} · longitud media ${avgLength} · puntuados ${judged} · puntuación media ${avgScore}"
+			"stats": "Total ${total} · vacías ${empty} · longitud media ${avgLength} · puntuados ${judged} · puntuación media ${avgScore}",
+			"import": null,
+			"export": null
 		},
 		"retention": {
 			"title": "Política de retención de registros",

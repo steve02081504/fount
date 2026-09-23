@@ -6897,7 +6897,9 @@
 			"results": "Ergebnisse",
 			"noResults": "Noch keine Ergebnisse.",
 			"notJudged": "Nicht bewertet",
-			"stats": "Gesamt ${total} · Leer ${empty} · Ø Länge ${avgLength} · Bewertet ${judged} · Ø Punktzahl ${avgScore}"
+			"stats": "Gesamt ${total} · Leer ${empty} · Ø Länge ${avgLength} · Bewertet ${judged} · Ø Punktzahl ${avgScore}",
+			"import": null,
+			"export": null
 		},
 		"retention": {
 			"title": "Aufbewahrung von Datensätzen",

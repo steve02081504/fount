@@ -6945,10 +6945,10 @@
 			"task": "タスク",
 			"conversation": "内部会話",
 			"empty": "（会話がありません）",
-			"send": "送信",
 			"messagePlaceholder": {
 				"placeholder": "実行中のサブエージェントにメッセージを追加…"
-			}
+			},
+			"send": "送信"
 		},
 		"conversation": {
 			"title": "会話の詳細",

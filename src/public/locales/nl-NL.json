@@ -6903,7 +6903,9 @@
 			"results": "Resultaten",
 			"noResults": "Nog geen resultaten.",
 			"notJudged": "Niet beoordeeld",
-			"stats": "Totaal ${total} · leeg ${empty} · gem. lengte ${avgLength} · beoordeeld ${judged} · gem. score ${avgScore}"
+			"stats": "Totaal ${total} · leeg ${empty} · gem. lengte ${avgLength} · beoordeeld ${judged} · gem. score ${avgScore}",
+			"import": null,
+			"export": null
 		},
 		"retention": {
 			"title": "Bewaring van records",

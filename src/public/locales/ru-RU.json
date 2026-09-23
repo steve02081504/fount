@@ -6905,7 +6905,8 @@
 			"results": "Результаты",
 			"noResults": "Результатов пока нет.",
 			"notJudged": "Без оценки",
-			"stats": "всего ${total} · пустых ответов ${empty} · средняя длина ${avgLength} · оценено ${judged} · средний балл ${avgScore}"
+			"stats": "всего ${total} · пустых ответов ${empty} · средняя длина ${avgLength} · оценено ${judged} · средний балл ${avgScore}",
+			"import": null
 		},
 		"retention": {
 			"title": "Хранение записей",

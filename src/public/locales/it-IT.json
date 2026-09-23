@@ -6903,7 +6903,9 @@
 			"results": "Risultati",
 			"noResults": "Nessun risultato.",
 			"notJudged": "Non valutato",
-			"stats": "Totale ${total} · vuote ${empty} · lunghezza media ${avgLength} · valutati ${judged} · punteggio medio ${avgScore}"
+			"stats": "Totale ${total} · vuote ${empty} · lunghezza media ${avgLength} · valutati ${judged} · punteggio medio ${avgScore}",
+			"import": null,
+			"export": null
 		},
 		"retention": {
 			"title": "Criterio di conservazione dei record",
