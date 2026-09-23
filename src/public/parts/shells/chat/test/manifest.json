@@ -200,7 +200,7 @@
 		},
 		{
 			"name": "integration",
-			"expected": "8m29s",
+			"expected": "14m44s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -223,7 +223,7 @@
 		},
 		{
 			"name": "smoke_chat",
-			"expected": "2m29s",
+			"expected": "56s",
 			"dependsOn": [
 				"server:live"
 			],
