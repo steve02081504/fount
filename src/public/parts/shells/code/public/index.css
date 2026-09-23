@@ -257,6 +257,12 @@
 	font-size: 0.8125rem;
 }
 
+/* tool/system 的 markdown 正文继承紧凑字号（github-markdown-css 的 .markdown-body 默认 16px 会放大） */
+.code-message.role-tool .markdown-body,
+.code-message.role-system .markdown-body {
+	font-size: inherit;
+}
+
 /* ---------------- 消息操作（hover 操作栏 / 反馈条 / 行内编辑） ---------------- */
 
 /* hover 操作栏：贴在本条消息下缘（悬停/键盘聚焦时滑出），明确归属当前消息；
@@ -510,16 +516,6 @@ pre.code-shell-stream-output {
 	font-size: 0.75rem;
 	opacity: 0.6;
 	margin-bottom: 0.25rem;
-}
-
-/* 超长代码块自身横向滚动：rehype-pretty-code 的 figure 带 daisyUI .join（inline-flex，按内容定宽），
-   还原为块级 flex 后代码块可收缩，pre 再内部滚动而不撑破消息容器（工具日志同享）。 */
-.code-message-body figure.join {
-	display: flex;
-}
-
-.code-message-body pre {
-	overflow-x: auto;
 }
 
 /* 大段命令输出 / 代码在内部双向滚动，不把消息流撑成数屏高。 */

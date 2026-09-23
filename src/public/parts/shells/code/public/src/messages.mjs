@@ -115,7 +115,7 @@ function renderTranscriptEntry(item) {
 	name.textContent = item.role === 'tool' ? labelForToolName(item.name) : item.name || ''
 	head.append(role, name)
 	const body = document.createElement('div')
-	body.className = 'code-transcript-body'
+	body.className = 'code-transcript-body markdown-body'
 	body.setAttribute('prompt-content', '')
 	renderMarkdownAsString(messageMarkdown(item.content ?? ''), store.markdownCache).then(html => {
 		body.innerHTML = html
@@ -156,7 +156,7 @@ function renderAsyncTaskRow(task) {
 	const bodyText = task.state === 'failed' ? task.error : task.result
 	if (bodyText) {
 		const body = document.createElement('div')
-		body.className = 'code-async-task-result'
+		body.className = 'code-async-task-result markdown-body'
 		body.setAttribute('prompt-content', '')
 		renderMarkdownAsString(messageMarkdown(String(bodyText)), store.markdownCache).then(html => {
 			body.innerHTML = html
@@ -227,7 +227,7 @@ function renderAsyncInspect(entry) {
 		return wrap
 	}
 	const body = document.createElement('div')
-	body.className = 'code-async-inspect-preview'
+	body.className = 'code-async-inspect-preview markdown-body'
 	body.setAttribute('prompt-content', '')
 	renderMarkdownAsString(messageMarkdown(String(meta.preview ?? '')), store.markdownCache).then(html => {
 		body.innerHTML = html
@@ -539,7 +539,7 @@ export function renderEntryBubble(entry, { isLast = false } = {}) {
 		name.textContent = toolDisplayLabel(entry)
 		summary.append(chevron, name)
 		const content = document.createElement('div')
-		content.className = 'mt-1'
+		content.className = 'mt-1 markdown-body'
 		details.append(summary, content)
 		body.appendChild(details)
 		if (entry.extension?.shellStream) {
@@ -566,6 +566,7 @@ export function renderEntryBubble(entry, { isLast = false } = {}) {
 	}
 	else {
 		const content = document.createElement('div')
+		content.className = 'markdown-body'
 		body.appendChild(content)
 		renderMarkdownAsString(messageMarkdown(entryShowText(entry), entry.role), store.markdownCache).then(html => {
 			content.innerHTML = html

@@ -1019,7 +1019,7 @@ export function startGeneratingBubble() {
 	name.className = 'code-message-name'
 	name.textContent = store.session?.charname || ''
 	const body = document.createElement('div')
-	body.className = 'code-message-body'
+	body.className = 'code-message-body markdown-body'
 	bubble.append(name, body)
 	elements.messages.insertBefore(bubble, backToBottom)
 	updateEmptyMode()
