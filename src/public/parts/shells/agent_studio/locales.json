@@ -28,22 +28,244 @@
 				"可观测"
 			]
 		},
-		"ar-SA": {},
-		"de-DE": {},
-		"emoji": {},
-		"es-ES": {},
-		"fr-FR": {},
-		"hi-IN": {},
-		"is-IS": {},
-		"it-IT": {},
-		"ja-JP": {},
-		"ko-KR": {},
-		"lzh": {},
-		"nl-NL": {},
-		"pt-PT": {},
-		"ru-RU": {},
-		"uk-UA": {},
-		"vi-VN": {},
-		"zh-TW": {}
+		"ar-SA": {
+			"name": "استوديو الوكلاء",
+			"avatar": "https://api.iconify.design/mdi/flask-outline.svg",
+			"description": "افحص عمليات التوليد وتشغيلات الوكلاء الفرعيين، وقيّم أداء الشخصيات.",
+			"description_markdown": "راقب كيف يُطلب من الشخصية وكيف تردّ، وتتبّع تشغيلات الوكلاء الفرعيين التي تُطلقها، وتصفّح سلاسل التوليد، وشغّل اختبارات معيارية مُقيَّمة من حَكَم على أي شخصية.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"وكيل",
+				"معيار",
+				"مراقبة"
+			]
+		},
+		"de-DE": {
+			"name": "Agenten-Studio",
+			"avatar": "https://api.iconify.design/mdi/flask-outline.svg",
+			"description": "Untersuche Generierungen und Sub-Agent-Läufe und führe Benchmarks für Charaktere durch.",
+			"description_markdown": "Beobachte, wie ein Charakter gepromptet wird und was er antwortet, verfolge die von ihm gestarteten Sub-Agent-Läufe, durchstöbere Generierungsketten und führe richterbewertete Benchmarks gegen beliebige Charaktere aus.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"agent",
+				"benchmark",
+				"observability"
+			]
+		},
+		"emoji": {
+			"name": "🧪🤖",
+			"avatar": "https://api.iconify.design/mdi/flask-outline.svg",
+			"description": "🔍🤖💬➕📊",
+			"description_markdown": "**🧪🤖** ➡️ ✨.\n✅ 🔍 🤖💬.\n✅ 👣 👥🏃.\n✅ 🌳🔗.\n✅ ⚖️📊.\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"🧪",
+				"🤖",
+				"📊",
+				"🔌"
+			]
+		},
+		"es-ES": {
+			"name": "Estudio de agentes",
+			"avatar": "https://api.iconify.design/mdi/flask-outline.svg",
+			"description": "Inspecciona las generaciones y las ejecuciones de subagentes, y evalúa a los personajes con pruebas comparativas.",
+			"description_markdown": "Observa cómo se le da el prompt a un personaje y qué responde, sigue las ejecuciones de subagentes que genera, explora las cadenas de generación y ejecuta pruebas comparativas puntuadas por un juez contra cualquier personaje.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"agente",
+				"prueba comparativa",
+				"observabilidad"
+			]
+		},
+		"fr-FR": {
+			"name": "Studio d'agents",
+			"avatar": "https://api.iconify.design/mdi/flask-outline.svg",
+			"description": "Inspectez les générations et les exécutions de sous-agents, et évaluez les personnages par des benchmarks.",
+			"description_markdown": "Observez comment un personnage est prompté et ce qu'il répond, suivez les exécutions de sous-agents qu'il déclenche, parcourez les chaînes de génération et lancez des benchmarks notés par un juge sur n'importe quel personnage.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"agent",
+				"benchmark",
+				"observabilité"
+			]
+		},
+		"hi-IN": {
+			"name": "एजेंट स्टूडियो",
+			"avatar": "https://api.iconify.design/mdi/flask-outline.svg",
+			"description": "जनरेशन और उप-एजेंट रन का निरीक्षण करें, और पात्रों का बेंचमार्क करें।",
+			"description_markdown": "देखें कि किसी पात्र को कैसे prompt दिया जाता है और वह क्या उत्तर देता है, उसके द्वारा बनाए गए उप-एजेंट रन का अनुसरण करें, जनरेशन शृंखलाएँ ब्राउज़ करें, और किसी भी पात्र पर निर्णायक-स्कोर वाले बेंचमार्क चलाएँ।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"एजेंट",
+				"बेंचमार्क",
+				"अवलोकनीयता"
+			]
+		},
+		"is-IS": {
+			"name": "Umboðsmannastofa",
+			"avatar": "https://api.iconify.design/mdi/flask-outline.svg",
+			"description": "Skoðaðu kynslóðir og keyrslur undirumboðsmanna og mældu afköst persóna.",
+			"description_markdown": "Fylgstu með því hvernig persóna er promptuð og hvað hún svarar, eltu keyrslur undirumboðsmanna sem hún ræsir, vafraðu um kynslóðarkeðjur og keyrðu dómarametnar árangursmælingar á hvaða persónu sem er.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"umboðsmaður",
+				"árangursmæling",
+				"sýnileiki"
+			]
+		},
+		"it-IT": {
+			"name": "Studio degli agenti",
+			"avatar": "https://api.iconify.design/mdi/flask-outline.svg",
+			"description": "Ispeziona le generazioni e le esecuzioni dei subagenti, e valuta i personaggi con benchmark.",
+			"description_markdown": "Osserva come viene passato il prompt a un personaggio e come risponde, segui le esecuzioni dei subagenti che avvia, sfoglia le catene di generazione ed esegui benchmark valutati da un giudice su qualsiasi personaggio.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"agente",
+				"benchmark",
+				"osservabilità"
+			]
+		},
+		"ja-JP": {
+			"name": "エージェントスタジオ",
+			"avatar": "https://api.iconify.design/mdi/flask-outline.svg",
+			"description": "生成とサブエージェントの実行を調査し、キャラクターをベンチマークします。",
+			"description_markdown": "キャラクターがどのようにプロンプトされ、どう応答するかを観察し、それが生み出すサブエージェント実行を追跡し、生成チェーンを閲覧し、任意のキャラクターに対して審査員が採点するベンチマークを実行します。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"エージェント",
+				"ベンチマーク",
+				"可観測性"
+			]
+		},
+		"ko-KR": {
+			"name": "에이전트 스튜디오",
+			"avatar": "https://api.iconify.design/mdi/flask-outline.svg",
+			"description": "생성 기록과 서브 에이전트 실행을 검사하고 캐릭터를 벤치마크합니다.",
+			"description_markdown": "캐릭터가 어떻게 prompt를 받고 어떻게 응답하는지 관찰하고, 캐릭터가 생성한 서브 에이전트 실행을 추적하고, 생성 체인을 둘러보며, 어떤 캐릭터든 판정관이 채점하는 벤치마크를 실행합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"에이전트",
+				"벤치마크",
+				"관측성"
+			]
+		},
+		"lzh": {
+			"name": "觀機精舍",
+			"avatar": "https://api.iconify.design/mdi/flask-outline.svg",
+			"description": "觀生成之跡與子代理之行，且比校群化之能",
+			"description_markdown": "觀化身受何 prompt、作何答，隨其所遣子代理之行，覽其生成之鏈，並以裁判評分之制，校量任何化身。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"化身",
+				"比校",
+				"可觀"
+			]
+		},
+		"nl-NL": {
+			"name": "Agentstudio",
+			"avatar": "https://api.iconify.design/mdi/flask-outline.svg",
+			"description": "Inspecteer generaties en subagent-runs, en benchmark personages.",
+			"description_markdown": "Observeer hoe een personage wordt geprompt en wat het antwoordt, volg de subagent-runs die het start, blader door generatieketens en voer door een jury beoordeelde benchmarks uit op elk personage.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"agent",
+				"benchmark",
+				"observeerbaarheid"
+			]
+		},
+		"pt-PT": {
+			"name": "Estúdio de agentes",
+			"avatar": "https://api.iconify.design/mdi/flask-outline.svg",
+			"description": "Inspecione gerações e execuções de subagentes, e avalie personagens com benchmarks.",
+			"description_markdown": "Observe como um personagem é promptado e o que responde, acompanhe as execuções de subagentes que cria, explore as cadeias de geração e execute benchmarks pontuados por um juiz contra qualquer personagem.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"agente",
+				"benchmark",
+				"observabilidade"
+			]
+		},
+		"ru-RU": {
+			"name": "Студия агентов",
+			"avatar": "https://api.iconify.design/mdi/flask-outline.svg",
+			"description": "Изучайте генерации и запуски субагентов и проводите бенчмарки персонажей.",
+			"description_markdown": "Наблюдайте, как формируется prompt персонажа и что он отвечает, отслеживайте запускаемые им субагенты, просматривайте цепочки генераций и запускайте оценённые судьёй бенчмарки для любого персонажа.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"агент",
+				"бенчмарк",
+				"наблюдаемость"
+			]
+		},
+		"uk-UA": {
+			"name": "Студія агентів",
+			"avatar": "https://api.iconify.design/mdi/flask-outline.svg",
+			"description": "Переглядайте генерації та запуски субагентів і проводьте бенчмарки персонажів.",
+			"description_markdown": "Спостерігайте, як формується prompt персонажа та що він відповідає, відстежуйте запущені ним субагенти, переглядайте ланцюги генерацій і запускайте оцінені суддею бенчмарки для будь-якого персонажа.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"агент",
+				"бенчмарк",
+				"спостережуваність"
+			]
+		},
+		"vi-VN": {
+			"name": "Xưởng tác nhân",
+			"avatar": "https://api.iconify.design/mdi/flask-outline.svg",
+			"description": "Kiểm tra các lượt sinh và lượt chạy tác nhân con, đồng thời đánh giá nhân vật bằng benchmark.",
+			"description_markdown": "Quan sát cách nhân vật được prompt và cách nhân vật trả lời, theo dõi các lượt chạy tác nhân con mà nó tạo ra, duyệt các chuỗi sinh, và chạy benchmark do giám khảo chấm điểm trên bất kỳ nhân vật nào.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"tác nhân",
+				"benchmark",
+				"khả năng quan sát"
+			]
+		},
+		"zh-TW": {
+			"name": "智慧體工作室",
+			"avatar": "https://api.iconify.design/mdi/flask-outline.svg",
+			"description": "檢視生成記錄與子代理執行，並對角色進行基準測試。",
+			"description_markdown": "觀察角色的提示與回覆，追蹤其衍生的子代理執行，瀏覽生成鏈，並對任意角色執行裁判評分的基準測試。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"智慧體",
+				"基準測試",
+				"可觀測"
+			]
+		}
 	}
 }

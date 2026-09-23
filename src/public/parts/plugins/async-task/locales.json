@@ -28,14 +28,119 @@
 				"插件"
 			]
 		},
-		"ar-SA": {},
-		"de-DE": {},
-		"emoji": {},
-		"es-ES": {},
-		"fr-FR": {},
-		"hi-IN": {},
-		"is-IS": {},
-		"it-IT": {},
+		"ar-SA": {
+			"name": "المهام غير المتزامنة",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "يسجّل المهام الخلفية غير المتزامنة وينتظرها (الوكلاء الفرعيون، تنفيذ التعليمات البرمجية في الخلفية، …)",
+			"description_markdown": "يمنح المكوّن الإضافي **Async tasks** كل عملية خلفية (تشغيل الوكلاء الفرعيين، تنفيذ JS/shell في الخلفية، …) معرّف مورد موحّدًا وأدوات انتظار. يمكن للشخصية سرد المهام الجارية عبر `<list-async/>` وانتظار واحدة أو أكثر عبر `<await-async ids=\"…\" mode=\"all|any\"/>`؛ وإذا انتهت مهمة دون انتظارها، أُخطرت الشخصية برسالة نظام.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"غير_متزامن",
+				"مهمة",
+				"إضافة"
+			]
+		},
+		"de-DE": {
+			"name": "Asynchrone Aufgaben",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "Registriert Hintergrundaufgaben und wartet auf sie (Sub-Agenten, Codeausführung im Hintergrund, …)",
+			"description_markdown": "Das **Async tasks**-Plugin gibt jeder Hintergrundoperation (Sub-Agent-Läufe, JS-/Shell-Ausführung im Hintergrund, …) eine einheitliche Ressourcen-ID und Wartewerkzeuge. Eine Figur kann laufende Aufgaben mit `<list-async/>` auflisten und mit `<await-async ids=\"…\" mode=\"all|any\"/>` auf eine oder mehrere warten; eine Aufgabe, die ohne Warten abgeschlossen wird, benachrichtigt die Figur per Systemnachricht.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"asynchron",
+				"aufgabe",
+				"plugin"
+			]
+		},
+		"emoji": {
+			"name": "⏳📋",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "🤖➕⏳📋➡️⏰",
+			"description_markdown": "**⏳📋** ➡️ 🤖✨.\n✅ 📋 ⏳.\n✅ ⏰ 🕐.\n⏳✅🙅⏰ ➡️ 🔔🤖.\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"⏳",
+				"📋",
+				"🔔",
+				"🔌"
+			]
+		},
+		"es-ES": {
+			"name": "Tareas asíncronas",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "Registra y espera tareas asíncronas en segundo plano (subagentes, ejecución de código en segundo plano, …)",
+			"description_markdown": "El complemento **Async tasks** otorga a cada operación en segundo plano (ejecuciones de subagentes, ejecución de JS/shell en segundo plano, …) un id de recurso unificado y herramientas de espera. Un personaje puede listar las tareas en curso con `<list-async/>` y esperar una o varias con `<await-async ids=\"…\" mode=\"all|any\"/>`; una tarea que termina sin haber sido esperada notifica al personaje mediante un mensaje de sistema.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"asíncrono",
+				"tarea",
+				"complemento"
+			]
+		},
+		"fr-FR": {
+			"name": "Tâches asynchrones",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "Enregistre et attend les tâches asynchrones en arrière-plan (sous-agents, exécution de code en arrière-plan, …)",
+			"description_markdown": "Le plugin **Async tasks** attribue à chaque opération en arrière-plan (exécutions de sous-agents, exécution JS/shell en arrière-plan, …) un identifiant de ressource unifié et des outils d'attente. Un personnage peut lister les tâches en cours avec `<list-async/>` et en attendre une ou plusieurs avec `<await-async ids=\"…\" mode=\"all|any\"/>` ; une tâche qui se termine sans avoir été attendue notifie le personnage par un message système.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"asynchrone",
+				"tâche",
+				"plugin"
+			]
+		},
+		"hi-IN": {
+			"name": "अतुल्यकालिक कार्य",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "पृष्ठभूमि के अतुल्यकालिक कार्यों को पंजीकृत करता है और उनकी प्रतीक्षा करता है (उप-एजेंट, पृष्ठभूमि में कोड निष्पादन, …)",
+			"description_markdown": "**Async tasks** प्लगइन हर पृष्ठभूमि संक्रिया (उप-एजेंट रन, पृष्ठभूमि में JS/shell निष्पादन, …) को एक समान संसाधन id और प्रतीक्षा उपकरण देता है। कोई पात्र `<list-async/>` से चल रहे कार्यों की सूची देख सकता है और `<await-async ids=\"…\" mode=\"all|any\"/>` से एक या अधिक की प्रतीक्षा कर सकता है; बिना प्रतीक्षा के पूरा हुआ कार्य पात्र को सिस्टम संदेश द्वारा सूचित करता है।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"अतुल्यकालिक",
+				"कार्य",
+				"प्लगइन"
+			]
+		},
+		"is-IS": {
+			"name": "Ósamstillt verkefni",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "Skráir og bíður eftir ósamstilltum verkefnum í bakgrunni (undirumboðsmenn, kóðakeyrsla í bakgrunni, …)",
+			"description_markdown": "**Async tasks** viðbótin gefur hverri bakgrunnsaðgerð (keyrslum undirumboðsmanna, JS/shell keyrslu í bakgrunni, …) sameiginlegt auðkenni auðlindar og biðverkfæri. Persóna getur listað verkefni í gangi með `<list-async/>` og beðið eftir einu eða fleiri með `<await-async ids=\"…\" mode=\"all|any\"/>`; verkefni sem lýkur án þess að beðið sé eftir því tilkynnir persónunni með kerfisskilaboði.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"ósamstillt",
+				"verkefni",
+				"viðbót"
+			]
+		},
+		"it-IT": {
+			"name": "Attività asincrone",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "Registra e attende le attività asincrone in background (subagenti, esecuzione di codice in background, …)",
+			"description_markdown": "Il plugin **Async tasks** assegna a ogni operazione in background (esecuzioni di subagenti, esecuzione JS/shell in background, …) un id di risorsa unificato e strumenti di attesa. Un personaggio può elencare le attività in corso con `<list-async/>` e attenderne una o più con `<await-async ids=\"…\" mode=\"all|any\"/>`; un'attività che termina senza essere stata attesa notifica il personaggio con un messaggio di sistema.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"asincrono",
+				"attività",
+				"plugin"
+			]
+		},
 		"ja-JP": {
 			"name": "非同期タスク",
 			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
@@ -50,13 +155,104 @@
 				"プラグイン"
 			]
 		},
-		"ko-KR": {},
-		"lzh": {},
-		"nl-NL": {},
-		"pt-PT": {},
-		"ru-RU": {},
-		"uk-UA": {},
-		"vi-VN": {},
+		"ko-KR": {
+			"name": "비동기 작업",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "백그라운드 비동기 작업(서브 에이전트, 백그라운드 코드 실행 등)을 등록하고 대기합니다",
+			"description_markdown": "**비동기 작업** 플러그인은 모든 백그라운드 작업(서브 에이전트 실행, 백그라운드 JS/shell 실행 등)에 통합 리소스 id와 대기 도구를 제공합니다. 캐릭터는 `<list-async/>`로 진행 중인 작업을 나열하고 `<await-async ids=\"…\" mode=\"all|any\"/>`로 하나 이상을 기다릴 수 있습니다. 대기되지 않은 채 완료된 작업은 시스템 메시지로 캐릭터에게 알립니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"비동기",
+				"작업",
+				"플러그인"
+			]
+		},
+		"lzh": {
+			"name": "異步諸務",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "總錄而候後臺異步之務（子代理、後臺演碼之類）",
+			"description_markdown": "此**異步諸務**插件，凡後臺諸務（子代理之run、後臺演 JS/shell 之類），皆予統一之資源 id 與候待之具。化身可憑 `<list-async/>` 覽見在之務，憑 `<await-async ids=\"…\" mode=\"all|any\"/>` 候一務或數務之成；務成而無人候之者，則以系統之書告於化身。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"異步",
+				"諸務",
+				"插件"
+			]
+		},
+		"nl-NL": {
+			"name": "Asynchrone taken",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "Registreert en wacht op asynchrone achtergrondtaken (subagenten, code-uitvoering op de achtergrond, …)",
+			"description_markdown": "De **Async tasks**-plugin geeft elke achtergrondbewerking (subagent-runs, JS-/shell-uitvoering op de achtergrond, …) een uniforme resource-id en wachttools. Een personage kan lopende taken tonen met `<list-async/>` en op een of meer wachten met `<await-async ids=\"…\" mode=\"all|any\"/>`; een taak die zonder te wachten voltooid raakt, stelt het personage op de hoogte met een systeembericht.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"asynchroon",
+				"taak",
+				"plugin"
+			]
+		},
+		"pt-PT": {
+			"name": "Tarefas assíncronas",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "Registra e aguarda tarefas assíncronas em segundo plano (subagentes, execução de código em segundo plano, …)",
+			"description_markdown": "O plugin **Async tasks** atribui a cada operação em segundo plano (execuções de subagentes, execução de JS/shell em segundo plano, …) um id de recurso unificado e ferramentas de espera. Um personagem pode listar as tarefas em curso com `<list-async/>` e aguardar uma ou várias com `<await-async ids=\"…\" mode=\"all|any\"/>`; uma tarefa que termina sem ter sido aguardada notifica o personagem através de uma mensagem de sistema.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"assíncrono",
+				"tarefa",
+				"plugin"
+			]
+		},
+		"ru-RU": {
+			"name": "Асинхронные задачи",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "Регистрирует фоновые асинхронные задачи и ожидает их (субагенты, выполнение кода в фоне, …)",
+			"description_markdown": "Плагин **Async tasks** даёт каждой фоновой операции (запускам субагентов, выполнению JS/shell в фоне, …) единый идентификатор ресурса и средства ожидания. Персонаж может перечислить активные задачи через `<list-async/>` и ожидать одну или несколько через `<await-async ids=\"…\" mode=\"all|any\"/>`; задача, завершившаяся без ожидания, уведомляет персонажа системным сообщением.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"асинхронность",
+				"задача",
+				"плагин"
+			]
+		},
+		"uk-UA": {
+			"name": "Асинхронні завдання",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "Реєструє фонові асинхронні завдання та очікує на них (субагенти, виконання коду у фоні, …)",
+			"description_markdown": "Плагін **Async tasks** надає кожній фоновій операції (запускам субагентів, виконанню JS/shell у фоні, …) єдиний ідентифікатор ресурсу та засоби очікування. Персонаж може перелічити активні завдання через `<list-async/>` та очікувати одне чи кілька через `<await-async ids=\"…\" mode=\"all|any\"/>`; завдання, що завершилося без очікування, повідомляє персонажа системним повідомленням.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"асинхронність",
+				"завдання",
+				"плагін"
+			]
+		},
+		"vi-VN": {
+			"name": "Tác vụ bất đồng bộ",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "Đăng ký và chờ các tác vụ bất đồng bộ chạy nền (tác nhân con, thực thi mã chạy nền, …)",
+			"description_markdown": "Plugin **Async tasks** cấp cho mọi thao tác chạy nền (lượt chạy tác nhân con, thực thi JS/shell chạy nền, …) một id tài nguyên thống nhất cùng công cụ chờ. Nhân vật có thể liệt kê các tác vụ đang chạy bằng `<list-async/>` và chờ một hoặc nhiều tác vụ bằng `<await-async ids=\"…\" mode=\"all|any\"/>`; tác vụ hoàn tất mà không được chờ sẽ thông báo cho nhân vật qua tin nhắn hệ thống.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"bất đồng bộ",
+				"tác vụ",
+				"plugin"
+			]
+		},
 		"zh-TW": {
 			"name": "非同步任務",
 			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",

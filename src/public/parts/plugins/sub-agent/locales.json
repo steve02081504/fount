@@ -28,14 +28,119 @@
 				"插件"
 			]
 		},
-		"ar-SA": {},
-		"de-DE": {},
-		"emoji": {},
-		"es-ES": {},
-		"fr-FR": {},
-		"hi-IN": {},
-		"is-IS": {},
-		"it-IT": {},
+		"ar-SA": {
+			"name": "الوكيل الفرعي",
+			"avatar": "https://api.iconify.design/line-md/account-multiple-plus.svg",
+			"description": "يتيح للشخصية إنتاج وكلاء فرعيين معزولين لإنجاز المهام على نحو متوازٍ",
+			"description_markdown": "يتيح مكوّن **Sub-agent** الإضافي للشخصية إنتاج وكلاء فرعيين يملكون محادثة معزولة وميزانيات خاصة بهم (يُشارَك دليل العمل/نظام الملفات مع الأصل). يعيد الوكيل الفرعي استخدام الشخصية وإعدادات العالم نفسها، لكنه يعمل بمجموعة أدوات وحلقة توليد معزولتين؛ ويدعم التشغيل المتزامن/غير المتزامن، والسياق المشترك بين الدفعات، والميزانيات الهرمية، والتلخيص عند الإنهاء.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"وكيل_فرعي",
+				"متعدد_الوكلاء",
+				"إضافة"
+			]
+		},
+		"de-DE": {
+			"name": "Sub-Agent",
+			"avatar": "https://api.iconify.design/line-md/account-multiple-plus.svg",
+			"description": "Lässt eine Figur isolierte Sub-Agenten für parallele Aufgabenarbeit erzeugen",
+			"description_markdown": "Das **Sub-agent**-Plugin lässt eine Figur Sub-Agenten erzeugen, die eine eigene, isolierte Konversation und eigene Budgets besitzen (Arbeitsverzeichnis/Dateisystem werden mit dem übergeordneten Agenten geteilt). Ein Sub-Agent verwendet dieselbe Persona und dieselben Welt-Einstellungen, läuft aber mit einem isolierten Werkzeugsatz und einer eigenen Generierungsschleife; er unterstützt synchrone/asynchrone Läufe, gemeinsamen Batch-Kontext, hierarchische Budgets und Zusammenfassung beim Beenden.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"sub-agent",
+				"multi-agent",
+				"plugin"
+			]
+		},
+		"emoji": {
+			"name": "👥🤖",
+			"avatar": "https://api.iconify.design/line-md/account-multiple-plus.svg",
+			"description": "🤖➕👥🔀 ➡️ ⚡🧠",
+			"description_markdown": "**👥** ➡️ 🤖✨.\n✅ 💬🔒 & 💰🔒.\n📁🤝👤.\n✅ ⚡🔄.\n✅ 📦🧠.\n✅ 📏💰.\n✅ 🛑📝.\n",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"👥",
+				"🔀",
+				"📏",
+				"🔌"
+			]
+		},
+		"es-ES": {
+			"name": "Subagente",
+			"avatar": "https://api.iconify.design/line-md/account-multiple-plus.svg",
+			"description": "Permite a un personaje generar subagentes aislados para trabajar en tareas en paralelo",
+			"description_markdown": "El complemento **Sub-agent** permite a un personaje generar subagentes que disponen de una conversación aislada y de sus propios presupuestos (el directorio de trabajo y el sistema de archivos se comparten con el agente principal). Un subagente reutiliza la misma persona y la misma configuración del mundo, pero se ejecuta con un conjunto de herramientas y un bucle de generación aislados; admite ejecuciones síncronas/asíncronas, contexto compartido por lote, presupuestos jerárquicos y resumen al finalizar.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"subagente",
+				"multiagente",
+				"complemento"
+			]
+		},
+		"fr-FR": {
+			"name": "Sous-agent",
+			"avatar": "https://api.iconify.design/line-md/account-multiple-plus.svg",
+			"description": "Permet à un personnage de créer des sous-agents isolés pour mener des tâches en parallèle",
+			"description_markdown": "Le plugin **Sub-agent** permet à un personnage de créer des sous-agents dotés d'une conversation isolée et de leurs propres budgets (le répertoire de travail et le système de fichiers sont partagés avec le parent). Un sous-agent réutilise la même persona et les mêmes réglages de monde, mais s'exécute avec un ensemble d'outils et une boucle de génération isolés ; il prend en charge les exécutions synchrones/asynchrones, le contexte partagé par lot, les budgets hiérarchiques et la synthèse à la fin.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"sous-agent",
+				"multi-agent",
+				"plugin"
+			]
+		},
+		"hi-IN": {
+			"name": "उप-एजेंट",
+			"avatar": "https://api.iconify.design/line-md/account-multiple-plus.svg",
+			"description": "पात्र को समानांतर कार्य के लिए अलग-थलग उप-एजेंट बनाने देता है",
+			"description_markdown": "**Sub-agent** प्लगइन किसी पात्र को ऐसे उप-एजेंट बनाने देता है जिनका अपना अलग संवाद और अपना बजट होता है (कार्य-निर्देशिका/फ़ाइल सिस्टम मूल के साथ साझा रहता है)। उप-एजेंट वही persona और world सेटिंग्स दोबारा उपयोग करता है, पर अलग टूल सेट और जनरेशन लूप में चलता है; यह तुल्यकालिक/अतुल्यकालिक रन, साझा बैच संदर्भ, श्रेणीबद्ध बजट और समाप्ति पर सारांश का समर्थन करता है।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"उप-एजेंट",
+				"बहु-एजेंट",
+				"प्लगइन"
+			]
+		},
+		"is-IS": {
+			"name": "Undirumboðsmaður",
+			"avatar": "https://api.iconify.design/line-md/account-multiple-plus.svg",
+			"description": "Leyfir persónu að mynda einangraða undirumboðsmenn fyrir samhliða verkvinnslu",
+			"description_markdown": "**Sub-agent** viðbótin leyfir persónu að mynda undirumboðsmenn sem hafa sitt eigið einangraða samtal og eigin fjárhagsáætlanir (vinnumappa/skráakerfi er sameiginlegt með foreldrinum). Undirumboðsmaður endurnýtir sömu persónu og heimstillingar en keyrir einangrað verkfærasett og kynslóðarlykkju; hann styður samstilltar/ósamstilltar keyrslur, sameiginlegt lotusamhengi, stigskiptar áætlanir og samantekt við lok.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"undirumboðsmaður",
+				"fjölumboðsmaður",
+				"viðbót"
+			]
+		},
+		"it-IT": {
+			"name": "Subagente",
+			"avatar": "https://api.iconify.design/line-md/account-multiple-plus.svg",
+			"description": "Consente a un personaggio di generare subagenti isolati per lavorare su attività in parallelo",
+			"description_markdown": "Il plugin **Sub-agent** consente a un personaggio di generare subagenti dotati di una conversazione isolata e di budget propri (la directory di lavoro e il file system sono condivisi con il genitore). Un subagente riutilizza la stessa persona e le stesse impostazioni del mondo, ma opera con un set di strumenti e un ciclo di generazione isolati; supporta esecuzioni sincrone/asincrone, contesto condiviso per lotto, budget gerarchici e riepilogo alla fine.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"subagente",
+				"multi-agente",
+				"plugin"
+			]
+		},
 		"ja-JP": {
 			"name": "サブエージェント",
 			"avatar": "https://api.iconify.design/line-md/account-multiple-plus.svg",
@@ -50,13 +155,104 @@
 				"プラグイン"
 			]
 		},
-		"ko-KR": {},
-		"lzh": {},
-		"nl-NL": {},
-		"pt-PT": {},
-		"ru-RU": {},
-		"uk-UA": {},
-		"vi-VN": {},
+		"ko-KR": {
+			"name": "서브 에이전트",
+			"avatar": "https://api.iconify.design/line-md/account-multiple-plus.svg",
+			"description": "캐릭터가 병렬 작업을 위해 격리된 서브 에이전트를 생성할 수 있게 합니다",
+			"description_markdown": "**서브 에이전트** 플러그인은 캐릭터가 독립된 대화와 자체 예산을 가진 서브 에이전트를 생성할 수 있게 합니다(작업 디렉터리/파일 시스템은 부모와 공유됩니다). 서브 에이전트는 동일한 페르소나와 세계 설정을 재사용하되 격리된 도구 세트와 생성 루프로 동작합니다. 동기/비동기 실행, 배치 간 공유 컨텍스트, 계층적 예산, 종료 시 요약을 지원합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"서브에이전트",
+				"멀티에이전트",
+				"플러그인"
+			]
+		},
+		"lzh": {
+			"name": "子代理",
+			"avatar": "https://api.iconify.design/line-md/account-multiple-plus.svg",
+			"description": "使化身得遣別立之子代理，並行治務",
+			"description_markdown": "此**子代理**插件，使化身能遣子代理，各有別立之談與自專之度（工作之目錄、文卷之統與父共之）。子代理仍用同一人格與世界之設，然行別立之器與生成之環；能同步、異步而行，批次共談，度有層級，止則為之摘要。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"子代理",
+				"眾代理",
+				"插件"
+			]
+		},
+		"nl-NL": {
+			"name": "Subagent",
+			"avatar": "https://api.iconify.design/line-md/account-multiple-plus.svg",
+			"description": "Laat een personage geïsoleerde subagenten voortbrengen voor parallel werk",
+			"description_markdown": "De **Sub-agent**-plugin laat een personage subagenten voortbrengen die een eigen, geïsoleerd gesprek en eigen budgetten hebben (de werkmap en het bestandssysteem worden met het bovenliggende personage gedeeld). Een subagent hergebruikt dezelfde persona en wereldinstellingen, maar draait met een geïsoleerde gereedschapsset en generatielus; hij ondersteunt synchrone/asynchrone runs, gedeelde batchcontext, hiërarchische budgetten en samenvatting bij beëindiging.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"subagent",
+				"multi-agent",
+				"plugin"
+			]
+		},
+		"pt-PT": {
+			"name": "Subagente",
+			"avatar": "https://api.iconify.design/line-md/account-multiple-plus.svg",
+			"description": "Permite que um personagem gere subagentes isolados para executar tarefas em paralelo",
+			"description_markdown": "O plugin **Sub-agent** permite que um personagem gere subagentes que têm uma conversa isolada e orçamentos próprios (o diretório de trabalho e o sistema de ficheiros são partilhados com o agente principal). Um subagente reutiliza a mesma persona e as mesmas definições de mundo, mas corre com um conjunto de ferramentas e um ciclo de geração isolados; suporta execuções síncronas/assíncronas, contexto partilhado por lote, orçamentos hierárquicos e resumo ao terminar.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"subagente",
+				"multiagente",
+				"plugin"
+			]
+		},
+		"ru-RU": {
+			"name": "Субагент",
+			"avatar": "https://api.iconify.design/line-md/account-multiple-plus.svg",
+			"description": "Позволяет персонажу порождать изолированных субагентов для параллельной работы над задачами",
+			"description_markdown": "Плагин **Sub-agent** позволяет персонажу порождать субагентов, у которых есть собственный изолированный диалог и собственные бюджеты (рабочий каталог и файловая система общие с родителем). Субагент повторно использует ту же личность и настройки мира, но работает с изолированным набором инструментов и циклом генерации; поддерживаются синхронные/асинхронные запуски, общий контекст партии, иерархические бюджеты и резюмирование при завершении.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"субагент",
+				"мультиагент",
+				"плагин"
+			]
+		},
+		"uk-UA": {
+			"name": "Субагент",
+			"avatar": "https://api.iconify.design/line-md/account-multiple-plus.svg",
+			"description": "Дозволяє персонажу породжувати ізольованих субагентів для паралельної роботи над завданнями",
+			"description_markdown": "Плагін **Sub-agent** дозволяє персонажу породжувати субагентів, які мають власну ізольовану розмову та власні бюджети (робочий каталог і файлова система спільні з батьківським агентом). Субагент повторно використовує ту саму персону й налаштування світу, але працює з ізольованим набором інструментів і циклом генерації; підтримуються синхронні/асинхронні запуски, спільний контекст партії, ієрархічні бюджети та підсумовування після завершення.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"субагент",
+				"мультиагент",
+				"плагін"
+			]
+		},
+		"vi-VN": {
+			"name": "Tác nhân con",
+			"avatar": "https://api.iconify.design/line-md/account-multiple-plus.svg",
+			"description": "Cho phép nhân vật tạo ra các tác nhân con tách biệt để xử lý công việc song song",
+			"description_markdown": "Plugin **Sub-agent** cho phép nhân vật tạo ra các tác nhân con sở hữu cuộc hội thoại tách biệt và ngân sách riêng (thư mục làm việc/hệ thống tệp được chia sẻ với tác nhân cha). Tác nhân con tái sử dụng cùng persona và thiết lập thế giới, nhưng chạy với bộ công cụ và vòng lặp sinh tách biệt; hỗ trợ chạy đồng bộ/bất đồng bộ, ngữ cảnh chia sẻ theo lô, ngân sách phân cấp và tóm tắt khi kết thúc.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"tác nhân con",
+				"đa tác nhân",
+				"plugin"
+			]
+		},
 		"zh-TW": {
 			"name": "子代理",
 			"avatar": "https://api.iconify.design/line-md/account-multiple-plus.svg",

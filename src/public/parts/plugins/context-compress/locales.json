@@ -19,118 +19,271 @@
 			"name": "上下文压缩",
 			"avatar": "https://api.iconify.design/material-symbols/compress.svg",
 			"description": "让 AI 角色按需把过长的对话历史压缩为摘要，腾出上下文空间继续对话",
-			"description_markdown": "**上下文压缩**插件为 AI 角色提供一个手动触发的工具标签：\n\n```\n<compress-context/>\n```\n\n当对话历史接近 AI 源的上下文上限时，角色可以输出该标签；插件会调用摘要生成，把历史收敛为一条 `summary` 条目，并在下一轮生成本轮 prompt，使角色在不丢失关键信息的前提下继续对话。\n\n该工具在普通聊天与角色 regen 循环中均可使用；同一轮生成最多压缩一次，避免重复摘要。",
+			"description_markdown": "**上下文压缩**插件为 AI 角色提供一个手动触发的工具标签：\n\n```\n<compress-context/>\n```\n\n当对话历史接近 AI 源的上下文上限时，角色可以输出该标签；插件会调用摘要生成，把历史收敛为一条 `summary` 条目，并在下一轮调整本轮的 prompt，使角色在不丢失关键信息的前提下继续对话。\n\n该工具在普通聊天与角色 regen 循环中均可使用；同一轮生成最多压缩一次，避免重复摘要。",
 			"version": "0.1.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
-				"context",
-				"compression",
-				"summary",
-				"plugin"
+				"上下文",
+				"压缩",
+				"摘要",
+				"插件"
 			]
 		},
 		"ar-SA": {
-			"name": null,
+			"name": "ضغط السياق",
 			"avatar": "https://api.iconify.design/material-symbols/compress.svg",
-			"description": null
-		},
-		"de-DE": {
-			"name": null,
-			"avatar": "https://api.iconify.design/material-symbols/compress.svg",
-			"description": null
-		},
-		"emoji": {
-			"name": "上下文压缩",
-			"avatar": "https://api.iconify.design/material-symbols/compress.svg",
-			"description": "让 AI 角色按需把过长的对话历史压缩为摘要，腾出上下文空间继续对话",
-			"description_markdown": "**上下文压缩**插件为 AI 角色提供一个手动触发的工具标签：\n\n```\n<compress-context/>\n```\n\n当对话历史接近 AI 源的上下文上限时，角色可以输出该标签；插件会调用摘要生成，把历史收敛为一条 `summary` 条目，并在下一轮生成本轮 prompt，使角色在不丢失关键信息的前提下继续对话。\n\n该工具在普通聊天与角色 regen 循环中均可使用；同一轮生成最多压缩一次，避免重复摘要。",
+			"description": "يتيح لشخصيات الذكاء الاصطناعي ضغط سجل محادثة طويل للغاية إلى ملخّص عند الحاجة، لتفريغ مساحة السياق.",
+			"description_markdown": "يمنح مكوّن **Context Compress** الإضافي شخصية الذكاء الاصطناعي وسم أداة يُستدعى يدويًا:\n\n```\n<compress-context/>\n```\n\nعندما يقترب سجل المحادثة من حد سياق مصدر الذكاء الاصطناعي، يمكن للشخصية إخراج هذا الوسم؛ فيُجري المكوّن عملية تلخيص، ويطوي السجل في مدخل `summary` واحد، ويعدّل موجه الجولة التالية كي تواصل الشخصية الحديث دون فقدان الحقائق المهمة.\n\nيعمل في المحادثات العادية وفي حلقة إعادة توليد الشخصية على حدٍّ سواء؛ وتُضغط الجولة الواحدة مرة واحدة على الأكثر لتجنّب التلخيص المكرر.",
 			"version": "0.1.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
-				"context",
-				"compression",
-				"summary",
+				"سياق",
+				"ضغط",
+				"ملخّص",
+				"إضافة"
+			]
+		},
+		"de-DE": {
+			"name": "Kontextkompression",
+			"avatar": "https://api.iconify.design/material-symbols/compress.svg",
+			"description": "Ermöglicht KI-Charakteren, einen überlangen Gesprächsverlauf bei Bedarf zu einer Zusammenfassung zu verdichten und so Kontextplatz freizugeben.",
+			"description_markdown": "Das **Context Compress**-Plugin gibt einem KI-Charakter ein manuell auslösbares Werkzeug-Tag:\n\n```\n<compress-context/>\n```\n\nNähert sich der Gesprächsverlauf dem Kontextlimit der KI-Quelle, kann der Charakter dieses Tag ausgeben; das Plugin führt eine Zusammenfassung aus, faltet den Verlauf zu einem einzigen `summary`-Eintrag und gleicht den Prompt der nächsten Runde daran an, sodass der Charakter weiterreden kann, ohne wichtige Fakten zu verlieren.\n\nEs funktioniert in normalen Chats ebenso wie in der Regenerierungsschleife des Charakters; eine einzelne Runde komprimiert höchstens einmal, um doppelte Zusammenfassungen zu vermeiden.",
+			"version": "0.1.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"kontext",
+				"kompression",
+				"zusammenfassung",
 				"plugin"
+			]
+		},
+		"emoji": {
+			"name": "🗜️💬",
+			"avatar": "https://api.iconify.design/material-symbols/compress.svg",
+			"description": "🤖➕🗜️📜➡️📝",
+			"description_markdown": "**🗜️💬** ➡️ 🤖✨.\n✅ 🗜️📜➡️📝.\n✅ 💬 & 🔄.\n1️⃣🔄 ⏩1️⃣🗜️.\n",
+			"version": "0.1.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"🗜️",
+				"📜",
+				"📝",
+				"🔌"
 			]
 		},
 		"es-ES": {
-			"name": null,
-			"avatar": "https://api.iconify.design/material-symbols/compress.svg"
+			"name": "Compresión de contexto",
+			"avatar": "https://api.iconify.design/material-symbols/compress.svg",
+			"description": "Permite que los personajes de IA compriman a petición un historial de conversación demasiado largo en un resumen para liberar espacio de contexto.",
+			"description_markdown": "El complemento **Context Compress** proporciona a un personaje de IA una etiqueta de herramienta que se activa manualmente:\n\n```\n<compress-context/>\n```\n\nCuando el historial de conversación se acerca al límite de contexto de la fuente de IA, el personaje puede emitir esta etiqueta; el complemento ejecuta un resumen, pliega el historial en una única entrada `summary` y ajusta el prompt de la siguiente ronda para que el personaje pueda seguir conversando sin perder datos clave.\n\nFunciona tanto en chats normales como en el bucle de regeneración del personaje; una misma ronda comprime como máximo una vez para evitar resúmenes duplicados.",
+			"version": "0.1.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"contexto",
+				"compresión",
+				"resumen",
+				"complemento"
+			]
 		},
 		"fr-FR": {
-			"name": null,
+			"name": "Compression du contexte",
 			"avatar": "https://api.iconify.design/material-symbols/compress.svg",
-			"description": null
+			"description": "Permet aux personnages IA de compresser à la demande un historique de conversation trop long en un résumé afin de libérer de l'espace de contexte.",
+			"description_markdown": "Le plugin **Context Compress** dote un personnage IA d'une balise d'outil déclenchée manuellement :\n\n```\n<compress-context/>\n```\n\nLorsque l'historique de la conversation approche de la limite de contexte de la source IA, le personnage peut émettre cette balise ; le plugin lance un résumé, replie l'historique en une seule entrée `summary` et réajuste le prompt de la manche suivante pour que le personnage puisse continuer à parler sans perdre les faits essentiels.\n\nIl fonctionne aussi bien dans les conversations ordinaires que dans la boucle de régénération du personnage ; une même manche ne compresse qu'une seule fois afin d'éviter les résumés en double.",
+			"version": "0.1.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"contexte",
+				"compression",
+				"résumé",
+				"plugin"
+			]
 		},
 		"hi-IN": {
-			"name": null,
+			"name": "संदर्भ संपीड़न",
 			"avatar": "https://api.iconify.design/material-symbols/compress.svg",
-			"description": null
+			"description": "AI पात्रों को माँग पर अत्यधिक लंबे संवाद इतिहास को सारांश में संपीड़ित करके संदर्भ स्थान मुक्त करने देता है।",
+			"description_markdown": "**Context Compress** प्लगइन AI पात्र को एक हस्त-चालित टूल टैग देता है:\n\n```\n<compress-context/>\n```\n\nजब संवाद इतिहास AI स्रोत की संदर्भ सीमा के निकट पहुँचता है, तो पात्र यह टैग उत्सर्जित कर सकता है; प्लगइन सारांशण चलाता है, इतिहास को एक ही `summary` प्रविष्टि में समेटता है, और अगली बारी का prompt समायोजित करता है ताकि पात्र मुख्य तथ्यों को खोए बिना बात जारी रख सके।\n\nयह सामान्य चैट और पात्र के regen लूप, दोनों में काम करता है; दोहरे सारांश से बचने के लिए एक बारी में अधिकतम एक बार संपीड़न होता है।",
+			"version": "0.1.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"संदर्भ",
+				"संपीड़न",
+				"सारांश",
+				"प्लगइन"
+			]
 		},
 		"is-IS": {
-			"name": null,
+			"name": "Samhengisþjöppun",
 			"avatar": "https://api.iconify.design/material-symbols/compress.svg",
-			"description": null
+			"description": "Gerir gervigreindarkarakterum kleift að þjappa of löngu samtalssögu í samantekt eftir þörfum og losa um samhengispláss.",
+			"description_markdown": "**Context Compress** viðbótin gefur gervigreindarkarakteri handvirkt kallað verkfærismerki:\n\n```\n<compress-context/>\n```\n\nÞegar samtalssagan nálgast samhengismörk gervigreindarheimildarinnar getur karakterinn gefið út þetta merki; viðbótin keyrir samantekt, brýtur söguna niður í eina `summary` færslu og lagar prompt næstu umferðar þannig að karakterinn geti haldið áfram að tala án þess að missa lykilstaðreyndir.\n\nHún virkar bæði í venjulegum spjallrásum og í endurkynslulykkju karaktersins; ein umferð þjappar í mesta lagi einu sinni til að koma í veg fyrir tvítekna samantekt.",
+			"version": "0.1.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"samhengi",
+				"þjöppun",
+				"samantekt",
+				"viðbót"
+			]
 		},
 		"it-IT": {
-			"name": null,
+			"name": "Compressione del contesto",
 			"avatar": "https://api.iconify.design/material-symbols/compress.svg",
-			"description": null
+			"description": "Consente ai personaggi IA di comprimere su richiesta una cronologia di conversazione troppo lunga in un riepilogo per liberare spazio di contesto.",
+			"description_markdown": "Il plugin **Context Compress** fornisce a un personaggio IA un tag strumento attivato manualmente:\n\n```\n<compress-context/>\n```\n\nQuando la cronologia della conversazione si avvicina al limite di contesto della sorgente IA, il personaggio può emettere questo tag; il plugin esegue un riepilogo, ripiega la cronologia in una singola voce `summary` e adegua il prompt del turno successivo così che il personaggio possa continuare a parlare senza perdere i fatti essenziali.\n\nFunziona sia nelle chat ordinarie sia nel ciclo di rigenerazione del personaggio; un singolo turno comprime al massimo una volta per evitare riepiloghi duplicati.",
+			"version": "0.1.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"contesto",
+				"compressione",
+				"riepilogo",
+				"plugin"
+			]
 		},
 		"ja-JP": {
-			"name": null,
+			"name": "コンテキスト圧縮",
 			"avatar": "https://api.iconify.design/material-symbols/compress.svg",
-			"description": null
+			"description": "AI キャラクターが、長くなりすぎた会話履歴を必要に応じて要約へ圧縮し、コンテキストの空きを確保できるようにします。",
+			"description_markdown": "**コンテキスト圧縮**プラグインは、AI キャラクターに手動で発動するツールタグを与えます：\n\n```\n<compress-context/>\n```\n\n会話履歴が AI ソースのコンテキスト上限に近づくと、キャラクターはこのタグを出力できます。プラグインが要約を実行し、履歴を単一の `summary` エントリへ畳み込み、次ラウンドの prompt を調整するため、キャラクターは重要な事実を失わずに会話を続けられます。\n\n通常のチャットでもキャラクターの regen ループでも同様に動作します。重複した要約を避けるため、1 ラウンドにつき圧縮は最大 1 回です。",
+			"version": "0.1.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"コンテキスト",
+				"圧縮",
+				"要約",
+				"プラグイン"
+			]
 		},
 		"ko-KR": {
-			"name": null,
+			"name": "컨텍스트 압축",
 			"avatar": "https://api.iconify.design/material-symbols/compress.svg",
-			"description": null
+			"description": "AI 캐릭터가 필요할 때 지나치게 긴 대화 기록을 요약으로 압축하여 컨텍스트 공간을 확보할 수 있게 합니다.",
+			"description_markdown": "**컨텍스트 압축** 플러그인은 AI 캐릭터에게 수동으로 발동하는 도구 태그를 제공합니다:\n\n```\n<compress-context/>\n```\n\n대화 기록이 AI 소스의 컨텍스트 한도에 가까워지면 캐릭터가 이 태그를 출력할 수 있습니다. 플러그인은 요약을 실행하여 기록을 하나의 `summary` 항목으로 접고, 다음 라운드의 prompt를 조정하므로 캐릭터는 핵심 사실을 잃지 않고 대화를 이어갈 수 있습니다.\n\n일반 채팅과 캐릭터 regen 루프 모두에서 동작합니다. 중복 요약을 피하기 위해 한 라운드에 최대 한 번만 압축합니다.",
+			"version": "0.1.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"컨텍스트",
+				"압축",
+				"요약",
+				"플러그인"
+			]
 		},
 		"lzh": {
-			"name": "上下文压缩",
+			"name": "文脈摺要",
 			"avatar": "https://api.iconify.design/material-symbols/compress.svg",
-			"description": "让 AI 角色按需把过长的对话历史压缩为摘要，腾出上下文空间继续对话",
-			"description_markdown": "**上下文压缩**插件为 AI 角色提供一个手动触发的工具标签：\n\n```\n<compress-context/>\n```\n\n当对话历史接近 AI 源的上下文上限时，角色可以输出该标签；插件会调用摘要生成，把历史收敛为一条 `summary` 条目，并在下一轮生成本轮 prompt，使角色在不丢失关键信息的前提下继续对话。\n\n该工具在普通聊天与角色 regen 循环中均可使用；同一轮生成最多压缩一次，避免重复摘要。",
+			"description": "使化身得按需摺冗長之談為要略，以廣文脈之地",
+			"description_markdown": "此**文脈摺要**插件，予化身一手發之器標：\n\n```\n<compress-context/>\n```\n\n談史近於 AI 源文脈之限時，化身可出此標；插件乃行摘要，斂其史為一 `summary` 之條，並調次輪之 prompt，使化身不失要旨而續談。\n\n凡常談與角色 regen 之環皆可用；一輪之生成，摺至多一次，以免重複之摘要。",
+			"version": "0.1.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"文脈",
+				"摺要",
+				"摘要",
+				"插件"
+			]
+		},
+		"nl-NL": {
+			"name": "Contextcompressie",
+			"avatar": "https://api.iconify.design/material-symbols/compress.svg",
+			"description": "Laat AI-personages een te lang gespreksverloop op verzoek tot een samenvatting comprimeren om contextruimte vrij te maken.",
+			"description_markdown": "De **Context Compress**-plugin geeft een AI-personage een handmatig te activeren gereedschapstag:\n\n```\n<compress-context/>\n```\n\nWanneer het gespreksverloop de contextlimiet van de AI-bron nadert, kan het personage deze tag uitzenden; de plugin voert een samenvatting uit, vouwt het verloop tot één `summary`-item en stemt de prompt van de volgende ronde daarop af, zodat het personage kan blijven praten zonder belangrijke feiten te verliezen.\n\nHet werkt zowel in gewone chats als in de regeneratielus van het personage; één ronde comprimeert hoogstens één keer om dubbele samenvattingen te voorkomen.",
 			"version": "0.1.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
 				"context",
-				"compression",
-				"summary",
+				"compressie",
+				"samenvatting",
 				"plugin"
 			]
 		},
-		"nl-NL": {
-			"name": null,
-			"avatar": "https://api.iconify.design/material-symbols/compress.svg",
-			"description": null
-		},
 		"pt-PT": {
-			"name": null,
-			"avatar": "https://api.iconify.design/material-symbols/compress.svg"
+			"name": "Compressão de contexto",
+			"avatar": "https://api.iconify.design/material-symbols/compress.svg",
+			"description": "Permite que os personagens de IA comprimam, quando necessário, um histórico de conversa demasiado longo num resumo para libertar espaço de contexto.",
+			"description_markdown": "O plugin **Context Compress** dá a um personagem de IA uma etiqueta de ferramenta acionada manualmente:\n\n```\n<compress-context/>\n```\n\nQuando o histórico da conversa se aproxima do limite de contexto da fonte de IA, o personagem pode emitir esta etiqueta; o plugin executa um resumo, dobra o histórico numa única entrada `summary` e ajusta o prompt da ronda seguinte para que o personagem possa continuar a falar sem perder factos essenciais.\n\nFunciona tanto em conversas normais como no ciclo de regeneração do personagem; uma mesma ronda comprime no máximo uma vez, para evitar resumos duplicados.",
+			"version": "0.1.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"contexto",
+				"compressão",
+				"resumo",
+				"plugin"
+			]
 		},
 		"ru-RU": {
-			"name": null,
+			"name": "Сжатие контекста",
 			"avatar": "https://api.iconify.design/material-symbols/compress.svg",
-			"description": null
+			"description": "Позволяет ИИ-персонажам по запросу сжимать слишком длинную историю переписки в резюме, освобождая место в контексте.",
+			"description_markdown": "Плагин **Context Compress** даёт ИИ-персонажу вручную запускаемый тег инструмента:\n\n```\n<compress-context/>\n```\n\nКогда история переписки приближается к пределу контекста источника ИИ, персонаж может выдать этот тег; плагин выполняет резюмирование, сворачивает историю в одну запись `summary` и согласует prompt следующего раунда, чтобы персонаж мог продолжать разговор, не теряя ключевых фактов.\n\nРаботает как в обычных чатах, так и в цикле регенерации персонажа; за один раунд сжатие выполняется не более одного раза — во избежание повторных резюме.",
+			"version": "0.1.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"контекст",
+				"сжатие",
+				"резюме",
+				"плагин"
+			]
 		},
 		"uk-UA": {
-			"name": null,
-			"avatar": "https://api.iconify.design/material-symbols/compress.svg"
+			"name": "Стиснення контексту",
+			"avatar": "https://api.iconify.design/material-symbols/compress.svg",
+			"description": "Дозволяє ШІ-персонажам на вимогу стискати занадто довгу історію розмови в резюме, звільняючи місце в контексті.",
+			"description_markdown": "Плагін **Context Compress** надає ШІ-персонажу тег інструмента, що запускається вручну:\n\n```\n<compress-context/>\n```\n\nКоли історія розмови наближається до межі контексту джерела ШІ, персонаж може видати цей тег; плагін виконує підсумовування, згортає історію в один запис `summary` і узгоджує prompt наступного раунду, щоб персонаж міг продовжувати розмову, не втрачаючи ключових фактів.\n\nПрацює як у звичайних чатах, так і в циклі регенерації персонажа; за один раунд стиснення виконується щонайбільше один раз, щоб уникнути повторних резюме.",
+			"version": "0.1.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"контекст",
+				"стиснення",
+				"резюме",
+				"плагін"
+			]
 		},
 		"vi-VN": {
-			"name": null,
+			"name": "Nén ngữ cảnh",
 			"avatar": "https://api.iconify.design/material-symbols/compress.svg",
-			"description": null
+			"description": "Cho phép nhân vật AI nén lịch sử hội thoại quá dài thành bản tóm tắt theo yêu cầu để giải phóng không gian ngữ cảnh.",
+			"description_markdown": "Plugin **Context Compress** cung cấp cho nhân vật AI một thẻ công cụ kích hoạt thủ công:\n\n```\n<compress-context/>\n```\n\nKhi lịch sử hội thoại tiến gần giới hạn ngữ cảnh của nguồn AI, nhân vật có thể phát ra thẻ này; plugin chạy tóm tắt, gấp lịch sử thành một mục `summary` duy nhất và điều chỉnh prompt của vòng kế tiếp để nhân vật tiếp tục trò chuyện mà không mất các dữ kiện quan trọng.\n\nNó hoạt động cả trong trò chuyện thường lẫn vòng lặp regen của nhân vật; một vòng chỉ nén tối đa một lần để tránh tóm tắt trùng lặp.",
+			"version": "0.1.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"ngữ cảnh",
+				"nén",
+				"tóm tắt",
+				"plugin"
+			]
 		},
 		"zh-TW": {
-			"name": null,
+			"name": "上下文壓縮",
 			"avatar": "https://api.iconify.design/material-symbols/compress.svg",
-			"description": null
+			"description": "讓 AI 角色按需把過長的對話歷史壓縮為摘要，騰出上下文空間繼續對話",
+			"description_markdown": "**上下文壓縮**外掛程式為 AI 角色提供一個手動觸發的工具標籤：\n\n```\n<compress-context/>\n```\n\n當對話歷史接近 AI 來源的上下文上限時，角色可以輸出該標籤；外掛程式會呼叫摘要生成，把歷史收斂為一條 `summary` 條目，並在下一輪調整本輪 prompt，使角色在不遺失關鍵資訊的前提下繼續對話。\n\n該工具在一般聊天與角色 regen 迴圈中均可使用；同一輪生成最多壓縮一次，避免重複摘要。",
+			"version": "0.1.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"上下文",
+				"壓縮",
+				"摘要",
+				"外掛"
+			]
 		}
 	}
 }
