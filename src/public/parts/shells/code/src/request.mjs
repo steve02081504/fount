@@ -104,6 +104,26 @@ async function buildCodeChatRequest({ username, session, requestSession, machine
 		fount_assets: true,
 		fount_themes: true,
 	}
+	/**
+	 * 生成选项。`base_result` 由角色模板在每轮 `StructCall` 前写入（累计结果容器，含 `logContextBefore`）；
+	 * WS 增量条目据此读取，而不是 AI 源构造的预览副本（那通常不带累计日志）。
+	 */
+	const generation_options = {
+		supported_functions,
+		/**
+		 * 转发流式预览；并把本轮累计结果暴露给调用方（WS）以增量读取 `logContextBefore`。
+		 * @param {import('../../../../../decl/chatLog.ts').chatReply_t} reply - 预览回复。
+		 * @returns {void}
+		 */
+		replyPreviewUpdater: reply => {
+			if (requestSession) requestSession.generationResult = generation_options.base_result ?? reply
+			onPreview?.(reply)
+		},
+		/** 工具执行实时输出（code-execution 插件回调），远程流式回显经 `shells/code` 的 RemoteCallBack。 */
+		onToolOutput,
+		remoteToolCallbackPartpath: onToolOutput ? 'shells/code' : undefined,
+		signal,
+	}
 	return {
 		supported_functions,
 		chat_name: 'code-' + session.id,
@@ -183,23 +203,7 @@ async function buildCodeChatRequest({ username, session, requestSession, machine
 		},
 		ai_source: aiSourceInstance,
 		workdir: session.memory.workdir ?? { machine: String(machine ?? '0'), path: workdir },
-		generation_options: {
-			supported_functions,
-			/**
-			 * 转发流式预览。
-			 * @param {import('../../../../../decl/chatLog.ts').chatReply_t} reply - 预览回复。
-			 * @returns {void}
-			 */
-			replyPreviewUpdater: reply => {
-				// 把本轮 result 暴露给调用方（WS）以增量读取 logContextBefore；角色实现应填充 base_result
-				if (requestSession && reply) requestSession.generationResult = reply
-				onPreview?.(reply)
-			},
-			/** 工具执行实时输出（code-execution 插件回调），远程流式回显经 `shells/code` 的 RemoteCallBack。 */
-			onToolOutput,
-			remoteToolCallbackPartpath: onToolOutput ? 'shells/code' : undefined,
-			signal,
-		},
+		generation_options,
 	}
 }
 

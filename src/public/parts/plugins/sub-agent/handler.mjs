@@ -1,15 +1,14 @@
 /**
  * 【文件】src/public/parts/plugins/sub-agent/handler.mjs
- * 【职责】sub-agent 插件的 ReplyHandler 组：解析 `<create-subagent-batch>` / `<run-subagent>` / `<list-ai-sources>` / `<check-subagent>` / `<terminate-subagent>` 五个工具标签。
+ * 【职责】sub-agent 插件的 ReplyHandler 组：解析 `<create-subagent-batch>` / `<run-subagent>` / `<list-ai-sources>` / `<terminate-subagent>` 四个工具标签。
  * 【原理】标签层只做参数解析与工具回执；真正的解析、限额校验、生成循环在 runtime.mjs。严格错误（缺限额、深度超限、找不到批次/AI 源）以错误工具日志回报并建议下一轮生成。
+ *   运行中检视已并入统一的 `<inspect-async>`（async-task 插件），本插件通过任务的 `inspect` 回调提供最近对话。
  * 【数据结构】handler = defineReplyHandler(...)；批次 id 形如 `batch-<uuid>`。
- * 【关联】runtime.mjs 的 runSubAgent / terminateSubAgentRun / listAvailableAiSources / describeRunConversation / describeRunEntries / SubAgentError；state.mjs 的 createBatch / parsePluginListAttr；main.mjs 汇总为 ReplyHandler。
+ * 【关联】runtime.mjs 的 runSubAgent / terminateSubAgentRun / listAvailableAiSources / SubAgentError；state.mjs 的 createBatch / parsePluginListAttr；main.mjs 汇总为 ReplyHandler。
  */
 import { defineReplyHandler, defineReplyHandlers } from '../../shells/chat/src/reply/defineReplyHandler.mjs'
 
 import {
-	describeRunConversation,
-	describeRunEntries,
 	listAvailableAiSources,
 	parseBooleanAttr,
 	parseDurationMs,
@@ -18,7 +17,7 @@ import {
 	SubAgentError,
 	terminateSubAgentRun,
 } from './runtime.mjs'
-import { createBatch, getRun, parsePluginListAttr } from './state.mjs'
+import { createBatch, parsePluginListAttr } from './state.mjs'
 
 /** 单个工具回执的长度上限。 */
 const TOOL_ECHO_LIMIT = 4000
@@ -201,49 +200,6 @@ export const listAiSourcesHandler = defineReplyHandler({
 })
 
 /**
- * `<check-subagent id="..."/>`：查看某运行最近的对话。
- * @type {import('../../../../decl/pluginAPI.ts').ReplyHandler_t}
- */
-export const checkSubAgentHandler = defineReplyHandler({
-	tag: 'check-subagent',
-	params: { id: 'string' },
-	/**
-	 * 查看运行对话。
-	 * @param {object} reply 回复对象
-	 * @param {object} args 请求上下文
-	 * @param {object} call 调用
-	 * @returns {Promise<object>} 结果
-	 */
-	handle: async (reply, args, call) => {
-		const id = call.params.id
-		const run = getRun(id)
-		if (!run) {
-			writeToolLog(args, 'sub-agent.check', `未找到子代理运行 "${id}"。`, true)
-			return { regen: true }
-		}
-		const conversationText = describeRunConversation(run, 3) || '（暂无对话）'
-		writeToolLog(
-			args,
-			'sub-agent.check',
-			`子代理 ${run.runId} 状态：${run.state}（轮次 ${run.rounds}/${run.roundLimit}）。最近对话：\n\n${echo(conversationText)}`,
-			false,
-			{
-				extension: {
-					subAgentCheck: {
-						runId: run.runId,
-						state: run.state,
-						rounds: run.rounds,
-						roundLimit: run.roundLimit,
-						entries: describeRunEntries(run, 3, 4000),
-					},
-				},
-			},
-		)
-		return { regen: true }
-	},
-})
-
-/**
  * `<terminate-subagent id="..."/>`：请求终止某运行（随后进入摘要）。
  * @type {import('../../../../decl/pluginAPI.ts').ReplyHandler_t}
  */
@@ -272,6 +228,5 @@ export const subAgentReplyHandlers = defineReplyHandlers([
 	createSubAgentBatchHandler,
 	runSubAgentHandler,
 	listAiSourcesHandler,
-	checkSubAgentHandler,
 	terminateSubAgentHandler,
 ])

@@ -13,7 +13,7 @@ import { iconElement, icons } from './icons.mjs'
 import { updateRunCards } from './runCards.mjs'
 import { markSessionDirty, regenerateLastReply } from './session.mjs'
 import { elements, store, SCROLL_TOLERANCE } from './store.mjs'
-import { openSubAgent, subAgentCardElement } from './subagents.mjs'
+import { subAgentCardElement } from './subagents.mjs'
 import { renderTemplate } from './templates.mjs'
 
 /**
@@ -42,10 +42,10 @@ const TOOL_NAME_I18N = {
 	'sub-agent.create-batch': 'code.tool.subAgent.createBatch',
 	'sub-agent.run': 'code.tool.subAgent.run',
 	'sub-agent.list-ai-sources': 'code.tool.subAgent.listAiSources',
-	'sub-agent.check': 'code.tool.subAgent.check',
 	'sub-agent.terminate': 'code.tool.subAgent.terminate',
 	'async-task.list': 'code.tool.async.list',
 	'async-task.await': 'code.tool.async.await',
+	'async-task.inspect': 'code.tool.async.inspect',
 	'async-task': 'code.tool.async.notice',
 }
 
@@ -121,37 +121,6 @@ function renderTranscriptEntry(item) {
 	})
 	row.append(head, body)
 	return row
-}
-
-/**
- * 渲染 `check-subagent` 的结构化对话卡（状态 + 轮次 + 打开 Agent Studio + 最近对话条目）。
- * @param {object} entry - 会话条目。
- * @returns {HTMLElement} 卡片。
- */
-function renderSubAgentCheck(entry) {
-	const meta = entry.extension.subAgentCheck ?? {}
-	const wrap = document.createElement('div')
-	wrap.className = 'code-subagent-check'
-	const head = document.createElement('div')
-	head.className = 'code-subagent-check-head'
-	const state = document.createElement('span')
-	state.className = 'badge badge-sm code-subagent-check-state'
-	state.textContent = geti18n(`code.subagent.state.${meta.state || 'done'}`)
-	const rounds = document.createElement('span')
-	rounds.className = 'code-subagent-check-meta'
-	rounds.textContent = geti18n('code.subagent.check.rounds', { rounds: meta.rounds ?? 0, roundLimit: meta.roundLimit ?? '-' })
-	const open = document.createElement('button')
-	open.type = 'button'
-	open.className = 'btn btn-ghost btn-xs code-subagent-check-open'
-	open.textContent = geti18n('code.subagent.check.open')
-	open.addEventListener('click', () => openSubAgent(meta.runId))
-	head.append(state, rounds, open)
-	wrap.appendChild(head)
-	const list = document.createElement('div')
-	list.className = 'code-transcript'
-	for (const item of meta.entries ?? []) list.appendChild(renderTranscriptEntry(item))
-	wrap.appendChild(list)
-	return wrap
 }
 
 /**
@@ -232,6 +201,37 @@ function renderAsyncAwait(entry) {
 		note.textContent = geti18n('code.asyncTasks.timedOut')
 		wrap.appendChild(note)
 	}
+	return wrap
+}
+
+/**
+ * 渲染 `<inspect-async/>` 的结构化检视结果。
+ * 子代理载荷带 `entries`（角色标签对话）；JS / shell 为纯文本片段（`preview`）。
+ * @param {object} entry - 会话条目。
+ * @returns {HTMLElement} 卡片。
+ */
+function renderAsyncInspect(entry) {
+	const meta = entry.extension.asyncInspect ?? {}
+	const wrap = document.createElement('div')
+	wrap.className = 'code-async-inspect'
+	if (Array.isArray(meta.entries)) {
+		if (!meta.entries.length) {
+			wrap.textContent = geti18n('code.asyncTasks.none')
+			return wrap
+		}
+		const list = document.createElement('div')
+		list.className = 'code-transcript'
+		for (const item of meta.entries) list.appendChild(renderTranscriptEntry(item))
+		wrap.appendChild(list)
+		return wrap
+	}
+	const body = document.createElement('div')
+	body.className = 'code-async-inspect-preview'
+	body.setAttribute('prompt-content', '')
+	renderMarkdownAsString(messageMarkdown(String(meta.preview ?? '')), store.markdownCache).then(html => {
+		body.innerHTML = html
+	})
+	wrap.appendChild(body)
 	return wrap
 }
 
@@ -527,7 +527,7 @@ export function renderEntryBubble(entry, { isLast = false } = {}) {
 	else if (entry.role === 'tool' || entry.role === 'system') {
 		const details = document.createElement('details')
 		details.className = 'code-tool-log'
-		if (entry.name === 'shell' || entry.name === 'sub-agent.check' || entry.name?.startsWith('code-execution')) details.open = true
+		if (entry.name === 'shell' || entry.name?.startsWith('code-execution')) details.open = true
 		const summary = document.createElement('summary')
 		const chevron = document.createElement('span')
 		chevron.className = 'code-tool-log-chevron'
@@ -551,12 +551,12 @@ export function renderEntryBubble(entry, { isLast = false } = {}) {
 			output.textContent = stream.output || ''
 			content.append(command, output)
 		}
-		else if (entry.extension?.subAgentCheck)
-			content.appendChild(renderSubAgentCheck(entry))
 		else if (entry.extension?.asyncList)
 			content.appendChild(renderAsyncList(entry))
 		else if (entry.extension?.asyncAwait)
 			content.appendChild(renderAsyncAwait(entry))
+		else if (entry.extension?.asyncInspect)
+			content.appendChild(renderAsyncInspect(entry))
 		else
 			renderMarkdownAsString(messageMarkdown(entryShowText(entry)), store.markdownCache).then(html => {
 				content.innerHTML = html

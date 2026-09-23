@@ -5,8 +5,7 @@
 import { assert, assertEquals, assertRejects } from 'jsr:@std/assert'
 
 import { runReplyHandlers } from '../../../../shells/chat/src/reply/handlerPipeline.mjs'
-import { resetAsyncTaskState, setAsyncTaskNotifier } from '../../../async-task/registry.mjs'
-import { checkSubAgentHandler } from '../../handler.mjs'
+import { inspectTask, resetAsyncTaskState, setAsyncTaskNotifier, ownerFromArgs } from '../../../async-task/registry.mjs'
 import { runSubAgent, SubAgentError } from '../../runtime.mjs'
 import { createRun, getRun, resetSubAgentState } from '../../state.mjs'
 
@@ -40,6 +39,44 @@ function createFakeAi(script, summary = 'FINAL-SUMMARY') {
 			index++
 			options.base_result.content = content
 			return { content }
+		},
+	}
+}
+
+/**
+ * 阻塞型假 AI 源：`StructCall` 写入内容后等待手动放行，用于在运行中检视。
+ * @param {string} [content] 生成内容
+ * @returns {{ai: object, release: () => void}} 假 AI 源与放行器
+ */
+function createBlockingAi(content = 'partial-result') {
+	/** @type {() => void} */
+	let release = () => { }
+	const gate = new Promise(resolve => { release = resolve })
+	return {
+		/**
+		 * 放行被阻塞的生成。
+		 * @returns {void}
+		 */
+		release: () => release(),
+		ai: {
+			filename: 'blocking-ai.mjs',
+			summaryCalls: 0,
+			/**
+			 * 纯文本摘要调用。
+			 * @returns {Promise<string>} 摘要文本
+			 */
+			async Call() { this.summaryCalls++; return 'SUMMARY' },
+			/**
+			 * 结构化调用：写入内容后阻塞直到放行。
+			 * @param {object} _prompt 提示结构
+			 * @param {object} options 生成选项
+			 * @returns {Promise<object>} 生成结果
+			 */
+			async StructCall(_prompt, options) {
+				options.base_result.content = content
+				await gate
+				return { content }
+			},
 		},
 	}
 }
@@ -299,40 +336,48 @@ Deno.test('runSubAgent persists the internal conversation and emits live status'
 	assert(deps.notifications.some(payload => payload.state === 'running'), 'expected a running notification')
 })
 
-Deno.test('check-subagent writes a structured conversation card', async () => {
+Deno.test('async sub-agent exposes a live inspect preview while running', async () => {
 	resetSubAgentState()
-	// 运行结束后 run 会被生命周期清理，check-subagent 只对内存中仍在进行的运行负责。
-	const run = createRun({
-		runId: 'live-run',
-		backgroundId: 'live-run',
-		state: 'running',
-		rounds: 1,
-		roundLimit: 3,
-		conversation: [
-			{ role: 'system', name: 'system', content: 'opening' },
-			{ role: 'char', name: 'Char', content: 'agent-layer', content_for_show: 'show-layer' },
-		],
-		result: { logContextBefore: [] },
-	})
-	/** 捕获的工具日志。 */
-	const logs = []
-	/**
-	 * 收集工具日志。
-	 * @param {object} entry 日志条目
-	 * @returns {void}
-	 */
-	const collectLog = entry => { logs.push(entry) }
-	const args = { username: 'user-1', char_id: 'char-1', chat_name: 'test_chat', extension: {}, AddLongTimeLog: collectLog }
-	await checkSubAgentHandler.handle(null, args, { params: { id: run.runId } })
-	const log = logs.at(-1)
-	assertEquals(log.name, 'sub-agent.check')
-	assertEquals(log.extension?.subAgentCheck?.runId, run.runId)
-	assertEquals(log.extension.subAgentCheck.state, 'running')
-	assert(Array.isArray(log.extension.subAgentCheck.entries))
-	assert(log.extension.subAgentCheck.entries.length > 0, 'expected conversation entries')
-	assert(log.extension.subAgentCheck.entries.every(entry =>
+	resetAsyncTaskState()
+	const { ai, release } = createBlockingAi()
+	const deps = createDeps(ai, createRegenPlugin(0))
+	const parentArgs = createParentArgs()
+	const outcome = await runSubAgent(
+		parentArgs,
+		{ body: 'long task', roundLimit: 3, timeLimitMs: 60_000, async: true },
+		deps,
+	)
+	assert(outcome.backgroundId, 'expected a backgroundId')
+	// 运行中即可检视：返回最近的对话条目，且不消费任务（不抑制完成通知）。
+	const inspected = inspectTask(outcome.backgroundId, ownerFromArgs(parentArgs))
+	assertEquals(inspected.ok, true)
+	assertEquals(inspected.preview.state, 'running')
+	assert(Array.isArray(inspected.preview.entries))
+	assert(inspected.preview.entries.length > 0, 'expected conversation entries')
+	assert(inspected.preview.entries.every(entry =>
 		typeof entry.role === 'string' && typeof entry.name === 'string' && typeof entry.content === 'string'
 	))
+	assertEquals(inspected.task.consumed, false, '检视不应消费任务')
+	release()
+	await waitFor(() => getRun(outcome.backgroundId) === undefined)
+})
+
+Deno.test('inspectTask matches ownership and rejects cross-session inspection', async () => {
+	resetSubAgentState()
+	resetAsyncTaskState()
+	const { ai, release } = createBlockingAi()
+	const deps = createDeps(ai, createRegenPlugin(0))
+	const parentArgs = createParentArgs()
+	const outcome = await runSubAgent(
+		parentArgs,
+		{ body: 'owned task', roundLimit: 3, timeLimitMs: 60_000, async: true },
+		deps,
+	)
+	const foreign = { username: 'user-2', charId: 'char-1', chatName: 'other_chat' }
+	assertEquals(inspectTask(outcome.backgroundId, foreign).reason, 'forbidden')
+	assertEquals(inspectTask('missing-id', ownerFromArgs(parentArgs)).reason, 'not_found')
+	release()
+	await waitFor(() => getRun(outcome.backgroundId) === undefined)
 })
 
 Deno.test('runSubAgent rejects over-depth and missing-limit spawns', async () => {

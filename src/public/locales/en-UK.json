@@ -6631,12 +6631,12 @@
 				"createBatch": "Create sub-agent batch",
 				"run": "Run sub-agent",
 				"listAiSources": "List AI sources",
-				"check": "Inspect sub-agent conversation",
 				"terminate": "Terminate sub-agent"
 			},
 			"async": {
 				"list": "List async tasks",
 				"await": "Await async tasks",
+				"inspect": "Inspect async tasks",
 				"notice": "Background task notice",
 				"run": "Run ${kind} in background"
 			}
@@ -6652,10 +6652,6 @@
 				"done": "Done",
 				"terminated": "Terminated",
 				"failed": "Failed"
-			},
-			"check": {
-				"open": "Open in Agent Studio",
-				"rounds": "Round ${rounds}/${roundLimit}"
 			}
 		},
 		"transcript": {

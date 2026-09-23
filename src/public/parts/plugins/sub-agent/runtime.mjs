@@ -716,6 +716,16 @@ export async function runSubAgent(args, request, deps = defaultSubAgentDeps) {
 			 * @returns {string} 通知文本
 			 */
 			format: task => subAgentNotificationText(task.result ?? run),
+			/**
+			 * 运行中检视：最近的对话条目与轮次。
+			 * @returns {{state: string, rounds: number, roundLimit: number, entries: object[]}} 检视载荷
+			 */
+			inspect: () => ({
+				state: run.state,
+				rounds: run.rounds,
+				roundLimit: run.roundLimit,
+				entries: describeRunEntries(run, 3, 4000),
+			}),
 		})
 		// 生命周期：动作结束、历史落盘并投递完成通知后释放 run；此后复用该 id 属于未定义行为。
 		// 挂在 task.done 之后而非 execute 内删除，确保 format 已生成通知文本。
@@ -747,7 +757,7 @@ export function terminateSubAgentRun(id) {
 }
 
 /**
- * 取运行最近对话的结构化条目（用于 check-subagent 的可读 UI 与文本回执）。
+ * 取运行最近对话的结构化条目（用于统一 `<inspect-async>` 的可读 UI 与文本回执）。
  * @param {object} run 运行
  * @param {number} [limit] 最近条数
  * @param {number} [contentLimit] 每条内容上限
@@ -763,7 +773,7 @@ export function describeRunEntries(run, limit = 3, contentLimit = 1000) {
 }
 
 /**
- * 描述运行最近的对话（用于 check-subagent）。
+ * 描述运行最近的对话（打包档案摘要等文本回执用）。
  * @param {object} run 运行
  * @param {number} [limit] 最近条数
  * @returns {string} 文本

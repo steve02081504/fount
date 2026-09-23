@@ -12,10 +12,10 @@ export function pickEntryExtension(extension) {
 	/** @type {object} */
 	const picked = {}
 	if (extension.subAgent) picked.subAgent = extension.subAgent
-	if (extension.subAgentCheck) picked.subAgentCheck = extension.subAgentCheck
 	if (extension.asyncTask) picked.asyncTask = extension.asyncTask
 	if (extension.asyncList) picked.asyncList = extension.asyncList
 	if (extension.asyncAwait) picked.asyncAwait = extension.asyncAwait
+	if (extension.asyncInspect) picked.asyncInspect = extension.asyncInspect
 	if (extension.error) picked.error = extension.error
 	if (Array.isArray(extension.loadedContextHashes)) picked.loadedContextHashes = extension.loadedContextHashes
 	return picked

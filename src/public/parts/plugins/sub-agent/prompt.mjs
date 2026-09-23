@@ -36,8 +36,9 @@ const SUB_AGENT_PROMPT = `\
 **列出可用 AI 源：**
 <list-ai-sources/>
 
-**查看某个子代理最近的对话：**
-<check-subagent id="runId 或 backgroundId"/>
+**查看某个运行中的子代理最近的对话：**
+<inspect-async id="runId 或 backgroundId"/>
+- 异步子代理也可用统一检视工具；同步调用会直接返回最终结果。
 
 **终止某个子代理（软取消：在当前工具调用结束后、下一轮开始前生效并进入摘要）：**
 <terminate-subagent id="runId 或 backgroundId"/>

@@ -6631,12 +6631,12 @@
 				"createBatch": "サブエージェントのバッチを作成",
 				"run": "サブエージェントを実行",
 				"listAiSources": "AI ソースを一覧",
-				"check": "サブエージェントの会話を表示",
 				"terminate": "サブエージェントを終了"
 			},
 			"async": {
 				"list": "非同期タスクを一覧",
 				"await": "非同期タスクを待機",
+				"inspect": "非同期タスクを検査",
 				"notice": "バックグラウンドタスク通知",
 				"run": "${kind} をバックグラウンド実行"
 			}
@@ -6652,10 +6652,6 @@
 				"done": "完了",
 				"terminated": "終了",
 				"failed": "失敗"
-			},
-			"check": {
-				"open": "Agent Studio で開く",
-				"rounds": "ラウンド ${rounds}/${roundLimit}"
 			}
 		},
 		"transcript": {

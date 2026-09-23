@@ -10,7 +10,7 @@ import { msstr } from '../../../../scripts/ms.mjs'
 import { defineReplyHandler, defineReplyHandlers } from '../../shells/chat/src/reply/defineReplyHandler.mjs'
 
 import { DEFAULT_AWAIT_TIMEOUT_MS, parseDurationMs } from './duration.mjs'
-import { awaitTasks, listTasksForOwner, ownerFromArgs } from './registry.mjs'
+import { awaitTasks, inspectTask, listTasksForOwner, ownerFromArgs } from './registry.mjs'
 
 /** 单个工具回执的长度上限。 */
 const TOOL_ECHO_LIMIT = 4000
@@ -177,8 +177,85 @@ export const awaitAsyncHandler = defineReplyHandler({
 	},
 })
 
+/**
+ * 把检视载荷转成面向角色的文本。
+ * @param {unknown} preview 检视载荷（字符串 / `{entries}` / 其它）
+ * @returns {string} 文本
+ */
+function inspectPreviewText(preview) {
+	if (preview == null) return '（无）'
+	if (typeof preview === 'string') return preview
+	if (Array.isArray(preview.entries)) {
+		if (!preview.entries.length) return '（暂无对话）'
+		return preview.entries.map(entry => `[${entry.role}] ${entry.name}: ${entry.content}`).join('\n---\n')
+	}
+	try { return JSON.stringify(preview, null, '\t') }
+	catch { return String(preview) }
+}
+
+/**
+ * 检视失败原因 → 面向角色的文案。
+ * @param {'not_found'|'settled'|'forbidden'|'unsupported'} reason 失败原因
+ * @param {string} id 任务 id
+ * @returns {string} 文案
+ */
+function inspectFailureText(reason, id) {
+	switch (reason) {
+		case 'settled': return `异步任务 "${id}" 已结束，请查看完成通知或用 <await-async ids="${id}"/> 取回结果。`
+		case 'forbidden': return `异步任务 "${id}" 不属于当前会话，无法检视。`
+		case 'unsupported': return `异步任务 "${id}" 暂不支持检视。`
+		default: return `未找到运行中的异步任务 "${id}"（可能已完成并释放，或 id 有误）。已完成的结果请查看完成通知，或用 <await-async ids="${id}"/> 取回。`
+	}
+}
+
+/**
+ * `<inspect-async id="..."/>`：检视一个运行中的异步任务的最新进展（只读，不等待、不消费）。
+ * @type {import('../../../../decl/pluginAPI.ts').ReplyHandler_t}
+ */
+export const inspectAsyncHandler = defineReplyHandler({
+	tag: 'inspect-async',
+	params: { id: 'string' },
+	/**
+	 * 检视运行中的异步任务。
+	 * @param {object} reply 回复对象
+	 * @param {object} args 请求上下文
+	 * @param {object} call 调用
+	 * @returns {Promise<object>} 结果
+	 */
+	handle: async (reply, args, call) => {
+		const id = String(call.params.id ?? '').trim()
+		if (!id) {
+			writeToolLog(args, 'async-task.inspect', 'inspect-async 需要 id。', true)
+			return { regen: true }
+		}
+		const result = inspectTask(id, ownerFromArgs(args))
+		if (!result.ok) {
+			writeToolLog(args, 'async-task.inspect', inspectFailureText(result.reason, id), true)
+			return { regen: true }
+		}
+		const { task, preview } = result
+		const head = `异步任务 ${task.id}（类型：${task.kind}，状态：${task.state}）${task.label ? `\n任务：${task.label}` : ''}`
+		writeToolLog(args, 'async-task.inspect', `${head}\n\n最新进展：\n${inspectPreviewText(preview)}`, false, {
+			extension: {
+				asyncInspect: {
+					id: task.id,
+					kind: task.kind,
+					state: task.state,
+					label: task.label,
+					rounds: preview?.rounds ?? null,
+					roundLimit: preview?.roundLimit ?? null,
+					entries: Array.isArray(preview?.entries) ? preview.entries : null,
+					preview: Array.isArray(preview?.entries) ? null : typeof preview === 'string' ? echo(preview) : null,
+				},
+			},
+		})
+		return { regen: true }
+	},
+})
+
 /** async-task 插件的完整 ReplyHandler 组。 */
 export const asyncTaskReplyHandlers = defineReplyHandlers([
 	listAsyncHandler,
 	awaitAsyncHandler,
+	inspectAsyncHandler,
 ])

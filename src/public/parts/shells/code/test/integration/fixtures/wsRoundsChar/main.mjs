@@ -100,7 +100,8 @@ export default {
 					for (const chunk of Array.from(text)) {
 						await new Promise(resolve => setTimeout(resolve, 20))
 						result.content += chunk
-						previewUpdater?.(result)
+						// 与真实 AI 源一致：预览传浅拷贝（不带累计 logContextBefore），增量日志须读 base_result
+						previewUpdater?.({ ...result })
 					}
 					if (await runReplyHandlers(result, { ...args, prompt_struct, AddLongTimeLog }, handlers))
 						continue regen

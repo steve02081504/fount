@@ -6631,12 +6631,12 @@
 				"createBatch": "创建子代理批次",
 				"run": "运行子代理",
 				"listAiSources": "列出 AI 源",
-				"check": "查看子代理对话",
 				"terminate": "终止子代理"
 			},
 			"async": {
 				"list": "列出异步任务",
 				"await": "等待异步任务",
+				"inspect": "检视异步任务",
 				"notice": "后台任务通知",
 				"run": "后台运行 ${kind}"
 			}
@@ -6652,10 +6652,6 @@
 				"done": "已完成",
 				"terminated": "已终止",
 				"failed": "已失败"
-			},
-			"check": {
-				"open": "在 Agent Studio 打开",
-				"rounds": "轮次 ${rounds}/${roundLimit}"
 			}
 		},
 		"transcript": {

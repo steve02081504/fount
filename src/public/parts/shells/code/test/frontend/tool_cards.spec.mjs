@@ -7,7 +7,7 @@ import { API_BASE, BASE, leftoverWorkspaceDirs, makeWorkspace, removeAllWorkspac
 useLeftoverWorkspaceCleanup(test)
 
 test.describe('code shell tool cards & highlighting', () => {
-	test('renders highlighted code, a structured sub-agent check card, and async task cards', async ({ page, baseUrl }) => {
+	test('renders highlighted code, ansi output, async inspect and task cards', async ({ page, baseUrl }) => {
 		const dir = makeWorkspace('fe-tool-cards', {})
 		leftoverWorkspaceDirs.add(dir)
 		const sessionId = 'tool-cards-session'
@@ -31,14 +31,22 @@ test.describe('code shell tool cards & highlighting', () => {
 						content_for_show: '```js\nconst answer = 40 + 2\n```\n\n执行结果：\n2',
 						time: now,
 					},
-					// check-subagent 结构化卡
+					// shell 执行结果：展示层为 ansi 代码块（保留终端颜色）
 					{
-						id: 'check-1', uid: 'system', role: 'tool', name: 'sub-agent.check',
-						content: '子代理 run-1 状态：done（轮次 1/3）。最近对话：\n\n[tool] code-execution.run-js: ok',
+						id: 'shell-1', uid: 'system', role: 'tool', name: 'code-execution.run-pwsh',
+						content: '退出码 0，耗时 1ms：\nhello',
+						content_for_show: '```pwsh\necho hi\n```\n\n退出码 0，耗时 1ms：\n\n```ansi\n\u001b[31mhello\u001b[0m\n```',
+						time: now,
+					},
+					// `<inspect-async/>` 统一的运行中检视卡（子代理载荷带 entries）
+					{
+						id: 'inspect-1', uid: 'system', role: 'tool', name: 'async-task.inspect',
+						content: '异步任务 run-1（类型：subagent，状态：running）\n\n最新进展：\n[char] Char: hi',
 						time: now,
 						extension: {
-							subAgentCheck: {
-								runId: 'run-1', state: 'done', rounds: 1, roundLimit: 3,
+							asyncInspect: {
+								id: 'run-1', kind: 'subagent', state: 'running', label: '检查',
+								rounds: 1, roundLimit: 3,
 								entries: [
 									{ role: 'system', name: 'system', content: '任务：检查' },
 									{ role: 'tool', name: 'code-execution.run-js', content: '```js\nconsole.log(1)\n```' },
@@ -77,9 +85,17 @@ test.describe('code shell tool cards & highlighting', () => {
 			expect(highlight.attr).toMatch(/^only (light|dark)$/)
 			expect(highlight.color).not.toBe(highlight.base)
 
-			// check-subagent：结构化对话卡（状态 + 两条内部对话）
-			await expect(page.locator('.code-subagent-check')).toHaveCount(1)
-			await expect(page.locator('.code-subagent-check .code-transcript-entry')).toHaveCount(2)
+			// shell 结果：ansi 代码块渲染出终端颜色，且不影响条数
+			await expect(page.locator('.code-message.role-tool pre.markdown-ansi-block')).toHaveCount(1)
+			await expect(page.locator('pre.markdown-ansi-block')).toContainText('hello')
+			const ansiColor = await page.evaluate(() => {
+				const span = document.querySelector('pre.markdown-ansi-block span[style*="color"]')
+				return span ? getComputedStyle(span).color : ''
+			})
+			expect(ansiColor).not.toBe('')
+
+			// inspect-async：统一的运行中检视卡（复用子代理对话渲染）
+			await expect(page.locator('.code-async-inspect .code-transcript-entry')).toHaveCount(2)
 
 			// 异步任务派发卡 + <list-async/> 任务行
 			await expect(page.locator('.code-async-card[data-async-task-id="task-1"]')).toHaveCount(1)

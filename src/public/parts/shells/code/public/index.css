@@ -1085,29 +1085,7 @@ pre.code-shell-stream-output {
 	background: color-mix(in oklch, var(--color-base-content) 10%, transparent);
 }
 
-/* ---------------- 子代理对话卡 / 结构化工具卡 ---------------- */
-
-.code-subagent-check {
-	display: flex;
-	flex-direction: column;
-	gap: 0.5rem;
-}
-
-.code-subagent-check-head {
-	display: flex;
-	align-items: center;
-	flex-wrap: wrap;
-	gap: 0.5rem;
-}
-
-.code-subagent-check-meta {
-	font-size: 0.75rem;
-	opacity: 0.7;
-}
-
-.code-subagent-check-open {
-	margin-inline-start: auto;
-}
+/* ---------------- 结构化工具卡（检视对话 / 任务列表） ---------------- */
 
 .code-transcript {
 	display: flex;
@@ -1258,4 +1236,16 @@ pre.code-shell-stream-output {
 .code-async-task-note {
 	font-size: 0.7rem;
 	opacity: 0.7;
+}
+
+/* `<inspect-async/>` 结构化检视结果（子代理对话 / JS·shell 最新输出片段） */
+.code-async-inspect {
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+}
+
+.code-async-inspect-preview {
+	font-size: 0.75rem;
+	overflow-x: auto;
 }

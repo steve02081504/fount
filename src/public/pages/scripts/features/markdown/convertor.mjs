@@ -1169,6 +1169,55 @@ function rehypeCacheRead() {
 	}
 }
 
+/** ansi→HTML 渲染器模块（浏览器端懒加载，仅 `ansi` 围栏需要）。 @type {Promise<{ansiToHtml: (text: string) => string}>|null} */
+let ansiToHtmlModule = null
+
+/**
+ * 加载 ansi→HTML 渲染器。
+ * @returns {Promise<(text: string) => string>} 渲染函数。
+ */
+async function loadAnsiToHtml() {
+	ansiToHtmlModule ??= import('https://esm.sh/@steve02081504/ansi2html')
+	const { ansiToHtml } = await ansiToHtmlModule
+	return ansiToHtml
+}
+
+/**
+ * 把 `language-ansi` 围栏渲染为保留终端颜色的代码块。
+ *
+ * 须在 rehypePrettyCode 之前替换，避免被 Shiki 当作普通语言；`raw` 节点只在可信档保留，
+ * 安全档（enabled=false）保持原样，交由后续净化 / 普通高亮处理。
+ * @param {object} [options={}] - 选项。
+ * @param {boolean} [options.enabled=true] - 是否执行 ANSI 渲染。
+ * @returns {(tree: object) => Promise<void>} - rehype 插件。
+ */
+function rehypeAnsiBlock({ enabled = true } = {}) {
+	return async tree => {
+		if (!enabled) return
+		/** @type {Array<{node: object, code: object}>} */
+		const targets = []
+		visit(tree, 'element', node => {
+			if (node.tagName !== 'pre') return
+			const code = node.children?.find(child => child.type === 'element' && child.tagName === 'code')
+			if (!code?.properties?.className?.includes('language-ansi')) return
+			targets.push({ node, code })
+		})
+		if (!targets.length) return
+		/** @type {(text: string) => string} */
+		let ansiToHtml
+		try { ansiToHtml = await loadAnsiToHtml() }
+		catch { return } // 渲染器不可用：保留为普通代码块，勿让整条消息渲染失败
+		for (const { node, code } of targets) {
+			const raw = hastToString(code).replace(/\n$/, '')
+			let html
+			try { html = ansiToHtml(raw) }
+			catch { continue }
+			node.properties = { className: ['markdown-ansi-block'] }
+			node.children = [{ type: 'raw', value: html }]
+		}
+	}
+}
+
 /**
  * 写入缓存插件
  * @returns {object} - 写入缓存插件
@@ -1252,6 +1301,7 @@ export async function GetMarkdownConvertor({
 			})
 		}
 	})
+	processor = processor.use(rehypeAnsiBlock, { enabled: allowDangerousHtml })
 	for (const plugin of earlyRehypePlugins)
 		processor = processor.use(plugin)
 	processor = processor
@@ -1361,6 +1411,17 @@ export async function GetMarkdownConvertor({
 .markdown-body pre {
 	color: var(--color-base-content);
 	background-color: var(--color-base-100);
+}
+
+/* ansi 围栏：保留终端颜色的等宽输出块 */
+.markdown-body pre.markdown-ansi-block {
+	font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	font-size: 0.85em;
+	line-height: 1.45;
+	padding: 0.75rem 1rem;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	word-break: break-word;
 }
 
 /* 内联 {:lang} 高亮：span>code，勿被块级 pre 样式带偏 */

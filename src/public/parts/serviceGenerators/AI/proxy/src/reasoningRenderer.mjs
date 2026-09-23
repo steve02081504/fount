@@ -15,6 +15,20 @@ const escapeHtml = (str) => String(str).replace(/["&'<>]/g, char => ({
 }[char]))
 
 /**
+ * 复制扩展字段用于新一轮生成，剔除上一轮的推理内容。
+ * 推理属于单轮：跨轮继承会让新轮次从旧推理继续追加（思考内容越滚越长）。
+ * @param {object} [extension] 上一轮结果扩展（通常是 `base_result.extension`）。
+ * @returns {object} 不含 `reasoning_content` / `reasoning_summary` 的浅拷贝。
+ */
+export function withoutReasoningExtension(extension) {
+	if (!extension || typeof extension !== 'object') return {}
+	const rest = { ...extension }
+	delete rest.reasoning_content
+	delete rest.reasoning_summary
+	return rest
+}
+
+/**
  * 构建 &lt;summary&gt; 的 HTML。服务端预填文案，支持 fount_i18nkeys 时附加 data-i18n 以便客户端语言切换时实时更新。
  * @param {{ locales?: string[], supported_functions?: { fount_i18nkeys?: boolean } }} renderOptions - 渲染选项。
  * @returns {string} summary 元素 HTML。

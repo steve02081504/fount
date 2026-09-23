@@ -4,7 +4,7 @@
  */
 import { assert, assertEquals } from 'jsr:@std/assert'
 
-import { awaitAsyncHandler, listAsyncHandler } from '../../handler.mjs'
+import { awaitAsyncHandler, inspectAsyncHandler, listAsyncHandler } from '../../handler.mjs'
 import { ownerFromArgs, registerTask, resetAsyncTaskState } from '../../registry.mjs'
 
 /**
@@ -93,4 +93,62 @@ Deno.test('await-async errors without ids', async () => {
 	const args = createArgs()
 	await awaitAsyncHandler.handle(null, args, { params: {} })
 	assertEquals(args.logs.at(-1).extension?.error, true)
+})
+
+Deno.test('inspect-async returns a running task preview without consuming it', async () => {
+	resetAsyncTaskState()
+	const args = createArgs()
+	const task = registerTask({
+		kind: 'pwsh',
+		label: 'do a thing',
+		owner: ownerFromArgs(args),
+		run: neverResolves(),
+		/**
+		 * 检视回调。
+		 * @returns {string} 最新输出
+		 */
+		inspect: () => 'tail of output',
+	})
+
+	await inspectAsyncHandler.handle(null, args, { params: { id: task.id } })
+	const log = args.logs.at(-1)
+	assertEquals(log.name, 'async-task.inspect')
+	assert(log.content.includes('tail of output'))
+	assertEquals(log.extension?.asyncInspect?.id, task.id)
+	assertEquals(log.extension.asyncInspect.preview, 'tail of output')
+	assertEquals(task.consumed, false, '检视不应消费任务，完成后仍应通知')
+})
+
+Deno.test('inspect-async surfaces structured sub-agent entries', async () => {
+	resetAsyncTaskState()
+	const args = createArgs()
+	const task = registerTask({
+		kind: 'subagent',
+		owner: ownerFromArgs(args),
+		run: neverResolves(),
+		/**
+		 * 检视回调。
+		 * @returns {object} 结构化检视载荷
+		 */
+		inspect: () => ({ state: 'running', rounds: 1, roundLimit: 3, entries: [{ role: 'char', name: 'Char', content: 'hi' }] }),
+	})
+
+	await inspectAsyncHandler.handle(null, args, { params: { id: task.id } })
+	const log = args.logs.at(-1)
+	assertEquals(log.extension.asyncInspect.state, 'running')
+	assertEquals(log.extension.asyncInspect.entries.length, 1)
+	assert(log.content.includes('[char] Char: hi'))
+})
+
+Deno.test('inspect-async reports failures for missing ids', async () => {
+	resetAsyncTaskState()
+	const args = createArgs()
+	await inspectAsyncHandler.handle(null, args, { params: {} })
+	assertEquals(args.logs.at(-1).name, 'async-task.inspect')
+	assertEquals(args.logs.at(-1).extension?.error, true)
+
+	args.logs.length = 0
+	await inspectAsyncHandler.handle(null, args, { params: { id: 'nope' } })
+	assertEquals(args.logs.at(-1).extension?.error, true)
+	assert(args.logs.at(-1).content.includes('未找到'))
 })

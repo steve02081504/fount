@@ -6,7 +6,8 @@ import process from 'node:process'
 import util from 'node:util'
 
 import { async_eval } from 'npm:@steve02081504/async-eval'
-import { available, shell_exec_map } from 'npm:@steve02081504/exec'
+import { available, removeTerminalSequences, shell_exec_map } from 'npm:@steve02081504/exec'
+import { VirtualConsole } from 'npm:@steve02081504/virtual-console'
 
 import {
 	createCollectingConsole,
@@ -122,6 +123,62 @@ function buildInlineToolCard(items, lang) {
 	return items.map(({ code, result }) =>
 		renderMarkdownCodeBlock(code, { lang }) + '\n\n结果：\n\n' + renderMarkdownCodeBlock(result ?? '')
 	).join('\n\n')
+}
+
+/**
+ * 用一次性虚拟控制台把任意值渲染为带颜色的 HTML（供人类展示层）。
+ * 复用 `LogEntry.toHtml()`：内容已转义，样式随终端能力内联，可直接嵌入 markdown。
+ * @param {unknown} value - 任意值。
+ * @returns {string} HTML；渲染失败时为空串。
+ */
+function renderValueHtml(value) {
+	try {
+		const vc = new VirtualConsole({ realConsoleOutput: false })
+		vc.log(value)
+		const entry = vc.outputEntries.at(-1)
+		return entry ? entry.toHtml() : ''
+	}
+	catch {
+		return ''
+	}
+}
+
+/**
+ * 组装执行结果的展示层：命令代码块 + 已渲染的结果区。
+ * @param {object} options - 选项。
+ * @param {string} options.lang - 命令的语言标签。
+ * @param {string} options.code - 命令源码。
+ * @param {string} options.body - 结果区（含标题 / 彩色结果 / 纯文本兜底）。
+ * @returns {string} 展示层 markdown。
+ */
+function buildResultShow({ lang, code, body }) {
+	return renderMarkdownCodeBlock(code, { lang }) + '\n\n' + body
+}
+
+/**
+ * 创建一个记录最近输出的滚动缓冲（供运行中异步任务检视「最后一段」输出）。
+ * @param {number} [limit=4000] - 保留的最大字符数。
+ * @returns {{push: (chunk: unknown) => void, read: () => string}} 缓冲区。
+ */
+function createTailBuffer(limit = 4000) {
+	let text = ''
+	return {
+		/**
+		 * 追加一段文本（只保留末尾 limit 字符）。
+		 * @param {unknown} chunk - 文本片段。
+		 * @returns {void}
+		 */
+		push(chunk) {
+			text = (text + String(chunk ?? '')).slice(-limit)
+		},
+		/**
+		 * 读取当前末尾文本。
+		 * @returns {string} 末尾文本。
+		 */
+		read() {
+			return text
+		},
+	}
 }
 
 /**
@@ -558,7 +615,7 @@ function createInlineHandle(lang) {
  * @param {object} options.limits - 运行限制。
  * @param {boolean} options.remote - 是否远程执行。
  * @param {Function|null} options.stream - 流式输出回调（后台执行传 null）。
- * @returns {Promise<string>} 完整结果文本。
+ * @returns {Promise<{fullOutput: string, html: string, suffix: string}>} 完整结果文本、结果值的彩色 HTML（成功时）与耗时后缀。
  */
 async function executeRunJs({ runtime, args, call, limits, remote, stream }) {
 	const collecting = createCollectingConsole(stream ?? undefined)
@@ -567,18 +624,25 @@ async function executeRunJs({ runtime, args, call, limits, remote, stream }) {
 		: await runJsWithTimeout(() => runtime.runJscodeForAI(call.inner, collecting.console), limits.timeoutMs)
 	runtime.execedCodes[call.inner] = evalResult ?? { timedOut: true }
 	const elapsedText = formatElapsed(elapsedMs)
-	let fullOutput
+	const parts = []
+	let html = ''
 	if (timedOut) {
-		fullOutput = `执行超时（耗时 ${elapsedText}）：JS 无法强制终止，代码可能仍在后台运行。`
+		parts.push(`执行超时（耗时 ${elapsedText}）：JS 无法强制终止，代码可能仍在后台运行。`)
 		const partial = collecting.text()
-		if (partial) fullOutput += `\n超时前捕获的输出：\n${partial}`
+		if (partial) parts.push('超时前捕获的输出：', partial)
 	}
-	else if (evalResult?.error)
-		fullOutput = '执行出错：\n' + (evalResult.error.stack || String(evalResult.error))
-	else
-		fullOutput = '执行结果：\n' + util.inspect(evalResult, { depth: 4 }) + (elapsedText ? `\n（耗时 ${elapsedText}）` : '')
-	fullOutput += formatTimeoutNotice({ timedOut, elapsedMs, waitForever: limits.waitForever, expectMs: limits.expectMs, toleranceMs: limits.toleranceMs, kind: 'js' })
-	return fullOutput
+	else if (evalResult?.error) 
+		parts.push('执行出错：', evalResult.error.stack || String(evalResult.error))
+	
+	else {
+		parts.push('执行结果：', util.inspect(evalResult, { depth: 4 }))
+		if (elapsedText) parts.push(`（耗时 ${elapsedText}）`)
+		html = renderValueHtml(evalResult)
+	}
+	const notice = formatTimeoutNotice({ timedOut, elapsedMs, waitForever: limits.waitForever, expectMs: limits.expectMs, toleranceMs: limits.toleranceMs, kind: 'js' })
+	if (notice) parts.push(notice.trim())
+	const suffix = !timedOut && !evalResult?.error && elapsedText ? `（耗时 ${elapsedText}）` : ''
+	return { fullOutput: parts.join('\n'), html, suffix }
 }
 
 /**
@@ -614,6 +678,14 @@ export const runJsReplyHandler = defineReplyHandler({
 
 		if (isAsyncRequested(attrs)) {
 			if (!isAsyncToolingEnabled()) return rejectAsyncWithoutTooling(args)
+			const inspectBuffer = createTailBuffer()
+			/**
+			 * 记录控制台输出末尾片段，供运行中检视。
+			 * @param {'stdout'|'stderr'} channel - 输出通道。
+			 * @param {string} data - 分片文本。
+			 * @returns {void}
+			 */
+			const inspectStream = (channel, data) => inspectBuffer.push(data)
 			const task = registerTask({
 				kind: 'js',
 				label: taskPreview(call.inner),
@@ -622,10 +694,15 @@ export const runJsReplyHandler = defineReplyHandler({
 				 * 后台执行 JS 并返回供完成通知使用的文本。
 				 * @returns {Promise<string>} 结果文本
 				 */
-				run: async () => '执行结果：\n' + (await guardOutput(
-					await executeRunJs({ runtime, args, call, limits, remote, stream: null }),
-					{ name: 'run-js', label: 'JS 结果' },
-				)).text,
+				run: async () => {
+					const { fullOutput } = await executeRunJs({ runtime, args, call, limits, remote, stream: inspectStream })
+					return (await guardOutput(fullOutput, { name: 'run-js', label: 'JS 结果' })).text
+				},
+				/**
+				 * 运行中检视：返回控制台输出的最后一段。
+				 * @returns {string} 末尾控制台输出。
+				 */
+				inspect: () => inspectBuffer.read().trim() || '（暂无控制台输出）',
 				meta: { code: call.inner, remote },
 			})
 			writeAsyncDispatchLog(args, task, 'JS')
@@ -634,15 +711,18 @@ export const runJsReplyHandler = defineReplyHandler({
 
 		await logCode(`${args.Charname} running JS code:`, call.inner, 'js')
 		emit?.({ callId, phase: 'start', name, lang: 'js', code: call.inner })
-		const fullOutput = await executeRunJs({ runtime, args, call, limits, remote, stream })
+		const { fullOutput, html, suffix } = await executeRunJs({ runtime, args, call, limits, remote, stream })
 		emit?.({ callId, phase: 'end', name })
 		console.info(`${args.Charname} JS result:`, runtime.execedCodes[call.inner])
 		const guarded = await guardOutput(fullOutput, { name: 'run-js', label: 'JS 结果' })
+		const body = html && !guarded.truncated
+			? `执行结果：\n\n${html}${suffix ? `\n\n${suffix}` : ''}`
+			: guarded.text
 		AddLongTimeLog({
 			name: 'code-execution.run-js',
 			role: 'tool',
-			content: '执行结果：\n' + guarded.text,
-			content_for_show: renderMarkdownCodeBlock(call.inner, { lang: 'js' }) + '\n\n执行结果：\n' + fullOutput,
+			content: guarded.text,
+			content_for_show: buildResultShow({ lang: 'js', code: call.inner, body }),
 			files: [],
 		})
 		return { regen: true }
@@ -669,34 +749,50 @@ export const inlineJsReplyHandler = defineReplyHandler({
  * @param {object} options.limits - 运行限制。
  * @param {string} options.shellName - shell 名。
  * @param {Function|null} options.stream - 流式输出回调（后台执行传 null）。
- * @returns {Promise<string>} 完整结果文本。
+ * @returns {Promise<{fullOutput: string, rawOutput: string, showBody: string}>}
+ *   完整结果文本（已去终端控制序列）、保留 ANSI 的原始输出、人类展示层结果区（ansi 代码块）。
  */
 async function executeRunShell({ runtime, args, call, limits, shellName, stream }) {
+	const chunks = []
 	let shell_result
 	try {
 		shell_result = await runtime.executorFor(call.params).execShell(shellName, call.inner, {
 			timeoutMs: limits.timeoutMs,
-			onOutput: stream ?? undefined,
+			/**
+			 * 记录原始输出分片并转发给流式回调。
+			 * @param {'stdout'|'stderr'} channel - 输出通道。
+			 * @param {string} data - 分片文本。
+			 * @returns {void}
+			 */
+			onOutput: (channel, data) => { chunks.push(String(data ?? '')); stream?.(channel, data) },
 			callbackPartpath: remoteToolCallbackPartpath(args),
 		})
 	} catch (err) { shell_result = err }
 	runtime.execedCodes[call.inner] = shell_result
 	const elapsedText = shell_result?.elapsedMs ? formatElapsed(shell_result.elapsedMs) : ''
 	const timedOut = Boolean(shell_result?.timedOut)
-	let fullOutput
-	if (shell_result instanceof Error)
-		fullOutput = '执行出错：\n' + (shell_result.stack || String(shell_result))
-	else {
-		const output = shell_result?.stdall ?? [shell_result?.stdout, shell_result?.stderr].filter(Boolean).join('\n') ?? ''
-		const header = `退出码 ${shell_result?.code ?? '(无)'}${shell_result?.signal ? `，信号 ${shell_result.signal}` : ''}${timedOut ? '（超时）' : ''}${elapsedText ? `，耗时 ${elapsedText}` : ''}：`
-		fullOutput = header + '\n' + output
-	}
-	fullOutput += formatTimeoutNotice({
+	const rawOutput = chunks.join('')
+	const notice = formatTimeoutNotice({
 		timedOut, elapsedMs: shell_result?.elapsedMs ?? 0, waitForever: limits.waitForever,
 		expectMs: limits.expectMs, toleranceMs: limits.toleranceMs, kind: 'shell',
 		killed: shell_result?.killed, remote: false,
 	})
-	return fullOutput
+	let fullOutput
+	let showBody
+	if (shell_result instanceof Error) {
+		fullOutput = '执行出错：\n' + (shell_result.stack || String(shell_result)) + notice
+		showBody = fullOutput
+	}
+	else {
+		// agent 层不含终端控制序列；优先用流式累积的原始输出（去掉序列）以覆盖远程未清理的情形
+		const buffered = shell_result?.stdall ?? [shell_result?.stdout, shell_result?.stderr].filter(Boolean).join('\n') ?? ''
+		const output = removeTerminalSequences(rawOutput || buffered)
+		const header = `退出码 ${shell_result?.code ?? '(无)'}${shell_result?.signal ? `，信号 ${shell_result.signal}` : ''}${timedOut ? '（超时）' : ''}${elapsedText ? `，耗时 ${elapsedText}` : ''}：`
+		fullOutput = header + '\n' + output + notice
+		// 展示层保留原始 ANSI：用 ansi 代码块呈色
+		showBody = header + '\n\n' + renderMarkdownCodeBlock(rawOutput || output, { lang: 'ansi' }) + (notice ? '\n' + notice.trim() : '')
+	}
+	return { fullOutput, rawOutput, showBody }
 }
 
 /**
@@ -733,6 +829,14 @@ function createRunShellReplyHandler(shell_name) {
 
 			if (isAsyncRequested(attrs)) {
 				if (!isAsyncToolingEnabled()) return rejectAsyncWithoutTooling(args)
+				const inspectBuffer = createTailBuffer()
+				/**
+				 * 记录原始输出末尾片段，供运行中检视（去掉终端控制序列）。
+				 * @param {'stdout'|'stderr'} channel - 输出通道。
+				 * @param {string} data - 分片文本。
+				 * @returns {void}
+				 */
+				const inspectStream = (channel, data) => inspectBuffer.push(data)
 				const task = registerTask({
 					kind: shell_name,
 					label: taskPreview(call.inner),
@@ -741,10 +845,15 @@ function createRunShellReplyHandler(shell_name) {
 					 * 后台执行 shell 并返回供完成通知使用的文本。
 					 * @returns {Promise<string>} 结果文本
 					 */
-					run: async () => '执行结果：\n' + (await guardOutput(
-						await executeRunShell({ runtime, args, call, limits, shellName: shell_name, stream: null }),
-						{ name: `shell-${shell_name}`, label: 'shell 输出' },
-					)).text,
+					run: async () => {
+						const { fullOutput } = await executeRunShell({ runtime, args, call, limits, shellName: shell_name, stream: inspectStream })
+						return (await guardOutput(fullOutput, { name: `shell-${shell_name}`, label: 'shell 输出' })).text
+					},
+					/**
+					 * 运行中检视：返回 stdall 的最后一段（去终端控制序列）。
+					 * @returns {string} 末尾输出。
+					 */
+					inspect: () => removeTerminalSequences(inspectBuffer.read()).trim() || '（暂无输出）',
 					meta: { code: call.inner },
 				})
 				writeAsyncDispatchLog(args, task, shell_name)
@@ -753,15 +862,15 @@ function createRunShellReplyHandler(shell_name) {
 
 			await logCode(`${args.Charname} running ${shell_name} code:`, call.inner, shell_name)
 			emit?.({ callId, phase: 'start', name, lang: shell_name, code: call.inner })
-			const fullOutput = await executeRunShell({ runtime, args, call, limits, shellName: shell_name, stream })
+			const { fullOutput, showBody } = await executeRunShell({ runtime, args, call, limits, shellName: shell_name, stream })
 			emit?.({ callId, phase: 'end', name })
 			console.info(`${args.Charname} ${shell_name} result:`, runtime.execedCodes[call.inner])
 			const guarded = await guardOutput(fullOutput, { name: `shell-${shell_name}`, label: 'shell 输出' })
 			AddLongTimeLog({
 				name: `code-execution.run-${shell_name}`,
 				role: 'tool',
-				content: '执行结果：\n' + guarded.text,
-				content_for_show: renderMarkdownCodeBlock(call.inner, { lang: shell_name }) + '\n\n执行结果：\n' + fullOutput,
+				content: guarded.text,
+				content_for_show: buildResultShow({ lang: shell_name, code: call.inner, body: guarded.truncated ? guarded.text : showBody }),
 				files: [],
 			})
 			return { regen: true }

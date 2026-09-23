@@ -2,7 +2,7 @@ import { createFetchChatCompletionWithRetry } from './chatCompletion.mjs'
 import { identityTokenizer } from './identityTokenizer.mjs'
 import { buildContentForShowFromLogprobs } from './logprobsRenderer.mjs'
 import { buildMessagesFromPromptStruct } from './messageBuilder.mjs'
-import { buildReasoningDetailsMarkdown } from './reasoningRenderer.mjs'
+import { buildReasoningDetailsMarkdown, withoutReasoningExtension } from './reasoningRenderer.mjs'
 import { clearFormat } from './responseFormat.mjs'
 import { buildSourceInfo } from './sourceInfo.mjs'
 
@@ -74,7 +74,8 @@ export async function createOpenAICompatibleSource({
 			const result = {
 				content: '',
 				files: [...base_result?.files || []],
-				extension: { ...base_result?.extension },
+				// 推理只属于单轮，不随 base_result 跨轮继承
+				extension: withoutReasoningExtension(base_result?.extension),
 			}
 			const i18nRender = { locales: prompt_struct.locales, supported_functions }
 			/**

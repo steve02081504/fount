@@ -112,7 +112,8 @@ export default {
 					for (const chunk of Array.from(text)) {
 						await delay(CHUNK_DELAY)
 						result.content += chunk
-						oriPreviewUpdater?.(result)
+						// 与真实 AI 源一致：预览传浅拷贝（不带累计 logContextBefore），增量日志须读 base_result
+						oriPreviewUpdater?.({ ...result })
 					}
 					if (await runReplyHandlers(result, { ...args, prompt_struct, AddLongTimeLog }, handlers)) {
 						await injectRoundEntries(args, prompt_struct)

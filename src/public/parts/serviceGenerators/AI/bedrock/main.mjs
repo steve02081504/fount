@@ -5,6 +5,7 @@ import process from 'node:process'
 import { defaultConvertConfig } from '../proxy/src/convertConfig.mjs'
 import { identityTokenizer } from '../proxy/src/identityTokenizer.mjs'
 import { buildMessagesFromPromptStruct } from '../proxy/src/messageBuilder.mjs'
+import { withoutReasoningExtension } from '../proxy/src/reasoningRenderer.mjs'
 import { clearFormat } from '../proxy/src/responseFormat.mjs'
 import { buildSourceInfo } from '../proxy/src/sourceInfo.mjs'
 
@@ -147,7 +148,8 @@ async function GetSource(config) {
 			const result = {
 				content: '',
 				files: [...base_result?.files || []],
-				extension: { ...base_result?.extension },
+				// 推理只属于单轮，不随 base_result 跨轮继承
+				extension: withoutReasoningExtension(base_result?.extension),
 			}
 			await run(messages, {
 				signal,

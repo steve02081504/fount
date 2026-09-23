@@ -7,6 +7,7 @@ import { assert, assertEquals } from 'jsr:@std/assert'
 import {
 	awaitTasks,
 	getTask,
+	inspectTask,
 	listTasks,
 	listTasksForOwner,
 	notificationQueueKey,
@@ -355,6 +356,50 @@ Deno.test('deliverNotification matches the channel by channel-scoped id', async 
 	await flushAsync()
 	assertEquals(wrong.appended.length, 0, '同群不同频道不应串台')
 	assertEquals(right.appended.length, 1)
+})
+
+Deno.test('inspectTask reads a running task preview without consuming it', () => {
+	resetAsyncTaskState()
+	const target = owner()
+	const task = registerTask({
+		kind: 'js',
+		owner: target,
+		run: neverResolves(),
+		/**
+		 * 检视回调。
+		 * @returns {string} 预览
+		 */
+		inspect: () => 'latest-output',
+	})
+	const result = inspectTask(task.id, target)
+	assertEquals(result.ok, true)
+	assertEquals(result.preview, 'latest-output')
+	assertEquals(result.task.id, task.id)
+	assertEquals(task.consumed, false, '检视不应消费任务')
+})
+
+Deno.test('inspectTask rejects unknown, unsupported and foreign tasks', async () => {
+	resetAsyncTaskState()
+	const target = owner()
+	const plain = registerTask({ kind: 'js', owner: target, run: neverResolves() })
+	assertEquals(inspectTask('missing-id', target).reason, 'not_found')
+	assertEquals(inspectTask(plain.id, target).reason, 'unsupported', '无 inspect 回调视为不支持')
+	assertEquals(inspectTask(plain.id, owner({ chatName: 'chat-2' })).reason, 'forbidden', '跨聊天作用域不可检视')
+	assertEquals(inspectTask(plain.id, owner({ charId: 'other' })).reason, 'forbidden', '跨角色不可检视')
+
+	// 结算后任务被释放，检视回落 not_found（完成结果由通知 / await 承载）
+	const done = registerTask({
+		kind: 'js',
+		owner: target,
+		run: resolveWith('x'),
+		/**
+		 * 检视回调。
+		 * @returns {string} 预览
+		 */
+		inspect: () => 'y',
+	})
+	await done.done
+	assertEquals(inspectTask(done.id, target).reason, 'not_found')
 })
 
 Deno.test('listTasksForOwner expands an owner into filter fields', () => {

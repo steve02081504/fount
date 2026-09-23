@@ -33,6 +33,7 @@ import { chatScopeId } from '../../shells/chat/src/lib/chatScopeId.mjs'
  * @property {Promise<asyncTask_t>} done 完成 Promise（结算为任务自身）
  * @property {object} meta 生产者附加数据
  * @property {(task: asyncTask_t) => string} [format] 自定义完成通知文本
+ * @property {(task: asyncTask_t) => unknown} [inspect] 运行中检视回调（只读，返回面向角色的最新进展）
  */
 
 /** 任务注册表（仅内存）。 @type {Map<string, asyncTask_t>} */
@@ -168,9 +169,10 @@ function normalizeError(error) {
  * @param {() => Promise<unknown>} options.run 后台执行函数
  * @param {object} [options.meta] 附加数据
  * @param {(task: asyncTask_t) => string} [options.format] 自定义完成通知文本
+ * @param {(task: asyncTask_t) => unknown} [options.inspect] 运行中检视回调
  * @returns {asyncTask_t} 任务对象
  */
-export function registerTask({ id, kind, label = '', owner = {}, run, meta = {}, format }) {
+export function registerTask({ id, kind, label = '', owner = {}, run, meta = {}, format, inspect }) {
 	/** @type {asyncTask_t} */
 	const task = {
 		id: id ?? crypto.randomUUID(),
@@ -187,6 +189,7 @@ export function registerTask({ id, kind, label = '', owner = {}, run, meta = {},
 		done: /** @type {any} */ null,
 		meta,
 		format,
+		inspect,
 	}
 	tasks.set(task.id, task)
 	emitTaskEvent('start', task)
@@ -322,6 +325,41 @@ async function deliverNotification(task) {
  */
 export function getTask(id) {
 	return tasks.get(id)
+}
+
+/**
+ * 判断请求者是否有权检视某任务：同用户、同角色且同聊天作用域。
+ * @param {asyncTaskOwner_t} [taskOwner] 任务归属
+ * @param {asyncTaskOwner_t} [requester] 请求者归属
+ * @returns {boolean} 是否可检视
+ */
+function canInspect(taskOwner = {}, requester = {}) {
+	if (requester.username !== undefined && taskOwner.username !== requester.username) return false
+	if (requester.charId !== undefined && taskOwner.charId !== requester.charId) return false
+	const taskScope = taskOwner.chatScopeId ?? chatScopeId(taskOwner.chatName, taskOwner.channelId)
+	const requesterScope = requester.chatScopeId ?? chatScopeId(requester.chatName, requester.channelId)
+	return taskScope === requesterScope
+}
+
+/**
+ * 检视一个**运行中**的异步任务（只读：不消费、不抑制完成通知；已结算任务不入注册表故不可检视）。
+ * @param {string} id 任务 id
+ * @param {asyncTaskOwner_t} [requester] 请求者归属
+ * @returns {{ok: true, task: asyncTask_t, preview: unknown} | {ok: false, reason: 'not_found'|'settled'|'forbidden'|'unsupported'}} 检视结果
+ */
+export function inspectTask(id, requester = {}) {
+	const task = tasks.get(String(id ?? ''))
+	if (!task) return { ok: false, reason: 'not_found' }
+	if (task.finishedAt !== null) return { ok: false, reason: 'settled' }
+	if (!canInspect(task.owner, requester)) return { ok: false, reason: 'forbidden' }
+	if (typeof task.inspect !== 'function') return { ok: false, reason: 'unsupported' }
+	try {
+		return { ok: true, task, preview: task.inspect(task) }
+	}
+	catch (error) {
+		console.warn('async-task: 检视失败', error)
+		return { ok: false, reason: 'unsupported' }
+	}
 }
 
 /**

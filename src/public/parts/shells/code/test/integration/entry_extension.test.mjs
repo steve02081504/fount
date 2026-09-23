@@ -9,10 +9,10 @@ import { pickEntryExtension } from '../../src/entry_extension.mjs'
 Deno.test('pickEntryExtension keeps frontend-rendering fields and drops the rest', () => {
 	const picked = pickEntryExtension({
 		subAgent: { runId: 'r' },
-		subAgentCheck: { runId: 'r' },
 		asyncTask: { id: 't', kind: 'js' },
 		asyncList: { tasks: [] },
 		asyncAwait: { settled: [] },
+		asyncInspect: { id: 't', kind: 'js' },
 		error: true,
 		loadedContextHashes: ['abc', 'def'],
 		feedback: { type: 'up' },
@@ -20,10 +20,10 @@ Deno.test('pickEntryExtension keeps frontend-rendering fields and drops the rest
 	})
 	assertEquals(picked, {
 		subAgent: { runId: 'r' },
-		subAgentCheck: { runId: 'r' },
 		asyncTask: { id: 't', kind: 'js' },
 		asyncList: { tasks: [] },
 		asyncAwait: { settled: [] },
+		asyncInspect: { id: 't', kind: 'js' },
 		error: true,
 		loadedContextHashes: ['abc', 'def'],
 	})

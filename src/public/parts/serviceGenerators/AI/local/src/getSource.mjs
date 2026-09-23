@@ -6,6 +6,7 @@ import { GeneralChatWrapper, getLlama, LlamaChatSession } from 'npm:node-llama-c
 import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../../shells/chat/src/prompt_struct/index.mjs'
 import { estimateTokenCount } from '../../proxy/src/identityTokenizer.mjs'
 import { buildContentForShowFromLogprobs } from '../../proxy/src/logprobsRenderer.mjs'
+import { withoutReasoningExtension } from '../../proxy/src/reasoningRenderer.mjs'
 import { clearFormat } from '../../proxy/src/responseFormat.mjs'
 import { buildSourceInfo } from '../../proxy/src/sourceInfo.mjs'
 
@@ -228,7 +229,8 @@ export async function GetSource(config) {
 			const out = {
 				content: '',
 				files: [...base_result?.files || []],
-				extension: { ...base_result?.extension },
+				// 推理只属于单轮，不随 base_result 跨轮继承
+				extension: withoutReasoningExtension(base_result?.extension),
 			}
 
 			const useStream = (config.use_stream ?? true) && !!replyPreviewUpdater

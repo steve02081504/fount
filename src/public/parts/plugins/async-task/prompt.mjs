@@ -16,6 +16,11 @@ const ASYNC_TASK_PROMPT = `\
 <list-async/>
 - 可选 \`kind="subagent|js|pwsh|…"\` 只看某一类。
 
+**检视一个运行中的异步任务的最新进展（只读，不等待、不消费）：**
+<inspect-async id="任务id"/>
+- 子代理返回最近的对话；JS 返回控制台输出的最后一段；shell 返回 stdall 的最后一段。
+- 只对**运行中**的任务有效；已结束的任务请查看完成通知，或用 \`<await-async>\` 取回结果。
+
 **等待一个或多个异步任务：**
 <await-async ids="id1,id2" mode="all" time-limit="5m"/>
 - \`ids\`（必填）：逗号分隔的任务 id。
