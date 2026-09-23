@@ -7,6 +7,8 @@ import { injectRoundEntries } from 'fount/public/parts/shells/chat/src/reply/rou
  */
 /** 第一轮：触发 file-operations 工具调用（结束后管线建议重生成）。 */
 const ROUND1 = '先读取文件。<view-file>\nnote.txt\n</view-file>'
+/** 真实会话 9df34984 中的失配形态：工具调用后遗留裸围栏，随后是报告正文。 */
+const REPORT_ROUND1 = '先读取文件。<view-file>\nnote.txt\n</view-file>\n```\n\n**实测通过的**\n1. 文件工具链已检查。\n\n**发现的欠缺 / 可改进**\n- 提示仍可精简。'
 /** 第二轮：无工具调用，作为最终回答。 */
 const ROUND2 = '读取完成，这是最终回答。'
 /** 每字符分片间隔（ms），放慢流式以便生成中捕获中间条目。 */
@@ -106,7 +108,8 @@ export default {
 				}
 				const handlers = Object.values(args.plugins || {}).map(plugin => plugin.interfaces?.chat?.ReplyHandler).filter(Boolean)
 				regen: while (true) {
-					const text = result.logContextBefore.length ? ROUND2 : ROUND1
+					const reportCase = args.chat_log.some(entry => entry.role === 'user' && entry.content === '多轮渲染测试')
+					const text = result.logContextBefore.length ? ROUND2 : reportCase ? REPORT_ROUND1 : ROUND1
 					result.content = ''
 					delete result.content_for_show
 					for (const chunk of Array.from(text)) {

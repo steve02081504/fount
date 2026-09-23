@@ -522,6 +522,12 @@ pre.code-shell-stream-output {
 	overflow-x: auto;
 }
 
+/* 大段命令输出 / 代码在内部双向滚动，不把消息流撑成数屏高。 */
+.code-message-body .markdown-code-block pre {
+	max-height: min(50vh, 32rem);
+	overflow-y: auto;
+}
+
 .code-message.generating {
 	opacity: 0.85;
 }

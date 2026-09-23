@@ -20,6 +20,7 @@ export const phases = [
 			'workspace_pill_search.spec.mjs',
 			'notifications.spec.mjs',
 			'tool_cards.spec.mjs',
+			'stream_render.spec.mjs',
 		],
 	},
 ]

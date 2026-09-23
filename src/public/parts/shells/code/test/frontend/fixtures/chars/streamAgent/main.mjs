@@ -4,6 +4,13 @@
  */
 /** 分片流式内容（800ms/片，模拟真实 AI 流式节奏，供生成中气泡断言增量文本）。 */
 const STREAM_CHUNKS = ['流式第一', '段。', '流式第二', '段。']
+/** 长报告：围栏期间须可读，闭合后标题与列表须回到正常 Markdown。 */
+const RENDER_CHUNKS = [
+	'检查结果：\n\n',
+	'```text\n' + ['LONG-LINE-' + 'x'.repeat(320), ...Array.from({ length: 118 }, (_, i) => `line ${i + 2}`)].join('\n') + '\n',
+	'```\n\n',
+	'## 修复计划\n\n- 第一项\n- 第二项\n\n报告结束。',
+]
 
 /**
  * 等待指定毫秒。
@@ -98,10 +105,12 @@ export default {
 					return result
 				}
 				// 无请求级 AI 源（角色自带）：角色自行分片推送预览
-				for (const chunk of STREAM_CHUNKS) {
+				const chunks = args.chat_log.at(-1)?.content === '渲染边界测试' ? RENDER_CHUNKS : STREAM_CHUNKS
+				for (const chunk of chunks) {
 					await delay(800)
 					result.content += chunk
 					args.generation_options.replyPreviewUpdater({ ...result })
+					if (chunks === RENDER_CHUNKS && chunk === RENDER_CHUNKS[1]) await delay(1600)
 				}
 				return result
 			},

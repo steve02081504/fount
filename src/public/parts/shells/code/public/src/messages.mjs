@@ -10,6 +10,7 @@ import { createGist } from '/parts/shells:gist/src/endpoints.mjs'
 
 import { asyncStateLabel, asyncTaskCardElement } from './asynctasks.mjs'
 import { iconElement, icons } from './icons.mjs'
+import { repairOrphanedReplyFence } from './replyMarkdown.mjs'
 import { updateRunCards } from './runCards.mjs'
 import { markSessionDirty, regenerateLastReply } from './session.mjs'
 import { elements, store, SCROLL_TOLERANCE } from './store.mjs'
@@ -250,10 +251,11 @@ export function isEntryVisible(entry) {
 /**
  * 将消息内容里的文件 / gist token 转为行内代码以便渲染。
  * @param {string} content - 原始内容。
+ * @param {string} role - 条目角色（仅修复角色回复中的孤立围栏）。
  * @returns {string} 处理后的 markdown。
  */
-function messageMarkdown(content) {
-	return content
+function messageMarkdown(content, role = '') {
+	return (role === 'char' ? repairOrphanedReplyFence(content) : content)
 		.replace(/@\[file:([^\]\n]+)\]/g, (_m, path) => '`' + path + '`')
 		.replace(/@\[gist:([^\]\n]+)\]/g, (_m, id) => '`' + (store.gistTitles.get(id) || id) + '`')
 }
@@ -311,7 +313,7 @@ function renderMessageActions(entry, bubble) {
  */
 async function saveEntryAsHtml(entry) {
 	showToastI18n('info', 'code.gist_source_plugins.creating')
-	const markdown = messageMarkdown(entryShowText(entry))
+	const markdown = messageMarkdown(entryShowText(entry), entry.role)
 	const title = markdown.split(/\r?\n/).find(line => line.trim())?.slice(0, 60) || 'code message'
 	try {
 		const gist = await createGist({
@@ -475,7 +477,7 @@ function bindMessageDragExport(entry, bubble) {
 		bubble.draggable = true
 		const token = ++dragToken
 		revokePayloadUrl()
-		void renderMarkdownAsStandaloneDocument(messageMarkdown(entryShowText(entry))).then(html => {
+		void renderMarkdownAsStandaloneDocument(messageMarkdown(entryShowText(entry), entry.role)).then(html => {
 			const url = URL.createObjectURL(new File([html], `fount-code-message-${entry.id}.html`, { type: 'text/html' }))
 			// 期间又发起了新拖拽（或已结束），该 URL 无人消费，立即回收
 			if (token !== dragToken) {
@@ -558,14 +560,14 @@ export function renderEntryBubble(entry, { isLast = false } = {}) {
 		else if (entry.extension?.asyncInspect)
 			content.appendChild(renderAsyncInspect(entry))
 		else
-			renderMarkdownAsString(messageMarkdown(entryShowText(entry)), store.markdownCache).then(html => {
+			renderMarkdownAsString(messageMarkdown(entryShowText(entry), entry.role), store.markdownCache).then(html => {
 				content.innerHTML = html
 			})
 	}
 	else {
 		const content = document.createElement('div')
 		body.appendChild(content)
-		renderMarkdownAsString(messageMarkdown(entryShowText(entry)), store.markdownCache).then(html => {
+		renderMarkdownAsString(messageMarkdown(entryShowText(entry), entry.role), store.markdownCache).then(html => {
 			content.innerHTML = html
 		})
 	}

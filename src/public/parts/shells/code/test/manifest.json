@@ -168,6 +168,17 @@
 					]
 				},
 				{
+					"name": "stream_render",
+					"expected": "1m",
+					"triggers": [
+						"src/public/parts/shells/code/test/frontend/stream_render.spec.mjs",
+						"src/public/parts/shells/code/test/frontend/fixtures/chars/streamAgent/**",
+						"src/public/parts/shells/code/test/frontend/fixtures/chars/multiRoundAgent/**",
+						"src/public/parts/shells/code/public/**",
+						"src/public/pages/scripts/features/markdown/**"
+					]
+				},
+				{
 					"name": "tool_cards",
 					"expected": "30s",
 					"triggers": [
