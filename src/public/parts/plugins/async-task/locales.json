@@ -1,19 +1,5 @@
 {
 	"info": {
-		"zh-CN": {
-			"name": "异步任务",
-			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
-			"description": "统一登记与等待后台异步任务（子代理、后台代码执行等）",
-			"description_markdown": "**异步任务**插件为所有后台异步操作（子代理运行、后台 JS/shell 执行等）提供统一的资源 id 与等待工具。角色可用 `<list-async/>` 查看进行中的任务，用 `<await-async ids=\"…\" mode=\"all|any\"/>` 等待一个或多个任务完成；任务完成后若未被等待，会以系统消息通知角色。",
-			"version": "0.0.0",
-			"author": "steve02081504",
-			"home_page": "",
-			"tags": [
-				"异步",
-				"任务",
-				"插件"
-			]
-		},
 		"en-UK": {
 			"name": "Async tasks",
 			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
@@ -28,20 +14,28 @@
 				"plugin"
 			]
 		},
-		"zh-TW": {
-			"name": "非同步任務",
+		"zh-CN": {
+			"name": "异步任务",
 			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
-			"description": "統一登記與等待後台非同步任務（子代理、後台程式執行等）",
-			"description_markdown": "**非同步任務**外掛為所有後台非同步操作（子代理執行、後台 JS/shell 執行等）提供統一的資源 id 與等待工具。角色可用 `<list-async/>` 檢視進行中的任務，用 `<await-async ids=\"…\" mode=\"all|any\"/>` 等待一個或多個任務完成；任務完成後若未被等待，會以系統訊息通知角色。",
+			"description": "统一登记与等待后台异步任务（子代理、后台代码执行等）",
+			"description_markdown": "**异步任务**插件为所有后台异步操作（子代理运行、后台 JS/shell 执行等）提供统一的资源 id 与等待工具。角色可用 `<list-async/>` 查看进行中的任务，用 `<await-async ids=\"…\" mode=\"all|any\"/>` 等待一个或多个任务完成；任务完成后若未被等待，会以系统消息通知角色。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
-				"非同步",
-				"任務",
-				"外掛"
+				"异步",
+				"任务",
+				"插件"
 			]
 		},
+		"ar-SA": {},
+		"de-DE": {},
+		"emoji": {},
+		"es-ES": {},
+		"fr-FR": {},
+		"hi-IN": {},
+		"is-IS": {},
+		"it-IT": {},
 		"ja-JP": {
 			"name": "非同期タスク",
 			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
@@ -54,6 +48,27 @@
 				"非同期",
 				"タスク",
 				"プラグイン"
+			]
+		},
+		"ko-KR": {},
+		"lzh": {},
+		"nl-NL": {},
+		"pt-PT": {},
+		"ru-RU": {},
+		"uk-UA": {},
+		"vi-VN": {},
+		"zh-TW": {
+			"name": "非同步任務",
+			"avatar": "https://api.iconify.design/line-md/clipboard-list.svg",
+			"description": "統一登記與等待後台非同步任務（子代理、後台程式執行等）",
+			"description_markdown": "**非同步任務**外掛為所有後台非同步操作（子代理執行、後台 JS/shell 執行等）提供統一的資源 id 與等待工具。角色可用 `<list-async/>` 檢視進行中的任務，用 `<await-async ids=\"…\" mode=\"all|any\"/>` 等待一個或多個任務完成；任務完成後若未被等待，會以系統訊息通知角色。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"非同步",
+				"任務",
+				"外掛"
 			]
 		}
 	}
