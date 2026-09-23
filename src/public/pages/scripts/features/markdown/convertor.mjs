@@ -1414,13 +1414,13 @@ export async function GetMarkdownConvertor({
 }
 
 /* ansi 围栏：保留终端颜色的等宽输出块 */
-.markdown-body pre.markdown-ansi-block {
+pre.markdown-ansi-block {
 	font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 	font-size: 0.85em;
 	line-height: 1.45;
 	padding: 0.75rem 1rem;
 	overflow-x: auto;
-	white-space: pre-wrap;
+	white-space: normal;
 	word-break: break-word;
 }
 

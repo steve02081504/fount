@@ -23,6 +23,13 @@ Copy / download / execute must be a rehype plugin **after** `rehype-pretty-code`
 
 Do not use Shiki `transformers.root` wrapping — it breaks inline `{:lang}` (expects `root>pre`). Plain `` `code` `` stays bare `<code>`; `` `code{:js}` `` → `span>code`. HTML `document.write` preview is trusted-only.
 
+## ansi fence
+
+```` ```ansi ```` is intercepted by `rehypeAnsiBlock` **before** `rehype-pretty-code` and replaced with `@steve02081504/ansi2html` output, so it never gets the pretty-code `markdown-code-block` wrapper. Two traps:
+
+- Style it from the **global** `pre.markdown-ansi-block` selector, not `.markdown-body pre…` — shells that render markdown into their own container (code shell: `.code-message-body`) never add `.markdown-body`, so a scoped rule silently does not apply. Keep it aligned with the already-global `.markdown-code-block`.
+- Use `white-space: normal`, **not** `pre`/`pre-wrap`: ansi2html encodes spaces as `&nbsp;` and line breaks as `<br/>`, so the container must not also preserve whitespace. ansi2html ≤0.0.0 additionally emitted a literal `\n` after `<br/>` and skipped CRLF, rendering one newline as 2–3 lines; fixed in 0.0.1 ([issue #1](https://github.com/steve02081504/ansi2html/issues/1)) — keep `normal` so the block is correct across versions.
+
 ## Unknown HTML tags
 
 `remarkLiteralizeUnknownHtmlTags`（remark 阶段、`remarkRehype` 前）把正文里的未知 HTML 标签（`HTMLUnknownElement`，或未注册的自定义元素——本项目不注册任何自定义元素）从 raw HTML 降级为字面文本。否则它们会被当 HTML 吞掉：信任档渲染为空（推理正文里的 `<run-subagent>` / `<list-ai-sources/>` 会留空洞），未信任档被 `remarkRehype` 直接丢弃。已知标签（`details` / `summary` / `b` / `img` / `script` …）与代码节点（行内/围栏代码是 `code` 节点，不是 `html` 节点）不受影响，故不会二次转义 `` `Array<T>` ``。

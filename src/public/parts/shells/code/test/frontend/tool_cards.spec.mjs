@@ -35,7 +35,7 @@ test.describe('code shell tool cards & highlighting', () => {
 					{
 						id: 'shell-1', uid: 'system', role: 'tool', name: 'code-execution.run-pwsh',
 						content: '退出码 0，耗时 1ms：\nhello',
-						content_for_show: '```pwsh\necho hi\n```\n\n退出码 0，耗时 1ms：\n\n```ansi\n\u001b[31mhello\u001b[0m\n```',
+						content_for_show: '```pwsh\necho hi\n```\n\n退出码 0，耗时 1ms：\n\n```ansi\n\u001b[31mhello\u001b[0m\r\nworld\r\nthird\n```',
 						time: now,
 					},
 					// `<inspect-async/>` 统一的运行中检视卡（子代理载荷带 entries）
@@ -93,6 +93,15 @@ test.describe('code shell tool cards & highlighting', () => {
 				return span ? getComputedStyle(span).color : ''
 			})
 			expect(ansiColor).not.toBe('')
+
+			// 单次换行只占一行：ansi2html 老版把换行写成 `<br/>\n` 且不归一化 CRLF，容器保留空白就会把 3 行渲染成 6+ 行
+			const ansiLines = await page.evaluate(() => {
+				const pre = document.querySelector('pre.markdown-ansi-block')
+				const cs = getComputedStyle(pre)
+				const inner = pre.getBoundingClientRect().height - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom)
+				return Math.round(inner / parseFloat(cs.lineHeight))
+			})
+			expect(ansiLines).toBe(3)
 
 			// inspect-async：统一的运行中检视卡（复用子代理对话渲染）
 			await expect(page.locator('.code-async-inspect .code-transcript-entry')).toHaveCount(2)
