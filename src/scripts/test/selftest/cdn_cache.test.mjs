@@ -22,6 +22,9 @@ Deno.test('isExternalCdnUrl matches known CDN hosts only', () => {
 	assertEquals(isExternalCdnUrl('https://esm.sh/@sentry/browser'), true)
 	assertEquals(isExternalCdnUrl('https://api.iconify.design/mdi/heart.svg'), true)
 	assertEquals(isExternalCdnUrl('https://cdn.jsdelivr.net/npm/daisyui'), true)
+	assertEquals(isExternalCdnUrl('https://steve02081504.github.io/fount/imgs/title.svg'), true)
+	// 不存在 steve02081504.n；此断言防止历史误写回归
+	assertEquals(isExternalCdnUrl('https://steve02081504.n/fount/imgs/title.svg'), false)
 	assertEquals(isUnversionedEsmShUrl('https://esm.sh/@steve02081504/async-eval'), true)
 	assertEquals(isUnversionedEsmShUrl('https://esm.sh/@steve02081504/async-eval@0.0.16/es2022/async-eval.mjs'), false)
 	assertEquals(isUnversionedEsmShUrl('https://esm.sh/@steve02081504/fount-p2p/core/hexIds'), true)

@@ -17,6 +17,8 @@ const CDN_HOSTS = new Set([
 	'cdn.jsdelivr.net',
 	'data.jsdelivr.com',
 	'api.github.com',
+	// 一方静态资产（shell 字标等）由 GitHub Pages 承载：不缓存则每次前端测试都走公网，一次抖动即触发 console error
+	'steve02081504.github.io',
 ])
 
 /** 未版本化 esm.sh URL 的复验间隔（esm.sh 边缘 max-age=600，同量级）。 */
@@ -93,7 +95,9 @@ export function isMutableCdnUrl(url) {
 			case 'cdn.jsdelivr.net': return isMutableJsDelivrUrl(parsed)
 			case 'data.jsdelivr.com':
 			case 'api.iconify.design':
-			case 'api.github.com': return true
+			case 'api.github.com':
+			// GitHub Pages 静态资产带 etag/last-modified，按可变 URL 条件复验，品牌图更新后自愈
+			case 'steve02081504.github.io': return true
 			default: return false
 		}
 	}
