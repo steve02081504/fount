@@ -27,11 +27,10 @@ export async function getCodeExecutionPrompt(args) {
 你可以运行js或${availableShells.join('、')}代码，通过返回以下格式来触发执行并获取结果：
 <run-js>code</run-js>
 或
-<run-${defaultShell}>code</run-${defaultShell}>${available.powershell ? available.pwsh ? `
-<run-powershell>会调用windows powershell，而<run-pwsh>会调用安装的powershell core。` : `
-<run-powershell>会调用windows powershell，且<run-pwsh>是<run-powershell>的别名。` : ''
-}
-如：
+<run-${defaultShell}>code</run-${defaultShell}>
+${available.powershell && available.pwsh ? `**注意：<run-powershell> 调用 Windows PowerShell，<run-pwsh> 调用已安装的 PowerShell Core，二者不同。**
+` : available.powershell ? `**注意：<run-powershell> 调用 Windows PowerShell，<run-pwsh> 是其别名。**
+` : ''}如：
 <run-js>(await import('npm:robotjs')).getScreenSize()</run-js>
 你还可以使用<inline-js>来运行js代码，返回结果会作为string直接插入到消息中。
 对于${defaultShell}，你也可以使用<inline-${defaultShell}>来达到同样的效果。
@@ -40,10 +39,6 @@ ${args.UserCharname}: 一字不差地输出10^308的数值。
 ${args.Charname}: 1<inline-js>'0'.repeat(308)</inline-js>
 ${args.UserCharname}: 反向输出\`never gonna give you up\`。
 ${args.Charname}: 好哒，<inline-js>'never gonna give you up'.split('').reverse().join('')</inline-js>！
-${args.UserCharname}: 97的32次方是多少？
-${args.Charname}: 是<inline-js>97n**32n</inline-js>哦？
-${args.UserCharname}: js中\`![]+[]\`是什么？
-${args.Charname}: 是<inline-js>![]+[]</inline-js>！
 ${available.powershell || available.pwsh ? `\
 ${args.UserCharname}: 我系统盘是哪个？
 ${args.Charname}: 是<inline-pwsh>$env:SystemDrive</inline-pwsh>。
@@ -67,16 +62,13 @@ return Array.from({ length: 201 }, (_, i) => toEnglishWord(i)).join(', ')
 这样可以吗？
 ]
 运行限制（所有 <run-*> 标签均支持）：
-- 默认 ${Math.round(SHELL_DEFAULT_TIMEOUT_MS / 60000)} 分钟超时；超时会尽力终止（shell 杀进程树；js 在进程内无法强杀，会如实告知你“实际仍在运行”）。
-- expect="时长" 为预期时长，tolerance="时长" 为额外容错，有效超时 = expect + tolerance；只给 tolerance 时基于默认值累加。时长支持 30s / 5m / 1h 或纯秒数，如 <run-${defaultShell} expect="5m" tolerance="1m">。
-- wait="forever" 强制干等、不设超时；请仅在确实需要长时间挂起时使用。
-- 正常结束会在结果里标注耗时，便于你预估后续命令。
-- <run-js> 返回 \`output\`（console 文本）和 \`result\`（返回值）；出错时为 \`output\` 与 \`error\`。
-- 单个输出过大时只保留开头与结尾，完整内容会写入临时文件并在结果中给出路径；你可以用 <view-file> 分页查看，或用 <grep> 搜索匹配行。超过约 ${Math.round(OUTPUT_GUARD_LIMIT / 1000)}KB 的输出请优先用 <run-*> 而不是 <inline-*>（内联结果会直接插入消息）。
-- 执行标签支持 machine="机器id"、workdir="目录" 单次指定目标；未指定时使用当前目标。
-- 在解决简单问题时使用<inline-js>，并使用大数类型。
-- 在解决复杂数学相关问题时使用<run-js>。
-- 在操作电脑、查看文件、更改设置、播放音乐时使用<run-${defaultShell}>。
+参数：
+- 超时：默认 ${Math.round(SHELL_DEFAULT_TIMEOUT_MS / 60000)} 分钟；expect="时长" + tolerance="时长" 生效（只给 tolerance 时基于默认值累加）；wait="forever" 干等不超时。时长支持 30s / 5m / 1h 或纯秒数，如 <run-${defaultShell} expect="5m" tolerance="1m">。超时会尽力终止（shell 杀进程树；js 在进程内无法强杀，会如实告知你“实际仍在运行”）。
+- 目标：machine="机器id"、workdir="目录" 单次覆盖，未指定时用当前目标。
+- 返回：<run-js> 给 \`output\`（console 文本）+ \`result\`（返回值），出错时为 \`output\` + \`error\`；正常结束会标注耗时。
+- 大输出：只保留头尾，完整内容写入临时文件并给出路径，可用 <view-file> 分页 / <grep> 搜索；超过约 ${Math.round(OUTPUT_GUARD_LIMIT / 1000)}KB 的输出请用 <run-*> 而非 <inline-*>（内联结果会直接插入消息）。
+使用约定：
+- 简单问题用 <inline-js> 并优先用大数类型；复杂数学用 <run-js>；操作电脑/查看文件/更改设置/播放音乐用 <run-${defaultShell}>。
 ${getConnectedSubfounts(args.username).length === 1 ? `\
 - 用户对接其他 subfount 后，你也可以在其他机器上运行代码。
 ` : `\
@@ -97,6 +89,11 @@ js代码相关：
   * 导入包需要符合deno的包名规范（追加\`npm|node|jsr:\`前缀），如\`npm:mathjs\`或\`node:fs\`。
 - 鼓励你在复杂情况下用workspace变量来存储工作数据，便于后续使用。
   * \`workspace.data = ...\` 会跨 <run-js> 调用保留；开始新任务时可用 \`workspace.clear()\` 清空。
+- JS 在 fount 进程内运行，\`process.cwd()\` 是 fount 进程自身的工作目录，可能与 shell 的 workdir 不一致，且无法按请求切换（切换会影响整个进程）。需要操作工作区文件时，用本机执行时提供的绝对路径变量 \`workdir\` 自行拼路径，如 \`(await import('node:path')).join(workdir, 'deno.json')\`；\`view_files\`/\`add_files\` 的相对路径同样按进程 cwd 解析，请传绝对路径。
+${args.supported_functions?.add_message ? `\
+- 长任务可不用 await，改用 \`callback(reason: string, promise: Promise)\` 在异步完成后反馈，如 <run-js>callback('unzip result', super_slow_async_function())</run-js>。
+  * callback 是异步的，你无法在 <run-js> 的当场看到 callback 结果。
+`: ''}\
 - 你可以通过chat_log访问对话记录来获取/操作你无法直接查看的文件，其结构如下：
 {
 	name: string;
@@ -112,12 +109,6 @@ const zip_buffer = chat_log.findLast(entry => entry.files?.length).files[0].buff
 // ...
 </run-js>
 ]
-${args.supported_functions?.add_message ? `\
-- 对于会需要很长时间的任务，你可以不用await，而是使用\`callback\`函数来在异步完成后反馈内容。
-  * 格式：callback(reason: string, promise: Promise)
-  * 例子：<run-js>callback('unzip result', super_slow_async_function())</run-js>
-  * 返回值：callback是异步的，你无法在<run-js>的当场看到callback结果。
-`: ''}
 - \`await view_files(file1, file2, ...)\` 只让你查看，不发送给用户；参数可为本地路径、URL 或 \`{ name, mime_type, buffer, description? }\`。
 ${args.supported_functions?.files ? `\
 - \`await add_files(file1, file2, ...)\` 用相同格式把文件发送给用户；例如 \`await add_files('~/Desktop/report.pdf')\`。仅需自己查看截图等内容时用 \`view_files\`。

@@ -421,6 +421,36 @@ Deno.test('code-execution inline-js 结果就地替换展示层且不改 content
 	assert(!logs.some(log => log.name === 'inline-rendered'), '已在工具回执包含结果时无需第二份汇总')
 })
 
+Deno.test('code-execution run-js/inline-js 暴露工作目录的绝对路径变量 workdir', async () => {
+	const root = await fs.mkdtemp(path.join(os.tmpdir(), 'fount_js_workdir_'))
+	try {
+		const run = createHandlerArgs()
+		run.args.workdir = { machine: '0', path: root }
+		await runReplyHandlers({ content: '<run-js>return typeof workdir</run-js>', extension: {} }, run.args, getCodeExecutionReplyHandlers())
+		const entry = findToolEntry(run.logs)
+		assert(entry, 'run-js 应产出工具日志')
+		assertStringIncludes(entry.content, '\'string\'', 'run-js 应在上下文中注入 workdir 字符串')
+
+		const inline = createHandlerArgs()
+		inline.args.workdir = { machine: '0', path: root }
+		const handlers = getCodeExecutionReplyHandlers()
+		const inlineJs = handlers.find(handler => handler.name === 'inline-js')
+		const call = { name: 'inline-js', inner: 'workdir', params: {}, occurrence: 0 }
+		const evaluated = await inlineJs.evaluate(call, inline.args)
+		assertEquals(evaluated, root, 'inline-js 也应拿到同一个 workdir 绝对路径')
+	}
+	finally {
+		await fs.rm(root, { recursive: true, force: true })
+	}
+})
+
+Deno.test('code-execution run-js 无工作目录时不注入 workdir', async () => {
+	const { logs, args } = createHandlerArgs()
+	await runReplyHandlers({ content: '<run-js>return typeof workdir</run-js>', extension: {} }, args, getCodeExecutionReplyHandlers())
+	const entry = findToolEntry(logs)
+	assertStringIncludes(entry.content, 'undefined', '未指定工作目录时不应注入 workdir')
+})
+
 Deno.test('runReplyHandlers 中 run-* 容器整段消耗，不触发内层 inline-js', async () => {
 	const { logs, result, args } = createHandlerArgs()
 	result.content = '<run-js>const s = "<inline-js>1 + 1</inline-js>"</run-js>'

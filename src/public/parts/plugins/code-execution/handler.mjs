@@ -25,7 +25,7 @@ import { defineReplyHandler } from '../../shells/chat/src/reply/defineReplyHandl
 import { defaultDisplay } from '../../shells/chat/src/reply/display.mjs'
 import { getChatI18n, renderMarkdownCodeBlock, renderMarkdownInlineCode } from '../../shells/chat/src/streaming/index.mjs'
 import { isAsyncToolingEnabled, ownerFromArgs, registerTask } from '../async-task/registry.mjs'
-import { createArgsExecutorResolver, resolveTarget } from '../file-operations/src/target.mjs'
+import { createArgsExecutorResolver, resolveLocalPath, resolveTarget } from '../file-operations/src/target.mjs'
 
 /**
  * 按预览参数缓存执行器解析器（远程内联执行用）。
@@ -342,6 +342,11 @@ function createRuntime(result, args) {
 			workspace: args.chat_scoped_char_memory.coderunner_workspace,
 			chat_log: args.chat_log,
 		}
+		// JS 在 fount 进程内求值，process.cwd() 即进程自身 cwd，无法按请求切换（chdir 会影响整个进程）。
+		// 暴露目标工作目录的绝对路径，供 AI 自行拼绝对路径，避免与 shell 侧 workdir 的基准不一致。
+		const target = resolveTarget(args)
+		if (!target.remote && target.workdir)
+			js_eval_context.workdir = resolveLocalPath(target.workdir)
 		/**
 		 * 清空工作区。
 		 */
@@ -524,8 +529,13 @@ async function evaluateInlineJs(call, args) {
 		const resolver = previewExecutorResolvers.get(args) ?? previewExecutorResolvers.set(args, createArgsExecutorResolver(args)).get(args)
 		outcome = await runJsWithTimeout(() => resolver(attrs).execJsWithTimeout(call.inner, limits.timeoutMs, { onOutput: stream, callbackPartpath: remoteToolCallbackPartpath(args) }), limits.timeoutMs)
 	}
-	else
-		outcome = await runJsWithTimeout(() => async_eval(call.inner, { console: collecting.console }), limits.timeoutMs)
+	else {
+		const target = resolveTarget(args)
+		const context = { console: collecting.console }
+		if (!target.remote && target.workdir)
+			context.workdir = resolveLocalPath(target.workdir)
+		outcome = await runJsWithTimeout(() => async_eval(call.inner, context), limits.timeoutMs)
+	}
 	emit?.({ callId, phase: 'end', name })
 	if (outcome.timedOut) throw new Error('内联 JS 执行超时；JS 无法强制终止，代码可能仍在运行。')
 	const coderesult = outcome.evalResult
