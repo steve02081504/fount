@@ -485,3 +485,38 @@
 	font-size: 0.75rem;
 	opacity: 0.65;
 }
+
+/* 消息多选：选中行高亮 */
+.chat.message-row.is-selected {
+	background: color-mix(in srgb, var(--color-primary) 16%, transparent);
+	border-radius: var(--radius-box);
+	box-shadow: inset 3px 0 0 var(--color-primary);
+}
+
+/* 消息多选浮动工具条 */
+.message-selection-toolbar {
+	position: fixed;
+	transform: translateX(-50%);
+	z-index: 60;
+}
+
+.message-selection-toolbar[hidden] {
+	display: none;
+}
+
+.message-selection-toolbar-inner {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.35rem 0.6rem;
+	border: var(--border) solid var(--border-color);
+	border-radius: 999px;
+	background: var(--color-base-100);
+	box-shadow: var(--shadow-md);
+}
+
+.message-selection-count {
+	font-size: 0.8rem;
+	opacity: 0.8;
+	white-space: nowrap;
+}

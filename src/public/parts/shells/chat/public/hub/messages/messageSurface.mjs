@@ -14,6 +14,7 @@ import { applyAvatarsTo } from '../presence.mjs'
 import { bindChannelMessageActions } from './actions/handlers.mjs'
 import { setChannelMessageActionsContext } from './messageActionsState.mjs'
 import { bindMessageDragExport } from './messageDragExport.mjs'
+import { bindMessageSelection } from './messageSelection.mjs'
 import { wireMessageReactions } from './reactionWire.mjs'
 import {
 	localizeRenderedMessages,
@@ -111,6 +112,7 @@ export function bindMessageSurface(container, {
 		reload,
 	}, container)
 	bindChannelMessageActions(container)
+	bindMessageSelection(container)
 	bindMessageDragExport(container)
 	wireMessageReactions(container, {
 		groupId,

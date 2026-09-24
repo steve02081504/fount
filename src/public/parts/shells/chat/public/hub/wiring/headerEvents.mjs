@@ -2,6 +2,7 @@ import { wireCallHeaderButton } from '../call.mjs'
 import { store } from '../core/state.mjs'
 import { wireForkActions } from '../federation/forkActions.mjs'
 import { showGroupHeaderMenu } from '../groupContextMenu.mjs'
+import { clearMessageSelection } from '../messages/messageSelection.mjs'
 import { wirePinsBookmarksPanels } from '../pinsBookmarks.mjs'
 import { wirePresenceInteractions } from '../presence.mjs'
 import { wireProfilePopupDismiss } from '../profilePopup.mjs'
@@ -26,6 +27,7 @@ export function wireHeaderEvents() {
 		const queryLower = query
 		const chType = store.context.currentState?.channels?.[store.context.currentChannelId]?.type || 'text'
 		if (store.context.currentGroupId && store.context.currentChannelId && chType === 'text') {
+			clearMessageSelection()
 			if (query.length >= 2) scheduleHubMessageSearch(query)
 			store.messages.channelSearchQuery = queryLower || null
 			void (async () => {

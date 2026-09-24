@@ -928,6 +928,15 @@
 					]
 				},
 				{
+					"name": "messageSelection",
+					"triggers": [
+						"src/public/parts/shells/chat/test/frontend/messageSelection.spec.mjs",
+						"src/public/parts/shells/chat/public/hub/messages/**",
+						"src/public/pages/scripts/components/selectionController.mjs",
+						"src/public/parts/shells/chat/public/hub/wiring/headerEvents.mjs"
+					]
+				},
+				{
 					"name": "messageAvatar",
 					"expected": "34s",
 					"triggers": [

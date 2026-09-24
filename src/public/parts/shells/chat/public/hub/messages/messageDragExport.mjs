@@ -8,6 +8,7 @@ import { fileNameFromHtmlTitle } from '/parts/shells:gist/src/standaloneDocument
 
 import { generateMessageStandaloneHtml } from './exportHtml.mjs'
 import { findContextMessage, getChannelMessageActionsContext } from './messageActionsState.mjs'
+import { isMessageSelectionActive } from './messageSelection.mjs'
 import { getMessageText } from './render/text.mjs'
 
 const ROW_SELECTOR = '.message[data-message-id], .message-row[data-message-id]'
@@ -112,6 +113,7 @@ export function bindMessageDragExport(container) {
 
 	container.addEventListener('mousedown', event => {
 		if (event.button !== 0) return
+		if (isMessageSelectionActive()) return
 		const row = /** @type {HTMLElement | null} */ event.target.closest(ROW_SELECTOR)
 		if (!row || !container.contains(row)) return
 		if (/** @type {HTMLElement} */ event.target.closest(NO_DRAG_SELECTOR)) {

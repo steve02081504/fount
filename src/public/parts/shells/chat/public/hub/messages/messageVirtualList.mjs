@@ -23,6 +23,7 @@ import {
 	scrollToBottom,
 	setPendingHighlightEventId,
 } from './messageScroll.mjs'
+import { clearMessageSelection, syncMessageSelectionStyles } from './messageSelection.mjs'
 import { isTwoPartyCharDialogue, refreshChannelView } from './messageShared.mjs'
 import {
 	bindMessageSurface,
@@ -35,6 +36,7 @@ import { revokeGroupFileBlobUrlsForChannel } from './render/file.mjs'
  * @returns {void}
  */
 export function destroyChannelVirtualList() {
+	clearMessageSelection()
 	const channelKey = store.messages.channelPipelineKey
 	store.messages.channelMessagePipeline?.destroy()
 	store.messages.channelMessagePipeline = null
@@ -176,6 +178,7 @@ export function decorateRenderedMessages(container, shouldScroll = false) {
 		reload: reloadChannel,
 	})
 	syncStreamingSlotsFromDom(container)
+	syncMessageSelectionStyles(container)
 	if (isTwoPartyCharDialogue()) {
 		updateHideCharNames(store.messages.channelMessages)
 		attachLastCharMessageSwipe(container)

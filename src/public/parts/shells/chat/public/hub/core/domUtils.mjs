@@ -191,6 +191,19 @@ export function formatTimeAttrs(timestamp) {
 }
 
 /**
+ * 将时间戳格式化为纯文本时间（今日 `HH:MM`，跨日 `日期 HH:MM`），供复制等场景。
+ * @param {number} timestamp 毫秒时间戳
+ * @returns {string} 纯文本时间
+ */
+export function formatMessageTimeText(timestamp) {
+	const date = new Date(timestamp)
+	const clock = date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false })
+	const now = new Date()
+	if (date.toDateString() === now.toDateString()) return clock
+	return `${date.toLocaleDateString()} ${clock}`
+}
+
+/**
  * @param {{ timeI18n: string, timeParam: string, timeText: string }} attrs `formatTimeAttrs` 返回值
  * @returns {string} 可插入模板的 `data-i18n` 属性片段
  */
