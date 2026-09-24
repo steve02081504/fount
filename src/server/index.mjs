@@ -108,11 +108,9 @@ if (args.length) {
 	const command = args.shift()
 
 	if (command == 'run' || command == 'runas') {
-		// `run` 始终以最后活跃的用户执行；`runas` 显式指定用户名。
-		const { getLastActiveUsername } = await import('./auth/index.mjs')
-		let username
-		if (command == 'run') username = await getLastActiveUsername()
-		else username = args.shift()
+		// `run` 以最后活跃用户执行（用户名留 null，待 init 载入 config 后再解析）；`runas` 显式指定。
+		let username = null
+		if (command == 'runas') username = args.shift()
 		let partPath = args.shift()
 		if (!partPath) {
 			console.errorI18n('fountConsole.ipc.partPathRequired')
@@ -168,6 +166,12 @@ if (showIcon && result === 'started') {
 if (process.env.FOUNT_STARTUP_PRIORITY_BOOST) {
 	try { os.setPriority(0, 0) } catch { /* ignore */ }
 	delete process.env.FOUNT_STARTUP_PRIORITY_BOOST
+}
+
+// init 载入 config 后，才能解析「最后活跃用户」。
+if (command_obj.data.username === null) {
+	const { getLastActiveUsername } = await import('./auth/index.mjs')
+	command_obj.data.username = await getLastActiveUsername()
 }
 
 // 如果提供了命令，则通过 IPC 发送到已运行的实例。
