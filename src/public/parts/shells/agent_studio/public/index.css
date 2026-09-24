@@ -1093,6 +1093,15 @@
 	height: 1rem;
 }
 
+.section-actions .btn {
+	gap: 0.25rem;
+}
+
+.section-actions-label {
+	font-size: 0.68rem;
+	line-height: 1;
+}
+
 .conversation-requests {
 	margin-top: 0.4rem;
 	display: flex;

@@ -29,13 +29,16 @@ export function textActions(getText, { filename }) {
 
 	const copy = document.createElement('button')
 	copy.type = 'button'
-	copy.className = 'btn btn-ghost btn-xs btn-square'
+	copy.className = 'btn btn-ghost btn-xs'
 	copy.title = geti18n('agent_studio.actions.copy')
 	copy.setAttribute('aria-label', geti18n('agent_studio.actions.copy'))
 	const copyIcon = document.createElement('span')
 	copyIcon.className = 'icon icon-copy'
 	copyIcon.setAttribute('aria-hidden', 'true')
-	copy.append(copyIcon)
+	const copyLabel = document.createElement('span')
+	copyLabel.className = 'section-actions-label'
+	copyLabel.textContent = geti18n('agent_studio.actions.copy')
+	copy.append(copyIcon, copyLabel)
 	copy.addEventListener('click', () => {
 		void navigator.clipboard.writeText(String(getText() ?? ''))
 			.then(() => showToastI18n('success', 'agent_studio.alerts.copied'))
@@ -44,13 +47,16 @@ export function textActions(getText, { filename }) {
 
 	const download = document.createElement('button')
 	download.type = 'button'
-	download.className = 'btn btn-ghost btn-xs btn-square'
+	download.className = 'btn btn-ghost btn-xs'
 	download.title = geti18n('agent_studio.actions.download')
 	download.setAttribute('aria-label', geti18n('agent_studio.actions.download'))
 	const downloadIcon = document.createElement('span')
 	downloadIcon.className = 'icon icon-download'
 	downloadIcon.setAttribute('aria-hidden', 'true')
-	download.append(downloadIcon)
+	const downloadLabel = document.createElement('span')
+	downloadLabel.className = 'section-actions-label'
+	downloadLabel.textContent = geti18n('agent_studio.actions.download')
+	download.append(downloadIcon, downloadLabel)
 	download.addEventListener('click', () => {
 		const blob = new Blob([String(getText() ?? '')], { type: 'text/plain;charset=utf-8' })
 		const url = URL.createObjectURL(blob)
