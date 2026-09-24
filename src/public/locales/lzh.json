@@ -3027,6 +3027,15 @@
 				"title": "此群尚無分苑",
 				"description": "於右側新立或擇分苑以敘",
 				"createAction": "立分苑"
+			},
+			"selection": {
+				"count": "已选 ${count} 条",
+				"copy": "复制",
+				"cancel": "取消",
+				"copied": "已复制 ${count} 条消息",
+				"toolbar": {
+					"aria-label": "消息多选工具栏"
+				}
 			}
 		},
 		"sidebar": {
@@ -6819,7 +6828,9 @@
 			"close": {
 				"title": "閉",
 				"aria-label": "閉"
-			}
+			},
+			"copy": "复制",
+			"download": "下载"
 		},
 		"dashboard": {
 			"title": "儀表盤",
@@ -6926,7 +6937,9 @@
 		"alerts": {
 			"loadFailed": "載之不成：${message}",
 			"saveFailed": "存之不成：${message}",
-			"runFailed": "行之不成：${message}"
+			"runFailed": "行之不成：${message}",
+			"copied": "已复制到剪贴板",
+			"copyFailed": "复制失败：${message}"
 		},
 		"home_function_buttons": {
 			"dev": {

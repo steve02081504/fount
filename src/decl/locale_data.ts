@@ -2990,6 +2990,15 @@ export type LocaleData = {
 				description: string
 				createAction: string
 			}
+			selection: {
+				count: string
+				copy: string
+				cancel: string
+				copied: string
+				toolbar: {
+					'aria-label': string
+				}
+			}
 		}
 		sidebar: {
 			settings: {
@@ -6782,6 +6791,8 @@ export type LocaleData = {
 				title: string
 				'aria-label': string
 			}
+			copy: string
+			download: string
 		}
 		dashboard: {
 			title: string
@@ -6889,6 +6900,8 @@ export type LocaleData = {
 			loadFailed: string
 			saveFailed: string
 			runFailed: string
+			copied: string
+			copyFailed: string
 		}
 		home_function_buttons: {
 			dev: {
@@ -7005,6 +7018,7 @@ export type LocaleKeyParams = {
 	'achievements.error.load_failed': { message: string | number }
 	'achievements.error.unlock_failed': { error: string | number }
 	'achievements.unlocked_on': { date: string | number }
+	'agent_studio.alerts.copyFailed': { message: string | number }
 	'agent_studio.alerts.loadFailed': { message: string | number }
 	'agent_studio.alerts.runFailed': { message: string | number }
 	'agent_studio.alerts.saveFailed': { message: string | number }
@@ -7230,6 +7244,8 @@ export type LocaleKeyParams = {
 	'chat.hub.reputationSlashAlert': { target: string | number }
 	'chat.hub.save.emojiFailed': { error: string | number }
 	'chat.hub.save.stickerFailed': { error: string | number }
+	'chat.hub.selection.copied': { count: string | number }
+	'chat.hub.selection.count': { count: string | number }
 	'chat.hub.send.failed': { error: string | number }
 	'chat.hub.send.imageFailed': { error: string | number }
 	'chat.hub.send.stickerFailed': { error: string | number }
