@@ -131,10 +131,12 @@ test.describe('Agent Studio shell boot', () => {
 			dialogue: { events: [{ round: 1, op: 'insert', message: { id: `m${index}`, role: 'char', content: `**reply ${index}**` } }] },
 			response: `**reply ${index}**`,
 		}))
-		await page.route('**/api/parts/shells:agent_studio/conversation/demo-replay', route => route.fulfill({ json: {
-			key: 'demo-replay', generations,
-			dialogue: { events: generations.map((generation, index) => ({ ...generation.dialogue.events[0], round: index + 1 })) },
-		} }))
+		await page.route('**/api/parts/shells:agent_studio/conversation/demo-replay', route => route.fulfill({
+			json: {
+				key: 'demo-replay', generations,
+				dialogue: { events: generations.map((generation, index) => ({ ...generation.dialogue.events[0], round: index + 1 })) },
+			}
+		}))
 		await openAgentStudio(page, baseUrl)
 		await page.evaluate(() => { window.location.hash = '#conversation/demo-replay' })
 		await expect(page.locator('#conversationGenerations .conversation-generation')).toHaveCount(2)
@@ -164,10 +166,12 @@ test.describe('Agent Studio shell boot', () => {
 
 	test('live sub-agent composer accepts a user message only at the latest replay node', async ({ page, baseUrl }) => {
 		const entries = [{ role: 'system', name: 'system', content: 'task started' }]
-		await page.route('**/api/parts/shells:agent_studio/subagent/live-run', route => route.fulfill({ json: {
-			runId: 'live-run', state: 'running', rounds: 1, roundLimit: 3, task: 'demo task',
-			conversation: entries, canSend: true,
-		} }))
+		await page.route('**/api/parts/shells:agent_studio/subagent/live-run', route => route.fulfill({
+			json: {
+				runId: 'live-run', state: 'running', rounds: 1, roundLimit: 3, task: 'demo task',
+				conversation: entries, canSend: true,
+			}
+		}))
 		await page.route('**/api/parts/shells:agent_studio/conversation/subagent%3Alive-run', route => route.fulfill({ status: 404, json: { error: 'pending' } }))
 		await page.route('**/api/parts/shells:agent_studio/subagent/live-run/messages', async route => {
 			const body = route.request().postDataJSON()

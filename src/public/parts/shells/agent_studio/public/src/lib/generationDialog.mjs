@@ -18,7 +18,7 @@ import { textActions } from './textActions.mjs'
  * @returns {string} 文本
  */
 function buildPromptText(record) {
-	if (record.requests?.length) 
+	if (record.requests?.length)
 		return record.requests.map(request => {
 			const lines = [`[轮次 ${request.index}] 模型 ${request.model ?? '-'} · ${formatTime(request.startedAt, primaryLocale())}`]
 			if (request.error) lines.push(`错误：${request.error.name || ''}: ${request.error.message || ''}`)
@@ -27,7 +27,6 @@ function buildPromptText(record) {
 				lines.push(`${message.role} ${message.name}: ${message.content}`)
 			return lines.join('\n')
 		}).join('\n\n')
-	
 	if (record.requestsStripped || record.requestCount)
 		return geti18n('agent_studio.conversation.requestsExpired', { count: record.requestCount ?? 0 })
 	return record.input === undefined || record.input === null

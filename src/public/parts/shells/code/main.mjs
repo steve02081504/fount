@@ -113,7 +113,7 @@ export default {
 			 */
 			ReStartJob: (username, data) => resumeCodeJob(username, data),
 			/** @returns {void} 关闭屏障统一处理所有进行中的生成。 */
-			PauseJob: () => {},
+			PauseJob: () => { },
 		},
 		/**
 		 * 分机回调：接收远程流式执行经 `callback` 回传的输出分片并按 execId 分派。

@@ -342,10 +342,9 @@ function renderGeneration(generation, cache = {}) {
 	requestsTitle.className = 'dialog-section-title'
 	requestsTitle.textContent = `${geti18n('agent_studio.conversation.requests')} · ${generation.requestCount ?? generation.requests?.length ?? 0}`
 	requestsSection.appendChild(requestsTitle)
-	if (generation.requests?.length) 
+	if (generation.requests?.length)
 		for (const request of generation.requests)
 			requestsSection.appendChild(renderRequest(request, generation.id))
-	
 	else {
 		const hint = document.createElement('p')
 		hint.className = 'conversation-requests-hint'

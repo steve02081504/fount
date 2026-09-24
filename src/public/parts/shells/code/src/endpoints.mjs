@@ -388,9 +388,11 @@ export function resumeCodeJob(username, data) {
 		if (!session || !startCodeRun) return
 		session.entries = (session.entries || []).filter(entry => !entry.is_generating)
 		const elapsed = Math.max(0, Date.now() - (interruptedAt || startedAt || Date.now()))
-		session.entries.push({ id: randomUUID(), role: 'system', uid: 'system', name: 'system',
+		session.entries.push({
+			id: randomUUID(), role: 'system', uid: 'system', name: 'system',
 			content: `fount 此前因${reason === 'restart' ? '正常退出或重启' : reason ? `收到 ${reason} 信号` : '意外退出'}而中断，距离中断已过约 ${Math.round(elapsed / 1000)} 秒。上一轮未完成的生成内容已清除，请继续处理原任务。如涉及子代理，这不影响你的时间预算（相关时间已顺延）；必要时重新委派未完成的子代理任务。`,
-			time: new Date().toISOString(), files: [] })
+			time: new Date().toISOString(), files: []
+		})
 		await startCodeRun(username, { type: 'trigger', session, machine: workTarget.machine, workdir: workTarget.path, ai_source, profile }, null)
 	})().catch(error => console.error('shells/code: 恢复生成失败', error))
 }
@@ -838,13 +840,15 @@ export function setEndpoints(router) {
 		const finished = new Promise(resolve => { finishRun = resolve })
 		/** 持久化的恢复参数。 */
 		const jobData = { sessionId: session.id, workTarget: { machine: String(machine ?? '0'), path: String(workdir || '') }, session: { ...session, entries: [...session.entries || []] }, ai_source, profile, startedAt: Date.now() }
-		const run = { runId, controller: thisRequestController, socket: ws, finished, completed: false,
+		const run = {
+			runId, controller: thisRequestController, socket: ws, finished, completed: false,
 			/**
 			 * 记录导致中断的原因和时间。
 			 * @param {string} reason - 信号名或普通重启。
 			 * @returns {void} 作业已持久化。
 			 */
-			markInterrupted: reason => { if (!run.completed && jobData.workTarget.path) StartJob(username, 'shells/code', session.id, { ...jobData, interruptedAt: Date.now(), reason }) } }
+			markInterrupted: reason => { if (!run.completed && jobData.workTarget.path) StartJob(username, 'shells/code', session.id, { ...jobData, interruptedAt: Date.now(), reason }) }
+		}
 		activeCodeRuns.set(runKey, run)
 		if (ws) ws.codeRun = run
 		const workPath = String(workdir || '')
@@ -864,8 +868,10 @@ export function setEndpoints(router) {
 		const baseIds = new Set(baseEntries.map(entry => String(entry?.id)))
 		const requestSession = { ...session, entries: [...baseEntries] }
 		const stopWake = onSystemWake(duration => {
-			requestSession.entries.push({ id: randomUUID(), role: 'system', uid: 'system', name: 'system',
-				content: `fount 检测到系统休眠约 ${Math.round(duration / 1000)} 秒；相关任务的时间限制已顺延，请继续处理原任务。`, time: new Date().toISOString(), files: [] })
+			requestSession.entries.push({
+				id: randomUUID(), role: 'system', uid: 'system', name: 'system',
+				content: `fount 检测到系统休眠约 ${Math.round(duration / 1000)} 秒；相关任务的时间限制已顺延，请继续处理原任务。`, time: new Date().toISOString(), files: []
+			})
 		})
 		/** 本轮新增条目（持久化用；按 id 去重、保持顺序）。 */
 		const allNewEntries = []

@@ -77,9 +77,11 @@ test('background completion notices appear before the ongoing reply', async ({ p
 		store.generatingSession = session
 		startGeneratingBubble()
 		for (const id of ['notice-a', 'notice-b', 'notice-c'])
-			handleAsyncEntryEvent({ chatName: `code-${session.id}`, entry: {
-				id, uid: 'system', role: 'system', name: 'async-task', content: `后台任务 ${id} 已完成`, time: new Date().toISOString(),
-			} })
+			handleAsyncEntryEvent({
+				chatName: `code-${session.id}`, entry: {
+					id, uid: 'system', role: 'system', name: 'async-task', content: `后台任务 ${id} 已完成`, time: new Date().toISOString(),
+				}
+			})
 		const flow = document.getElementById('messages')
 		return {
 			dom: [...flow.querySelectorAll('.code-message')].map(node => node.dataset.entryId || 'generating'),

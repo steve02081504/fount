@@ -355,16 +355,14 @@ export function createSelectionController({ getOrderedIds, onChange, plainClick 
 		const out = []
 		for (const [a, b] of resolved) {
 			let run = null
-			for (let i = a; i <= b; i++) 
-				if (visible.has(ids[i])) 
+			for (let i = a; i <= b; i++)
+				if (visible.has(ids[i]))
 					if (run) run[1] = i
 					else run = [i, i]
-				
 				else if (run) {
 					out.push(run)
 					run = null
 				}
-			
 			if (run) out.push(run)
 		}
 		const before = resolved

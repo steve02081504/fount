@@ -32,4 +32,3 @@ Wire-format mocks (point the generator's `base_url` at them, or use `mockJsonFet
 | OpenAI Responses (`codex`) | `proxy/test/mockFetch.mjs` + shared tracker | `serviceGenerators/AI/codex/test/integration/prompt_prefix_stability.test.mjs` |
 
 Each driving test sets `system_prompt_at_depth: 0` (+ `disable_default_prompt` / `roleReminding: false`) so the prompt is append-only, then asserts `allGrewOnly` and `minCommonWithFirstTokens === firstPromptTokens` across all rounds — "the same conversation always sends the same prefix". The proxy full-pipeline `prompt_cache_rate.test.mjs` (depth 10) remains the realistic moving-system case.
-

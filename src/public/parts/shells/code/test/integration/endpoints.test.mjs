@@ -774,8 +774,10 @@ Deno.test({
 	const fixtureDir = path.join(path.dirname(fileURLToPath(import.meta.url)), 'fixtures', 'wsRoundsChar')
 	const node = await launchCodeNode({ fixtureCopies: [{ from: fixtureDir, to: 'chars/wsRoundsChar' }] })
 	const root = await fs.mkdtemp(path.join(os.tmpdir(), 'fount_code_protected_session_'))
-	const session = { id: 'protected01', title: '', charname: 'wsRoundsChar', profile: '', ai_source: '',
-		created: new Date().toISOString(), updated: new Date().toISOString(), memory: {}, entries: [] }
+	const session = {
+		id: 'protected01', title: '', charname: 'wsRoundsChar', profile: '', ai_source: '',
+		created: new Date().toISOString(), updated: new Date().toISOString(), memory: {}, entries: []
+	}
 	const query = `machine=0&workdir=${encodeURIComponent(root)}`
 	let ws
 	try {
@@ -823,8 +825,10 @@ Deno.test({
 	const root = await fs.mkdtemp(path.join(os.tmpdir(), 'fount_code_resume_workspace_'))
 	let node = await launchCodeNode({ fixtureCopies: [{ from: fixtureDir, to: 'chars/wsRoundsChar' }], keepData: true })
 	const dataPath = node.dataPath
-	const session = { id: 'resume01', title: '', charname: 'wsRoundsChar', profile: '', ai_source: '',
-		created: new Date().toISOString(), updated: new Date().toISOString(), memory: {}, entries: [] }
+	const session = {
+		id: 'resume01', title: '', charname: 'wsRoundsChar', profile: '', ai_source: '',
+		created: new Date().toISOString(), updated: new Date().toISOString(), memory: {}, entries: []
+	}
 	let ws
 	try {
 		await fs.writeFile(path.join(root, 'note.txt'), 'resumable content', 'utf8')

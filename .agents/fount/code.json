@@ -1,13 +1,26 @@
 {
 	"hooks": {
 		"agentStart": [
-			{ "command": "fount test --watch", "detached": true, "windowsHide": true, "singleton": true }
+			{
+				"command": "fount test --watch",
+				"detached": true,
+				"windowsHide": true,
+				"singleton": true
+			}
 		],
 		"agentFinish": [
-			{ "command": "deno run -A --quiet .agents/fount/hooks/agent-finish.mjs", "shell": "pwsh", "timeoutMs": 600000 }
+			{
+				"command": "deno run -A --quiet .agents/fount/hooks/agent-finish.mjs",
+				"shell": "pwsh",
+				"timeoutMs": 600000
+			}
 		],
 		"agentsIdle": [
-			{ "command": "fount reboot", "shell": "pwsh", "detached": true }
+			{
+				"command": "fount reboot",
+				"shell": "pwsh",
+				"detached": true
+			}
 		]
 	}
 }

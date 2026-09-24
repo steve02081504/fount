@@ -83,15 +83,17 @@ Deno.test('summarizeSubAgentRuns merges history, live state and batches', () => 
 
 Deno.test('sub-agent message endpoint only appends to the owned active run', async () => {
 	const entries = []
-	createRun({ runId: 'send-run', username: 'alice', state: 'running', childArgs: {
-		UserUid: 'user',
-		/**
-		 * 保存消息的替身。
-		 * @param {object} entry 消息
-		 * @returns {Promise<object>} 已保存的消息
-		 */
-		AddChatLogEntry: async entry => { entries.push(entry); return entry },
-	} })
+	createRun({
+		runId: 'send-run', username: 'alice', state: 'running', childArgs: {
+			UserUid: 'user',
+			/**
+			 * 保存消息的替身。
+			 * @param {object} entry 消息
+			 * @returns {Promise<object>} 已保存的消息
+			 */
+			AddChatLogEntry: async entry => { entries.push(entry); return entry },
+		}
+	})
 	try {
 		await sendSubAgentMessage('alice', 'send-run', 'hello')
 		assertEquals(entries[0].role, 'user')
