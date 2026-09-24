@@ -152,6 +152,24 @@
 			]
 		},
 		{
+			"name": "error_format",
+			"expected": 200,
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/selftest/error_format.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/error_format.mjs",
+				"src/scripts/test/selftest/error_format.test.mjs"
+			]
+		},
+		{
 			"name": "serial_files",
 			"expected": 700,
 			"run": [

@@ -10,6 +10,7 @@
 /** @typedef {import('../../../../../decl/chatLog.ts').chatReplyRequest_t} chatReplyRequest_t */
 /** @typedef {import('../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
+import { formatErrorMessage } from '../../../../../scripts/error_format.mjs'
 import { createPromptRequestRecorder } from '../../chat/src/prompt_struct/snapshot.mjs'
 import { buildDialogue } from '../public/shared/dialogueReplay.mjs'
 
@@ -101,7 +102,7 @@ export function finishPromptRequest(handle, outcome = {}) {
 	if (outcome.error)
 		handle.entry.error = {
 			name: outcome.error?.name,
-			message: outcome.error?.message ?? String(outcome.error),
+			message: formatErrorMessage(outcome.error),
 		}
 }
 

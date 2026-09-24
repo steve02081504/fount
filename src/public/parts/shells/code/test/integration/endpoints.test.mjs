@@ -609,6 +609,41 @@ Deno.test({
 })
 
 Deno.test({
+	name: 'session WS formats a non-Error throw into a readable error frame',
+	timeout: 120_000,
+}, async () => {
+	const fixtureDir = path.join(path.dirname(fileURLToPath(import.meta.url)), 'fixtures', 'wsThrowChar')
+	const node = await launchCodeNode({
+		fixtureCopies: [{ from: fixtureDir, to: 'chars/wsThrowChar' }],
+	})
+	try {
+		const session = {
+			id: 'throw01',
+			title: '',
+			charname: 'wsThrowChar',
+			profile: '',
+			ai_source: '',
+			created: new Date().toISOString(),
+			updated: new Date().toISOString(),
+			memory: {},
+			entries: [{ id: 'throw-u1', uid: 'user', role: 'user', name: node.username, content: 'hi', time: new Date().toISOString(), files: [] }],
+		}
+		const { done } = await sessionStream(node, {
+			type: 'send', session, machine: '0', workdir: '',
+			ai_source: '', profile: '', content: 'hi', files: [], clientEntryId: 'throw-u1',
+		})
+		assertEquals(done.type, 'error', `expected error, got ${JSON.stringify(done).slice(0, 300)}`)
+		// 抛普通对象时不能退化成 [object Object]，应带出原始字段
+		assert(done.error !== '[object Object]', '错误帧不得只显示 [object Object]')
+		assert(done.error.includes('Endpoint is unavailable.'), `错误帧应含原始 message：${done.error}`)
+		assert(done.error.includes('503'), `错误帧应含状态码：${done.error}`)
+	}
+	finally {
+		await stopNode(node)
+	}
+})
+
+Deno.test({
 	name: 'session WS emits entries-append for completed rounds before done',
 	timeout: 120_000,
 }, async () => {

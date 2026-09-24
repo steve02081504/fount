@@ -11,10 +11,9 @@
 /** @typedef {import('../../../../../../../decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t */
 /** @typedef {import('../../../../../../../decl/basedefs.ts').locale_t} locale_t */
 
-import { inspect } from 'node:util'
-
 import { isEntityHash128, parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 
+import { formatGenerationError } from '../../../../../../../scripts/error_format.mjs'
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { getPartDetails } from '../../../../../../../server/parts_loader.mjs'
 import { finishAsyncGeneration } from '../../../../../plugins/async-task/registry.mjs'
@@ -587,16 +586,6 @@ export async function triggerCharReply(groupId, channelId, charname, requestOver
 		charReplyInFlight.delete(flightKey)
 		throw error
 	}
-}
-
-/**
- * @param {unknown} value 错误或其它值
- * @returns {string} 诊断字符串
- */
-function formatGenerationError(value) {
-	if (value instanceof Error) return value.stack || value.message || inspect(value)
-	if (Array.isArray(value)) return value.map(formatGenerationError).join('\n---\n')
-	return inspect(value)
 }
 
 /**

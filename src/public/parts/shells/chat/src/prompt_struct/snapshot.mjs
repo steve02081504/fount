@@ -9,6 +9,8 @@
 /** @typedef {import('../../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 /** @typedef {import('../../../../../../decl/AIsource.ts').AIsource_t} AIsource_t */
 
+import { formatErrorMessage } from '../../../../../../scripts/error_format.mjs'
+
 import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from './index.mjs'
 import { serializeSnapshotValue } from './serializeSnapshot.mjs'
 
@@ -127,7 +129,7 @@ export function createPromptRequestRecorder() {
 			if (projected.snapshot != null) entry.snapshot = projected.snapshot
 		}
 		catch (error) {
-			entry.error = { name: error?.name, message: error?.message ?? String(error) }
+			entry.error = { name: error?.name, message: formatErrorMessage(error) }
 		}
 		entry.index = requests.length + 1
 		requests.push(entry)

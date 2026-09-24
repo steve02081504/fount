@@ -11,6 +11,7 @@ import { buildPromptStruct } from '../../../../../src/public/parts/shells/chat/s
 import { defineReplyHandler } from '../../../../../src/public/parts/shells/chat/src/reply/defineReplyHandler.mjs'
 import { runReplyHandlers } from '../../../../../src/public/parts/shells/chat/src/reply/handlerPipeline.mjs'
 import { defineReplyPreviews } from '../../../../../src/public/parts/shells/chat/src/streaming/index.mjs'
+import { formatErrorMessage, formatGenerationError } from '../../../../../src/scripts/error_format.mjs'
 import { getPartInfo } from '../../../../../src/scripts/locale.mjs'
 import { __dirname } from '../../../../../src/server/base.mjs'
 import { loadPart, loadAnyPreferredDefaultPart } from '../../../../../src/server/parts_loader.mjs'
@@ -606,7 +607,7 @@ async function charGeneratorHandler(reply, args, call) {
 		AddLongTimeLog({
 			name: 'char-generator',
 			role: 'tool',
-			content: `生成失败！\n原因：${e.stack}`,
+			content: `生成失败！\n原因：${formatGenerationError(e)}`,
 		})
 		return { regen: true }
 	}
@@ -657,7 +658,7 @@ async function personaGeneratorHandler(reply, args, call) {
 		AddLongTimeLog({
 			name: 'persona-generator',
 			role: 'tool',
-			content: `生成失败！\n原因：${e.stack}`,
+			content: `生成失败！\n原因：${formatGenerationError(e)}`,
 		})
 		return { regen: true }
 	}
@@ -920,7 +921,7 @@ ${sourceLine}`,
 					}
 				}
 				catch (error) {
-					await finishGeneration(args, { error: { name: error?.name, message: error?.message } })
+					await finishGeneration(args, { error: { name: error?.name, message: formatErrorMessage(error) } })
 					throw error
 				}
 				await finishGeneration(args, { response: result.content })

@@ -4,6 +4,7 @@
 import { Buffer } from 'node:buffer'
 import { randomUUID } from 'node:crypto'
 
+import { formatGenerationError } from '../../../../../scripts/error_format.mjs'
 import { httpError } from '../../../../../scripts/http_error.mjs'
 import { memoizePromise } from '../../../../../scripts/memo.mjs'
 import { ms } from '../../../../../scripts/ms.mjs'
@@ -613,7 +614,7 @@ export function setEndpoints(router) {
 				send({ type: 'done', id, ...result })
 			}
 			catch (error) {
-				send({ type: 'error', id, error: String(error?.stack || error) })
+				send({ type: 'error', id, error: formatGenerationError(error) })
 			}
 			finally {
 				running = false
@@ -1084,7 +1085,7 @@ export function setEndpoints(router) {
 			else send({ type: 'error', entries, error: 'session persistence failed; generation remains resumable.' })
 		}
 		catch (error) {
-			runError = String(error?.stack || error)
+			runError = formatGenerationError(error)
 			// 中断/报错：补发尚未增量推送的 tool 日志（截断到水位，避免重复）
 			if (!thisRequestController.signal.aborted) flushIncrementalEntries()
 			const pending = (requestSession.generationResult?.logContextBefore || []).slice(emittedLogCount)
@@ -1101,7 +1102,7 @@ export function setEndpoints(router) {
 			if (thisRequestController.signal.aborted || stoppedForShutdown)
 				send({ type: 'aborted', entries })
 			else
-				send({ type: 'error', entries, error: String(error?.stack || error) })
+				send({ type: 'error', entries, error: formatGenerationError(error) })
 		}
 		finally {
 			stopWake()
