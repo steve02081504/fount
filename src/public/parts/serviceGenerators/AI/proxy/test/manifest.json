@@ -6,7 +6,8 @@
 			"expected": "1s",
 			"triggers": [
 				"src/public/parts/serviceGenerators/AI/proxy/**",
-				"src/scripts/test/fixtures/openai_prompt_cache_mock.mjs"
+				"src/scripts/test/fixtures/openai_prompt_cache_mock.mjs",
+				"src/scripts/test/fixtures/prompt_cache_tracker.mjs"
 			],
 			"run": [
 				"deno",
@@ -30,6 +31,8 @@
 				"src/public/parts/shells/chat/src/prompt_struct/**",
 				"src/public/parts/shells/chat/test/harness.mjs",
 				"src/scripts/test/fixtures/openai_prompt_cache_mock.mjs",
+				"src/scripts/test/fixtures/prompt_cache_tracker.mjs",
+				"src/scripts/test/fixtures/ai_conversation.mjs",
 				"src/scripts/test/fixtures/serviceSources/AI/proxy_openai_mock/**",
 				"src/scripts/test/{deno/serial.mjs,node/boot.mjs}",
 				"src/server/parts_loader.mjs"

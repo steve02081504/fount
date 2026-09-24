@@ -2,14 +2,16 @@
  * OpenAI Chat Completions 格式 mock：按前缀复用模拟 prompt caching。
  * 规则对齐 OpenAI 自动缓存：≥1024 token 起计，按 128 token 递增；
  * cached_tokens 取与「上一请求」的最长公共前缀（向下取整到 128）。
+ *
+ * 前缀统计与缓存数学见 [prompt_cache_tracker.mjs](./prompt_cache_tracker.mjs)。
  */
 import { Buffer } from 'node:buffer'
 import { createServer } from 'node:http'
 
+import { countTokens, createPrefixCacheTracker } from './prompt_cache_tracker.mjs'
+
 /** 可缓存的最短前缀（OpenAI 文档下限）。 */
-export const MIN_CACHE_TOKENS = 1024
-/** 缓存命中粒度。 */
-export const CACHE_TOKEN_INCREMENT = 128
+export { CACHE_TOKEN_INCREMENT, MIN_CACHE_TOKENS, cachedTokensFromPrefix, countTokens, longestCommonPrefixLength } from './prompt_cache_tracker.mjs'
 
 /**
  * 将 messages 序列化为稳定字符串（用于前缀比较）。
@@ -26,38 +28,6 @@ export function serializeMessages(messages) {
 }
 
 /**
- * 以字符近似 token（缓存率只依赖相对比例，绝对尺度无关）。
- * @param {string} text 文本
- * @returns {number} token 数
- */
-export function countTokens(text) {
-	return String(text || '').length
-}
-
-/**
- * 两段 token 序列的最长公共前缀长度。
- * @param {string} previous 上一请求序列
- * @param {string} current 当前请求序列
- * @returns {number} 公共前缀长度
- */
-export function longestCommonPrefixLength(previous, current) {
-	const limit = Math.min(previous.length, current.length)
-	let index = 0
-	while (index < limit && previous[index] === current[index]) index++
-	return index
-}
-
-/**
- * 按 OpenAI 规则把公共前缀换算成 cached_tokens。
- * @param {number} commonPrefixTokens 公共前缀 token 数
- * @returns {number} cached_tokens
- */
-export function cachedTokensFromPrefix(commonPrefixTokens) {
-	if (commonPrefixTokens < MIN_CACHE_TOKENS) return 0
-	return Math.floor(commonPrefixTokens / CACHE_TOKEN_INCREMENT) * CACHE_TOKEN_INCREMENT
-}
-
-/**
  * 创建带 prompt 缓存统计的 OpenAI mock 服务。
  * @param {object} [options] 选项
  * @param {(body: object) => string} [options.reply] 根据请求体生成回复文本
@@ -66,18 +36,12 @@ export function cachedTokensFromPrefix(commonPrefixTokens) {
  *   completionsUrl: string,
  *   port: number,
  *   close: () => Promise<void>,
- *   stats: () => { requests: number, promptTokens: number, cachedTokens: number, cacheRate: number, perRequest: object[] },
+ *   stats: () => object,
  *   reset: () => void,
  * }>} mock 句柄
  */
 export async function startOpenAIPromptCacheMock(options = {}) {
-	/** @type {string | null} */
-	let lastSerialized = null
-	/** @type {object[]} */
-	const perRequest = []
-	let promptTokensTotal = 0
-	let cachedTokensTotal = 0
-	let prefixMatchTokensTotal = 0
+	const tracker = createPrefixCacheTracker()
 
 	/**
 	 * @param {object} body 请求体
@@ -88,35 +52,10 @@ export async function startOpenAIPromptCacheMock(options = {}) {
 		return `mock-ok:messages=${(body.messages || []).length}`
 	})
 
-	/**
-	 * 重置缓存状态与累计。
-	 * @returns {void}
-	 */
-	const reset = () => {
-		lastSerialized = null
-		perRequest.length = 0
-		promptTokensTotal = 0
-		cachedTokensTotal = 0
-		prefixMatchTokensTotal = 0
-	}
-
-	/**
-	 * @returns {{ requests: number, promptTokens: number, cachedTokens: number, prefixMatchTokens: number, cacheRate: number, prefixMatchRate: number, perRequest: object[] }} 统计
-	 */
-	const stats = () => ({
-		requests: perRequest.length,
-		promptTokens: promptTokensTotal,
-		cachedTokens: cachedTokensTotal,
-		prefixMatchTokens: prefixMatchTokensTotal,
-		cacheRate: promptTokensTotal > 0 ? cachedTokensTotal / promptTokensTotal : 0,
-		prefixMatchRate: promptTokensTotal > 0 ? prefixMatchTokensTotal / promptTokensTotal : 0,
-		perRequest: [...perRequest],
-	})
-
 	const server = createServer(async (req, res) => {
 		if (req.method === 'GET' && (req.url === '/' || req.url === '/health')) {
 			res.writeHead(200, { 'Content-Type': 'application/json' })
-			res.end(JSON.stringify({ ok: true, ...stats() }))
+			res.end(JSON.stringify({ ok: true, ...tracker.stats() }))
 			return
 		}
 
@@ -130,44 +69,19 @@ export async function startOpenAIPromptCacheMock(options = {}) {
 		for await (const chunk of req) chunks.push(chunk)
 		const raw = Buffer.concat(chunks).toString('utf8')
 		const body = raw ? JSON.parse(raw) : {}
-		const serialized = serializeMessages(body.messages || [])
-		const promptTokens = countTokens(serialized)
-		const previousSerialized = lastSerialized
-		const common = previousSerialized == null ? 0 : longestCommonPrefixLength(previousSerialized, serialized)
-		const cachedTokens = previousSerialized == null ? 0 : cachedTokensFromPrefix(common)
-		lastSerialized = serialized
-		promptTokensTotal += promptTokens
-		cachedTokensTotal += cachedTokens
-		prefixMatchTokensTotal += common
+		const row = tracker.record(serializeMessages(body.messages || []))
 
 		const content = reply(body)
 		const completionTokens = countTokens(content)
 		const usage = {
-			prompt_tokens: promptTokens,
+			prompt_tokens: row.promptTokens,
 			completion_tokens: completionTokens,
-			total_tokens: promptTokens + completionTokens,
-			prompt_tokens_details: { cached_tokens: cachedTokens },
+			total_tokens: row.promptTokens + completionTokens,
+			prompt_tokens_details: { cached_tokens: row.cachedTokens },
 		}
-		const grewOnly = previousSerialized != null && common === previousSerialized.length && serialized.length >= previousSerialized.length
-		perRequest.push({
-			promptTokens,
-			cachedTokens,
-			prefixMatchTokens: common,
-			commonPrefixTokens: common,
-			cacheRate: promptTokens > 0 ? cachedTokens / promptTokens : 0,
-			prefixMatchRate: promptTokens > 0 ? common / promptTokens : 0,
-			grewOnly,
-			divergeAt: previousSerialized == null || grewOnly
-				? null
-				: {
-					index: common,
-					prev: previousSerialized.slice(Math.max(0, common - 40), common + 80),
-					curr: serialized.slice(Math.max(0, common - 40), common + 80),
-				},
-		})
 
 		const payload = {
-			id: `chatcmpl-mock-${perRequest.length}`,
+			id: `chatcmpl-mock-${tracker.stats().requests}`,
 			object: 'chat.completion',
 			created: Math.floor(Date.now() / 1000),
 			model: body.model || 'mock-cache',
@@ -221,13 +135,14 @@ export async function startOpenAIPromptCacheMock(options = {}) {
 		url,
 		completionsUrl: `${url}/v1/chat/completions`,
 		port,
-		stats,
-		reset,
+		stats: tracker.stats,
+		reset: tracker.reset,
 		/**
 		 * 关闭 mock HTTP 服务。
 		 * @returns {Promise<void>}
 		 */
 		close: () => new Promise((resolve, reject) => {
+			server.closeAllConnections?.()
 			server.close(error => error ? reject(error) : resolve())
 		}),
 	}

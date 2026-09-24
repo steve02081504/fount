@@ -14,7 +14,7 @@ alwaysApply: false
 | Suite packing / optimistic overlap / module-check mutex | [docs/resource-scheduling.md](docs/resource-scheduling.md) |
 | Host keep-awake / sleep interrupts | [docs/host-keep-awake.md](docs/host-keep-awake.md) |
 | Playwright fixtures / CDN / diagnostics | [docs/playwright.md](docs/playwright.md) |
-| Fixture mocks (ImportHandlers / OpenAI cache) | [docs/fixtures-mocks.md](docs/fixtures-mocks.md) |
+| Fixture mocks (ImportHandlers / AI prompt cache) | [docs/fixtures-mocks.md](docs/fixtures-mocks.md) |
 | Upstream blockers (do not silence) | [docs/upstream-blockers.md](docs/upstream-blockers.md) |
 | OOM / heap | [docs/heap-snapshots.md](docs/heap-snapshots.md) |
 | Trigger filter | [docs/trigger-filter.md](docs/trigger-filter.md) |
@@ -79,7 +79,7 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 - **Live WS probes**: `createLiveShellHttp({ shell? })` from `wsHarness.mjs` — end with `finishLiveWs` / `failLiveWsPrecondition`; frames via `waitForWsFrame`.
 - **Polling**: `pollUntil` (live/fed, seconds, soft) / `waitUntil` (integration & selftest, ms, throws) — `core/wait.mjs`.
 - **Chat / Social fixtures**: `createCharBoot` / `seedCharFixture` / `seedStubCharPart` / `waitUntil` from `shells/chat/test/harness.mjs`; Social agents: `seedAgentChar` / `seedStubAgent` in `shells/social/test/harness.mjs`. Char names via `resolveCharPartName` at write boundaries; Hub compares with exact `===`.
-- **ImportHandlers / easynew / OpenAI prompt-cache mock**: [fixtures-mocks.md](docs/fixtures-mocks.md).
+- **ImportHandlers / easynew / AI prompt-cache mocks**: [fixtures-mocks.md](docs/fixtures-mocks.md).
 - **Platform bot / OnMessage contract**: [domain-harness.md](docs/domain-harness.md#platform-bot--onmessage-contract).
 - Every `deno run`/`test`/`install` carries `--allow-scripts --allow-all` (in that order). Sole exception: `deno cache` takes `--allow-scripts` alone.
 - **Manual single-file runs**: `deno test --allow-scripts --allow-all --no-check -c ./deno.json <path/to/file.test.mjs>` from the repo root. A bare `deno test` (no `-c`) fails type-check on `src/public/decl/*.ts` (needs the import map). **Do not trust `RUST_BACKTRACE`**: when it is set (`1`), deno appends a backtrace to every reported error whose tail can bottom out in `aws_lc_*_jent_entropy_switch_notime_impl` — that is diagnostic noise, not a native crash. Unset it (or `Remove-Item Env:RUST_BACKTRACE`) before diagnosing an "aws_lc crash".

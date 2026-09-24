@@ -3,6 +3,7 @@
 	"suites": [
 		{
 			"name": "pure",
+			"expected": "1s",
 			"triggers": [
 				"src/public/parts/serviceGenerators/AI/codex/src/responsesClient.mjs",
 				"src/public/parts/serviceGenerators/AI/codex/test/pure/**"
@@ -24,7 +25,9 @@
 				"src/public/parts/serviceGenerators/AI/codex/**",
 				"src/public/parts/serviceGenerators/AI/proxy/src/**",
 				"src/public/parts/serviceGenerators/AI/proxy/test/mockFetch.mjs",
-				"src/public/parts/shells/oauth_handler/src/providers.mjs"
+				"src/public/parts/shells/oauth_handler/src/providers.mjs",
+				"src/scripts/test/fixtures/ai_conversation.mjs",
+				"src/scripts/test/fixtures/prompt_cache_tracker.mjs"
 			],
 			"run": [
 				"deno",

@@ -1,0 +1,45 @@
+{
+	"id": "serviceGenerators/AI/claude-api",
+	"suites": [
+		{
+			"name": "pure",
+			"expected": "1s",
+			"triggers": [
+				"src/public/parts/serviceGenerators/AI/claude-api/test/pure/**",
+				"src/scripts/test/fixtures/claude_prompt_cache_mock.mjs",
+				"src/scripts/test/fixtures/prompt_cache_tracker.mjs"
+			],
+			"run": [
+				"deno",
+				"test",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/serviceGenerators/AI/claude-api/test/pure/"
+			]
+		},
+		{
+			"name": "integration",
+			"expected": "5s",
+			"triggers": [
+				"src/public/parts/serviceGenerators/AI/claude-api/**",
+				"src/public/parts/serviceGenerators/AI/proxy/src/**",
+				"src/public/parts/shells/chat/src/prompt_struct/**",
+				"src/scripts/test/fixtures/claude_prompt_cache_mock.mjs",
+				"src/scripts/test/fixtures/prompt_cache_tracker.mjs",
+				"src/scripts/test/fixtures/ai_conversation.mjs"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/deno/serial.mjs",
+				"./src/public/parts/serviceGenerators/AI/claude-api/test/integration/"
+			]
+		}
+	]
+}
