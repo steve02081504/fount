@@ -27,6 +27,7 @@
 			],
 			"triggers": [
 				"src/public/parts/serviceGenerators/AI/proxy/**",
+				"src/public/parts/serviceGenerators/AI/codex/src/responsesClient.mjs",
 				"default/templates/user/chars/ZL-31/**",
 				"src/public/parts/shells/chat/src/prompt_struct/**",
 				"src/public/parts/shells/chat/test/harness.mjs",

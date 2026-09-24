@@ -1,4 +1,70 @@
+import { fetchResponses, messagesToResponsesBody } from '../../codex/src/responsesClient.mjs'
+
 import { completionsUrlCandidates } from './completionsUrl.mjs'
+import { responsesUrlCandidates, urlImpliesResponses } from './responsesUrl.mjs'
+
+/** Chat Completions 专有的请求参数，Responses API 不接受，转发前需剔除。 */
+const CHAT_ONLY_ARGUMENTS = new Set([
+	'n', 'logprobs', 'top_logprobs', 'stop', 'frequency_penalty', 'presence_penalty',
+	'seed', 'response_format', 'stream_options', 'logit_bias', 'user',
+])
+
+/**
+ * 把 proxy 的 `model_arguments` 过滤成 Responses API 可接受的参数。
+ * @param {object} [model_arguments] - 原始参数。
+ * @returns {object} 过滤后的参数。
+ */
+export function toResponsesArguments(model_arguments) {
+	const result = {}
+	for (const [key, value] of Object.entries(model_arguments ?? {}))
+		if (key === 'max_tokens') result.max_output_tokens ??= value
+		else if (!CHAT_ONLY_ARGUMENTS.has(key)) result[key] = value
+
+	return result
+}
+
+/**
+ * 构建两种 OpenAI API 风格共用的请求头。
+ * @param {object} requestConfig - 服务配置。
+ * @returns {Record<string, string>} 请求头。
+ */
+function requestHeaders(requestConfig) {
+	return {
+		'Content-Type': 'application/json',
+		...requestConfig.apikey ? { Authorization: 'Bearer ' + requestConfig.apikey } : {},
+		'HTTP-Referer': 'https://steve02081504.github.io/fount/',
+		'X-Title': 'fount',
+		...requestConfig.url.includes('openrouter.ai') ? {
+			'X-OpenRouter-Title': 'fount',
+			'X-OpenRouter-Categories': 'personal-agent,productivity,roleplay',
+		} : {},
+		...requestConfig.custom_headers,
+	}
+}
+
+/**
+ * 按 `config.api_mode` 与配置 URL 解析请求候选（URL + API 风格），保持优先级顺序。
+ *
+ * - `chat`：仅 chat completions
+ * - `responses`：仅 Responses
+ * - `auto`（默认）：URL 指向 `/responses` 时先 Responses 再 chat，否则先 chat 再 Responses
+ *
+ * @param {object} config - 服务配置。
+ * @returns {Array<{url: string, apiStyle: 'chat' | 'responses'}>} 候选请求。
+ */
+export function requestCandidates(config) {
+	const chat = completionsUrlCandidates(config.url).map(url => ({ url, apiStyle: 'chat' }))
+	const responses = responsesUrlCandidates(config.url).map(url => ({ url, apiStyle: 'responses' }))
+
+	switch (config.api_mode) {
+		case 'chat': return chat
+		case 'responses': return responses
+		default:
+			return urlImpliesResponses(config.url)
+				? [...responses, ...chat]
+				: [...chat, ...responses]
+	}
+}
 
 /**
  * 创建带重试的聊天补全请求函数。
@@ -54,17 +120,7 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 		let imageIndex = 0
 		const response = await fetch(requestConfig.url, {
 			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				...requestConfig.apikey ? { Authorization: 'Bearer ' + requestConfig.apikey } : {},
-				'HTTP-Referer': 'https://steve02081504.github.io/fount/',
-				'X-Title': 'fount',
-				...requestConfig.url.includes('openrouter.ai') ? {
-					'X-OpenRouter-Title': 'fount',
-					'X-OpenRouter-Categories': 'personal-agent,productivity,roleplay',
-				} : {},
-				...requestConfig.custom_headers
-			},
+			headers: requestHeaders(requestConfig),
 			body: JSON.stringify({
 				model: requestConfig.model,
 				messages,
@@ -244,24 +300,48 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 	}
 
 	/**
-	 * 调用基础模型（带重试）。
+	 * 按单次候选（URL + API 风格）请求并解析。
+	 * @param {Array<object>} messages - 消息数组。
+	 * @param {{url: string, apiStyle: 'chat' | 'responses'}} candidate - 候选请求。
+	 * @param {object} options - 选项。
+	 * @returns {Promise<object>} 模型返回的内容。
+	 */
+	async function fetchByCandidate(messages, candidate, options) {
+		if (candidate.apiStyle !== 'responses')
+			return fetchChatCompletion(messages, { ...config, url: candidate.url }, options)
+
+		const requestConfig = { ...config, url: candidate.url }
+		return fetchResponses({
+			url: candidate.url,
+			headers: requestHeaders(requestConfig),
+			body: messagesToResponsesBody(messages, {
+				model: config.model,
+				stream: config.use_stream,
+				model_arguments: toResponsesArguments(config.model_arguments),
+			}),
+			signal: options.signal,
+			previewUpdater: options.previewUpdater,
+			result: options.result,
+		})
+	}
+
+	/**
+	 * 调用基础模型（按候选顺序回退）。
 	 * @param {Array<object>} messages - 消息数组。
 	 * @param {{ signal?: AbortSignal, previewUpdater?: (result: {content: string, content_for_show?: string, files: any[]}) => void, result?: {content: string, content_for_show?: string, files: any[]} }} options - 选项。
 	 * @returns {Promise<{content: string, content_for_show?: string, files: any[]}>} 模型返回的内容。
 	 */
 	return async function fetchChatCompletionWithRetry(messages, options = {}) {
 		const errors = []
-		const urls = completionsUrlCandidates(config.url)
 
-		for (const url of urls) {
-			const currentConfig = { ...config, url }
-
+		for (const candidate of requestCandidates(config))
 			try {
-				const result = await fetchChatCompletion(messages, currentConfig, options)
+				const result = await fetchByCandidate(messages, candidate, options)
 
-				if (url !== config.url) {
-					console.warn(`the api url of ${config.model} need to change from ${config.url} to ${url}`)
-					Object.assign(config, currentConfig)
+				const changedUrl = candidate.url !== config.url
+				if (changedUrl) {
+					console.warn(`the api endpoint of ${config.model} resolved to ${candidate.apiStyle} ${candidate.url}`)
+					config.url = candidate.url
 					SaveConfig()
 				}
 
@@ -270,7 +350,7 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 				if (error.name === 'AbortError') throw error
 				errors.push(error)
 			}
-		}
+
 		throw errors.length == 1 ? errors[0] : errors
 	}
 }

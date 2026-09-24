@@ -13,6 +13,13 @@ Deno.test('full chat/completions URL is kept as-is', () => {
 	)
 })
 
+Deno.test('Responses URL maps back to the matching chat/completions endpoint', () => {
+	assertEquals(
+		completionsUrlCandidates('https://opencode.ai/zen/v1/responses'),
+		['https://opencode.ai/zen/v1/chat/completions'],
+	)
+})
+
 Deno.test('/v1 base only appends /chat/completions', () => {
 	assertEquals(
 		completionsUrlCandidates('https://api.moonshot.cn/v1'),

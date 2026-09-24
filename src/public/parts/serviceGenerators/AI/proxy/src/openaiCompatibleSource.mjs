@@ -1,4 +1,6 @@
-import { createFetchChatCompletionWithRetry } from './chatCompletion.mjs'
+import { messagesToResponsesBody } from '../../codex/src/responsesClient.mjs'
+
+import { createFetchChatCompletionWithRetry, requestCandidates, toResponsesArguments } from './chatCompletion.mjs'
 import { identityTokenizer } from './identityTokenizer.mjs'
 import { buildContentForShowFromLogprobs } from './logprobsRenderer.mjs'
 import { buildMessagesFromPromptStruct } from './messageBuilder.mjs'
@@ -29,6 +31,7 @@ export async function createOpenAICompatibleSource({
 }) {
 	config.convert_config = { ...configTemplate.convert_config, ...config.convert_config }
 	config.use_stream ??= true
+	config.api_mode ??= 'auto'
 	config.context_size ??= configTemplate.context_size
 	const fetchChatCompletionWithRetry = createFetchChatCompletionWithRetry(config, { SaveConfig })
 
@@ -113,8 +116,16 @@ export async function createOpenAICompatibleSource({
 		/**
 		 * 按本源配置把 prompt_struct 构建成 OpenAI 兼容消息结构（附件二进制保留为 Buffer），供快照与缓存对比。
 		 * @param {import('../../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct - 结构化提示。
-		 * @returns {Promise<object[]>} 消息结构。
+		 * @returns {Promise<object[]|object>} 当前 API 风格对应的请求结构。
 		 */
-		BuildPrompt: prompt_struct => buildMessagesFromPromptStruct(prompt_struct, config, configTemplate, { binaryMode: 'buffer' }),
+		BuildPrompt: async prompt_struct => {
+			const messages = await buildMessagesFromPromptStruct(prompt_struct, config, configTemplate, { binaryMode: 'buffer' })
+			if (requestCandidates(config)[0]?.apiStyle !== 'responses') return messages
+			return messagesToResponsesBody(messages, {
+				model: config.model,
+				stream: config.use_stream,
+				model_arguments: toResponsesArguments(config.model_arguments),
+			})
+		},
 	}
 }

@@ -2,6 +2,7 @@
  * 根据用户粘贴的 API 地址生成 chat completions 候选 URL。
  *
  * - 已含 `/chat/completions`：原样使用
+ * - 已含 `/responses`：替换为对应的 `/chat/completions`
  * - 以 `/v1` 结尾：只补 `/chat/completions`（避免拼出 `/v1/v1/...`）
  * - 其它基址：先试原 URL，再试 `/v1/chat/completions`、`/chat/completions`
  *
@@ -32,6 +33,11 @@ export function completionsUrlCandidates(url) {
 		const next = new URL(urlObj)
 		next.pathname = pathname
 		return next.href
+	}
+
+	if (path.endsWith('/responses')) {
+		const base = path.replace(/\/responses$/, '')
+		return [withPath(`${base}/chat/completions`)]
 	}
 
 	if (path.endsWith('/v1'))

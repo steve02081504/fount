@@ -6,7 +6,9 @@ alwaysApply: false
 
 # AI generators
 
-OpenAI-compatible **API keys** (DeepSeek, OpenRouter, Groq, Azure Chat Completions, …) stay on [proxy](proxy/). Do not grow proxy to cover OAuth, Bedrock Converse, Vertex ADC, or Responses.
+OpenAI-compatible **API keys** (DeepSeek, OpenRouter, Groq, Azure Chat Completions, …) stay on [proxy](proxy/). Keep OAuth, Bedrock Converse, and Vertex ADC in their dedicated generators.
+
+The proxy supports both Chat Completions and OpenAI Responses API. `config.api_mode` accepts `auto` (default), `chat`, or `responses`; auto prefers the style implied by the configured URL, retries the alternate style on failure, and persists the URL that worked without pinning the mode. Responses requests reuse the Codex Responses client and strip Chat-only model arguments; keep `BuildPrompt` aligned with the selected request shape.
 
 **AI-source identity**: `buildSourceInfo` ([proxy/src/sourceInfo.mjs](proxy/src/sourceInfo.mjs)) sets each locale's `info.name = config.model || config.name` (model name wins) and, only when the generator's API URL is overridden from its template, `info.provider = hostname(url)`; there is no separate `info.model`. Generators with an overridable URL pass `{ url, defaultUrl }` (shared factories take a `providerUrl` arg). Chars read it via `getPartInfo(source, locales)` to tell the model what it is.
 
@@ -20,7 +22,7 @@ Overly generic helpers live in the representative part; callers import from ther
 
 | Need | Home |
 | --- | --- |
-| OpenAI-compat source / `convert_config` / token estimator / `buildSourceInfo` | [proxy/src](proxy/src/) (`createOpenAICompatibleSource`, `defaultConvertConfig`, `identityTokenizer` + `estimateTokenCount` / `minKnownContextSize`, `sourceInfo`) |
+| OpenAI-compat source / Chat Completions + Responses fallback / `convert_config` / token estimator / `buildSourceInfo` | [proxy/src](proxy/src/) (`createOpenAICompatibleSource`, `chatCompletion`, `completionsUrl`, `responsesUrl`, `defaultConvertConfig`, `identityTokenizer` + `estimateTokenCount` / `minKnownContextSize`, `sourceInfo`) |
 | Envelope-tag cleanup (`<message>`/`<sender>`/`<content>`) | [proxy/src/responseFormat.mjs](proxy/src/responseFormat.mjs) (`cleanupResponseText` / `clearFormat`) — all generators import this; never copy the regex chain |
 | Responses client + source | [codex/src](codex/src/) (`createResponsesSource`); Azure imports it |
 | OAuth login UI | [oauth_handler](../../shells/oauth_handler/AGENTS.md) `public/src/oauthDisplay.mjs`; each OAuth generator’s `display.mjs` calls `renderOauthPanel` |
