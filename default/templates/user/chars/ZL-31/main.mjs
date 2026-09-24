@@ -5,6 +5,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
+import { beginPromptRequest, finishGeneration, finishPromptRequest } from '../../../../../src/public/parts/shells/agent_studio/src/request_record.mjs'
 import { needsCompression, compressContext } from '../../../../../src/public/parts/shells/chat/src/chat/session/summarize.mjs'
 import { buildPromptStruct } from '../../../../../src/public/parts/shells/chat/src/prompt_struct/index.mjs'
 import { defineReplyHandler } from '../../../../../src/public/parts/shells/chat/src/reply/defineReplyHandler.mjs'
@@ -897,18 +898,32 @@ ${sourceLine}`,
 					PersonaGenerator,
 					...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)
 				].filter(Boolean)
-				// 在重新生成循环中检查插件触发
-				regen: while (true) {
-					args.generation_options.base_result = result
-					await aiSource.StructCall(prompt_struct, args.generation_options)
-					// 达到 72.9% 上下文阈值时压缩历史后重新生成
-					if (needsCompression(args, { prompt_struct }) &&
-						await compressContext({ args, aiSource, prompt_struct, result }))
-						continue regen
-					if (await runReplyHandlers(result, { ...args, prompt_struct, AddLongTimeLog }, handlers))
-						continue regen
-					break
+				try {
+					// 在重新生成循环中检查插件触发
+					regen: while (true) {
+						args.generation_options.base_result = result
+						// 主动记录本轮 prompt：由角色自己调用 Agent Studio API，不依赖 shell 注入回调
+						const promptRequest = beginPromptRequest(args, prompt_struct, { model: aiSource?.filename })
+						try {
+							await aiSource.StructCall(prompt_struct, args.generation_options)
+						}
+						finally {
+							finishPromptRequest(promptRequest)
+						}
+						// 达到 72.9% 上下文阈值时压缩历史后重新生成
+						if (needsCompression(args, { prompt_struct }) &&
+							await compressContext({ args, aiSource, prompt_struct, result }))
+							continue regen
+						if (await runReplyHandlers(result, { ...args, prompt_struct, AddLongTimeLog }, handlers))
+							continue regen
+						break
+					}
 				}
+				catch (error) {
+					await finishGeneration(args, { error: { name: error?.name, message: error?.message } })
+					throw error
+				}
+				await finishGeneration(args, { response: result.content })
 				// 返回构建好的回复
 				return result
 			}
