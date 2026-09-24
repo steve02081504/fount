@@ -39,8 +39,8 @@ Deno.test('Codex BuildPrompt builds Responses body with attachment bytes as Buff
 	assertEquals(body.input[0].type, 'message')
 	assertEquals(body.input[0].role, 'user')
 
-	const imagePart = body.input[0].content.find(part => part.type === 'image_url')
-	assert(imagePart, 'expected an image_url part')
+	const imagePart = body.input[0].content.find(part => part.type === 'input_image')
+	assert(imagePart, 'expected an input_image part')
 	assert(imagePart.image_url.data instanceof Uint8Array, 'attachment bytes must stay bytes')
 	assertEquals('url' in imagePart.image_url, false)
 })

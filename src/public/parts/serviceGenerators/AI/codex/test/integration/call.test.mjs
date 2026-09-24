@@ -40,3 +40,34 @@ Deno.test('Codex Call posts Responses with account id and originator fount', asy
 		mock.restore()
 	}
 })
+
+Deno.test('Responses client preserves reasoning summaries in the result extension', async () => {
+	const mock = mockJsonFetch(() => new Response(JSON.stringify({
+		output: [
+			{ type: 'reasoning', summary: [{ type: 'summary_text', text: 'Thinking.' }] },
+			{ type: 'message', content: [{ type: 'output_text', text: 'Answer.' }] },
+		],
+	}), { status: 200, headers: { 'Content-Type': 'application/json' } }))
+	try {
+		const source = await generator.interfaces.serviceGenerator.GetSource({
+			name: 'codex',
+			model: 'gpt-5.1-codex',
+			use_stream: false,
+			oauth: {
+				access: 'tok',
+				refresh: 'r',
+				expires: Date.now() + 60_000,
+				accountId: 'acct_x',
+			},
+		}, {
+			/** GetSource 依赖桩：空 SaveConfig。 */
+			SaveConfig: async () => { },
+		})
+		const result = await source.Call('hi')
+		assertEquals(result.content, 'Answer.')
+		assertEquals(result.extension.reasoning_summary, ['Thinking.'])
+	}
+	finally {
+		mock.restore()
+	}
+})

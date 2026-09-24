@@ -14,11 +14,22 @@ export function messagesToResponsesBody(messages, { model, stream, model_argumen
 		.join('\n')
 	const input = messages
 		.filter(message => message.role !== 'system')
-		.map(message => ({
-			type: 'message',
-			role: message.role === 'assistant' ? 'assistant' : 'user',
-			content: message.content,
-		}))
+		.map(message => {
+			const role = message.role === 'assistant' ? 'assistant' : 'user'
+			const content = Array.isArray(message.content)
+				? message.content.map(part => {
+					if (part.type === 'text')
+						return { type: role === 'assistant' ? 'output_text' : 'input_text', text: part.text }
+					if (part.type === 'image_url')
+						return {
+							type: 'input_image',
+							image_url: typeof part.image_url === 'string' ? part.image_url : part.image_url?.url ?? part.image_url,
+						}
+					return part
+				})
+				: message.content
+			return { type: 'message', role, content }
+		})
 	return {
 		model,
 		stream: !!stream,
@@ -42,6 +53,23 @@ export function textFromResponsesJson(json) {
 			for (const part of item.content ?? [])
 				if (part.type === 'output_text') text += part.text ?? ''
 	return text
+}
+
+/**
+ * 把 Responses `output` 数组里的 reasoning summary 追加进结果的 extension。
+ * 流式/非流式的 `reasoning_summary_text.delta` 与 `reasoning` item 共用此形状。
+ * @param {{extension?: object}} result - 累积结果。
+ * @param {number} index - summary 段索引。
+ * @param {string} text - 追加文本。
+ * @returns {void}
+ */
+function appendReasoningSummary(result, index, text) {
+	if (!text) return
+	result.extension ??= {}
+	result.extension.reasoning_summary ??= []
+	while (result.extension.reasoning_summary.length <= index)
+		result.extension.reasoning_summary.push('')
+	result.extension.reasoning_summary[index] += text
 }
 
 /**
@@ -77,6 +105,11 @@ export async function fetchResponses({
 	if (!body.stream) {
 		const json = await response.json()
 		result.content = textFromResponsesJson(json)
+		let reasoningIndex = 0
+		for (const item of json.output ?? [])
+			if (item.type === 'reasoning')
+				for (const summary of item.summary ?? [])
+					if (summary.type === 'summary_text') appendReasoningSummary(result, reasoningIndex++, summary.text)
 		previewUpdater(result)
 		return result
 	}
@@ -109,6 +142,10 @@ export async function fetchResponses({
 				const json = JSON.parse(data)
 				if (json.type === 'response.output_text.delta') {
 					result.content += json.delta ?? ''
+					previewUpdater(result)
+				}
+				else if (json.type === 'response.reasoning_summary_text.delta') {
+					appendReasoningSummary(result, json.content_index ?? 0, json.delta ?? '')
 					previewUpdater(result)
 				}
 				else if (json.type === 'response.completed' && json.response)
