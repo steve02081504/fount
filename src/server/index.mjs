@@ -169,7 +169,7 @@ if (process.env.FOUNT_STARTUP_PRIORITY_BOOST) {
 }
 
 // init 载入 config 后，才能解析「最后活跃用户」。
-if (command_obj.data.username === null) {
+if (command_obj?.data?.username === null) {
 	const { getLastActiveUsername } = await import('./auth/index.mjs')
 	command_obj.data.username = await getLastActiveUsername()
 }
