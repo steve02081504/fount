@@ -15,6 +15,7 @@
 
 import { isContainerEntry } from '../../../../../../decl/chatLog.ts'
 import { entryVisibleToViewer } from '../chat/lib/visibility.mjs'
+import { flattenReplyHandlers } from '../reply/defineReplyHandler.mjs'
 
 import { applySummaryBoundary } from './summaryBoundary.mjs'
 
@@ -61,6 +62,32 @@ function injectAttributionWarnings(promptStruct, args) {
 			attribution: entry.extension.chat.attribution,
 		})),
 	}
+}
+
+/**
+ * 本次生成装配了多个工具标签处理器时，提示模型可在单次输出中同时使用多个标签。
+ *
+ * 管线允许一条回复里出现多个标签调用并依次/并发执行；把不相关的多个操作合并到同一条回复
+ * 可减少「生成 → 处理 → 重新生成」的轮次。仅当确有多个可用标签（展开组合节点后叶子数 ≥ 2）时注入。
+ * @param {prompt_struct_t} promptStruct prompt
+ * @param {chatReplyRequest_t} args 请求
+ * @returns {void}
+ */
+function injectMultiToolHint(promptStruct, args) {
+	const sources = [
+		args.char?.interfaces?.chat?.ReplyHandler,
+		args.world?.interfaces?.chat?.ReplyHandler,
+		args.user?.interfaces?.chat?.ReplyHandler,
+		...Object.values(args.plugins || {}).map(plugin => plugin?.interfaces?.chat?.ReplyHandler),
+	].filter(Boolean)
+	if (flattenReplyHandlers(sources).length < 2) return
+	promptStruct.world_prompt ??= getSinglePartPrompt()
+	promptStruct.world_prompt.text ??= []
+	promptStruct.world_prompt.text.push({
+		content: '你可以在单次回复中同时调用多个/多次工具（鼓励这样做）：它们会按出现顺序依次执行，结果在下一轮一并返回。',
+		description: 'multi-tool hint',
+		important: 0,
+	})
 }
 
 /**
@@ -163,6 +190,7 @@ export async function buildPromptStruct(
 		promptStruct.plugin_prompts[pluginName] = await promptStruct.plugin_prompts[pluginName]
 
 	injectAttributionWarnings(promptStruct, args)
+	injectMultiToolHint(promptStruct, args)
 
 	while (detail_level--) await Promise.all([
 		world?.interfaces?.chat?.TweakPrompt?.(args, promptStruct, promptStruct.world_prompt, detail_level),

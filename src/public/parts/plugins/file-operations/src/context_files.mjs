@@ -109,10 +109,27 @@ export async function collectUpwardContext(executor, workspaceRoot, filePath) {
 	 */
 	const norm = p => p.replace(/\\/g, '/')
 	const root = workspaceRoot ? norm(workspaceRoot).replace(/\/+$/, '') : ''
-	let dir = norm(filePath).replace(/[^/]+$/, '').replace(/\/+$/, '') || '.'
+	const normFile = norm(filePath)
+	// 正在读取的文件自身不再作为「向上加载的上下文」重复注入：目标恰是 AGENTS.md / .agents/docs 文档时，
+	// 完整读取本就含其正文，分页读取也会显示其中一段——再注入一次全文纯属重复。
+	// 用 realpath 比较（而非 toLowerCase）：既能在大小写不敏感系统上匹配同一文件，又不会在大小写敏感系统上误判同名不同文件。
+	const selfRealPath = await executor.realpath?.(filePath).catch(() => null) ?? null
+	/**
+	 * 判断候选路径是否就是正在读取的文件本身。
+	 * @param {string} candidatePath - 候选路径（POSIX 化）。
+	 * @returns {Promise<boolean>} 是否为同一文件。
+	 */
+	const isSelf = async candidatePath => {
+		if (selfRealPath) {
+			const candidateRealPath = await executor.realpath?.(candidatePath).catch(() => null)
+			if (candidateRealPath) return candidateRealPath === selfRealPath
+		}
+		return norm(candidatePath) === normFile
+	}
+	let dir = normFile.replace(/[^/]+$/, '').replace(/\/+$/, '') || '.'
 	const relFromRoot = (() => {
-		if (!root) return norm(filePath)
-		return norm(filePath).startsWith(root + '/') ? norm(filePath).slice(root.length + 1) : norm(filePath)
+		if (!root) return normFile
+		return normFile.startsWith(root + '/') ? normFile.slice(root.length + 1) : normFile
 	})()
 
 	for (let depth = 0; depth < 32; depth++) {
@@ -120,8 +137,11 @@ export async function collectUpwardContext(executor, workspaceRoot, filePath) {
 		if (entries.length) {
 			const agentsFile = entries.find(e => e.isFile && e.name.toLowerCase() === 'agents.md')
 			if (agentsFile) {
-				const content = await executor.readTextFile(dir + '/' + agentsFile.name).catch(() => null)
-				if (content != null) agents.push({ path: dir + '/' + agentsFile.name, content, hash: hashContent(content) })
+				const agentPath = dir + '/' + agentsFile.name
+				if (!await isSelf(agentPath)) {
+					const content = await executor.readTextFile(agentPath).catch(() => null)
+					if (content != null) agents.push({ path: agentPath, content, hash: hashContent(content) })
+				}
 			}
 			const docsDir = entries.find(e => e.isDirectory && e.name === '.agents')
 			if (docsDir) {
@@ -129,6 +149,7 @@ export async function collectUpwardContext(executor, workspaceRoot, filePath) {
 				for (const doc of docEntries.filter(e => e.isFile && e.name.endsWith('.md'))) {
 					const docPath = dir + '/.agents/docs/' + doc.name
 					if (seen.has(docPath)) continue
+					if (await isSelf(docPath)) continue
 					seen.add(docPath)
 					const content = await executor.readTextFile(docPath).catch(() => null)
 					if (content == null) continue

@@ -176,6 +176,26 @@ Deno.test('view-file 跨轮读取同一文件：生效窗口内已注入过的�
 	}
 })
 
+Deno.test('view-file 分页读取 AGENTS.md 时不把自身全文重复注入为向上上下文', async () => {
+	const root = await tempDir()
+	try {
+		// 目标文件即 AGENTS.md，且行数超过 limit → 只显示前几行，不能把全文再注入一次
+		const agents = path.join(root, 'AGENTS.md')
+		const body = 'UNIQUE_SELF_MARKER\n' + Array.from({ length: 30 }, (_, i) => `line ${i + 1}`).join('\n') + '\n'
+		await fs.writeFile(agents, body, 'utf8')
+		const run = createHandlerArgs(root)
+		await runFileOps(`<view-file limit="5">${agents}</view-file>`, run.args)
+
+		const entry = viewEntry(run.logs)
+		assert(entry.content.includes('已显示第 1-5 行'), `应提示只显示前 5 行：\n${entry.content}`)
+		assertEquals(entry.content.split('UNIQUE_SELF_MARKER').length - 1, 1, '同一文件的内容不应出现两次')
+		assert(!entry.content.includes('随文件一并加载的上下文'), '分页读取自身时不应把同一文件重复注入为向上上下文')
+	}
+	finally {
+		await fs.rm(root, { recursive: true, force: true })
+	}
+})
+
 Deno.test('view-file 非首页（offset 非 1）读取同样注入上下文', async () => {
 	const root = await tempDir()
 	try {

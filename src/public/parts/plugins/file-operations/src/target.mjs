@@ -63,6 +63,7 @@ function withWriteLock(key, fn) {
  * @property {(codeOrFn: string|Function, ...args: any[]) => Promise<any>} execJs - 执行 JS（返回 EvalResult.result）；函数经参数注入序列化，字符串原样执行。
  * @property {(code: string, timeoutMs: number|null, streamOptions?: {onOutput?: (stream: 'stdout'|'stderr', data: string) => void, callbackPartpath?: string}) => Promise<any>} [execJsWithTimeout] - 远程执行 JS 并放宽请求超时（仅远程执行器实现）；给 `onOutput` + `callbackPartpath` 时流式回显 console 输出。
  * @property {(p: string) => Promise<string>} resolvePath - 将路径解析为目标机器上的绝对路径（相对路径基于工作目录，支持 `~`）。
+ * @property {(p: string) => Promise<string>} realpath - 解析路径的真实位置（realpath；跨符号链接与大小写差异，大小写敏感系统上同名不同文件仍可区分）。
  * @property {(p: string) => Promise<string>} readTextFile - 读文本文件。
  * @property {(p: string) => Promise<Buffer>} readFileBuffer - 读二进制文件。
  * @property {(p: string, content: string) => Promise<void>} writeTextFile - 写文本文件。
@@ -269,6 +270,12 @@ function createLocalExecutor(target) {
 		 */
 		resolvePath: async p => abs(p),
 		/**
+		 * 解析路径的真实位置（realpath，跨符号链接/大小写；大小写敏感系统上同名不同文件仍可区分）。
+		 * @param {string} p - 路径。
+		 * @returns {Promise<string>} 真实绝对路径。
+		 */
+		realpath: async p => await fs.promises.realpath(abs(p)),
+		/**
 		 * 读文本文件。
 		 * @param {string} p - 路径。
 		 * @returns {Promise<string>} 文件内容。
@@ -451,6 +458,12 @@ function createRemoteExecutor(username, target) {
 		 * @returns {Promise<string>} 绝对路径。
 		 */
 		resolvePath: async p => await withPath(absExpr => `return ${absExpr}`, p),
+		/**
+		 * 解析路径的真实位置（realpath，跨符号链接/大小写；大小写敏感系统上同名不同文件仍可区分）。
+		 * @param {string} p - 路径。
+		 * @returns {Promise<string>} 真实绝对路径。
+		 */
+		realpath: async p => await withPath(absExpr => `return await fs.realpath(${absExpr})`, p),
 		/**
 		 * 读文本文件。
 		 * @param {string} p - 路径。
