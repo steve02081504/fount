@@ -25,6 +25,48 @@ const MARKER_NAME = 'deno_upgraded.test'
 const LOCK_NAME = 'deno-update.lock'
 
 /**
+ * 升级锁的过期时间（毫秒）。持有升级的内核被强杀（工具超时、`taskkill /T`）时
+ * 不会走 `finally`，锁文件会永久残留；超过此年龄即视为死锁，清除后重试。
+ */
+export const STALE_LOCK_MS = ms('15m')
+
+/**
+ * 尝试获取升级锁；已存在但已过期则清除后重试一次。
+ * @param {string} lockPath 锁文件
+ * @returns {import('node:fs').FsFile | null} 锁句柄（未获取到为 null）
+ */
+export function acquireLock(lockPath) {
+	for (let attempt = 0; attempt < 2; attempt++) 
+		try {
+			const handle = Deno.openSync(lockPath, { createNew: true, write: true })
+			handle.writeSync(new TextEncoder().encode(JSON.stringify({ pid: process.pid, at: Date.now() })))
+			return handle
+		}
+		catch {
+			if (attempt === 0 && clearStaleLock(lockPath)) continue
+			return null
+		}
+	
+	return null
+}
+
+/**
+ * 清除超过 {@link STALE_LOCK_MS} 仍存在的锁文件（持有者崩溃残留）。
+ * @param {string} lockPath 锁文件
+ * @returns {boolean} 是否已清除
+ */
+export function clearStaleLock(lockPath) {
+	try {
+		if (Date.now() - statSync(lockPath).mtimeMs < STALE_LOCK_MS) return false
+		rmSync(lockPath, { force: true })
+		return true
+	}
+	catch {
+		return false
+	}
+}
+
+/**
  * 解析仓库 Deno pin（`.deno-version` 首行）；空则回退 canary。
  * @param {string} repoRoot 仓库根
  * @returns {{ spec: string[], label: string }} `deno upgrade` 参数与展示标签
@@ -101,13 +143,9 @@ export async function maybeUpgradeDeno({ repoRoot, reason = 'manual', intervalMs
 
 	const lockPath = join(installerDir, LOCK_NAME)
 	mkdirSync(dirname(lockPath), { recursive: true })
-	let lockHandle
-	try {
-		lockHandle = Deno.openSync(lockPath, { createNew: true, write: true })
-	}
-	catch {
+	const lockHandle = acquireLock(lockPath)
+	if (!lockHandle)
 		return { status: 'locked', changed: false, label }
-	}
 	try {
 		const before = await denoVersion()
 		const command = new Deno.Command(Deno.execPath(), {

@@ -2,14 +2,14 @@
  * 内核侧 Deno 更新：pin 解析、跳过开关、新鲜标记短路。
  */
 /* global Deno */
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, rmSync, statSync, utimesSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import process from 'node:process'
 
 import { assertEquals } from 'jsr:@std/assert'
 
-import { maybeUpgradeDeno, resolveDenoUpgradeSpec } from '../kernel/deno_update.mjs'
+import { acquireLock, clearStaleLock, maybeUpgradeDeno, resolveDenoUpgradeSpec, STALE_LOCK_MS } from '../kernel/deno_update.mjs'
 
 /**
  * 建一个临时 repo 根。
@@ -86,4 +86,46 @@ Deno.test('maybeUpgradeDeno: fresh marker short-circuits without running deno up
 		if (previous !== undefined) process.env.FOUNT_TEST_SKIP_DENO_UPGRADE = previous
 		rmSync(dir, { recursive: true, force: true })
 	}
+})
+
+Deno.test('clearStaleLock: clears only locks older than STALE_LOCK_MS', () => {
+	const dir = mkdtempSync(join(tmpdir(), 'fount-deno-lock-'))
+	const lockPath = join(dir, 'deno-update.lock')
+	try {
+		writeFileSync(lockPath, '', 'utf8')
+		const old = new Date(Date.now() - STALE_LOCK_MS - 60_000)
+		utimesSync(lockPath, old, old)
+		assertEquals(clearStaleLock(lockPath), true)
+		assertEquals(statSync(lockPath, { throwIfNoEntry: false }), undefined)
+
+		writeFileSync(lockPath, JSON.stringify({ pid: process.pid, at: Date.now() }), 'utf8')
+		assertEquals(clearStaleLock(lockPath), false)
+		assertEquals(statSync(lockPath, { throwIfNoEntry: false }) != null, true)
+	}
+	finally { rmSync(dir, { recursive: true, force: true }) }
+})
+
+Deno.test('acquireLock: reclaims a stale lock, refuses a fresh one', () => {
+	const dir = mkdtempSync(join(tmpdir(), 'fount-deno-lock-'))
+	const lockPath = join(dir, 'deno-update.lock')
+	try {
+		writeFileSync(lockPath, '', 'utf8')
+		const old = new Date(Date.now() - STALE_LOCK_MS - 60_000)
+		utimesSync(lockPath, old, old)
+		const handle = acquireLock(lockPath)
+		assertEquals(handle != null, true)
+		handle.close()
+		rmSync(lockPath, { force: true })
+
+		const held = acquireLock(lockPath)
+		assertEquals(held != null, true)
+		try {
+			assertEquals(acquireLock(lockPath), null)
+		}
+		finally {
+			held.close()
+			rmSync(lockPath, { force: true })
+		}
+	}
+	finally { rmSync(dir, { recursive: true, force: true }) }
 })
