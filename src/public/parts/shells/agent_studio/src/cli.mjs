@@ -8,8 +8,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { replayDialogue } from '../public/shared/dialogueReplay.mjs'
-
 import { buildCacheReport } from './cache_report.mjs'
 import { getConversation, getGeneration, listConversations, listGenerations } from './generation_history.mjs'
 
@@ -112,11 +110,6 @@ export function renderConversationText(conversation) {
 		out += `   来源 ${generation.source ?? '-'} · 角色 ${generation.charname ?? generation.charId ?? '-'} · 模型 ${generation.model ?? '-'} · ${formatTime(generation.startedAt)}\n`
 		out += '   回复：\n'
 		out += String(generation.response ?? '').split('\n').map(line => `      ${line}`).join('\n') + '\n'
-		if (generation.dialogue?.events?.length) {
-			out += '   复原对话：\n'
-			for (const message of replayDialogue(generation.dialogue.events))
-				out += `      [${message.role}] ${message.name}: ${message.content}\n`
-		}
 		out += `   请求轮次：\n${renderRequestRounds(generation)}\n`
 	}
 	return out

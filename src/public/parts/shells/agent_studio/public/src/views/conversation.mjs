@@ -8,7 +8,7 @@ import { geti18n, geti18n_nowarn, primaryLocale } from '/scripts/i18n/index.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
 import { onServerEvent } from '/scripts/endpoints/server_events.mjs'
 
-import { dialogueRounds, replayDialogue } from '../../shared/dialogueReplay.mjs'
+import { replayDialogue } from '../../shared/dialogueReplay.mjs'
 import { estimatePromptCache } from '../../shared/promptCache.mjs'
 import { messagesToText } from '../../shared/promptText.mjs'
 import { getConversation, getSubAgent, sendSubAgentMessage } from '../endpoints.mjs'
@@ -391,15 +391,6 @@ function renderGeneration(generation, cache = {}) {
 	head.appendChild(meta)
 	article.appendChild(head)
 
-	// 由逐轮请求复原的连续对话（可按轮次复播，编辑随轮次推进呈现）
-	if (generation.dialogue?.events?.length) {
-		const replay = document.createElement('details')
-		const title = document.createElement('summary')
-		title.textContent = geti18n('agent_studio.conversation.replay')
-		replay.append(title, buildDialogueSection(generation.dialogue, generation.id))
-		article.appendChild(replay)
-	}
-
 	article.appendChild(buildSection(geti18n('agent_studio.conversation.response'), generation.response ?? '', `generation-${generation.id}-response.txt`))
 
 	const requestsSection = document.createElement('details')
@@ -484,56 +475,6 @@ function renderRequest(request, generationId) {
 		round.appendChild(list)
 	}
 	return round
-}
-
-/**
- * 构建复原对话段落：含轮次选择器与按轮次复播的消息列表。
- * @param {{ rounds: number, events: object[] }} dialogue 对话
- * @param {string} generationId 所属生成记录 id（用于下载文件名）
- * @returns {HTMLElement} 段落
- */
-function buildDialogueSection(dialogue, generationId) {
-	const section = document.createElement('section')
-	section.className = 'conversation-dialogue'
-	const head = document.createElement('div')
-	head.className = 'conversation-section-head'
-	const heading = document.createElement('h3')
-	heading.className = 'dialog-section-title'
-	heading.textContent = geti18n('agent_studio.conversation.replay')
-	let upToRound = 0
-	head.append(heading, textActions(
-		() => messagesToText(replayDialogue(dialogue.events, upToRound > 0 ? { upToRound } : undefined)),
-		{ filename: `generation-${generationId}-dialogue.txt` },
-	))
-	section.appendChild(head)
-
-	const row = document.createElement('label')
-	row.className = 'conversation-request-head'
-	row.textContent = geti18n('agent_studio.conversation.replayUpto') + ' '
-	const select = document.createElement('select')
-	select.className = 'select select-sm'
-	const all = document.createElement('option')
-	all.value = '0'
-	all.textContent = geti18n('agent_studio.conversation.replayAll')
-	select.appendChild(all)
-	for (const round of dialogueRounds(dialogue.events)) {
-		const option = document.createElement('option')
-		option.value = String(round)
-		option.textContent = geti18n('agent_studio.conversation.roundIndex', { index: round })
-		select.appendChild(option)
-	}
-	row.appendChild(select)
-	section.appendChild(row)
-
-	const list = document.createElement('div')
-	list.className = 'conversation-messages'
-	list.replaceChildren(...renderMessages(replayDialogue(dialogue.events)))
-	section.appendChild(list)
-	select.addEventListener('change', () => {
-		upToRound = Number(select.value) || 0
-		list.replaceChildren(...renderMessages(replayDialogue(dialogue.events, { upToRound: upToRound > 0 ? upToRound : undefined })))
-	})
-	return section
 }
 
 /**

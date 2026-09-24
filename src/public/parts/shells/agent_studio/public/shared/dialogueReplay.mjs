@@ -88,12 +88,3 @@ export function replayDialogue(events, { upToRound } = {}) {
 	}
 	return order.map(id => byId.get(id))
 }
-
-/**
- * 列出事件流涉及的轮次（升序，去重）。
- * @param {object[]} events 对话事件
- * @returns {number[]} 轮次列表
- */
-export function dialogueRounds(events) {
-	return [...new Set((events || []).map(event => event.round ?? 0))].filter(round => round > 0).sort((a, b) => a - b)
-}

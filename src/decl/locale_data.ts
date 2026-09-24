@@ -6939,9 +6939,6 @@ export type LocaleData = {
 			requests: string
 			requestsMissing: string
 			requestsExpired: string
-			replay: string
-			replayUpto: string
-			replayAll: string
 			roundIndex: string
 			round: string
 			systemPrompt: string

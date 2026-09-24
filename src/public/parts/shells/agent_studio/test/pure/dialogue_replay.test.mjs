@@ -4,7 +4,7 @@
  */
 import { assertEquals } from 'jsr:@std/assert'
 
-import { buildDialogue, dialogueRounds, replayDialogue } from '../../public/shared/dialogueReplay.mjs'
+import { buildDialogue, replayDialogue } from '../../public/shared/dialogueReplay.mjs'
 
 /**
  * 构造逐轮请求快照。
@@ -41,8 +41,4 @@ Deno.test('buildDialogue records an edit at the round it happens and replay adva
 	assertEquals(dialogue.events[1].round, 2)
 	assertEquals(replayDialogue(dialogue.events, { upToRound: 1 })[0].content, 'v1')
 	assertEquals(replayDialogue(dialogue.events, { upToRound: 2 })[0].content, 'v2')
-})
-
-Deno.test('dialogueRounds lists event rounds ascending and deduped', () => {
-	assertEquals(dialogueRounds([{ round: 2 }, { round: 1 }, { round: 2 }]), [1, 2])
 })
