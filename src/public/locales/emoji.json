@@ -3027,6 +3027,15 @@
 				"title": "📺📭",
 				"description": "➕📺 🖱️💬",
 				"createAction": "🆕📺"
+			},
+			"selection": {
+				"count": "已选 ${count} 条",
+				"copy": "复制",
+				"cancel": "取消",
+				"copied": "已复制 ${count} 条消息",
+				"toolbar": {
+					"aria-label": "消息多选工具栏"
+				}
 			}
 		},
 		"sidebar": {
@@ -6819,7 +6828,9 @@
 			"close": {
 				"title": "❌",
 				"aria-label": "❌"
-			}
+			},
+			"copy": "复制",
+			"download": "下载"
 		},
 		"dashboard": {
 			"title": "📊",
@@ -6926,7 +6937,9 @@
 		"alerts": {
 			"loadFailed": "⚠️📥 ${message}",
 			"saveFailed": "⚠️💾 ${message}",
-			"runFailed": "⚠️🏃 ${message}"
+			"runFailed": "⚠️🏃 ${message}",
+			"copied": "已复制到剪贴板",
+			"copyFailed": "复制失败：${message}"
 		},
 		"home_function_buttons": {
 			"dev": {
