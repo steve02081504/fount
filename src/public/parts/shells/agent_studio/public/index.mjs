@@ -67,7 +67,7 @@ async function boot() {
 		initConversationView()
 		onLanguageChange(() => {
 			const view = currentMainView()
-			if (view) void switchView(view, { skipHash: true })
+			if (view) return switchView(view, { skipHash: true })
 		})
 		await Promise.all([reloadChars(), reloadBenchmarks(), reloadRetention()])
 			.catch(error => showToastI18n('error', 'agent_studio.alerts.loadFailed', { message: error.message }))

@@ -68,7 +68,7 @@
 		},
 		{
 			"name": "frontend",
-			"expected": "1m",
+			"expected": "2m54s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -76,7 +76,7 @@
 			"subtests": [
 				{
 					"name": "smoke",
-					"expected": "30s",
+					"expected": "2m21s",
 					"triggers": [
 						"src/public/parts/shells/agent_studio/test/frontend/smoke.spec.mjs",
 						"src/public/parts/shells/agent_studio/test/frontend/fixtures.mjs",

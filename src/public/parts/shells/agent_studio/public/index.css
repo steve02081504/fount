@@ -997,12 +997,16 @@
 }
 
 .conversation-timeline {
-	display: flex;
-	justify-content: space-around;
-	gap: 0.2rem;
+	position: relative;
+	height: 1.75rem;
 }
 
 .conversation-timeline-node {
+	position: absolute;
+	top: 0;
+	height: 100%;
+	box-sizing: border-box;
+	transform: translateX(-50%);
 	border: var(--border) solid var(--border-color);
 	border-radius: var(--radius-selector);
 	background: var(--surface-sunken);
@@ -1014,6 +1018,11 @@
 .conversation-timeline-node.active {
 	background: var(--color-primary);
 	color: var(--color-primary-content);
+}
+
+.conversation-timeline-node.generation-start {
+	border-color: var(--color-primary);
+	border-width: calc(var(--border) * 2);
 }
 
 .conversation-cache-chart {

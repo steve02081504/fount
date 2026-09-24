@@ -22,6 +22,8 @@ import { textActions } from '../lib/textActions.mjs'
 let currentKey = ''
 /** 当前子代理运行的状态刷新定时器。 */
 let refreshTimer = null
+/** 回放条两端内缩，抵消原生 range 滑块拇指的半宽，使节点/图表与进度条对位。 */
+const REPLAY_INSET = 8
 
 /**
  * 内部对话角色标签的 i18n 键（缺失时回落原始角色名）。
@@ -103,10 +105,12 @@ export async function loadConversationView({ key } = {}) {
 		empty.classList.toggle('hidden', items.length > 0)
 		const metrics = estimatePromptCache(items)
 		const transcript = document.getElementById('conversationTranscript')
-		renderReplay(items, metrics, count => {
-			generations.replaceChildren(...items.slice(0, count).map((item, index) => renderGeneration(item, metrics[index])))
+		const units = buildRoundUnits(items)
+		renderReplay(units, metrics, count => {
+			const revealed = generationsForRounds(items, units, count)
+			generations.replaceChildren(...revealed.map(({ item, index }) => renderGeneration(item, metrics[index])))
 			if (transcript) {
-				const rounds = items.slice(0, count).reduce((sum, item) => sum + Math.max(0, ...item.dialogue?.events?.map(event => event.round ?? 0) ?? []), 0)
+				const rounds = units.length ? units[count - 1]?.round ?? 0 : 0
 				transcript.replaceChildren(...renderMessages(replayDialogue(conversation.dialogue?.events ?? [], { upToRound: rounds })))
 			}
 		})
@@ -118,13 +122,55 @@ export async function loadConversationView({ key } = {}) {
 }
 
 /**
- * 各种会话共用的逐生成回放控制和缓存图。
- * @param {object[]} items 生成
- * @param {object[]} metrics 每次生成缓存数据
- * @param {(count: number) => void} onChange 回放变化
+ * 把生成记录展开为逐轮回放单元：每个单元代表一轮（一次 AI 调用），并记录其所属生成与全局轮次。
+ * @param {object[]} items 生成记录（按开始时间升序）
+ * @returns {Array<{ round: number, startedAt: number, generationIndex: number, generationStart: boolean }>} 逐轮单元
+ */
+export function buildRoundUnits(items) {
+	const units = []
+	let round = 0
+	for (const [index, item] of (items || []).entries()) {
+		// 轮次数取每代权威计数：优先采集到的请求数，其次复原对话的轮次；缺失时至少 1 轮。
+		const span = Math.max(item.requestCount ?? item.requests?.length ?? 0, item.dialogue?.rounds ?? 0, 1)
+		for (let offset = 0; offset < span; offset++) {
+			round++
+			units.push({
+				round,
+				startedAt: item.requests?.[offset]?.startedAt ?? item.startedAt ?? 0,
+				generationIndex: index,
+				generationStart: offset === 0,
+			})
+		}
+	}
+	return units
+}
+
+/**
+ * 取在某轮回放位置下应展示的生成记录（首个轮次已被揭示者即展示）。
+ * @param {object[]} items 生成记录
+ * @param {ReturnType<typeof buildRoundUnits>} units 逐轮单元
+ * @param {number} count 已揭示的轮次数
+ * @returns {Array<{ item: object, index: number }>} 生成记录与其原始下标
+ */
+function generationsForRounds(items, units, count) {
+	const revealed = []
+	const seen = new Set()
+	for (const unit of units.slice(0, count))
+		if (!seen.has(unit.generationIndex)) {
+			seen.add(unit.generationIndex)
+			revealed.push({ item: items[unit.generationIndex], index: unit.generationIndex })
+		}
+	return revealed
+}
+
+/**
+ * 逐轮回放控制与缓存图：timeline / 滑块 / 选择器均以「轮次」为单位。
+ * @param {ReturnType<typeof buildRoundUnits>} units 逐轮单元
+ * @param {object[]} metrics 每次生成缓存数据（按生成下标）
+ * @param {(count: number) => void} onChange 回放变化（count = 已揭示轮次数）
  * @returns {void}
  */
-function renderReplay(items, metrics, onChange) {
+function renderReplay(units, metrics, onChange) {
 	const timeline = document.getElementById('conversationTimeline')
 	const chart = document.getElementById('conversationCacheChart')
 	const summary = document.getElementById('conversationCacheSummary')
@@ -132,42 +178,48 @@ function renderReplay(items, metrics, onChange) {
 	const selection = document.getElementById('conversationReplaySelection')
 	if (!(slider instanceof HTMLInputElement) || !timeline || !chart || !summary || !selection) return
 	const previous = slider.dataset.key !== currentKey || Number(slider.value) === Number(slider.max)
-		? items.length : Number(slider.value)
+		? units.length : Number(slider.value)
 	slider.dataset.key = currentKey
-	slider.max = String(items.length)
-	slider.value = String(Math.min(previous, items.length))
+	slider.min = units.length ? '1' : '0'
+	slider.max = String(units.length)
+	slider.value = String(Math.min(previous, units.length))
+	const span = units.length > 1 ? units.length - 1 : 1
 	/** @returns {void} 更新回放进度和消息。 */
 	const update = () => {
 		const count = Number(slider.value)
-		selection.textContent = `${count}/${items.length}`
+		selection.textContent = `${count}/${units.length}`
 		onChange(count)
 		for (const node of timeline.children) node.classList.toggle('active', Number(node.dataset.index) === count)
 	}
 	slider.oninput = update
-	timeline.replaceChildren(...items.map((item, index) => {
+	timeline.replaceChildren(...units.map((unit, index) => {
 		const node = document.createElement('button')
 		node.type = 'button'
 		node.className = 'conversation-timeline-node'
+		if (unit.generationStart) node.classList.add('generation-start')
 		node.dataset.index = String(index + 1)
-		node.title = `${index + 1} · ${formatTime(item.startedAt, primaryLocale())}`
-		node.textContent = String(index + 1)
-		/** @returns {void} 跳转到指定生成节点。 */
+		node.title = `${geti18n_nowarn('agent_studio.conversation.roundIndex', { index: unit.round })} · ${formatTime(unit.startedAt, primaryLocale())}`
+		node.textContent = String(unit.round)
+		node.style.left = `calc(${REPLAY_INSET}px + ${index / span} * (100% - ${REPLAY_INSET * 2}px))`
+		/** @returns {void} 跳转到指定轮次节点。 */
 		node.onclick = () => { slider.value = String(index + 1); update() }
 		return node
 	}))
 	const total = metrics.reduce((sum, metric) => sum + metric.total, 0)
 	const reused = metrics.reduce((sum, metric) => sum + metric.reused, 0)
 	summary.textContent = total ? geti18n('agent_studio.conversation.cache.summary', { rate: Math.round(reused / total * 100) }) : geti18n('agent_studio.conversation.cache.missing')
-	paintCacheChart(chart, metrics)
+	paintCacheChart(chart, units, metrics)
 	update()
 }
 
 /**
+ * 按「轮次」位置绘制缓存率折线：每次生成的指标落在其轮次区间的中心。
  * @param {HTMLCanvasElement} canvas 画布
- * @param {object[]} metrics 缓存指标
+ * @param {ReturnType<typeof buildRoundUnits>} units 逐轮单元
+ * @param {object[]} metrics 每次生成缓存指标
  * @returns {void}
  */
-function paintCacheChart(canvas, metrics) {
+function paintCacheChart(canvas, units, metrics) {
 	if (!(canvas instanceof HTMLCanvasElement)) return
 	const ratio = window.devicePixelRatio || 1
 	canvas.width = Math.round(canvas.clientWidth * ratio)
@@ -177,9 +229,22 @@ function paintCacheChart(canvas, metrics) {
 	ctx.scale(ratio, ratio)
 	const width = canvas.clientWidth
 	const height = canvas.clientHeight
-	const points = metrics.map((metric, index) => metric.rate == null ? null : {
-		x: (index + 0.5) * width / metrics.length,
-		y: height - 10 - metric.rate * (height - 20), rate: metric.rate,
+	const span = units.length > 1 ? units.length - 1 : 1
+	/** 每次生成的轮次中心位置（按单元下标）。 */
+	const centers = new Map()
+	units.forEach((unit, index) => {
+		const group = centers.get(unit.generationIndex) ?? { first: index, last: index }
+		group.last = index
+		centers.set(unit.generationIndex, group)
+	})
+	const points = metrics.map((metric, index) => {
+		const center = centers.get(index)
+		if (metric.rate == null || !center || !units.length) return null
+		const position = (center.first + center.last) / 2
+		return {
+			x: REPLAY_INSET + position / span * (width - REPLAY_INSET * 2),
+			y: height - 10 - metric.rate * (height - 20), rate: metric.rate,
+		}
 	})
 	const style = getComputedStyle(canvas)
 	ctx.strokeStyle = style.getPropertyValue('--color-primary')
@@ -242,11 +307,14 @@ async function loadSubagentConversation(key) {
 		if (currentKey !== key) return
 		const items = record?.generations?.length ? record.generations : [{ id: run.runId, startedAt: run.startedAt }]
 		const metrics = estimatePromptCache(items)
-		renderReplay(items, metrics, count => {
+		const units = buildRoundUnits(items)
+		renderReplay(units, metrics, count => {
 			// 子代理运行时的增量对话只属于当前生成；回放期间不显示未来消息或允许注入。
-			transcript.classList.toggle('hidden', count !== items.length)
-			form?.classList.toggle('hidden', !run.canSend || count !== items.length)
-			list.replaceChildren(...items.slice(0, count).filter(item => item.requests?.length).map((item, index) => renderGeneration(item, metrics[index])))
+			const atLatest = count === units.length
+			transcript.classList.toggle('hidden', !atLatest)
+			form?.classList.toggle('hidden', !run.canSend || !atLatest)
+			const revealed = generationsForRounds(items, units, count)
+			list.replaceChildren(...revealed.filter(({ item }) => item.requests?.length).map(({ item, index }) => renderGeneration(item, metrics[index])))
 		})
 		transcript.replaceChildren(...(run.conversation || []).map(message => {
 			const row = document.createElement('article')

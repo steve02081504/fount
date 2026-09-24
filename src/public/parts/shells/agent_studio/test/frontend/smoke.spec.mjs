@@ -83,6 +83,19 @@ test.describe('Agent Studio frontend modules', () => {
 		expect(html).toContain('Demo')
 		expect(html).toContain('desc')
 	})
+
+	test('buildRoundUnits expands generations into one unit per round', async ({ modulePage }) => {
+		const units = await modulePage.run(async () => {
+			const { buildRoundUnits } = await import('/parts/shells:agent_studio/src/views/conversation.mjs')
+			return buildRoundUnits([
+				{ id: 'a', requestCount: 4, requests: [{ index: 1 }, { index: 2 }, { index: 3 }, { index: 4 }] },
+				{ id: 'b', requestCount: 1, requests: [{ index: 1 }] },
+			])
+		})
+		expect(units.map(unit => unit.round)).toEqual([1, 2, 3, 4, 5])
+		expect(units.map(unit => unit.generationIndex)).toEqual([0, 0, 0, 0, 1])
+		expect(units.filter(unit => unit.generationStart).map(unit => unit.round)).toEqual([1, 5])
+	})
 })
 
 test.describe('Agent Studio shell boot', () => {
@@ -160,8 +173,38 @@ test.describe('Agent Studio shell boot', () => {
 		await expect(body.locator('strong')).toHaveText('reply 1')
 		await body.locator('button').click()
 		await expect(body.locator('pre')).toContainText('**reply 1**')
-		await page.locator('#conversationReplaySlider').fill('0')
-		await expect(page.locator('#conversationTranscript .conversation-message')).toHaveCount(0)
+		await expect(page.locator('#conversationReplaySlider')).toHaveAttribute('min', '1')
+		await expect(page.locator('#conversationReplaySlider')).toHaveValue('1')
+	})
+
+	test('conversation timeline lists one node per round across multi-round generations', async ({ page, baseUrl }) => {
+		const generations = [
+			{ id: 'g1', startedAt: 1000, source: 'shells/code', charId: 'demo', requestCount: 4, requests: [1, 2, 3, 4].map(index => ({ index, systemPrompt: 'shared', messages: [{ role: 'user', id: 'user-1', content: 'hello' }] })), dialogue: { rounds: 4, events: [1, 2, 3, 4].map(round => ({ round, op: 'insert', message: { id: `a${round}`, role: 'char', content: `round ${round}` } })) }, response: 'round 4' },
+			{ id: 'g2', startedAt: 2000, source: 'shells/code', charId: 'demo', requestCount: 1, requests: [{ index: 1, systemPrompt: 'shared', messages: [{ role: 'user', id: 'user-1', content: 'hello' }] }], dialogue: { rounds: 1, events: [{ round: 1, op: 'insert', message: { id: 'b1', role: 'char', content: 'final' } }] }, response: 'final' },
+		]
+		await page.route('**/api/parts/shells:agent_studio/conversation/demo-rounds', route => route.fulfill({
+			json: {
+				key: 'demo-rounds', generations,
+				dialogue: { events: [...generations[0].dialogue.events, { ...generations[1].dialogue.events[0], round: 5 }] },
+			}
+		}))
+		await openAgentStudio(page, baseUrl)
+		await page.evaluate(() => { window.location.hash = '#conversation/demo-rounds' })
+		await expect(page.locator('#conversationTimeline .conversation-timeline-node')).toHaveCount(5)
+		await expect(page.locator('#conversationTimeline .conversation-timeline-node').first()).toHaveText('1')
+		await expect(page.locator('#conversationTimeline .conversation-timeline-node').last()).toHaveText('5')
+		await expect(page.locator('#conversationReplaySlider')).toHaveAttribute('max', '5')
+		// 回放到第 1 轮只显示第一条生成，且展示会话转录中该轮的消息
+		await page.locator('#conversationReplaySlider').fill('1')
+		await expect(page.locator('#conversationGenerations .conversation-generation')).toHaveCount(1)
+		await expect(page.locator('#conversationTranscript .conversation-message')).toHaveCount(1)
+		// 回放到第 2 轮仍属于同一生成
+		await page.locator('#conversationReplaySlider').fill('2')
+		await expect(page.locator('#conversationGenerations .conversation-generation')).toHaveCount(1)
+		await expect(page.locator('#conversationTranscript .conversation-message')).toHaveCount(2)
+		// 回放到最后一轮显示两条生成
+		await page.locator('#conversationReplaySlider').fill('5')
+		await expect(page.locator('#conversationGenerations .conversation-generation')).toHaveCount(2)
 	})
 
 	test('live sub-agent composer accepts a user message only at the latest replay node', async ({ page, baseUrl }) => {
@@ -172,7 +215,15 @@ test.describe('Agent Studio shell boot', () => {
 				conversation: entries, canSend: true,
 			}
 		}))
-		await page.route('**/api/parts/shells:agent_studio/conversation/subagent%3Alive-run', route => route.fulfill({ status: 404, json: { error: 'pending' } }))
+		await page.route('**/api/parts/shells:agent_studio/conversation/subagent%3Alive-run', route => {
+			const generations = [1, 2].map(index => ({
+				id: `g${index}`, startedAt: 1000 * index, source: 'shells/code', charId: 'demo',
+				requestCount: 1, requests: [{ index: 1, systemPrompt: 'shared', messages: [{ role: 'user', id: 'user-1', content: 'hello' }] }],
+				dialogue: { events: [{ round: index, op: 'insert', message: { id: `m${index}`, role: 'char', content: `reply ${index}` } }] },
+				response: `reply ${index}`,
+			}))
+			return route.fulfill({ json: { key: 'subagent:live-run', generations, dialogue: { events: generations.map(generation => generation.dialogue.events[0]) } } })
+		})
 		await page.route('**/api/parts/shells:agent_studio/subagent/live-run/messages', async route => {
 			const body = route.request().postDataJSON()
 			entries.push({ role: 'user', name: 'alice', content: body.content })
@@ -181,9 +232,9 @@ test.describe('Agent Studio shell boot', () => {
 		await openAgentStudio(page, baseUrl)
 		await page.evaluate(() => { window.location.hash = '#conversation/subagent%3Alive-run' })
 		await expect(page.locator('#subagentMessageForm')).toBeVisible()
-		await page.locator('#conversationReplaySlider').fill('0')
-		await expect(page.locator('#subagentMessageForm')).toBeHidden()
 		await page.locator('#conversationReplaySlider').fill('1')
+		await expect(page.locator('#subagentMessageForm')).toBeHidden()
+		await page.locator('#conversationReplaySlider').fill('2')
 		await page.locator('#subagentMessageInput').fill('new instruction')
 		await page.locator('#subagentMessageForm button').click()
 		await expect(page.locator('#subagentTranscript')).toContainText('new instruction')
