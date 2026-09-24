@@ -3027,6 +3027,15 @@
 				"title": "このグループにはまだチャンネルがありません",
 				"description": "右側でチャンネルを作成または選択してチャットを始めましょう",
 				"createAction": "チャンネルを作成"
+			},
+			"selection": {
+				"count": "${count} 件を選択中",
+				"copy": "コピー",
+				"cancel": "キャンセル",
+				"copied": "${count} 件のメッセージをコピーしました",
+				"toolbar": {
+					"aria-label": "メッセージ複数選択ツールバー"
+				}
 			}
 		},
 		"sidebar": {
@@ -4421,6 +4430,9 @@
 		"bootstrapFailed": "ソーシャル インターフェイスの初期化に失敗しました: ${error}",
 		"connectNodeFailed": "ノードへの接続に失敗しました：${error}",
 		"dwellFailed": "閲覧滞在時間に基づくおすすめデータの更新に失敗しました：${error}",
+		"readProgress": {
+			"saveFailed": "閲覧位置の保存に失敗しました：${error}"
+		},
 		"home_function_buttons": {
 			"main": {
 				"title": "広場"

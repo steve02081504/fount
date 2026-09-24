@@ -3033,6 +3033,15 @@
 				"title": "Ce groupe n'a pas encore de salon",
 				"description": "Créez ou sélectionnez un salon à droite pour commencer à discuter",
 				"createAction": "Créer un salon"
+			},
+			"selection": {
+				"count": "${count} sélectionnés",
+				"copy": "Copier",
+				"cancel": "Annuler",
+				"copied": "${count} messages copiés",
+				"toolbar": {
+					"aria-label": "Barre d'outils de sélection multiple des messages"
+				}
 			}
 		},
 		"sidebar": {
@@ -4427,6 +4436,9 @@
 		"bootstrapFailed": "Échec d'initialisation de l'interface sociale : ${error}",
 		"connectNodeFailed": "Échec de la connexion au nœud : ${error}",
 		"dwellFailed": "Échec de la mise à jour des préférences selon le temps de visionnage : ${error}",
+		"readProgress": {
+			"saveFailed": "Échec de l'enregistrement de la position de lecture : ${error}"
+		},
 		"home_function_buttons": {
 			"main": {
 				"title": "Social"
@@ -6825,7 +6837,9 @@
 			"close": {
 				"title": "Fermer",
 				"aria-label": "Fermer"
-			}
+			},
+			"copy": "Copier",
+			"download": "Télécharger"
 		},
 		"dashboard": {
 			"title": "Tableau de bord",
@@ -6932,7 +6946,9 @@
 		"alerts": {
 			"loadFailed": "Échec du chargement : ${message}",
 			"saveFailed": "Échec de l'enregistrement : ${message}",
-			"runFailed": "Échec de l'exécution : ${message}"
+			"runFailed": "Échec de l'exécution : ${message}",
+			"copied": "Copié dans le presse-papiers",
+			"copyFailed": "Échec de la copie : ${message}"
 		},
 		"home_function_buttons": {
 			"dev": {

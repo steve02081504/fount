@@ -3027,6 +3027,15 @@
 				"title": "इस समूह में अभी कोई चैनल नहीं है",
 				"description": "चैट शुरू करने के लिए दाईं ओर एक चैनल बनाएँ या चुनें",
 				"createAction": "नया चैनल बनाएं"
+			},
+			"selection": {
+				"count": "${count} चयनित",
+				"copy": "कॉपी करें",
+				"cancel": "रद्द करें",
+				"copied": "${count} संदेश कॉपी किए गए",
+				"toolbar": {
+					"aria-label": "संदेश बहु-चयन टूलबार"
+				}
 			}
 		},
 		"sidebar": {
@@ -4421,6 +4430,9 @@
 		"bootstrapFailed": "सामाजिक इंटरफ़ेस आरंभीकरण विफल: ${error}",
 		"connectNodeFailed": "नोड से कनेक्ट करने में विफल: ${error}",
 		"dwellFailed": "देखने के समय के आधार पर प्राथमिकता डेटा अपडेट विफल: ${error}",
+		"readProgress": {
+			"saveFailed": "पठन प्रगति सहेजने में विफल: ${error}"
+		},
 		"home_function_buttons": {
 			"main": {
 				"title": "फ़ीड"
@@ -6819,7 +6831,9 @@
 			"close": {
 				"title": "बंद करें",
 				"aria-label": "बंद करें"
-			}
+			},
+			"copy": "कॉपी करें",
+			"download": "डाउनलोड करें"
 		},
 		"dashboard": {
 			"title": "डैशबोर्ड",
@@ -6926,7 +6940,9 @@
 		"alerts": {
 			"loadFailed": "लोड करने में विफल: ${message}",
 			"saveFailed": "सहेजने में विफल: ${message}",
-			"runFailed": "चलाने में विफल: ${message}"
+			"runFailed": "चलाने में विफल: ${message}",
+			"copied": "क्लिपबोर्ड पर कॉपी किया गया",
+			"copyFailed": "कॉपी करने में विफल: ${message}"
 		},
 		"home_function_buttons": {
 			"dev": {

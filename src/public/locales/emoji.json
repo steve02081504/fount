@@ -3029,12 +3029,12 @@
 				"createAction": "🆕📺"
 			},
 			"selection": {
-				"count": "已选 ${count} 条",
-				"copy": "复制",
-				"cancel": "取消",
-				"copied": "已复制 ${count} 条消息",
+				"count": "✅ ${count}",
+				"copy": "📋",
+				"cancel": "↩️",
+				"copied": "✅📋 ${count}",
 				"toolbar": {
-					"aria-label": "消息多选工具栏"
+					"aria-label": "📋☑️"
 				}
 			}
 		},
@@ -4430,6 +4430,9 @@
 		"bootstrapFailed": "🏛️🚀❌: ${error}",
 		"connectNodeFailed": "🔗🌐❌：${error}",
 		"dwellFailed": "👀⏱️⭐❤️❌：${error}",
+		"readProgress": {
+			"saveFailed": "📖💾❌：${error}"
+		},
 		"home_function_buttons": {
 			"main": {
 				"title": "🏛️"
@@ -6829,8 +6832,8 @@
 				"title": "❌",
 				"aria-label": "❌"
 			},
-			"copy": "复制",
-			"download": "下载"
+			"copy": "📋",
+			"download": "⬇️"
 		},
 		"dashboard": {
 			"title": "📊",
@@ -6938,8 +6941,8 @@
 			"loadFailed": "⚠️📥 ${message}",
 			"saveFailed": "⚠️💾 ${message}",
 			"runFailed": "⚠️🏃 ${message}",
-			"copied": "已复制到剪贴板",
-			"copyFailed": "复制失败：${message}"
+			"copied": "✅📋",
+			"copyFailed": "📋❌：${message}"
 		},
 		"home_function_buttons": {
 			"dev": {

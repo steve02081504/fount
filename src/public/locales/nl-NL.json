@@ -3033,6 +3033,15 @@
 				"title": "Deze groep heeft nog geen kanalen",
 				"description": "Maak of kies rechts een kanaal om te beginnen met chatten",
 				"createAction": "Nieuw kanaal maken"
+			},
+			"selection": {
+				"count": "${count} geselecteerd",
+				"copy": "Kopiëren",
+				"cancel": "Annuleren",
+				"copied": "${count} berichten gekopieerd",
+				"toolbar": {
+					"aria-label": "Werkbalk voor het selecteren van meerdere berichten"
+				}
 			}
 		},
 		"sidebar": {
@@ -4427,6 +4436,9 @@
 		"bootstrapFailed": "Initialisatie van sociale interface mislukt: ${error}",
 		"connectNodeFailed": "Verbinding met knooppunt mislukt: ${error}",
 		"dwellFailed": "Voorkeursgegevens bijwerken op basis van kijktijd mislukt: ${error}",
+		"readProgress": {
+			"saveFailed": "Leesvoortgang opslaan mislukt: ${error}"
+		},
 		"home_function_buttons": {
 			"main": {
 				"title": "Plein"
@@ -6825,7 +6837,9 @@
 			"close": {
 				"title": "Sluiten",
 				"aria-label": "Sluiten"
-			}
+			},
+			"copy": "Kopiëren",
+			"download": "Downloaden"
 		},
 		"dashboard": {
 			"title": "Dashboard",
@@ -6932,7 +6946,9 @@
 		"alerts": {
 			"loadFailed": "Laden mislukt: ${message}",
 			"saveFailed": "Opslaan mislukt: ${message}",
-			"runFailed": "Uitvoering mislukt: ${message}"
+			"runFailed": "Uitvoering mislukt: ${message}",
+			"copied": "Gekopieerd naar klembord",
+			"copyFailed": "Kopiëren mislukt: ${message}"
 		},
 		"home_function_buttons": {
 			"dev": {

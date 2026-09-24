@@ -3027,6 +3027,15 @@
 				"title": "Nhóm này chưa có kênh nào",
 				"description": "Tạo hoặc chọn một kênh ở bên phải để bắt đầu trò chuyện",
 				"createAction": "Tạo kênh mới"
+			},
+			"selection": {
+				"count": "Đã chọn ${count}",
+				"copy": "Sao chép",
+				"cancel": "Huỷ",
+				"copied": "Đã sao chép ${count} tin nhắn",
+				"toolbar": {
+					"aria-label": "Thanh công cụ chọn nhiều tin nhắn"
+				}
 			}
 		},
 		"sidebar": {
@@ -4421,6 +4430,9 @@
 		"bootstrapFailed": "Khởi tạo giao diện xã hội không thành công: ${error}",
 		"connectNodeFailed": "Không thể kết nối tới nút: ${error}",
 		"dwellFailed": "Không thể cập nhật dữ liệu sở thích theo thời gian xem: ${error}",
+		"readProgress": {
+			"saveFailed": "Lưu vị trí đọc thất bại: ${error}"
+		},
 		"home_function_buttons": {
 			"main": {
 				"title": "Quảng trường"
@@ -6819,7 +6831,9 @@
 			"close": {
 				"title": "Đóng",
 				"aria-label": "Đóng"
-			}
+			},
+			"copy": "Sao chép",
+			"download": "Tải xuống"
 		},
 		"dashboard": {
 			"title": "Bảng điều khiển",
@@ -6926,7 +6940,9 @@
 		"alerts": {
 			"loadFailed": "Tải thất bại: ${message}",
 			"saveFailed": "Lưu thất bại: ${message}",
-			"runFailed": "Chạy thất bại: ${message}"
+			"runFailed": "Chạy thất bại: ${message}",
+			"copied": "Đã sao chép vào clipboard",
+			"copyFailed": "Sao chép thất bại: ${message}"
 		},
 		"home_function_buttons": {
 			"dev": {

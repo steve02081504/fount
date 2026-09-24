@@ -3027,6 +3027,15 @@
 				"title": "This group has no channels yet",
 				"description": "Create or select a channel on the right to start chatting",
 				"createAction": "Create new channel"
+			},
+			"selection": {
+				"count": "${count} selected",
+				"copy": "Copy",
+				"cancel": "Cancel",
+				"copied": "Copied ${count} messages",
+				"toolbar": {
+					"aria-label": "Message multi-select toolbar"
+				}
 			}
 		},
 		"sidebar": {
@@ -4421,6 +4430,9 @@
 		"bootstrapFailed": "Social interface initialization failed: ${error}",
 		"connectNodeFailed": "Couldn't connect to node: ${error}",
 		"dwellFailed": "Couldn't update taste data from watch time: ${error}",
+		"readProgress": {
+			"saveFailed": "Failed to save reading progress: ${error}"
+		},
 		"home_function_buttons": {
 			"main": {
 				"title": "Square"

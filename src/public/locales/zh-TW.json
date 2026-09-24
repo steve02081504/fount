@@ -3026,6 +3026,15 @@
 				"title": "這個群組還沒有頻道",
 				"description": "在右側新建或選擇一個頻道，就能開始聊天",
 				"createAction": "新建頻道"
+			},
+			"selection": {
+				"count": "已選 ${count} 則",
+				"copy": "複製",
+				"cancel": "取消",
+				"copied": "已複製 ${count} 則訊息",
+				"toolbar": {
+					"aria-label": "訊息多選工具列"
+				}
 			}
 		},
 		"sidebar": {
@@ -4420,6 +4429,9 @@
 		"bootstrapFailed": "社交介面初始化失敗：${error}",
 		"connectNodeFailed": "連接節點失敗：${error}",
 		"dwellFailed": "觀看時長偏好更新失敗：${error}",
+		"readProgress": {
+			"saveFailed": "儲存閱讀進度失敗：${error}"
+		},
 		"home_function_buttons": {
 			"main": {
 				"title": "廣場"
@@ -6818,7 +6830,9 @@
 			"close": {
 				"title": "關閉",
 				"aria-label": "關閉"
-			}
+			},
+			"copy": "複製",
+			"download": "下載"
 		},
 		"dashboard": {
 			"title": "儀表板",
@@ -6925,7 +6939,9 @@
 		"alerts": {
 			"loadFailed": "載入失敗：${message}",
 			"saveFailed": "儲存失敗：${message}",
-			"runFailed": "執行失敗：${message}"
+			"runFailed": "執行失敗：${message}",
+			"copied": "已複製到剪貼簿",
+			"copyFailed": "複製失敗：${message}"
 		},
 		"home_function_buttons": {
 			"dev": {

@@ -3027,6 +3027,15 @@
 				"title": "لا توجد قنوات في هذه المجموعة بعد",
 				"description": "أنشئ قناة على اليمين أو اختر إحداها لبدء الدردشة",
 				"createAction": "إنشاء قناة جديدة"
+			},
+			"selection": {
+				"count": "تم تحديد ${count}",
+				"copy": "نسخ",
+				"cancel": "إلغاء",
+				"copied": "تم نسخ ${count} رسالة",
+				"toolbar": {
+					"aria-label": "شريط أدوات تحديد الرسائل المتعدد"
+				}
 			}
 		},
 		"sidebar": {
@@ -4431,6 +4440,9 @@
 		"bootstrapFailed": "فشل تهيئة واجهة التواصل: ${error}",
 		"connectNodeFailed": "فشل الاتصال بالعقدة: ${error}",
 		"dwellFailed": "فشل تحديث بيانات التفضيلات حسب مدة المشاهدة: ${error}",
+		"readProgress": {
+			"saveFailed": "فشل حفظ موضع القراءة: ${error}"
+		},
 		"home_function_buttons": {
 			"main": {
 				"title": "الساحة"
@@ -6829,7 +6841,9 @@
 			"close": {
 				"title": "إغلاق",
 				"aria-label": "إغلاق"
-			}
+			},
+			"copy": "نسخ",
+			"download": "تنزيل"
 		},
 		"dashboard": {
 			"title": "لوحة المعلومات",
@@ -6936,7 +6950,9 @@
 		"alerts": {
 			"loadFailed": "فشل التحميل: ${message}",
 			"saveFailed": "فشل الحفظ: ${message}",
-			"runFailed": "فشل التشغيل: ${message}"
+			"runFailed": "فشل التشغيل: ${message}",
+			"copied": "تم النسخ إلى الحافظة",
+			"copyFailed": "فشل النسخ: ${message}"
 		},
 		"home_function_buttons": {
 			"dev": {

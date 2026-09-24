@@ -3027,6 +3027,15 @@
 				"title": "В этой группе пока нет каналов",
 				"description": "Создайте или выберите канал справа, чтобы начать общение",
 				"createAction": "Создать новый канал"
+			},
+			"selection": {
+				"count": "Выбрано: ${count}",
+				"copy": "Копировать",
+				"cancel": "Отмена",
+				"copied": "Скопировано сообщений: ${count}",
+				"toolbar": {
+					"aria-label": "Панель группового выбора сообщений"
+				}
 			}
 		},
 		"sidebar": {
@@ -4429,6 +4438,9 @@
 		"bootstrapFailed": "Не удалось инициализировать социнтерфейс: ${error}",
 		"connectNodeFailed": "Не удалось подключиться к узлу: ${error}",
 		"dwellFailed": "Не удалось обновить данные о предпочтениях по времени просмотра: ${error}",
+		"readProgress": {
+			"saveFailed": "Не удалось сохранить прогресс чтения: ${error}"
+		},
 		"home_function_buttons": {
 			"main": {
 				"title": "Площадь"
@@ -6827,7 +6839,9 @@
 			"close": {
 				"title": "Закрыть",
 				"aria-label": "Закрыть"
-			}
+			},
+			"copy": "Копировать",
+			"download": "Скачать"
 		},
 		"dashboard": {
 			"title": "Панель управления",
@@ -6934,7 +6948,9 @@
 		"alerts": {
 			"loadFailed": "Ошибка загрузки: ${message}",
 			"saveFailed": "Ошибка сохранения: ${message}",
-			"runFailed": "Ошибка запуска: ${message}"
+			"runFailed": "Ошибка запуска: ${message}",
+			"copied": "Скопировано в буфер обмена",
+			"copyFailed": "Не удалось скопировать: ${message}"
 		},
 		"home_function_buttons": {
 			"dev": {

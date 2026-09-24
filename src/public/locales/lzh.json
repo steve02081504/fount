@@ -3029,12 +3029,12 @@
 				"createAction": "立分苑"
 			},
 			"selection": {
-				"count": "已选 ${count} 条",
-				"copy": "复制",
-				"cancel": "取消",
-				"copied": "已复制 ${count} 条消息",
+				"count": "已擇 ${count} 條",
+				"copy": "謄錄",
+				"cancel": "止",
+				"copied": "已謄錄 ${count} 條訊息",
 				"toolbar": {
-					"aria-label": "消息多选工具栏"
+					"aria-label": "訊息多擇之欄"
 				}
 			}
 		},
@@ -4430,6 +4430,9 @@
 		"bootstrapFailed": "社交界面初設未遂：${error}",
 		"connectNodeFailed": "連接節點未遂：${error}",
 		"dwellFailed": "依觀看時長更新偏好未遂：${error}",
+		"readProgress": {
+			"saveFailed": "存閱讀進度未遂：${error}"
+		},
 		"home_function_buttons": {
 			"main": {
 				"title": "廣場"
@@ -6829,8 +6832,8 @@
 				"title": "閉",
 				"aria-label": "閉"
 			},
-			"copy": "复制",
-			"download": "下载"
+			"copy": "謄錄",
+			"download": "拓存"
 		},
 		"dashboard": {
 			"title": "儀表盤",
@@ -6938,8 +6941,8 @@
 			"loadFailed": "載之不成：${message}",
 			"saveFailed": "存之不成：${message}",
 			"runFailed": "行之不成：${message}",
-			"copied": "已复制到剪贴板",
-			"copyFailed": "复制失败：${message}"
+			"copied": "已謄於剪貼板",
+			"copyFailed": "謄錄未遂：${message}"
 		},
 		"home_function_buttons": {
 			"dev": {

@@ -3033,6 +3033,15 @@
 				"title": "Este grupo ainda não tem canais",
 				"description": "Crie ou selecione um canal à direita para começar a conversar",
 				"createAction": "Criar novo canal"
+			},
+			"selection": {
+				"count": "${count} selecionadas",
+				"copy": "Copiar",
+				"cancel": "Cancelar",
+				"copied": "${count} mensagens copiadas",
+				"toolbar": {
+					"aria-label": "Barra de ferramentas de seleção múltipla de mensagens"
+				}
 			}
 		},
 		"sidebar": {
@@ -4427,6 +4436,9 @@
 		"bootstrapFailed": "Falha na inicialização da interface social: ${error}",
 		"connectNodeFailed": "Falha ao ligar ao nó: ${error}",
 		"dwellFailed": "Falha ao atualizar preferências com base no tempo de visualização: ${error}",
+		"readProgress": {
+			"saveFailed": "Falha ao guardar o progresso de leitura: ${error}"
+		},
 		"home_function_buttons": {
 			"main": {
 				"title": "Praça"
@@ -6825,7 +6837,9 @@
 			"close": {
 				"title": "Fechar",
 				"aria-label": "Fechar"
-			}
+			},
+			"copy": "Copiar",
+			"download": "Descarregar"
 		},
 		"dashboard": {
 			"title": "Painel",
@@ -6932,7 +6946,9 @@
 		"alerts": {
 			"loadFailed": "Falha ao carregar: ${message}",
 			"saveFailed": "Falha ao guardar: ${message}",
-			"runFailed": "Falha ao executar: ${message}"
+			"runFailed": "Falha ao executar: ${message}",
+			"copied": "Copiado para a área de transferência",
+			"copyFailed": "Falha ao copiar: ${message}"
 		},
 		"home_function_buttons": {
 			"dev": {

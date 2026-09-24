@@ -3027,6 +3027,15 @@
 				"title": "Þessi hópur hefur engar rásir ennþá",
 				"description": "Búðu til eða veldu rás til hægri til að byrja að spjalla",
 				"createAction": "Búa til nýja rás"
+			},
+			"selection": {
+				"count": "${count} valin",
+				"copy": "Afrita",
+				"cancel": "Hætta við",
+				"copied": "${count} skilaboð afrituð",
+				"toolbar": {
+					"aria-label": "Verkfærastika fyrir fjölval skilaboða"
+				}
 			}
 		},
 		"sidebar": {
@@ -4421,6 +4430,9 @@
 		"bootstrapFailed": "Frumstilling samfélagsviðmóts mistókst: ${error}",
 		"connectNodeFailed": "Tenging við hnút mistókst: ${error}",
 		"dwellFailed": "Uppfærsla óskagagna út frá áhorfstíma mistókst: ${error}",
+		"readProgress": {
+			"saveFailed": "Vistun lestrarstöðu mistókst: ${error}"
+		},
 		"home_function_buttons": {
 			"main": {
 				"title": "Torg"
@@ -6819,7 +6831,9 @@
 			"close": {
 				"title": "Loka",
 				"aria-label": "Loka"
-			}
+			},
+			"copy": "Afrita",
+			"download": "Sækja"
 		},
 		"dashboard": {
 			"title": "Mælaborð",
@@ -6926,7 +6940,9 @@
 		"alerts": {
 			"loadFailed": "Hleðsla mistókst: ${message}",
 			"saveFailed": "Vistun mistókst: ${message}",
-			"runFailed": "Keyrsla mistókst: ${message}"
+			"runFailed": "Keyrsla mistókst: ${message}",
+			"copied": "Afritað á klippiborð",
+			"copyFailed": "Afritun mistókst: ${message}"
 		},
 		"home_function_buttons": {
 			"dev": {

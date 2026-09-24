@@ -3027,6 +3027,15 @@
 				"title": "이 그룹에는 아직 채널이 없습니다",
 				"description": "오른쪽에서 채널을 만들거나 선택하여 대화를 시작하세요",
 				"createAction": "채널 만들기"
+			},
+			"selection": {
+				"count": "${count}개 선택됨",
+				"copy": "복사",
+				"cancel": "취소",
+				"copied": "메시지 ${count}개를 복사했습니다",
+				"toolbar": {
+					"aria-label": "메시지 다중 선택 도구 모음"
+				}
 			}
 		},
 		"sidebar": {
@@ -4421,6 +4430,9 @@
 		"bootstrapFailed": "소셜 인터페이스 초기화 실패: ${error}",
 		"connectNodeFailed": "노드 연결 실패: ${error}",
 		"dwellFailed": "체류 시간 기반 취향 데이터 업데이트 실패: ${error}",
+		"readProgress": {
+			"saveFailed": "읽기 진행 상황 저장 실패: ${error}"
+		},
 		"home_function_buttons": {
 			"main": {
 				"title": "정사각형"
@@ -6819,7 +6831,9 @@
 			"close": {
 				"title": "닫기",
 				"aria-label": "닫기"
-			}
+			},
+			"copy": "복사",
+			"download": "다운로드"
 		},
 		"dashboard": {
 			"title": "대시보드",
@@ -6926,7 +6940,9 @@
 		"alerts": {
 			"loadFailed": "불러오기 실패: ${message}",
 			"saveFailed": "저장 실패: ${message}",
-			"runFailed": "실행 실패: ${message}"
+			"runFailed": "실행 실패: ${message}",
+			"copied": "클립보드에 복사했습니다",
+			"copyFailed": "복사 실패: ${message}"
 		},
 		"home_function_buttons": {
 			"dev": {
