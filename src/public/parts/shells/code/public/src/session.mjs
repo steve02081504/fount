@@ -1187,7 +1187,7 @@ export function handleAsyncEntryEvent(payload) {
 	const knownIds = new Set(session.entries.map(e => String(e.id)))
 	if (!knownIds.has(String(entry.id))) {
 		session.entries.push(entry)
-		if (session === store.session && isEntryVisible(entry)) appendEntryBubble(entry)
+		if (session === store.session && isEntryVisible(entry)) appendEntryBubble(entry, { before: generatingBubble?.bubble })
 	}
 	markSessionDirty(session)
 	updateEmptyMode()

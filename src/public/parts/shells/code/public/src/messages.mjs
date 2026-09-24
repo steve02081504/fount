@@ -692,8 +692,11 @@ elements.messages.addEventListener('pointerdown', event => {
 	// 直接按在消息流自身上 = 拖滚动条
 	if (event.target === elements.messages) releasePin()
 })
-elements.messages.addEventListener('toggle', () => { lastUserToggleAt = performance.now() }, { capture: true })
+// 程序重建折叠块也会触发 toggle；只有用户操作才应暂停贴底跟随。
 elements.messages.addEventListener('click', () => { lastUserToggleAt = performance.now() }, { capture: true })
+elements.messages.addEventListener('keydown', event => {
+	if (event.target.closest('summary') && ['Enter', ' '].includes(event.key)) lastUserToggleAt = performance.now()
+}, { capture: true })
 
 /**
  * 贴底跟随：贴底状态下，消息流内任何内容变化（流式增量、markdown 异步落定、工具输出）
@@ -766,14 +769,15 @@ export function renderMessages() {
 }
 
 /**
- * 追加消息气泡（无可见内容的条目直接跳过）。
+ * 追加消息气泡（无可见内容的条目直接跳过）。生成期间可插在流式气泡之前。
  * @param {object} entry - 会话条目。
+ * @param {{before?: HTMLElement|null}} [options] - 插入锚点，缺省为消息流末端。
  * @returns {HTMLElement|null} 气泡元素；跳过时为 null。
  */
-export function appendEntryBubble(entry) {
+export function appendEntryBubble(entry, { before = backToBottom } = {}) {
 	if (!isEntryVisible(entry)) return null
 	const bubble = renderEntryBubble(entry, { isLast: true })
-	elements.messages.insertBefore(bubble, backToBottom)
+	elements.messages.insertBefore(bubble, before || backToBottom)
 	updateEmptyMode()
 	// 用户自己发出的消息总要看见：恢复贴底
 	if (entry.role === 'user') scrollMessagesBottom()

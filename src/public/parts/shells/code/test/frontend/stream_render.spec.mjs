@@ -1,6 +1,6 @@
 /** 真实会话 WS → 逐帧预览 → 浏览器 Markdown → 最终会话条目的渲染回归。 */
 import { test, expect } from './fixtures.mjs'
-import { API_BASE, BASE, leftoverWorkspaceDirs, makeWorkspace, openCode, PREF_PREFIX, removeAllWorkspacesViaApi, selectWorkspaceViaBrowser, useLeftoverWorkspaceCleanup } from './helpers.mjs'
+import { API_BASE, BASE, holdLocale, leftoverWorkspaceDirs, makeWorkspace, openCode, PREF_PREFIX, removeAllWorkspacesViaApi, selectWorkspaceViaBrowser, useLeftoverWorkspaceCleanup } from './helpers.mjs'
 
 useLeftoverWorkspaceCleanup(test)
 
@@ -61,6 +61,33 @@ test('completed run-js does not remain below later streaming text', async ({ pag
 	})), { timeout: 60_000 }).toEqual({ preview: true, live: 0 })
 	await expect(page.locator('.code-message.generating')).toHaveCount(0)
 	await expect(page.locator('.code-message.role-tool')).toContainText('live-tool-output')
+})
+
+test('background completion notices appear before the ongoing reply', async ({ page, baseUrl }) => {
+	await openCode(page, baseUrl)
+	await holdLocale(page)
+	const result = await page.evaluate(async () => {
+		const { store } = await import('/parts/shells:code/src/store.mjs')
+		const { handleAsyncEntryEvent, newSessionObject, startGeneratingBubble } = await import('/parts/shells:code/src/session.mjs')
+		const { renderMessages } = await import('/parts/shells:code/src/messages.mjs')
+		const session = store.session = newSessionObject('async-notice-test')
+		session.entries = [{ id: 'prompt', role: 'user', uid: 'user', content: '启动后台任务', time: new Date().toISOString() }]
+		renderMessages()
+		store.generating = true
+		store.generatingSession = session
+		startGeneratingBubble()
+		for (const id of ['notice-a', 'notice-b', 'notice-c'])
+			handleAsyncEntryEvent({ chatName: `code-${session.id}`, entry: {
+				id, uid: 'system', role: 'system', name: 'async-task', content: `后台任务 ${id} 已完成`, time: new Date().toISOString(),
+			} })
+		const flow = document.getElementById('messages')
+		return {
+			dom: [...flow.querySelectorAll('.code-message')].map(node => node.dataset.entryId || 'generating'),
+			stored: session.entries.map(entry => entry.id),
+		}
+	})
+	expect(result.stored).toEqual(['prompt', 'notice-a', 'notice-b', 'notice-c'])
+	expect(result.dom).toEqual(['prompt', 'notice-a', 'notice-b', 'notice-c', 'generating'])
 })
 
 test('persisted multi-round transcript renders the report outside its orphan fence', async ({ page, baseUrl }) => {
