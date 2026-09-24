@@ -24,6 +24,9 @@ function pickMessage(message) {
 
 /**
  * 由逐轮请求快照与最终回复构建对话事件流。
+ *
+ * 最终回复是末轮请求的输出，与末轮同轮次（不新增幻影轮）；只有回复而无请求时占第 1 轮。
+ * 轮次号必须与 `buildRoundUnits` 的口径一致，否则多代合并复播会整体错位。
  * @param {object[]} requests 逐轮请求快照（含 `index` 与 `messages`）
  * @param {{ response?: unknown, responseId?: string, responseName?: string, responseUid?: string }} [final] 最终角色回复
  * @returns {{ rounds: number, events: object[] }} 对话事件与总轮次
@@ -49,18 +52,20 @@ export function buildDialogue(requests, final = {}) {
 			}
 		}
 	}
-	if (final.response !== undefined && final.response !== null)
+	if (final.response !== undefined) {
+		round = Math.max(round, 1)
 		events.push({
-			round: round + 1,
+			round,
 			op: 'insert',
 			message: {
-				id: final.responseId ?? `final:${round + 1}`,
+				id: final.responseId ?? `final:${round}`,
 				role: 'char',
 				name: final.responseName ?? '',
 				uid: final.responseUid ?? 'char',
 				content: String(final.response),
 			},
 		})
+	}
 	return { rounds: round, events }
 }
 

@@ -1,9 +1,10 @@
 /**
  * 【文件】generationChain.mjs — 生成记录纯函数
- * 【职责】按 `conversationId`/`chatId` 聚合生成记录，并按 `parentId` 构建父子链；前后端共用，无副作用。
- * 【原理】记录以 `id` 为节点、`parentId` 为边；找不到父节点的记录作为链根。
- * 【关联】agent_studio/src/generation_history.mjs 重导出；前端链视图。
+ * 【职责】按 `conversationId`/`chatId` 聚合生成记录，按 `parentId` 构建父子链，并把各代复原对话合并为连续对话；前后端共用，无副作用。
+ * 【原理】记录以 `id` 为节点、`parentId` 为边；找不到父节点的记录作为链根。对话按开始顺序各代轮次顺延合并。
+ * 【关联】agent_studio/src/generation_history.mjs 重导出；前端链视图；dialogueReplay.mjs。
  */
+import { replayDialogue } from './dialogueReplay.mjs'
 
 /**
  * @typedef {object} generationRecordSummary_t
@@ -99,6 +100,29 @@ export function minCacheRateByChar(records) {
 		if (current == null || record.cacheRate < current) result[record.charId] = record.cacheRate
 	}
 	return result
+}
+
+/**
+ * 把一次会话内各生成的复原对话合并为一条连续对话（同 id 消息不重复，编辑按轮次替换）。
+ *
+ * 每代轮次跨度与前端 `buildRoundUnits` 一致（`max(requestCount, dialogue.rounds, 1)`），否则复播整体错位。
+ * @param {object[]} generations 生成记录（按开始时间升序，含 `dialogue` / `requestCount`）
+ * @returns {{ rounds: number, events: object[], messages: object[] }} 合并后的对话
+ */
+export function mergeDialogueEvents(generations) {
+	const events = []
+	let offset = 0
+	let rounds = 0
+	for (const generation of generations || []) {
+		const dialogue = generation.dialogue
+		if (!dialogue?.events?.length) continue
+		const span = Math.max(generation.requestCount, dialogue.rounds, 1)
+		for (const event of dialogue.events)
+			events.push({ ...event, round: (event.round ?? 0) + offset })
+		offset += span
+		rounds = Math.max(rounds, offset)
+	}
+	return { rounds, events, messages: replayDialogue(events) }
 }
 
 /**

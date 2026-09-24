@@ -27,8 +27,16 @@ Deno.test('buildDialogue dedupes repeated messages by id and appends the final r
 	const dialogue = buildDialogue(requests, { response: 'bye', responseId: 'final' })
 	assertEquals(dialogue.rounds, 2)
 	assertEquals(dialogue.events.map(event => event.op), ['insert', 'insert', 'insert'])
-	assertEquals(dialogue.events.at(-1).round, 3)
-	assertEquals(replayDialogue(dialogue.events).map(message => message.content), ['hi', 'hello', 'bye'])
+	// 最终回复是末轮请求的输出，与末轮同轮次（不新增幻影轮），否则多代合并复播会整体错位
+	assertEquals(dialogue.events.at(-1).round, 2)
+	assertEquals(replayDialogue(dialogue.events, { upToRound: 2 }).map(message => message.content), ['hi', 'hello', 'bye'])
+})
+
+Deno.test('buildDialogue places a reply without requests at round 1', () => {
+	const dialogue = buildDialogue([], { response: 'only', responseId: 'final' })
+	assertEquals(dialogue.rounds, 1)
+	assertEquals(dialogue.events.map(event => event.round), [1])
+	assertEquals(replayDialogue(dialogue.events, { upToRound: 1 }).map(message => message.content), ['only'])
 })
 
 Deno.test('buildDialogue records an edit at the round it happens and replay advances content', () => {

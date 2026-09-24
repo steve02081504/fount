@@ -12,14 +12,13 @@ import { loadJsonFileIfExists, saveJsonFile } from '../../../../../scripts/json_
 import { ms } from '../../../../../scripts/ms.mjs'
 import { getUserDictionary } from '../../../../../server/auth/index.mjs'
 import { events } from '../../../../../server/events.mjs'
-import { replayDialogue } from '../public/shared/dialogueReplay.mjs'
-import { conversationKey, summarizeConversations } from '../public/shared/generationChain.mjs'
+import { conversationKey, mergeDialogueEvents, summarizeConversations } from '../public/shared/generationChain.mjs'
 import { estimateGenerationCache, serializeRequest } from '../public/shared/promptCache.mjs'
 
 /**
  * 重导出生成链 / 会话聚合纯函数，供调用方从本模块统一获取。
  */
-export { buildChains, conversationKey, groupByConversation, minCacheRateByChar, summarizeConversations } from '../public/shared/generationChain.mjs'
+export { buildChains, conversationKey, groupByConversation, mergeDialogueEvents, minCacheRateByChar, summarizeConversations } from '../public/shared/generationChain.mjs'
 
 /** 默认保留策略：prompt（input）2 天，conversation（整条记录）7 天。 */
 export const DEFAULT_RETENTION = {
@@ -465,30 +464,5 @@ export async function getConversation(username, key) {
 		if (record) generations.push(record)
 	}
 	if (!generations.length) return null
-	return { key, generations, dialogue: mergeConversationDialogue(generations) }
-}
-
-/**
- * 把一次会话内各生成的复原对话合并为一条连续对话（同 id 消息不重复，编辑按轮次替换）。
- * 各生成的轮次依次顺延：把每个生成的事件轮次整体平移后合并复播。
- * @param {object[]} generations 生成记录（按开始时间升序）
- * @returns {{ rounds: number, events: object[], messages: object[] }} 合并后的对话
- */
-function mergeConversationDialogue(generations) {
-	const events = []
-	let offset = 0
-	let rounds = 0
-	for (const generation of generations) {
-		const dialogue = generation.dialogue
-		if (!dialogue?.events?.length) continue
-		let span = 0
-		for (const event of dialogue.events) {
-			const round = (event.round ?? 0) + offset
-			events.push({ ...event, round })
-			span = Math.max(span, event.round ?? 0)
-		}
-		offset += span
-		rounds = Math.max(rounds, offset)
-	}
-	return { rounds, events, messages: replayDialogue(events) }
+	return { key, generations, dialogue: mergeDialogueEvents(generations) }
 }

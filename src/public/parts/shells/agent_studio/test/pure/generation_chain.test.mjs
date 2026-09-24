@@ -4,7 +4,7 @@
  */
 import { assertEquals } from 'jsr:@std/assert'
 
-import { buildChains, conversationKey, groupByConversation, minCacheRateByChar, summarizeConversations } from '../../public/shared/generationChain.mjs'
+import { buildChains, conversationKey, groupByConversation, mergeDialogueEvents, minCacheRateByChar, summarizeConversations } from '../../public/shared/generationChain.mjs'
 
 Deno.test('groupByConversation falls back to chatId and keeps empty key', () => {
 	const groups = groupByConversation([
@@ -67,6 +67,37 @@ Deno.test('summarizeConversations keeps the lowest cache rate per conversation',
 	])
 	assertEquals(summaries.find(summary => summary.key === 'conv').minCacheRate, 0.35)
 	assertEquals(summaries.find(summary => summary.key === 'chat').minCacheRate, null)
+})
+
+Deno.test('mergeDialogueEvents offsets each generation by its round span so replay stays aligned', () => {
+	const generations = [
+		{
+			id: 'g1', requestCount: 4,
+			dialogue: {
+				rounds: 4,
+				events: [
+					{ round: 1, op: 'insert', message: { id: 'u', role: 'user', content: 'hi' } },
+					{ round: 4, op: 'insert', message: { id: 'c1', role: 'char', content: 'r4' } },
+					{ round: 4, op: 'insert', message: { id: 'final1', role: 'char', content: 'bye' } },
+				],
+			},
+		},
+		{
+			id: 'g2', requestCount: 1,
+			dialogue: {
+				rounds: 1,
+				events: [
+					{ round: 1, op: 'insert', message: { id: 'u2', role: 'user', content: 'next' } },
+					{ round: 1, op: 'insert', message: { id: 'final2', role: 'char', content: 'ans' } },
+				],
+			},
+		},
+	]
+	const merged = mergeDialogueEvents(generations)
+	// g1 占 1..4，g2 顺延到第 5 轮，总轮次与前端 buildRoundUnits 一致
+	assertEquals(merged.rounds, 5)
+	assertEquals(merged.events.map(event => [event.message.id, event.round]), [['u', 1], ['c1', 4], ['final1', 4], ['u2', 5], ['final2', 5]])
+	assertEquals(merged.messages.map(message => message.content), ['hi', 'r4', 'bye', 'next', 'ans'])
 })
 
 Deno.test('minCacheRateByChar picks the lowest finite rate per character', () => {
