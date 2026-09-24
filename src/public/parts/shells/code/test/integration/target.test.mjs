@@ -43,6 +43,22 @@ Deno.test('local executor read/write/list against temp workspace', async () => {
 	}
 })
 
+Deno.test('local executor listDir follows directory links (junction)', async () => {
+	const root = await tempDir()
+	try {
+		await fs.mkdir(path.join(root, 'real'))
+		// 目录联接（Windows junction）无需管理员权限；unix 用普通符号链接
+		await fs.symlink(path.join(root, 'real'), path.join(root, 'link'), process.platform === 'win32' ? 'junction' : 'dir')
+		const executor = createTargetExecutor('u', { machine: '0', workdir: root })
+		const link = (await executor.listDir('.')).find(entry => entry.name === 'link')
+		assert(link, '目录链接应出现在列表中')
+		assertEquals(link.isDirectory, true, '目录链接应标记为目录')
+	}
+	finally {
+		await fs.rm(root, { recursive: true, force: true })
+	}
+})
+
 Deno.test('createArgsExecutorResolver caches per target', () => {
 	const args = { username: 'u', workdir: { machine: '0', path: '/base' } }
 	const resolver = createArgsExecutorResolver(args)

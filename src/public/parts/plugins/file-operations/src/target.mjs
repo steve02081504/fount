@@ -316,8 +316,18 @@ function createLocalExecutor(target) {
 		 * @returns {Promise<dirEntry_t[]>} 条目列表。
 		 */
 		listDir: async p => {
-			const entries = await fs.promises.readdir(abs(p), { withFileTypes: true })
-			return entries.map(e => ({ name: e.name, isDirectory: e.isDirectory(), isFile: e.isFile() }))
+			const dir = abs(p)
+			const entries = await fs.promises.readdir(dir, { withFileTypes: true })
+			return await Promise.all(entries.map(async e => {
+				let isDirectory = e.isDirectory()
+				let isFile = e.isFile()
+				// readdir 不跟随链接：符号链接 / 目录联接（Windows junction）需 stat 解析真实类型
+				if (!isDirectory && !isFile && e.isSymbolicLink()) {
+					const st = await fs.promises.stat(path.join(dir, e.name)).catch(() => null)
+					if (st) { isDirectory = st.isDirectory(); isFile = st.isFile() }
+				}
+				return { name: e.name, isDirectory, isFile }
+			}))
 		},
 		/**
 		 * 查看条目。
@@ -493,7 +503,7 @@ function createRemoteExecutor(username, target) {
 		 * @param {string} p - 路径。
 		 * @returns {Promise<dirEntry_t[]>} 条目列表。
 		 */
-		listDir: async p => await withPath(absExpr => `const entries = await fs.readdir(${absExpr}, { withFileTypes: true });\nreturn entries.map(e => ({ name: e.name, isDirectory: e.isDirectory(), isFile: e.isFile() }))`, p),
+		listDir: async p => await withPath(absExpr => `const dir = ${absExpr};\nconst entries = await fs.readdir(dir, { withFileTypes: true });\nreturn await Promise.all(entries.map(async e => {\n\tlet isDirectory = e.isDirectory();\n\tlet isFile = e.isFile();\n\tif (!isDirectory && !isFile && e.isSymbolicLink()) {\n\t\tconst st = await fs.stat(path.join(dir, e.name)).catch(() => null);\n\t\tif (st) { isDirectory = st.isDirectory(); isFile = st.isFile(); }\n\t}\n\treturn { name: e.name, isDirectory, isFile };\n}))`, p),
 		/**
 		 * 查看条目。
 		 * @param {string} p - 路径。

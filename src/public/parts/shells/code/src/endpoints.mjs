@@ -178,11 +178,17 @@ async function buildQuickAccess(username, machine, workspacePath) {
 				const path = await import('node:path')
 				/** @type {Array<{name: string, path: string}>} 兄弟目录。 */
 				const out = []
+				const parent = path.dirname(workspacePath)
 				let entries
-				try { entries = await fs.readdir(path.dirname(workspacePath), { withFileTypes: true }) } catch { return out }
-				for (const e of entries)
-					if (e.isDirectory() && e.name !== path.basename(workspacePath))
-						out.push({ name: e.name, path: path.join(path.dirname(workspacePath), e.name) })
+				try { entries = await fs.readdir(parent, { withFileTypes: true }) } catch { return out }
+				for (const e of entries) {
+					if (e.name === path.basename(workspacePath)) continue
+					// 符号链接 / 目录联接（Windows junction）readdir 不跟随，需 stat 解析真实类型
+					let isDirectory = e.isDirectory()
+					if (!isDirectory && !e.isFile() && e.isSymbolicLink())
+						isDirectory = await fs.stat(path.join(parent, e.name)).then(st => st.isDirectory(), () => false)
+					if (isDirectory) out.push({ name: e.name, path: path.join(parent, e.name) })
+				}
 				return out
 			}, cleaned)
 			for (const item of siblings) collect(item)
