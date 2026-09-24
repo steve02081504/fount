@@ -74,7 +74,13 @@ Deno.test('createPromptRequestRecorder projects system prompt, messages and roun
 
 Deno.test('createPromptRequestRecorder snapshots the AI source BuildPrompt structure', async () => {
 	const recorder = createPromptRequestRecorder()
-	const aiSource = { BuildPrompt: async () => ({ messages: [{ role: 'system', content: 'you are demo' }], bytes: new Uint8Array([1, 2, 3, 4]) }) }
+	const aiSource = {
+		/**
+		 * 模拟 AI 源的 BuildPrompt 出站结构。
+		 * @returns {Promise<object>} 含 messages 与二进制附件的请求对象
+		 */
+		BuildPrompt: async () => ({ messages: [{ role: 'system', content: 'you are demo' }], bytes: new Uint8Array([1, 2, 3, 4]) })
+	}
 	await recordPromptRequest(recorder, makePromptStruct(), { aiSource })
 	const snapshot = recorder.requests[0].snapshot
 	assertEquals(typeof snapshot, 'string')
