@@ -51,3 +51,21 @@ export function responsesOutputResponse(content) {
 		headers: { 'Content-Type': 'application/json' },
 	})
 }
+
+/**
+ * 模拟严格 Responses 后端（vLLM / LiteLLM 等）：带 `type:'message'` 的 assistant
+ * 多轮历史若以字符串为 content，会按 `ResponseOutputMessage` 逐字符校验并返回 400。
+ * @param {string} [content] - 合法请求的回复文本。
+ * @returns {(request: {url: string, init?: RequestInit}) => Response} mockFetch handler。
+ */
+export function strictResponsesHandler(content = 'mock-ok') {
+	return ({ init }) => {
+		const body = JSON.parse(init.body)
+		for (const item of body.input ?? [])
+			if (item?.type === 'message' && item.role === 'assistant' && !Array.isArray(item.content))
+				return new Response(JSON.stringify({
+					error: { message: 'Input should be a valid dictionary', param: item.content },
+				}), { status: 400, headers: { 'Content-Type': 'application/json' } })
+		return responsesOutputResponse(content)
+	}
+}

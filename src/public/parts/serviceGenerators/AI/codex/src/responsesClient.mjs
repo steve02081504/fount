@@ -27,7 +27,11 @@ export function messagesToResponsesBody(messages, { model, stream, model_argumen
 						}
 					return part
 				})
-				: message.content
+				// 严格 Responses 后端会把带 type 的 assistant 消息按 ResponseOutputMessage 校验，字符串 content 会被逐字符迭代而 400；
+				// 多轮回传的 assistant 内容必须序列化为 output_text 内容块。
+				: role === 'assistant'
+					? [{ type: 'output_text', text: message.content }]
+					: message.content
 			return { type: 'message', role, content }
 		})
 	return {

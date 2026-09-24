@@ -14,9 +14,10 @@ import generator from '../../main.mjs'
 
 /**
  * 构造带默认 convert_config 的 proxy 源。
+ * @param {object} [overrides] - 覆盖配置。
  * @returns {Promise<object>} AI 源
  */
-async function makeSource() {
+async function makeSource(overrides = {}) {
 	return generator.interfaces.serviceGenerator.GetSource({
 		name: 'proxy-build-prompt',
 		url: 'https://example.invalid/v1/chat/completions',
@@ -35,6 +36,7 @@ async function makeSource() {
 			forceUserMessageEnding: false,
 			forceNoSystemMessages: false,
 		},
+		...overrides,
 	}, { /**
 	 * 忽略配置持久化的桩函数。
 	 * @returns {void}
@@ -76,4 +78,28 @@ Deno.test('proxy BuildPrompt serializes to a snapshot with a hashed buffer', asy
 	const snapshot = serializeSnapshotValue(await source.BuildPrompt(prompt))
 	assert(snapshot.includes('<buffer 5B'), 'buffer must be reduced to a hash marker')
 	assert(!snapshot.includes('base64'), 'snapshot must not embed base64')
+})
+
+Deno.test('proxy BuildPrompt keeps chat image_url but maps Responses input to input_image', async () => {
+	const conversation = createPromptStructConversation({ charName: 'ZL-31', userName: 'Tester' })
+	conversation.addUser('看图')
+	conversation.makePromptStruct().chat_log.find(entry => entry.role === 'user').files = [
+		{ name: 'a.png', mime_type: 'image/png', buffer: Buffer.from([1, 2, 3, 4, 5]) },
+	]
+
+	const chatSource = await makeSource()
+	const chatBody = await chatSource.BuildPrompt(conversation.makePromptStruct())
+	assert(Array.isArray(chatBody), 'chat style keeps the messages array')
+	const chatImage = chatBody.flatMap(message => Array.isArray(message.content) ? message.content : [])
+		.find(part => part.type === 'image_url')
+	assert(chatImage, 'chat style must keep image_url for older Chat Completions APIs')
+
+	const responsesSource = await makeSource({
+		url: 'https://example.invalid/v1/responses',
+		api_mode: 'responses',
+	})
+	const responsesBody = await responsesSource.BuildPrompt(conversation.makePromptStruct())
+	const responsesImage = responsesBody.input.flatMap(item => Array.isArray(item.content) ? item.content : [])
+		.find(part => part.type === 'input_image')
+	assert(responsesImage, 'Responses style must map images to input_image')
 })

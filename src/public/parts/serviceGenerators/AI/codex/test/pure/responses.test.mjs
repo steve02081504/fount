@@ -22,6 +22,21 @@ Deno.test('Responses body and output_text parse', () => {
 	}), 'z')
 })
 
+Deno.test('Responses body serializes a multi-turn assistant history as output_text parts', () => {
+	const body = messagesToResponsesBody([
+		{ role: 'system', content: 'sys' },
+		{ role: 'user', content: 'turn one' },
+		{ role: 'assistant', content: 'turn one answer' },
+		{ role: 'user', content: 'turn two' },
+	], { model: 'gpt-4.1', stream: false })
+
+	assertEquals(body.input.map(item => item.role), ['user', 'assistant', 'user'])
+	const assistant = body.input[1]
+	assertEquals(assistant.type, 'message')
+	assertEquals(Array.isArray(assistant.content), true)
+	assertEquals(assistant.content, [{ type: 'output_text', text: 'turn one answer' }])
+})
+
 Deno.test('Responses body maps chat multimodal parts to Responses content types', () => {
 	const body = messagesToResponsesBody([
 		{
