@@ -13,7 +13,7 @@ import { computeGlobalBudget } from '../core/concurrency.mjs'
 import { buildEstimateTask, expectedRunDurationMs } from '../core/estimate.mjs'
 import { parseExpectedMs } from '../core/expected.mjs'
 import { parseGithubIssueUrl } from '../core/github_issue.mjs'
-import { resolveSerialOnlyFiles } from '../core/serial_files.mjs'
+import { resolveSerialOnlyFiles, serialRunnerRoots } from '../core/serial_files.mjs'
 import {
 	formatSkipBecauseUrls,
 	isSkipBecauseBlocking,
@@ -1130,7 +1130,7 @@ export class TestKernel {
 					subtests: item.subtests,
 					onlyFiles: item.fileFilters?.length
 						? resolveSerialOnlyFiles(suite, item.fileFilters, this.repoRoot).files
-						: undefined,
+						: serialRunnerRoots(suite, this.repoRoot).length ? [] : undefined,
 					moduleCheckTicket: ticket,
 					triggeredFiles: suiteTriggeredFiles(suite, changedFilesForRun(fingerprints, key)),
 				},

@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { basename } from 'node:path'
+import { basename, resolve } from 'node:path'
 import process from 'node:process'
 
 import open from 'npm:open'
@@ -8,7 +8,7 @@ import { config } from '../../../../server/server.mjs'
 import { loadShellData, saveShellData } from '../../../../server/setting_loader.mjs'
 import { dispatchRemoteStreamOutput } from '../../plugins/file-operations/src/remote_stream.mjs'
 
-import { resumeCodeJob, setEndpoints } from './src/endpoints.mjs'
+import { requestExternalOpen, resumeCodeJob, setEndpoints } from './src/endpoints.mjs'
 
 const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
@@ -36,18 +36,52 @@ function ensureWorkspace(username, cwd) {
 }
 
 /**
- * CLI `fount run <user> shells/code`：以调用方 cwd 为工作区打开 code 页面。
+ * 解析 `fount run code` 参数：`--prompt|-p`、`--workspace|-w`（也支持 `--k=v`）。
+ * @param {string[]} args - 参数列表。
+ * @returns {{prompt: string, workspace: string}} 解析结果（缺省空）。
+ */
+function parseRunArgs(args = []) {
+	let prompt = ''
+	let workspace = ''
+	for (let i = 0; i < args.length; i++) {
+		const arg = String(args[i])
+		const eq = arg.indexOf('=')
+		const name = eq !== -1 ? arg.slice(0, eq) : arg
+		const inline = eq !== -1 ? arg.slice(eq + 1) : null
+		if (name === '--prompt' || name === '-p') {
+			prompt = inline ?? String(args[++i] ?? '')
+			continue
+		}
+		if (name === '--workspace' || name === '-w') {
+			workspace = inline ?? String(args[++i] ?? '')
+			continue
+		}
+	}
+	return { prompt, workspace }
+}
+
+/**
+ * CLI `fount run code [--prompt <text>] [--workspace <path>]`：以 cwd（或被指定路径）为工作区打开 code 页面，
+ * 带 `--prompt` 时在已有页面新开对话并聚焦，无页面在线则打开带 `?prompt=` 的新页面。
  * @param {string} username - 用户名。
- * @param {string[]} _args - 参数（未用）。
+ * @param {string[]} args - 参数。
  * @param {{cwd?: string}} [context] - 调用上下文（IPC runpart 携带 CLI cwd）。
  * @returns {Promise<void>} 打开完成。
  */
-async function openCodePage(username, _args, context = {}) {
+async function openCodePage(username, args, context = {}) {
 	const cwd = context.cwd || process.cwd()
-	const workspaceId = ensureWorkspace(username, cwd)
+	const { prompt, workspace } = parseRunArgs(args)
+	const targetCwd = workspace ? resolve(cwd, workspace) : cwd
+	const workspaceId = ensureWorkspace(username, targetCwd)
 	const port = config.port ?? 8931
 	const url = `http://localhost:${port}/parts/shells:code/?workspace=${encodeURIComponent(workspaceId)}`
-	console.log(`Opening code shell in workspace: ${cwd}`)
+	console.log(`Opening code shell in workspace: ${targetCwd}`)
+	if (prompt) {
+		const claimed = await requestExternalOpen(username, { workspaceId, prompt })
+		if (claimed) return
+		await open(`${url}&prompt=${encodeURIComponent(prompt)}`)
+		return
+	}
 	await open(url)
 }
 
@@ -102,12 +136,17 @@ export default {
 			 */
 			ArgumentsHandler: openCodePage,
 			/**
-			 * 处理 IPC 调用：以 { cwd } 为工作区打开 code 页面。
+			 * 处理 IPC 调用：以 { cwd, prompt?, workspace? } 在工作区打开 code 页面。
 			 * @param {string} user - 用户名。
-			 * @param {{cwd?: string}} data - 调用数据。
+			 * @param {{cwd?: string, prompt?: string, workspace?: string}} data - 调用数据。
 			 * @returns {Promise<void>} 打开完成。
 			 */
-			IPCInvokeHandler: async (user, data) => openCodePage(user, [], data || {}),
+			IPCInvokeHandler: async (user, data = {}) => {
+				const args = []
+				if (data.prompt) args.push('--prompt', String(data.prompt))
+				if (data.workspace) args.push('--workspace', String(data.workspace))
+				return openCodePage(user, args, data)
+			},
 		},
 	},
 }

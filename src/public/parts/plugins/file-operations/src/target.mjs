@@ -232,12 +232,13 @@ function createLocalExecutor(target) {
 		 * 执行 shell 命令（shell 为 null 时用 exec 默认 shell），支持超时杀进程树。
 		 * @param {string|null} shell - shell 名。
 		 * @param {string} code - 命令。
-		 * @param {{timeoutMs?: number|null, onOutput?: (stream: 'stdout'|'stderr', data: string) => void}} [options] - 执行选项；`onOutput` 逐块回显。
+		 * @param {{timeoutMs?: number|null, onOutput?: (stream: 'stdout'|'stderr', data: string) => void, env?: Record<string, string>}} [options] - 执行选项；`onOutput` 逐块回显；`env` 为本机追加环境变量（与 `process.env` 合并）。
 		 * @returns {Promise<any>} 执行结果（附 `timedOut` / `elapsedMs`；出错时抛出并附带该二字段）。
 		 */
 		async execShell(shell, code, options = {}) {
 			if (shell && !shell_exec_map[shell]) throw new Error(`Unsupported shell: ${shell}`)
 			const timeoutMs = options && 'timeoutMs' in options ? options.timeoutMs : SHELL_DEFAULT_TIMEOUT_MS
+			const env = options.env ? { ...process.env, ...options.env } : undefined
 			const streamOptions = typeof options.onOutput === 'function' ? {
 				/**
 				 * 转发 stdout 分片。
@@ -252,7 +253,7 @@ function createLocalExecutor(target) {
 				 */
 				on_stderr: data => options.onOutput('stderr', data),
 			} : {}
-			const { result, timedOut, elapsedMs } = await execShellWithTimeout(shell, code, { ...spawnOptions, ...streamOptions }, timeoutMs)
+			const { result, timedOut, elapsedMs } = await execShellWithTimeout(shell, code, { ...spawnOptions, ...streamOptions, ...env ? { env } : {} }, timeoutMs)
 			if (result instanceof Error) throw Object.assign(result, { timedOut, elapsedMs })
 			return { ...result, timedOut, elapsedMs }
 		},

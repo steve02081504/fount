@@ -80,6 +80,8 @@ export function projectPromptStruct(prompt) {
 			role: entry.role ?? 'system',
 			name: entry.name ?? '',
 			uid: entry.uid ?? '',
+			// 保留条目类型（如 `summary`）：供缓存报告识别发生上下文压缩的轮次
+			...entry.type ? { type: entry.type } : {},
 			content: clampText(entry.content),
 		}
 	})

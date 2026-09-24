@@ -4,6 +4,10 @@
 		"testFramework": [
 			"src/scripts/test/{deno/serial.mjs,node/boot.mjs}"
 		],
+		"pureCore": [
+			"src/public/parts/shells/code/src/hooks_config.mjs",
+			"src/public/parts/shells/code/test/pure/**"
+		],
 		"shellBackend": [
 			"src/public/parts/shells/code/src/**",
 			"src/public/parts/shells/code/{main.mjs,fount.json,locales.json,home_registry.json}",
@@ -30,8 +34,26 @@
 	},
 	"suites": [
 		{
+			"name": "pure",
+			"expected": "5s",
+			"trigger": [
+				"pureCore",
+				"testFramework"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/deno/serial.mjs",
+				"./src/public/parts/shells/code/test/pure/"
+			]
+		},
+		{
 			"name": "integration",
-			"expected": "10m18s",
+			"expected": "4m45s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -155,6 +177,14 @@
 					"expected": "30s",
 					"triggers": [
 						"src/public/parts/shells/code/test/frontend/workspace_pill_search.spec.mjs",
+						"src/public/parts/shells/code/public/**"
+					]
+				},
+				{
+					"name": "open_prompt",
+					"expected": "30s",
+					"triggers": [
+						"src/public/parts/shells/code/test/frontend/open_prompt.spec.mjs",
 						"src/public/parts/shells/code/public/**"
 					]
 				},

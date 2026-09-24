@@ -120,6 +120,15 @@ export async function putTabs(tabs, activeTab) {
 }
 
 /**
+ * 认领一次「在已有页面开新对话」请求（`code-open` 事件，首个认领者生效）。
+ * @param {string} nonce - 事件携带的请求标识。
+ * @returns {Promise<{claimed: boolean, workspaceId?: string, prompt?: string}>} 认领结果。
+ */
+export async function claimCodeOpen(nonce) {
+	return sendJson(`${API_BASE}/open-claim`, { nonce })
+}
+
+/**
  * `!` 模式 shell 流式执行（WS）：逐块回显 stdout/stderr，最后 resolve 完整结果。
  * @param {{machine: string, workdir: string, shell?: string, command: string}} options - 执行参数。
  * @param {{onOutput?: (stream: 'stdout'|'stderr', data: string) => void, signal?: AbortSignal}} [callbacks] - 输出回调与中止信号。

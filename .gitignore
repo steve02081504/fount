@@ -56,5 +56,5 @@ __pycache__/
 /.github/pages/blog/index.json
 
 # 本机code shell（fount自举开发）开发数据
-/.agents/fount
 /.fount
+/.agents/fount/code/message_history.json

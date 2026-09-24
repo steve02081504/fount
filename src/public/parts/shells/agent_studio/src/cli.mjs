@@ -10,7 +10,8 @@ import path from 'node:path'
 
 import { replayDialogue } from '../public/shared/dialogueReplay.mjs'
 
-import { getConversation, getGeneration, listConversations } from './generation_history.mjs'
+import { buildCacheReport } from './cache_report.mjs'
+import { getConversation, getGeneration, listConversations, listGenerations } from './generation_history.mjs'
 
 /** 命令用法文本。 */
 const USAGE = `\
@@ -19,12 +20,14 @@ const USAGE = `\
   fount run agent_studio conversation <key> [--json] [--out <path>]
   fount run agent_studio generation <id> [--json] [--out <path>]
   fount run agent_studio dump <key> [--format json|text] [--out <path>]
+  fount run agent_studio cache-report <key> [--threshold <0-1>]
 
 说明：
   conversations  列出会话摘要（键、生成数、角色、最近时间）。
   conversation   输出一个会话的生成记录及其逐轮 prompt 请求。
   generation     输出单条生成记录。
   dump           输出完整会话数据（默认 JSON），供 agent 直接解析。
+  cache-report   输出会话逐请求提示缓存命中率 JSON（标记压缩轮次），供自动检查脚本解析。
   run 使用最后活跃用户；runas <user> ... 显式指定用户。
 `
 
@@ -211,6 +214,19 @@ export async function runStudioCli(username, args, context = {}) {
 				? renderConversationText(conversation)
 				: JSON.stringify(conversation, null, 2) + '\n'
 			return emit(content, optionString(flags, 'out'), cwd, `会话 ${key} dump`)
+		}
+		case 'cache-report': {
+			const key = _[0]
+			if (!key) throw new Error('用法：cache-report <key>')
+			const threshold = optionString(flags, 'threshold') ? Number(optionString(flags, 'threshold')) : 0.729
+			const summaries = await listGenerations(username, { conversationId: key, limit: Number.MAX_SAFE_INTEGER })
+			const records = []
+			for (const summary of summaries) {
+				const record = await getGeneration(username, summary.id)
+				if (record) records.push(record)
+			}
+			records.sort((a, b) => (a.startedAt ?? 0) - (b.startedAt ?? 0))
+			return JSON.stringify(buildCacheReport(records, { conversationId: key, threshold }), null, 2) + '\n'
 		}
 		default:
 			throw new Error(`未知子命令：${subcommand}\n${USAGE}`)

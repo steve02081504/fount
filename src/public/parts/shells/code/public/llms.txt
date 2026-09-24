@@ -17,9 +17,10 @@ AI 编码会话 shell：与任意角色就工作区对话，在本机或已连�
 - `GET /workspaces` / `POST /workspaces {name?, machine, path}` / `PUT /workspaces/:id {name}` / `DELETE /workspaces/:id` → 保存的工作区 CRUD
 - `GET /tabs` → `{ tabs: [{ type: draft|session, id, workspaceId, draft? }], activeTab }`（打开的标签页列表与各标签未发送草稿）
 - `PUT /tabs {tabs, activeTab}` → 保存标签页列表与活动标签（id 须匹配 `[A-Za-z0-9_-]{1,64}`）
+- `POST /open-claim {nonce}` → `{ claimed, workspaceId?, prompt? }`：认领一次外部开对话请求（后端 `code-open` 事件携带 nonce，首个认领页面得到 `claimed: true` 及其工作区/提示词，其余为 false）；供 `fount run code --prompt` 在已有页面开新对话时页面认领用
 - `GET /history?machine&workdir&kind=shell|message&shell=` → `{ own: string[], native: string[] }`（own 为自有历史追加序；native 为原生 shell 历史 newest-first，仅 kind=shell）
 - `POST /history {machine, workdir, kind, command}` → 追加自有历史，返回 `{ own: string[] }`
-- `GET /workspace-config?machine&workdir=` → `.agents/fount/code.json` 解析对象（无则 `{}`）
+- `GET /workspace-config?machine&workdir=` → `.agents/fount/code.json` 解析对象（无则 `{}`）；可含 `char`（工作区角色覆盖）与 `hooks`（工作区钩子，见下）
 - `GET /sessions/all` → `{ sessions: [{ id, title, charname, updated, workspaceId, workspaceName }] }`（跨工作区聚合，按 updated 降序）
 - `GET /files/search?machine&workdir&q=` → `{ files: string[] }`（文件名子串匹配，跳过 node_modules/.git 等）
 - `GET /file?machine&workdir&path=` → `{ content, context }`（content 为文件文本，context 为向上收集的 AGENTS.md/触发文档文本）
@@ -50,3 +51,17 @@ AI 编码会话 shell：与任意角色就工作区对话，在本机或已连�
   - 持久化：服务端在运行开始前写一份含「生成中」占位（`is_generating: true`）的会话到工作区磁盘，收尾（`done`/`aborted`/`error`）时用最终条目替换后写回；`ws.close()` 不会中断生成，生成会继续并落盘（旧运行收尾同样落盘）。页面据此可在重载后轮询 `/sessions/:id` 恢复。
   - 出错回 `{ type: 'error', entries, error }`。
   - 每次 `done` 后服务端向用户发送「对话已完成」通知：浏览器在线经 `/ws/notify`，其次 Web Push，均不可达时回退桌面通知（点击打开对应页面）。
+
+## 工作区钩子（`.agents/fount/code.json` → `hooks`）
+
+在 workflow 事件上运行 shell 命令；复杂工作流由脚本自行用 shell 实现。仅支持 shell，数据经环境变量传入。
+
+- `hooks.agentStart` / `hooks.agentFinish` / `hooks.agentsIdle`：各为条目数组，条目为命令字符串或 `{ command, shell?, cwd?, timeoutMs?, detached?, singleton? }`。
+  - `agentStart`：任意 agent 开始运行（顶层 code 生成 + 该会话的子代理 run）。`agentFinish`：单个 agent 完毕（顶层或子代理）。`agentsIdle`：该工作区活跃 agent 数归零。
+  - `detached` 经脱离进程树的隐藏方式运行（仅本机；不捕获退出码）；`singleton` 保证同工作区同命令只起一个实例。
+  - `agentFinish` 命令退出码非 0 → 把 stdout+stderr 合并追加为系统条目并触发重生成（同一会话最多 3 次，随后停止）；`agentStart`/`agentsIdle` 非 0 仅记录日志。
+- 环境变量：`FOUNT_CODE_EVENT`（agent-start|agent-finish|agents-idle）、`FOUNT_CODE_KIND`（code|subagent）、`FOUNT_CODE_USERNAME`、`FOUNT_CODE_SESSION_ID`、`FOUNT_CODE_CONVERSATION_ID`（`code-<sessionId>`）、`FOUNT_CODE_WORKSPACE_ID`、`FOUNT_CODE_WORKSPACE_PATH`、`FOUNT_CODE_MACHINE`、`FOUNT_CODE_CHAR`、`FOUNT_CODE_GENERATION_ID`、`FOUNT_CODE_RUN_ID`、`FOUNT_CODE_SUCCESS`、`FOUNT_CODE_ERROR`、`FOUNT_CODE_ATTEMPT`。
+
+## CLI
+
+- `fount run code [--prompt <text>] [--workspace <path>]`（`runas <user> code` 同理）：以 `--workspace`（缺省 CLI cwd）为工作区打开 code 页面。带 `--prompt` 时：若已有 code 页在线则其在目标工作区新开对话、聚焦并立即发送该提示词；无页面在线则打开带 `?prompt=` 的新页面（同样立即发送）。

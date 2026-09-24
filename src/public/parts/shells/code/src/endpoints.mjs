@@ -13,6 +13,7 @@ import { authenticate, getUserByReq } from '../../../../../server/auth/index.mjs
 import { EndJob, StartJob } from '../../../../../server/jobs.mjs'
 import { getAllDefaultParts, getPartList } from '../../../../../server/parts_loader.mjs'
 import { loadShellData, saveShellData, assignShellData } from '../../../../../server/setting_loader.mjs'
+import { sendEventToUser } from '../../../../../server/web_server/event_dispatcher.mjs'
 import { listTasks as listAsyncTasks } from '../../../plugins/async-task/registry.mjs'
 import { createTargetExecutor, listMachines, parseVolumeLabels } from '../../../plugins/file-operations/src/target.mjs'
 
@@ -28,6 +29,7 @@ import {
 import { collectEditorSources } from './editor_sources.mjs'
 import { pickEntryExtension } from './entry_extension.mjs'
 import { appendOwnHistory, getHistory } from './history.mjs'
+import { dispatchAgentFinish, dispatchAgentStart, setHookRuntime } from './hooks.mjs'
 import {
 	beginCodeGeneration,
 	cancelAllPowerActions,
@@ -322,6 +324,58 @@ let startCodeRun
 let shutdownRegistered = false
 
 /**
+ * 待认领的「在已有 code 页开新对话」请求：nonce → 认领状态。
+ * 后端无法直接知道是否有 code 页打开，故广播事件后等待页面认领；超时未认领则由调用方新开页面。
+ * @type {Map<string, {username: string, workspaceId: string, prompt: string, claimed: boolean, resolve: (claimed: boolean) => void, timer: ReturnType<typeof setTimeout>}>}
+ */
+const pendingOpens = new Map()
+
+/** 页面认领等待时长（毫秒）；超时即认为无 code 页在线。 */
+const OPEN_CLAIM_TIMEOUT_MS = 800
+
+/**
+ * 请求在已打开的 code 页面新开一个对话；无页面认领时返回 false（调用方回退为新开页面）。
+ * @param {string} username - 用户名。
+ * @param {{workspaceId: string, prompt: string}} payload - 目标工作区 id 与提示词。
+ * @returns {Promise<boolean>} 是否被某页面认领。
+ */
+export function requestExternalOpen(username, { workspaceId, prompt }) {
+	const nonce = randomUUID()
+	return new Promise(resolve => {
+		/**
+		 * 结束等待并按认领结果 resolve。
+		 * @param {boolean} claimed - 是否被认领。
+		 * @returns {void}
+		 */
+		const settle = claimed => {
+			const entry = pendingOpens.get(nonce)
+			if (entry) clearTimeout(entry.timer)
+			pendingOpens.delete(nonce)
+			resolve(claimed)
+		}
+		const timer = setTimeout(() => settle(false), OPEN_CLAIM_TIMEOUT_MS)
+		pendingOpens.set(nonce, { username, workspaceId, prompt, claimed: false, resolve: settle })
+		sendEventToUser(username, 'code-open', { nonce, workspaceId, prompt })
+	})
+}
+
+/**
+ * 前端认领一次外部开对话请求（首个认领者生效，其余返回未认领）。
+ * @param {string} username - 用户名。
+ * @param {string} nonce - 请求标识。
+ * @returns {{claimed: boolean, workspaceId?: string, prompt?: string}} 认领结果。
+ */
+function claimExternalOpen(username, nonce) {
+	const entry = pendingOpens.get(nonce)
+	if (!entry || entry.claimed || entry.username !== username) return { claimed: false }
+	entry.claimed = true
+	clearTimeout(entry.timer)
+	pendingOpens.delete(nonce)
+	entry.resolve(true)
+	return { claimed: true, workspaceId: entry.workspaceId, prompt: entry.prompt }
+}
+
+/**
  * 从 jobs 恢复未完成的生成，不阻塞启动。
  * @param {string} username 用户名
  * @param {object} data 持久化参数
@@ -339,6 +393,38 @@ export function resumeCodeJob(username, data) {
 			time: new Date().toISOString(), files: [] })
 		await startCodeRun(username, { type: 'trigger', session, machine: workTarget.machine, workdir: workTarget.path, ai_source, profile }, null)
 	})().catch(error => console.error('shells/code: 恢复生成失败', error))
+}
+
+/**
+ * 工作区钩子要求的自动重生成：把钩子输出作为系统条目写入会话并触发新生成（不等待本轮生成收尾，避免阻塞钩子）。
+ * @param {string} username - 用户名。
+ * @param {object} ctx - 生成上下文（sessionId/machine/path/ai_source/profile/attempt）。
+ * @param {string} content - 钩子输出。
+ * @returns {Promise<void>} 触发完成。
+ */
+async function regenCodeSession(username, ctx, content) {
+	const workTarget = { machine: String(ctx.machine ?? '0'), path: String(ctx.path || '') }
+	const session = await loadSession(username, workTarget, ctx.sessionId)
+	if (!session || !startCodeRun) return
+	session.entries = Array.isArray(session.entries) ? session.entries : []
+	session.entries.push({
+		id: randomUUID(),
+		role: 'system',
+		uid: 'system',
+		name: 'system',
+		content: `工作区自动检查未通过（第 ${ctx.attempt ?? 1} 次），请修复后继续：\n\n${content}`,
+		time: new Date().toISOString(),
+		files: [],
+	})
+	await saveSession(username, workTarget, session)
+	void startCodeRun(username, {
+		type: 'trigger',
+		session,
+		machine: workTarget.machine,
+		workdir: workTarget.path,
+		ai_source: ctx.ai_source || undefined,
+		profile: ctx.profile,
+	}, null)
 }
 
 /**
@@ -360,6 +446,7 @@ export function setEndpoints(router) {
 		registerCodeShutdown(() => activeCodeRuns.values())
 		shutdownRegistered = true
 	}
+	setHookRuntime({ regen: regenCodeSession })
 	// 机器列表（含本机与已连接 subfount）
 	router.get('/api/parts/shells\\:code/machines', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
@@ -473,6 +560,12 @@ export function setEndpoints(router) {
 		}
 		assignShellData(username, 'code', 'tabs', data)
 		res.json(data)
+	})
+
+	// `fount run code --prompt` 在已有页面开新对话：页面认领（首个生效），无页面认领时调用方回退为新开页面
+	router.post('/api/parts/shells\\:code/open-claim', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		res.json(claimExternalOpen(username, String(req.body?.nonce || '')))
 	})
 
 	// `!` 模式 shell 流式执行：客户端发一条命令，服务端逐块回显 stdout/stderr，最后 done/error
@@ -889,6 +982,12 @@ export function setEndpoints(router) {
 		if (workPath) StartJob(username, 'shells/code', session.id, jobData)
 		// 生成运行身份：带回 runId 的 run-start 帧（前端据此接纳本运行的事件）
 		send({ type: 'run-start' })
+		// 工作区钩子：任意 agent 开始运行（闭包内 fire-and-forget，不阻塞生成）
+		dispatchAgentStart(username, { machine: workTarget.machine, path: workPath, sessionId: session.id, char: session.charname, generationId, runId })
+		/** 本轮是否成功完成（供工作区钩子判定成功/失败）。 */
+		let runSuccess = false
+		/** 本轮错误信息（供工作区钩子）。 */
+		let runError = ''
 		// 先落盘一个生成中占位，页面在生成期间重置时磁盘仍有「进行中」标记可供恢复
 		const placeholderEntry = {
 			id: randomUUID(),
@@ -965,6 +1064,7 @@ export function setEndpoints(router) {
 			}
 			else if (saved || !workPath) {
 				run.completed = true
+				runSuccess = true
 				if (workPath) EndJob(username, 'shells/code', session.id)
 				send({ type: 'done', entries, memory })
 				void notifyCodeCompletion(username, session)
@@ -972,6 +1072,7 @@ export function setEndpoints(router) {
 			else send({ type: 'error', entries, error: 'session persistence failed; generation remains resumable.' })
 		}
 		catch (error) {
+			runError = String(error?.stack || error)
 			// 中断/报错：补发尚未增量推送的 tool 日志（截断到水位，避免重复）
 			if (!thisRequestController.signal.aborted) flushIncrementalEntries()
 			const pending = (requestSession.generationResult?.logContextBefore || []).slice(emittedLogCount)
@@ -993,6 +1094,16 @@ export function setEndpoints(router) {
 		finally {
 			stopWake()
 			if (activeCodeRuns.get(runKey) === run) activeCodeRuns.delete(runKey)
+			// 工作区钩子：单个 agent 完毕（含失败回灌与重生成）；先于计数递减，避免误触「全部完毕」
+			try {
+				await dispatchAgentFinish(username, {
+					machine: workTarget.machine, path: workPath, sessionId: session.id,
+					char: session.charname, generationId, runId,
+					success: runSuccess, error: runError,
+					ai_source: ai_source || undefined, profile,
+				})
+			}
+			catch (error) { console.warn('shells/code: agentFinish 钩子失败', error) }
 			finishRun()
 			finishCodeGeneration(username)
 		}

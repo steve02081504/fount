@@ -58,6 +58,50 @@ import {
 import { elements, getPref, initComposer, richInput, setPref, store } from './store.mjs'
 import { handleSubAgentEvent } from './subagents.mjs'
 
+/**
+ * 尽力让本页获得焦点并闪烁标题提示用户（浏览器对非用户手势的 `window.focus` 有策略限制）。
+ * @returns {void}
+ */
+function flashWindowFocus() {
+	try { window.focus() } catch { /* 焦点策略限制 */ }
+	if (document.hasFocus?.()) return
+	const original = document.title
+	let on = false
+	let ticks = 0
+	const timer = setInterval(() => {
+		document.title = on ? `● ${original}` : original
+		on = !on
+		if (document.hasFocus?.() || ++ticks > 20) {
+			clearInterval(timer)
+			document.title = original
+		}
+	}, 500)
+	window.addEventListener('focus', () => {
+		clearInterval(timer)
+		document.title = original
+	}, { once: true })
+}
+
+/**
+ * 处理后端 `code-open` 事件：认领后在目标工作区新开草稿标签、聚焦并发送提示词。
+ * @param {{nonce?: string, workspaceId?: string, prompt?: string}} payload - 事件负载。
+ * @returns {Promise<void>}
+ */
+async function handleExternalOpen(payload) {
+	if (!payload?.nonce || !payload.prompt) return
+	let result
+	try {
+		result = await api.claimCodeOpen(payload.nonce)
+	}
+	catch { return }
+	if (!result?.claimed) return
+	flashWindowFocus()
+	const tab = createDraftTab(result.workspaceId || '')
+	await activateTab(tab)
+	if (store.workspace) await applyWorkspaceCharConfig()
+	await sendMessage(result.prompt)
+}
+
 /** 语言切换时的动态文案重渲染。 */
 function rerenderDynamicText() {
 	refreshHomePicker()
@@ -108,6 +152,7 @@ export async function boot() {
 	onServerEvent('async-task', handleAsyncTaskEvent)
 	onServerEvent('code-async-entry', handleAsyncEntryEvent)
 	onServerEvent('code-async-consumed', handleAsyncConsumedEvent)
+	onServerEvent('code-open', handleExternalOpen)
 	// createMarkdownRichInput 初始化即聚焦 composer：待 pill 镀铬挂载后再建，避免早聚焦触发与装载的竞态
 	initComposer()
 	wireComposerEvents()
@@ -134,6 +179,7 @@ export async function boot() {
 	const urlParams = new URLSearchParams(location.search)
 	const urlWorkspace = urlParams.get('workspace')
 	const urlSession = urlParams.get('session')
+	const urlPrompt = urlParams.get('prompt')
 	const savedWorkspace = urlWorkspace || getPref('workspace')
 	store.workspace = workspaces.find(w => w.id === savedWorkspace) || workspaces[0] || null
 	if (store.workspace && urlWorkspace) setPref('workspace', store.workspace.id)
@@ -166,8 +212,11 @@ export async function boot() {
 	await activateTab(initialTab)
 	rerenderDynamicText()
 	void ensureHistory(store.shellMode ? 'shell' : 'message')
-	if (store.workspace) void applyWorkspaceCharConfig()
+	// 冷启动带 ?prompt=（`fount run code --prompt` 无页面在线时的回退）：先应用工作区角色配置再立即发送
+	if (store.workspace && urlPrompt) await applyWorkspaceCharConfig()
+	else if (store.workspace) void applyWorkspaceCharConfig()
 	elements.composerInput.focus()
+	if (urlPrompt) await sendMessage(urlPrompt)
 }
 
 /* ---------------- 事件绑定 ---------------- */

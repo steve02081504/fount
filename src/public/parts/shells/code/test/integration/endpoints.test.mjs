@@ -885,3 +885,20 @@ Deno.test({
 		await stopNode(node)
 	}
 })
+
+Deno.test({
+	name: 'open-claim rejects an unknown or reused nonce',
+	timeout: 120_000,
+}, async () => {
+	const node = await launchCodeNode()
+	try {
+		const unknown = await codeFetch(node, 'POST', '/open-claim', { nonce: 'no-such-nonce' })
+		assertEquals(unknown.status, 200)
+		assertEquals(await unknown.json(), { claimed: false })
+		const empty = await codeFetch(node, 'POST', '/open-claim', {})
+		assertEquals(await empty.json(), { claimed: false })
+	}
+	finally {
+		await stopNode(node)
+	}
+})
