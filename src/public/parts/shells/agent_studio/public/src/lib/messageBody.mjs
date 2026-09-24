@@ -20,7 +20,7 @@ export function messageBody(text) {
 	body.className = 'markdown-body message-view-body'
 	body.setAttribute('prompt-content', '')
 	const raw = String(text ?? '')
-	let plain = false
+	let plain = true
 	/** @returns {void} 绘制当前正文视图。 */
 	const paint = () => {
 		button.textContent = geti18n(plain ? 'agent_studio.conversation.markdownView' : 'agent_studio.conversation.plainView')

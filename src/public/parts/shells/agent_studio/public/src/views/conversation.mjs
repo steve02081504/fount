@@ -213,10 +213,10 @@ function renderReplay(units, metrics, onChange) {
 }
 
 /**
- * 按「轮次」位置绘制缓存率折线：每次生成的指标落在其轮次区间的中心。
+ * 按「轮次」位置绘制缓存率折线：每个轮次节点一个点，取该单次请求相对上一请求的复用率，与 timeline 节点一一对位。
  * @param {HTMLCanvasElement} canvas 画布
  * @param {ReturnType<typeof buildRoundUnits>} units 逐轮单元
- * @param {object[]} metrics 每次生成缓存指标
+ * @param {object[]} metrics 每次生成缓存指标（含 `rounds` 逐轮指标）
  * @returns {void}
  */
 function paintCacheChart(canvas, units, metrics) {
@@ -230,20 +230,18 @@ function paintCacheChart(canvas, units, metrics) {
 	const width = canvas.clientWidth
 	const height = canvas.clientHeight
 	const span = units.length > 1 ? units.length - 1 : 1
-	/** 每次生成的轮次中心位置（按单元下标）。 */
-	const centers = new Map()
+	/** 每个生成的首个单元下标，用于取该轮的请求下标。 */
+	const firstIndex = new Map()
 	units.forEach((unit, index) => {
-		const group = centers.get(unit.generationIndex) ?? { first: index, last: index }
-		group.last = index
-		centers.set(unit.generationIndex, group)
+		if (!firstIndex.has(unit.generationIndex)) firstIndex.set(unit.generationIndex, index)
 	})
-	const points = metrics.map((metric, index) => {
-		const center = centers.get(index)
-		if (metric.rate == null || !center || !units.length) return null
-		const position = (center.first + center.last) / 2
+	const points = units.map((unit, index) => {
+		const offset = index - (firstIndex.get(unit.generationIndex) ?? 0)
+		const rate = metrics[unit.generationIndex]?.rounds?.[offset]?.rate
+		if (rate == null) return null
 		return {
-			x: REPLAY_INSET + position / span * (width - REPLAY_INSET * 2),
-			y: height - 10 - metric.rate * (height - 20), rate: metric.rate,
+			x: REPLAY_INSET + index / span * (width - REPLAY_INSET * 2),
+			y: height - 10 - rate * (height - 20), rate,
 		}
 	})
 	const style = getComputedStyle(canvas)

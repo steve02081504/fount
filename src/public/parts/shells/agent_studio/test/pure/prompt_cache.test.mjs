@@ -14,6 +14,25 @@ Deno.test('estimates contiguous prompt reuse across generations without claiming
 	assertEquals(rates[2].rate, null)
 })
 
+Deno.test('estimatePromptCache exposes per-round rates aligned with each generation request', () => {
+	const metrics = estimatePromptCache([
+		{ requests: [
+			{ systemPrompt: 'instruction', messages: [{ role: 'user', content: 'hello' }] },
+			{ systemPrompt: 'instruction', messages: [{ role: 'user', content: 'hello world' }] },
+			{ systemPrompt: 'instruction', messages: [{ role: 'user', content: 'hello world!' }] },
+		] },
+		{ requests: [{ systemPrompt: 'instruction', messages: [{ role: 'user', content: 'hello world!' }] }] },
+	])
+	assertEquals(metrics[0].rounds.length, 3)
+	assertEquals(metrics[0].rounds[0].rate, null)
+	assertEquals(metrics[0].rounds[1].rate > 0.7, true)
+	assertEquals(metrics[0].rounds[2].rate > 0.9, true)
+	assertEquals(metrics[1].rounds.length, 1)
+	assertEquals(metrics[1].rounds[0].rate, 1)
+	// 生成的汇总率即各轮 reused / total 的加权平均
+	assertEquals(metrics[0].rate > 0.8, true)
+})
+
 Deno.test('estimateGenerationCache compares the first request against the supplied previous prompt', () => {
 	const request = { systemPrompt: 'instruction', messages: [{ role: 'user', content: 'hello world' }] }
 	const previous = serializeRequest({ systemPrompt: 'instruction', messages: [{ role: 'user', content: 'hello' }] })

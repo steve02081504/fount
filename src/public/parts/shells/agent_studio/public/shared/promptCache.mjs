@@ -33,25 +33,32 @@ export function commonPrefixLength(a, b) {
 
 /**
  * 为会话中每次生成提供估算缓存率；快照过期或没有上次请求时返回 null。
+ * `rounds` 逐轮给出该生成的每次请求相对上一请求的复用率，供按轮次绘制的图表与回放对位。
  * @param {object[]} generations 顺序排列的生成记录
- * @returns {Array<{ rate: number | null, reused: number, total: number }>} 每次生成的指标
+ * @returns {Array<{ rate: number | null, reused: number, total: number, rounds: Array<{ rate: number | null, reused: number, total: number }> }>} 每次生成的指标
  */
 export function estimatePromptCache(generations = []) {
 	let previous = null
 	return generations.map(generation => {
 		let reused = 0
 		let total = 0
+		const rounds = []
 		if (!generation.requests?.length) previous = null
 		for (const request of generation.requests ?? []) {
-			if (!isComparableRequest(request)) continue
+			if (!isComparableRequest(request)) {
+				rounds.push({ rate: null, reused: 0, total: 0 })
+				continue
+			}
 			const current = serializeRequest(request)
+			const roundReused = previous != null ? commonPrefixLength(current, previous) : 0
 			if (previous != null) {
-				reused += commonPrefixLength(current, previous)
+				reused += roundReused
 				total += current.length
 			}
+			rounds.push({ rate: previous != null && current.length ? roundReused / current.length : null, reused: roundReused, total: previous != null ? current.length : 0 })
 			previous = current
 		}
-		return { rate: total ? reused / total : null, reused, total }
+		return { rate: total ? reused / total : null, reused, total, rounds }
 	})
 }
 
