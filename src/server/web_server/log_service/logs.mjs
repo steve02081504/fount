@@ -1,7 +1,8 @@
+import { getGlobalConsoleResolver } from 'npm:@steve02081504/virtual-console/node'
 import { createLogWireWebSocketHandler } from 'npm:@steve02081504/virtual-console/wire/server'
 import { on_shutdown } from 'npm:on-shutdown'
 
-import { console, geti18nForTerminal } from '../../../scripts/i18n/index.mjs'
+import { geti18nForTerminal } from '../../../scripts/i18n/index.mjs'
 import { ms } from '../../../scripts/ms.mjs'
 import { get_hosturl_in_local_ip } from '../../../scripts/ratelimit.mjs'
 import { baseScriptLoadedTime } from '../../base.mjs'
@@ -9,9 +10,19 @@ import { config, hosturl } from '../../server.mjs'
 
 
 /**
+ * 日志线路绑定的具体控制台实例。
+ *
+ * 全局 `console` 是按 `AsyncLocalStorage` 解析的代理，模块构造期与连接请求期可能落到不同实例；
+ * 直接把代理交给 wire 处理器时，历史快照与 append 监听会各自绑定到一个实例，令快照恒为空。
+ * 固定构造期解析出的具体实例，保证同一控制台既接收 append 又提供快照。
+ * @type {import('npm:@steve02081504/virtual-console').VirtualConsole}
+ */
+const logConsole = getGlobalConsoleResolver().getActiveConsole()
+
+/**
  * 日志查看器 WebSocket 服务句柄。
  */
-export const logServiceWebSocketHandler = createLogWireWebSocketHandler(console, {
+export const logServiceWebSocketHandler = createLogWireWebSocketHandler(logConsole, {
 	/**
 	 * 在新查看器打开且时机合适时推送 ASCII Logo、URL 与随机 tips，用于方便用户和展现人情味。
 	 * @param {{ ws: import('npm:ws').WebSocket }} root0 - 客户端连接上下文。
@@ -19,7 +30,7 @@ export const logServiceWebSocketHandler = createLogWireWebSocketHandler(console,
 	 * @returns {Promise<void>}
 	 */
 	onClientConnected: async ({ ws }) => {
-		if (console.outputEntries.length < 72 || baseScriptLoadedTime.getTime() > Date.now() - ms('5m')) return
+		if (logConsole.outputEntries.length < 72 || baseScriptLoadedTime.getTime() > Date.now() - ms('5m')) return
 		const ansi_hosturl = `\x1b]8;;${hosturl}\x1b\\${hosturl}\x1b]8;;\x1b\\`
 		let text = ''
 		if (config.https?.enabled)

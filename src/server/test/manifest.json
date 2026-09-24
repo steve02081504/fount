@@ -20,6 +20,7 @@
 				"src/server/parts_loader.mjs",
 				"src/scripts/fs_walk.mjs",
 				"src/server/no_cors.mjs",
+				"src/server/web_server/log_service/logs.mjs",
 				"src/server/web_server/preload_list.mjs",
 				"src/scripts/net_listen.mjs",
 				"src/scripts/part_paths.mjs",
