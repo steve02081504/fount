@@ -8,6 +8,7 @@ import { httpError } from '../../../../../scripts/http_error.mjs'
 import { memoizePromise } from '../../../../../scripts/memo.mjs'
 import { ms } from '../../../../../scripts/ms.mjs'
 import { onSystemWake } from '../../../../../scripts/sleep_watch.mjs'
+import { isStopping } from '../../../../../scripts/stopping.mjs'
 import { authenticate, getUserByReq } from '../../../../../server/auth/index.mjs'
 import { EndJob, StartJob } from '../../../../../server/jobs.mjs'
 import { getAllDefaultParts, getPartList } from '../../../../../server/parts_loader.mjs'
@@ -40,7 +41,7 @@ import {
 import { triggerCodeReply } from './request.mjs'
 import { availableShells, machineDefaultShell, runShellCommand } from './runner.mjs'
 import { deleteSession, listSessions, loadSession, saveSession } from './sessions.mjs'
-import { isCodeStopping, registerCodeShutdown } from './shutdown.mjs'
+import { registerCodeShutdown } from './shutdown.mjs'
 import { readWorkspaceConfig } from './workspace_config.mjs'
 
 /**
@@ -716,7 +717,7 @@ export function setEndpoints(router) {
 	 * @returns {Promise<void>} 生成与落盘结束时完成。
 	 */
 	startCodeRun = async (username, msg, ws) => {
-		if (isCodeStopping()) return
+		if (isStopping()) return
 		if (msg.type === 'abort') {
 			const targetKey = msg.sessionId ? codeRunKey(username, msg.sessionId) : null
 			const run = targetKey ? activeCodeRuns.get(targetKey) : ws?.codeRun
@@ -777,6 +778,10 @@ export function setEndpoints(router) {
 		const allNewEntries = []
 		/** 原始日志下标对应的已发送条目 ID；中断时只保留已完成的轮次。 */
 		const logEntryIds = []
+		/** 已完成轮次的日志数水位；硬中断时丢弃其后的半成品。 */
+		let completedLogCount = 0
+		/** 退出流程要求停止、本轮结果保留为续跑起点。 */
+		let stoppedForShutdown = false
 		/**
 			 * 规整并登记一条本轮新条目；已存在于基础会话或本轮时返回 null。
 			 * @param {object} rawEntry - 原始条目。
@@ -840,8 +845,7 @@ export function setEndpoints(router) {
 		}
 		/** 中断只保留此前完整轮次的日志，移除本轮生成到一半的内容。 */
 		const dropIncompleteLogs = () => {
-			const safeCount = requestSession.generationResult?.extension?.completedLogCount ?? 0
-			const incompleteIds = new Set(logEntryIds.slice(safeCount).filter(Boolean))
+			const incompleteIds = new Set(logEntryIds.slice(completedLogCount).filter(Boolean))
 			for (let i = allNewEntries.length - 1; i >= 0; i--)
 				if (incompleteIds.has(allNewEntries[i].id)) allNewEntries.splice(i, 1)
 		}
@@ -926,10 +930,16 @@ export function setEndpoints(router) {
 				onToolOutput: event => {
 					send({ type: 'tool-output', ...event })
 				},
-				/** @returns {Promise<void>} 将已完成轮次写入会话快照。 */
-				onRoundComplete: async () => {
+				/**
+				 * 完成一轮：落盘已完成的工具结果并确认是否继续生成。
+				 * @returns {Promise<boolean>} 是否继续下一轮。
+				 */
+				finishRound: async () => {
 					flushIncrementalEntries()
+					completedLogCount = requestSession.generationResult?.logContextBefore?.length ?? emittedLogCount
 					await persist(undefined, [placeholderEntry])
+					if (isStopping()) { stoppedForShutdown = true; return false }
+					return true
 				},
 			})
 			// 已在预览期增量推送的 tool 日志只补发剩余部分，避免前端重复插入
@@ -937,15 +947,17 @@ export function setEndpoints(router) {
 				const entry = addNewEntry(rawEntry)
 				if (entry) entries.push(entry)
 			}
-			if (reply && !reply.extension?.incompleteRound && !thisRequestController.signal.aborted) {
+			// 被中断的轮次内容已在日志层丢弃；自然结束时才把最终回复作为独立条目写入
+			if (reply && !stoppedForShutdown && !thisRequestController.signal.aborted) {
 				const replyEntry = addNewEntry({ ...reply, role: 'char', uid: 'char', name: reply.name || session.charname, time_stamp: new Date() })
 				if (replyEntry) entries.push(replyEntry)
 			}
 			if (thisRequestController.signal.aborted) dropIncompleteLogs()
+			const interrupted = stoppedForShutdown || thisRequestController.signal.aborted
 			// 权威结果先落盘，再广播完成帧：页面/连接丢失也不会丢内容
-			const saved = await persist(memory, (reply?.extension?.incompleteRound || thisRequestController.signal.aborted) && isCodeStopping() ? [placeholderEntry] : [])
-			if (reply?.extension?.incompleteRound || thisRequestController.signal.aborted) {
-				if (!isCodeStopping() && saved) {
+			const saved = await persist(memory, interrupted && isStopping() ? [placeholderEntry] : [])
+			if (interrupted) {
+				if (!isStopping() && saved) {
 					run.completed = true
 					EndJob(username, 'shells/code', session.id)
 				}
@@ -968,12 +980,12 @@ export function setEndpoints(router) {
 				if (entry) entries.push(entry)
 			}
 			if (thisRequestController.signal.aborted) dropIncompleteLogs()
-			const saved = await persist(undefined, isCodeStopping() ? [placeholderEntry] : [])
-			if (!isCodeStopping() && saved) {
+			const saved = await persist(undefined, isStopping() ? [placeholderEntry] : [])
+			if (!isStopping() && saved) {
 				run.completed = true
 				EndJob(username, 'shells/code', session.id)
 			}
-			if (thisRequestController.signal.aborted)
+			if (thisRequestController.signal.aborted || stoppedForShutdown)
 				send({ type: 'aborted', entries })
 			else
 				send({ type: 'error', entries, error: String(error?.stack || error) })

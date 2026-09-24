@@ -203,6 +203,11 @@ function createDeps(aiSource, plugin) {
 		 * @returns {number} 毫秒时间戳
 		 */
 		now: () => Date.now(),
+		/**
+		 * 默认未进入退出流程。
+		 * @returns {boolean} false
+		 */
+		isStopping: () => false,
 	}
 }
 
@@ -271,17 +276,14 @@ Deno.test('runSubAgent runs a synchronous loop and isolates the parent workdir',
 
 Deno.test('sub-agent finishes reply handlers but does not start another AI call during shutdown', async () => {
 	resetSubAgentState()
-	const parentArgs = createParentArgs()
-	parentArgs.generation_options = {
-		/**
-		 * 关闭时不再开始下一轮。
-		 * @returns {boolean} 应停止。
-		 */
-		stopAfterRound: () => true,
-	}
-	const outcome = await runSubAgent(parentArgs,
-		{ body: 'do the task', roundLimit: 5, timeLimitMs: 60_000 },
-		createDeps(createFakeAi(['first round', 'second round']), createRegenPlugin(1)))
+	const deps = createDeps(createFakeAi(['first round', 'second round']), createRegenPlugin(1))
+	/**
+	 * 模拟进程正在退出。
+	 * @returns {boolean} 恒为 true。
+	 */
+	deps.isStopping = () => true
+	const outcome = await runSubAgent(createParentArgs(),
+		{ body: 'do the task', roundLimit: 5, timeLimitMs: 60_000 }, deps)
 	assertEquals(outcome.run.rounds, 1)
 	assert(outcome.text.includes('重新委派'))
 })

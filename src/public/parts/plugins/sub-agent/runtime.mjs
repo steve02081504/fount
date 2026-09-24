@@ -8,6 +8,7 @@
  * 【关联】handler.mjs 解析标签后调用 `runSubAgent` / `terminateSubAgentRun` / `listAvailableAiSources`；prompt.mjs 注入预算；archive.mjs 管理父代档案；state.mjs 保存注册表。
  */
 import { onSystemWake, setAwakeTimeout } from '../../../../scripts/sleep_watch.mjs'
+import { isStopping } from '../../../../scripts/stopping.mjs'
 import { beginPromptRequest, collectGenerationRecord, finishPromptRequest } from '../../shells/agent_studio/src/request_record.mjs'
 import { buildPromptStruct } from '../../shells/chat/src/prompt_struct/index.mjs'
 import { runReplyHandlers } from '../../shells/chat/src/reply/handlerPipeline.mjs'
@@ -170,6 +171,7 @@ export const defaultSubAgentDeps = {
 	notifyRun: defaultNotifyRun,
 	buildPromptStruct,
 	runReplyHandlers,
+	isStopping,
 	archive: { cleanupExpiredArchives, projectArchiveEntries, removeParentArchive, writeParentArchive },
 	/**
 	 * 可注入的当前时间源。
@@ -557,7 +559,6 @@ export async function executeSubAgentRun(run, deps = defaultSubAgentDeps) {
 		}
 		const generationOptions = {
 			signal: run.controller.signal,
-			stopAfterRound: run.parentArgs?.generation_options?.stopAfterRound,
 			supported_functions: childArgs.supported_functions,
 			/**
 			 * 推送模型流式预览。
@@ -617,7 +618,7 @@ export async function executeSubAgentRun(run, deps = defaultSubAgentDeps) {
 			for (const entry of result.logContextBefore.slice(shownLogCount)) appendChildConversationEntry(run, entry, false)
 			shownLogCount = result.logContextBefore.length
 			if (!wantRegen) break
-			if (generationOptions.stopAfterRound?.()) {
+			if (deps.isStopping()) {
 				result.content = 'fount 正在退出，子代理已完成当前轮处理；重启后请重新委派尚未完成的任务。'
 				break
 			}

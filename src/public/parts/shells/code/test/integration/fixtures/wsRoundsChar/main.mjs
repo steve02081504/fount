@@ -104,9 +104,7 @@ export default {
 						previewUpdater?.({ ...result })
 					}
 					if (await runReplyHandlers(result, { ...args, prompt_struct, AddLongTimeLog }, handlers)) {
-						result.extension.completedLogCount = result.logContextBefore.length
-						await args.generation_options.onRoundComplete?.()
-						if (args.generation_options.stopAfterRound?.()) { result.extension.incompleteRound = true; break regen }
+						if (!await args.generation_options.finishRound?.()) break regen
 						continue regen
 					}
 					break

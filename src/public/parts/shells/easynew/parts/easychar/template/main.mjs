@@ -267,7 +267,6 @@ export default {
 				try {
 					// 在重新生成循环中检查插件触发
 					regen: while (true) {
-						if (args.generation_options.signal?.aborted) throw new DOMException('Generation aborted', 'AbortError')
 						args.generation_options.base_result = result
 						// 主动记录本轮 prompt：由角色自己调用 Agent Studio API，不依赖 shell 注入回调
 						const promptRequest = beginPromptRequest(args, prompt_struct, { model: activeSource?.filename })
@@ -277,21 +276,16 @@ export default {
 						finally {
 							finishPromptRequest(promptRequest)
 						}
-						if (args.generation_options.signal?.aborted) throw new DOMException('Generation aborted', 'AbortError')
+						args.generation_options.signal?.throwIfAborted()
 						// 达到 72.9% 上下文阈值时压缩历史后重新生成
-						if (!args.generation_options.stopAfterRound?.() && needsCompression(args, { prompt_struct }) &&
+						if (needsCompression(args, { prompt_struct }) &&
 							await compressContext({ args, aiSource: activeSource, prompt_struct, result })) {
 							await injectRoundEntries(args, prompt_struct)
-							result.extension.completedLogCount = result.logContextBefore.length
-							await args.generation_options.onRoundComplete?.()
-							if (args.generation_options.stopAfterRound?.()) { result.extension.incompleteRound = true; break regen }
 							continue regen
 						}
 						if (await runReplyHandlers(result, { ...args, prompt_struct, AddLongTimeLog }, handlers)) {
 							await injectRoundEntries(args, prompt_struct)
-							result.extension.completedLogCount = result.logContextBefore.length
-							await args.generation_options.onRoundComplete?.()
-							if (args.generation_options.stopAfterRound?.()) { result.extension.incompleteRound = true; break regen }
+							if (!await args.generation_options.finishRound?.()) break
 							continue regen
 						}
 						break
