@@ -3,6 +3,7 @@ import { setTimeout, clearTimeout } from 'node:timers'
 import { on_shutdown } from 'npm:on-shutdown'
 
 import { ms } from '../scripts/ms.mjs'
+import { markStopping } from '../scripts/stopping.mjs'
 
 /** 在考虑系统空闲之前等待的毫秒数。 */
 const IDLE_TIMEOUT_MS = ms('30s')
@@ -129,7 +130,12 @@ async function runIdleTasks() {
 	idleRunOnces.length = 0
 }
 
-on_shutdown(runIdleTasks)
+on_shutdown(async () => {
+	// 关停期间标记进程正在退出：更新类空闲任务（checkUpstream / checkDenoUpdate）会检查该标记并跳过，
+	// 避免重启被网络型更新检查拖住甚至挂死；真正的更新交给 launcher 的 exit-131 流程。
+	markStopping()
+	await runIdleTasks()
+})
 
 /**
  * 检查空闲状态并运行任务的主循环。

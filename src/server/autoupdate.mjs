@@ -6,6 +6,7 @@ import { exec, execFile, powershell_exec } from 'npm:@steve02081504/exec'
 
 import { git } from '../scripts/git.mjs'
 import { console } from '../scripts/i18n/index.mjs'
+import { isStopping } from '../scripts/stopping.mjs'
 
 import { __dirname } from './base.mjs'
 import { onIdle, offIdle } from './idle.mjs'
@@ -41,6 +42,7 @@ refreshGitRef()
  * @returns {Promise<void>}
  */
 async function checkUpstream() {
+	if (isStopping()) return
 	if (!fs.existsSync(__dirname + '/.git')) return
 	await git('config', 'core.autocrlf', 'false')
 	await git('fetch')
@@ -78,6 +80,7 @@ async function checkUpstream() {
  * @returns {Promise<void>}
  */
 async function checkDenoUpdate() {
+	if (isStopping()) return
 	/* global Deno */
 	let denoPath
 	if (Deno.build.os === 'linux' && !fs.existsSync('/data/data/com.termux'))
