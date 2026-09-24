@@ -49,9 +49,9 @@ Deno.test('sanitizeForJson strips binary and functions', () => {
 	assertEquals(out.nested, { ok: true })
 })
 
-Deno.test('createPromptRequestRecorder projects system prompt, messages and round index', () => {
+Deno.test('createPromptRequestRecorder projects system prompt, messages and round index', async () => {
 	const recorder = createPromptRequestRecorder()
-	const finish = recordPromptRequest(recorder, makePromptStruct(), { model: 'demo-model' })
+	const finish = await recordPromptRequest(recorder, makePromptStruct(), { model: 'demo-model' })
 	finish()
 	assertEquals(recorder.requests.length, 1)
 	const request = recorder.requests[0]
@@ -68,6 +68,17 @@ Deno.test('createPromptRequestRecorder projects system prompt, messages and roun
 	)
 	assertEquals(typeof request.finishedAt, 'number')
 
-	recorder.record(makePromptStruct())
+	await recorder.record(makePromptStruct())
 	assertEquals(recorder.requests.map(item => item.index), [1, 2])
+})
+
+Deno.test('createPromptRequestRecorder snapshots the AI source BuildPrompt structure', async () => {
+	const recorder = createPromptRequestRecorder()
+	const aiSource = { BuildPrompt: async () => ({ messages: [{ role: 'system', content: 'you are demo' }], bytes: new Uint8Array([1, 2, 3, 4]) }) }
+	await recordPromptRequest(recorder, makePromptStruct(), { aiSource })
+	const snapshot = recorder.requests[0].snapshot
+	assertEquals(typeof snapshot, 'string')
+	assert(snapshot.includes('"messages"'))
+	assert(snapshot.includes('you are demo'))
+	assert(snapshot.includes('<buffer 4B'))
 })

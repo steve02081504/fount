@@ -269,7 +269,7 @@ export default {
 					regen: while (true) {
 						args.generation_options.base_result = result
 						// 主动记录本轮 prompt：由角色自己调用 Agent Studio API，不依赖 shell 注入回调
-						const promptRequest = beginPromptRequest(args, prompt_struct, { model: activeSource?.filename })
+						const promptRequest = await beginPromptRequest(args, prompt_struct, { model: activeSource?.filename, aiSource: activeSource })
 						try {
 							await activeSource.StructCall(prompt_struct, args.generation_options)
 						}

@@ -1,0 +1,22 @@
+{
+	"id": "serviceGenerators/AI/change-prompt",
+	"suites": [
+		{
+			"name": "pure",
+			"expected": 700,
+			"triggers": [
+				"src/public/parts/serviceGenerators/AI/change-prompt/**",
+				"src/public/parts/serviceGenerators/AI/proxy/src/buildPromptDelegation.mjs"
+			],
+			"run": [
+				"deno",
+				"test",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/serviceGenerators/AI/change-prompt/test/pure/"
+			]
+		}
+	]
+}

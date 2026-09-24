@@ -12,6 +12,8 @@ import { async_eval } from 'npm:@steve02081504/async-eval'
 import { loadAIsourceFromNameOrConfigData } from '../../../serviceSources/AI/main.mjs'
 import { identityTokenizer, minKnownContextSize } from '../proxy/src/identityTokenizer.mjs'
 
+import { buildPromptByCondition, createConditionSelector, promptStructContent } from './prompt.mjs'
+
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /**
@@ -88,30 +90,7 @@ async function GetSource(config, { username, SaveConfig }) {
 	 * @param {prompt_struct_t} [prompt_struct] - 结构化提示（可选）。
 	 * @returns {Promise<AIsource_t>} 选择的源。
 	 */
-	const selectSourceByCondition = async (content, prompt_struct = null) => {
-		for (const rule of ifRules) {
-			if (!rule.condition || !rule.target) continue
-
-			const evalContext = { content }
-			if (prompt_struct) {
-				evalContext.prompt_struct = prompt_struct
-				evalContext.chat_log = prompt_struct.chat_log
-			}
-
-			const evalResult = await async_eval(rule.condition, evalContext)
-			if (evalResult.error) {
-				console.error('Error evaluating condition:', evalResult.error)
-				continue
-			}
-
-			if (evalResult.result) {
-				const key = JSON.stringify(rule.target)
-				const source = sourceMap.get(key)
-				if (source) return source
-			}
-		}
-		throw new Error('no matching condition found')
-	}
+	const selectSourceByCondition = createConditionSelector({ ifRules, sourceMap })
 
 	/**
 	 * 处理 if_result 规则。
@@ -176,15 +155,18 @@ async function GetSource(config, { username, SaveConfig }) {
 		 */
 		StructCall: async (prompt_struct, options = {}) => {
 			// 从 prompt_struct 中提取内容用于条件判断
-			const content = prompt_struct.chat_log
-				.map(entry => entry.content)
-				.filter(Boolean)
-				.join('\n')
+			const content = promptStructContent(prompt_struct)
 
 			const selectedSource = await selectSourceByCondition(content, prompt_struct)
 			const aiResult = await selectedSource.StructCall(prompt_struct, options)
 			return await processIfResultRules(aiResult)
 		},
+		/**
+		 * 委托条件选中的内层源构建 prompt 结构。
+		 * @param {prompt_struct_t} prompt_struct - 结构化提示。
+		 * @returns {Promise<object|unknown[]>} 构建结果。
+		 */
+		BuildPrompt: prompt_struct => buildPromptByCondition(promptStructContent(prompt_struct), prompt_struct, selectSourceByCondition),
 		tokenizer: identityTokenizer,
 	}
 	return result

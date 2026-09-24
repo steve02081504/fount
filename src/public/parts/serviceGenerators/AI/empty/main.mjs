@@ -68,6 +68,12 @@ async function GetSource(config) {
 		StructCall: async prompt_struct => {
 			throw error
 		},
+		/**
+		 * 空源不构建 prompt，始终返回空对象。
+		 * @param {import('../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct - 结构化提示。
+		 * @returns {Promise<object>} 空对象。
+		 */
+		BuildPrompt: async prompt_struct => ({}),
 		tokenizer: identityTokenizer,
 	}
 	return result

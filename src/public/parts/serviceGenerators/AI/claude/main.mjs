@@ -1,8 +1,8 @@
-import { structPromptToSingleNoChatLog } from '../../../shells/chat/src/prompt_struct/index.mjs'
 import { cleanupResponseText } from '../proxy/src/responseFormat.mjs'
 import { buildSourceInfo } from '../proxy/src/sourceInfo.mjs'
 
 import { ClaudeAPI } from './claude_api.mjs'
+import { buildClaudeMessages, buildClaudePrompt } from './promptBuilder.mjs'
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
@@ -93,29 +93,7 @@ async function GetSource(config, { SaveConfig }) { // 接收 SaveConfig
 		StructCall: async (prompt_struct, options = {}) => {
 			const { base_result = {}, replyPreviewUpdater, signal } = options
 
-			const messages = []
-			prompt_struct.chat_log.forEach(chatLogEntry => {
-				const uid = chatLogEntry.id ||= crypto.randomUUID().slice(0, 8)
-				messages.push({
-					role: chatLogEntry.role === 'user' ? 'user' : chatLogEntry.role === 'system' ? 'system' : 'assistant',
-					content: `\
-<message "${uid}">
-<sender>${chatLogEntry.name}</sender>
-<content>
-${chatLogEntry.content}
-</content>
-</message "${uid}">
-`
-				})
-			})
-
-			// 系统 Prompt (如果需要的话)
-			const system_prompt = structPromptToSingleNoChatLog(prompt_struct)
-			if (system_prompt)
-				messages.unshift({
-					role: 'system',
-					content: system_prompt
-				})
+			const messages = buildClaudeMessages(prompt_struct)
 
 			/**
 			 * 清理 AI 响应的格式，移除 XML 标签和不完整的标记。
@@ -158,6 +136,16 @@ ${chatLogEntry.content}
 			previewUpdater(result)
 
 			return Object.assign(base_result, clearFormat(result))
+		},
+
+		/**
+		 * 按本源配置把 prompt_struct 构建成 Claude 出站结构（prompt 字符串 + 消息数组），供快照与缓存对比。
+		 * @param {import('../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct - 结构化提示。
+		 * @returns {Promise<{prompt: string, chat_log: Array<{role: string, content: string}>}>} 出站结构。
+		 */
+		BuildPrompt: async prompt_struct => {
+			const chat_log = buildClaudeMessages(prompt_struct)
+			return { prompt: buildClaudePrompt(chat_log), chat_log }
 		},
 
 		tokenizer: {

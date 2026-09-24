@@ -2,6 +2,8 @@
 import { Buffer } from 'node:buffer'
 import { randomUUID } from 'node:crypto'
 
+import { buildClaudePrompt } from './promptBuilder.mjs'
+
 const AI = {
 	/**
 	 * 获取 API 端点。
@@ -390,7 +392,7 @@ export class ClaudeAPI {
 			const rProxy = this.config.r_proxy || AI.end()
 
 			// 构建 prompt 字符串
-			const prompt = messages.map(chatMessage => `${chatMessage.role}: ${chatMessage.content}`).join('\n\n') + '\n\nAssistant:'
+			const prompt = buildClaudePrompt(messages)
 
 			const payload = {
 				completion: {

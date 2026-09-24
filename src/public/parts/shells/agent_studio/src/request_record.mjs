@@ -72,10 +72,10 @@ function getSession(args) {
  * 每次 AI 源调用前记录一轮请求快照。
  * @param {chatReplyRequest_t} args 请求
  * @param {prompt_struct_t} promptStruct 提示结构
- * @param {{ model?: string }} [extra] 额外字段
- * @returns {{ session: recordSession_t, entry: object } | null} 轮次句柄（禁用时为 null）
+ * @param {{ model?: string, aiSource?: import('../../../../../decl/AIsource.ts').AIsource_t }} [extra] 额外字段（提供 aiSource 时用其 `BuildPrompt` 生成缓存快照文本）
+ * @returns {Promise<{ session: recordSession_t, entry: object } | null>} 轮次句柄（禁用时为 null）
  */
-export function beginPromptRequest(args, promptStruct, extra = {}) {
+export async function beginPromptRequest(args, promptStruct, extra = {}) {
 	let session
 	try {
 		session = getSession(args)
@@ -85,7 +85,7 @@ export function beginPromptRequest(args, promptStruct, extra = {}) {
 		return null
 	}
 	if (session.disabled) return null
-	const entry = session.recorder.record(promptStruct, { model: extra.model })
+	const entry = await session.recorder.record(promptStruct, { model: extra.model, aiSource: extra.aiSource })
 	return { session, entry }
 }
 

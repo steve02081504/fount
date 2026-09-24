@@ -7,23 +7,13 @@
  * @typedef {import('../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t
  */
 
-import { formatStr } from '../../../../../scripts/format.mjs'
 import { parseRegexFromString } from '../../../../../scripts/regex.mjs'
 import { loadAIsourceFromNameOrConfigData } from '../../../serviceSources/AI/main.mjs'
 
+import { buildChangedPromptStruct, buildPromptChanged } from './prompt.mjs'
+
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
-/**
- * 获取单一部分的提示对象。
- * @returns {{text: any[], additional_chat_log: any[], extension: {}}} 单一部分的提示对象。
- */
-function getSinglePartPrompt() {
-	return {
-		text: [],
-		additional_chat_log: [],
-		extension: {},
-	}
-}
 /**
  * Change Prompt AI 来源生成器模块定义。
  * @type {import('../../../../../decl/AIsource.ts').AIsource_interfaces_and_AIsource_t_getter}
@@ -124,102 +114,7 @@ async function GetSource(config, { username, SaveConfig }) {
 		 * @returns {Promise<{content: string}>} AI 的返回结果。
 		 */
 		StructCall: async (prompt_struct, options = {}) => {
-			const new_prompt_struct = {
-				char_id: prompt_struct.char_id,
-				UserCharname: prompt_struct.UserCharname,
-				ReplyToCharname: prompt_struct.ReplyToCharname,
-				UserUid: prompt_struct.UserUid,
-				CharUid: prompt_struct.CharUid,
-				ReplyToUid: prompt_struct.ReplyToUid,
-				Charname: prompt_struct.Charname,
-				char_prompt: getSinglePartPrompt(),
-				user_prompt: getSinglePartPrompt(),
-				other_chars_prompts: {},
-				other_personas_prompts: {},
-				world_prompt: getSinglePartPrompt(),
-				plugin_prompts: {},
-				chat_log: prompt_struct.chat_log,
-			}
-			let eval_strings = {
-				char_prompt: '',
-				user_prompt: '',
-				world_prompt: '',
-				other_chars_prompts: '',
-				other_personas_prompts: '',
-				plugin_prompts: '',
-			}
-			if (config.build_prompt) {
-				{
-					const sorted = prompt_struct.char_prompt.text.sort((a, b) => a.important - b.important).map(text => text.content).filter(Boolean)
-					eval_strings.char_prompt = sorted.join('\n')
-				}
-
-				{
-					const sorted = prompt_struct.user_prompt.text.sort((a, b) => a.important - b.important).map(text => text.content).filter(Boolean)
-					eval_strings.user_prompt = sorted.join('\n')
-				}
-
-				{
-					const sorted = prompt_struct.world_prompt.text.sort((a, b) => a.important - b.important).map(text => text.content).filter(Boolean)
-					eval_strings.world_prompt = sorted.join('\n')
-				}
-
-				{
-					const sorted = Object.values(prompt_struct.other_chars_prompts).map(char => char.text).filter(Boolean).map(
-						char => char.sort((a, b) => a.important - b.important).map(text => text.content).filter(Boolean)
-					).flat().filter(Boolean)
-					eval_strings.other_chars_prompts = sorted.join('\n')
-				}
-
-				{
-					const sorted = Object.values(prompt_struct.other_personas_prompts || {}).map(persona => persona.text).filter(Boolean).map(
-						persona => persona.sort((a, b) => a.important - b.important).map(text => text.content).filter(Boolean)
-					).flat().filter(Boolean)
-					eval_strings.other_personas_prompts = sorted.join('\n')
-				}
-
-				{
-					const sorted = Object.values(prompt_struct.plugin_prompts).map(plugin => plugin?.text).filter(Boolean).map(
-						plugin => plugin.sort((a, b) => a.important - b.important).map(text => text.content).filter(Boolean)
-					).flat().filter(Boolean)
-					eval_strings.plugin_prompts = sorted.join('\n')
-				}
-			}
-			else {
-				new_prompt_struct.char_prompt = prompt_struct.char_prompt
-				new_prompt_struct.user_prompt = prompt_struct.user_prompt
-				new_prompt_struct.world_prompt = prompt_struct.world_prompt
-				new_prompt_struct.other_chars_prompts = prompt_struct.other_chars_prompts
-				new_prompt_struct.other_personas_prompts = prompt_struct.other_personas_prompts || {}
-				new_prompt_struct.plugin_prompts = prompt_struct.plugin_prompts
-				eval_strings = {}
-			}
-			for (const change of config.changes) {
-				const value = {
-					name: 'system',
-					role: 'system',
-					files: [],
-					extension: {},
-					...change.content,
-					content: await formatStr(change.content.content, {
-						...eval_strings,
-						...prompt_struct,
-					})
-				}
-				const { chat_log } = new_prompt_struct
-				if (change.insert_depth > 0)
-					// 正数表示在后插入
-					if (chat_log.length > change.insert_depth)
-						chat_log.splice(chat_log.length - change.insert_depth, 0, value)
-					else
-						chat_log.unshift(value)
-				else
-					// 负数表示在前插入
-					if (chat_log.length > -change.insert_depth)
-						chat_log.splice(-change.insert_depth, 0, value)
-					else
-						chat_log.push(value)
-			}
+			const new_prompt_struct = await buildChangedPromptStruct(prompt_struct, config)
 			const result = await base_source.StructCall(new_prompt_struct, options)
 			for (const replace of config.replaces) {
 				const reg = parseRegexFromString(replace.seek)
@@ -227,6 +122,12 @@ async function GetSource(config, { username, SaveConfig }) {
 			}
 			return result
 		},
+		/**
+		 * 应用相同的 prompt 变换后委托基础源构建 prompt 结构。
+		 * @param {prompt_struct_t} prompt_struct - 结构化提示。
+		 * @returns {Promise<object|unknown[]>} 构建结果。
+		 */
+		BuildPrompt: prompt_struct => buildPromptChanged(prompt_struct, config, base_source),
 		tokenizer: {
 			/**
 			 * 释放分词器。

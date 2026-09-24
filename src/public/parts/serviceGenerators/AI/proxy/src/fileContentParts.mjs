@@ -66,9 +66,11 @@ export async function resolveFileBuffer(file) {
  * 构建附件 contentParts（image_url / input_audio），空字节或加载失败的文件跳过并计入 skipped。
  * @param {object[]} files 附件描述符
  * @param {string} textContent 正文
+ * @param {{ binaryMode?: 'base64' | 'buffer' }} [options] `binaryMode='buffer'` 时二进制保留为 Buffer（供快照构建），默认 `'base64'`（真实出站）
  * @returns {Promise<{ parts: object[], skipped: string[] }>} contentParts 与跳过名单
  */
-export async function buildFileContentParts(files, textContent) {
+export async function buildFileContentParts(files, textContent, options = {}) {
+	const binaryMode = options.binaryMode ?? 'base64'
 	const parts = [{ type: 'text', text: textContent }]
 	const skipped = []
 	for (const file of files) {
@@ -83,9 +85,9 @@ export async function buildFileContentParts(files, textContent) {
 		if (mime.startsWith('image/'))
 			parts.push({
 				type: 'image_url',
-				image_url: {
-					url: `data:${mime};base64,${bytes.toString('base64')}`,
-				},
+				image_url: binaryMode === 'buffer'
+					? { mime_type: mime, data: bytes }
+					: { url: `data:${mime};base64,${bytes.toString('base64')}` },
 			})
 		else if (mime.startsWith('audio/')) {
 			const formatMap = {
@@ -102,10 +104,9 @@ export async function buildFileContentParts(files, textContent) {
 			const format = formatMap[mime.toLowerCase()] || 'wav'
 			parts.push({
 				type: 'input_audio',
-				input_audio: {
-					data: bytes.toString('base64'),
-					format,
-				},
+				input_audio: binaryMode === 'buffer'
+					? { mime_type: mime, format, data: bytes }
+					: { data: bytes.toString('base64'), format },
 			})
 		}
 	}

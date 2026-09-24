@@ -3,6 +3,7 @@
 	"suites": [
 		{
 			"name": "pure",
+			"expected": 900,
 			"triggers": [
 				"src/public/parts/serviceGenerators/AI/bedrock/src/converse.mjs",
 				"src/public/parts/serviceGenerators/AI/bedrock/test/pure/**"
@@ -22,7 +23,8 @@
 			"expected": "26s",
 			"triggers": [
 				"src/public/parts/serviceGenerators/AI/bedrock/**",
-				"src/public/parts/serviceGenerators/AI/proxy/src/{convertConfig,identityTokenizer,messageBuilder,responseFormat}.mjs"
+				"src/public/parts/serviceGenerators/AI/proxy/src/{convertConfig,identityTokenizer,messageBuilder,responseFormat}.mjs",
+				"src/scripts/test/fixtures/ai_conversation.mjs"
 			],
 			"run": [
 				"deno",

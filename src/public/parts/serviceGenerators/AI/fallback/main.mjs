@@ -10,6 +10,8 @@
 import { loadAIsourceFromNameOrConfigData } from '../../../serviceSources/AI/main.mjs'
 import { identityTokenizer, minKnownContextSize } from '../proxy/src/identityTokenizer.mjs'
 
+import { buildPromptInOrder } from './prompt.mjs'
+
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /**
@@ -112,6 +114,12 @@ async function GetSource(config, { username, SaveConfig }) {
 				console.error(e)
 			}
 		},
+		/**
+		 * 按 StructCall 的故障转移顺序委托内层源构建 prompt 结构。
+		 * @param {prompt_struct_t} prompt_struct - 结构化提示。
+		 * @returns {Promise<object|unknown[]>} 构建结果。
+		 */
+		BuildPrompt: prompt_struct => buildPromptInOrder(sources, prompt_struct),
 		tokenizer: identityTokenizer,
 	}
 	return result

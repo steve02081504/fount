@@ -11,10 +11,12 @@ function isComparableRequest(request) {
 
 /**
  * 把一次请求快照序列化为可比较的字符串。
+ * 优先取记录时由 AI 源 `BuildPrompt` 构建并序列化的 `snapshot`（真实出站形态）；缺失（旧记录或无 BuildPrompt 的源）时回退到系统提示 + 消息拼接。
  * @param {object} request 请求快照
  * @returns {string} 序列化文本
  */
 export function serializeRequest(request) {
+	if (typeof request?.snapshot === 'string') return request.snapshot
 	return [request.systemPrompt, ...(request.messages ?? []).map(message => `${message.role}\n${message.content ?? ''}`)].join('\n')
 }
 

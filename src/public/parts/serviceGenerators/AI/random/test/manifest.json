@@ -1,0 +1,22 @@
+{
+	"id": "serviceGenerators/AI/random",
+	"suites": [
+		{
+			"name": "pure",
+			"expected": 400,
+			"triggers": [
+				"src/public/parts/serviceGenerators/AI/random/**",
+				"src/public/parts/serviceGenerators/AI/proxy/src/buildPromptDelegation.mjs"
+			],
+			"run": [
+				"deno",
+				"test",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/serviceGenerators/AI/random/test/pure/"
+			]
+		}
+	]
+}

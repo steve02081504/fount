@@ -43,6 +43,44 @@ const configTemplate = {
 	}
 }
 /**
+ * 把 prompt_struct 构建成 Cohere 出站 `messages`（system 置顶 + 聊天记录 + 多角色提醒）。
+ * @param {prompt_struct_t} prompt_struct - 结构化提示。
+ * @param {object} config - 当前服务配置。
+ * @returns {Array<{role: 'user'|'assistant'|'system', content: string}>} 消息数组。
+ */
+function buildCohereMessages(prompt_struct, config) {
+	const messages = [{
+		role: 'system',
+		content: structPromptToSingleNoChatLog(prompt_struct)
+	}]
+	mergeStructPromptChatLog(prompt_struct).forEach(chatLogEntry => {
+		const uid = chatLogEntry.id ||= crypto.randomUUID().slice(0, 8)
+		messages.push({
+			role: chatLogEntry.role === 'user' ? 'user' : chatLogEntry.role === 'system' ? 'system' : 'assistant',
+			content: `\
+<message "${uid}">
+<sender>${chatLogEntry.name}</sender>
+<content>
+${chatLogEntry.content}
+</content>
+</message "${uid}">
+`
+		})
+	})
+
+	if (config.convert_config?.roleReminding ?? true) {
+		const isMultiChar = new Set(prompt_struct.chat_log.map(chatLogEntry => chatLogEntry.name).filter(Boolean)).size > 2
+		if (isMultiChar)
+			messages.push({
+				role: 'system',
+				content: `现在请以${prompt_struct.Charname}的身份续写对话。`
+			})
+	}
+
+	return messages
+}
+
+/**
  * 获取 AI 源。
  * @param {object} config - 配置对象。
  * @returns {Promise<AIsource_t>} AI 源。
@@ -83,36 +121,9 @@ async function GetSource(config) {
 		StructCall: async (prompt_struct, options = {}) => {
 			const { base_result = {}, replyPreviewUpdater, signal } = options
 
-			const system_prompt = structPromptToSingleNoChatLog(prompt_struct)
 			const request = {
 				model: config.model,
-				messages: [{
-					role: 'system',
-					content: system_prompt
-				}]
-			}
-			mergeStructPromptChatLog(prompt_struct).forEach(chatLogEntry => {
-				const uid = chatLogEntry.id ||= crypto.randomUUID().slice(0, 8)
-				request.messages.push({
-					role: chatLogEntry.role === 'user' ? 'user' : chatLogEntry.role === 'system' ? 'system' : 'assistant',
-					content: `\
-<message "${uid}">
-<sender>${chatLogEntry.name}</sender>
-<content>
-${chatLogEntry.content}
-</content>
-</message "${uid}">
-`
-				})
-			})
-
-			if (config.convert_config?.roleReminding ?? true) {
-				const isMultiChar = new Set(prompt_struct.chat_log.map(chatLogEntry => chatLogEntry.name).filter(Boolean)).size > 2
-				if (isMultiChar)
-					request.messages.push({
-						role: 'system',
-						content: `现在请以${prompt_struct.Charname}的身份续写对话。`
-					})
+				messages: buildCohereMessages(prompt_struct, config)
 			}
 
 			/**
@@ -179,6 +190,15 @@ ${chatLogEntry.content}
 
 			return Object.assign(base_result, clearFormat(result))
 		},
+		/**
+		 * 按本源配置把 prompt_struct 构建成 Cohere 出站 `{ model, messages }`，供快照与缓存对比。
+		 * @param {prompt_struct_t} prompt_struct - 结构化提示。
+		 * @returns {Promise<{model: string, messages: Array<{role: 'user'|'assistant'|'system', content: string}>}>} 出站结构。
+		 */
+		BuildPrompt: async prompt_struct => ({
+			model: config.model,
+			messages: buildCohereMessages(prompt_struct, config),
+		}),
 		tokenizer: {
 			/**
 			 * 释放分词器。

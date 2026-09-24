@@ -1,4 +1,4 @@
-import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../shells/chat/src/prompt_struct/index.mjs'
+import { buildEnvelopeChatMessages } from '../proxy/src/envelopeMessages.mjs'
 import { cleanupResponseText } from '../proxy/src/responseFormat.mjs'
 import { buildSourceInfo } from '../proxy/src/sourceInfo.mjs'
 
@@ -104,36 +104,10 @@ async function GetSource(config) {
 		StructCall: async (prompt_struct, options = {}) => {
 			const { base_result = {}, replyPreviewUpdater, signal } = options
 
-			const messages = []
-			mergeStructPromptChatLog(prompt_struct).forEach(chatLogEntry => {
-				const uid = chatLogEntry.id ||= crypto.randomUUID().slice(0, 8)
-				messages.push({
-					role: chatLogEntry.role === 'user' ? 'user' : chatLogEntry.role === 'system' ? 'system' : 'assistant',
-					content: `\
-<message "${uid}">
-<sender>${chatLogEntry.name}</sender>
-<content>
-${chatLogEntry.content}
-</content>
-</message "${uid}">
-`
-				})
+			const messages = buildEnvelopeChatMessages(prompt_struct, {
+				systemPromptAtDepth: 10,
+				roleReminding: config.convert_config?.roleReminding ?? true,
 			})
-
-			const system_prompt = structPromptToSingleNoChatLog(prompt_struct)
-			messages.splice(Math.max(messages.length - 10, 0), 0, {
-				role: 'system',
-				content: system_prompt
-			})
-
-			if (config.convert_config?.roleReminding ?? true) {
-				const isMultiChar = new Set(prompt_struct.chat_log.map(chatLogEntry => chatLogEntry.name).filter(Boolean)).size > 2
-				if (isMultiChar)
-					messages.push({
-						role: 'system',
-						content: `现在请以${prompt_struct.Charname}的身份续写对话。`
-					})
-			}
 
 			/**
 			 * 清理 AI 响应的格式，移除 XML 标签和不完整的标记。
@@ -197,6 +171,15 @@ ${chatLogEntry.content}
 
 			return Object.assign(base_result, clearFormat(result))
 		},
+		/**
+		 * 按本源配置把 prompt_struct 构建成信封消息结构，供快照与缓存对比。
+		 * @param {prompt_struct_t} prompt_struct - 结构化提示。
+		 * @returns {Promise<Array<{role: string, content: string}>>} 消息数组。
+		 */
+		BuildPrompt: async prompt_struct => buildEnvelopeChatMessages(prompt_struct, {
+			systemPromptAtDepth: 10,
+			roleReminding: config.convert_config?.roleReminding ?? true,
+		}),
 		tokenizer: {
 			/**
 			 * 释放分词器。

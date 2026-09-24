@@ -1,13 +1,16 @@
 /**
  * 【文件】snapshot.mjs — 生成请求快照采集
  * 【职责】在每次 `StructCall` 前把 `prompt_struct` 投影为可 JSON 化的「请求快照」，供 Agent Studio 展示每轮真实 prompt。
- * 【原理】`projectPromptStruct` 用 `structPromptToSingleNoChatLog` 得系统提示、`mergeStructPromptChatLog` 得可见聊天记录（含附加日志与摘要边界）。
- *   采集器 `createPromptRequestRecorder()` 持有轮次数组；调用方在每个 AI 源调用前 `record(prompt)`，同一 prompt_struct 的后续就地修改不再影响已存快照。
- * 【关联】prompt_struct/index.mjs、chat triggerReply、plugins/sub-agent、chars 模板。
+ * 【原理】`projectPromptStruct` 用 `structPromptToSingleNoChatLog` 得系统提示、`mergeStructPromptChatLog` 得可见聊天记录（含附加日志与摘要边界）；
+ *   另在提供 AI 源时用其 `BuildPrompt` 构建出站形态结构并序列化为快照纯文本（buffer 走变长 hash），供 prompt 缓存做前缀对比。
+ *   采集器 `createPromptRequestRecorder()` 持有轮次数组；调用方在每个 AI 源调用前 `record(prompt, { aiSource })`，同一 prompt_struct 的后续就地修改不再影响已存快照。
+ * 【关联】prompt_struct/index.mjs、serializeSnapshot.mjs、chat triggerReply、plugins/sub-agent、chars 模板。
  */
 /** @typedef {import('../../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
+/** @typedef {import('../../../../../../decl/AIsource.ts').AIsource_t} AIsource_t */
 
 import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from './index.mjs'
+import { serializeSnapshotValue } from './serializeSnapshot.mjs'
 
 /** 快照记录的单条内容长度上限（0 表示不限；默认不限以保留完整 prompt）。 */
 export const PROMPT_SNAPSHOT_MAX_CHARS = 0
@@ -53,11 +56,12 @@ function clampText(value) {
 }
 
 /**
- * 把 prompt_struct 投影为请求快照：系统提示 + 可见聊天记录。
+ * 把 prompt_struct 投影为请求快照：系统提示 + 可见聊天记录，另附 AI 源构建并序列化的快照纯文本。
  * @param {prompt_struct_t} prompt 提示结构
- * @returns {{ systemPrompt: string, messages: Array<{ id: string, role: string, name: string, uid: string, content: string }> }} 投影
+ * @param {{ aiSource?: AIsource_t }} [options] 选项（提供 AI 源时用其 `BuildPrompt` 生成缓存快照文本）
+ * @returns {Promise<{ systemPrompt: string, messages: Array<{ id: string, role: string, name: string, uid: string, content: string }>, snapshot: string | null }>} 投影
  */
-export function projectPromptStruct(prompt) {
+export async function projectPromptStruct(prompt, options = {}) {
 	let systemPrompt = ''
 	try {
 		systemPrompt = structPromptToSingleNoChatLog(prompt) || ''
@@ -85,38 +89,47 @@ export function projectPromptStruct(prompt) {
 			content: clampText(entry.content),
 		}
 	})
-	return { systemPrompt: clampText(systemPrompt), messages }
+	let snapshot = null
+	if (typeof options.aiSource?.BuildPrompt === 'function')
+		try {
+			snapshot = serializeSnapshotValue(await options.aiSource.BuildPrompt(prompt))
+		}
+		catch (error) {
+			console.warn('snapshot: BuildPrompt 失败', error)
+		}
+	return { systemPrompt: clampText(systemPrompt), messages, snapshot }
 }
 
 /**
  * 创建一次生成的请求采集器；每次 AI 源调用前调用 `record`。
- * @returns {{ requests: object[], record: (prompt: prompt_struct_t, extra?: object) => object }} 采集器
+ * @returns {{ requests: object[], record: (prompt: prompt_struct_t, extra?: { model?: string, aiSource?: AIsource_t, startedAt?: number }) => Promise<object> }} 采集器
  */
 export function createPromptRequestRecorder() {
 	const requests = []
 	/**
 	 * 记录一轮请求快照。
 	 * @param {prompt_struct_t} prompt 提示结构
-	 * @param {{ model?: string, startedAt?: number }} [extra] 额外字段
-	 * @returns {object} 快照
+	 * @param {{ model?: string, aiSource?: AIsource_t, startedAt?: number }} [extra] 额外字段
+	 * @returns {Promise<object>} 快照
 	 */
-	const record = (prompt, extra = {}) => {
+	const record = async (prompt, extra = {}) => {
 		const startedAt = extra.startedAt ?? Date.now()
 		/** @type {object} */
 		const entry = {
-			index: requests.length + 1,
 			startedAt,
 			finishedAt: null,
 			model: extra.model ?? null,
 		}
 		try {
-			const projected = projectPromptStruct(prompt)
+			const projected = await projectPromptStruct(prompt, { aiSource: extra.aiSource })
 			entry.systemPrompt = projected.systemPrompt
 			entry.messages = projected.messages
+			if (projected.snapshot != null) entry.snapshot = projected.snapshot
 		}
 		catch (error) {
 			entry.error = { name: error?.name, message: error?.message ?? String(error) }
 		}
+		entry.index = requests.length + 1
 		requests.push(entry)
 		return entry
 	}
@@ -127,11 +140,11 @@ export function createPromptRequestRecorder() {
  * 记录一次请求并使用方持有，返回用于标记完成的函数（写入 finishedAt）。
  * @param {ReturnType<typeof createPromptRequestRecorder>} recorder 采集器
  * @param {prompt_struct_t} prompt 提示结构
- * @param {{ model?: string }} [extra] 额外字段
- * @returns {() => void} 完成回调
+ * @param {{ model?: string, aiSource?: AIsource_t }} [extra] 额外字段
+ * @returns {Promise<() => void>} 完成回调
  */
-export function recordPromptRequest(recorder, prompt, extra = {}) {
+export async function recordPromptRequest(recorder, prompt, extra = {}) {
 	if (!recorder) return () => { }
-	const entry = recorder.record(prompt, extra)
+	const entry = await recorder.record(prompt, extra)
 	return () => { entry.finishedAt = Date.now() }
 }

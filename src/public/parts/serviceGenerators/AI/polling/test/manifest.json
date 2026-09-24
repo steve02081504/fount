@@ -1,0 +1,22 @@
+{
+	"id": "serviceGenerators/AI/polling",
+	"suites": [
+		{
+			"name": "pure",
+			"expected": 500,
+			"triggers": [
+				"src/public/parts/serviceGenerators/AI/polling/**",
+				"src/public/parts/serviceGenerators/AI/proxy/src/buildPromptDelegation.mjs"
+			],
+			"run": [
+				"deno",
+				"test",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/serviceGenerators/AI/polling/test/pure/"
+			]
+		}
+	]
+}

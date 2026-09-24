@@ -8,9 +8,10 @@ import { assistantMessageCarriesDeniedFiles, normalizeMimePatterns, prependText,
  * @param {import('../../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct - 结构化提示。
  * @param {object} config - 当前服务配置。
  * @param {object} configTemplate - 配置模板（默认值）。
+ * @param {{ binaryMode?: 'base64' | 'buffer' }} [options] - `binaryMode='buffer'` 时附件二进制保留为 Buffer（供 BuildPrompt 快照），默认 `'base64'`（真实出站）。
  * @returns {Promise<Array<{role: 'user'|'assistant'|'system', content: string | object[]}>>} OpenAI 格式消息数组。
  */
-export async function buildMessagesFromPromptStruct(prompt_struct, config, configTemplate) {
+export async function buildMessagesFromPromptStruct(prompt_struct, config, configTemplate, options = {}) {
 	const ignoreFiles = normalizeMimePatterns(config.convert_config?.ignoreFiles ?? configTemplate.convert_config.ignoreFiles)
 	const forbidSystemFiles = normalizeMimePatterns(config.convert_config?.forbidSystemFiles ?? configTemplate.convert_config.forbidSystemFiles)
 	const forbidAssistantFiles = normalizeMimePatterns(config.convert_config?.forbidAssistantFiles ?? configTemplate.convert_config.forbidAssistantFiles)
@@ -42,7 +43,7 @@ ${chatLogEntry.content}
 			message.content = textContent
 		}
 		if (kept.length) {
-			const { parts, skipped } = await buildFileContentParts(kept, textContent)
+			const { parts, skipped } = await buildFileContentParts(kept, textContent, options)
 			if (parts.length > 1)
 				message.content = parts
 			if (skipped.length) {

@@ -49,9 +49,9 @@ function makeArgs(overrides = {}) {
 	}
 }
 
-Deno.test('collectGenerationRecord builds a record with grouped identity and replayed dialogue', () => {
+Deno.test('collectGenerationRecord builds a record with grouped identity and replayed dialogue', async () => {
 	const args = makeArgs()
-	const handle = beginPromptRequest(args, makePromptStruct(), { model: 'demo-model' })
+	const handle = await beginPromptRequest(args, makePromptStruct(), { model: 'demo-model' })
 	finishPromptRequest(handle)
 	const record = collectGenerationRecord(args, { response: 'bye' })
 
@@ -68,7 +68,7 @@ Deno.test('collectGenerationRecord builds a record with grouped identity and rep
 	assertEquals(record.dialogue.events.at(-1).message.content, 'bye')
 })
 
-Deno.test('collectGenerationRecord returns null and warns when chat_id is missing', () => {
+Deno.test('collectGenerationRecord returns null and warns when chat_id is missing', async () => {
 	const args = makeArgs({ chat_id: undefined })
 	const original = console.error
 	const errors = []
@@ -79,7 +79,7 @@ Deno.test('collectGenerationRecord returns null and warns when chat_id is missin
 	 */
 	console.error = (...parts) => { errors.push(parts.join(' ')) }
 	try {
-		const handle = beginPromptRequest(args, makePromptStruct())
+		const handle = await beginPromptRequest(args, makePromptStruct())
 		assertEquals(handle, null)
 		assertEquals(collectGenerationRecord(args, { response: 'x' }), null)
 	}
@@ -90,11 +90,11 @@ Deno.test('collectGenerationRecord returns null and warns when chat_id is missin
 	assert(errors[0].includes('chat_id'))
 })
 
-Deno.test('beginPromptRequest records message ids so consecutive rounds can align by id', () => {
+Deno.test('beginPromptRequest records message ids so consecutive rounds can align by id', async () => {
 	const args = makeArgs()
-	const first = beginPromptRequest(args, makePromptStruct())
+	const first = await beginPromptRequest(args, makePromptStruct())
 	finishPromptRequest(first)
-	const second = beginPromptRequest(args, makePromptStruct([
+	const second = await beginPromptRequest(args, makePromptStruct([
 		{ id: 'm1', role: 'user', name: 'User', uid: 'user', content: 'hi' },
 		{ id: 'm2', role: 'char', name: 'Demo', uid: 'char', content: 'hello' },
 	]))

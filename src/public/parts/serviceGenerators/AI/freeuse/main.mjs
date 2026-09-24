@@ -41,6 +41,19 @@ const configTemplate = {
 }
 
 /**
+ * 把 prompt_struct 构建成 Freeuse 出站 prompt 字符串。
+ * @param {prompt_struct_t} prompt_struct - 结构化提示。
+ * @returns {string} 出站 prompt。
+ */
+function buildFreeusePrompt(prompt_struct) {
+	let prompt = structPromptToSingleNoChatLog(prompt_struct)
+	prompt += `\
+\n${prompt_struct.chat_log.map(item => `${item.name}: ${item.content}\n${endToken}`).join('\n')}
+${prompt_struct.Charname}: `
+	return prompt
+}
+
+/**
  * 获取 AI 源。
  * @param {object} config - 配置对象。
  * @returns {Promise<AIsource_t>} AI 源。
@@ -88,16 +101,21 @@ async function GetSource(config) {
 				throw err
 			}
 
-			let prompt = structPromptToSingleNoChatLog(prompt_struct)
-			prompt += `\
-\n${prompt_struct.chat_log.map(item => `${item.name}: ${item.content}\n${endToken}`).join('\n')}
-${prompt_struct.Charname}: `
+			const prompt = buildFreeusePrompt(prompt_struct)
 
 			return Object.assign(base_result, {
 				content: generator.generate({ prompt }),
 				files: [...base_result?.files || []],
 			})
 		},
+		/**
+		 * 按本源配置把 prompt_struct 构建成 Freeuse 出站 `{ prompt }`，供快照与缓存对比。
+		 * @param {prompt_struct_t} prompt_struct - 结构化提示。
+		 * @returns {Promise<{prompt: string}>} 出站结构。
+		 */
+		BuildPrompt: async prompt_struct => ({
+			prompt: buildFreeusePrompt(prompt_struct),
+		}),
 		tokenizer: identityTokenizer,
 	}
 

@@ -83,6 +83,15 @@ export class AIsource_t<InputType, OutputType> {
 	context_size?: number
 
 	/**
+	 * 按本源的配置把 fount 格式的 `prompt_struct` 构建成其出站形态的 JSON 结构。
+	 * 规范化表示：结构可含 array / object / string / number / Buffer；二进制（图片、音频等）保留为 Buffer，不做 base64/编码。
+	 * 与真实出站 payload 同构但不发往网络，供快照序列化与 prompt 缓存对比使用；缺失时消费方自行降级。
+	 * @param {prompt_struct_t} prompt_struct - 结构化的 prompt。
+	 * @returns {Promise<object | unknown[]>} 可序列化的 JSON 结构。
+	 */
+	BuildPrompt?: (prompt_struct: prompt_struct_t) => Promise<object | unknown[]>
+
+	/**
 	 * 卸载 AI 数据源并释放资源。
 	 * @returns {Promise<void>}
 	 */

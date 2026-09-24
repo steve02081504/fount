@@ -30,6 +30,19 @@ export async function createResponsesSource({
 	config.context_size ??= configTemplate.context_size
 
 	/**
+	 * 由 chat 消息构建 Responses 请求体（StructCall 与 BuildPrompt 共用）。
+	 * @param {Array<object>} messages - 消息。
+	 * @returns {object} Responses 请求体。
+	 */
+	function buildResponsesBody(messages) {
+		return messagesToResponsesBody(messages, {
+			model: config.model,
+			stream: config.use_stream,
+			model_arguments: config.model_arguments,
+		})
+	}
+
+	/**
 	 * 打 Responses。
 	 * @param {Array<object>} messages - 消息。
 	 * @param {object} [options] - 选项。
@@ -40,11 +53,7 @@ export async function createResponsesSource({
 		return fetchResponses({
 			url,
 			headers,
-			body: messagesToResponsesBody(messages, {
-				model: config.model,
-				stream: config.use_stream,
-				model_arguments: config.model_arguments,
-			}),
+			body: buildResponsesBody(messages),
 			signal: options.signal,
 			previewUpdater: options.previewUpdater,
 			result: options.result,
@@ -91,5 +100,13 @@ export async function createResponsesSource({
 			return Object.assign(base_result, clearFormat(result, prompt_struct))
 		},
 		tokenizer: identityTokenizer,
+		/**
+		 * 按本源配置把 prompt_struct 构建成 Responses 请求体（附件二进制保留为 Buffer），供快照与缓存对比。
+		 * @param {import('../../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct - 结构化提示。
+		 * @returns {Promise<object>} Responses 请求体结构。
+		 */
+		BuildPrompt: async prompt_struct => buildResponsesBody(
+			await buildMessagesFromPromptStruct(prompt_struct, config, configTemplate, { binaryMode: 'buffer' }),
+		),
 	}
 }

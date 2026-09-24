@@ -110,5 +110,11 @@ export async function createOpenAICompatibleSource({
 			return Object.assign(base_result, clearFormat(result, prompt_struct))
 		},
 		tokenizer: identityTokenizer,
+		/**
+		 * 按本源配置把 prompt_struct 构建成 OpenAI 兼容消息结构（附件二进制保留为 Buffer），供快照与缓存对比。
+		 * @param {import('../../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct - 结构化提示。
+		 * @returns {Promise<object[]>} 消息结构。
+		 */
+		BuildPrompt: prompt_struct => buildMessagesFromPromptStruct(prompt_struct, config, configTemplate, { binaryMode: 'buffer' }),
 	}
 }

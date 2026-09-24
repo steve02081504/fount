@@ -1,0 +1,26 @@
+{
+	"id": "serviceGenerators/AI/blackbox",
+	"suites": [
+		{
+			"name": "integration",
+			"expected": "5s",
+			"triggers": [
+				"src/public/parts/serviceGenerators/AI/blackbox/**",
+				"src/public/parts/serviceGenerators/AI/proxy/src/**",
+				"src/public/parts/shells/chat/src/prompt_struct/**",
+				"src/scripts/await_timeout.mjs",
+				"src/scripts/test/fixtures/ai_conversation.mjs"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/deno/serial.mjs",
+				"./src/public/parts/serviceGenerators/AI/blackbox/test/integration/"
+			]
+		}
+	]
+}

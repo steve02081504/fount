@@ -1,0 +1,22 @@
+{
+	"id": "serviceGenerators/AI/fallback",
+	"suites": [
+		{
+			"name": "pure",
+			"expected": "2s",
+			"triggers": [
+				"src/public/parts/serviceGenerators/AI/fallback/**",
+				"src/public/parts/serviceGenerators/AI/proxy/src/buildPromptDelegation.mjs"
+			],
+			"run": [
+				"deno",
+				"test",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/serviceGenerators/AI/fallback/test/pure/"
+			]
+		}
+	]
+}

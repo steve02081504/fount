@@ -25,7 +25,8 @@
 				"src/public/parts/serviceGenerators/AI/azure-openai-responses/**",
 				"src/public/parts/serviceGenerators/AI/codex/src/**",
 				"src/public/parts/serviceGenerators/AI/proxy/src/**",
-				"src/public/parts/serviceGenerators/AI/proxy/test/mockFetch.mjs"
+				"src/public/parts/serviceGenerators/AI/proxy/test/mockFetch.mjs",
+				"src/scripts/test/fixtures/ai_conversation.mjs"
 			],
 			"run": [
 				"deno",

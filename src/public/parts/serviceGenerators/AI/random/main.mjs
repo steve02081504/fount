@@ -12,6 +12,8 @@ import { FullProxy } from 'npm:full-proxy'
 import { loadAIsourceFromNameOrConfigData } from '../../../serviceSources/AI/main.mjs'
 import { minKnownContextSize } from '../proxy/src/identityTokenizer.mjs'
 
+import { buildPromptByWeight, selectSourceByWeight } from './prompt.mjs'
+
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /**
@@ -86,16 +88,7 @@ async function GetSource(config, { username, SaveConfig }) {
 	 * 按权重选择源。
 	 * @returns {AIsource_t} 选择的源。
 	 */
-	const selectSourceByWeight = () => {
-		const totalWeight = weightedSources.reduce((sum, s) => sum + s.weight, 0)
-		let randomValue = Math.random() * totalWeight
-
-		for (const weightedSource of weightedSources) {
-			randomValue -= weightedSource.weight
-			if (randomValue <= 0)
-				return weightedSource.source
-		}
-	}
+	const selectSource = () => selectSourceByWeight(weightedSources)
 
 
 	/**
@@ -122,7 +115,7 @@ async function GetSource(config, { username, SaveConfig }) {
 		 * @returns {Promise<any>} 来自 AI 的结果。
 		 */
 		Call: async prompt => {
-			const selectedSource = selectSourceByWeight()
+			const selectedSource = selectSource()
 			return await selectedSource.Call(prompt)
 		},
 		/**
@@ -132,10 +125,16 @@ async function GetSource(config, { username, SaveConfig }) {
 		 * @returns {Promise<any>} 来自 AI 的结果。
 		 */
 		StructCall: async (prompt_struct, options = {}) => {
-			const selectedSource = selectSourceByWeight()
+			const selectedSource = selectSource()
 			return await selectedSource.StructCall(prompt_struct, options)
 		},
-		tokenizer: new FullProxy(() => selectSourceByWeight().tokenizer),
+		/**
+		 * 委托加权随机选中的内层源构建 prompt 结构。
+		 * @param {prompt_struct_t} prompt_struct - 结构化提示。
+		 * @returns {Promise<object|unknown[]>} 构建结果。
+		 */
+		BuildPrompt: prompt_struct => buildPromptByWeight(weightedSources, prompt_struct),
+		tokenizer: new FullProxy(() => selectSource().tokenizer),
 	}
 	return result
 }

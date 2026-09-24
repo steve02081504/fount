@@ -3,9 +3,10 @@ import path from 'node:path'
 
 import { Ollama } from 'npm:ollama'
 
-import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../shells/chat/src/prompt_struct/index.mjs'
 import { estimateTokenCount } from '../proxy/src/identityTokenizer.mjs'
 import { buildSourceInfo } from '../proxy/src/sourceInfo.mjs'
+
+import { buildOllamaMessages } from './prompt.mjs'
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
@@ -103,45 +104,7 @@ async function GetSource(config) {
 		StructCall: async (prompt_struct, options = {}) => {
 			const { base_result = {}, replyPreviewUpdater, signal } = options
 
-			const messages = mergeStructPromptChatLog(prompt_struct).map(chatLogEntry => {
-				const images = (chatLogEntry.files || [])
-					.filter(file => file.mime_type && file.mime_type.startsWith('image/'))
-					.map(file => file.buffer.toString('base64'))
-
-				/**
-				 * Ollama 消息对象。
-				 * @type {{role: 'user'|'assistant'|'system', content: string, images?: string[]}}
-				 */
-				const message = {
-					role: chatLogEntry.role === 'user' ? 'user' : chatLogEntry.role === 'system' ? 'system' : 'assistant',
-					content: chatLogEntry.content,
-				}
-				if (images.length) message.images = images
-
-				return message
-			})
-
-			const system_prompt = structPromptToSingleNoChatLog(prompt_struct)
-			if (system_prompt) {
-				const systemMessage = {
-					role: 'system',
-					content: system_prompt
-				}
-				if (config.system_prompt_at_depth && config.system_prompt_at_depth < messages.length)
-					messages.splice(Math.max(messages.length - config.system_prompt_at_depth, 0), 0, systemMessage)
-				else
-					messages.unshift(systemMessage)
-			}
-
-
-			if (config.convert_config?.roleReminding ?? true) {
-				const isMultiChar = new Set(prompt_struct.chat_log.map(chatLogEntry => chatLogEntry.name).filter(Boolean)).size > 2
-				if (isMultiChar)
-					messages.push({
-						role: 'system',
-						content: `Now, please continue the conversation as ${prompt_struct.Charname}.`
-					})
-			}
+			const messages = buildOllamaMessages(prompt_struct, config)
 
 			const result = {
 				content: '',
@@ -200,6 +163,12 @@ async function GetSource(config) {
 
 			return Object.assign(base_result, result)
 		},
+		/**
+		 * 按本源配置把 prompt_struct 构建成 Ollama 消息结构（图片保留为 Buffer），供快照与缓存对比。
+		 * @param {prompt_struct_t} prompt_struct - 结构化提示。
+		 * @returns {Promise<Array<{role: string, content: string, images?: Uint8Array[]}>>} 消息数组。
+		 */
+		BuildPrompt: async prompt_struct => buildOllamaMessages(prompt_struct, config, { binaryMode: 'buffer' }),
 		tokenizer: {
 			/**
 			 * 释放分词器。

@@ -9,6 +9,8 @@
 import { loadAIsourceFromNameOrConfigData, source_dead } from '../../../serviceSources/AI/main.mjs'
 import { identityTokenizer, minKnownContextSize } from '../proxy/src/identityTokenizer.mjs'
 
+import { advancePollingIndex, buildPromptPolling } from './prompt.mjs'
+
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /**
@@ -94,7 +96,7 @@ async function GetSource(config, { username, SaveConfig }) {
 			let error_num = 0
 			let skipIncrement = false
 			while (true) try {
-				if (!skipIncrement) index = (index + 1) % sources.length
+				if (!skipIncrement) index = advancePollingIndex(index, sources.length)
 				skipIncrement = false
 				return await sources[index][methodName](...args)
 			} catch (e) {
@@ -149,6 +151,12 @@ async function GetSource(config, { username, SaveConfig }) {
 		 * @returns {Promise<any>} 来自 AI 的结果。
 		 */
 		StructCall: createPollingCall('StructCall'),
+		/**
+		 * 委托轮询选中的内层源构建 prompt 结构。
+		 * @param {prompt_struct_t} prompt_struct - 结构化提示。
+		 * @returns {Promise<object|unknown[]>} 构建结果。
+		 */
+		BuildPrompt: prompt_struct => buildPromptPolling(sources, index, prompt_struct),
 		tokenizer: identityTokenizer,
 	}
 	return result

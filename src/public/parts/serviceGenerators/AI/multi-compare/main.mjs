@@ -12,6 +12,8 @@ import { getUserByUsername } from '../../../../../server/auth/index.mjs'
 import { loadAIsourceFromNameOrConfigData } from '../../../serviceSources/AI/main.mjs'
 import { identityTokenizer, minKnownContextSize } from '../proxy/src/identityTokenizer.mjs'
 
+import { buildPromptFromFirstSource } from './prompt.mjs'
+
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /**
@@ -184,6 +186,12 @@ ${err.stack || err}
 				files: allFiles
 			})
 		},
+		/**
+		 * 委托首个内层源构建 prompt 结构。
+		 * @param {prompt_struct_t} prompt_struct - 结构化提示。
+		 * @returns {Promise<object|unknown[]>} 构建结果。
+		 */
+		BuildPrompt: prompt_struct => buildPromptFromFirstSource(sources, prompt_struct),
 		tokenizer: identityTokenizer,
 	}
 	return result

@@ -33,6 +33,17 @@ Deno.test('estimatePromptCache exposes per-round rates aligned with each generat
 	assertEquals(metrics[0].rate > 0.8, true)
 })
 
+Deno.test('serializeRequest prefers the built snapshot text over systemPrompt + messages', () => {
+	assertEquals(
+		serializeRequest({ systemPrompt: 'sys', messages: [{ role: 'user', content: 'hi' }], snapshot: 'built-prompt' }),
+		'built-prompt',
+	)
+	assertEquals(
+		serializeRequest({ systemPrompt: 'sys', messages: [{ role: 'user', content: 'hi' }] }),
+		'sys\nuser\nhi',
+	)
+})
+
 Deno.test('estimateGenerationCache compares the first request against the supplied previous prompt', () => {
 	const request = { systemPrompt: 'instruction', messages: [{ role: 'user', content: 'hello world' }] }
 	const previous = serializeRequest({ systemPrompt: 'instruction', messages: [{ role: 'user', content: 'hello' }] })

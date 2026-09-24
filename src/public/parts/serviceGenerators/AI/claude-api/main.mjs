@@ -58,6 +58,72 @@ const configTemplate = {
 }
 
 /**
+ * 把 prompt_struct 的聊天记录转成 Anthropic messages 结构（文本 + 图片块）。
+ * @param {prompt_struct_t} prompt_struct - 结构化提示。
+ * @param {string[]} supportedImageTypes - 支持的图片 MIME。
+ * @param {{ binaryMode?: 'base64' | 'buffer' }} [options] - `binaryMode='buffer'` 时图片字节保留为 Buffer（供快照），默认 `'base64'`（真实出站）。
+ * @returns {Promise<Array<{ role: 'user' | 'assistant', content: object[] }>>} Anthropic messages。
+ */
+async function buildClaudeMessages(prompt_struct, supportedImageTypes, options = {}) {
+	const binaryMode = options.binaryMode ?? 'base64'
+	return Promise.all(mergeStructPromptChatLog(prompt_struct).map(async chatLogEntry => {
+		const role = chatLogEntry.role === 'user' || chatLogEntry.role === 'system' ? 'user' : 'assistant'
+
+		// 内容可以是文本和图片的混合数组
+		const content = []
+
+		const uid = chatLogEntry.id ||= crypto.randomUUID().slice(0, 8)
+
+		// 添加文本内容
+		content.push({
+			type: 'text',
+			text: `\
+<message "${uid}">
+<sender>${chatLogEntry.name}</sender>
+<content>
+${chatLogEntry.content}
+</content>
+</message "${uid}">
+`,
+		})
+
+		// 处理并添加文件内容（仅限图片）
+		if (chatLogEntry.files)
+			for (const file of chatLogEntry.files) {
+				const mime_type = file.mime_type || mime.lookup(file.name) || 'application/octet-stream'
+				if (supportedImageTypes.includes(mime_type))
+					try {
+						content.push({
+							type: 'image',
+							source: {
+								type: 'base64',
+								media_type: mime_type,
+								data: binaryMode === 'buffer' ? file.buffer : file.buffer.toString('base64'),
+							}
+						})
+					}
+					catch (error) {
+						console.error(`Failed to process image file ${file.name}:`, error)
+						// 如果处理失败，可以添加一条错误信息文本
+						content.push({
+							type: 'text',
+							text: `[System Error: Failed to process image file ${file.name}]`,
+						})
+					}
+				else {
+					console.warn(`Unsupported file type for Claude: ${mime_type} for file ${file.name}. Skipping.`)
+					content.push({
+						type: 'text',
+						text: `[System Info: File ${file.name} with type ${mime_type} was skipped as it is not a supported image format.]`
+					})
+				}
+			}
+
+		return { role, content }
+	}))
+}
+
+/**
  * 获取 AI 源。
  * @param {object} config - 配置对象。
  * @param {object} [extra] - 可选注入（OAuth / Gateway 等）。
@@ -164,61 +230,7 @@ export async function GetSource(config, extra = {}) {
 			const system_prompt = structPromptToSingleNoChatLog(prompt_struct)
 
 			// 使用 fount 工具函数合并聊天记录，并转换为 Claude 的格式
-			const messages = await Promise.all(mergeStructPromptChatLog(prompt_struct).map(async chatLogEntry => {
-				const role = chatLogEntry.role === 'user' || chatLogEntry.role === 'system' ? 'user' : 'assistant'
-
-				// 内容可以是文本和图片的混合数组
-				const content = []
-
-				const uid = chatLogEntry.id ||= crypto.randomUUID().slice(0, 8)
-
-				// 添加文本内容
-				content.push({
-					type: 'text',
-					text: `\
-<message "${uid}">
-<sender>${chatLogEntry.name}</sender>
-<content>
-${chatLogEntry.content}
-</content>
-</message "${uid}">
-`,
-				})
-
-				// 处理并添加文件内容（仅限图片）
-				if (chatLogEntry.files)
-					for (const file of chatLogEntry.files) {
-						const mime_type = file.mime_type || mime.lookup(file.name) || 'application/octet-stream'
-						if (supportedImageTypes.includes(mime_type))
-							try {
-								content.push({
-									type: 'image',
-									source: {
-										type: 'base64',
-										media_type: mime_type,
-										data: file.buffer.toString('base64'),
-									}
-								})
-							}
-							catch (error) {
-								console.error(`Failed to process image file ${file.name}:`, error)
-								// 如果处理失败，可以添加一条错误信息文本
-								content.push({
-									type: 'text',
-									text: `[System Error: Failed to process image file ${file.name}]`,
-								})
-							}
-						else {
-							console.warn(`Unsupported file type for Claude: ${mime_type} for file ${file.name}. Skipping.`)
-							content.push({
-								type: 'text',
-								text: `[System Info: File ${file.name} with type ${mime_type} was skipped as it is not a supported image format.]`
-							})
-						}
-					}
-
-				return { role, content }
-			}))
+			const messages = await buildClaudeMessages(prompt_struct, supportedImageTypes)
 
 			// 构建最终的 API 请求参数
 			const params = {
@@ -277,6 +289,15 @@ ${chatLogEntry.content}
 			return Object.assign(base_result, clearFormat(result))
 		},
 		tokenizer: identityTokenizer,
+		/**
+		 * 按本源配置把 prompt_struct 构建成 Anthropic 出站结构（图片字节保留为 Buffer），供快照与缓存对比。
+		 * @param {prompt_struct_t} prompt_struct - 结构化提示。
+		 * @returns {Promise<{system: string, messages: object[]}>} 出站结构。
+		 */
+		BuildPrompt: async prompt_struct => ({
+			system: structPromptToSingleNoChatLog(prompt_struct),
+			messages: await buildClaudeMessages(prompt_struct, supportedImageTypes, { binaryMode: 'buffer' }),
+		}),
 	}
 
 	return result

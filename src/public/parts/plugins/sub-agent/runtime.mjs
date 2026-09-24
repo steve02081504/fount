@@ -590,7 +590,7 @@ export async function executeSubAgentRun(run, deps = defaultSubAgentDeps) {
 			}
 			generationOptions.base_result = result
 			// 主动记录本轮 prompt（sub-agent 不经过 char 模板，由运行时直接调用 Agent Studio API）
-			const promptRequest = beginPromptRequest(childArgs, promptStruct, { model: run.aiSource?.filename })
+			const promptRequest = await beginPromptRequest(childArgs, promptStruct, { model: run.aiSource?.filename, aiSource: run.aiSource })
 			try {
 				await run.aiSource.StructCall(promptStruct, generationOptions)
 			}
