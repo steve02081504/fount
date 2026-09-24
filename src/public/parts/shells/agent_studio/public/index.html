@@ -218,7 +218,10 @@
 					</div>
 					<div id="conversationSubagent" class="hidden">
 						<section class="dialog-section">
-							<h3 class="dialog-section-title" data-i18n="agent_studio.subagent.task"></h3>
+							<div class="conversation-section-head">
+								<h3 class="dialog-section-title" data-i18n="agent_studio.subagent.task"></h3>
+								<span id="subagentConversationTaskActions"></span>
+							</div>
 							<pre id="subagentConversationTask" class="code-block" prompt-content></pre>
 						</section>
 						<div id="subagentTranscript" class="subagent-conversation"></div>
@@ -303,11 +306,17 @@
 			</header>
 			<div id="generationDialogMeta" class="meta-chips"></div>
 			<section class="dialog-section">
-				<h3 class="dialog-section-title" data-i18n="agent_studio.generation.prompt"></h3>
+				<div class="conversation-section-head">
+					<h3 class="dialog-section-title" data-i18n="agent_studio.generation.prompt"></h3>
+					<span id="generationDialogPromptActions"></span>
+				</div>
 				<pre id="generationDialogPrompt" class="code-block" prompt-content></pre>
 			</section>
 			<section class="dialog-section">
-				<h3 class="dialog-section-title" data-i18n="agent_studio.generation.response"></h3>
+				<div class="conversation-section-head">
+					<h3 class="dialog-section-title" data-i18n="agent_studio.generation.response"></h3>
+					<span id="generationDialogResponseActions"></span>
+				</div>
 				<pre id="generationDialogResponse" class="code-block" prompt-content></pre>
 			</section>
 		</div>

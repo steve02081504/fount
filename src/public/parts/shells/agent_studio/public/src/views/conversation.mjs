@@ -10,11 +10,13 @@ import { onServerEvent } from '/scripts/endpoints/server_events.mjs'
 
 import { dialogueRounds, replayDialogue } from '../../shared/dialogueReplay.mjs'
 import { estimatePromptCache } from '../../shared/promptCache.mjs'
+import { messagesToText } from '../../shared/promptText.mjs'
 import { getConversation, getSubAgent, sendSubAgentMessage } from '../endpoints.mjs'
 import { formatTime } from '../lib/format.mjs'
 import { messageBody } from '../lib/messageBody.mjs'
 import { requestNavigate } from '../lib/navigationEvents.mjs'
 import { stateBadge } from '../lib/stateBadge.mjs'
+import { textActions } from '../lib/textActions.mjs'
 
 /** 当前深链的会话键（语言切换重载时复用）。 */
 let currentKey = ''
@@ -231,6 +233,10 @@ async function loadSubagentConversation(key) {
 		}
 		const task = document.getElementById('subagentConversationTask')
 		if (task) task.textContent = run.task || ''
+		document.getElementById('subagentConversationTaskActions')?.replaceChildren(textActions(
+			() => run.task || '',
+			{ filename: `subagent-${run.runId}-task.txt` },
+		))
 		const form = document.getElementById('subagentMessageForm')
 		const record = await getConversation(key).catch(() => null)
 		if (currentKey !== key) return
@@ -324,11 +330,11 @@ function renderGeneration(generation, cache = {}) {
 		const replay = document.createElement('details')
 		const title = document.createElement('summary')
 		title.textContent = geti18n('agent_studio.conversation.replay')
-		replay.append(title, buildDialogueSection(generation.dialogue))
+		replay.append(title, buildDialogueSection(generation.dialogue, generation.id))
 		article.appendChild(replay)
 	}
 
-	article.appendChild(buildSection(geti18n('agent_studio.conversation.response'), generation.response ?? ''))
+	article.appendChild(buildSection(geti18n('agent_studio.conversation.response'), generation.response ?? '', `generation-${generation.id}-response.txt`))
 
 	const requestsSection = document.createElement('details')
 	requestsSection.className = 'conversation-requests'
@@ -338,7 +344,7 @@ function renderGeneration(generation, cache = {}) {
 	requestsSection.appendChild(requestsTitle)
 	if (generation.requests?.length) 
 		for (const request of generation.requests)
-			requestsSection.appendChild(renderRequest(request))
+			requestsSection.appendChild(renderRequest(request, generation.id))
 	
 	else {
 		const hint = document.createElement('p')
@@ -356,9 +362,10 @@ function renderGeneration(generation, cache = {}) {
 /**
  * 渲染一轮 prompt 请求。
  * @param {object} request 请求快照
+ * @param {string} generationId 所属生成记录 id（用于下载文件名）
  * @returns {HTMLElement} 元素
  */
-function renderRequest(request) {
+function renderRequest(request, generationId) {
 	const round = document.createElement('div')
 	round.className = 'conversation-request'
 
@@ -379,13 +386,23 @@ function renderRequest(request) {
 		round.appendChild(error)
 	}
 
-	round.appendChild(buildSection(geti18n('agent_studio.conversation.systemPrompt'), request.systemPrompt ?? ''))
+	round.appendChild(buildSection(
+		geti18n('agent_studio.conversation.systemPrompt'),
+		request.systemPrompt ?? '',
+		`generation-${generationId}-round-${request.index}-system.txt`,
+	))
 
 	if (request.messages?.length) {
+		const labelRow = document.createElement('div')
+		labelRow.className = 'conversation-section-head'
 		const label = document.createElement('h6')
 		label.className = 'conversation-request-label'
 		label.textContent = geti18n('agent_studio.conversation.messages')
-		round.appendChild(label)
+		labelRow.append(label, textActions(
+			() => messagesToText(request.messages),
+			{ filename: `generation-${generationId}-round-${request.index}-messages.txt` },
+		))
+		round.appendChild(labelRow)
 		const list = document.createElement('div')
 		list.className = 'conversation-messages'
 		for (const message of request.messages) {
@@ -407,15 +424,23 @@ function renderRequest(request) {
 /**
  * 构建复原对话段落：含轮次选择器与按轮次复播的消息列表。
  * @param {{ rounds: number, events: object[] }} dialogue 对话
+ * @param {string} generationId 所属生成记录 id（用于下载文件名）
  * @returns {HTMLElement} 段落
  */
-function buildDialogueSection(dialogue) {
+function buildDialogueSection(dialogue, generationId) {
 	const section = document.createElement('section')
 	section.className = 'conversation-dialogue'
+	const head = document.createElement('div')
+	head.className = 'conversation-section-head'
 	const heading = document.createElement('h3')
 	heading.className = 'dialog-section-title'
 	heading.textContent = geti18n('agent_studio.conversation.replay')
-	section.appendChild(heading)
+	let upToRound = 0
+	head.append(heading, textActions(
+		() => messagesToText(replayDialogue(dialogue.events, upToRound > 0 ? { upToRound } : undefined)),
+		{ filename: `generation-${generationId}-dialogue.txt` },
+	))
+	section.appendChild(head)
 
 	const row = document.createElement('label')
 	row.className = 'conversation-request-head'
@@ -440,7 +465,7 @@ function buildDialogueSection(dialogue) {
 	list.replaceChildren(...renderMessages(replayDialogue(dialogue.events)))
 	section.appendChild(list)
 	select.addEventListener('change', () => {
-		const upToRound = Number(select.value) || 0
+		upToRound = Number(select.value) || 0
 		list.replaceChildren(...renderMessages(replayDialogue(dialogue.events, { upToRound: upToRound > 0 ? upToRound : undefined })))
 	})
 	return section
@@ -466,18 +491,23 @@ function renderMessages(messages) {
 }
 
 /**
- * 构建带标题的 `<pre>` 段落。
+ * 构建带标题的 `<pre>` 段落，标题旁附带复制 / 下载按钮。
  * @param {string} title 标题
  * @param {string} text 文本
+ * @param {string} [filename] 下载文件名（缺省则不加按钮）
  * @returns {HTMLElement} 段落
  */
-function buildSection(title, text) {
+function buildSection(title, text, filename) {
 	const section = document.createElement('section')
 	section.className = 'conversation-section'
+	const head = document.createElement('div')
+	head.className = 'conversation-section-head'
 	const heading = document.createElement('h3')
 	heading.className = 'dialog-section-title'
 	heading.textContent = title
+	head.appendChild(heading)
+	if (filename) head.appendChild(textActions(() => text, { filename }))
 	const body = messageBody(text)
-	section.append(heading, body)
+	section.append(head, body)
 	return section
 }

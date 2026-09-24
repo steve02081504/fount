@@ -3027,6 +3027,15 @@
 				"title": "这个群还没有频道",
 				"description": "在右侧新建或选择一个频道即可开始聊天",
 				"createAction": "新建频道"
+			},
+			"selection": {
+				"count": "已选 ${count} 条",
+				"copy": "复制",
+				"cancel": "取消",
+				"copied": "已复制 ${count} 条消息",
+				"toolbar": {
+					"aria-label": "消息多选工具栏"
+				}
 			}
 		},
 		"sidebar": {
@@ -6819,7 +6828,9 @@
 			"close": {
 				"title": "关闭",
 				"aria-label": "关闭"
-			}
+			},
+			"copy": "复制",
+			"download": "下载"
 		},
 		"dashboard": {
 			"title": "仪表盘",
@@ -6926,7 +6937,9 @@
 		"alerts": {
 			"loadFailed": "加载失败：${message}",
 			"saveFailed": "保存失败：${message}",
-			"runFailed": "运行失败：${message}"
+			"runFailed": "运行失败：${message}",
+			"copied": "已复制到剪贴板",
+			"copyFailed": "复制失败：${message}"
 		},
 		"home_function_buttons": {
 			"dev": {

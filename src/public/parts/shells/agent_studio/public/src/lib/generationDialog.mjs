@@ -10,6 +10,7 @@ import { showToastI18n } from '/scripts/features/toast.mjs'
 import { getGeneration } from '../endpoints.mjs'
 
 import { formatTime } from './format.mjs'
+import { textActions } from './textActions.mjs'
 
 /**
  * 生成详情中 prompt 区域的文本：优先逐轮请求快照，旧记录回落到 `input`。
@@ -64,12 +65,22 @@ export async function openGenerationDialog(id) {
 				meta.appendChild(chip)
 			}
 		}
+		const promptText = buildPromptText(record)
+		const responseText = typeof record.response === 'string'
+			? record.response
+			: JSON.stringify(record.response ?? null, null, 2)
 		if (prompt)
-			prompt.textContent = buildPromptText(record)
+			prompt.textContent = promptText
 		if (response)
-			response.textContent = typeof record.response === 'string'
-				? record.response
-				: JSON.stringify(record.response ?? null, null, 2)
+			response.textContent = responseText
+		document.getElementById('generationDialogPromptActions')?.replaceChildren(textActions(
+			() => promptText,
+			{ filename: `generation-${record.id}-prompt.txt` },
+		))
+		document.getElementById('generationDialogResponseActions')?.replaceChildren(textActions(
+			() => responseText,
+			{ filename: `generation-${record.id}-response.txt` },
+		))
 		dialog.showModal()
 	}
 	catch (error) {

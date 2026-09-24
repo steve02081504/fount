@@ -6819,7 +6819,9 @@
 			"close": {
 				"title": "閉じる",
 				"aria-label": "閉じる"
-			}
+			},
+			"copy": "コピー",
+			"download": "ダウンロード"
 		},
 		"dashboard": {
 			"title": "ダッシュボード",
@@ -6926,7 +6928,9 @@
 		"alerts": {
 			"loadFailed": "読み込みに失敗しました：${message}",
 			"saveFailed": "保存に失敗しました：${message}",
-			"runFailed": "実行に失敗しました：${message}"
+			"runFailed": "実行に失敗しました：${message}",
+			"copied": "クリップボードにコピーしました",
+			"copyFailed": "コピーに失敗しました：${message}"
 		},
 		"home_function_buttons": {
 			"dev": {

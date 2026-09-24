@@ -139,6 +139,18 @@ test.describe('Agent Studio shell boot', () => {
 		await page.evaluate(() => { window.location.hash = '#conversation/demo-replay' })
 		await expect(page.locator('#conversationGenerations .conversation-generation')).toHaveCount(2)
 		await expect(page.locator('#conversationGenerations .conversation-generation-head .badge-success')).toHaveCount(3)
+
+		const actions = page.locator('#conversationGenerations .conversation-generation > .conversation-section .section-actions').first()
+		await expect(actions).toBeVisible()
+		const downloadPromise = page.waitForEvent('download')
+		await actions.getByRole('button').nth(1).click()
+		const download = await downloadPromise
+		expect(download.suggestedFilename()).toBe('generation-g1-response.txt')
+		await page.context().grantPermissions(['clipboard-read', 'clipboard-write'])
+		await actions.getByRole('button').first().click()
+		const clipboard = await page.evaluate(() => navigator.clipboard.readText())
+		expect(clipboard).toContain('reply 1')
+
 		await page.locator('#conversationReplaySlider').fill('1')
 		await expect(page.locator('#conversationGenerations .conversation-generation')).toHaveCount(1)
 		await expect(page.locator('#conversationTranscript .conversation-message')).toHaveCount(1)

@@ -6819,7 +6819,9 @@
 			"close": {
 				"title": "Close",
 				"aria-label": "Close"
-			}
+			},
+			"copy": "Copy",
+			"download": "Download"
 		},
 		"dashboard": {
 			"title": "Dashboard",
@@ -6926,7 +6928,9 @@
 		"alerts": {
 			"loadFailed": "Load failed: ${message}",
 			"saveFailed": "Save failed: ${message}",
-			"runFailed": "Run failed: ${message}"
+			"runFailed": "Run failed: ${message}",
+			"copied": "Copied to clipboard",
+			"copyFailed": "Copy failed: ${message}"
 		},
 		"home_function_buttons": {
 			"dev": {

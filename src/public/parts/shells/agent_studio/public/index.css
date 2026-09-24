@@ -34,6 +34,14 @@
 	--icon: url("https://api.iconify.design/mdi/flask-outline.svg");
 }
 
+.icon-copy {
+	--icon: url("https://api.iconify.design/mdi/content-copy.svg");
+}
+
+.icon-download {
+	--icon: url("https://api.iconify.design/mdi/download-outline.svg");
+}
+
 .icon-dashboard {
 	--icon: url("https://api.iconify.design/mdi/view-dashboard-outline.svg");
 }
@@ -1050,6 +1058,30 @@
 
 .conversation-section {
 	margin-top: 0.2rem;
+}
+
+.conversation-section-head {
+	display: flex;
+	align-items: center;
+	gap: 0.35rem;
+	margin-bottom: 0.35rem;
+}
+
+.conversation-section-head .dialog-section-title,
+.conversation-section-head .conversation-request-label {
+	margin: 0;
+}
+
+.section-actions {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.1rem;
+	margin-left: auto;
+}
+
+.section-actions .icon {
+	width: 1rem;
+	height: 1rem;
 }
 
 .conversation-requests {
