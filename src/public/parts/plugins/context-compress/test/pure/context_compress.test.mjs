@@ -164,9 +164,22 @@ Deno.test('GetPrompt returns single-part shape with tool and usage', () => {
 	assertEquals(Array.isArray(prompt.text), true)
 	assertEquals(prompt.text.length, 1)
 	assertStringIncludes(prompt.text[0].content, '<compress-context/>')
-	assertStringIncludes(prompt.text[0].content, '/1000')
-	assertEquals(prompt.additional_chat_log, [])
+	assertEquals(prompt.text[0].content.includes('1000'), false)
+	assertEquals(prompt.additional_chat_log.length, 1)
+	assertStringIncludes(prompt.additional_chat_log[0].content, '模型上下文上限 1000 tokens')
+	assertStringIncludes(prompt.additional_chat_log[0].content, '%')
+	assertEquals(prompt.additional_chat_log[0].role, 'system')
 	assertEquals(prompt.extension, {})
+})
+
+Deno.test('GetPrompt keeps the volatile usage hint out of the cached system prompt', () => {
+	const prompt = getContextCompressPrompt({
+		locales: ['zh-CN'],
+		ai_source: makeAiSource(''),
+		chat_log: [makeEntry('user', 'User', 'a'.repeat(400))],
+	})
+	assertEquals(prompt.text[0].content.includes('当前上下文占用'), false)
+	assertStringIncludes(prompt.additional_chat_log[0].content, '当前上下文占用')
 })
 
 Deno.test('GetPrompt nudges when usage reaches threshold', () => {
@@ -178,7 +191,7 @@ Deno.test('GetPrompt nudges when usage reaches threshold', () => {
 			ai_source: makeAiSource(''),
 			chat_log: [makeEntry('user', 'User', 'a'.repeat(400))],
 		})
-		assertStringIncludes(prompt.text[0].content, '接近上限')
+		assertStringIncludes(prompt.additional_chat_log[0].content, '接近上限')
 	}
 	finally {
 		setConfig(previous)

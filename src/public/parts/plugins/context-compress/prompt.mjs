@@ -3,7 +3,8 @@
  * 【职责】注入 `<compress-context/>` 工具说明，并在可知时附带当前上下文占用（估算 tokens / context_size）与接近阈值的建议。
  * 【原理】GetPrompt 阶段尚无 prompt_struct，故以 `args.chat_log` 拼接文本，并用 AI 源 tokenizer（缺失时权威估算）计数；
  *   占用率仅作提示，不强制压缩——是否压缩由角色手动输出的标签触发。提示词固定中文（提示词不做多语言化）。
- * 【数据结构】返回 single_part_prompt_t：{ text: [{ content, description, important }], additional_chat_log: [], extension: {} }。
+ *   占用提示随历史变化，故放入 `additional_chat_log` 尾部条目而非 system prompt，避免它插在稳定历史之前、破坏按前缀命中的 prompt 缓存。
+ * 【数据结构】返回 single_part_prompt_t：{ text: [{ content, description, important }], additional_chat_log, extension: {} }。
  * 【关联】summarize.mjs（countTokens / 阈值语义）、state.mjs（阈值）。
  */
 /**
@@ -31,11 +32,11 @@ export function getContextCompressPrompt(args) {
 	const tokens = countTokens(aiSource, transcript)
 	const contextSize = Number(aiSource?.context_size)
 	const hasUsage = Number.isFinite(contextSize) && contextSize > 0
-	const usage = hasUsage ? `${tokens}/${contextSize}` : null
 	const overThreshold = hasUsage && tokens / contextSize >= getThreshold()
+	const percent = hasUsage ? (tokens / contextSize * 100).toFixed(1) : null
 
-	const usageHint = usage
-		? `\n当前上下文占用约 ${usage} tokens${overThreshold ? '，已接近上限，建议尽快压缩' : ''}。`
+	const usageHint = hasUsage
+		? `当前上下文占用约 ${tokens} tokens，模型上下文上限 ${contextSize} tokens，占用约 ${percent}%${overThreshold ? '，已接近上限，建议尽快压缩' : ''}。`
 		: ''
 
 	return {
@@ -47,11 +48,13 @@ export function getContextCompressPrompt(args) {
 <compress-context/>
 
 输出该标签后，系统会把你此前的对话历史整理成一份摘要，并在下一轮用摘要替换旧历史；请基于摘要继续对话，不要重复已总结的内容。
-仅当历史确实冗长、接近上限时使用。${usageHint}`,
+仅当历史确实冗长、接近上限时使用。`,
 			description: 'context-compress 插件：上下文压缩工具',
 			important: 0,
 		}],
-		additional_chat_log: [],
+		additional_chat_log: usageHint
+			? [{ role: 'system', name: 'system', uid: 'system', time_stamp: new Date().toISOString(), content: usageHint, files: [], extension: {} }]
+			: [],
 		extension: {},
 	}
 }
