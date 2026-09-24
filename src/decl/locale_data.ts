@@ -4392,6 +4392,9 @@ export type LocaleData = {
 		bootstrapFailed: string
 		connectNodeFailed: string
 		dwellFailed: string
+		readProgress: {
+			saveFailed: string
+		}
 		home_function_buttons: {
 			main: {
 				title: string
@@ -7605,6 +7608,7 @@ export type LocaleKeyParams = {
 	'social.post.gistCreateFailed': { error: string | number }
 	'social.profile.cabinetsFailed': { error: string | number }
 	'social.profile.loadFailed': { error: string | number }
+	'social.readProgress.saveFailed': { error: string | number }
 	'social.replies.loadFailed': { error: string | number }
 	'social.reply.context': { author: string | number }
 	'social.saved.loadFailed': { error: string | number }
