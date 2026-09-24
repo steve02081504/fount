@@ -4,7 +4,7 @@ import { initTranslations } from '/scripts/i18n/index.mjs'
 import { onServerEvent } from '/scripts/endpoints/server_events.mjs'
 
 import { ping } from '/scripts/endpoints/base.mjs'
-import { createTestStatusWs, getAutoUpdateEnabled, getSystemInfo, postRestart } from './src/endpoints.mjs'
+import { createTestStatusWs, getSystemInfo, postRestart } from './src/endpoints.mjs'
 import { mountTemplate, renderTemplate } from './templates.mjs'
 
 applyTheme()
@@ -34,7 +34,6 @@ const debugData = {
 }
 
 let isUpToDate = null
-let autoUpdateEnabled = false
 
 /**
  * 将字节数转换为 GiB。
@@ -332,11 +331,11 @@ const LOADING_ICON = 'https://api.iconify.design/line-md/loading-twotone-loop.sv
 const UPTODATE_ICON = 'https://api.iconify.design/line-md/confirm.svg'
 
 /**
- * 根据当前版本状态和自动更新配置刷新更新按钮的样式与可用性。
+ * 根据当前版本状态刷新更新按钮的样式与可用性（有更新时才可点击，是否允许更新交给后端判定）。
  */
 function refreshUpdateButton() {
 	const upToDate = isUpToDate === true
-	updateButton.disabled = !(isUpToDate === false && autoUpdateEnabled)
+	updateButton.disabled = isUpToDate !== false
 	if (updateButtonIcon) updateButtonIcon.src = upToDate ? UPTODATE_ICON : UPDATE_ICON
 	if (updateButtonLabel) updateButtonLabel.dataset.i18n = upToDate ? 'debug_info.alreadyLatest' : 'debug_info.update.now'
 }
@@ -348,19 +347,6 @@ function setUpdateButtonRestarting() {
 	updateButton.disabled = true
 	if (updateButtonIcon) updateButtonIcon.src = LOADING_ICON
 	if (updateButtonLabel) updateButtonLabel.dataset.i18n = 'debug_info.update.restarting'
-}
-
-/**
- * 从服务器获取自动更新启用状态并刷新更新按钮。
- */
-async function fetchAutoUpdateStatus() {
-	try {
-		const data = await getAutoUpdateEnabled()
-		autoUpdateEnabled = data.enabled
-	} catch {
-		autoUpdateEnabled = false
-	}
-	refreshUpdateButton()
 }
 
 copyButton.addEventListener('click', () => {
@@ -406,7 +392,7 @@ updateButton.addEventListener('click', async () => {
 			showToastI18n('success', 'debug_info.update.success')
 		} else if (data.error === 'auto_update_disabled') {
 			showToastI18n('warning', 'debug_info.autoUpdateNotEnabled')
-			await fetchAutoUpdateStatus()
+			refreshUpdateButton()
 		} else {
 			showToastI18n('error', 'debug_info.update.failed')
 			refreshUpdateButton()
@@ -462,5 +448,4 @@ if (!document.hidden) startPollTimer()
 pollVersionInfo()
 fetchSystemInfo()
 checkFrontendConnectivity()
-fetchAutoUpdateStatus()
 startTestStatusStream()
