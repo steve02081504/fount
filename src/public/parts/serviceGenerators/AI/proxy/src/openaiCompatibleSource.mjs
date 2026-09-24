@@ -110,6 +110,8 @@ export async function createOpenAICompatibleSource({
 				},
 			})
 			buildShow(result)
+			// base_result 跨工具轮复用；上一轮隐藏工具标签留下的展示层不能遮住本轮正文。
+			if (!('content_for_show' in result)) delete base_result.content_for_show
 			return Object.assign(base_result, clearFormat(result, prompt_struct))
 		},
 		tokenizer: identityTokenizer,

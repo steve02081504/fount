@@ -97,6 +97,7 @@ export async function createResponsesSource({
 				 */
 				previewUpdater: partialResult => replyPreviewUpdater?.(clearFormat({ ...partialResult }, prompt_struct)),
 			})
+			if (!('content_for_show' in result)) delete base_result.content_for_show
 			return Object.assign(base_result, clearFormat(result, prompt_struct))
 		},
 		tokenizer: identityTokenizer,

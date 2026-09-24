@@ -54,10 +54,13 @@ Deno.test('proxy Responses mode replays the growing history in output-compatible
 		const first = await source.StructCall(conversation.makePromptStruct(), {})
 		assertEquals(first.content, 'mock-answer')
 		conversation.addChar(first.content)
+		// 工具处理后的展示层可能被隐藏；下一轮的纯文本回复必须重建展示层。
+		first.content_for_show = ''
 
 		conversation.addUser('second question')
-		const second = await source.StructCall(conversation.makePromptStruct(), {})
+		const second = await source.StructCall(conversation.makePromptStruct(), { base_result: first })
 		assertEquals(second.content, 'mock-answer')
+		assertEquals(second.content_for_show ?? second.content, 'mock-answer')
 
 		assertEquals(mock.calls.map(call => call.url), [
 			'https://example.com/v1/responses',

@@ -41,10 +41,12 @@ Deno.test('Codex Responses replays the growing history in output-compatible shap
 		const first = await source.StructCall(conversation.makePromptStruct(), {})
 		assertEquals(first.content, 'codex-answer')
 		conversation.addChar(first.content)
+		first.content_for_show = ''
 
 		conversation.addUser('second question')
-		const second = await source.StructCall(conversation.makePromptStruct(), {})
+		const second = await source.StructCall(conversation.makePromptStruct(), { base_result: first })
 		assertEquals(second.content, 'codex-answer')
+		assertEquals(second.content_for_show ?? second.content, 'codex-answer')
 
 		assertEquals(mock.calls.length, 2)
 		const body = JSON.parse(mock.calls[1].init.body)
