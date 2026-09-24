@@ -111,7 +111,9 @@ async function plainWriteEntry(entry) {
 	const body = await entry.renderString({ indent: '  ', maxDepth: 5 })
 	const color = LEVEL_PREFIX_COLORS[entry?.level]
 	const text = color ? `${color}${body}${ANSI_RESET}` : body
-	process.stdout.write(text)
+	// 选择器模式随即 `process.exit`，而 `process.stdout` 已被虚拟控制台接管、写入是异步的，
+	// 缓冲内容会随退出丢失；同步写 fd 1 保证输出落地。
+	fs.writeSync(1, text)
 }
 
 /**
