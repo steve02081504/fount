@@ -6,4 +6,5 @@ export const phases = [
 	{ name: 'toast', testMatch: ['toast.spec.mjs'] },
 	{ name: 'pageWatchLayout', testMatch: ['pageWatchLayout.spec.mjs'] },
 	{ name: 'pageWatchViewport', testMatch: ['pageWatchViewport.spec.mjs'] },
+	{ name: 'scrollProgress', testMatch: ['scrollProgress.spec.mjs'] },
 ]

@@ -3,6 +3,7 @@ import { getProfile, getProfileReplies } from '../endpoints/profile.mjs'
 import { formatActionKey } from '../lib/actionKey.mjs'
 import { rememberEntityHandle } from '../lib/display.mjs'
 import { mountEmptyState } from '../lib/emptyState.mjs'
+import { bindPostDetailReadProgress } from '../lib/readProgress.mjs'
 import { buildPostCard } from '../postCard.mjs'
 import { state } from '../state.mjs'
 import { activateView } from '../viewChrome.mjs'
@@ -77,6 +78,7 @@ export async function loadPostDetail(entityHash, postId) {
 
 	const { bindFeedVideoAutoplay } = await import('../lib/videoAutoplay.mjs')
 	bindFeedVideoAutoplay(card)
+	void bindPostDetailReadProgress({ entityHash, postId, card })
 
 	try {
 		const repliesData = await getProfileReplies(entityHash, postId)

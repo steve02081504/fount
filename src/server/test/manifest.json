@@ -62,6 +62,7 @@
 			"triggers": [
 				"src/server/test/live/**",
 				"src/server/auth/**",
+				"src/server/read_progress.mjs",
 				"src/server/web_server/**",
 				"src/scripts/ms.mjs",
 				"src/scripts/WsAbleRouter.mjs",

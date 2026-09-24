@@ -14,6 +14,7 @@ import { registerLiveRoutes } from './endpoints/live.mjs'
 import { registerNotificationRoutes } from './endpoints/notifications.mjs'
 import { registerPostsRoutes } from './endpoints/posts.mjs'
 import { registerProfileRoutes } from './endpoints/profile.mjs'
+import { registerReadProgressRoutes } from './endpoints/readProgress.mjs'
 import { registerRelationshipsRoutes } from './endpoints/relationships.mjs'
 import { registerSavedRoutes } from './endpoints/saved.mjs'
 import { registerSearchRoutes } from './endpoints/search.mjs'
@@ -49,6 +50,7 @@ export function setEndpoints(router) {
 	registerDraftsRoutes(router)
 	registerTasteRoutes(router)
 	registerSignalsRoutes(router)
+	registerReadProgressRoutes(router)
 	registerVaultRoutes(router)
 	if (process.env.FOUNT_TEST === '1' || process.env.FOUNT_TEST_ISOLATED === '1')
 		registerTestSeedRoutes(router, authenticate)

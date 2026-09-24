@@ -7,4 +7,5 @@ export const phases = [
 	{ name: 'source_plugins', testMatch: ['source_plugins.spec.mjs'] },
 	{ name: 'edit_security', testMatch: ['edit_security.spec.mjs'] },
 	{ name: 'selection_controller', testMatch: ['selection_controller.spec.mjs'] },
+	{ name: 'read_progress', testMatch: ['read_progress.spec.mjs'] },
 ]

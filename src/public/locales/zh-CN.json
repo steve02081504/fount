@@ -4430,6 +4430,9 @@
 		"bootstrapFailed": "社交界面初始化失败：${error}",
 		"connectNodeFailed": "连接节点失败：${error}",
 		"dwellFailed": "观看时长偏好更新失败：${error}",
+		"readProgress": {
+			"saveFailed": "保存阅读进度失败：${error}"
+		},
 		"home_function_buttons": {
 			"main": {
 				"title": "广场"

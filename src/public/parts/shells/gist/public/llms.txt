@@ -76,3 +76,13 @@
   - 请求：`GET /api/parts/shells:gist/source-plugins`
   - 响应 200：`{ "plugins": [ { "partpath": "...", "id": "web", "level": 0, "...其他注册表条目字段": ... } ] }`
 - 关键约束：每条插件字段为 `{ partpath, id, level, ...该注册表条目其余字段 }`；`partpath`/`id`/`level` 在条目级缺省时回退到注册表条目级值。注册表尚未有任何条目时 `plugins` 为空数组。
+
+### 阅读进度 `GET /read-progress/:id` 与 `POST /read-progress`
+
+- 调用目的：记住 / 恢复每个 gist 文档查看页的阅读位置。位置以「内容块锚点」表达（`anchor = { blockIndex, blockSig, offsetRatio }`）而非像素，故窗口尺寸变化后仍能跳回同一段内容；`ratio` 为整体滚动进度，仅在块定位失败时兜底。
+- 请求示例：
+  - 请求：`GET /api/parts/shells:gist/read-progress/aB3dE9fG`
+  - 响应 200：`{ "progress": { "anchor": { "blockIndex": 3, "blockSig": "某段正文…", "offsetRatio": 0.5 }, "ratio": 0.42, "updatedAt": 1730000000000 } }`（无记录为 `null`）
+  - 请求：`POST /api/parts/shells:gist/read-progress`
+  - 请求体：`{ "progress": [ { "id": "aB3dE9fG", "anchor": { "blockIndex": 3, "blockSig": "某段正文…", "offsetRatio": 0.5 }, "ratio": 0.42 } ] }`
+- 关键约束：`id` 非法 → 400；`anchor` 缺失、或既无 `blockSig` 又无 `blockIndex` 的条目被忽略；`updatedAt` 由服务端赋值，按更新时间保留最近 1000 条。本机隐私，不联邦。

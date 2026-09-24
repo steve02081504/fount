@@ -87,3 +87,33 @@ export async function deleteGists(ids) {
 export async function getSourcePlugins() {
 	return requestJson(`${API_BASE}/source-plugins`)
 }
+
+/**
+ * 读取单个 gist 的阅读进度。
+ * @param {string} id - gist id。
+ * @returns {Promise<{ progress: object | null }>} 进度记录。
+ */
+export function getReadProgress(id) {
+	return requestJson(`${API_BASE}/read-progress/${encodeURIComponent(id)}`)
+}
+
+/**
+ * 上报 gist 阅读进度（批量 upsert）。
+ * @param {object[]} progress - 进度条目。
+ * @returns {Promise<{ saved: number }>} 写入统计。
+ */
+export function saveReadProgress(progress) {
+	return sendJson(`${API_BASE}/read-progress`, { progress })
+}
+
+/**
+ * 页面隐藏 / 卸载时上报阅读进度（sendBeacon 优先，失败退回 fetch）。
+ * @param {object[]} progress - 进度条目。
+ * @returns {Promise<void>}
+ */
+export function saveReadProgressBeacon(progress) {
+	const body = JSON.stringify({ progress })
+	if (navigator.sendBeacon?.(`${API_BASE}/read-progress`, new Blob([body], { type: 'application/json' })))
+		return Promise.resolve()
+	return saveReadProgress(progress).then(() => { })
+}

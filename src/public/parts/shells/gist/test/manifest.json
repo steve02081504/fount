@@ -9,7 +9,9 @@
 			"src/public/parts/shells/gist/src/**",
 			"src/public/parts/shells/gist/main.mjs",
 			"src/public/parts/shells/gist/test/frontend/**",
-			"src/public/pages/scripts/test/**"
+			"src/public/pages/scripts/test/**",
+			"src/public/pages/scripts/features/scrollProgress.mjs",
+			"src/server/read_progress.mjs"
 		]
 	},
 	"suites": [
@@ -56,6 +58,19 @@
 					"triggers": [
 						"src/public/parts/shells/gist/test/frontend/selection_controller.spec.mjs",
 						"src/public/pages/scripts/components/selectionController.mjs"
+					]
+				},
+				{
+					"name": "read_progress",
+					"expected": "15s",
+					"triggers": [
+						"src/public/parts/shells/gist/test/frontend/read_progress.spec.mjs",
+						"src/public/parts/shells/gist/public/view.mjs",
+						"src/public/parts/shells/gist/public/src/readProgress.mjs",
+						"src/public/parts/shells/gist/public/src/endpoints.mjs",
+						"src/public/parts/shells/gist/src/endpoints.mjs",
+						"src/public/pages/scripts/features/scrollProgress.mjs",
+						"src/server/read_progress.mjs"
 					]
 				}
 			],

@@ -1,10 +1,15 @@
 import { httpError } from '../../../../../scripts/http_error.mjs'
 import { authenticate, getUserByReq } from '../../../../../server/auth/index.mjs'
+import { getReadProgress, saveReadProgress } from '../../../../../server/read_progress.mjs'
 import { loadRegistryJsonEntries } from '../../../../../server/registries.mjs'
 
 import { createGist, deleteGists, getGist, listGists, updateGist } from './manager.mjs'
 
 const SECURITY_LEVELS = ['secure', 'trusted']
+/** gist 阅读进度作用域与保留条数。 */
+const READ_PROGRESS_SCOPE = 'gist'
+const READ_PROGRESS_MAX = 1000
+const GIST_ID_RE = /^[\w-]{1,64}$/
 
 /**
  * 校验 securityLevel 值，非法时抛 400。
@@ -81,5 +86,29 @@ export function setEndpoints(router) {
 				level: item.level ?? entry.level,
 			})))
 		res.json({ plugins })
+	})
+
+	router.get('/api/parts/shells\\:gist/read-progress/:id', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const id = String(req.params.id || '')
+		if (!GIST_ID_RE.test(id)) throw httpError(400, 'invalid gist id.')
+		res.json({ progress: await getReadProgress(username, READ_PROGRESS_SCOPE, id) })
+	})
+
+	router.post('/api/parts/shells\\:gist/read-progress', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const rows = Array.isArray(req.body?.progress) ? req.body.progress : []
+		const entries = []
+		for (const row of rows.slice(0, 20)) {
+			const id = String(row?.id || '')
+			if (!GIST_ID_RE.test(id)) continue
+			if (!row?.anchor || typeof row.anchor !== 'object') continue
+			entries.push({ key: id, anchor: row.anchor, ratio: row.ratio })
+		}
+		if (!entries.length) {
+			res.json({ saved: 0 })
+			return
+		}
+		res.json(await saveReadProgress(username, READ_PROGRESS_SCOPE, entries, { maxEntries: READ_PROGRESS_MAX }))
 	})
 }

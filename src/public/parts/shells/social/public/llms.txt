@@ -55,6 +55,8 @@ social shell 提供信息流（feed）、帖文、社交关系、直播与探索
 | GET | `S/hashtags/trending?limit=&scope=` | `limit` 默认 12 / 上限 32；`scope` = `local`（默认）或 `nearby` → `{ tags: [{ tag, count }], scope }` |
 | GET | `S/mentions/suggest?q=&limit=` | `{ suggestions: [{ entityHash, displayName, kind }] }`（self / following / agent） |
 | POST | `S/signals/dwell` | 本地停留信号（不联邦），body `{ entries: [{ author, postId, tags?, dwellMs, at? }] }`（`dwellMs` ≥ 3000） |
+| GET | `S/read-progress/:authorEntityHash/:postId` | 帖子详情阅读进度（本机隐私，不联邦）→ `{ progress: 记录 \| null }` |
+| POST | `S/read-progress` | 保存帖子详情阅读进度（本机隐私，不联邦，按更新时间保留最近 1000 条）；body `{ progress: [{ entityHash, postId, anchor, ratio }] }` |
 | GET / PUT | `S/profile/muted-keywords` | 本地关键词 / 标签屏蔽（不联邦）；PUT body `{ entries: [{ pattern, matchTags?, expiresAt? }] }` |
 | GET | `S/videos/feed?limit=&cursor=` | 短视频竖屏流（含 video 媒体的公开帖） |
 | GET | `S/topics/followed` | 已订阅话题 `{ tags[] }` |

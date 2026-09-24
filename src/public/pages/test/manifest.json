@@ -55,6 +55,15 @@
 						"src/public/pages/scripts/test/watch/flicker.mjs",
 						"src/public/pages/scripts/test/watch/mutation_gate.mjs"
 					]
+				},
+				{
+					"name": "scrollProgress",
+					"expected": "10s",
+					"triggers": [
+						"src/public/pages/test/frontend/scrollProgress.spec.mjs",
+						"src/public/pages/test/frontend/fixtures.mjs",
+						"src/public/pages/scripts/features/scrollProgress.mjs"
+					]
 				}
 			],
 			"run": [

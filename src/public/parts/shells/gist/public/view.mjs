@@ -10,6 +10,7 @@ import { applyTheme } from '/scripts/theme/index.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
 
 import { deleteGists, getGist, getSourcePlugins, updateGist } from './src/endpoints.mjs'
+import { bindGistReadProgress } from './src/readProgress.mjs'
 import { renderGistContent } from './src/render.mjs'
 import { fileNameFromHtmlTitle, renderMarkdownAsStandaloneDocument, downloadHtmlDocument } from './src/standaloneDocument.mjs'
 import { deriveTitleFromMarkdown } from './src/title.mjs'
@@ -195,6 +196,11 @@ async function loadGist(id) {
 	}
 	await renderGist()
 	await renderSourcePlugins()
+	void bindGistReadProgress({
+		id,
+		scrollRoot: document.getElementById('gist-scroll'),
+		contentRoot: document.getElementById('content'),
+	})
 }
 
 /**

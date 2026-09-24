@@ -7,6 +7,7 @@ import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { publishPost } from './composer.mjs'
 import { connectFederationNode } from './endpoints/p2p.mjs'
+import { unbindPostDetailReadProgress } from './lib/readProgress.mjs'
 import { state } from './state.mjs'
 import { activateView, currentMainView, MAIN_NAV_VIEWS } from './viewChrome.mjs'
 import { loadDrafts } from './views/drafts.mjs'
@@ -108,6 +109,7 @@ export async function switchView(view, options = {}) {
  * @returns {Promise<void>}
  */
 async function renderSwitchView(view, options) {
+	unbindPostDetailReadProgress()
 	activateView(view)
 	if (!options.skipHash)
 		syncHashForMainView(view)
