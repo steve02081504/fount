@@ -7,6 +7,7 @@
  * 【数据结构】run_t 见 state.mjs；deps = { loadPart, loadAnyPreferredDefaultPart, listAiSources, recordGeneration, notifyRun, buildPromptStruct, runReplyHandlers, archive, now, config }。
  * 【关联】handler.mjs 解析标签后调用 `runSubAgent` / `terminateSubAgentRun` / `listAvailableAiSources`；prompt.mjs 注入预算；archive.mjs 管理父代档案；state.mjs 保存注册表。
  */
+import { onSystemWake, setAwakeTimeout } from '../../../../scripts/sleep_watch.mjs'
 import { beginPromptRequest, collectGenerationRecord, finishPromptRequest } from '../../shells/agent_studio/src/request_record.mjs'
 import { buildPromptStruct } from '../../shells/chat/src/prompt_struct/index.mjs'
 import { runReplyHandlers } from '../../shells/chat/src/reply/handlerPipeline.mjs'
@@ -528,8 +529,15 @@ export async function executeSubAgentRun(run, deps = defaultSubAgentDeps) {
 	run.childArgs = childArgs
 
 	let summarized = false
+	let stopWake
 	try {
 		const promptStruct = await deps.buildPromptStruct(childArgs)
+		stopWake = onSystemWake(duration => {
+			run.deadline += duration
+			const content = `fount 检测到系统休眠约 ${Math.round(duration / 1000)} 秒；这不影响你的时间预算，相关时间已顺延。继续完成原任务。`
+			appendChildConversationEntry(run, { role: 'system', uid: 'system', name: 'system', content }, false)
+			promptStruct.char_prompt.additional_chat_log.push({ role: 'system', uid: 'system', name: 'system', content, charVisibility: [run.charId] })
+		})
 		const result = run.result = { content: '', logContextBefore: [], logContextAfter: [], files: [], extension: {} }
 		const handlers = Object.values(run.plugins)
 			.map(plugin => plugin?.interfaces?.chat?.ReplyHandler)
@@ -549,6 +557,7 @@ export async function executeSubAgentRun(run, deps = defaultSubAgentDeps) {
 		}
 		const generationOptions = {
 			signal: run.controller.signal,
+			stopAfterRound: run.parentArgs?.generation_options?.stopAfterRound,
 			supported_functions: childArgs.supported_functions,
 			/**
 			 * 推送模型流式预览。
@@ -564,7 +573,7 @@ export async function executeSubAgentRun(run, deps = defaultSubAgentDeps) {
 			onToolOutput: event => emitRunChange(run, deps, { toolOutput: event }),
 		}
 		childArgs.generation_options = generationOptions
-		run.timer = setTimeout(() => {
+		run.timer = setAwakeTimeout(() => {
 			run.summaryReason ??= 'time'
 			run.controller.abort()
 		}, run.timeLimitMs)
@@ -608,6 +617,10 @@ export async function executeSubAgentRun(run, deps = defaultSubAgentDeps) {
 			for (const entry of result.logContextBefore.slice(shownLogCount)) appendChildConversationEntry(run, entry, false)
 			shownLogCount = result.logContextBefore.length
 			if (!wantRegen) break
+			if (generationOptions.stopAfterRound?.()) {
+				result.content = 'fount 正在退出，子代理已完成当前轮处理；重启后请重新委派尚未完成的任务。'
+				break
+			}
 			promptStruct.char_prompt.additional_chat_log.push(makeRoundBudgetEntry(run, deps.now()))
 		}
 		if (!summarized) {
@@ -634,7 +647,8 @@ export async function executeSubAgentRun(run, deps = defaultSubAgentDeps) {
 	}
 	finally {
 		emitRunChange(run, deps, { preview: null })
-		if (run.timer) clearTimeout(run.timer)
+		stopWake?.()
+		run.timer?.()
 		finishAsyncGeneration(run.runId)
 		run.finishedAt = deps.now()
 		deps.archive.removeParentArchive(run.archivePath)

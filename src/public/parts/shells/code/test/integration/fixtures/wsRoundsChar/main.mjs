@@ -94,17 +94,21 @@ export default {
 				}
 				const handlers = Object.values(args.plugins || {}).map(plugin => plugin.interfaces?.chat?.ReplyHandler).filter(Boolean)
 				regen: while (true) {
-					const text = result.logContextBefore.length ? ROUND2 : ROUND1
+					const text = result.logContextBefore.length || args.chat_log.some(entry => entry.role === 'tool') ? ROUND2 : ROUND1
 					result.content = ''
 					delete result.content_for_show
 					for (const chunk of Array.from(text)) {
-						await new Promise(resolve => setTimeout(resolve, 20))
+						await new Promise(resolve => setTimeout(resolve, args.chat_name === 'code-resume01' && text === ROUND2 ? 200 : 20))
 						result.content += chunk
 						// 与真实 AI 源一致：预览传浅拷贝（不带累计 logContextBefore），增量日志须读 base_result
 						previewUpdater?.({ ...result })
 					}
-					if (await runReplyHandlers(result, { ...args, prompt_struct, AddLongTimeLog }, handlers))
+					if (await runReplyHandlers(result, { ...args, prompt_struct, AddLongTimeLog }, handlers)) {
+						result.extension.completedLogCount = result.logContextBefore.length
+						await args.generation_options.onRoundComplete?.()
+						if (args.generation_options.stopAfterRound?.()) { result.extension.incompleteRound = true; break regen }
 						continue regen
+					}
 					break
 				}
 				return result

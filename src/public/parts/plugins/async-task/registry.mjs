@@ -7,6 +7,7 @@
  * 【数据结构】asyncTask_t；任务表 `Map<id, task>`；频道注册表 `Map<agentKey, args[]>`；待注入通知 `Map<queueKey, entry[]>`。
  * 【关联】prompt.mjs 注入工具说明与通知；handler.mjs 解析 `<list-async>` / `<await-async>`；sub-agent/runtime.mjs 与 code-execution/handler.mjs 注册任务。
  */
+import { setAwakeTimeout } from '../../../../scripts/sleep_watch.mjs'
 import { chatScopeId } from '../../shells/chat/src/lib/chatScopeId.mjs'
 
 /**
@@ -446,14 +447,14 @@ export async function awaitTasks(ids, { mode = 'all', timeoutMs = null, signal, 
 		const racers = [completion]
 		let timer = null
 		if (timeoutMs !== null)
-			racers.push(new Promise(resolve => { timer = setTimeout(() => { timedOut = true; resolve(null) }, Math.max(0, timeoutMs)) }))
+			racers.push(new Promise(resolve => { timer = setAwakeTimeout(() => { timedOut = true; resolve(null) }, timeoutMs) }))
 		if (signal)
 			racers.push(new Promise(resolve => {
 				if (signal.aborted) resolve(null)
 				else signal.addEventListener('abort', () => resolve(null), { once: true })
 			}))
 		try { await Promise.race(racers) }
-		finally { if (timer) clearTimeout(timer) }
+		finally { timer?.() }
 	}
 
 	// 等待期间置 consumed 仅为抑制竞态通知；结束后把仍未结算的任务复位，

@@ -13,6 +13,7 @@ import { exec, execFile, shell_exec_map } from 'npm:@steve02081504/exec'
 import { VirtualConsole } from 'npm:@steve02081504/virtual-console'
 
 import { ms } from './ms.mjs'
+import { awakeNow, setAwakeTimeout } from './sleep_watch.mjs'
 
 /** shell 默认超时（毫秒）。 */
 export const SHELL_DEFAULT_TIMEOUT_MS = ms('3m')
@@ -192,7 +193,7 @@ export async function killProcessTree(child) {
  * @returns {Promise<{result: any, timedOut: boolean, elapsedMs: number}>} 结果（`result` 可能是 Error）、是否超时与耗时。
  */
 export async function execShellWithTimeout(shell, code, options = {}, timeoutMs = SHELL_DEFAULT_TIMEOUT_MS) {
-	const start = Date.now()
+	const start = awakeNow()
 	/** @type {import('node:child_process').ChildProcess|null} */
 	let child = null
 	const userOnSpawn = options?.on_spawn
@@ -213,7 +214,7 @@ export async function execShellWithTimeout(shell, code, options = {}, timeoutMs 
 		run = Promise.resolve(shell ? shell_exec_map[shell](code, spawnOptions) : exec(code, spawnOptions))
 	}
 	catch (error) {
-		return { result: error, timedOut: false, elapsedMs: Date.now() - start }
+		return { result: error, timedOut: false, elapsedMs: awakeNow() - start }
 	}
 	run.then(() => { }, () => { })
 
@@ -222,18 +223,18 @@ export async function execShellWithTimeout(shell, code, options = {}, timeoutMs 
 	 * @returns {Promise<{result: any, timedOut: boolean, elapsedMs: number}>} 归一结果。
 	 */
 	const settle = () => run.then(
-		result => ({ result, timedOut: false, elapsedMs: Date.now() - start }),
-		error => ({ result: error, timedOut: false, elapsedMs: Date.now() - start })
+		result => ({ result, timedOut: false, elapsedMs: awakeNow() - start }),
+		error => ({ result: error, timedOut: false, elapsedMs: awakeNow() - start })
 	)
 
 	if (timeoutMs === null) return await settle()
 
-	let timer
+	let cancelTimer
 	const timedOut = await Promise.race([
 		run.then(() => false, () => false),
-		new Promise(resolve => { timer = setTimeout(() => resolve(true), Math.max(0, timeoutMs)) }),
+		new Promise(resolve => { cancelTimer = setAwakeTimeout(() => resolve(true), timeoutMs) }),
 	])
-	clearTimeout(timer)
+	cancelTimer()
 	if (!timedOut) return await settle()
 
 	await killProcessTree(child)
@@ -242,7 +243,7 @@ export async function execShellWithTimeout(shell, code, options = {}, timeoutMs 
 		new Promise(resolve => setTimeout(() => resolve(null), KILL_GRACE_MS)),
 	])
 	const result = settled?.result ?? { code: null, signal: 'SIGKILL', stdout: '', stderr: '', stdall: '' }
-	return { result, timedOut: true, elapsedMs: Date.now() - start }
+	return { result, timedOut: true, elapsedMs: awakeNow() - start }
 }
 
 /**
@@ -276,19 +277,19 @@ export function createCollectingConsole(onOutput) {
  * @returns {Promise<{evalResult: any, timedOut: boolean, elapsedMs: number}>} 求值结果（超时时为 null）、是否超时与耗时。
  */
 export async function runJsWithTimeout(runEval, timeoutMs = JS_DEFAULT_TIMEOUT_MS) {
-	const start = Date.now()
+	const start = awakeNow()
 	if (timeoutMs === null) {
 		const evalResult = await runEval()
-		return { evalResult, timedOut: false, elapsedMs: Date.now() - start }
+		return { evalResult, timedOut: false, elapsedMs: awakeNow() - start }
 	}
-	let timer
+	let cancelTimer
 	const outcome = await Promise.race([
 		Promise.resolve().then(runEval).then(evalResult => ({ evalResult }), error => ({ evalResult: { error } })),
-		new Promise(resolve => { timer = setTimeout(() => resolve('timeout'), Math.max(0, timeoutMs)) }),
+		new Promise(resolve => { cancelTimer = setAwakeTimeout(() => resolve('timeout'), timeoutMs) }),
 	])
-	clearTimeout(timer)
-	if (outcome === 'timeout') return { evalResult: null, timedOut: true, elapsedMs: Date.now() - start }
-	return { evalResult: outcome.evalResult, timedOut: false, elapsedMs: Date.now() - start }
+	cancelTimer()
+	if (outcome === 'timeout') return { evalResult: null, timedOut: true, elapsedMs: awakeNow() - start }
+	return { evalResult: outcome.evalResult, timedOut: false, elapsedMs: awakeNow() - start }
 }
 
 /**

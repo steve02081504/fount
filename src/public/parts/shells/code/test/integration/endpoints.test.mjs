@@ -10,6 +10,7 @@ import { fileURLToPath } from 'node:url'
 import { assert, assertEquals } from 'jsr:@std/assert'
 
 import { launchNode, stopNode } from 'fount/scripts/test/node/launch.mjs'
+import { defaultTestStarts } from 'fount/scripts/test/node/starts.mjs'
 
 import { parseVolumeLabels } from '../../../../plugins/file-operations/src/target.mjs'
 
@@ -763,6 +764,109 @@ Deno.test({
 	finally {
 		await fs.rm(root, { recursive: true, force: true })
 		await stopNode(node)
+	}
+})
+
+Deno.test({
+	name: 'active code generation protects its conversation from deletion and external writes',
+	timeout: 120_000,
+}, async () => {
+	const fixtureDir = path.join(path.dirname(fileURLToPath(import.meta.url)), 'fixtures', 'wsRoundsChar')
+	const node = await launchCodeNode({ fixtureCopies: [{ from: fixtureDir, to: 'chars/wsRoundsChar' }] })
+	const root = await fs.mkdtemp(path.join(os.tmpdir(), 'fount_code_protected_session_'))
+	const session = { id: 'protected01', title: '', charname: 'wsRoundsChar', profile: '', ai_source: '',
+		created: new Date().toISOString(), updated: new Date().toISOString(), memory: {}, entries: [] }
+	const query = `machine=0&workdir=${encodeURIComponent(root)}`
+	let ws
+	try {
+		ws = new WebSocket(`${node.baseUrl.replace(/^http/, 'ws')}/ws/parts/shells:code/session?fount-apikey=${encodeURIComponent(node.apiKey)}`)
+		await new Promise((resolve, reject) => {
+			/**
+			 * 连接后发起生成。
+			 * @returns {void} 请求已发送。
+			 */
+			ws.onopen = () => ws.send(JSON.stringify({ type: 'send', session, machine: '0', workdir: root, content: '读取文件' }))
+			/**
+			 * 收到运行身份后检查删除屏障。
+			 * @param {MessageEvent} event - WS 消息。
+			 * @returns {void} 收到首帧时完成等待。
+			 */
+			ws.onmessage = event => { if (JSON.parse(event.data).type === 'run-start') resolve() }
+			/**
+			 * 报告连接错误。
+			 * @returns {void} 等待失败。
+			 */
+			ws.onerror = () => reject(new Error('websocket failed'))
+		})
+		assertEquals((await codeFetch(node, 'DELETE', `/sessions/${session.id}?${query}`)).status, 409)
+		assertEquals((await codeFetch(node, 'PUT', `/sessions/${session.id}`, { machine: '0', workdir: root, session })).status, 409)
+		ws.send(JSON.stringify({ type: 'abort', sessionId: session.id }))
+		let deleted = false
+		for (let i = 0; i < 50; i++) {
+			await new Promise(resolve => setTimeout(resolve, 100))
+			if ((await codeFetch(node, 'DELETE', `/sessions/${session.id}?${query}`)).status === 200) { deleted = true; break }
+		}
+		assert(deleted, '生成中禁止删除，运行结束后允许删除')
+	}
+	finally {
+		ws?.close()
+		await fs.rm(root, { recursive: true, force: true })
+		await stopNode(node)
+	}
+})
+
+Deno.test({
+	name: 'signal interruption leaves a resumable job and startup resumes the conversation',
+	timeout: 120_000,
+}, async () => {
+	const fixtureDir = path.join(path.dirname(fileURLToPath(import.meta.url)), 'fixtures', 'wsRoundsChar')
+	const root = await fs.mkdtemp(path.join(os.tmpdir(), 'fount_code_resume_workspace_'))
+	let node = await launchCodeNode({ fixtureCopies: [{ from: fixtureDir, to: 'chars/wsRoundsChar' }], keepData: true })
+	const dataPath = node.dataPath
+	const session = { id: 'resume01', title: '', charname: 'wsRoundsChar', profile: '', ai_source: '',
+		created: new Date().toISOString(), updated: new Date().toISOString(), memory: {}, entries: [] }
+	let ws
+	try {
+		await fs.writeFile(path.join(root, 'note.txt'), 'resumable content', 'utf8')
+		ws = new WebSocket(`${node.baseUrl.replace(/^http/, 'ws')}/ws/parts/shells:code/session?fount-apikey=${encodeURIComponent(node.apiKey)}`)
+		await new Promise((resolve, reject) => {
+			/** @returns {void} 发送待续跑的请求。 */
+			ws.onopen = () => ws.send(JSON.stringify({ type: 'send', session, machine: '0', workdir: root, content: '读取文件' }))
+			/** @param {MessageEvent} event - 消息。 @returns {void} 收到运行首帧时完成。 */
+			ws.onmessage = event => { if (JSON.parse(event.data).type === 'run-start') resolve() }
+			/** @returns {void} 报告连接错误。 */
+			ws.onerror = () => reject(new Error('websocket failed'))
+		})
+		const file = path.join(root, '.fount', 'code', 'sessions', session.id + '.json')
+		let checkpoint
+		for (let i = 0; i < 50; i++) {
+			await new Promise(resolve => setTimeout(resolve, 50))
+			try { checkpoint = JSON.parse(await fs.readFile(file, 'utf8')) } catch { continue }
+			if (checkpoint.entries.some(entry => entry.role === 'tool') && checkpoint.entries.some(entry => entry.is_generating)) break
+		}
+		assert(checkpoint?.entries.some(entry => entry.role === 'tool') && checkpoint.entries.some(entry => entry.is_generating), '下一次 AI 调用之前须持久化已完成轮次')
+		await stopNode({ ...node, keepData: true })
+		ws.close()
+		const config = JSON.parse(await fs.readFile(path.join(dataPath, 'config.json'), 'utf8'))
+		assert(config.data.users[node.username].jobs['shells/code']?.[session.id], '信号退出后须保留待续跑作业')
+		node = await launchCodeNode({ dataPath, keepData: true, starts: defaultTestStarts({ web: true, jobs: true }) })
+		let disk
+		for (let i = 0; i < 120; i++) {
+			await new Promise(resolve => setTimeout(resolve, 100))
+			try { disk = JSON.parse(await fs.readFile(file, 'utf8')) } catch { continue }
+			if (disk.entries.some(entry => entry.role === 'char' && entry.content.includes('读取完成')) && !disk.entries.some(entry => entry.is_generating)) break
+		}
+		const reason = config.data.users[node.username].jobs['shells/code']?.[session.id]?.reason
+		const expectedReason = reason === 'restart' ? '正常退出或重启' : reason || '意外退出'
+		assert(disk?.entries.some(entry => entry.role === 'system' && entry.content.includes('此前') && entry.content.includes(expectedReason)), `续跑前应通知中断原因和间隔：${JSON.stringify(disk?.entries)}; ${node.peekOutput()}`)
+		assert(disk.entries.some(entry => entry.role === 'char' && entry.content.includes('读取完成')), '自动续跑应完成原任务')
+		assertEquals(disk.entries.filter(entry => entry.role === 'tool').length, 1, '已落盘的工具调用不得在续跑后重复执行')
+	}
+	finally {
+		ws?.close()
+		await stopNode(node)
+		await fs.rm(root, { recursive: true, force: true })
+		await fs.rm(dataPath, { recursive: true, force: true })
 	}
 })
 

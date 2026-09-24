@@ -14,6 +14,7 @@ import { guardOutput } from '../../../../../scripts/shell_guard.mjs'
 import { getAnyPreferredDefaultPart, loadPart } from '../../../../../server/parts_loader.mjs'
 import { finishAsyncGeneration } from '../../../plugins/async-task/registry.mjs'
 
+import { isCodeStopping } from './shutdown.mjs'
 import { codeWorld } from './world.mjs'
 
 /** `!` 用户命令 prompt 层截断结果的缓存（键：entry.id + 内容长度）。 */
@@ -78,10 +79,11 @@ async function sessionToChatLog(entries) {
  * @param {string} [options.generationId] - 本轮生成 id（供子代理回链父代生成；缺省由调用方生成）。
  * @param {(reply: chatReply_t) => void} [options.onPreview] - 流式预览回调。
  * @param {(event: object) => void} [options.onToolOutput] - 工具执行实时输出回调（`generation_options.onToolOutput`）。
+ * @param {() => Promise<void>} [options.onRoundComplete] - 完成一轮工具处理后的持久化回调。
  * @param {AbortSignal} [options.signal] - 中断信号。
  * @returns {Promise<chatReplyRequest_t>} 构建好的请求。
  */
-async function buildCodeChatRequest({ username, session, requestSession, machine, workdir, ai_source, profile, generationId, onPreview, onToolOutput, signal }) {
+async function buildCodeChatRequest({ username, session, requestSession, machine, workdir, ai_source, profile, generationId, onPreview, onToolOutput, onRoundComplete, signal }) {
 	const char = await loadPart(username, 'chars/' + session.charname)
 	const personaName = getAnyPreferredDefaultPart(username, 'personas')
 	const user = personaName ? await loadPart(username, 'personas/' + personaName) : null
@@ -122,8 +124,14 @@ async function buildCodeChatRequest({ username, session, requestSession, machine
 		},
 		/** 工具执行实时输出（code-execution 插件回调），远程流式回显经 `shells/code` 的 RemoteCallBack。 */
 		onToolOutput,
+		/** 在 agent 进入下一轮之前持久化完成的工具结果。 */
+		onRoundComplete: async () => {
+			if (requestSession) requestSession.generationResult = generation_options.base_result
+			await onRoundComplete?.()
+		},
 		remoteToolCallbackPartpath: onToolOutput ? 'shells/code' : undefined,
 		signal,
+		stopAfterRound: isCodeStopping,
 	}
 	return {
 		supported_functions,
@@ -157,7 +165,7 @@ async function buildCodeChatRequest({ username, session, requestSession, machine
 		 * 重读会话条目并重建请求（供轮次刷新 `injectRoundEntries` 采集新条目）。
 		 * @returns {Promise<object>} 刷新后的请求
 		 */
-		Update: () => buildCodeChatRequest({ username, session, machine, workdir, ai_source, profile, generationId, onPreview, onToolOutput, signal }),
+		Update: () => buildCodeChatRequest({ username, session, machine, workdir, ai_source, profile, generationId, onPreview, onToolOutput, onRoundComplete, signal }),
 		/**
 		 * 追加一条日志条目。`role === 'char'`（或缺省）作为角色回复写入；其余 role（异步完成通知等）额外
 		 * 推送 `code-async-entry` 事件，让前端持久化并在空闲时触发生成。

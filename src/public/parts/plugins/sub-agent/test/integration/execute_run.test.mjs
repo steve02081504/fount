@@ -4,6 +4,7 @@
  */
 import { assert, assertEquals, assertRejects } from 'jsr:@std/assert'
 
+import { checkForSleep } from '../../../../../../scripts/sleep_watch.mjs'
 import { runReplyHandlers } from '../../../../shells/chat/src/reply/handlerPipeline.mjs'
 import { awaitTasks, finishAsyncGeneration, inspectTask, ownerFromArgs, resetAsyncTaskState, setAsyncTaskNotifier } from '../../../async-task/registry.mjs'
 import { runSubAgent, SubAgentError } from '../../runtime.mjs'
@@ -268,6 +269,23 @@ Deno.test('runSubAgent runs a synchronous loop and isolates the parent workdir',
 	assertEquals(parentArgs.workdir, { machine: '0', path: '/tmp' })
 })
 
+Deno.test('sub-agent finishes reply handlers but does not start another AI call during shutdown', async () => {
+	resetSubAgentState()
+	const parentArgs = createParentArgs()
+	parentArgs.generation_options = {
+		/**
+		 * 关闭时不再开始下一轮。
+		 * @returns {boolean} 应停止。
+		 */
+		stopAfterRound: () => true,
+	}
+	const outcome = await runSubAgent(parentArgs,
+		{ body: 'do the task', roundLimit: 5, timeLimitMs: 60_000 },
+		createDeps(createFakeAi(['first round', 'second round']), createRegenPlugin(1)))
+	assertEquals(outcome.run.rounds, 1)
+	assert(outcome.text.includes('重新委派'))
+})
+
 Deno.test('runSubAgent consumes ancestor round budgets hierarchically', async () => {
 	resetSubAgentState()
 	const parent = { runId: 'parent-run', parentRunId: null, depth: 0, rounds: 0, roundLimit: 99, deadline: Date.now() + 60_000, state: 'running', username: 'user-1', charId: 'char-1' }
@@ -480,4 +498,39 @@ Deno.test('an AI-source error past the deadline fails instead of summarizing', a
 	)
 	assertEquals(outcome.run.state, 'failed')
 	assertEquals(ai.summaryCalls, 0)
+})
+
+Deno.test('system wake extends sub-agent budget and adds a system notification', async () => {
+	resetSubAgentState()
+	const originalNow = Date.now
+	let now = originalNow()
+	const realStart = now
+	/**
+	 * 返回含模拟休眠间隔的时间。
+	 * @returns {number} 毫秒时间。
+	 */
+	Date.now = () => now + originalNow() - realStart
+	const blocked = createBlockingAi('done after wake')
+	const deps = createDeps(blocked.ai, createRegenPlugin(0))
+	let run
+	try {
+		const started = await runSubAgent(createParentArgs(),
+			{ body: 'wake up', roundLimit: 2, timeLimitMs: 60_000, async: true }, deps)
+		run = started.run
+		await waitFor(() => !!run.result)
+		const deadline = run.deadline
+		now += 6 * 60 * 1000
+		checkForSleep(Date.now())
+		assert(run.deadline - deadline >= 6 * 60 * 1000 - 1000)
+		assert(run.deadline - deadline <= 6 * 60 * 1000)
+		assert(run.conversation.some(entry => entry.role === 'system' && entry.content.includes('时间预算') && entry.content.includes('顺延')))
+		blocked.release()
+		await waitFor(() => run.state === 'done')
+	}
+	finally {
+		blocked.release()
+		Date.now = originalNow
+		checkForSleep()
+		resetSubAgentState()
+	}
 })

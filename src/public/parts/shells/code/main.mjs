@@ -8,7 +8,7 @@ import { config } from '../../../../server/server.mjs'
 import { loadShellData, saveShellData } from '../../../../server/setting_loader.mjs'
 import { dispatchRemoteStreamOutput } from '../../plugins/file-operations/src/remote_stream.mjs'
 
-import { setEndpoints } from './src/endpoints.mjs'
+import { resumeCodeJob, setEndpoints } from './src/endpoints.mjs'
 
 const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
@@ -70,6 +70,17 @@ export default {
 	},
 	interfaces: {
 		web: {},
+		jobs: {
+			/**
+			 * 唤醒退出前正在生成的会话。
+			 * @param {string} username - 用户名。
+			 * @param {object} data - 保存的生成参数。
+			 * @returns {void} 恢复在后台运行。
+			 */
+			ReStartJob: (username, data) => resumeCodeJob(username, data),
+			/** @returns {void} 关闭屏障统一处理所有进行中的生成。 */
+			PauseJob: () => {},
+		},
 		/**
 		 * 分机回调：接收远程流式执行经 `callback` 回传的输出分片并按 execId 分派。
 		 */
