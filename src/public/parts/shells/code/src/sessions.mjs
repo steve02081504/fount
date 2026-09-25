@@ -27,7 +27,7 @@ import { createTargetExecutor, joinWorkdir } from '../../../plugins/file-operati
  * @returns {boolean} 是否合法。
  */
 function isValidSessionId(id) {
-	return typeof id === 'string' && /^[A-Za-z0-9_-]{1,64}$/.test(id)
+	return typeof id === 'string' && /^[\w-]{1,64}$/.test(id)
 }
 
 /**
@@ -35,7 +35,7 @@ function isValidSessionId(id) {
  * @param {{path?: string}} workdir - 目标工作区。
  * @returns {string} 会话目录。
  */
-export function sessionsDir(workdir) {
+function sessionsDir(workdir) {
 	return joinWorkdir(workdir?.path, '.fount/code/sessions')
 }
 

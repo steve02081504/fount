@@ -38,7 +38,7 @@ const DEFAULT_GLOBAL_HABITS = `\
 `
 
 /** 自带 profile（mode）。 */
-export const BUILTIN_PROFILES = [
+const BUILTIN_PROFILES = [
 	{
 		name: 'plan',
 		source: 'builtin',
@@ -72,7 +72,7 @@ ${DEFAULT_GLOBAL_HABITS}`,
  * @param {string} username - 用户名。
  * @returns {string} 目录绝对路径。
  */
-export function getGlobalAgentsDir(username) {
+function getGlobalAgentsDir(username) {
 	try {
 		return path.join(getUserDictionary(username), 'shells', 'code', 'agents')
 	}
@@ -87,7 +87,7 @@ export function getGlobalAgentsDir(username) {
  * @param {string} text - 文件内容。
  * @returns {string} 正文。
  */
-export function stripFrontmatter(text) {
+function stripFrontmatter(text) {
 	return text.replace(/^---\r?\n[^]*?\r?\n---\r?\n?/, '')
 }
 
@@ -197,10 +197,10 @@ function parseParamsBlock(frontmatter) {
 		const line = rawLine.replace(/\t/g, '  ')
 		if (!line.trim()) continue
 		const indent = line.match(/^ */)[0].length
-		const kv = line.trim().match(/^([A-Za-z_][\w-]*)\s*:\s*(.*)$/)
+		const kv = line.trim().match(/^([A-Z_a-z][\w-]*)\s*:\s*(.*)$/)
 		if (!kv) continue
 		const [, key, rawValue] = kv
-		const value = rawValue.trim().replace(/^['"]|['"]$/g, '')
+		const value = rawValue.trim().replace(/^["']|["']$/g, '')
 		if (indent === 0) {
 			inParams = key === 'params'
 			current = null
@@ -331,9 +331,9 @@ async function replaceAsync(text, regexp, replacer) {
  */
 export async function renderCommand(command, argv, executor) {
 	const { async_eval } = await import('npm:@steve02081504/async-eval')
-	let template = command.template
+	let {template} = command
 	// 内联 shell：!`cmd`{:shell?} → stdout
-	template = await replaceAsync(template, /!`([^`]+)`(?:\{:(\w+)\})?/g, async match => {
+	template = await replaceAsync(template, /!`([^`]+)`(?:{:(\w+)})?/g, async match => {
 		const cmd = match[1]
 		const shell = match[2]
 		const result = await executor.execShell(shell || null, cmd)
@@ -342,7 +342,7 @@ export async function renderCommand(command, argv, executor) {
 		return String(result.stdout ?? '').trim()
 	})
 	// 内联 JS：${expr} → 求值结果（argv 可用）
-	template = await replaceAsync(template, /\$\{([^]+?)\}/g, async match => {
+	template = await replaceAsync(template, /\${([^]+?)}/g, async match => {
 		const expr = match[1]
 		const script = `const argv = ${JSON.stringify(argv)};\nreturn (${expr})`
 		const evalResult = await async_eval(script, {})

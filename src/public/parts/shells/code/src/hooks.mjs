@@ -266,13 +266,12 @@ export async function dispatchAgentFinish(username, ctx) {
 				await saveSession(username, work, session).catch(error => console.warn('shells/code: 重置自动回灌计数失败', error))
 			}
 		}
-		else if (typeof runtime.regen === 'function') 
+		else if (typeof runtime.regen === 'function')
 			try {
 				// 计数由 regenCodeSession 写入会话文件，这里只把新值随上下文传过去。
 				await runtime.regen(username, { ...ctx, attempt: attempt + 1 }, failure.output.slice(0, 20000))
 			}
 			catch (error) { console.warn('shells/code: 自动重生成触发失败', error) }
-		
 	}
 	else if (session?.regenAttempts) {
 		delete session.regenAttempts

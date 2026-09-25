@@ -16,7 +16,7 @@ import { getAllDefaultParts, getPartList } from '../../../../../server/parts_loa
 import { loadShellData, saveShellData, assignShellData } from '../../../../../server/setting_loader.mjs'
 import { sendEventToUser } from '../../../../../server/web_server/event_dispatcher.mjs'
 import { listTasks as listAsyncTasks } from '../../../plugins/async-task/registry.mjs'
-import { createTargetExecutor, listMachines, parseVolumeLabels } from '../../../plugins/file-operations/src/target.mjs'
+import { availableShells, createTargetExecutor, listMachines, machineDefaultShell, parseVolumeLabels } from '../../../plugins/file-operations/src/target.mjs'
 
 import {
 	getCommand,
@@ -42,7 +42,7 @@ import {
 	schedulePowerAction,
 } from './lifecycle.mjs'
 import { triggerCodeReply } from './request.mjs'
-import { availableShells, machineDefaultShell, runShellCommand } from './runner.mjs'
+import { runShellCommand } from './runner.mjs'
 import { deleteSession, listSessions, loadSession, saveSession } from './sessions.mjs'
 import { registerCodeShutdown } from './shutdown.mjs'
 import { readWorkspaceConfig } from './workspace_config.mjs'
@@ -89,7 +89,7 @@ async function ensureSessionsGitignored(username, workTarget) {
 		const hasGit = entries.some(entry => entry.isDirectory && entry.name === '.git')
 		const gitignoreEntry = entries.find(entry => entry.isFile && entry.name === '.gitignore')
 		if (!hasGit && !gitignoreEntry) return
-		const file = workTarget.path.replace(/[\\/]+$/, '') + '/.gitignore'
+		const file = workTarget.path.replace(/[/\\]+$/, '') + '/.gitignore'
 		const existing = gitignoreEntry ? await executor.readTextFile(file).catch(() => null) : ''
 		if (existing == null) return
 		const alreadyIgnored = existing.split(/\r?\n/).some(raw => {
@@ -206,7 +206,7 @@ async function buildQuickAccess(username, machine, workspacePath) {
 		rawSeen.add(entry.path)
 		candidates.push(entry)
 	}
-	const cleaned = workspacePath ? String(workspacePath).replace(/[\\/]+$/, '') : ''
+	const cleaned = workspacePath ? String(workspacePath).replace(/[/\\]+$/, '') : ''
 	if (cleaned) {
 		// 兄弟目录：工作区父目录下其他文件夹（排除工作区自身；目标机器本地路径拼接）
 		try {
@@ -321,7 +321,7 @@ function getTabs(username) {
 function sanitizeTab(tab) {
 	if (!tab || typeof tab !== 'object') return null
 	if (!['draft', 'session'].includes(tab.type)) return null
-	if (typeof tab.id !== 'string' || !/^[A-Za-z0-9_-]{1,64}$/.test(tab.id)) return null
+	if (typeof tab.id !== 'string' || !/^[\w-]{1,64}$/.test(tab.id)) return null
 	return {
 		type: tab.type,
 		id: tab.id,
@@ -543,7 +543,7 @@ export function setEndpoints(router) {
 			roots: [],
 			entries: entries.map(e => ({
 				name: e.name,
-				path: path.replace(/[\\/]+$/, '') + '/' + e.name,
+				path: path.replace(/[/\\]+$/, '') + '/' + e.name,
 				isDirectory: e.isDirectory,
 				isFile: e.isFile,
 			})),

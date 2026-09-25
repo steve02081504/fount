@@ -79,7 +79,7 @@ async function readNativeHistory(username, machine, shell) {
  * @param {string} kind - 历史类型（`shell` | `message`）。
  * @returns {string} 文件路径。
  */
-export function historyFilePath(workdirPath, kind) {
+function historyFilePath(workdirPath, kind) {
 	return joinWorkdir(workdirPath, `${HISTORY_DIR}/${kind}_history.json`)
 }
 

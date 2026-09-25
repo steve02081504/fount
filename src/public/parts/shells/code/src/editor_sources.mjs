@@ -166,7 +166,7 @@ async function scanEditorSources() {
 				const xml = await fs.readFile(path.join(root, dir, 'options', 'recentProjects.xml'), 'utf8')
 				for (const match of xml.matchAll(/<entry key="([^"]*)"/g)) {
 					const expanded = match[1].replace(/\$USER_HOME\$/g, os.homedir())
-					if (/\$[A-Z_0-9]+\$/.test(expanded)) continue // 其余宏（如 $APPLICATION_HOME_DIR$）无法可靠展开，跳过
+					if (/\$[\dA-Z_]+\$/.test(expanded)) continue // 其余宏（如 $APPLICATION_HOME_DIR$）无法可靠展开，跳过
 					await addDir(expanded)
 				}
 			}
