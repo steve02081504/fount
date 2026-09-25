@@ -11,12 +11,12 @@ import { createHash } from 'node:crypto'
 import { handleError } from 'fount/scripts/errorHandlers.mjs'
 
 import { channelMessage, normalizeChannelMessage } from '../../../public/shared/channelContent.mjs'
-import { isGreetingEntry } from '../logEntryTypes.mjs'
 import { commitChannelMessageEvent } from '../channel/messageCommit.mjs'
 import { replicateChunkToFederation } from '../federation/chunks.mjs'
 import { resolveGroupChannelId } from '../lib/channelId.mjs'
 import { charIdFromChatLogEntry } from '../lib/charIdFromEntry.mjs'
 import { isExpectedTeardownRace } from '../lib/expectedTeardownRace.mjs'
+import { isGreetingEntry } from '../logEntryTypes.mjs'
 import { getStorageForGroup } from '../storage.mjs'
 
 import { appendSignedLocalEvent } from './append.mjs'

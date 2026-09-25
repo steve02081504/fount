@@ -11,8 +11,8 @@
 /** @typedef {import('../../../../../../../decl/basedefs.ts').locale_t} locale_t */
 
 import { resolveActiveMemberKeyForLocalUser } from '../../group/access.mjs'
-import { isGreetingEntry } from '../logEntryTypes.mjs'
 import { getState } from '../dag/materialize.mjs'
+import { isGreetingEntry } from '../logEntryTypes.mjs'
 
 import { chatMetadata_t } from './models.mjs'
 import { getGroupRuntime } from './runtime.mjs'

@@ -36,6 +36,9 @@ export function commonPrefixLength(a, b) {
 /**
  * 为会话中每次生成提供估算缓存率；快照过期或没有上次请求时返回 null。
  * `rounds` 逐轮给出该生成的每次请求相对上一请求的复用率，供按轮次绘制的图表与回放对位。
+ *
+ * 生成的汇总 `rate` 取各轮 `rate` 的算术平均（每轮以该轮自身 prompt 长度归一），
+ * 而不是 `reused / 各轮长度之和`——后者会把「命中前缀占单轮比例」稀释一半，低估真实缓存命中。
  * @param {object[]} generations 顺序排列的生成记录
  * @returns {Array<{ rate: number | null, reused: number, total: number, rounds: Array<{ rate: number | null, reused: number, total: number }> }>} 每次生成的指标
  */
@@ -60,28 +63,48 @@ export function estimatePromptCache(generations = []) {
 			rounds.push({ rate: previous != null && current.length ? roundReused / current.length : null, reused: roundReused, total: previous != null ? current.length : 0 })
 			previous = current
 		}
-		return { rate: total ? reused / total : null, reused, total, rounds }
+		return { rate: averageRoundRate(rounds), reused, total, rounds }
 	})
 }
 
 /**
+ * 汇总逐轮复用率为生成级指标：取各轮非空 `rate` 的算术平均；全为空时返回 null。
+ * @param {Array<{ rate: number | null }>} rounds 逐轮指标
+ * @returns {number | null} 生成级复用率
+ */
+export function averageRoundRate(rounds = []) {
+	let sum = 0
+	let count = 0
+	for (const round of rounds)
+		if (typeof round?.rate === 'number' && Number.isFinite(round.rate)) {
+			sum += round.rate
+			count++
+		}
+	return count ? sum / count : null
+}
+
+/**
  * 估算单次生成相对上一轮 prompt 的缓存复用率（供列表页预计算，无需载入完整会话）。
+ * 与 `estimatePromptCache` 同口径：生成级 `rate` 取各轮复用率的算术平均，而非 `reused / 长度之和`。
  * @param {string | null} previousPrompt 上一次请求的序列化 prompt（缺失时为 null）
  * @param {object[]} requests 本次生成的逐轮请求快照
  * @returns {{ rate: number | null, reused: number, total: number }} 指标
  */
 export function estimateGenerationCache(previousPrompt, requests = []) {
 	let previous = typeof previousPrompt === 'string' ? previousPrompt : null
+	const rounds = []
 	let reused = 0
 	let total = 0
 	for (const request of requests ?? []) {
 		if (!isComparableRequest(request)) continue
 		const current = serializeRequest(request)
 		if (previous != null) {
-			reused += commonPrefixLength(current, previous)
+			const roundReused = commonPrefixLength(current, previous)
+			reused += roundReused
 			total += current.length
+			rounds.push({ rate: current.length ? roundReused / current.length : null })
 		}
 		previous = current
 	}
-	return { rate: total ? reused / total : null, reused, total }
+	return { rate: averageRoundRate(rounds), reused, total }
 }

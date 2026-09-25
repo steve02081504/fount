@@ -1,6 +1,6 @@
 /**
  * 【文件】test/pure/context_compress.test.mjs
- * 【职责】纯函数层验证 `<compress-context/>` handler 与 GetPrompt：成功 regen、失败写工具日志、重复压缩防护、prompt 形状与占用提示。
+ * 【职责】纯函数层验证 `<compress-context/>` handler、GetPrompt（稳定工具说明）与 TweakPrompt（占用提示原地更新）：成功 regen、失败写工具日志、重复压缩防护、prompt 形状与占用提示。
  * 【原理】直接调用 handler 的 handle（真实 compressContext 路径），以可控 aiSource.Call 桩替换网络；prompt_struct 手工构造，零 I/O、零 server 依赖。
  * 【关联】plugins/context-compress/handler.mjs、prompt.mjs、state.mjs。
  */
@@ -8,7 +8,7 @@
 import { assertEquals, assertStringIncludes } from 'jsr:@std/assert'
 
 import { compressContextReplyHandler } from '../../handler.mjs'
-import { getContextCompressPrompt } from '../../prompt.mjs'
+import { applyContextUsageHint, getContextCompressPrompt, USAGE_ENTRY_ID } from '../../prompt.mjs'
 import { getConfig, setConfig } from '../../state.mjs'
 
 /**
@@ -155,7 +155,7 @@ Deno.test('compress handler does not compress the same result twice', async () =
 	assertEquals(logs.length, 1)
 })
 
-Deno.test('GetPrompt returns single-part shape with tool and usage', () => {
+Deno.test('GetPrompt returns a stable tool-only single-part shape', () => {
 	const prompt = getContextCompressPrompt({
 		locales: ['zh-CN'],
 		ai_source: makeAiSource(''),
@@ -164,34 +164,63 @@ Deno.test('GetPrompt returns single-part shape with tool and usage', () => {
 	assertEquals(Array.isArray(prompt.text), true)
 	assertEquals(prompt.text.length, 1)
 	assertStringIncludes(prompt.text[0].content, '<compress-context/>')
-	assertEquals(prompt.text[0].content.includes('1000'), false)
-	assertEquals(prompt.additional_chat_log.length, 1)
-	assertStringIncludes(prompt.additional_chat_log[0].content, '模型上下文上限 1000 tokens')
-	assertStringIncludes(prompt.additional_chat_log[0].content, '%')
-	assertEquals(prompt.additional_chat_log[0].role, 'system')
+	// 工具说明稳定：不含易变占用文本，也不注入 additional_chat_log
+	assertEquals(prompt.text[0].content.includes('当前上下文占用'), false)
+	assertEquals(prompt.additional_chat_log.length, 0)
 	assertEquals(prompt.extension, {})
 })
 
-Deno.test('GetPrompt keeps the volatile usage hint out of the cached system prompt', () => {
-	const prompt = getContextCompressPrompt({
-		locales: ['zh-CN'],
-		ai_source: makeAiSource(''),
-		chat_log: [makeEntry('user', 'User', 'a'.repeat(400))],
-	})
-	assertEquals(prompt.text[0].content.includes('当前上下文占用'), false)
-	assertStringIncludes(prompt.additional_chat_log[0].content, '当前上下文占用')
+Deno.test('TweakPrompt appends a usage entry with a stable id', () => {
+	const prompt_struct = makePromptStruct([makeEntry('user', 'User', 'a'.repeat(400))])
+	const myPrompt = { text: [], additional_chat_log: [], extension: {} }
+	applyContextUsageHint({ ai_source: makeAiSource('') }, prompt_struct, myPrompt)
+	assertEquals(myPrompt.additional_chat_log.length, 1)
+	const entry = myPrompt.additional_chat_log[0]
+	assertEquals(entry.id, USAGE_ENTRY_ID)
+	assertEquals(entry.extension.contextCompress, true)
+	assertStringIncludes(entry.content, '模型上下文上限 1000 tokens')
+	assertStringIncludes(entry.content, '%')
 })
 
-Deno.test('GetPrompt nudges when usage reaches threshold', () => {
+Deno.test('TweakPrompt updates the existing usage entry in place instead of appending', () => {
+	const prompt_struct = makePromptStruct([makeEntry('user', 'User', 'a'.repeat(400))])
+	const myPrompt = { text: [], additional_chat_log: [], extension: {} }
+	applyContextUsageHint({ ai_source: makeAiSource('') }, prompt_struct, myPrompt)
+	const firstContent = myPrompt.additional_chat_log[0].content
+	// 追加更多历史后再更新：仍只有一条，内容变化
+	prompt_struct.chat_log.push(makeEntry('char', 'Char', 'b'.repeat(4000)))
+	applyContextUsageHint({ ai_source: makeAiSource('') }, prompt_struct, myPrompt)
+	assertEquals(myPrompt.additional_chat_log.length, 1)
+	assertEquals(myPrompt.additional_chat_log[0].id, USAGE_ENTRY_ID)
+	assertEquals(myPrompt.additional_chat_log[0].content === firstContent, false)
+})
+
+Deno.test('TweakPrompt counts the assembled prompt_struct, not just chat_log', () => {
+	const smallPrompt = makePromptStruct([makeEntry('user', 'User', 'hi')])
+	const small = { text: [], additional_chat_log: [], extension: {} }
+	applyContextUsageHint({ ai_source: makeAiSource('') }, smallPrompt, small)
+	const largePrompt = makePromptStruct([makeEntry('user', 'User', 'hi')])
+	// 给 char_prompt 注入大段系统提示：占用提示应随之增大
+	largePrompt.char_prompt.text.push({ content: 'x'.repeat(20000), description: 'big', important: 0 })
+	const large = { text: [], additional_chat_log: [], extension: {} }
+	applyContextUsageHint({ ai_source: makeAiSource('') }, largePrompt, large)
+	/**
+	 * 从占用提示中提取估算 token 数。
+	 * @param {string} text 占用提示文本
+	 * @returns {number} 估算 token 数
+	 */
+	const count = text => Number(text.match(/约 (\d+) tokens/)[1])
+	assertEquals(count(large.additional_chat_log[0].content) > count(small.additional_chat_log[0].content), true)
+})
+
+Deno.test('TweakPrompt nudges when usage reaches threshold', () => {
 	const previous = getConfig()
 	setConfig({ threshold: 0.01 })
 	try {
-		const prompt = getContextCompressPrompt({
-			locales: ['zh-CN'],
-			ai_source: makeAiSource(''),
-			chat_log: [makeEntry('user', 'User', 'a'.repeat(400))],
-		})
-		assertStringIncludes(prompt.additional_chat_log[0].content, '接近上限')
+		const prompt_struct = makePromptStruct([makeEntry('user', 'User', 'a'.repeat(400))])
+		const myPrompt = { text: [], additional_chat_log: [], extension: {} }
+		applyContextUsageHint({ ai_source: makeAiSource('') }, prompt_struct, myPrompt)
+		assertStringIncludes(myPrompt.additional_chat_log[0].content, '接近上限')
 	}
 	finally {
 		setConfig(previous)

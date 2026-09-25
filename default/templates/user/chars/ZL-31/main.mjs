@@ -10,6 +10,7 @@ import { needsCompression, compressContext } from '../../../../../src/public/par
 import { buildPromptStruct } from '../../../../../src/public/parts/shells/chat/src/prompt_struct/index.mjs'
 import { defineReplyHandler } from '../../../../../src/public/parts/shells/chat/src/reply/defineReplyHandler.mjs'
 import { runReplyHandlers } from '../../../../../src/public/parts/shells/chat/src/reply/handlerPipeline.mjs'
+import { injectRoundEntries } from '../../../../../src/public/parts/shells/chat/src/reply/roundContext.mjs'
 import { defineReplyPreviews } from '../../../../../src/public/parts/shells/chat/src/streaming/index.mjs'
 import { formatErrorMessage, formatGenerationError } from '../../../../../src/scripts/error_format.mjs'
 import { getPartInfo } from '../../../../../src/scripts/locale.mjs'
@@ -85,6 +86,7 @@ fount角色以mjs文件语法所书写，其可以自由导入任何npm或jsr包
 import { loadPart, loadAnyPreferredDefaultPart } from '../../../../../src/server/parts_loader.mjs'
 import { buildPromptStruct } from '../../../../../src/public/parts/shells/chat/src/prompt_struct/index.mjs'
 import { runReplyHandlers } from '../../../../../src/public/parts/shells/chat/src/reply/handlerPipeline.mjs'
+import { injectRoundEntries } from '../../../../../src/public/parts/shells/chat/src/reply/roundContext.mjs'
 
 /**
  * AI源的实例
@@ -273,8 +275,11 @@ export default {
 				regen: while (true) {
 					args.generation_options.base_result = result
 					await AIsource.StructCall(prompt_struct, args.generation_options)
-					if (await runReplyHandlers(result, { ...args, prompt_struct, AddLongTimeLog }, handlers))
+					if (await runReplyHandlers(result, { ...args, prompt_struct, AddLongTimeLog }, handlers)) {
+						await injectRoundEntries(args, prompt_struct)
+						if (!await args.generation_options.finishRound?.()) break
 						continue regen
+					}
 					break
 				}
 				// 返回构建好的回复
@@ -290,6 +295,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { defineReplyHandler } from '../../../../../src/public/parts/shells/chat/src/reply/defineReplyHandler.mjs'
 import { runReplyHandlers } from '../../../../../src/public/parts/shells/chat/src/reply/handlerPipeline.mjs'
+import { injectRoundEntries } from '../../../../../src/public/parts/shells/chat/src/reply/roundContext.mjs'
 
 /**
  * 处理 generate-char 工具调用。
@@ -389,8 +395,11 @@ const CharGenerator = defineReplyHandler({
 				regen: while (true) {
 					args.generation_options.base_result = result
 					await AIsource.StructCall(prompt_struct, args.generation_options)
-					if (await runReplyHandlers(result, { ...args, prompt_struct, AddLongTimeLog }, handlers))
+					if (await runReplyHandlers(result, { ...args, prompt_struct, AddLongTimeLog }, handlers)) {
+						await injectRoundEntries(args, prompt_struct)
+						if (!await args.generation_options.finishRound?.()) break
 						continue regen
+					}
 					break
 				}
 				// 返回构建好的回复
@@ -913,10 +922,15 @@ ${sourceLine}`,
 						}
 						// 达到 72.9% 上下文阈值时压缩历史后重新生成
 						if (needsCompression(args, { prompt_struct }) &&
-							await compressContext({ args, aiSource, prompt_struct, result }))
+							await compressContext({ args, aiSource, prompt_struct, result })) {
+							await injectRoundEntries(args, prompt_struct)
 							continue regen
-						if (await runReplyHandlers(result, { ...args, prompt_struct, AddLongTimeLog }, handlers))
+						}
+						if (await runReplyHandlers(result, { ...args, prompt_struct, AddLongTimeLog }, handlers)) {
+							await injectRoundEntries(args, prompt_struct)
+							if (!await args.generation_options.finishRound?.()) break
 							continue regen
+						}
 						break
 					}
 				}

@@ -16,8 +16,8 @@ import crypto from 'node:crypto'
 import { putFileManifest } from 'npm:@steve02081504/fount-p2p/files/evfs'
 import { formatEvfsRef, parseEvfsRef } from 'npm:@steve02081504/fount-p2p/files/evfs_ref'
 
-import { isGreetingEntry } from '../logEntryTypes.mjs'
 import { resolveOperatorEntityHash } from '../lib/replica.mjs'
+import { isGreetingEntry } from '../logEntryTypes.mjs'
 
 /**
  * @param {Buffer | string} buffer 文件内容或 evfs 引用

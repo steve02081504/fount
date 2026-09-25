@@ -53,6 +53,28 @@ Deno.test('estimateGenerationCache compares the first request against the suppli
 	assertEquals(estimateGenerationCache(previous, []).rate, null)
 })
 
+Deno.test('estimatePromptCache averages per-round rates instead of diluting by summed lengths', () => {
+	// 第二个请求以第一个为前缀
+	const metrics = estimatePromptCache([{
+		requests: [
+			{ systemPrompt: 'sys', messages: [{ role: 'user', content: 'hello' }] },
+			{ systemPrompt: 'sys', messages: [{ role: 'user', content: 'hello' }, { role: 'char', content: 'hi there' }] },
+		],
+	}])
+	assertEquals(metrics[0].rounds[0].rate, null)
+	assertEquals(metrics[0].rounds[1].rate > 0.4, true)
+	// 旧口径 reused/sum(len) 会把单轮命中稀释到约一半；新口径等于该轮自身 rate
+	assertEquals(metrics[0].rate, metrics[0].rounds[1].rate)
+})
+
+Deno.test('estimateGenerationCache averages per-round rates', () => {
+	const previous = serializeRequest({ systemPrompt: 'sys', messages: [{ role: 'user', content: 'hello' }] })
+	const metric = estimateGenerationCache(previous, [
+		{ systemPrompt: 'sys', messages: [{ role: 'user', content: 'hello' }, { role: 'char', content: 'hi there' }] },
+	])
+	assertEquals(metric.rate, metric.reused / metric.total)
+})
+
 Deno.test('serializeRequest and commonPrefixLength expose the character-level basis', () => {
 	const serialized = serializeRequest({ systemPrompt: 'sys', messages: [{ role: 'user', content: 'hi' }] })
 	assertEquals(serialized, 'sys\nuser\nhi')

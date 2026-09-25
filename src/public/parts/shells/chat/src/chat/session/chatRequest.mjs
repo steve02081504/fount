@@ -18,7 +18,6 @@ import { resolveDeclaredOwnerEntityHash } from '../../entity/master.mjs'
 import { ensureLocalAgentEntityHash } from '../../entity/member.mjs'
 import { resolveActiveMemberKeyForLocalUser } from '../../group/access.mjs'
 import { readChannelMessagesForUser } from '../../group/queries.mjs'
-import { isGreetingEntry } from '../logEntryTypes.mjs'
 import {
 	buildChatLogEntriesFromChannelLines,
 	loadDagHydrationI18n,
@@ -28,6 +27,7 @@ import { resolveChannelId, resolveGroupChannelId } from '../lib/channelId.mjs'
 import { injectFountChatCodeContextPlugin } from '../lib/codeContextPlugin.mjs'
 import { hydrateLogContextFromSidecar, sidecarChannelForEntry } from '../lib/contextSidecar.mjs'
 import { getOperatorEntityHash } from '../lib/replica.mjs'
+import { isGreetingEntry } from '../logEntryTypes.mjs'
 
 import {
 	aggregateChannelActivity,

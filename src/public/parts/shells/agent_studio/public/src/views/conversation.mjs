@@ -123,6 +123,9 @@ export async function loadConversationView({ key } = {}) {
 
 /**
  * 把生成记录展开为逐轮回放单元：每个单元代表一轮（一次 AI 调用），并记录其所属生成与全局轮次。
+ *
+ * 跨度公式必须与后端 `generationChain.mergeDialogueEvents` 完全一致（`max(requestCount, dialogue.rounds, 1)`），
+ * 否则复播的轮次偏移会错位、生成卡片与 transcript 对不上。
  * @param {object[]} items 生成记录（按开始时间升序）
  * @returns {Array<{ round: number, startedAt: number, generationIndex: number, generationStart: boolean }>} 逐轮单元
  */

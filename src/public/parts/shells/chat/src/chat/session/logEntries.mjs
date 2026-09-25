@@ -7,8 +7,8 @@
  */
 import { getPartDetails } from '../../../../../../../server/parts_loader.mjs'
 import { ensureLocalAgentEntityHash } from '../../entity/member.mjs'
-import { greetingEntryType } from '../logEntryTypes.mjs'
 import { resolveChannelId } from '../lib/channelId.mjs'
+import { greetingEntryType } from '../logEntryTypes.mjs'
 
 import { chatLogEntry_t } from './models.mjs'
 

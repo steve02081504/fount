@@ -11,8 +11,8 @@
 /** @typedef {import('../../../../../../../decl/AIsource.ts').AIsource_t} AIsource_t */
 
 import { estimateTokenCount } from '../../../../../serviceGenerators/AI/proxy/src/identityTokenizer.mjs'
-import { isSummaryEntry, SUMMARY_ENTRY_TYPE } from '../logEntryTypes.mjs'
 import { mergeStructPromptChatLog, structPromptToSingle } from '../../prompt_struct/index.mjs'
+import { isSummaryEntry, SUMMARY_ENTRY_TYPE } from '../logEntryTypes.mjs'
 
 /** 已在本轮压缩过的 result（防止同一生成重复压缩）。 @type {WeakSet<object>} */
 const compressedResults = new WeakSet()

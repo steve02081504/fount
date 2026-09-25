@@ -13,11 +13,11 @@ import {
 	normalizeChannelMessage,
 } from '../../../public/shared/channelContent.mjs'
 import { ensureChatExtension } from '../../../public/shared/messageFields.mjs'
-import { greetingSubtypeOf } from '../logEntryTypes.mjs'
 import { resolveDisplaySnapshot } from '../archive/postSnapshot.mjs'
 import { appendSignedLocalEvent } from '../dag/append.mjs'
 import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
 import { getState } from '../dag/materialize.mjs'
+import { greetingSubtypeOf } from '../logEntryTypes.mjs'
 import { resolveWorld } from '../session/resolvePart.mjs'
 import { exportSessionSnapshot } from '../session/sessionSnapshot.mjs'
 

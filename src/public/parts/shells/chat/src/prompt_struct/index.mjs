@@ -215,7 +215,7 @@ export function structPromptToSingleNoChatLog(/** @type {prompt_struct_t} */ pro
 	{
 		const sorted = prompt.char_prompt.text.sort((a, b) => a.important - b.important).map(text => text.content).filter(Boolean)
 		if (sorted.length) {
-			result.push('Character settings to role-play:')
+			result.push('Character settings:')
 			result.push(...sorted)
 		}
 	}
@@ -271,6 +271,7 @@ export function structPromptToSingleNoChatLog(/** @type {prompt_struct_t} */ pro
 
 /**
  * 合并结构化提示聊天记录。
+ *
  * @param {prompt_struct_t} prompt - 提示结构。
  * @returns {chatLogEntry_t[]} - 聊天记录条目数组。
  */

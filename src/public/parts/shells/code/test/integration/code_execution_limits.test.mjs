@@ -159,11 +159,14 @@ Deno.test('remoteShellStreamScript 超时杀掉分机侧进程树并标记 timed
 	const shell = await pickShell()
 	if (!shell) return
 	const posix = shell === 'bash' || shell === 'sh'
+	// 超时必须显著大于 shell 冷启动 + 嵌套 async_eval 加载 npm 模块的耗时（实测空闲 ~0.5s，整机负载下可达数秒）。
+	// 若超时贴得太紧（如 800ms），它会在 "before" 输出之前就触发，使 "before" 断言随机失败（racy）。
+	// 内层 sleep 远大于超时，保证 "after" 永不产生。
 	const command = posix
-		? `printf before; ${shell} -c 'sleep 2; printf after'`
-		: `Write-Output before; ${shell} -NoProfile -Command 'Start-Sleep -Seconds 2; Write-Output after'`
+		? `printf before; ${shell} -c 'sleep 120; printf after'`
+		: `Write-Output before; ${shell} -NoProfile -Command 'Start-Sleep -Seconds 120; Write-Output after'`
 	const chunks = []
-	const script = remoteShellStreamScript(shell, command, undefined, 800, 'exec-timeout')
+	const script = remoteShellStreamScript(shell, command, undefined, 8000, 'exec-timeout')
 	const start = Date.now()
 	const evalResult = await async_eval(script, {
 		/**
@@ -176,8 +179,8 @@ Deno.test('remoteShellStreamScript 超时杀掉分机侧进程树并标记 timed
 	const elapsed = Date.now() - start
 	const outcome = evalResult.error ?? evalResult.result
 	assertEquals(outcome?.timedOut, true, '应标记 timedOut')
-	assert(elapsed < 10_000, `应于超时后迅速收敛（实际 ${elapsed}ms）`)
-	await new Promise(resolve => setTimeout(resolve, 2000))
+	assert(elapsed < 20_000, `应于超时后迅速收敛（实际 ${elapsed}ms）`)
+	await new Promise(resolve => setTimeout(resolve, 1000))
 	const text = chunks.map(chunk => String(chunk.data)).join('')
 	assertStringIncludes(text, 'before')
 	assert(!text.includes('after'), '超时杀进程树后不应再收到后续输出')

@@ -100,6 +100,65 @@ Deno.test('mergeDialogueEvents offsets each generation by its round span so repl
 	assertEquals(merged.messages.map(message => message.content), ['hi', 'r4', 'bye', 'next', 'ans'])
 })
 
+Deno.test('mergeDialogueEvents drops a superseded final reply when the same user turn is re-run', () => {
+	const generations = [
+		{
+			id: 'g1', requestCount: 1,
+			dialogue: {
+				rounds: 1,
+				events: [
+					{ round: 1, op: 'insert', message: { id: 'u', role: 'user', content: 'express 版本?' } },
+					{ round: 1, op: 'insert', message: { id: 'r1', role: 'char', content: '我猜一下…' } },
+				],
+			},
+		},
+		{
+			id: 'g2', requestCount: 1,
+			dialogue: {
+				rounds: 1,
+				// 重放同一用户回合，但未携带 g1 的最终回复 r1
+				events: [
+					{ round: 1, op: 'insert', message: { id: 'u', role: 'user', content: 'express 版本?' } },
+					{ round: 1, op: 'insert', message: { id: 'r2', role: 'char', content: 'deno.json 里是 ^5.1.0' } },
+				],
+			},
+		},
+	]
+	const merged = mergeDialogueEvents(generations)
+	// r1 被 g2 取代，不应出现在合并对话中
+	assertEquals(merged.messages.map(message => message.content), ['express 版本?', 'deno.json 里是 ^5.1.0'])
+})
+
+Deno.test('mergeDialogueEvents keeps both finals when the next generation is a genuine new turn', () => {
+	const generations = [
+		{
+			id: 'g1', requestCount: 1,
+			dialogue: {
+				rounds: 1,
+				events: [
+					{ round: 1, op: 'insert', message: { id: 'u1', role: 'user', content: 'hi' } },
+					{ round: 1, op: 'insert', message: { id: 'r1', role: 'char', content: 'hello' } },
+				],
+			},
+		},
+		{
+			id: 'g2', requestCount: 1,
+			dialogue: {
+				rounds: 1,
+				events: [
+					// 新一轮的请求携带上一轮历史（含 r1）与新的用户输入 u2
+					{ round: 1, op: 'insert', message: { id: 'u1', role: 'user', content: 'hi' } },
+					{ round: 1, op: 'insert', message: { id: 'r1', role: 'char', content: 'hello' } },
+					{ round: 1, op: 'insert', message: { id: 'u2', role: 'user', content: 'bye' } },
+					{ round: 1, op: 'insert', message: { id: 'r2', role: 'char', content: 'see ya' } },
+				],
+			},
+		},
+	]
+	const merged = mergeDialogueEvents(generations)
+	assertEquals(merged.messages.map(message => message.content), ['hi', 'hello', 'bye', 'see ya'])
+})
+
 Deno.test('minCacheRateByChar picks the lowest finite rate per character', () => {
 	const result = minCacheRateByChar([
 		{ charId: 'a', cacheRate: 0.7 },
