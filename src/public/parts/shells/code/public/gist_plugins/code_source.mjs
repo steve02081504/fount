@@ -1,7 +1,7 @@
 /**
  * code shell 的 gist 来源插件：渲染 gist 来源描述（来自编码会话 · 会话 id · 导出时间）。
  */
-import { geti18n, setLocalizeLogic } from '/scripts/i18n/index.mjs'
+import { geti18n, setElementI18n, setLocalizeLogic } from '/scripts/i18n/index.mjs'
 
 /**
  * code 来源插件默认导出：供 gist 查看页按 source.type 渲染来源区。
@@ -38,7 +38,7 @@ export default {
 			const sendButton = document.createElement('button')
 			sendButton.type = 'button'
 			sendButton.className = 'btn btn-ghost btn-sm'
-			sendButton.textContent = geti18n('code.gist_source_plugins.sendToWorkspace')
+			setElementI18n(sendButton, 'code.gist_source_plugins.sendToWorkspace')
 			sendButton.addEventListener('click', async () => {
 				// code 页面在场时经 fount.user.send 直接发到当前会话；否则复制正文降级
 				if (globalThis.fount?.user?.send) {

@@ -30,7 +30,7 @@ test.describe('gist shell smoke', () => {
 		await expect(page.locator('#view-title')).toContainText('标题一')
 		await expect(page.locator('#content h1')).toHaveText('标题一')
 		await expect(page.locator('#content')).toContainText('加粗')
-		await expect(page.locator('#security-toggle')).toHaveText('无防护')
+		await expect(page.locator('#security-toggle')).toHaveAttribute('data-i18n', 'gist.securityToggle.trusted')
 	})
 
 	test('masonry distributes cards into non-empty columns', async ({ page, baseUrl, apiKey }) => {
@@ -139,7 +139,8 @@ test.describe('gist shell smoke', () => {
 		await expect(page.locator('.gist-select-checkbox').first()).toBeVisible()
 		await page.locator('h1').click()
 		await page.keyboard.press('Control+a')
-		await expect(page.locator('#selection-count')).toHaveText('已选择 2 个')
+		await expect(page.locator('#selection-count')).toHaveAttribute('data-i18n', 'gist.list.selectedCount')
+		await expect(page.locator('#selection-count')).toContainText('2')
 	})
 
 	test('shift-click selects a continuous range', async ({ page, baseUrl, apiKey }) => {
@@ -152,7 +153,8 @@ test.describe('gist shell smoke', () => {
 		await expect(page.locator('.gist-card')).toHaveCount(3)
 		await page.locator('.gist-card').first().click({ modifiers: ['ControlOrMeta'] })
 		await page.locator('.gist-card').nth(2).click({ modifiers: ['Shift'] })
-		await expect(page.locator('#selection-count')).toHaveText('已选择 3 个')
+		await expect(page.locator('#selection-count')).toHaveAttribute('data-i18n', 'gist.list.selectedCount')
+		await expect(page.locator('#selection-count')).toContainText('3')
 	})
 
 	test('search filters and batch delete removes selected gists', async ({ page, baseUrl, apiKey }) => {
@@ -165,12 +167,13 @@ test.describe('gist shell smoke', () => {
 		await expect(page.locator('.gist-card')).toHaveCount(2)
 		await page.locator('#select-mode-button').click()
 		await page.locator('#select-all-checkbox').check()
-		await expect(page.locator('#selection-count')).toHaveText('已选择 2 个')
+		await expect(page.locator('#selection-count')).toHaveAttribute('data-i18n', 'gist.list.selectedCount')
+		await expect(page.locator('#selection-count')).toContainText('2')
 		await expect(page.locator('#batch-delete-button')).toBeEnabled()
 		await page.locator('#batch-delete-button').click()
 		await page.locator('dialog[open] [data-dialog-resolve="ok"]').click()
 		await expect(page.locator('#gist-list .gist-empty-state')).toBeVisible({ timeout: 30_000 })
-		await expect(page.locator('#gist-list')).toContainText('没有匹配的 gist')
+		await expect(page.locator('#gist-list [data-i18n="gist.list.noResults"]')).toBeVisible()
 	})
 
 	test('view assigns heading anchors and honors the URL hash', async ({ page, baseUrl, apiKey }) => {

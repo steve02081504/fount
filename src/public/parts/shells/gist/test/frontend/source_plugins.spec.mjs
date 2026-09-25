@@ -34,7 +34,7 @@ test.describe('gist source plugins', () => {
 		await page.goto(`${baseUrl}/parts/shells:gist/view?id=${id}`, { waitUntil: 'domcontentloaded' })
 		await expect(page.locator('.gist-source-code')).toBeVisible({ timeout: 30_000 })
 		await expect(page.locator('.gist-source-code')).toContainText('abc-123')
-		await expect(page.locator('.gist-source-code button')).toContainText('发送到工作区')
+		await expect(page.locator('.gist-source-code button')).toHaveAttribute('data-i18n', 'code.gist_source_plugins.sendToWorkspace')
 	})
 
 	test('code source send button copies markdown when no code context', async ({ page, baseUrl, apiKey, context }) => {
@@ -47,7 +47,7 @@ test.describe('gist source plugins', () => {
 		await expect(button).toBeVisible({ timeout: 30_000 })
 		await context.grantPermissions(['clipboard-read', 'clipboard-write'])
 		await button.click()
-		await expect(page.locator('#toast-container, .toast')).toContainText('已复制', { timeout: 10_000 })
+		await expect(page.locator('#toast-container [data-i18n="code.gist_source_plugins.copied"]')).toBeVisible({ timeout: 10_000 })
 		await expect.poll(async () => page.evaluate(() => navigator.clipboard.readText()))
 			.toContain('# code source test')
 	})
