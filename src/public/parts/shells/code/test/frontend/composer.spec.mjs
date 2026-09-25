@@ -9,20 +9,19 @@ test.describe('code shell composer & placeholders', () => {
 		await openCode(page, baseUrl)
 		const composer = page.locator('#composer-input')
 		const placeholder = composer.locator('.fount-markdown-rich-input-placeholder')
-		await expect(placeholder).toContainText('输入消息开始')
+		await expect(placeholder).toHaveAttribute('data-i18n', 'code.composer.placeholderNormal')
 		// 点外部可聚焦元素（发送按钮）再点回输入框：占位符不应被旧 i18n 文案（输入命令，Enter 执行…）覆盖
 		await page.locator('#send-button').click()
 		await expect(composer).not.toBeFocused()
 		await composer.click()
-		await expect(placeholder).toContainText('输入消息开始')
-		await expect(placeholder).not.toContainText('输入命令')
+		await expect(placeholder).toHaveAttribute('data-i18n', 'code.composer.placeholderNormal')
 	})
 
 	test('shell mode swaps the placeholder, removes ！, and Backspace on empty exits', async ({ page, baseUrl }) => {
 		await openCode(page, baseUrl)
 		const composer = page.locator('#composer-input')
 		const placeholder = composer.locator('.fount-markdown-rich-input-placeholder')
-		await expect(placeholder).toContainText('输入消息开始')
+		await expect(placeholder).toHaveAttribute('data-i18n', 'code.composer.placeholderNormal')
 		await composer.click()
 		await page.keyboard.type('！')
 		await expect(page.locator('#shell-pill-wrap')).toBeVisible()
@@ -31,19 +30,18 @@ test.describe('code shell composer & placeholders', () => {
 		const shellBox = await page.locator('#shell-pill-wrap').boundingBox()
 		expect(shellBox.x - controlsBox.x).toBeLessThan(8)
 		// 叹号被移除，输入框为空 → shell 占位符显示
-		await expect(placeholder).toContainText('输入 shell 命令')
+		await expect(placeholder).toHaveAttribute('data-i18n', 'code.composer.placeholderShell')
 		// 输入内容后再删到空：不退出 shell 模式
 		await page.keyboard.type('echo hi')
 		await expect(placeholder).toHaveCount(0)
 		await page.keyboard.press('Control+A')
 		await page.keyboard.press('Backspace')
 		await expect(page.locator('#shell-pill-wrap')).toBeVisible()
-		await expect(placeholder).toContainText('输入 shell 命令')
+		await expect(placeholder).toHaveAttribute('data-i18n', 'code.composer.placeholderShell')
 		// 空内容再按 Backspace：退出 shell 模式
 		await page.keyboard.press('Backspace')
 		await expect(page.locator('#shell-pill-wrap')).toBeHidden()
-		await expect(placeholder).toContainText('输入消息开始')
-		await expect(placeholder).not.toContainText('输入命令')
+		await expect(placeholder).toHaveAttribute('data-i18n', 'code.composer.placeholderNormal')
 	})
 
 	test('! shell command executes and renders output bubbles', async ({ page, baseUrl }) => {
@@ -98,7 +96,7 @@ test.describe('code shell composer & placeholders', () => {
 		await expect(composer).toContainText('echo hello-code-shell')
 		// ↓ 恢复草稿（空）
 		await page.keyboard.press('ArrowDown')
-		await expect(placeholder).toContainText('输入 shell 命令')
+		await expect(placeholder).toHaveAttribute('data-i18n', 'code.composer.placeholderShell')
 		// 影子补全 + Tab 接受
 		await page.keyboard.type('echo h')
 		await expect(page.locator('.code-composer-ghost')).toContainText('ello-code-shell')

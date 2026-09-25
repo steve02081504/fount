@@ -6517,11 +6517,11 @@
 			"sendButton": {
 				"aria-label": "Senda skilaboð"
 			},
-			"sendAria": "Senda skilaboð",
-			"stopAria": "Stöðva myndun",
+			"stopButton": {
+				"aria-label": "Stöðva myndun"
+			},
 			"modeSwitched": "Skipt yfir í ${mode} ham",
 			"hint": "Sláðu inn ! þegar tómt fyrir skelham · @ til að vísa í skrár · / fyrir skipanir · ↑↓ saga · Tab fyrir klárun",
-			"placeholder": "Sláðu inn skipun; Ctrl/Cmd+Enter keyrir hana (hreinsaðu til að yfirgefa skelham)",
 			"placeholderNormal": "Skrifaðu skilaboð… (@ til að vísa í skrár, / fyrir skipanir)",
 			"placeholderShell": "Sláðu inn skelskipun… (t.d. git status)",
 			"aria-label": "Innsláttur skilaboða",

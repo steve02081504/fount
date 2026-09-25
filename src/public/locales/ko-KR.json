@@ -6517,11 +6517,11 @@
 			"sendButton": {
 				"aria-label": "메시지 보내기"
 			},
-			"sendAria": "메시지 보내기",
-			"stopAria": "생성 중지",
+			"stopButton": {
+				"aria-label": "생성 중지"
+			},
 			"modeSwitched": "${mode} 모드로 전환됨",
 			"hint": "비어 있을 때 ! 를 입력하면 셸 모드 · @ 로 파일 참조 · / 로 명령 · ↑↓ 기록 · Tab 으로 자동 완성",
-			"placeholder": "명령을 입력하고 Ctrl/Cmd+Enter 로 실행하세요(비우면 셸 모드 종료)",
 			"placeholderNormal": "메시지를 입력하세요…(@ 로 파일 참조, / 로 명령)",
 			"placeholderShell": "셸 명령을 입력하세요…(예: git status)",
 			"aria-label": "메시지 입력",

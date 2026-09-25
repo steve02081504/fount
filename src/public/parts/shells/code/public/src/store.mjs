@@ -139,6 +139,7 @@ export let richInput = null
  */
 export function initComposer() {
 	richInput = createMarkdownRichInput(elements.composerInput, {
+		placeholderI18n: 'code.composer.placeholderNormal',
 		inlineTokens: [{
 			kind: 'file',
 			regex: /@\[file:([^\n\]]+)]/,

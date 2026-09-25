@@ -1,7 +1,7 @@
 /**
  * 左上角「工作区 / 对话」两栏弹窗：浏览工作区、打开/删除对话、移除工作区。
  */
-import { geti18n } from '/scripts/i18n/index.mjs'
+import { geti18n, setElementI18n } from '/scripts/i18n/index.mjs'
 import { svgInliner } from '/scripts/lib/svgInliner.mjs'
 
 import { iconElement, icons } from './icons.mjs'
@@ -116,8 +116,11 @@ function sessionRow(session) {
 	main.className = 'code-home-row-main'
 	const title = document.createElement('span')
 	title.className = 'code-home-row-title'
-	title.setAttribute('user-content', '')
-	title.textContent = session.title || geti18n('code.sessions.untitled')
+	if (session.title) {
+		title.setAttribute('user-content', '')
+		title.textContent = session.title
+	}
+	else setElementI18n(title, 'code.sessions.untitled')
 	const time = document.createElement('span')
 	time.className = 'code-home-row-sub'
 	time.textContent = formatSessionTime(session.updated || session.created)

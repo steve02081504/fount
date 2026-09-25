@@ -7,7 +7,6 @@ import { blobToBase64 } from '/scripts/lib/base64.mjs'
 import { memoizePromise } from '/scripts/lib/memo.mjs'
 import { svgInliner } from '/scripts/lib/svgInliner.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
-import { geti18n } from '/scripts/i18n/index.mjs'
 
 import * as api from './endpoints.mjs'
 import { iconElement, icons } from './icons.mjs'
@@ -16,15 +15,9 @@ import { sendMessage, syncActiveTabDraft } from './session.mjs'
 import { ATTACHMENT_MAX_BYTES, elements, getPref, richInput, setPref, store, target } from './store.mjs'
 import { openDialogFromTemplate } from './templates.mjs'
 
-/** 更新 composer placeholder（normal / shell 模式）。 */
+/** 更新 composer placeholder（normal / shell 模式；占位 span 走 `data-i18n`，随语种自动重译）。 */
 export function updateComposerPlaceholder() {
-	const placeholder = store.shellMode
-		? geti18n('code.composer.placeholderShell')
-		: geti18n('code.composer.placeholderNormal')
-	const node = elements.composerInput.querySelector('.fount-markdown-rich-input-placeholder')
-	if (node) node.textContent = placeholder
-	// markdownRichInput 在 focus/click 时会按 placeholder 属性重建占位符 span，同步该属性保证重建后仍是当前模式的文案
-	elements.composerInput.setAttribute('placeholder', placeholder)
+	richInput?.setPlaceholderI18n(store.shellMode ? 'code.composer.placeholderShell' : 'code.composer.placeholderNormal')
 }
 
 /**

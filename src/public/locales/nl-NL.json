@@ -6523,11 +6523,11 @@
 			"sendButton": {
 				"aria-label": "Bericht verzenden"
 			},
-			"sendAria": "Bericht verzenden",
-			"stopAria": "Genereren stoppen",
+			"stopButton": {
+				"aria-label": "Genereren stoppen"
+			},
 			"modeSwitched": "Geschakeld naar de ${mode}-modus",
 			"hint": "Typ ! bij een leeg veld voor de shellmodus · @ om bestanden te verwijzen · / voor opdrachten · ↑↓ geschiedenis · Tab om aan te vullen",
-			"placeholder": "Typ een opdracht; Ctrl/Cmd+Enter voert uit (leegmaken om de shellmodus te verlaten)",
 			"placeholderNormal": "Typ je bericht… (@ om bestanden te verwijzen, / voor opdrachten)",
 			"placeholderShell": "Typ een shellopdracht… (bijv. git status)",
 			"aria-label": "Berichtinvoer",

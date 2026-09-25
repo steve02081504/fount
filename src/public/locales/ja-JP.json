@@ -6517,11 +6517,11 @@
 			"sendButton": {
 				"aria-label": "メッセージを送信"
 			},
-			"sendAria": "メッセージを送信",
-			"stopAria": "生成を停止",
+			"stopButton": {
+				"aria-label": "生成を停止"
+			},
 			"modeSwitched": "${mode} モードに切り替えました",
 			"hint": "空欄で ! を入力するとシェルモード · @ でファイル参照 · / でコマンド · ↑↓ 履歴 · Tab 補完",
-			"placeholder": "コマンドを入力、Ctrl/Cmd+Enter で実行（空にするとシェルモードを終了）",
 			"placeholderNormal": "メッセージを入力…（@ でファイル参照、/ でコマンド）",
 			"placeholderShell": "シェルコマンドを入力…（例: git status）",
 			"aria-label": "メッセージ入力",

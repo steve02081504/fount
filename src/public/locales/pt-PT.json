@@ -6523,11 +6523,11 @@
 			"sendButton": {
 				"aria-label": "Enviar mensagem"
 			},
-			"sendAria": "Enviar mensagem",
-			"stopAria": "Parar a geração",
+			"stopButton": {
+				"aria-label": "Parar a geração"
+			},
 			"modeSwitched": "Mudado para o modo ${mode}",
 			"hint": "Digite ! num campo vazio para o modo shell · @ para referenciar ficheiros · / para comandos · ↑↓ histórico · Tab para completar",
-			"placeholder": "Digite um comando; Ctrl/Cmd+Enter executa (esvazie para sair do modo shell)",
 			"placeholderNormal": "Escreva a sua mensagem… (@ para referenciar ficheiros, / para comandos)",
 			"placeholderShell": "Digite um comando shell… (ex.: git status)",
 			"aria-label": "Entrada de mensagem",

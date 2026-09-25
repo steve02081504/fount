@@ -6516,11 +6516,11 @@
 			"sendButton": {
 				"aria-label": "傳送訊息"
 			},
-			"sendAria": "傳送訊息",
-			"stopAria": "停止產生",
+			"stopButton": {
+				"aria-label": "停止產生"
+			},
 			"modeSwitched": "已切換至 ${mode} 模式",
 			"hint": "空白輸入時按 ! 切換 shell · @ 引用檔案 · / 執行指令 · ↑↓ 歷史記錄 · Tab 自動完成",
-			"placeholder": "輸入指令，Ctrl/Cmd+Enter 執行（清空以退出 shell 模式）",
 			"placeholderNormal": "開始輸入訊息…（@ 引用檔案 · / 執行指令）",
 			"placeholderShell": "輸入 shell 指令…（例如 git status）",
 			"aria-label": "訊息輸入框",

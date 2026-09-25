@@ -6517,11 +6517,11 @@
 			"sendButton": {
 				"aria-label": "Nachricht senden"
 			},
-			"sendAria": "Nachricht senden",
-			"stopAria": "Generierung stoppen",
+			"stopButton": {
+				"aria-label": "Generierung stoppen"
+			},
 			"modeSwitched": "In den ${mode}-Modus gewechselt",
 			"hint": "Bei leerem Feld ! für Shell · @ für Dateiverweise · / für Befehle · ↑↓ Verlauf · Tab zum Vervollständigen",
-			"placeholder": "Befehl eingeben, Ctrl/Cmd+Enter führt aus (leeren zum Verlassen des Shell-Modus)",
 			"placeholderNormal": "Nachricht eingeben… (@ für Dateiverweise, / für Befehle)",
 			"placeholderShell": "Shell-Befehl eingeben… (z. B. git status)",
 			"aria-label": "Nachrichteneingabe",

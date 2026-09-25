@@ -17,7 +17,7 @@ test.describe('code shell sessions & workspace', () => {
 		await page.locator('#new-tab-button').click()
 		// 每次点击都新建草稿标签（允许多个未发送草稿标签并存），而非复用当前空草稿
 		await expect(page.locator('#tab-strip .code-tab')).toHaveCount(2)
-		await expect(page.locator('#tab-strip .code-tab[data-active="true"] .code-tab-title')).toContainText('新会话')
+		await expect(page.locator('#tab-strip .code-tab[data-active="true"] .code-tab-title')).toHaveAttribute('data-i18n', 'code.sessions.new')
 		await page.locator('#new-tab-button').click()
 		await expect(page.locator('#tab-strip .code-tab')).toHaveCount(3)
 	})
@@ -53,7 +53,7 @@ test.describe('code shell sessions & workspace', () => {
 			await page.keyboard.type('！echo home-delete')
 			await page.locator('#send-button').click()
 			await expect(page.locator('.code-message.role-tool')).toContainText('home-delete')
-			await expect(page.locator('#tab-strip .code-tab[data-active="true"] .code-tab-title')).toContainText('未命名会话')
+			await expect(page.locator('#tab-strip .code-tab[data-active="true"] .code-tab-title')).toHaveAttribute('data-i18n', 'code.sessions.untitled')
 			const sessionsDir = join(dir, '.fount', 'code', 'sessions')
 			/**
 			 * 磁盘上该工作区的会话文件。
@@ -66,12 +66,12 @@ test.describe('code shell sessions & workspace', () => {
 			await holdLocale(page)
 			try {
 				await page.locator('#home-toggle').click()
-				await page.locator('#home-session-list .code-home-row', { hasText: '未命名会话' }).locator('.code-home-row-delete').click()
+				await page.locator('#home-session-list .code-home-row:has(.code-home-row-title[data-i18n="code.sessions.untitled"]) .code-home-row-delete').click()
 				await page.locator('dialog[open] [data-dialog-resolve="ok"]').click()
 				await expect(page.locator('#home-session-list .code-home-row')).toHaveCount(0)
 				// 会话标签被关闭 → 回落为单个新草稿
 				await expect(page.locator('#tab-strip .code-tab')).toHaveCount(1)
-				await expect(page.locator('#tab-strip .code-tab[data-active="true"] .code-tab-title')).toContainText('新会话')
+				await expect(page.locator('#tab-strip .code-tab[data-active="true"] .code-tab-title')).toHaveAttribute('data-i18n', 'code.sessions.new')
 			}
 			finally {
 				await releaseLocale(page)

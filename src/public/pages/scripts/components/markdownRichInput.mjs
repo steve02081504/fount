@@ -120,6 +120,7 @@ function findNextToken(rawText, fromIndex, tokens) {
  * @param {Array<{ kind: string, regex: RegExp, parse?: Function, resolveLabel?: Function, buildChip?: Function }>} [options.inlineTokens]
  *   调用方直接提供的 inline token 定义（优先于注册表项；如 code shell 的 `@file:…` 文件引用）
  * @param {boolean} [options.useRegisteredInlineTokens=true] 是否合并注册表（markdown_extensions）的 inline token；false 时仅用 `inlineTokens`
+ * @param {string|null} [options.placeholderI18n=null] 空态占位符 i18n 键（`data-i18n`）；设了则占位 span 走本地化，忽略 `placeholder` 属性
  * @returns {object} 组件控制句柄
  */
 export function createMarkdownRichInput(element, options = {}) {
@@ -130,6 +131,7 @@ export function createMarkdownRichInput(element, options = {}) {
 		enableDockedToolbar = false,
 		inlineTokens = [],
 		useRegisteredInlineTokens = true,
+		placeholderI18n = null,
 	} = options
 
 	if (!(element instanceof HTMLElement) || element.classList.contains('fount-markdown-rich-input'))
@@ -154,6 +156,8 @@ export function createMarkdownRichInput(element, options = {}) {
 	let rawText = ''
 	let composing = false
 	let disabled = element.hasAttribute('disabled')
+	/** 空态占位符的 i18n 键；非空时占位 span 由 `data-i18n` 驱动（随语种自动重译，不受 `placeholder` 属性影响）。 */
+	let placeholderI18nKey = placeholderI18n
 	/** 空态光标锚点（可编辑零宽文本），让光标停在可编辑位置而非占位符边界。 */
 	const caretAnchors = new WeakSet()
 	/** @type {Array<{ node: Node, kind: 'text'|'br'|'chip', raw?: string, start: number, end: number, token?: object }>} */
@@ -333,7 +337,8 @@ export function createMarkdownRichInput(element, options = {}) {
 			placeholder.className = 'fount-markdown-rich-input-placeholder'
 			placeholder.setAttribute('contenteditable', 'false')
 			placeholder.dataset.emptySlot = '1'
-			placeholder.textContent = element.getAttribute('placeholder') ?? ''
+			if (placeholderI18nKey) setElementI18n(placeholder, placeholderI18nKey)
+			else placeholder.textContent = element.getAttribute('placeholder') ?? ''
 			const br = document.createElement('br')
 			br.dataset.emptySlot = '1'
 			element.append(anchor, placeholder, br)
@@ -1156,6 +1161,22 @@ export function createMarkdownRichInput(element, options = {}) {
 		focus: () => element.focus(),
 		setRangeText,
 		setSelection,
+		/**
+		 * 切换空态占位符 i18n 键（模式相关文案随模式切换）。
+		 * 空态占位 span 会立即重译；重建时按新键生成。
+		 * @param {string|null} key i18n 键；null 回退到 `placeholder` 属性
+		 * @returns {void}
+		 */
+		setPlaceholderI18n: key => {
+			placeholderI18nKey = key
+			const node = element.querySelector('.fount-markdown-rich-input-placeholder')
+			if (!node) return
+			if (key) setElementI18n(node, key)
+			else {
+				delete node.dataset.i18n
+				node.textContent = element.getAttribute('placeholder') ?? ''
+			}
+		},
 		/**
 		 * 执行格式动作（heading/bold/italic/quote/code/list/link 等），供外部停靠工具栏复用。
 		 * @param {string} action 动作名

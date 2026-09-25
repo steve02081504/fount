@@ -23,45 +23,45 @@ test.describe('code shell tabs', () => {
 			await page.keyboard.type('！echo tab-lifecycle')
 			await page.locator('#send-button').click()
 			await expect(page.locator('.code-message.role-tool')).toContainText('tab-lifecycle')
-			await expect(page.locator('#tab-strip .code-tab[data-active="true"] .code-tab-title')).toContainText('未命名会话')
+			await expect(page.locator('#tab-strip .code-tab[data-active="true"] .code-tab-title')).toHaveAttribute('data-i18n', 'code.sessions.untitled')
 			// 会话标签带工作区头像（非草稿铅笔图标）
 			await expect(page.locator('#tab-strip .code-tab[data-active="true"] .code-tab-avatar:not(.code-tab-avatar-draft)')).toBeVisible()
 			// + 新建草稿标签
 			await page.locator('#new-tab-button').click()
 			await expect(page.locator('#tab-strip .code-tab')).toHaveCount(2)
-			await expect(page.locator('#tab-strip .code-tab[data-active="true"] .code-tab-title')).toContainText('新会话')
+			await expect(page.locator('#tab-strip .code-tab[data-active="true"] .code-tab-title')).toHaveAttribute('data-i18n', 'code.sessions.new')
 			// 新草稿绑定同一工作区，且为空态布局
 			await expect(page.locator('.code-main')).toHaveClass(/empty-mode/)
 			// 点会话标签切回（消息流恢复）
-			await page.locator('#tab-strip .code-tab', { hasText: '未命名会话' }).click()
+			await page.locator('#tab-strip .code-tab:has(.code-tab-title[data-i18n="code.sessions.untitled"])').click()
 			await expect(page.locator('.code-message.role-tool')).toContainText('tab-lifecycle')
 			await expect(page.locator('.code-main')).not.toHaveClass(/empty-mode/)
 			// home 总览弹窗右栏列出该会话，点击打开（已开 → 聚焦）
 			await page.locator('#home-toggle').click()
-			const homeSession = page.locator('#home-session-list .code-home-row', { hasText: '未命名会话' })
+			const homeSession = page.locator('#home-session-list .code-home-row:has(.code-home-row-title[data-i18n="code.sessions.untitled"])')
 			await expect(homeSession).toBeVisible()
 			await homeSession.locator('.code-home-row-main').click()
 			await expect(page.locator('#tab-strip .code-tab')).toHaveCount(2)
 			// 关闭当前活动草稿标签 → 切回相邻会话标签
-			await page.locator('#tab-strip .code-tab', { hasText: '新会话' }).locator('.code-tab-close').click()
+			await page.locator('#tab-strip .code-tab:has(.code-tab-title[data-i18n="code.sessions.new"]) .code-tab-close').click()
 			await expect(page.locator('#tab-strip .code-tab')).toHaveCount(1)
-			await expect(page.locator('#tab-strip .code-tab[data-active="true"] .code-tab-title')).toContainText('未命名会话')
+			await expect(page.locator('#tab-strip .code-tab[data-active="true"] .code-tab-title')).toHaveAttribute('data-i18n', 'code.sessions.untitled')
 			// Alt+T 新建 / Alt+1 切换（浏览器保留键无法拦截，键绑用 Alt 系）
 			await page.keyboard.press('Alt+t')
 			await expect(page.locator('#tab-strip .code-tab')).toHaveCount(2)
 			await page.keyboard.press('Alt+1')
-			await expect(page.locator('#tab-strip .code-tab[data-active="true"] .code-tab-title')).toContainText('未命名会话')
+			await expect(page.locator('#tab-strip .code-tab[data-active="true"] .code-tab-title')).toHaveAttribute('data-i18n', 'code.sessions.untitled')
 			// 右键会话标签 → 删除对话（确认后关闭标签并从磁盘移除）
 			await holdLocale(page)
 			try {
-				await page.locator('#tab-strip .code-tab', { hasText: '未命名会话' }).click({ button: 'right' })
+				await page.locator('#tab-strip .code-tab:has(.code-tab-title[data-i18n="code.sessions.untitled"])').click({ button: 'right' })
 				await page.locator('#code-tab-menu [data-i18n="code.sessions.delete"]').click()
 				await page.locator('[data-dialog-resolve="ok"]').click()
 			}
 			finally {
 				await releaseLocale(page)
 			}
-			await expect(page.locator('#tab-strip .code-tab', { hasText: '未命名会话' })).toHaveCount(0)
+			await expect(page.locator('#tab-strip .code-tab:has(.code-tab-title[data-i18n="code.sessions.untitled"])')).toHaveCount(0)
 			// 清理：移除工作区，避免污染同相位后续测试
 			await removeAllWorkspacesViaApi(page, baseUrl)
 		}

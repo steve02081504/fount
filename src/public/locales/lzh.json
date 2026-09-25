@@ -6517,11 +6517,11 @@
 			"sendButton": {
 				"aria-label": "傳訊"
 			},
-			"sendAria": "傳訊",
-			"stopAria": "罷生成",
+			"stopButton": {
+				"aria-label": "罷生成"
+			},
 			"modeSwitched": "已易為 ${mode} 模式",
 			"hint": "空時鍵 ! 以入 shell · @ 以引檔 · / 以施令 · ↑↓ 故錄 · Tab 補全",
-			"placeholder": "鍵令，Ctrl/Cmd+Enter 以行之（清空則退 shell 模式）",
 			"placeholderNormal": "鍵訊以始…（@ 引檔 · / 施令）",
 			"placeholderShell": "鍵 shell 令…（如 git status）",
 			"aria-label": "訊框",

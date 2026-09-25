@@ -43,13 +43,13 @@ test.describe('code shell smoke', () => {
 		await expect(page.locator('#workspace-pill-label')).toHaveAttribute('data-i18n', 'code.workspaces.none')
 		await expect(page.locator('#ai-source-pill-label')).toHaveAttribute('data-i18n', 'code.aiSource.charOwn')
 		await expect(page.locator('#mode-pill-label')).toContainText('build')
-		await expect(page.locator('#send-button')).toHaveAttribute('aria-label', '发送消息')
+		await expect(page.locator('#send-button')).toHaveAttribute('data-i18n', 'code.composer.sendButton')
 		await expect(page.locator('#send-button svg#send-icon')).toBeVisible()
 		// 空态：居中布局 + wordmark，无工作区引导走下方 workspace pill
 		await expect(page.locator('.code-main')).toHaveClass(/empty-mode/)
 		await expect(page.locator('#code-wordmark')).toBeVisible()
 		// 启动即有一个活动草稿标签
-		await expect(page.locator('#tab-strip .code-tab[data-active="true"] .code-tab-title')).toContainText('新会话')
+		await expect(page.locator('#tab-strip .code-tab[data-active="true"] .code-tab-title')).toHaveAttribute('data-i18n', 'code.sessions.new')
 		await releaseLocale(page)
 	})
 

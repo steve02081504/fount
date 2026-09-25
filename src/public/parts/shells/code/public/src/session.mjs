@@ -8,7 +8,7 @@ import { bindDismissOnDocumentInteraction } from '/scripts/components/contextMen
 import { positionContextMenu } from '/scripts/components/positionContextMenu.mjs'
 import { confirmAction, promptText } from '/scripts/features/promptDialog.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
-import { geti18n } from '/scripts/i18n/index.mjs'
+import { geti18n, setElementI18n } from '/scripts/i18n/index.mjs'
 import { arrayBufferToBase64 } from '/scripts/lib/base64.mjs'
 import { svgInliner } from '/scripts/lib/svgInliner.mjs'
 
@@ -151,15 +151,25 @@ export function createDraftTab(workspaceId) {
 }
 
 /**
- * 标签页标题。
+ * 标签页标题信息：chrome（草稿 / 未命名）走 `data-i18n` 自动重译，会话标题为用户/数据文本。
+ * @param {object} tab - 标签页。
+ * @returns {{ text: string, i18nKey: string|null }} 标题文本与（chrome 时的）i18n 键。
+ */
+function tabTitleInfo(tab) {
+	if (tab.type === 'draft') return { text: geti18n('code.sessions.new'), i18nKey: 'code.sessions.new' }
+	const cached = store.sessionCache.get(tabKeyOf(tab))
+	const summary = store.allSessions.find(session => session.id === tab.id && session.workspaceId === tab.workspaceId)
+	const title = cached?.title || summary?.title
+	return title ? { text: title, i18nKey: null } : { text: geti18n('code.sessions.untitled'), i18nKey: 'code.sessions.untitled' }
+}
+
+/**
+ * 标签页标题文本。
  * @param {object} tab - 标签页。
  * @returns {string} 标题。
  */
 function tabTitle(tab) {
-	if (tab.type === 'draft') return geti18n('code.sessions.new')
-	const cached = store.sessionCache.get(tabKeyOf(tab))
-	const summary = store.allSessions.find(session => session.id === tab.id && session.workspaceId === tab.workspaceId)
-	return cached?.title || summary?.title || geti18n('code.sessions.untitled')
+	return tabTitleInfo(tab).text
 }
 
 /**
@@ -220,9 +230,13 @@ export function renderTabs() {
 		}
 		const title = document.createElement('span')
 		title.className = 'code-tab-title'
-		// 标题为工作区/会话动态文本，跳过语种扫描
-		title.setAttribute('user-content', '')
-		title.textContent = tabTitle(tab)
+		const titleInfo = tabTitleInfo(tab)
+		if (titleInfo.i18nKey) setElementI18n(title, titleInfo.i18nKey)
+		else {
+			// 标题为工作区/会话动态文本，跳过语种扫描
+			title.setAttribute('user-content', '')
+			title.textContent = titleInfo.text
+		}
 		main.appendChild(title)
 		if (store.tabUnread.has(key)) {
 			const badge = document.createElement('span')
@@ -1122,7 +1136,8 @@ export function updateSendButton() {
 	const stop = store.generating
 	elements.sendButton.classList.toggle('btn-error', stop)
 	elements.sendButton.classList.toggle('btn-primary', !stop)
-	elements.sendButton.setAttribute('aria-label', geti18n(stop ? 'code.composer.stopAria' : 'code.composer.sendAria'))
+	// 图标按钮的 aria-label 走 data-i18n 对象键（停止态换键），随语种自动重译
+	setElementI18n(elements.sendButton, stop ? 'code.composer.stopButton' : 'code.composer.sendButton')
 	document.getElementById('send-icon')?.replaceWith(iconElement(stop ? icons.stop : icons.send, { size: 16, id: 'send-icon' }))
 	void svgInliner(elements.sendButton)
 	updateRegenButtons()

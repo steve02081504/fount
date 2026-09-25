@@ -6517,11 +6517,11 @@
 			"sendButton": {
 				"aria-label": "📤"
 			},
-			"sendAria": "📤",
-			"stopAria": "⏹️",
+			"stopButton": {
+				"aria-label": "⏹️"
+			},
 			"modeSwitched": "➡️ ${mode} ✨",
 			"hint": "! 🐚 · @ 📎 · / ⌨️ · ↑↓ 🕘 · ⇥",
-			"placeholder": "⌨️ ⏎",
 			"placeholderNormal": "@ 📎 · / ⌨️",
 			"placeholderShell": "⌨️ (git status)",
 			"aria-label": "💬",

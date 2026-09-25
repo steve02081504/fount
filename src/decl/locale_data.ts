@@ -6479,11 +6479,11 @@ export type LocaleData = {
 			sendButton: {
 				'aria-label': string
 			}
-			sendAria: string
-			stopAria: string
+			stopButton: {
+				'aria-label': string
+			}
 			modeSwitched: string
 			hint: string
-			placeholder: string
 			placeholderNormal: string
 			placeholderShell: string
 			'aria-label': string

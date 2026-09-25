@@ -6517,11 +6517,11 @@
 			"sendButton": {
 				"aria-label": "发送消息"
 			},
-			"sendAria": "发送消息",
-			"stopAria": "停止生成",
+			"stopButton": {
+				"aria-label": "停止生成"
+			},
 			"modeSwitched": "已切换到 ${mode} 模式",
 			"hint": "空内容键入 ! 切 shell · @ 引用文件 · / 命令 · ↑↓ 历史 · Tab 补全",
-			"placeholder": "输入命令，Ctrl/Cmd+Enter 执行（清空退出 shell 模式）",
 			"placeholderNormal": "输入消息开始…（@ 引用文件 · / 命令）",
 			"placeholderShell": "输入 shell 命令…（如 git status）",
 			"aria-label": "消息输入框",
