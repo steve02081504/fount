@@ -85,7 +85,6 @@ export async function loadConversationView({ key } = {}) {
 	const runPanel = document.getElementById('conversationSubagent')
 	const isSubagent = currentKey.startsWith('subagent:')
 	runPanel?.classList.toggle('hidden', !isSubagent)
-	document.getElementById('conversationTranscript')?.classList.toggle('hidden', isSubagent)
 	document.getElementById('conversationReplay')?.classList.remove('hidden')
 	if (isSubagent) return loadSubagentConversation(currentKey)
 	const meta = document.getElementById('conversationMeta')
@@ -104,15 +103,10 @@ export async function loadConversationView({ key } = {}) {
 		const items = conversation.generations ?? []
 		empty.classList.toggle('hidden', items.length > 0)
 		const metrics = estimatePromptCache(items)
-		const transcript = document.getElementById('conversationTranscript')
 		const units = buildRoundUnits(items)
 		renderReplay(units, metrics, count => {
 			const revealed = generationsForRounds(items, units, count)
-			generations.replaceChildren(...revealed.map(({ item, index }) => renderGeneration(item, metrics[index])))
-			if (transcript) {
-				const rounds = units.length ? units[count - 1]?.round ?? 0 : 0
-				transcript.replaceChildren(...renderMessages(replayDialogue(conversation.dialogue?.events ?? [], { upToRound: rounds })))
-			}
+			generations.replaceChildren(...revealed.map(({ item, index, rounds }) => renderGeneration(item, metrics[index], rounds, conversation.dialogue?.events ?? [])))
 		})
 	}
 	catch (error) {
@@ -153,17 +147,16 @@ export function buildRoundUnits(items) {
  * @param {object[]} items 生成记录
  * @param {ReturnType<typeof buildRoundUnits>} units 逐轮单元
  * @param {number} count 已揭示的轮次数
- * @returns {Array<{ item: object, index: number }>} 生成记录与其原始下标
+ * @returns {Array<{ item: object, index: number, rounds: number[] }>} 生成记录、原始下标与已揭示轮次
  */
 function generationsForRounds(items, units, count) {
-	const revealed = []
-	const seen = new Set()
-	for (const unit of units.slice(0, count))
-		if (!seen.has(unit.generationIndex)) {
-			seen.add(unit.generationIndex)
-			revealed.push({ item: items[unit.generationIndex], index: unit.generationIndex })
-		}
-	return revealed
+	const revealed = new Map()
+	for (const unit of units.slice(0, count)) {
+		const index = unit.generationIndex
+		if (!revealed.has(index)) revealed.set(index, { item: items[index], index, rounds: [] })
+		revealed.get(index).rounds.push(unit.round)
+	}
+	return [...revealed.values()]
 }
 
 /**
@@ -276,8 +269,6 @@ function paintCacheChart(canvas, units, metrics) {
 async function loadSubagentConversation(key) {
 	const meta = document.getElementById('conversationMeta')
 	const list = document.getElementById('conversationGenerations')
-	const transcriptView = document.getElementById('conversationTranscript')
-	transcriptView?.replaceChildren()
 	const empty = document.getElementById('conversationEmpty')
 	const transcript = document.getElementById('subagentTranscript')
 	if (!meta || !list || !empty || !transcript) return
@@ -310,28 +301,34 @@ async function loadSubagentConversation(key) {
 		const metrics = estimatePromptCache(items)
 		const units = buildRoundUnits(items)
 		renderReplay(units, metrics, count => {
-			// 子代理运行时的增量对话只属于当前生成；回放期间不显示未来消息或允许注入。
+			// 运行中的增量对话没有逐条轮次信息；历史部分用逐轮快照复播。
 			const atLatest = count === units.length
-			transcript.classList.toggle('hidden', !atLatest)
+			transcript.replaceChildren(...(atLatest ? run.conversation || [] : replayDialogue(record?.dialogue?.events ?? [], { upToRound: units[count - 1]?.round ?? 0 })).map(renderSubagentEntry))
 			form?.classList.toggle('hidden', !run.canSend || !atLatest)
 			const revealed = generationsForRounds(items, units, count)
-			list.replaceChildren(...revealed.filter(({ item }) => item.requests?.length).map(({ item, index }) => renderGeneration(item, metrics[index])))
+			list.replaceChildren(...revealed.filter(({ item }) => item.requests?.length).map(({ item, index, rounds }) => renderGeneration(item, metrics[index], rounds, record?.dialogue?.events ?? [])))
 		})
-		transcript.replaceChildren(...(run.conversation || []).map(message => {
-			const row = document.createElement('article')
-			row.className = `subagent-entry role-${message.role || 'char'}`
-			const title = document.createElement('strong')
-			title.className = 'subagent-entry-name'
-			title.textContent = message.name || message.role || ''
-			row.append(title, messageBody(message.content_for_show ?? message.content ?? ''))
-			return row
-		}))
 		const preview = document.getElementById('subagentLivePreview')
 		if (!run.canSend && preview) { preview.textContent = ''; preview.classList.add('hidden') }
 	}
 	catch (error) {
 		showToastI18n('error', 'agent_studio.alerts.loadFailed', { message: error.message })
 	}
+}
+
+/**
+ * 渲染子代理的单条对话消息。
+ * @param {object} message 消息
+ * @returns {HTMLElement} 消息元素
+ */
+function renderSubagentEntry(message) {
+	const row = document.createElement('article')
+	row.className = `subagent-entry role-${message.role || 'char'}`
+	const title = document.createElement('strong')
+	title.className = 'subagent-entry-name'
+	title.textContent = message.name || message.role || ''
+	row.append(title, messageBody(message.content_for_show ?? message.content ?? ''))
+	return row
 }
 
 /**
@@ -360,124 +357,142 @@ function renderMeta(container, conversation) {
  * 渲染一条生成记录及其逐轮请求。
  * @param {object} generation 生成记录
  * @param {object} cache 缓存复用估算
+ * @param {number[]} rounds 已揭示的全局轮次
+ * @param {object[]} events 会话事件
  * @returns {HTMLElement} 元素
  */
-function renderGeneration(generation, cache = {}) {
+function renderGeneration(generation, cache, rounds, events) {
 	const article = document.createElement('article')
 	article.className = 'conversation-generation surface'
-
 	const head = document.createElement('header')
 	head.className = 'conversation-generation-head'
-	const title = document.createElement('span')
+	const title = document.createElement('h3')
 	title.className = 'conversation-generation-id'
 	title.setAttribute('prompt-content', '')
 	title.textContent = generation.id
-	const badge = document.createElement('span')
-	const state = generation.hasError ? 'failed' : 'done'
-	badge.className = `badge ${stateBadge(state)}`
-	badge.textContent = geti18n(`agent_studio.run.state.${state}`)
-	head.append(title, badge)
-	const cacheBadge = document.createElement('span')
-	cacheBadge.className = `badge ${cache.rate == null ? 'badge-ghost' : cache.rate >= 0.6 ? 'badge-success' : 'badge-error'}`
-	cacheBadge.textContent = cache.rate == null ? geti18n('agent_studio.conversation.cache.noRate') : geti18n('agent_studio.conversation.cache.rate', { rate: Math.round(cache.rate * 100) })
-	cacheBadge.title = geti18n('agent_studio.conversation.cache.hint')
-	head.append(cacheBadge)
+	head.append(title)
+	if (rounds.length >= Math.max(generation.requestCount ?? generation.requests?.length ?? 0, generation.dialogue?.rounds ?? 0, 1)) {
+		const badge = document.createElement('span')
+		const state = generation.hasError ? 'failed' : 'done'
+		badge.className = `badge ${stateBadge(state)}`
+		badge.textContent = geti18n(`agent_studio.run.state.${state}`)
+		head.append(badge)
+	}
 	const meta = document.createElement('p')
 	meta.className = 'conversation-generation-meta'
 	meta.setAttribute('user-content', '')
 	meta.textContent = [
 		generation.source || '',
 		generation.charname || generation.charId || '',
-		generation.model || '',
+		generation.requests?.[rounds.length - 1]?.model || generation.model,
 		formatTime(generation.startedAt, primaryLocale()),
 	].filter(Boolean).join(' · ')
 	head.appendChild(meta)
 	article.appendChild(head)
-
-	article.appendChild(buildSection(geti18n('agent_studio.conversation.response'), generation.response ?? '', `generation-${generation.id}-response.txt`))
-
-	const requestsSection = document.createElement('details')
-	requestsSection.className = 'conversation-requests'
-	const requestsTitle = document.createElement('summary')
-	requestsTitle.className = 'dialog-section-title'
-	requestsTitle.textContent = `${geti18n('agent_studio.conversation.requests')} · ${generation.requestCount ?? generation.requests?.length ?? 0}`
-	requestsSection.appendChild(requestsTitle)
-	if (generation.requests?.length)
-		for (const request of generation.requests)
-			requestsSection.appendChild(renderRequest(request, generation.id))
-	else {
-		const hint = document.createElement('p')
-		hint.className = 'conversation-requests-hint'
-		hint.textContent = generation.requestsStripped || generation.requestCount
-			? geti18n('agent_studio.conversation.requestsExpired', { count: generation.requestCount ?? 0 })
-			: geti18n('agent_studio.conversation.requestsMissing')
-		requestsSection.appendChild(hint)
-	}
-	article.appendChild(requestsSection)
-
+	for (const [offset, round] of rounds.entries())
+		article.append(renderRound(generation, offset, round, cache.rounds?.[offset]?.rate, events))
 	return article
 }
 
 /**
- * 渲染一轮 prompt 请求。
- * @param {object} request 请求快照
- * @param {string} generationId 所属生成记录 id（用于下载文件名）
- * @returns {HTMLElement} 元素
+ * 每个节点同时展示本轮的产出、缓存复用率和本轮 prompt，避免回放到早期时读到未来结果。
+ * @param {object} generation 生成记录
+ * @param {number} offset 该生成中的轮次下标
+ * @param {number} round 全局轮次
+ * @param {number|null} cacheRate 本轮缓存率
+ * @param {object[]} events 合并后的会话事件
+ * @returns {HTMLElement} 节点
  */
-function renderRequest(request, generationId) {
-	const round = document.createElement('div')
-	round.className = 'conversation-request'
-
-	const head = document.createElement('h5')
-	head.className = 'conversation-request-head'
-	head.textContent = geti18n('agent_studio.conversation.round', {
-		index: request.index,
-		model: request.model || '-',
-		time: formatTime(request.startedAt, primaryLocale()),
-	})
-	round.appendChild(head)
-
-	if (request.error) {
-		const error = document.createElement('p')
-		error.className = 'conversation-request-error'
-		error.setAttribute('prompt-content', '')
-		error.textContent = `${request.error.name || ''}: ${request.error.message || ''}`
-		round.appendChild(error)
+function renderRound(generation, offset, round, cacheRate, events) {
+	const node = document.createElement('section')
+	node.className = 'conversation-round'
+	node.dataset.round = String(round)
+	const head = document.createElement('header')
+	head.className = 'conversation-round-head'
+	const heading = document.createElement('h4')
+	heading.className = 'conversation-request-head'
+	heading.textContent = geti18n('agent_studio.conversation.roundIndex', { index: round })
+	const badge = document.createElement('span')
+	badge.className = `badge ${cacheRate == null ? 'badge-ghost' : cacheRate >= 0.6 ? 'badge-success' : 'badge-error'}`
+	badge.textContent = cacheRate == null ? geti18n('agent_studio.conversation.cache.noRate') : geti18n('agent_studio.conversation.cache.rate', { rate: Math.round(cacheRate * 100) })
+	badge.title = geti18n('agent_studio.conversation.cache.hint')
+	head.append(heading, badge)
+	node.append(head)
+	const roundEvents = events.filter(event => event.round === round)
+	const changedIds = new Set(roundEvents.map(event => event.message?.id ?? event.id))
+	const messages = replayDialogue(events, { upToRound: round }).filter(message => changedIds.has(message.id) && message.id !== `${generation.id}:final`)
+	if (messages.length) {
+		const output = document.createElement('div')
+		output.className = 'conversation-messages'
+		output.append(...renderMessages(messages))
+		node.append(output)
 	}
+	if (roundEvents.some(event => event.message?.id === `${generation.id}:final`))
+		node.append(buildSection(geti18n('agent_studio.conversation.response'), generation.response, `generation-${generation.id}-response.txt`))
+	node.append(renderRoundPrompt(generation, offset))
+	return node
+}
 
-	round.appendChild(buildSection(
-		geti18n('agent_studio.conversation.systemPrompt'),
-		request.systemPrompt ?? '',
-		`generation-${generationId}-round-${request.index}-system.txt`,
-	))
-
-	if (request.messages?.length) {
-		const labelRow = document.createElement('div')
-		labelRow.className = 'conversation-section-head'
-		const label = document.createElement('h6')
-		label.className = 'conversation-request-label'
-		label.textContent = geti18n('agent_studio.conversation.messages')
-		labelRow.append(label, textActions(
-			() => messagesToText(request.messages),
-			{ filename: `generation-${generationId}-round-${request.index}-messages.txt` },
-		))
-		round.appendChild(labelRow)
-		const list = document.createElement('div')
-		list.className = 'conversation-messages'
-		for (const message of request.messages) {
-			const row = document.createElement('div')
-			row.className = `conversation-message role-${message.role || 'system'}`
-			const name = document.createElement('span')
-			name.className = 'conversation-message-name'
-			const key = ROLE_LABEL_KEYS[message.role]
-			name.textContent = message.name || (key && geti18n_nowarn(key)) || message.role || ''
-			const body = messageBody(message.content ?? '')
-			row.append(name, body)
-			list.appendChild(row)
+/**
+ * 渲染当前轮次的 prompt 快照。
+ * @param {object} generation 生成记录
+ * @param {number} offset 该生成中的轮次下标
+ * @returns {HTMLDetailsElement} prompt 折叠面板
+ */
+function renderRoundPrompt(generation, offset) {
+	const details = document.createElement('details')
+	details.className = 'conversation-requests'
+	const summary = document.createElement('summary')
+	summary.className = 'dialog-section-title'
+	summary.textContent = geti18n('agent_studio.conversation.requests')
+	details.append(summary)
+	const request = generation.requests?.[offset]
+	if (request) {
+		const content = document.createElement('div')
+		content.className = 'conversation-request'
+		const requestHeading = document.createElement('h5')
+		requestHeading.className = 'conversation-request-head'
+		requestHeading.textContent = geti18n('agent_studio.conversation.round', {
+			index: request.index,
+			model: request.model || '-',
+			time: formatTime(request.startedAt, primaryLocale()),
+		})
+		content.append(requestHeading)
+		if (request.error) {
+			const error = document.createElement('p')
+			error.className = 'conversation-request-error'
+			error.setAttribute('prompt-content', '')
+			error.textContent = `${request.error.name || ''}: ${request.error.message || ''}`
+			content.append(error)
 		}
-		round.appendChild(list)
+		content.append(buildSection(geti18n('agent_studio.conversation.systemPrompt'), request.systemPrompt ?? '', `generation-${generation.id}-round-${request.index}-system.txt`))
+		if (request.messages?.length) {
+			const labelRow = document.createElement('div')
+			labelRow.className = 'conversation-section-head'
+			const label = document.createElement('span')
+			label.className = 'conversation-request-label'
+			label.textContent = geti18n('agent_studio.conversation.messages')
+			labelRow.append(label, textActions(
+				() => messagesToText(request.messages),
+				{ filename: `generation-${generation.id}-round-${request.index}-messages.txt` },
+			))
+			content.append(labelRow)
+			const list = document.createElement('div')
+			list.className = 'conversation-messages'
+			list.append(...renderMessages(request.messages))
+			content.append(list)
+		}
+		details.append(content)
 	}
-	return round
+	else {
+		const hint = document.createElement('p')
+		hint.className = 'conversation-requests-hint'
+		hint.textContent = generation.requestsStripped || generation.requestCount
+			? geti18n('agent_studio.conversation.requestsExpired', { count: offset + 1 })
+			: geti18n('agent_studio.conversation.requestsMissing')
+		details.append(hint)
+	}
+	return details
 }
 
 /**

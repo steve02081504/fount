@@ -2,7 +2,7 @@
  * 【文件】dialogueReplay.mjs — 从逐轮请求快照复原对话的纯函数
  * 【职责】把一次生成的逐轮请求（每轮可见消息）按消息 id 合并成一条对话事件流，并支持按轮次复播。
  * 【原理】相邻请求通常重复携带历史消息：首次出现的 id 记为 insert；同一 id 内容变化记为 update（即编辑）并保留其发生的轮次；
- *   内容未变则不重复记录。末轮角色回复无处可寻（没有下一次请求），由调用方作为最终事件补入。
+ *   内容未变则不重复记录。下一轮请求中首次出现的角色/工具消息是上一轮的产出，应归到上一轮；末轮回复由调用方补入。
  *   复播到第 N 轮时按轮次顺序应用事件，因此同一条消息会随轮次推进呈现当时的内容。
  * 【关联】request_record.mjs 生成事件并落盘；generation_history.mjs 读取；前端会话视图复播。
  */
@@ -44,7 +44,7 @@ export function buildDialogue(requests, final = {}) {
 			const previous = latest.get(message.id)
 			if (previous === undefined) {
 				latest.set(message.id, content)
-				events.push({ round, op: 'insert', message: pickMessage(message) })
+				events.push({ round: ['char', 'tool'].includes(message.role) ? Math.max(1, round - 1) : round, op: 'insert', message: pickMessage(message) })
 			}
 			else if (previous !== content) {
 				latest.set(message.id, content)

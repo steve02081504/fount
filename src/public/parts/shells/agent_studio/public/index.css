@@ -1052,6 +1052,7 @@
 }
 
 .conversation-generation-id {
+	margin: 0;
 	font-family: var(--font-code);
 	font-size: 0.76rem;
 	color: var(--text-muted);
@@ -1063,6 +1064,20 @@
 	flex-basis: 100%;
 	font-size: 0.74rem;
 	color: var(--text-muted);
+}
+
+.conversation-round {
+	border-top: var(--border) solid var(--border-color);
+	padding-top: 0.65rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.55rem;
+}
+
+.conversation-round-head {
+	display: flex;
+	align-items: center;
+	gap: 0.65rem;
 }
 
 .conversation-section {

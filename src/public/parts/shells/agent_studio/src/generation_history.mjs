@@ -12,6 +12,7 @@ import { loadJsonFileIfExists, saveJsonFile } from '../../../../../scripts/json_
 import { ms } from '../../../../../scripts/ms.mjs'
 import { getUserDictionary } from '../../../../../server/auth/index.mjs'
 import { events } from '../../../../../server/events.mjs'
+import { buildDialogue } from '../public/shared/dialogueReplay.mjs'
 import { conversationKey, mergeDialogueEvents, summarizeConversations } from '../public/shared/generationChain.mjs'
 import { estimateGenerationCache, serializeRequest } from '../public/shared/promptCache.mjs'
 
@@ -399,6 +400,11 @@ export async function getGeneration(username, id) {
 		return null
 	}
 	if (action === 'strip-input' && stripPromptPayloads(record)) saveJsonFile(file, record)
+	if (record.requests?.length) record.dialogue = buildDialogue(record.requests, {
+		response: record.response,
+		responseId: `${record.id}:final`,
+		responseName: record.charname,
+	})
 	return record
 }
 

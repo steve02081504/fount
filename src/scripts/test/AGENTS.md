@@ -98,4 +98,4 @@ Deep detail (performance bench, isolation runs, temp-dir internals): [docs/opera
 - **`[language-check-ignore]`**: boolean; page-watch locale script scan skips the subtree (language name lists, EULA in a chosen locale). Not `user-content`. `[prompt-content]` = prompt/model/plugin content (tool logs, tool cards) — same subtree skip, use it instead of `user-content` for prompt-side text. `user-content=""` skips the whole subtree; `user-content="aria-label"` skips only that element's own `aria-label`. Selector: `LOCALE_CHECK_SKIP_SELECTOR` in `pages/scripts/test/watch/locale_script.mjs`.
 - **Locale triggers**: [trigger-filter.md](docs/trigger-filter.md#locale-triggers).
 - **Selftests**: `fount test testkit`. Fixtures: `selftest/fixtures.mjs`. Timeout races: `awaitWithTimeout` in `selftest/kernel_fixtures.mjs` (clears the timer). Keep manifest id `testkit`.
-- **Naming**: readable identifiers (`context` not `ctx`). Suite/file/`Deno.test` names use domain semantics — never planning milestone codes.
+- **Naming**: suite/file/`Deno.test` names use domain semantics.
