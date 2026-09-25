@@ -103,17 +103,30 @@ export async function releaseLocale(page) {
  * @returns {Promise<void>}
  */
 export async function selectWorkspaceViaBrowser(page, dir) {
+	await openFolderBrowserViaMenu(page)
+	await page.locator('#folder-path-input').fill(dir)
+	await page.locator('#folder-select-button').click()
+	await expect(page.locator('#workspace-pill-label')).toContainText(basename(dir))
+}
+
+/**
+ * 从工作区 pill 下拉打开文件夹浏览器，并等待对话框出现后才恢复 locale 轮换。
+ * page watch 的 locale 轮换每秒重建整页，与「点 pill → 点浏览菜单项 → 组件异步取模板开框」竞态
+ * （重建会卸下刚点的注册 / 关闭刚开的框 → 浏览器永不出现 → 超时）；沿用 `selectWorkspaceViaBrowser`
+ * 的做法挂起轮换，并在框真正可见后才 release，避免组件异步开框期间又被重建抢掉。
+ * @param {import('npm:@playwright/test').Page} page - Playwright page。
+ * @returns {Promise<void>}
+ */
+export async function openFolderBrowserViaMenu(page) {
 	await holdLocale(page)
 	try {
 		await page.locator('#workspace-pill').click()
 		await page.locator('#workspace-menu').locator('[data-i18n="code.workspaces.browse"]').click()
+		await expect(page.locator('dialog.modal:has(#folder-entries)')).toBeVisible()
 	}
 	finally {
 		await releaseLocale(page)
 	}
-	await page.locator('#folder-path-input').fill(dir)
-	await page.locator('#folder-select-button').click()
-	await expect(page.locator('#workspace-pill-label')).toContainText(basename(dir))
 }
 
 /**

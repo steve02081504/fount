@@ -10,6 +10,7 @@ export const phases = [
 			'composer.spec.mjs',
 			'pill_dropdowns.spec.mjs',
 			'sessions.spec.mjs',
+			'folder_browser.spec.mjs',
 			'tabs.spec.mjs',
 			'messages.spec.mjs',
 			'gist_mention.spec.mjs',

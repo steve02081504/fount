@@ -108,9 +108,18 @@
 				},
 				{
 					"name": "sessions",
-					"expected": "3m",
+					"expected": "5m58s",
 					"triggers": [
 						"src/public/parts/shells/code/test/frontend/sessions.spec.mjs",
+						"src/public/parts/shells/code/public/**"
+					]
+				},
+				{
+					"name": "folder_browser",
+					"expected": "1m",
+					"triggers": [
+						"src/public/parts/shells/code/test/frontend/folder_browser.spec.mjs",
+						"src/public/pages/scripts/components/folderBrowser.mjs",
 						"src/public/parts/shells/code/public/**"
 					]
 				},
