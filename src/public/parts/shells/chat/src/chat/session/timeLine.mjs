@@ -11,7 +11,7 @@
 /** @typedef {import('../../../../../../../decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t */
 /** @typedef {import('../../../../../../../decl/basedefs.ts').locale_t} locale_t */
 
-import { greetingEntryType, greetingSubtypeOf } from '../../../../../../../decl/chatLog.ts'
+import { greetingEntryType, greetingSubtypeOf } from '../logEntryTypes.mjs'
 
 import { broadcastGroupEvent } from './broadcast.mjs'
 import { getChatRequest } from './chatRequest.mjs'

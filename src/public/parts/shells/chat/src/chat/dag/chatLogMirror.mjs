@@ -10,8 +10,8 @@ import { createHash } from 'node:crypto'
 
 import { handleError } from 'fount/scripts/errorHandlers.mjs'
 
-import { isGreetingEntry } from '../../../../../../../decl/chatLog.ts'
 import { channelMessage, normalizeChannelMessage } from '../../../public/shared/channelContent.mjs'
+import { isGreetingEntry } from '../logEntryTypes.mjs'
 import { commitChannelMessageEvent } from '../channel/messageCommit.mjs'
 import { replicateChunkToFederation } from '../federation/chunks.mjs'
 import { resolveGroupChannelId } from '../lib/channelId.mjs'

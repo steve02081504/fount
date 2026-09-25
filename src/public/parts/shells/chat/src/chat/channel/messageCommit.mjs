@@ -5,7 +5,6 @@
  * 【数据结构】canonical message content：全员 displayName/displayAvatar；生成类另附 sessionSnapshot、`extension.chat.entryId`。
  * 【关联】postMessage、chatLogMirror、eventPersist、session/chatRequest、archive/postSnapshot。
  */
-import { greetingSubtypeOf } from '../../../../../../../decl/chatLog.ts'
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import {
 	channelMessage,
@@ -14,6 +13,7 @@ import {
 	normalizeChannelMessage,
 } from '../../../public/shared/channelContent.mjs'
 import { ensureChatExtension } from '../../../public/shared/messageFields.mjs'
+import { greetingSubtypeOf } from '../logEntryTypes.mjs'
 import { resolveDisplaySnapshot } from '../archive/postSnapshot.mjs'
 import { appendSignedLocalEvent } from '../dag/append.mjs'
 import { resolveLocalEventSigner } from '../dag/localSigner.mjs'

@@ -6,7 +6,7 @@
  */
 /** @typedef {import('../../../../../../decl/chatLog.ts').chatLogEntry_t} chatLogEntry_t */
 
-import { isSummaryEntry } from '../../../../../../decl/chatLog.ts'
+import { isSummaryEntry } from '../chat/logEntryTypes.mjs'
 
 /**
  * 以最新的可见摘要条目为界裁剪历史。

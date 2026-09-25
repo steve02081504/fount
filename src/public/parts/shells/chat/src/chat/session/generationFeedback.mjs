@@ -11,7 +11,7 @@
 /** @typedef {import('../../../../../../../decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t */
 /** @typedef {import('../../../../../../../decl/basedefs.ts').locale_t} locale_t */
 
-import { isGreetingEntry } from '../../../../../../../decl/chatLog.ts'
+import { isGreetingEntry } from '../logEntryTypes.mjs'
 import { appendSignedLocalEvent } from '../dag/append.mjs'
 import { ensureGroup } from '../dag/lifecycle.mjs'
 import { resolveLocalEventSigner } from '../dag/localSigner.mjs'

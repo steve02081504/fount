@@ -4,7 +4,7 @@
  */
 import { assert, assertEquals } from 'jsr:@std/assert'
 
-import { CONTAINER_ENTRY_TYPE, isContainerEntry } from '../../../../../../decl/chatLog.ts'
+import { CONTAINER_ENTRY_TYPE, isContainerEntry } from '../../src/chat/logEntryTypes.mjs'
 import { mergeStructPromptChatLog } from '../../src/prompt_struct/index.mjs'
 import { injectRoundEntries } from '../../src/reply/roundContext.mjs'
 

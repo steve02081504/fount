@@ -17,7 +17,6 @@ import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 import { handleError } from 'fount/scripts/errorHandlers.mjs'
 
-import { greetingEntryType, isGreetingEntry } from '../../../../../../../decl/chatLog.ts'
 import { geti18nForUser } from '../../../../../../../scripts/i18n/index.mjs'
 import {
 	chatExtensionOf,
@@ -28,6 +27,7 @@ import {
 import { memberEntityHash } from '../../entity/member.mjs'
 import { resolveActiveAgentMemberKeyByCharname } from '../../group/access.mjs'
 import { readChannelMessagesForUser } from '../../group/queries.mjs'
+import { greetingEntryType, isGreetingEntry } from '../logEntryTypes.mjs'
 import { isChannelKeyEncryptedContent } from '../channel_keys/content.mjs'
 import { getPlaintextCache } from '../files/blobStore.mjs'
 import { fileMetaFromState, getDecryptedFile } from '../files/groupFiles.mjs'

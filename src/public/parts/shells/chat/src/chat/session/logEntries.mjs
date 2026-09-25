@@ -5,9 +5,9 @@
  * 【数据结构】chatLogEntry_t 字段（role/content/extension.timeSlice/files/extension/logContext*）。
  * 【关联】models、channelContent、messages、triggerReply、chatRequest.AddChatLogEntry。
  */
-import { greetingEntryType } from '../../../../../../../decl/chatLog.ts'
 import { getPartDetails } from '../../../../../../../server/parts_loader.mjs'
 import { ensureLocalAgentEntityHash } from '../../entity/member.mjs'
+import { greetingEntryType } from '../logEntryTypes.mjs'
 import { resolveChannelId } from '../lib/channelId.mjs'
 
 import { chatLogEntry_t } from './models.mjs'

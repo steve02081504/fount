@@ -1,6 +1,6 @@
 ---
 description: Chat session viewer model (GetChatLogForViewer, member_roles, greeting hooks, builtin world/persona)
-globs: src/public/parts/shells/chat/src/chat/session/**, src/decl/chatLog.ts, src/decl/worldAPI.ts, src/decl/userAPI.ts
+globs: src/public/parts/shells/chat/src/chat/session/**, src/public/parts/shells/chat/src/chat/logEntryTypes.mjs, src/decl/chatLog.ts, src/decl/worldAPI.ts, src/decl/userAPI.ts
 alwaysApply: false
 ---
 
@@ -43,7 +43,7 @@ World shared state / `WorldChatHost`: [docs/world-host.md](docs/world-host.md).
 ## member_roles / greeting
 
 - Inject `state.members[*].roles` into top-level and `extension.member_roles`. Resolve char via `resolveActiveAgentMemberKeyByCharname`; local user via `resolveActiveMemberKeyForLocalUser`. Do not look up `state.members` by `extension.memberId` (operator entity hash).
-- Skip greeting when hooks are missing. Keep the greeting marker on `entry.type` (`greeting:<subtype>`, helpers `isGreetingEntry` / `greetingSubtypeOf`) — deleting breaks re-roll / `greetingLog`. Wire side stays `extension.chat.isGreeting` / `greetingType`. `bindWorld` greeting uses `resolveWorld(channelId)`, not only `LastTimeSlice.world`.
+- Skip greeting when hooks are missing. Keep the greeting marker on `entry.type` (`greeting:<subtype>`, runtime helpers `isGreetingEntry` / `greetingSubtypeOf` in `src/chat/logEntryTypes.mjs`) — deleting breaks re-roll / `greetingLog`. Wire side stays `extension.chat.isGreeting` / `greetingType`. `bindWorld` greeting uses `resolveWorld(channelId)`, not only `LastTimeSlice.world`.
 
 ## Write / edit path
 

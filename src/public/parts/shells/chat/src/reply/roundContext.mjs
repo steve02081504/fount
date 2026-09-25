@@ -10,7 +10,7 @@
  */
 /** @typedef {import('../../../../../../decl/chatLog.ts').chatLogEntry_t} chatLogEntry_t */
 
-import { CONTAINER_ENTRY_TYPE } from '../../../../../../decl/chatLog.ts'
+import { CONTAINER_ENTRY_TYPE } from '../chat/logEntryTypes.mjs'
 
 /** 每个请求本代已注入过的日志 id。 @type {WeakMap<object, Set<string>>} */
 const injectedIds = new WeakMap()

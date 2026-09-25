@@ -4,7 +4,7 @@
 /* global Deno */
 import { assertEquals } from 'jsr:@std/assert'
 
-import { isSummaryEntry } from '../../../../../../decl/chatLog.ts'
+import { isSummaryEntry } from '../../src/chat/logEntryTypes.mjs'
 import { applySummaryBoundary } from '../../src/prompt_struct/summaryBoundary.mjs'
 
 /**

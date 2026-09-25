@@ -13,8 +13,8 @@
 /** @typedef {import('../../../../../../decl/chatLog.ts').chatLogEntry_t} chatLogEntry_t */
 /** @typedef {import('../../../../../../decl/chatLog.ts').chatReplyRequest_t} chatReplyRequest_t */
 
-import { isContainerEntry } from '../../../../../../decl/chatLog.ts'
 import { entryVisibleToViewer } from '../chat/lib/visibility.mjs'
+import { isContainerEntry } from '../chat/logEntryTypes.mjs'
 import { flattenReplyHandlers } from '../reply/defineReplyHandler.mjs'
 
 import { applySummaryBoundary } from './summaryBoundary.mjs'

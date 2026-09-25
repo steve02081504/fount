@@ -10,8 +10,8 @@
 /** @typedef {import('../../../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 /** @typedef {import('../../../../../../../decl/AIsource.ts').AIsource_t} AIsource_t */
 
-import { isSummaryEntry, SUMMARY_ENTRY_TYPE } from '../../../../../../../decl/chatLog.ts'
 import { estimateTokenCount } from '../../../../../serviceGenerators/AI/proxy/src/identityTokenizer.mjs'
+import { isSummaryEntry, SUMMARY_ENTRY_TYPE } from '../logEntryTypes.mjs'
 import { mergeStructPromptChatLog, structPromptToSingle } from '../../prompt_struct/index.mjs'
 
 /** 已在本轮压缩过的 result（防止同一生成重复压缩）。 @type {WeakSet<object>} */

@@ -11,7 +11,6 @@
 /** @typedef {import('../../../../../../../decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t */
 /** @typedef {import('../../../../../../../decl/basedefs.ts').locale_t} locale_t */
 
-import { isGreetingEntry } from '../../../../../../../decl/chatLog.ts'
 import { localhostLocales } from '../../../../../../../scripts/i18n/bare.mjs'
 import { getPartInfo } from '../../../../../../../scripts/locale.mjs'
 import { getUserByUsername } from '../../../../../../../server/auth/index.mjs'
@@ -19,6 +18,7 @@ import { resolveDeclaredOwnerEntityHash } from '../../entity/master.mjs'
 import { ensureLocalAgentEntityHash } from '../../entity/member.mjs'
 import { resolveActiveMemberKeyForLocalUser } from '../../group/access.mjs'
 import { readChannelMessagesForUser } from '../../group/queries.mjs'
+import { isGreetingEntry } from '../logEntryTypes.mjs'
 import {
 	buildChatLogEntriesFromChannelLines,
 	loadDagHydrationI18n,
