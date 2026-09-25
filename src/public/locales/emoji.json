@@ -6565,7 +6565,8 @@
 					"aria-label": "👎💬"
 				}
 			},
-			"regen": "🔁"
+			"regen": "🔁",
+			"retry": "🔄"
 		},
 		"attach": {
 			"add": {

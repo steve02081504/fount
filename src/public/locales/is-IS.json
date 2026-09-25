@@ -6565,7 +6565,8 @@
 					"aria-label": "Ástæða þess að líkar ekki"
 				}
 			},
-			"regen": "Mynda aftur"
+			"regen": "Mynda aftur",
+			"retry": "Reyna aftur"
 		},
 		"attach": {
 			"add": {

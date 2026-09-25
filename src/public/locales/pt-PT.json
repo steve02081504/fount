@@ -6571,7 +6571,8 @@
 					"aria-label": "Motivo do não gosto"
 				}
 			},
-			"regen": "Regenerar"
+			"regen": "Regenerar",
+			"retry": "Tentar novamente"
 		},
 		"attach": {
 			"add": {

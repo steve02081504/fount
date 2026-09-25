@@ -6564,7 +6564,8 @@
 					"aria-label": "不喜歡的原因"
 				}
 			},
-			"regen": "重新產生"
+			"regen": "重新產生",
+			"retry": "重試"
 		},
 		"attach": {
 			"add": {

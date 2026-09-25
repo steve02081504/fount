@@ -6565,7 +6565,8 @@
 					"aria-label": "点踩原因"
 				}
 			},
-			"regen": "重新生成"
+			"regen": "重新生成",
+			"retry": "重试"
 		},
 		"attach": {
 			"add": {

@@ -6571,7 +6571,8 @@
 					"aria-label": "Reden van vind ik niet leuk"
 				}
 			},
-			"regen": "Opnieuw genereren"
+			"regen": "Opnieuw genereren",
+			"retry": "Opnieuw proberen"
 		},
 		"attach": {
 			"add": {

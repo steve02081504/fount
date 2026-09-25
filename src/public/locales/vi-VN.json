@@ -6565,7 +6565,8 @@
 					"aria-label": "Lý do không thích"
 				}
 			},
-			"regen": "Tạo lại"
+			"regen": "Tạo lại",
+			"retry": "Thử lại"
 		},
 		"attach": {
 			"add": {

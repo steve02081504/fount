@@ -6565,7 +6565,8 @@
 					"aria-label": "低評価の理由"
 				}
 			},
-			"regen": "再生成"
+			"regen": "再生成",
+			"retry": "再試行"
 		},
 		"attach": {
 			"add": {

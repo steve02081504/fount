@@ -333,6 +333,11 @@ body {
 	transition: opacity 0.12s;
 }
 
+/* 报错重试条：常显（不依赖 hover），否则触屏 / 未悬停时无从重试 */
+.code-message:has(> .code-message-error-retry) .code-message-feedback {
+	opacity: 1;
+}
+
 .code-message:hover .code-message-feedback,
 .code-message-feedback:focus-within {
 	opacity: 1;

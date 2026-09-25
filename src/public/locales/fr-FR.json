@@ -6571,7 +6571,8 @@
 					"aria-label": "Raison du désaccord"
 				}
 			},
-			"regen": "Régénérer"
+			"regen": "Régénérer",
+			"retry": "Réessayer"
 		},
 		"attach": {
 			"add": {

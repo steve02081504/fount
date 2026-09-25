@@ -134,7 +134,7 @@ async function applyRemoteTabs({ tabs, activeTab: remoteActive } = {}) {
 }
 
 tabsChannel?.addEventListener('message', event => {
-	const data = event.data
+	const {data} = event
 	if (!data || data.source === pageId) return
 	void applyRemoteTabs(data)
 })
@@ -916,7 +916,7 @@ function onSocketMessage(event) {
 		// 复位发送按钮（内部同步刷新 regen 按钮），与 finishGeneration 的收尾对齐
 		updateSendButton()
 		const fallback = geti18n('code.error.generate')
-		const text = `${fallback}\n\`\`\`\n${msg.error}\n\`\`\``
+		const text = msg.error ? `${fallback}\n\`\`\`\n${msg.error}\n\`\`\`` : fallback
 		const knownIds = new Set((session?.entries || []).map(entry => String(entry.id)))
 		const freshEntries = (msg.entries || []).filter(entry => !knownIds.has(String(entry.id)))
 		const errorEntry = { id: crypto.randomUUID().slice(0, 8), uid: 'system', role: 'system', name: 'error', content: text, time: new Date().toISOString() }
@@ -1099,7 +1099,7 @@ export function abortGeneration() {
  * @returns {Promise<void>}
  */
 export async function regenerateLastReply() {
-	const session = store.session
+	const {session} = store
 	if (!session || store.generating || store.recovering) return
 	const last = session.entries.at(-1)
 	if (last?.role !== 'char') return
@@ -1140,11 +1140,55 @@ export async function regenerateLastReply() {
 }
 
 /**
- * 按当前会话原样触发一次生成（不新增用户消息）；用于异步通知到达时让角色作出回应。
+ * 从角色抛错的气泡重试该轮：丢弃该错误条目及其后的所有条目（含被中断的半截输出），
+ * 从剩余上下文重新生成；等价于把末尾那一轮重新跑一遍。
+ * @param {object} entry - 角色抛错时追加的错误条目。
+ * @returns {Promise<void>}
+ */
+export async function retryFromError(entry) {
+	const {session} = store
+	if (!session || store.generating || store.recovering) return
+	const index = session.entries.findIndex(candidate => candidate.id === entry.id)
+	if (index < 0) return
+	if (!session.charname) {
+		showToastI18n('error', 'code.error.noChar')
+		return
+	}
+	session.entries.splice(index)
+	renderMessages()
+	store.generatingSession = session
+	store.generating = true
+	store.generatingRunId = crypto.randomUUID()
+	updateSendButton()
+	startGeneratingBubble()
+	markSessionDirty(session)
+	try {
+		const ws = await getSocket()
+		ws.send(JSON.stringify({
+			type: 'trigger',
+			runId: store.generatingRunId,
+			session,
+			...target(),
+			ai_source: store.aiSource || '',
+			profile: store.profile,
+		}))
+	}
+	catch (error) {
+		store.generating = false
+		store.generatingRunId = null
+		endGeneratingBubble()
+		store.generatingSession = null
+		updateSendButton()
+		showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
+	}
+}
+
+/**
+ * 按当前会话原样触发一次生成（不新增用户消息）；用于异步通知抵达时让角色作出回应。
  * @returns {Promise<void>}
  */
 async function triggerGeneration() {
-	const session = store.session
+	const {session} = store
 	if (!session || store.generating || store.recovering || !session.charname) return
 	store.generatingSession = session
 	store.generating = true
@@ -1182,7 +1226,7 @@ async function triggerGeneration() {
  */
 export function handleAsyncEntryEvent(payload) {
 	const { chatName, entry } = payload || {}
-	const session = store.session
+	const {session} = store
 	if (!session || !entry || chatName !== 'code-' + session.id) return
 	const knownIds = new Set(session.entries.map(e => String(e.id)))
 	if (!knownIds.has(String(entry.id))) {
@@ -1202,13 +1246,13 @@ export function handleAsyncEntryEvent(payload) {
  */
 export function handleAsyncConsumedEvent(payload) {
 	const { chatName } = payload || {}
-	const session = store.session
+	const {session} = store
 	if (!session || chatName !== 'code-' + session.id) return
 	session.awaitingAsyncTrigger = false
 }
 
 /** 消息中的 `@[gist:id]` token。 */
-const GIST_TOKEN_RE = /@\[gist:([^\]\n]+)\]/g
+const GIST_TOKEN_RE = /@\[gist:([^\n\]]+)]/g
 
 /**
  * 展开消息中的 gist token：拉取正文并构造附件（发送时随用户消息送给角色）。
@@ -1221,7 +1265,7 @@ async function resolveGistAttachments(content) {
 	for (const id of ids) {
 		const gist = await getGist(id).catch(() => null)
 		if (!gist) continue
-		const name = `${String(gist.title || gist.id).replace(/[\r\n]+/g, ' ').trim().slice(0, 80)}.md`
+		const name = `${String(gist.title || gist.id).replace(/[\n\r]+/g, ' ').trim().slice(0, 80)}.md`
 		files.push({
 			name,
 			mime_type: 'text/markdown',

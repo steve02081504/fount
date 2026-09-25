@@ -6571,7 +6571,8 @@
 					"aria-label": "Motivo del non mi piace"
 				}
 			},
-			"regen": "Rigenera"
+			"regen": "Rigenera",
+			"retry": "Riprova"
 		},
 		"attach": {
 			"add": {

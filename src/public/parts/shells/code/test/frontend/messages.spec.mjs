@@ -268,6 +268,47 @@ test.describe('code shell message actions & layout', () => {
 		await expect(page.locator('.code-message.role-char:not(.generating)')).toHaveCount(1)
 	})
 
+	test('error entry: a persistent retry button drops the failed round and regenerates', async ({ page, baseUrl }) => {
+		const dir = makeWorkspace('fe-error-retry', {})
+		leftoverWorkspaceDirs.add(dir)
+		const sessionId = 'error-retry-session'
+		try {
+			const workspaceData = await (await page.request.post(`${baseUrl}${API_BASE}/workspaces`, { data: { name: 'error-retry', machine: '0', path: dir } })).json()
+			const workspaceId = workspaceData.list.find(workspace => workspace.path === dir).id
+			const now = new Date().toISOString()
+			const session = {
+				id: sessionId,
+				title: 'error-retry',
+				charname: 'codeBuddy',
+				profile: 'build',
+				created: now,
+				updated: now,
+				memory: {},
+				entries: [
+					{ id: 'user-1', uid: 'user', role: 'user', name: 'code-fe-user', content: '请干活', time: now },
+					{ id: 'err-1', uid: 'system', role: 'system', name: 'error', content: '生成回复失败：\n```\n发生未知错误。\n```', time: now },
+				],
+			}
+			expect((await page.request.post(`${baseUrl}${API_BASE}/sessions`, { data: { machine: '0', workdir: dir, session } })).ok()).toBeTruthy()
+			await page.goto(`${baseUrl}${BASE}?workspace=${workspaceId}&session=${sessionId}`, { waitUntil: 'domcontentloaded' })
+			await page.waitForFunction(() => document.activeElement?.id === 'composer-input')
+			const errorBubble = page.locator('.code-message.role-system', { hasText: '生成回复失败' })
+			await expect(errorBubble).toBeVisible()
+			// 重试按钮常显（不依赖 hover），可点击
+			const retry = errorBubble.locator('.code-message-error-retry')
+			await expect(retry).toBeVisible()
+			// 点重试：丢弃含错误条目的整轮，启动生成 → 错误气泡消失、生成中气泡出现，随后落回正常回复
+			await retry.click()
+			await expect(page.locator('.code-message.role-system', { hasText: '生成回复失败' })).toHaveCount(0)
+			await expect(page.locator('.code-message.role-char')).toContainText('测试回复。', { timeout: 60_000 })
+			await expect(page.locator('.code-message.generating')).toHaveCount(0)
+			await expect(page.locator('.code-message.role-user')).toHaveCount(1)
+		}
+		finally {
+			await removeAllWorkspacesViaApi(page, baseUrl)
+		}
+	})
+
 	test('edit & feedback persist into the workspace session file', async ({ page, baseUrl }) => {
 		const dir = mkdtempSync(join(tmpdir(), 'fount-code-fe-actions-'))
 		try {

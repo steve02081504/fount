@@ -6565,7 +6565,8 @@
 					"aria-label": "Dislike reason"
 				}
 			},
-			"regen": "Regenerate"
+			"regen": "Regenerate",
+			"retry": "Retry"
 		},
 		"attach": {
 			"add": {

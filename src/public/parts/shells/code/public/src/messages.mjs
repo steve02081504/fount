@@ -12,7 +12,7 @@ import { asyncStateLabel, asyncTaskCardElement } from './asynctasks.mjs'
 import { iconElement, icons } from './icons.mjs'
 import { repairOrphanedReplyFence } from './replyMarkdown.mjs'
 import { updateRunCards } from './runCards.mjs'
-import { markSessionDirty, regenerateLastReply } from './session.mjs'
+import { markSessionDirty, regenerateLastReply, retryFromError } from './session.mjs'
 import { elements, store, SCROLL_TOLERANCE } from './store.mjs'
 import { subAgentCardElement } from './subagents.mjs'
 import { renderTemplate } from './templates.mjs'
@@ -78,7 +78,7 @@ function labelForToolName(name) {
  * @returns {string|null} 标签名；无法解析时为 null。
  */
 function toolTagName(entry) {
-	const match = entryShowText(entry).match(/^[ \t]*`{3,}[^\n]*\n[ \t]*<([a-zA-Z][\w.-]*)\b/)
+	const match = entryShowText(entry).match(/^[\t ]*`{3,}[^\n]*\n[\t ]*<([A-Za-z][\w.-]*)\b/)
 	return match?.[1] ?? null
 }
 
@@ -237,6 +237,15 @@ function renderAsyncInspect(entry) {
 }
 
 /**
+ * 条目是否为生成报错条目（角色抛错时前端追加，带重试按钮）。
+ * @param {object} entry - 会话条目。
+ * @returns {boolean} 是否报错条目。
+ */
+function isErrorEntry(entry) {
+	return entry?.role === 'system' && entry?.name === 'error'
+}
+
+/**
  * 条目是否有可渲染内容（工具/系统条目始终渲染；其余需有可见文本或附件）。
  * 纯工具调用生成的 char 条目在人类层被清空，避免残留空气泡。
  * @param {object} entry - 会话条目。
@@ -256,8 +265,8 @@ export function isEntryVisible(entry) {
  */
 function messageMarkdown(content, role = '') {
 	return (role === 'char' ? repairOrphanedReplyFence(content) : content)
-		.replace(/@\[file:([^\]\n]+)\]/g, (_m, path) => '`' + path + '`')
-		.replace(/@\[gist:([^\]\n]+)\]/g, (_m, id) => '`' + (store.gistTitles.get(id) || id) + '`')
+		.replace(/@\[file:([^\n\]]+)]/g, (_m, path) => '`' + path + '`')
+		.replace(/@\[gist:([^\n\]]+)]/g, (_m, id) => '`' + (store.gistTitles.get(id) || id) + '`')
 }
 
 /**
@@ -422,6 +431,18 @@ function renderCharFeedback(entry, isLast, bubble) {
 }
 
 /**
+ * 生成报错的内联重试条：错误气泡常驻一个旋转重试图标，点击后丢弃该轮错误并重跑。
+ * @param {object} entry - 错误条目。
+ * @returns {HTMLElement} 重试条。
+ */
+function renderErrorRetry(entry) {
+	const bar = document.createElement('div')
+	bar.className = 'code-message-feedback'
+	bar.appendChild(messageActionButton('code-message-error-retry', 'code.message.retry', icons.regen, () => { void retryFromError(entry) }))
+	return bar
+}
+
+/**
  * 按条目 id 找当前 DOM 中的气泡。
  * @param {object} entry - 会话条目。
  * @returns {HTMLElement|null} 气泡元素。
@@ -526,7 +547,7 @@ export function renderEntryBubble(entry, { isLast = false } = {}) {
 	else if (entry.role === 'tool' || entry.role === 'system') {
 		const details = document.createElement('details')
 		details.className = 'code-tool-log'
-		if (entry.name === 'shell' || entry.name?.startsWith('code-execution')) details.open = true
+		if (!isErrorEntry(entry) && (entry.name === 'shell' || entry.name?.startsWith('code-execution'))) details.open = true
 		const summary = document.createElement('summary')
 		const chevron = document.createElement('span')
 		chevron.className = 'code-tool-log-chevron'
@@ -582,6 +603,7 @@ export function renderEntryBubble(entry, { isLast = false } = {}) {
 	}
 	bubble.appendChild(renderMessageActions(entry, bubble))
 	if (entry.role === 'char') bubble.appendChild(renderCharFeedback(entry, isLast, bubble))
+	if (isErrorEntry(entry)) bubble.appendChild(renderErrorRetry(entry))
 	bindMessageDragExport(entry, bubble)
 	return bubble
 }
@@ -594,6 +616,9 @@ export function updateRegenButtons() {
 		const regen = el.querySelector('.code-message-feedback-regen')
 		if (!regen) continue
 		regen.hidden = !(last && String(last.id) === el.dataset.entryId && last.role === 'char' && !store.generating)
+		const retry = el.querySelector('.code-message-error-retry')
+		if (!retry) continue
+		retry.disabled = store.generating || store.recovering
 	}
 }
 

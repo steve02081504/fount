@@ -6565,7 +6565,8 @@
 					"aria-label": "싫어요 이유"
 				}
 			},
-			"regen": "다시 생성"
+			"regen": "다시 생성",
+			"retry": "다시 시도"
 		},
 		"attach": {
 			"add": {

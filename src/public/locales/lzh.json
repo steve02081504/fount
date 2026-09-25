@@ -6565,7 +6565,8 @@
 					"aria-label": "貶之故"
 				}
 			},
-			"regen": "更生"
+			"regen": "更生",
+			"retry": "復試"
 		},
 		"attach": {
 			"add": {

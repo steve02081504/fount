@@ -6565,7 +6565,8 @@
 					"aria-label": "Grund für Nichtgefallen"
 				}
 			},
-			"regen": "Neu generieren"
+			"regen": "Neu generieren",
+			"retry": "Erneut versuchen"
 		},
 		"attach": {
 			"add": {

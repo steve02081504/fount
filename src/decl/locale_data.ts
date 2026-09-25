@@ -6528,6 +6528,7 @@ export type LocaleData = {
 				}
 			}
 			regen: string
+			retry: string
 		}
 		attach: {
 			add: {
