@@ -108,7 +108,7 @@
 				},
 				{
 					"name": "sessions",
-					"expected": "5m58s",
+					"expected": "59s",
 					"triggers": [
 						"src/public/parts/shells/code/test/frontend/sessions.spec.mjs",
 						"src/public/parts/shells/code/public/**"
