@@ -18,8 +18,8 @@ import { openModulePage } from './module_page.mjs'
  * @param {object} [options.isolated] 隔离节点断言（run.mjs 注入）
  * @param {string} [options.isolated.usernameEnv='FOUNT_TEST_USERNAME'] 用户名环境变量
  * @param {string} options.isolated.shellLabel 错误提示用 shell 名
- * @param {number|string} [options.isolated.timeout] beforeEach 内 setTimeout
- * @param {(args: { page: import('npm:@playwright/test').Page, baseUrl: string, apiKey: string }) => Promise<void>} [options.isolated.beforeEach] 额外钩子
+ * @param {number|string} [options.isolated.timeout] 隔离 auto fixture 内 setTimeout
+ * @param {(args: { page: import('npm:@playwright/test').Page, baseUrl: string, apiKey: string }) => Promise<void>} [options.isolated.beforeEach] 额外初始化（在隔离 auto fixture 内、隔离断言前运行）
  * @returns {{ test: typeof base, expect: typeof expect }} 扩展后的 test 与 expect
  */
 export function createFountFixtures(options = {}) {
@@ -120,19 +120,27 @@ export function createFountFixtures(options = {}) {
 			timeout,
 			beforeEach: extraBeforeEach,
 		} = options.isolated
-		test.beforeEach(async ({ page, baseUrl, apiKey }) => {
-			const expectedUsername = process.env[usernameEnv]
-			if (!expectedUsername)
-				throw new Error(`${usernameEnv} is required; run via test/frontend/run.mjs`)
-			if (timeout != null) test.setTimeout(typeof timeout === 'number' ? timeout : ms(timeout))
-			if (extraBeforeEach) await extraBeforeEach({ page, baseUrl, apiKey })
-			await assertIsolatedFrontendTest({
-				baseUrl,
-				apiKey,
-				expectedUsername,
-				shellLabel,
-			})
+		// 隔离初始化必须是 auto fixture，不能是 beforeEach hook：在共享 fixture 模块里注册的
+		// hook 只绑定到首个加载的 spec 文件，同一 Playwright 进程内的其余 spec（多 subtest
+		// 合并运行正是这种单进程多文件场景）会漏掉 3m 超时与隔离断言，回落到配置超时并在
+		// 高负载下超时失败。fixture 定义是全局的，对所有引用该 test 的文件都生效。
+		const isolatedTest = test.extend({
+			isolatedFrontend: [async ({ page, baseUrl, apiKey }, use) => {
+				const expectedUsername = process.env[usernameEnv]
+				if (!expectedUsername)
+					throw new Error(`${usernameEnv} is required; run via test/frontend/run.mjs`)
+				if (timeout != null) test.setTimeout(typeof timeout === 'number' ? timeout : ms(timeout))
+				if (extraBeforeEach) await extraBeforeEach({ page, baseUrl, apiKey })
+				await assertIsolatedFrontendTest({
+					baseUrl,
+					apiKey,
+					expectedUsername,
+					shellLabel,
+				})
+				await use()
+			}, { auto: true }],
 		})
+		return { test: isolatedTest, expect }
 	}
 
 	return { test, expect }
