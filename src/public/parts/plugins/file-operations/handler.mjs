@@ -19,6 +19,19 @@ const SEARCH_FILE_LIMIT = 100
 const SEARCH_MATCH_LIMIT = 200
 
 /**
+ * 把动态值包成安全的内联代码（围栏长度随内容中的反引号 run 选取，避免被提前闭合）。
+ * 工具回执正文里的路径 / 模式 / 错误都来自模型或远端内容，直接进 markdown 会被解析成 HTML / 链接。
+ * @param {unknown} value 动态值。
+ * @returns {string} Markdown 内联代码。
+ */
+function inlineCode(value) {
+	const text = String(value ?? '')
+	const fence = '`'.repeat(1 + Math.max(0, ...(text.match(/`+/g) || []).map(run => run.length)))
+	const pad = text.startsWith('`') || text.endsWith('`') ? ' ' : ''
+	return `${fence}${pad}${text}${pad}${fence}`
+}
+
+/**
  * 回复处理器类型别名。
  * @typedef {import("../../../../../src/decl/pluginAPI.ts").ReplyHandler_t} ReplyHandler_t
  */
@@ -82,11 +95,11 @@ function resolveKnownContextHashes(args) {
 function renderReadResult(filepath, text, readWindow) {
 	const result = windowText(text, readWindow)
 	if (result.outOfRange)
-		return `文件：${filepath}\n读取失败：${formatReadWindowNotice(result)}\n`
+		return `文件：${inlineCode(filepath)}\n读取失败：${formatReadWindowNotice(result)}\n`
 	const rangeNote = readWindow.offset > 1 || result.endLine < result.totalLines
 		? `（第 ${result.startLine}-${result.endLine} 行 / 共 ${result.totalLines} 行）`
 		: ''
-	let output = `文件：${filepath}${rangeNote}\n${renderMarkdownCodeBlock(result.text, { lang: inferCodeLanguageFromPath(filepath) })}\n`
+	let output = `文件：${inlineCode(filepath)}${rangeNote}\n${renderMarkdownCodeBlock(result.text, { lang: inferCodeLanguageFromPath(filepath) })}\n`
 	const notice = formatReadWindowNotice(result)
 	if (notice) output += notice + '\n'
 	return output
@@ -251,7 +264,7 @@ export const setWorkdirReplyHandler = defineReplyHandler({
 		if (call.params.path) workdir.path = call.params.path
 		args.chat_scoped_char_memory ??= {}
 		args.chat_scoped_char_memory.workdir = { ...workdir }
-		addFileToolLog(args, call.raw, `默认工作目录已更新为机器 ${workdir.machine}${workdir.path ? ` 的 ${workdir.path}` : ''}。`, { name: 'file-operations.set-workdir' })
+		addFileToolLog(args, call.raw, `默认工作目录已更新为机器 ${inlineCode(workdir.machine)}${workdir.path ? ` 的 ${inlineCode(workdir.path)}` : ''}。`, { name: 'file-operations.set-workdir' })
 		return { regen: true }
 	},
 })
@@ -338,11 +351,11 @@ export const viewFileReplyHandler = defineReplyHandler({
 				}
 				else {
 					files.push({ name: filepath.split(/[\\/]/).pop() || 'file', buffer, mime_type: 'application/octet-stream' })
-					file_content += `文件：${filepath}读取成功，放置于附件。\n`
+					file_content += `文件：${inlineCode(filepath)}读取成功，放置于附件。\n`
 				}
 			}
 			catch (err) {
-				file_content += `读取文件失败：${filepath}\n${renderMarkdownCodeBlock(err.stack || String(err))}\n`
+				file_content += `读取文件失败：${inlineCode(filepath)}\n${renderMarkdownCodeBlock(err.stack || String(err))}\n`
 			}
 
 		addFileToolLog(args, call.raw, file_content, { name: 'file-operations.view-file', files, loadedContextHashes })
@@ -375,15 +388,15 @@ export const globReplyHandler = defineReplyHandler({
 			const root = await executor.resolvePath(call.params.path || '')
 			const result = await executor.execJs(runRipgrep, { mode: 'glob', root, patterns, limit: SEARCH_FILE_LIMIT })
 			if (!result.ok)
-				system_content = `文件搜索失败：${result.error}\n`
+				system_content = `文件搜索失败：${inlineCode(result.error)}\n`
 			else {
-				system_content = `在 ${location} 下搜索文件，命中 ${result.total} 个${result.truncated ? `（仅显示前 ${SEARCH_FILE_LIMIT} 个）` : ''}：\n`
+				system_content = `在 ${inlineCode(location)} 下搜索文件，命中 ${result.total} 个${result.truncated ? `（仅显示前 ${SEARCH_FILE_LIMIT} 个）` : ''}：\n`
 				system_content += result.files.length
 					? renderMarkdownCodeBlock(result.files.join('\n'), { lang: 'text' }) + '\n'
 					: '（无匹配）\n'
 				const zeroHit = (result.patterns || []).filter(item => item.count === 0).map(item => item.pattern)
 				if (zeroHit.length)
-					system_content += `注意：以下模式 0 命中，可能写法有误——含 / 的模式相对起始目录解析（如应写 \`test/*.mjs\` 而非 \`src/scripts/test/*.mjs\`）：${zeroHit.join('、')}\n`
+					system_content += `注意：以下模式 0 命中，可能写法有误——含 / 的模式相对起始目录解析（如应写 \`test/*.mjs\` 而非 \`src/scripts/test/*.mjs\`）：${zeroHit.map(inlineCode).join('、')}\n`
 				if (result.truncated)
 					system_content += '结果过多，请使用更精确的 glob 模式或更小的 path。\n'
 			}
@@ -424,15 +437,15 @@ export const grepReplyHandler = defineReplyHandler({
 			const root = await executor.resolvePath(call.params.path || '')
 			const result = await executor.execJs(runRipgrep, { mode: 'grep', root, pattern, includes, filesOnly, limit: SEARCH_MATCH_LIMIT })
 			if (!result.ok)
-				system_content = `内容搜索失败：${result.error}\n`
+				system_content = `内容搜索失败：${inlineCode(result.error)}\n`
 			else if (filesOnly) {
-				system_content = `在 ${location} 下搜索 ${pattern}，命中 ${result.total} 个文件${result.truncated ? `（仅显示前 ${SEARCH_MATCH_LIMIT} 个）` : ''}：\n`
+				system_content = `在 ${inlineCode(location)} 下搜索 ${inlineCode(pattern)}，命中 ${result.total} 个文件${result.truncated ? `（仅显示前 ${SEARCH_MATCH_LIMIT} 个）` : ''}：\n`
 				system_content += result.files.length
 					? renderMarkdownCodeBlock(result.files.join('\n'), { lang: 'text' }) + '\n'
 					: '（无匹配）\n'
 			}
 			else {
-				system_content = `在 ${location} 下搜索 ${pattern}，命中 ${result.total} 处${result.truncated ? `（仅显示前 ${SEARCH_MATCH_LIMIT} 处）` : ''}：\n`
+				system_content = `在 ${inlineCode(location)} 下搜索 ${inlineCode(pattern)}，命中 ${result.total} 处${result.truncated ? `（仅显示前 ${SEARCH_MATCH_LIMIT} 处）` : ''}：\n`
 				const grouped = new Map()
 				for (const match of result.matches)
 					grouped.set(match.path, [...grouped.get(match.path) || [], match])
@@ -503,7 +516,7 @@ export const replaceFileReplyHandler = defineReplyHandler({
 		}
 		catch (err) {
 			console.error('Error parsing replace-file content with regex:', err)
-			addFileToolLog(args, logContent, `解析replace-file失败：\n${renderMarkdownCodeBlock(err.stack || String(err))}\n原始数据:\n<replace-file>${replace_file_content}</replace-file>`, { name: 'file-operations.replace-file' })
+			addFileToolLog(args, logContent, `解析replace-file失败：\n${renderMarkdownCodeBlock(err.stack || String(err))}\n原始数据:\n${renderMarkdownCodeBlock('<replace-file>' + replace_file_content + '</replace-file>')}`, { name: 'file-operations.replace-file' })
 			return { regen: true }
 		}
 
@@ -520,7 +533,7 @@ export const replaceFileReplyHandler = defineReplyHandler({
 				originalContent = await executor.readTextFile(filepath)
 			}
 			catch (err) {
-				addFileToolLog(args, logContent, `读取文件失败：${filepath}\n${renderMarkdownCodeBlock(err.stack || String(err))}\n`, { name: 'file-operations.replace-file' })
+				addFileToolLog(args, logContent, `读取文件失败：${inlineCode(filepath)}\n${renderMarkdownCodeBlock(err.stack || String(err))}\n`, { name: 'file-operations.replace-file' })
 				continue
 			}
 
@@ -558,12 +571,12 @@ export const replaceFileReplyHandler = defineReplyHandler({
 			const changed = originalContent !== finalContent
 			let system_content = ''
 			if (changed) {
-				system_content = `文件 ${filepath} 内容已修改，应用了 ${replacements.length} 项替换`
+				system_content = `文件 ${inlineCode(filepath)} 内容已修改，应用了 ${replacements.length} 项替换`
 				if (replace_count > 0) system_content += `，其中 ${replace_count} 个替换成功`
 				if (methods_used.size) system_content += `（匹配方式：${[...methods_used].join('、')}）`
 				system_content += '。\n'
 			}
-			else system_content = `文件 ${filepath} 内容未发生变化（尝试了 ${replacements.length} 项替换规则）。\n`
+			else system_content = `文件 ${inlineCode(filepath)} 内容未发生变化（尝试了 ${replacements.length} 项替换规则）。\n`
 
 			if (failed_replaces.length) {
 				system_content += `以下 ${failed_replaces.length} 处替换操作失败：\n`
@@ -577,7 +590,7 @@ export const replaceFileReplyHandler = defineReplyHandler({
 					await executor.writeTextFile(filepath, finalContent)
 				}
 				catch (err) {
-					system_content = `写入文件失败：${filepath}\n${renderMarkdownCodeBlock(err.stack || String(err))}\n`
+					system_content = `写入文件失败：${inlineCode(filepath)}\n${renderMarkdownCodeBlock(err.stack || String(err))}\n`
 				}
 			}
 			else if (!failed_replaces.length) system_content += '所有替换规则均未匹配到内容或未导致文件变化。'
@@ -619,16 +632,16 @@ export const overrideFileReplyHandler = defineReplyHandler({
 				const similarity = similarityRatio(toLf(stripBom(existing)), toLf(newText))
 				const isEmpty = !newText.trim()
 				if (!force && (isEmpty || similarity < 0.3)) {
-					addFileToolLog(args, logContent, `覆写 ${filepath} 被拒绝：新内容与原文相似度仅 ${(similarity * 100).toFixed(1)}%${isEmpty ? '，且新内容为空' : ''}。\n如确认要整体重写，请为 <override-file> 添加 force="true"；否则请改用 <replace-file> 做局部修改。`, { name: 'file-operations.override-file' })
+					addFileToolLog(args, logContent, `覆写 ${inlineCode(filepath)} 被拒绝：新内容与原文相似度仅 ${(similarity * 100).toFixed(1)}%${isEmpty ? '，且新内容为空' : ''}。\n如确认要整体重写，请为 <override-file> 添加 force="true"；否则请改用 <replace-file> 做局部修改。`, { name: 'file-operations.override-file' })
 					return { regen: true }
 				}
 				await executor.writeTextFile(filepath, restoreBom(applyEol(toLf(newText), style.eol), style.bom))
 			}
 			else await executor.writeTextFile(filepath, newText)
-			addFileToolLog(args, logContent, `文件 ${filepath} 已写入`, { name: 'file-operations.override-file' })
+			addFileToolLog(args, logContent, `文件 ${inlineCode(filepath)} 已写入`, { name: 'file-operations.override-file' })
 		}
 		catch (err) {
-			addFileToolLog(args, logContent, `写入文件失败：${filepath}\n${renderMarkdownCodeBlock(err.stack || String(err))}\n`, { name: 'file-operations.override-file' })
+			addFileToolLog(args, logContent, `写入文件失败：${inlineCode(filepath)}\n${renderMarkdownCodeBlock(err.stack || String(err))}\n`, { name: 'file-operations.override-file' })
 		}
 		return { regen: true }
 	},

@@ -5,6 +5,7 @@ import { newGroup } from './chat/session/groupLifecycle.mjs'
 import { addchar } from './chat/session/partConfig.mjs'
 import { getActiveGroupRuntime } from './chat/session/persistence.mjs'
 import { triggerCharReply } from './chat/session/triggerReply.mjs'
+import { renderMarkdownCodeBlock } from './streaming/index.mjs'
 
 /**
  * 构造定时器到期时注入聊天上下文的系统条目。
@@ -14,18 +15,21 @@ import { triggerCharReply } from './chat/session/triggerReply.mjs'
  * @returns {object} chatLogEntry_t 形状
  */
 export function makeTimerSystemEntry(reason, chatLogSnip, char_id) {
-	return {
-		name: 'system',
-		uid: 'system',
-		role: 'system',
-		content: `\
+	const content = `\
 定时器"${reason}"到期。
 设置定时器时的聊天记录节选：
 <chat_log_snip>
 ${chatLogSnip}
 </chat_log_snip>
 请根据定时器的内容进行回复。
-`,
+`
+	return {
+		name: 'system',
+		uid: 'system',
+		role: 'system',
+		content,
+		// reason / 聊天记录节选是模型可达文本，展示层包进代码块，避免被 markdown / HTML 解析
+		content_for_show: renderMarkdownCodeBlock(content, { lang: 'text' }),
 		files: [],
 		charVisibility: [char_id],
 		time_stamp: new Date(),

@@ -42,7 +42,8 @@ function getSafeFence(code) {
  * @returns {string} 转义后片段
  */
 function escapeMarkdownInfoStringValue(value) {
-	return String(value).replace(/\\/g, '\\\\').replace(/"/g, '\\"')
+	// 换行会把 info string 拆行、可能让后续行被当作代码块边界：折叠为空格
+	return String(value).replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/[\r\n]+/g, ' ')
 }
 
 /**

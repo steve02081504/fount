@@ -229,6 +229,18 @@ function finishTask(task, state, result, error) {
 }
 
 /**
+ * 把不可信文本包进 ansi 代码块（前端 rehypeAnsiBlock 转 ansi2html 转义，且不按 markdown 解析）。
+ * 围栏长度按内容中最长反引号 run 选取，避免被内容里的反引号提前闭合。
+ * @param {unknown} text 原始文本
+ * @returns {string} Markdown 代码块
+ */
+function wrapAnsiBlock(text) {
+	const value = String(text ?? '')
+	const fence = '`'.repeat(1 + Math.max(2, ...(value.match(/`+/g) || []).map(run => run.length)))
+	return `${fence}ansi\n${value}\n${fence}`
+}
+
+/**
  * 生成默认完成通知文本。
  * @param {asyncTask_t} task 任务
  * @returns {string} 通知文本
@@ -237,9 +249,9 @@ function defaultNotificationText(task) {
 	const lines = [
 		`[async-task] 后台任务 ${task.id}（类型：${task.kind}）已结束，状态：${task.state}。`,
 	]
-	if (task.label) lines.push(`任务：${task.label}`)
-	if (task.state === 'failed') lines.push(`错误：${task.error?.message ?? '未知错误'}`)
-	else lines.push(`结果：\n${truncate(task.result)}`)
+	if (task.label) lines.push(`任务：\n${wrapAnsiBlock(task.label)}`)
+	if (task.state === 'failed') lines.push(`错误：\n${wrapAnsiBlock(task.error?.message ?? '未知错误')}`)
+	else lines.push(`结果：\n${wrapAnsiBlock(truncate(task.result))}`)
 	return lines.join('\n')
 }
 

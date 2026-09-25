@@ -125,7 +125,8 @@ Deno.test('inspect-async returns a running task preview without consuming it', a
 	assertEquals(log.name, 'async-task.inspect')
 	assert(log.content.includes('tail of output'))
 	assertEquals(log.extension?.asyncInspect?.id, task.id)
-	assertEquals(log.extension.asyncInspect.preview, 'tail of output')
+	assert(log.extension.asyncInspect.preview.includes('```ansi'), '预览应包进 ansi 代码块，避免被 markdown 解析')
+	assert(log.extension.asyncInspect.preview.includes('tail of output'))
 	assertEquals(task.consumed, false, '检视不应消费任务，完成后仍应通知')
 })
 

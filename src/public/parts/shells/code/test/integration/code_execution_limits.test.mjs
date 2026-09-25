@@ -400,10 +400,21 @@ Deno.test('code-execution run-js 将 console 和返回值归为 output/result，
 		assertEquals(await runReplyHandlers(result, args, getCodeExecutionReplyHandlers()), true)
 		const entry = findToolEntry(logs)
 		for (const part of expected) assertStringIncludes(entry.content, part)
-		assertStringIncludes(entry.content_for_show, '&nbsp;', '展示层应以 HTML 渲染结果/错误，而非纯文本回退')
+		assertStringIncludes(entry.content_for_show, '```ansi', '展示层应以 ansi 代码块渲染结果/错误（前端转义着 color，不经 markdown）')
 		assert(!entry.content.includes('outputEntries'), '不应向模型展开 EvalResult 内部结构')
 		assert(!entry.content.includes('LogEntry'), '不应向模型展开 console 日志对象')
 	}
+})
+
+Deno.test('code-execution run-js 把不可信结果包进 ansi 代码块，不按 markdown/HTML 解析', async () => {
+	const { logs, result, args } = createHandlerArgs()
+	result.content = '<run-js>return \'<img src=x onerror="alert(1)">\' + String.fromCharCode(10) + \'[x](javascript:alert(2))\'</run-js>'
+	assertEquals(await runReplyHandlers(result, args, getCodeExecutionReplyHandlers()), true)
+	const entry = findToolEntry(logs)
+	assert(entry, 'tool entry should exist')
+	assertStringIncludes(entry.content_for_show, '```ansi', '结果应包进 ansi 代码块')
+	const fenced = entry.content_for_show.split('```ansi')[1] ?? ''
+	assert(fenced.includes('<img src=x onerror='), '不可信原文应位于代码块内，交由前端 ansi2html 转义')
 })
 
 Deno.test('code-execution inline-js 结果就地替换展示层且不改 content', async () => {

@@ -8,6 +8,7 @@
  */
 import { msstr } from '../../../../scripts/ms.mjs'
 import { defineReplyHandler, defineReplyHandlers } from '../../shells/chat/src/reply/defineReplyHandler.mjs'
+import { renderMarkdownCodeBlock } from '../../shells/chat/src/streaming/index.mjs'
 
 import { DEFAULT_AWAIT_TIMEOUT_MS, parseDurationMs } from './duration.mjs'
 import { awaitTasks, inspectTask, listTasksForOwner, ownerFromArgs } from './registry.mjs'
@@ -60,6 +61,15 @@ function taskResultText(task) {
 	if (typeof result.text === 'string') return result.text
 	try { return JSON.stringify(result, null, '\t') }
 	catch { return String(result) }
+}
+
+/**
+ * 把不可信的任务结果 / 错误包进 ansi 代码块（前端转义着 color，且不按 markdown 解析）。
+ * @param {unknown} text 原始文本
+ * @returns {string} Markdown 代码块
+ */
+function ansiBlock(text) {
+	return renderMarkdownCodeBlock(String(text ?? ''), { lang: 'ansi' })
 }
 
 /**
@@ -160,8 +170,8 @@ export const awaitAsyncHandler = defineReplyHandler({
 							id: task.id,
 							kind: task.kind,
 							state: task.state,
-							result: task.state === 'failed' ? '' : echo(taskResultText(task), 4000),
-							error: task.state === 'failed' ? task.error?.message ?? '未知错误' : '',
+							result: task.state === 'failed' ? '' : ansiBlock(echo(taskResultText(task), 4000)),
+							error: task.state === 'failed' ? ansiBlock(task.error?.message ?? '未知错误') : '',
 						})),
 						pending: result.pending,
 						unknown: result.unknown,
@@ -245,7 +255,7 @@ export const inspectAsyncHandler = defineReplyHandler({
 					rounds: preview?.rounds ?? null,
 					roundLimit: preview?.roundLimit ?? null,
 					entries: Array.isArray(preview?.entries) ? preview.entries : null,
-					preview: Array.isArray(preview?.entries) ? null : typeof preview === 'string' ? echo(preview) : null,
+					preview: Array.isArray(preview?.entries) ? null : typeof preview === 'string' ? ansiBlock(echo(preview)) : null,
 				},
 			},
 		})

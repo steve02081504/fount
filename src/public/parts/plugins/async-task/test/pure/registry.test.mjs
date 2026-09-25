@@ -410,6 +410,20 @@ Deno.test('deliverNotification appends a char-visible notice via AddChatLogEntry
 	assertEquals(takePendingNotifications(target), [], '已投递则为空')
 })
 
+Deno.test('deliverNotification wraps untrusted result / label in an ansi code block', async () => {
+	resetAsyncTaskState()
+	const fake = deliveryChannel()
+	registerChannel('u', 'c', fake.channel)
+	const target = owner()
+	const payload = '<img src=x onerror="alert(1)">\n[x](javascript:alert(2))'
+	const task = registerTask({ kind: 'js', owner: target, label: payload, run: resolveWith(payload) })
+	await task.done
+	await flushAsync()
+	const content = fake.appended[0].content
+	assert(content.includes('```ansi'), '结果 / 标签应包进 ansi 代码块，避免被 markdown 解析')
+	assert(content.includes(payload), '原始文本应保留在代码块内')
+})
+
 Deno.test('deliverNotification matches the channel by channel-scoped id', async () => {
 	resetAsyncTaskState()
 	const wrong = deliveryChannel({ chatName: 'chat-1', channelId: 'other' })

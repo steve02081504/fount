@@ -7,7 +7,6 @@ import util from 'node:util'
 
 import { async_eval } from 'npm:@steve02081504/async-eval'
 import { available, removeTerminalSequences, shell_exec_map } from 'npm:@steve02081504/exec'
-import { VirtualConsole } from 'npm:@steve02081504/virtual-console'
 
 import {
 	createCollectingConsole,
@@ -127,21 +126,28 @@ function buildInlineToolCard(items, lang) {
 }
 
 /**
- * 用一次性虚拟控制台把任意值渲染为带颜色的 HTML（供人类展示层）。
- * 复用 `LogEntry.toHtml()`：内容已转义，样式随终端能力内联，可直接嵌入 markdown。
+ * 把任意值渲染为带颜色的 ANSI 文本（供人类展示层）。
+ * 结果一律放进 ansi 代码块（见 renderAnsiBlock），由前端 rehypeAnsiBlock 转 ansi2html 转义着 color：
+ * 工具输出是模型可经命令 / 文件间接引入的不可信文本，绝不能作为内联 HTML / markdown 直接进页面。
  * @param {unknown} value - 任意值。
- * @returns {string} HTML；渲染失败时为空串。
+ * @returns {string} ANSI 文本。
  */
-function renderValueHtml(value) {
+function renderAnsiText(value) {
 	try {
-		const vc = new VirtualConsole({ realConsoleOutput: false })
-		vc.log(value)
-		const entry = vc.outputEntries.at(-1)
-		return entry ? entry.toHtml() : ''
+		return util.inspect(value, { depth: 4, colors: true })
 	}
 	catch {
-		return ''
+		return util.inspect({ error: String(value) }, { depth: 4, colors: true })
 	}
+}
+
+/**
+ * 把不可信的终端 / 控制台文本包进 ansi 代码块（前端转义着 color，且不再按 markdown 解析）。
+ * @param {string} text - 原始文本。
+ * @returns {string} Markdown 代码块。
+ */
+function renderAnsiBlock(text) {
+	return renderMarkdownCodeBlock(text ?? '', { lang: 'ansi' })
 }
 
 /**
@@ -281,7 +287,8 @@ async function callback_handler(args, reason, code, result) {
 \`\`\`js
 ${code}
 \`\`\`
-结果是：${util.inspect(result, { depth: 4 })}
+结果是：
+${renderAnsiBlock(renderAnsiText(result))}
 请根据callback函数的内容进行回复。
 `,
 		charVisibility: [args.char_id],
@@ -628,7 +635,7 @@ function createInlineHandle(lang) {
  * @param {object} options.limits - 运行限制。
  * @param {boolean} options.remote - 是否远程执行。
  * @param {Function|null} options.stream - 流式输出回调（后台执行传 null）。
- * @returns {Promise<{fullOutput: string, html: string, suffix: string, evalResult: object}>} 完整结果文本、结果值的彩色 HTML、耗时后缀，以及原始求值结果（用于展示层标题判断 error）。
+ * @returns {Promise<{fullOutput: string, showBlock: string, suffix: string, evalResult: object}>} 完整结果文本、结果值的 ANSI 代码块、耗时后缀，以及原始求值结果（用于展示层标题判断 error）。
  */
 async function executeRunJs({ runtime, args, call, limits, remote, stream }) {
 	const collecting = createCollectingConsole(stream ?? undefined)
@@ -646,7 +653,7 @@ async function executeRunJs({ runtime, args, call, limits, remote, stream }) {
 	runtime.execedCodes[call.inner] = evalResult ?? { timedOut: true }
 	const elapsedText = formatElapsed(elapsedMs)
 	const parts = []
-	let html = ''
+	let showBlock = ''
 	const output = remote ? remoteOutput.join('') : collecting.text()
 	if (timedOut) {
 		parts.push(`执行超时（耗时 ${elapsedText}）：JS 无法强制终止，代码可能仍在后台运行。`)
@@ -655,18 +662,18 @@ async function executeRunJs({ runtime, args, call, limits, remote, stream }) {
 	else if (evalResult?.error) {
 		const summary = { output, error: evalResult.error }
 		parts.push('执行出错：', util.inspect(summary, { depth: 4 }))
-		html = renderValueHtml(summary)
+		showBlock = renderAnsiBlock(renderAnsiText(summary))
 	}
 	else {
 		const summary = { output, result: remote ? evalResult : evalResult?.result }
 		parts.push('执行结果：', util.inspect(summary, { depth: 4 }))
 		if (elapsedText) parts.push(`（耗时 ${elapsedText}）`)
-		html = renderValueHtml(summary)
+		showBlock = renderAnsiBlock(renderAnsiText(summary))
 	}
 	const notice = formatTimeoutNotice({ timedOut, elapsedMs, waitForever: limits.waitForever, expectMs: limits.expectMs, toleranceMs: limits.toleranceMs, kind: 'js' })
 	if (notice) parts.push(notice.trim())
 	const suffix = !timedOut && !evalResult?.error && elapsedText ? `（耗时 ${elapsedText}）` : ''
-	return { fullOutput: parts.join('\n'), html, suffix, evalResult }
+	return { fullOutput: parts.join('\n'), showBlock, suffix, evalResult }
 }
 
 /**
@@ -735,12 +742,12 @@ export const runJsReplyHandler = defineReplyHandler({
 
 		await logCode(`${args.Charname} running JS code:`, call.inner, 'js')
 		emit?.({ callId, phase: 'start', name, lang: 'js', code: call.inner })
-		const { fullOutput, html, suffix, evalResult } = await executeRunJs({ runtime, args, call, limits, remote, stream })
+		const { fullOutput, showBlock, suffix, evalResult } = await executeRunJs({ runtime, args, call, limits, remote, stream })
 		emit?.({ callId, phase: 'end', name })
 		const guarded = await guardOutput(fullOutput, { name: 'run-js', label: 'JS 结果' })
-		const body = html && !guarded.truncated
-			? `${evalResult?.error ? '执行出错' : '执行结果'}：\n\n${html}${suffix ? `\n\n${suffix}` : ''}`
-			: guarded.text
+		const body = showBlock && !guarded.truncated
+			? `${evalResult?.error ? '执行出错' : '执行结果'}：\n\n${showBlock}${suffix ? `\n\n${suffix}` : ''}`
+			: renderAnsiBlock(guarded.text)
 		AddLongTimeLog({
 			name: 'code-execution.run-js',
 			role: 'tool',
@@ -893,7 +900,7 @@ function createRunShellReplyHandler(shell_name) {
 				name: `code-execution.run-${shell_name}`,
 				role: 'tool',
 				content: guarded.text,
-				content_for_show: buildResultShow({ lang: shell_name, code: call.inner, body: guarded.truncated ? guarded.text : showBody }),
+				content_for_show: buildResultShow({ lang: shell_name, code: call.inner, body: guarded.truncated ? renderAnsiBlock(guarded.text) : showBody }),
 				files: [],
 			})
 			return { regen: true }

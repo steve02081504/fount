@@ -7,6 +7,7 @@
 
 import { getTimers, removeTimer, setTimer } from '../../../../server/timers.mjs'
 import { defineReplyHandler } from '../../shells/chat/src/reply/defineReplyHandler.mjs'
+import { renderMarkdownCodeBlock } from '../../shells/chat/src/streaming/index.mjs'
 
 import { registerChannel } from './state.mjs'
 
@@ -14,6 +15,15 @@ import { registerChannel } from './state.mjs'
  * timer 插件的 PATH
  */
 export const PLUGIN_PATH = 'plugins/timer'
+
+/**
+ * 把日志正文包进代码块作为人类展示层：正文含模型提供的 reason / 路径等文本，不可直接进 markdown。
+ * @param {string} content 日志正文。
+ * @returns {string} 展示层 Markdown。
+ */
+function showFence(content) {
+	return renderMarkdownCodeBlock(content ?? '')
+}
 
 /**
  * 将自然语言时间字符串解析为毫秒数。
@@ -181,7 +191,7 @@ export const setTimerReplyHandler = defineReplyHandler({
 			}
 
 		systemLog += `已设置 ${successCount} 个定时器。\n届时将触发新回复，现在你可以继续当前对话。\n`
-		AddLongTimeLog({ name: 'timer', role: 'tool', content: systemLog, files: [] })
+		AddLongTimeLog({ name: 'timer', role: 'tool', content: systemLog, content_for_show: showFence(systemLog), files: [] })
 		return { regen: true }
 	},
 })
@@ -205,7 +215,8 @@ export const listTimersReplyHandler = defineReplyHandler({
 		const listText = charTimers.length
 			? charTimers.map(t => `- "${t.callbackdata.reason}"：${t.callbackdata.trigger}`).join('\n')
 			: '无'
-		AddLongTimeLog({ name: 'timer', role: 'tool', content: `当前定时器列表：\n${listText}`, files: [] })
+		const logText = `当前定时器列表：\n${listText}`
+		AddLongTimeLog({ name: 'timer', role: 'tool', content: logText, content_for_show: showFence(logText), files: [] })
 		return { regen: true }
 	},
 })
@@ -246,7 +257,7 @@ export const removeTimerReplyHandler = defineReplyHandler({
 			else
 				systemLog += `未找到定时器"${reason}"。\n`
 		}
-		AddLongTimeLog({ name: 'timer', role: 'tool', content: systemLog, files: [] })
+		AddLongTimeLog({ name: 'timer', role: 'tool', content: systemLog, content_for_show: showFence(systemLog), files: [] })
 		return { regen: true }
 	},
 })
