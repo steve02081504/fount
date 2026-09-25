@@ -16,7 +16,7 @@ Deno.test('freeuse BuildPrompt returns { prompt } with system, chat log and char
 	const out = await source.BuildPrompt(conversation.makePromptStruct())
 
 	assertEquals(typeof out.prompt, 'string')
-	assert(out.prompt.includes('Character settings to role-play:'), 'system prompt expected')
+	assert(out.prompt.includes('Character settings:'), 'system prompt expected')
 	assert(out.prompt.includes('Tester: 你好\n<|endofres|>'), 'chat log entry with end token expected')
 	assert(out.prompt.endsWith('ZL-31: '), 'char lead-in expected')
 })

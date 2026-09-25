@@ -23,6 +23,6 @@ Deno.test('cohere BuildPrompt returns { model, messages } with system first', as
 	assertEquals(out.model, 'command-r-plus')
 	assert(Array.isArray(out.messages), 'messages array expected')
 	assertEquals(out.messages.map(message => message.role), ['system', 'user', 'assistant'])
-	assert(out.messages[0].content.includes('Character settings to role-play:'), 'system prompt expected')
+	assert(out.messages[0].content.includes('Character settings:'), 'system prompt expected')
 	assert(out.messages[1].content.includes('<sender>Tester</sender>'), 'message wrapper expected')
 })
