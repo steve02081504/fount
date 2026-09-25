@@ -16,8 +16,8 @@ import { __dirname } from 'fount/server/base.mjs'
 
 /** 会话轮数。 */
 const ROUNDS = 100
-/** 全会话累计缓存率下限（depth=10 时 system 会移位，约 83%）。 */
-const MIN_CACHE_RATE = 0.83
+/** 全会话累计前缀复用率下限（depth=10 时 system 会移位，实测约 86%，取 84% 留余量）。 */
+const MIN_CACHE_RATE = 0.84
 /** mock AI 源目录名。 */
 const AI_SOURCE_NAME = 'proxy_openai_mock'
 

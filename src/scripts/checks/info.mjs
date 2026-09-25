@@ -110,7 +110,8 @@ export async function isUrlUnavailable(url, timeoutMs = URL_CHECK_TIMEOUT_MS) {
 		try {
 			const response = await fetch(url, { method, headers, signal: controller.signal, redirect: 'follow' })
 			if (response.status === 404) return 'not_found'
-			if (response.ok) return 'ok'
+			// 429 限流只说明请求被拒，资源本身可达（否则批量探测会被 CDN 误报）
+			if (response.ok || response.status === 429) return 'ok'
 			// HEAD 405/403 等：回退 GET；GET 非 404 视为可达（与旧脚本一致）
 			if (method === 'HEAD') return 'error'
 			return 'ok'
@@ -123,10 +124,22 @@ export async function isUrlUnavailable(url, timeoutMs = URL_CHECK_TIMEOUT_MS) {
 		}
 	}
 
-	const head = await once('HEAD')
+	/**
+	 * 网络抖动重试：单次超时/连接失败不代表资源不可用。
+	 * @param {string} method HTTP 方法
+	 * @returns {Promise<'ok' | 'not_found' | 'error'>} 探测结果
+	 */
+	async function onceRetry(method) {
+		const first = await once(method)
+		if (first !== 'error') return first
+		await new Promise(resolve => setTimeout(resolve, 500))
+		return once(method)
+	}
+
+	const head = await onceRetry('HEAD')
 	if (head === 'ok') return false
 	// 部分 CDN 对 HEAD 回 404/错误但 GET 正常；以 GET 为准
-	const get = await once('GET')
+	const get = await onceRetry('GET')
 	return get !== 'ok'
 }
 

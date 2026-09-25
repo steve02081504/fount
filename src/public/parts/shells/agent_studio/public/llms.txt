@@ -55,7 +55,7 @@ Agent Studio 经 shell 的 `ArgumentsHandler` 暴露 CLI，便于 agent dump 数
 ### GET /api/parts/shells:agent_studio/generation/:id
 - 用途：单条生成记录完整内容（含 `requests`/`dialogue`/`response`/`conversation`，受保留策略约束）。
 - 记录内的 `requests` 为该次生成逐轮 AI 请求快照 `{ index, startedAt, finishedAt, model, systemPrompt, messages, snapshot? }`：`systemPrompt` 为合并后的系统提示，`messages` 为可见聊天记录（含附加日志与摘要边界），每条消息带 `id`；`snapshot` 为 AI 源按自身配置构建出站形态结构后序列化的纯文本快照（附件二进制以变长 hash 表示），用于缓存对比；`requestCount` 为采集轮次数。
-- `cacheRate` 为该次生成相对上一轮 prompt 的估算缓存复用率（比对 `snapshot` 纯文本的公共前缀，旧记录回退 `systemPrompt`+`messages`，非计费 token，记录时预计算，`requests` 被清除后仍保留）；取该生成**各轮复用率的算术平均**（每轮以自身 prompt 长度归一，而非各轮长度之和），无上一轮或快照过期时为 `null`。
+- `cacheRate` 为该次生成相对上一轮 prompt 的估算缓存复用率（比对 `snapshot` 纯文本的公共前缀，旧记录回退 `systemPrompt`+`messages`，非计费 token，记录时预计算，`requests` 被清除后仍保留）；每轮 `rate` = 公共前缀 / **上一请求**长度（即上一请求有多少成为这一请求的开头，纯追加内容时该轮为 100%），生成级取各轮复用率的算术平均，无上一轮或快照过期时为 `null`。
 - `dialogue` 为按消息 `id` 从 `requests` 复原的对话事件流 `{ rounds, events }`：首次出现的消息记 `insert`，同一 id 内容变化记 `update`（编辑）并保留其发生轮次，可在客户端按轮次复播；末轮角色回复作为最后一条事件。`dialogue` 独立于请求保留期，跟随整条记录（`conversationMs`）存活。
 - `promptMs` 超期后 `requests` 被清除并置 `requestsStripped`（`dialogue` 仍在）。旧格式记录的 `input` 仅为请求 `chat_log` 快照，非完整 prompt。
 
@@ -102,7 +102,7 @@ Agent Studio 经 shell 的 `ArgumentsHandler` 暴露 CLI，便于 agent dump 数
 ### POST /api/parts/shells:agent_studio/benchmarks/:id/run
 - Body：`{ charId, aiSource?, judgeAiSource?, model? }`
 - 用途：运行基准。逐用例调用角色 `chat.GetReply` 并写入生成记录（source `shells/agent_studio/benchmark`）；有 `check` 时先运行程序评分；有 `criteria`（或无 `check` 但有 `expected`）时再用裁判 AI 源评分，程序失败则跳过裁判。裁判源缺失时拒绝运行含裁判用例的基准。
-- JSON 文件可直接作为 `POST /benchmarks` 请求体导入；`GET /benchmarks/:id` 可导出定义；演示定义见仓库 `src/public/parts/shells/agent_studio/examples/LLM唐b测试.json`。
+- JSON 文件可直接作为 `POST /benchmarks` 请求体导入；`GET /benchmarks/:id` 可导出定义；演示定义见仓库 `src/public/parts/shells/agent_studio/examples/LLM-mixed-scoring-demo.json`。
 - 返回：`benchmarkRun_t`（`results` / `stats`）。
 
 ---

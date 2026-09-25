@@ -46,6 +46,29 @@ Deno.test('cache report excludes compression rounds and their successor', () => 
 	assertEquals(report.below, false)
 })
 
+Deno.test('cache report treats an append-only prompt as full reuse', () => {
+	const base = { systemPrompt: 'sys', messages: [{ role: 'user', content: 'Q'.repeat(200) }] }
+	const appended = {
+		systemPrompt: 'sys',
+		messages: [{ role: 'user', content: 'Q'.repeat(200) }, { role: 'char', content: 'A'.repeat(114514) }],
+	}
+	const report = buildCacheReport([
+		{ id: 'g1', startedAt: 1, requests: [base] },
+		{ id: 'g2', startedAt: 2, requests: [appended] },
+	])
+	assertEquals(report.generations[1].requests[0].rate, 1)
+	assertEquals(report.minNonCompressedRate, 1)
+	assertEquals(report.below, false)
+})
+
+Deno.test('cache report normalizes reuse by the previous request length', () => {
+	const report = buildCacheReport([
+		{ id: 'g1', startedAt: 1, requests: [{ systemPrompt: 'sys', messages: [{ role: 'user', content: 'hello' }] }] },
+		{ id: 'g2', startedAt: 2, requests: [{ systemPrompt: 'sys', messages: [] }] },
+	])
+	assertEquals(report.generations[1].requests[0].rate, 3 / 14)
+})
+
 Deno.test('cache report tolerates stripped records without requests', () => {
 	const report = buildCacheReport([
 		{ id: 'g1', startedAt: 1, requestCount: 2, requestsStripped: true },

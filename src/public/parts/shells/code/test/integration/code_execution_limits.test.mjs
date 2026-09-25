@@ -400,6 +400,7 @@ Deno.test('code-execution run-js 将 console 和返回值归为 output/result，
 		assertEquals(await runReplyHandlers(result, args, getCodeExecutionReplyHandlers()), true)
 		const entry = findToolEntry(logs)
 		for (const part of expected) assertStringIncludes(entry.content, part)
+		assertStringIncludes(entry.content_for_show, '&nbsp;', '展示层应以 HTML 渲染结果/错误，而非纯文本回退')
 		assert(!entry.content.includes('outputEntries'), '不应向模型展开 EvalResult 内部结构')
 		assert(!entry.content.includes('LogEntry'), '不应向模型展开 console 日志对象')
 	}

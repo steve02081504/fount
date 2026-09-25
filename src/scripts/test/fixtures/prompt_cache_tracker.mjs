@@ -6,6 +6,10 @@
  * - 与「首个请求」的最长公共前缀（会话头部稳定性）；
  * - 是否纯追加（`grewOnly`，即上一请求是当前请求的完整前缀）。
  *
+ * 两种「命中率」语义不同，勿混用：
+ * - `cacheRate` = cachedTokens / 本次 prompt 长度，模拟供应商计费口径（cached / prompt，见 OpenAI 的 cached_tokens）。
+ * - `prefixMatchRate` = 公共前缀 / **上一请求**长度，衡量上一请求有多少成为本次请求的开头；纯追加时为 100%，不因新增内容变长而被稀释。
+ *
  * OpenAI / Gemini / Claude 等各 wire 格式 mock 只需提供自己的 `serialize`。
  */
 
@@ -64,6 +68,7 @@ export function createPrefixCacheTracker() {
 	/** @type {object[]} */
 	const perRequest = []
 	let promptTokensTotal = 0
+	let previousPromptTokensTotal = 0
 	let cachedTokensTotal = 0
 	let prefixMatchTokensTotal = 0
 	let firstMatchTokensTotal = 0
@@ -84,6 +89,7 @@ export function createPrefixCacheTracker() {
 		lastSerialized = serialized
 
 		promptTokensTotal += promptTokens
+		if (previousSerialized != null) previousPromptTokensTotal += previousSerialized.length
 		cachedTokensTotal += cachedTokens
 		prefixMatchTokensTotal += common
 		firstMatchTokensTotal += commonWithFirst
@@ -97,7 +103,7 @@ export function createPrefixCacheTracker() {
 			commonPrefixTokens: common,
 			commonWithFirstTokens: commonWithFirst,
 			cacheRate: promptTokens > 0 ? cachedTokens / promptTokens : 0,
-			prefixMatchRate: promptTokens > 0 ? common / promptTokens : 0,
+			prefixMatchRate: previousSerialized?.length ? common / previousSerialized.length : 0,
 			grewOnly,
 			divergeAt: previousSerialized == null || grewOnly
 				? null
@@ -118,11 +124,12 @@ export function createPrefixCacheTracker() {
 	const stats = () => ({
 		requests: perRequest.length,
 		promptTokens: promptTokensTotal,
+		previousPromptTokens: previousPromptTokensTotal,
 		cachedTokens: cachedTokensTotal,
 		prefixMatchTokens: prefixMatchTokensTotal,
 		firstMatchTokens: firstMatchTokensTotal,
 		cacheRate: promptTokensTotal > 0 ? cachedTokensTotal / promptTokensTotal : 0,
-		prefixMatchRate: promptTokensTotal > 0 ? prefixMatchTokensTotal / promptTokensTotal : 0,
+		prefixMatchRate: previousPromptTokensTotal > 0 ? prefixMatchTokensTotal / previousPromptTokensTotal : 0,
 		firstMatchRate: promptTokensTotal > 0 ? firstMatchTokensTotal / promptTokensTotal : 0,
 		firstPromptTokens: firstSerialized == null ? 0 : firstSerialized.length,
 		minCommonWithFirstTokens: perRequest.length
@@ -141,6 +148,7 @@ export function createPrefixCacheTracker() {
 		lastSerialized = null
 		perRequest.length = 0
 		promptTokensTotal = 0
+		previousPromptTokensTotal = 0
 		cachedTokensTotal = 0
 		prefixMatchTokensTotal = 0
 		firstMatchTokensTotal = 0

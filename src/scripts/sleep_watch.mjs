@@ -1,6 +1,8 @@
 /** 进程内休眠监测：延迟超过五分钟的 1s tick 视为系统暂停。 */
+import { ms } from './ms.mjs'
+
 const INTERVAL_MS = 1000
-const MIN_SLEEP_MS = 5 * 60 * 1000
+const MIN_SLEEP_MS = ms('5m')
 let lastTick = Date.now()
 let pausedMs = 0
 const listeners = new Set()
@@ -47,9 +49,7 @@ export function setAwakeTimeout(callback, duration) {
 	const deadline = awakeNow() + Math.max(0, duration)
 	let timer
 	let cancelled = false
-	/**
-	 *
-	 */
+	/** 到点触发回调，否则按剩余清醒时间续期。 */
 	const tick = () => {
 		if (cancelled) return
 		const remaining = deadline - awakeNow()

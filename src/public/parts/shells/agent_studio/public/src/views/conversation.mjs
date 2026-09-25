@@ -9,7 +9,7 @@ import { showToastI18n } from '/scripts/features/toast.mjs'
 import { onServerEvent } from '/scripts/endpoints/server_events.mjs'
 
 import { replayDialogue } from '../../shared/dialogueReplay.mjs'
-import { estimatePromptCache } from '../../shared/promptCache.mjs'
+import { commonPrefixLength, estimatePromptCache } from '../../shared/promptCache.mjs'
 import { messagesToText } from '../../shared/promptText.mjs'
 import { getConversation, getSubAgent, sendSubAgentMessage } from '../endpoints.mjs'
 import { formatTime } from '../lib/format.mjs'
@@ -24,6 +24,8 @@ let currentKey = ''
 let refreshTimer = null
 /** 回放条两端内缩，抵消原生 range 滑块拇指的半宽，使节点/图表与进度条对位。 */
 const REPLAY_INSET = 8
+/** 工具条目输出超过该行数时默认折叠。 */
+const TOOL_COLLAPSE_LINES = 7
 
 /**
  * 内部对话角色标签的 i18n 键（缺失时回落原始角色名）。
@@ -106,7 +108,7 @@ export async function loadConversationView({ key } = {}) {
 		const units = buildRoundUnits(items)
 		renderReplay(units, metrics, count => {
 			const revealed = generationsForRounds(items, units, count)
-			generations.replaceChildren(...revealed.map(({ item, index, rounds }) => renderGeneration(item, metrics[index], rounds, conversation.dialogue?.events ?? [])))
+			generations.replaceChildren(...revealed.map(({ item, index, rounds }) => renderGeneration(item, metrics[index], rounds, conversation.dialogue?.events ?? [], previousRequestFor(items, index))))
 		})
 	}
 	catch (error) {
@@ -306,7 +308,7 @@ async function loadSubagentConversation(key) {
 			transcript.replaceChildren(...(atLatest ? run.conversation || [] : replayDialogue(record?.dialogue?.events ?? [], { upToRound: units[count - 1]?.round ?? 0 })).map(renderSubagentEntry))
 			form?.classList.toggle('hidden', !run.canSend || !atLatest)
 			const revealed = generationsForRounds(items, units, count)
-			list.replaceChildren(...revealed.filter(({ item }) => item.requests?.length).map(({ item, index, rounds }) => renderGeneration(item, metrics[index], rounds, record?.dialogue?.events ?? [])))
+			list.replaceChildren(...revealed.filter(({ item }) => item.requests?.length).map(({ item, index, rounds }) => renderGeneration(item, metrics[index], rounds, record?.dialogue?.events ?? [], previousRequestFor(items, index))))
 		})
 		const preview = document.getElementById('subagentLivePreview')
 		if (!run.canSend && preview) { preview.textContent = ''; preview.classList.add('hidden') }
@@ -327,7 +329,9 @@ function renderSubagentEntry(message) {
 	const title = document.createElement('strong')
 	title.className = 'subagent-entry-name'
 	title.textContent = message.name || message.role || ''
-	row.append(title, messageBody(message.content_for_show ?? message.content ?? ''))
+	row.append(title, messageBody(message.content_for_show ?? message.content ?? '', {
+		collapseLines: message.role === 'tool' ? TOOL_COLLAPSE_LINES : 0,
+	}))
 	return row
 }
 
@@ -354,14 +358,66 @@ function renderMeta(container, conversation) {
 }
 
 /**
+ * 取某次生成之前的最近一次请求快照，作为首轮的缓存比较基准（跨生成沿用同一会话）。
+ * @param {object[]} items 会话内按开始时间升序的生成记录
+ * @param {number} index 目标生成下标
+ * @returns {object | null} 上一请求快照或 null
+ */
+function previousRequestFor(items, index) {
+	for (let cursor = index - 1; cursor >= 0; cursor--) {
+		const requests = items[cursor]?.requests
+		if (requests?.length) return requests[requests.length - 1]
+	}
+	return null
+}
+
+/**
+ * 把一次请求拆成与展示一一对应的文本块：系统提示在前，消息正文按序跟随。
+ * @param {object} request 请求快照
+ * @returns {Array<{ kind: 'system' | 'message', index: number, text: string }>} 文本块
+ */
+function reusableBlocks(request) {
+	return [
+		{ kind: 'system', index: -1, text: String(request.systemPrompt ?? '') },
+		...(request.messages ?? []).map((message, index) => ({ kind: 'message', index, text: String(message.content ?? '') })),
+	]
+}
+
+/**
+ * 比较本轮与上一轮的展示文本块序列，取连续公共前缀。
+ * 逐块给出被复用的首字符数；首个未完全复用的块即绿色与非绿色的分界线，可精确到块内字符。
+ * @param {object} request 本轮请求快照
+ * @param {object} previous 上一轮请求快照
+ * @returns {{ reusedLengths: number[], boundary: { kind: 'system' | 'message', index: number } | null }} 各块复用字符数与边界
+ */
+function computeReuse(request, previous) {
+	const blocks = reusableBlocks(request)
+	const previousBlocks = reusableBlocks(previous)
+	const prefix = commonPrefixLength(blocks.map(block => block.text).join('\n'), previousBlocks.map(block => block.text).join('\n'))
+	const reusedLengths = []
+	let remaining = prefix
+	for (const [index, block] of blocks.entries()) {
+		const take = Math.min(remaining, block.text.length)
+		reusedLengths.push(take)
+		remaining -= take
+		if (remaining <= 0) break
+		if (index < blocks.length - 1) remaining -= 1
+	}
+	while (reusedLengths.length < blocks.length) reusedLengths.push(0)
+	const changed = reusedLengths.findIndex((length, index) => length < blocks[index].text.length)
+	return { reusedLengths, boundary: changed < 0 ? null : { kind: blocks[changed].kind, index: blocks[changed].index } }
+}
+
+/**
  * 渲染一条生成记录及其逐轮请求。
  * @param {object} generation 生成记录
  * @param {object} cache 缓存复用估算
  * @param {number[]} rounds 已揭示的全局轮次
  * @param {object[]} events 会话事件
+ * @param {object | null} previousRequest 本代首轮的上一请求快照（跨生成）
  * @returns {HTMLElement} 元素
  */
-function renderGeneration(generation, cache, rounds, events) {
+function renderGeneration(generation, cache, rounds, events, previousRequest = null) {
 	const article = document.createElement('article')
 	article.className = 'conversation-generation surface'
 	const head = document.createElement('header')
@@ -390,7 +446,7 @@ function renderGeneration(generation, cache, rounds, events) {
 	head.appendChild(meta)
 	article.appendChild(head)
 	for (const [offset, round] of rounds.entries())
-		article.append(renderRound(generation, offset, round, cache.rounds?.[offset]?.rate, events))
+		article.append(renderRound(generation, offset, round, cache.rounds?.[offset]?.rate, events, previousRequest))
 	return article
 }
 
@@ -401,9 +457,10 @@ function renderGeneration(generation, cache, rounds, events) {
  * @param {number} round 全局轮次
  * @param {number|null} cacheRate 本轮缓存率
  * @param {object[]} events 合并后的会话事件
+ * @param {object | null} previousRequest 本代首轮的上一请求快照（跨生成）
  * @returns {HTMLElement} 节点
  */
-function renderRound(generation, offset, round, cacheRate, events) {
+function renderRound(generation, offset, round, cacheRate, events, previousRequest = null) {
 	const node = document.createElement('section')
 	node.className = 'conversation-round'
 	node.dataset.round = String(round)
@@ -413,11 +470,17 @@ function renderRound(generation, offset, round, cacheRate, events) {
 	heading.className = 'conversation-request-head'
 	heading.textContent = geti18n('agent_studio.conversation.roundIndex', { index: round })
 	const badge = document.createElement('span')
-	badge.className = `badge ${cacheRate == null ? 'badge-ghost' : cacheRate >= 0.6 ? 'badge-success' : 'badge-error'}`
+	badge.className = `badge ${cacheRate == null ? 'badge-neutral' : cacheRate >= 0.6 ? 'badge-success' : 'badge-error'}`
 	badge.textContent = cacheRate == null ? geti18n('agent_studio.conversation.cache.noRate') : geti18n('agent_studio.conversation.cache.rate', { rate: Math.round(cacheRate * 100) })
 	badge.title = geti18n('agent_studio.conversation.cache.hint')
 	head.append(heading, badge)
+	const request = generation.requests?.[offset]
+	const previous = offset > 0 ? generation.requests?.[offset - 1] : previousRequest
+	const reuse = request && previous ? computeReuse(request, previous) : null
+	const prompt = renderRoundPrompt(generation, offset, reuse)
+	if (reuse?.boundary) head.append(buildJumpButton(prompt))
 	node.append(head)
+	node.append(prompt)
 	const roundEvents = events.filter(event => event.round === round)
 	const changedIds = new Set(roundEvents.map(event => event.message?.id ?? event.id))
 	const messages = replayDialogue(events, { upToRound: round }).filter(message => changedIds.has(message.id) && message.id !== `${generation.id}:final`)
@@ -429,7 +492,6 @@ function renderRound(generation, offset, round, cacheRate, events) {
 	}
 	if (roundEvents.some(event => event.message?.id === `${generation.id}:final`))
 		node.append(buildSection(geti18n('agent_studio.conversation.response'), generation.response, `generation-${generation.id}-response.txt`))
-	node.append(renderRoundPrompt(generation, offset))
 	return node
 }
 
@@ -437,9 +499,10 @@ function renderRound(generation, offset, round, cacheRate, events) {
  * 渲染当前轮次的 prompt 快照。
  * @param {object} generation 生成记录
  * @param {number} offset 该生成中的轮次下标
+ * @param {{ reusedLengths: number[], boundary: object | null } | null} [reuse] 与前轮的复用判定
  * @returns {HTMLDetailsElement} prompt 折叠面板
  */
-function renderRoundPrompt(generation, offset) {
+function renderRoundPrompt(generation, offset, reuse = null) {
 	const details = document.createElement('details')
 	details.className = 'conversation-requests'
 	const summary = document.createElement('summary')
@@ -465,7 +528,10 @@ function renderRoundPrompt(generation, offset) {
 			error.textContent = `${request.error.name || ''}: ${request.error.message || ''}`
 			content.append(error)
 		}
-		content.append(buildSection(geti18n('agent_studio.conversation.systemPrompt'), request.systemPrompt ?? '', `generation-${generation.id}-round-${request.index}-system.txt`))
+		content.append(buildSection(geti18n('agent_studio.conversation.systemPrompt'), request.systemPrompt ?? '', `generation-${generation.id}-round-${request.index}-system.txt`, {
+			reusedLength: reuse?.reusedLengths?.[0] ?? 0,
+			boundary: reuse?.boundary?.kind === 'system',
+		}))
 		if (request.messages?.length) {
 			const labelRow = document.createElement('div')
 			labelRow.className = 'conversation-section-head'
@@ -479,7 +545,7 @@ function renderRoundPrompt(generation, offset) {
 			content.append(labelRow)
 			const list = document.createElement('div')
 			list.className = 'conversation-messages'
-			list.append(...renderMessages(request.messages))
+			list.append(...renderMessages(request.messages, reuse))
 			content.append(list)
 		}
 		details.append(content)
@@ -498,17 +564,22 @@ function renderRoundPrompt(generation, offset) {
 /**
  * 渲染一组消息行。
  * @param {object[]} messages 消息
+ * @param {{ reusedLengths: number[], boundary: object | null } | null} [reuse] 各块复用字符数与边界（缺省则不标记）
  * @returns {HTMLElement[]} 行元素
  */
-function renderMessages(messages) {
-	return (messages || []).map(message => {
+function renderMessages(messages, reuse = null) {
+	return (messages || []).map((message, index) => {
 		const row = document.createElement('div')
 		row.className = `conversation-message role-${message.role || 'system'}`
 		const name = document.createElement('span')
 		name.className = 'conversation-message-name'
 		const key = ROLE_LABEL_KEYS[message.role]
 		name.textContent = message.name || (key && geti18n_nowarn(key)) || message.role || ''
-		const body = messageBody(message.content ?? '')
+		const body = messageBody(message.content ?? '', {
+			reusedLength: reuse?.reusedLengths?.[index + 1] ?? 0,
+			boundary: reuse?.boundary?.kind === 'message' && reuse.boundary.index === index,
+			collapseLines: message.role === 'tool' ? TOOL_COLLAPSE_LINES : 0,
+		})
 		row.append(name, body)
 		return row
 	})
@@ -519,9 +590,10 @@ function renderMessages(messages) {
  * @param {string} title 标题
  * @param {string} text 文本
  * @param {string} [filename] 下载文件名（缺省则不加按钮）
+ * @param {{ reusedLength?: number, boundary?: boolean }} [options] 复用前缀字符数与是否为本轮复用分界线
  * @returns {HTMLElement} 段落
  */
-function buildSection(title, text, filename) {
+function buildSection(title, text, filename, { reusedLength = 0, boundary = false } = {}) {
 	const section = document.createElement('section')
 	section.className = 'conversation-section'
 	const head = document.createElement('div')
@@ -531,7 +603,37 @@ function buildSection(title, text, filename) {
 	heading.textContent = title
 	head.appendChild(heading)
 	if (filename) head.appendChild(textActions(() => text, { filename }))
-	const body = messageBody(text)
+	const body = messageBody(text, { reusedLength, boundary })
 	section.append(head, body)
 	return section
+}
+
+/**
+ * 构建「跳到复用分界线」按钮：展开 prompt 面板并滚动到首个非复用块。
+ * @param {HTMLDetailsElement} details 对应的 prompt 折叠面板
+ * @returns {HTMLButtonElement} 按钮
+ */
+function buildJumpButton(details) {
+	const button = document.createElement('button')
+	button.type = 'button'
+	button.className = 'btn btn-ghost btn-xs conversation-jump'
+	const label = geti18n('agent_studio.conversation.jumpToChange')
+	button.title = label
+	button.setAttribute('aria-label', label)
+	const icon = document.createElement('span')
+	icon.className = 'icon icon-jump'
+	icon.setAttribute('aria-hidden', 'true')
+	const text = document.createElement('span')
+	text.className = 'section-actions-label'
+	text.textContent = label
+	button.append(icon, text)
+	button.addEventListener('click', () => {
+		details.open = true
+		const target = details.querySelector('[data-prompt-boundary]')
+		if (!target) return
+		target.scrollIntoView({ behavior: 'smooth', block: 'center' })
+		target.classList.add('prompt-boundary-flash')
+		setTimeout(() => target.classList.remove('prompt-boundary-flash'), 900)
+	})
+	return button
 }

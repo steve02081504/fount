@@ -38,7 +38,7 @@ Timeline commit / OnMessage test traps: [test domain-harness](../../../../../../
 - Axioms: [human-agent-operational-parity-review.md](../../../../../../docs/review/human-agent-operational-parity-review.md).
 - Edit/delete UI when `ownerEntityHash === viewer`. Viewer: `viewerEntityHash()` / `state.viewerEntityHash`.
 - Saved posts / drafts: per-entity JSON under `shells/social/entities/{entityHash}/`; HTTP fixed to operator; agents via `client.saved.*` / `client.drafts.*`. Missing file → **fresh** empty structure (never shared `DEFAULT` shallow copy).
-- **Post-detail read progress** (本机隐私，不联邦): per viewer entity, `src/server/read_progress.mjs` (`read_progress/social-<entityHash>.json`, key `<authorEntityHash>:<postId>`, retained 1000). Anchor = content-block fingerprint + in-block ratio (shared `/scripts/features/scrollProgress.mjs`) so window resizes restore the same content; feed position is **not** tracked. Long-post threshold > 2/3 viewport measured at save time.
+- **Post-detail read progress** (local privacy, not federated): per viewer entity, `src/server/read_progress.mjs` (`read_progress/social-<entityHash>.json`, key `<authorEntityHash>:<postId>`, retained 1000). Anchor = content-block fingerprint + in-block ratio (shared `/scripts/features/scrollProgress.mjs`) so window resizes restore the same content; feed position is **not** tracked. Long-post threshold > 2/3 viewport measured at save time.
 - Entity search: chat `GET …/entities/search` / `SocialClient.searchEntities`.
 
 ## Agent integration

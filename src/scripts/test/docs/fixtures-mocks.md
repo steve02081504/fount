@@ -14,9 +14,9 @@ Shared mock AI: `scripts/test/fixtures/mock_ai.mjs` (`seedMockAiSource`, `PROMPT
 
 `scripts/test/fixtures/openai_prompt_cache_mock.mjs` + `serviceSources/AI/proxy_openai_mock` (env `FOUNT_TEST_OPENAI_MOCK_URL`).
 
-- Assert **exact prefix match rate** (`prefixMatchRate`).
-- OpenAI `cached_tokens` still applies ≥1024 / 128 flooring in the mock response.
-- Default `system_prompt_at_depth: 10` moves the system block as the log grows — expect ~83% over 100 rounds, not near-100%.
+- Assert **exact prefix match rate** (`prefixMatchRate` = common prefix / previous prompt length; a fully-reused prior prompt counts 100%).
+- OpenAI `cached_tokens` still applies ≥1024 / 128 flooring in the mock response (`cacheRate` = cached / current prompt, the provider billing shape).
+- Default `system_prompt_at_depth: 10` moves the system block as the log grows — expect ~86% reuse over 100 rounds, not near-100%.
 
 ## AI prompt-prefix cache stability mocks
 

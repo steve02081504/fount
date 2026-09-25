@@ -6991,6 +6991,9 @@
 			"plainView": "プレーンテキスト",
 			"markdownView": "Markdown",
 			"switchView": "Markdown / テキストを切り替え",
+			"jumpToChange": "未再利用箇所へ移動",
+			"expand": "展開",
+			"collapse": "折りたたむ",
 			"replayProgress": {
 				"aria-label": "会話の再生進捗"
 			},

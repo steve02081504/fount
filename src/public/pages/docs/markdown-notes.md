@@ -32,7 +32,7 @@ Do not use Shiki `transformers.root` wrapping — it breaks inline `{:lang}` (ex
 
 ## Unknown HTML tags
 
-`remarkLiteralizeUnknownHtmlTags`（remark 阶段、`remarkRehype` 前）把正文里的未知 HTML 标签（`HTMLUnknownElement`，或未注册的自定义元素——本项目不注册任何自定义元素）从 raw HTML 降级为字面文本。否则它们会被当 HTML 吞掉：信任档渲染为空（推理正文里的 `<run-subagent>` / `<list-ai-sources/>` 会留空洞），未信任档被 `remarkRehype` 直接丢弃。已知标签（`details` / `summary` / `b` / `img` / `script` …）与代码节点（行内/围栏代码是 `code` 节点，不是 `html` 节点）不受影响，故不会二次转义 `` `Array<T>` ``。
+`remarkLiteralizeUnknownHtmlTags` (a remark plugin, before `remarkRehype`) downgrades unknown HTML tags in the body (`HTMLUnknownElement`, or custom elements not registered — this project registers none) from raw HTML to literal text. Otherwise they are swallowed as HTML: the trusted tier renders them as nothing (a `<run-subagent>` / `<list-ai-sources/>` in reasoning text leaves a hole), and the untrusted tier drops them outright in `remarkRehype`. Known tags (`details` / `summary` / `b` / `img` / `script` …) and code nodes (inline/fenced code are `code` nodes, not `html` nodes) are unaffected, so `` `Array<T>` `` is not double-escaped.
 
 ## URL safety
 

@@ -82,6 +82,10 @@
 	--icon: url("https://api.iconify.design/mdi/delete-outline.svg");
 }
 
+.icon-jump {
+	--icon: url("https://api.iconify.design/mdi/format-vertical-align-bottom.svg");
+}
+
 /* Shell layout */
 .shell {
 	display: grid;
@@ -877,6 +881,11 @@
 	float: right;
 }
 
+.message-collapse-toggle {
+	float: right;
+	margin-right: 0.35rem;
+}
+
 .message-view-body {
 	clear: both;
 	min-width: 0;
@@ -888,6 +897,13 @@
 	word-break: break-word;
 	font-family: var(--font-code);
 	font-size: 0.78rem;
+	line-height: 1.5;
+}
+
+.message-view-plain.is-collapsed,
+.markdown-body.is-collapsed {
+	max-height: calc(7 * 1.5em);
+	overflow: hidden;
 }
 
 .subagent-conversation {
@@ -1151,6 +1167,44 @@
 	margin: 0;
 	font-size: 0.76rem;
 	color: var(--color-error);
+}
+
+/* 与前轮连续公共前缀一致的 prompt 字符：微绿背景标出复用区，逐字符精确到分界线 */
+.prompt-reused {
+	background: color-mix(in srgb, var(--color-success) 15%, transparent);
+	border-radius: var(--radius-field);
+	box-decoration-break: clone;
+	-webkit-box-decoration-break: clone;
+}
+
+/* 复用区末尾的零宽锚点：绿色与非绿色的分界线，也是「跳到」按钮的滚动目标 */
+.prompt-boundary {
+	display: inline-block;
+	width: 0.12rem;
+	height: 1.1em;
+	margin: 0 -0.06rem;
+	vertical-align: -0.15em;
+	background: color-mix(in srgb, var(--color-success) 45%, transparent);
+	scroll-margin-block: 6rem;
+}
+
+.conversation-jump {
+	gap: 0.25rem;
+	margin-left: auto;
+}
+
+.prompt-boundary-flash {
+	animation: prompt-boundary-flash var(--duration-hover) var(--ease-standard);
+}
+
+@keyframes prompt-boundary-flash {
+	from {
+		box-shadow: 0 0 0 0.15rem color-mix(in srgb, var(--color-success) 55%, transparent);
+	}
+
+	to {
+		box-shadow: 0 0 0 0.15rem transparent;
+	}
 }
 
 .conversation-request-label {

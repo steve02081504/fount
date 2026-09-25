@@ -29,7 +29,7 @@ Deno.test('estimatePromptCache exposes per-round rates aligned with each generat
 	assertEquals(metrics[0].rounds[2].rate > 0.9, true)
 	assertEquals(metrics[1].rounds.length, 1)
 	assertEquals(metrics[1].rounds[0].rate, 1)
-	// 生成的汇总率即各轮 reused / total 的加权平均
+	// 生成的汇总率取各轮复用率的算术平均
 	assertEquals(metrics[0].rate > 0.8, true)
 })
 
@@ -63,7 +63,8 @@ Deno.test('estimatePromptCache averages per-round rates instead of diluting by s
 	}])
 	assertEquals(metrics[0].rounds[0].rate, null)
 	assertEquals(metrics[0].rounds[1].rate > 0.4, true)
-	// 旧口径 reused/sum(len) 会把单轮命中稀释到约一半；新口径等于该轮自身 rate
+	// 纯追加时上一请求被完整复用，该轮即 100%
+	assertEquals(metrics[0].rounds[1].rate, 1)
 	assertEquals(metrics[0].rate, metrics[0].rounds[1].rate)
 })
 
@@ -73,6 +74,26 @@ Deno.test('estimateGenerationCache averages per-round rates', () => {
 		{ systemPrompt: 'sys', messages: [{ role: 'user', content: 'hello' }, { role: 'char', content: 'hi there' }] },
 	])
 	assertEquals(metric.rate, metric.reused / metric.total)
+})
+
+Deno.test('a fully-reused previous prompt counts as 100% even when large content is appended', () => {
+	const base = { systemPrompt: 'instruction', messages: [{ role: 'user', content: 'X'.repeat(200) }] }
+	const appended = {
+		systemPrompt: 'instruction',
+		messages: [{ role: 'user', content: 'X'.repeat(200) }, { role: 'char', content: 'Y'.repeat(114514) }],
+	}
+	const metrics = estimatePromptCache([{ requests: [base, appended] }])
+	assertEquals(metrics[0].rounds[1].rate, 1)
+	assertEquals(metrics[0].rate, 1)
+	assertEquals(estimateGenerationCache(serializeRequest(base), [appended]).rate, 1)
+})
+
+Deno.test('reuse rate is normalized by the previous prompt, not the current one', () => {
+	const base = { systemPrompt: 'sys', messages: [{ role: 'user', content: 'hello' }] }
+	const shorter = { systemPrompt: 'sys', messages: [] }
+	const metrics = estimatePromptCache([{ requests: [base, shorter] }])
+	// 上一请求 14 字符、本轮 3 字符：只有 3 字符可作为前缀复用
+	assertEquals(metrics[0].rounds[1].rate, 3 / 14)
 })
 
 Deno.test('serializeRequest and commonPrefixLength expose the character-level basis', () => {

@@ -109,7 +109,7 @@ Deno.test('program checks score exact, regex, contains and reverse before judge'
 })
 
 Deno.test('demo benchmark imports and preserves mixed scoring cases', async () => {
-	const file = new URL('../../examples/LLM唐b测试.json', import.meta.url)
+	const file = new URL('../../examples/LLM-mixed-scoring-demo.json', import.meta.url)
 	const benchmark = normalizeBenchmark(JSON.parse(await Deno.readTextFile(file)))
 	assertEquals(benchmark.cases.length, 10)
 	assertEquals(benchmark.cases.some(item => item.check && item.criteria), true)

@@ -153,8 +153,11 @@ function copySelection(activeController) {
 		const meta = `${formatMessageTimeText(time)} · ${messageDisplayName(message)}`
 		const content = getMessageText(message) || ''
 		htmlParts.push(
-			`<div class="fount-message"><div class="fount-message-meta">${escapeHtml(meta)}</div>`
-			+ `<div class="fount-message-content">${escapeHtml(content).replace(/\n/g, '<br>')}</div></div>`,
+			`
+			<div class="fount-message">
+				<div class="fount-message-meta">${escapeHtml(meta)}</div>
+				<div class="fount-message-content">${escapeHtml(content).replace(/\n/g, '<br>')}</div>
+			</div>`,
 		)
 		textParts.push(`${meta}\n${content}`)
 	}

@@ -1,6 +1,6 @@
 /**
  * 【文件】src/cache_report.mjs — Agent Studio 提示缓存报告
- * 【职责】给定按时间排序的生成记录，逐请求计算相对上一请求的公共前缀复用率，并标记发生上下文压缩的轮次，输出机器可读报告。
+ * 【职责】给定按时间排序的生成记录，逐请求计算相对上一请求的公共前缀复用率（公共前缀 / 上一请求长度），并标记发生上下文压缩的轮次，输出机器可读报告。
  * 【原理】复用 `public/shared/promptCache.mjs` 的序列化与公共前缀算法；含 `summary` 条目的请求（或紧随其后的请求）不算缓存命中率，避免把压缩造成的下降误判为事故。
  * 【关联】cli.mjs（cache-report 子命令）、generation_history.mjs、public/shared/promptCache.mjs。
  */
@@ -34,8 +34,8 @@ export function buildCacheReport(records = [], { conversationId = '', threshold 
 			const current = serializeRequest(request)
 			let rate = null
 			// 本轮或上一轮发生压缩时，前缀对比不可比：跳过不计
-			if (previousPrompt != null && !compressed && !previousCompressed && current.length)
-				rate = commonPrefixLength(current, previousPrompt) / current.length
+			if (previousPrompt != null && !compressed && !previousCompressed && previousPrompt.length)
+				rate = commonPrefixLength(current, previousPrompt) / previousPrompt.length
 			if (rate != null && (minNonCompressedRate == null || rate < minNonCompressedRate))
 				minNonCompressedRate = rate
 			rounds.push({ index: request.index ?? rounds.length + 1, rate, compressed })

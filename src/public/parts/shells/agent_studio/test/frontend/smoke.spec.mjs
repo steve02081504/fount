@@ -154,8 +154,9 @@ test.describe('Agent Studio shell boot', () => {
 		await page.evaluate(() => { window.location.hash = '#conversation/demo-replay' })
 		await expect(page.locator('#conversationGenerations .conversation-generation')).toHaveCount(2)
 		await expect(page.locator('#conversationGenerations .conversation-round-head .badge-success')).toHaveCount(1)
+		await expect(page.locator('#conversationGenerations .conversation-round-head .badge-neutral')).toHaveCount(1)
 
-		const actions = page.locator('#conversationGenerations .conversation-round .conversation-section .section-actions').first()
+		const actions = page.locator('#conversationGenerations .conversation-round > .conversation-section .section-actions').first()
 		await expect(actions).toBeVisible()
 		const downloadPromise = page.waitForEvent('download')
 		await actions.getByRole('button').nth(1).click()
@@ -169,12 +170,78 @@ test.describe('Agent Studio shell boot', () => {
 		await page.locator('#conversationReplaySlider').fill('1')
 		await expect(page.locator('#conversationGenerations .conversation-generation')).toHaveCount(1)
 		await expect(page.locator('#conversationGenerations .conversation-round')).toHaveCount(1)
-		const body = page.locator('#conversationGenerations .conversation-round .message-view').first()
+		const body = page.locator('#conversationGenerations .conversation-round > .conversation-section .message-view').first()
 		await expect(body.locator('pre')).toContainText('**reply 1**')
 		await body.locator('button').click()
 		await expect(body.locator('strong')).toHaveText('reply 1')
 		await expect(page.locator('#conversationReplaySlider')).toHaveAttribute('min', '1')
 		await expect(page.locator('#conversationReplaySlider')).toHaveValue('1')
+	})
+
+	test('highlights prompt text reused from the previous round and jumps to the reuse boundary', async ({ page, baseUrl }) => {
+		const shared = 'S'.repeat(70)
+		const generations = [{
+			id: 'g1', startedAt: 1000, source: 'shells/code', charId: 'demo', requestCount: 2,
+			requests: [
+				{ index: 1, systemPrompt: `${shared}A`, messages: [{ role: 'user', id: 'u1', content: 'hello' }] },
+				{ index: 2, systemPrompt: `${shared}B`, messages: [{ role: 'user', id: 'u1', content: 'hello' }, { role: 'char', id: 'a1', content: 'first answer' }] },
+			],
+			dialogue: { rounds: 2, events: [{ round: 2, op: 'insert', message: { id: 'g1:final', role: 'char', content: 'final' } }] },
+			response: 'final',
+		}]
+		await page.route('**/api/parts/shells:agent_studio/conversation/demo-reuse', route => route.fulfill({
+			json: { key: 'demo-reuse', generations, dialogue: { events: generations[0].dialogue.events } },
+		}))
+		await openAgentStudio(page, baseUrl)
+		await page.evaluate(() => { window.location.hash = '#conversation/demo-reuse' })
+		await expect(page.locator('#conversationReplaySlider')).toHaveValue('2')
+		const rounds = page.locator('#conversationGenerations .conversation-round')
+		// 首轮没有上一轮基准：无复用高亮、无跳转按钮。
+		await expect(rounds.nth(0).locator('.prompt-reused')).toHaveCount(0)
+		await expect(rounds.nth(0).locator('.conversation-jump')).toHaveCount(0)
+		await expect(rounds.nth(0).locator('[data-prompt-boundary]')).toHaveCount(0)
+		// 次轮系统提示在第 71 个字符处不同：只高亮公共的 70 字符，分界线落在条目内部，其后消息不再泛绿。
+		const second = rounds.nth(1)
+		const systemSection = second.locator('.conversation-request > .conversation-section').first()
+		await expect(systemSection.locator('.prompt-reused')).toHaveText('S'.repeat(70))
+		await expect(systemSection.locator('[data-prompt-boundary]')).toHaveCount(1)
+		await expect(second.locator('.conversation-message .prompt-reused')).toHaveCount(0)
+		const jump = second.locator('.conversation-jump')
+		await expect(jump).toBeVisible()
+		const details = second.locator('.conversation-requests')
+		await expect(details).not.toHaveAttribute('open', '')
+		await jump.click()
+		await expect(details).toHaveAttribute('open', '')
+	})
+
+	test('collapses tool output longer than seven lines by default', async ({ page, baseUrl }) => {
+		const longTool = Array.from({ length: 12 }, (_, index) => `tool line ${index + 1}`).join('\n')
+		const shortTool = Array.from({ length: 7 }, (_, index) => `short line ${index + 1}`).join('\n')
+		const generations = [{
+			id: 'g1', startedAt: 1000, source: 'shells/code', charId: 'demo', requestCount: 1,
+			requests: [{ index: 1, systemPrompt: 'sys', messages: [{ role: 'user', id: 'u1', content: 'hello' }] }],
+			dialogue: {
+				rounds: 1, events: [
+					{ round: 1, op: 'insert', message: { id: 'long', role: 'tool', content: longTool } },
+					{ round: 1, op: 'insert', message: { id: 'short', role: 'tool', content: shortTool } },
+					{ round: 1, op: 'insert', message: { id: 'g1:final', role: 'char', content: 'done' } },
+				]
+			},
+			response: 'done',
+		}]
+		await page.route('**/api/parts/shells:agent_studio/conversation/demo-tool-collapse', route => route.fulfill({
+			json: { key: 'demo-tool-collapse', generations, dialogue: { events: generations[0].dialogue.events } },
+		}))
+		await openAgentStudio(page, baseUrl)
+		await page.evaluate(() => { window.location.hash = '#conversation/demo-tool-collapse' })
+		const rows = page.locator('#conversationGenerations .conversation-round > .conversation-messages .conversation-message.role-tool')
+		const longRow = rows.filter({ hasText: 'tool line 12' })
+		await expect(longRow.locator('.message-view-plain')).toHaveClass(/is-collapsed/)
+		const toggle = longRow.locator('.message-collapse-toggle')
+		await expect(toggle).toBeVisible()
+		await toggle.click()
+		await expect(longRow.locator('.message-view-plain')).not.toHaveClass(/is-collapsed/)
+		await expect(rows.filter({ hasText: 'short line 7' }).locator('.message-collapse-toggle')).toHaveCount(0)
 	})
 
 	test('conversation timeline lists one node per round across multi-round generations', async ({ page, baseUrl }) => {

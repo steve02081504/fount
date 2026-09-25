@@ -510,7 +510,7 @@
 	gap: 0.5rem;
 	padding: 0.35rem 0.6rem;
 	border: var(--border) solid var(--border-color);
-	border-radius: 999px;
+	border-radius: var(--radius-box);
 	background: var(--color-base-100);
 	box-shadow: var(--shadow-md);
 }

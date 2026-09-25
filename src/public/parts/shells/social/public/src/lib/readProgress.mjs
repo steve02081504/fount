@@ -78,21 +78,15 @@ export async function bindPostDetailReadProgress({ entityHash, postId, card }) {
 	}
 	if (active !== controller) return
 
-	/**
-	 *
-	 */
+	/** 滚动时防抖保存阅读进度。 */
 	controller.onScroll = () => {
 		if (active !== controller || controller.restoring) return
 		clearTimeout(controller.timer)
 		controller.timer = setTimeout(() => { void persist(controller) }, SAVE_IDLE_MS)
 	}
-	/**
-	 *
-	 */
+	/** 页面隐藏（pagehide）时立即上报进度。 */
 	controller.onPageHide = () => { void persist(controller, { beacon: true }) }
-	/**
-	 *
-	 */
+	/** 页面转入后台时立即上报进度。 */
 	controller.onVisibility = () => {
 		if (document.visibilityState === 'hidden') void persist(controller, { beacon: true })
 	}

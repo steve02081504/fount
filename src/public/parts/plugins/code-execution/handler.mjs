@@ -628,7 +628,7 @@ function createInlineHandle(lang) {
  * @param {object} options.limits - 运行限制。
  * @param {boolean} options.remote - 是否远程执行。
  * @param {Function|null} options.stream - 流式输出回调（后台执行传 null）。
- * @returns {Promise<{fullOutput: string, html: string, suffix: string}>} 完整结果文本、结果值的彩色 HTML（成功时）与耗时后缀。
+ * @returns {Promise<{fullOutput: string, html: string, suffix: string, evalResult: object}>} 完整结果文本、结果值的彩色 HTML、耗时后缀，以及原始求值结果（用于展示层标题判断 error）。
  */
 async function executeRunJs({ runtime, args, call, limits, remote, stream }) {
 	const collecting = createCollectingConsole(stream ?? undefined)
@@ -652,8 +652,11 @@ async function executeRunJs({ runtime, args, call, limits, remote, stream }) {
 		parts.push(`执行超时（耗时 ${elapsedText}）：JS 无法强制终止，代码可能仍在后台运行。`)
 		if (output) parts.push('超时前捕获的输出：', output)
 	}
-	else if (evalResult?.error)
-		parts.push('执行出错：', util.inspect({ output, error: evalResult.error }, { depth: 4 }))
+	else if (evalResult?.error) {
+		const summary = { output, error: evalResult.error }
+		parts.push('执行出错：', util.inspect(summary, { depth: 4 }))
+		html = renderValueHtml(summary)
+	}
 	else {
 		const summary = { output, result: remote ? evalResult : evalResult?.result }
 		parts.push('执行结果：', util.inspect(summary, { depth: 4 }))
@@ -663,7 +666,7 @@ async function executeRunJs({ runtime, args, call, limits, remote, stream }) {
 	const notice = formatTimeoutNotice({ timedOut, elapsedMs, waitForever: limits.waitForever, expectMs: limits.expectMs, toleranceMs: limits.toleranceMs, kind: 'js' })
 	if (notice) parts.push(notice.trim())
 	const suffix = !timedOut && !evalResult?.error && elapsedText ? `（耗时 ${elapsedText}）` : ''
-	return { fullOutput: parts.join('\n'), html, suffix }
+	return { fullOutput: parts.join('\n'), html, suffix, evalResult }
 }
 
 /**
@@ -732,11 +735,11 @@ export const runJsReplyHandler = defineReplyHandler({
 
 		await logCode(`${args.Charname} running JS code:`, call.inner, 'js')
 		emit?.({ callId, phase: 'start', name, lang: 'js', code: call.inner })
-		const { fullOutput, html, suffix } = await executeRunJs({ runtime, args, call, limits, remote, stream })
+		const { fullOutput, html, suffix, evalResult } = await executeRunJs({ runtime, args, call, limits, remote, stream })
 		emit?.({ callId, phase: 'end', name })
 		const guarded = await guardOutput(fullOutput, { name: 'run-js', label: 'JS 结果' })
 		const body = html && !guarded.truncated
-			? `执行结果：\n\n${html}${suffix ? `\n\n${suffix}` : ''}`
+			? `${evalResult?.error ? '执行出错' : '执行结果'}：\n\n${html}${suffix ? `\n\n${suffix}` : ''}`
 			: guarded.text
 		AddLongTimeLog({
 			name: 'code-execution.run-js',
