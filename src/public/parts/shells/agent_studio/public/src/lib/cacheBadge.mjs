@@ -7,7 +7,7 @@
 import { geti18n } from '/scripts/i18n/index.mjs'
 
 /** 缓存复用率的合格阈值。 */
-const CACHE_GOOD_RATIO = 0.6
+export const CACHE_GOOD_RATIO = 0.6
 
 /**
  * 构造最低缓存命中率徽章；无有效数据时返回 null。

@@ -48,3 +48,12 @@ export function formatTime(ms, locale) {
 	if (!ms) return ''
 	return new Date(ms).toLocaleString(locale)
 }
+
+/**
+ * 清洗文件名中的非法字符。
+ * @param {string} name 原始文件名
+ * @returns {string} 安全文件名
+ */
+export function safeFilename(name) {
+	return String(name ?? '').replace(/[\\/:*?"<>|]/g, '_')
+}

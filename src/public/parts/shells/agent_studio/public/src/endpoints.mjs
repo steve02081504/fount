@@ -25,6 +25,19 @@ async function requestJson(path, options = {}) {
 }
 
 /**
+ * 把过滤条件序列化为 `?a=1&b=2`；空值跳过，无有效条件时为空串。
+ * @param {object} [filter] 过滤条件
+ * @returns {string} 查询串（含前导 `?`）
+ */
+function querySuffix(filter = {}) {
+	const params = new URLSearchParams()
+	for (const [key, value] of Object.entries(filter))
+		if (value !== undefined && value !== null && value !== '') params.set(key, String(value))
+	const query = params.toString()
+	return query ? '?' + query : ''
+}
+
+/**
  * 列出全部角色。
  * @returns {Promise<Array<{ id: string, info: object | null }>>} 角色列表
  */
@@ -39,10 +52,7 @@ export function listChars() {
  * @returns {Promise<object>} 概览
  */
 export function getCharOverview(charId, options = {}) {
-	const params = new URLSearchParams()
-	if (options.limit) params.set('limit', String(options.limit))
-	const query = params.toString()
-	return requestJson(`/char/${encodeURIComponent(charId)}/overview${query ? '?' + query : ''}`)
+	return requestJson(`/char/${encodeURIComponent(charId)}/overview${querySuffix(options)}`)
 }
 
 /**
@@ -52,10 +62,7 @@ export function getCharOverview(charId, options = {}) {
  */
 export function listSubAgents(filter) {
 	const { charId, chatId } = typeof filter === 'string' ? { charId: filter } : filter ?? {}
-	const params = new URLSearchParams()
-	if (charId) params.set('charId', charId)
-	if (chatId) params.set('chatId', chatId)
-	return requestJson(`/subagents?${params.toString()}`)
+	return requestJson(`/subagents${querySuffix({ charId, chatId })}`)
 }
 
 /**
@@ -85,11 +92,7 @@ export function sendSubAgentMessage(runId, content) {
  * @returns {Promise<object[]>} 记录摘要
  */
 export function listGenerations(filter = {}) {
-	const params = new URLSearchParams()
-	for (const [key, value] of Object.entries(filter))
-		if (value !== undefined && value !== null && value !== '') params.set(key, String(value))
-	const query = params.toString()
-	return requestJson(`/generations${query ? '?' + query : ''}`)
+	return requestJson(`/generations${querySuffix(filter)}`)
 }
 
 /**
@@ -107,11 +110,7 @@ export function getGeneration(id) {
  * @returns {Promise<{ removed: number }>} 删除的记录数
  */
 export function clearGenerations(filter = {}) {
-	const params = new URLSearchParams()
-	for (const [key, value] of Object.entries(filter))
-		if (value !== undefined && value !== null && value !== '') params.set(key, String(value))
-	const query = params.toString()
-	return requestJson(`/generations${query ? '?' + query : ''}`, { method: 'DELETE' })
+	return requestJson(`/generations${querySuffix(filter)}`, { method: 'DELETE' })
 }
 
 /**
@@ -120,11 +119,7 @@ export function clearGenerations(filter = {}) {
  * @returns {Promise<object[]>} 会话摘要列表
  */
 export function listConversations(filter = {}) {
-	const params = new URLSearchParams()
-	for (const [key, value] of Object.entries(filter))
-		if (value !== undefined && value !== null && value !== '') params.set(key, String(value))
-	const query = params.toString()
-	return requestJson(`/conversations${query ? '?' + query : ''}`)
+	return requestJson(`/conversations${querySuffix(filter)}`)
 }
 
 /**
@@ -142,11 +137,7 @@ export function getConversation(key) {
  * @returns {Promise<object[]>} 链根列表
  */
 export function listChains(filter = {}) {
-	const params = new URLSearchParams()
-	for (const [key, value] of Object.entries(filter))
-		if (value !== undefined && value !== null && value !== '') params.set(key, String(value))
-	const query = params.toString()
-	return requestJson(`/chains${query ? '?' + query : ''}`)
+	return requestJson(`/chains${querySuffix(filter)}`)
 }
 
 /**
@@ -243,11 +234,7 @@ export function runBenchmark(id, config) {
  * @returns {Promise<object[]>} 运行摘要
  */
 export function listRuns(filter = {}) {
-	const params = new URLSearchParams()
-	if (filter.benchmarkId) params.set('benchmarkId', filter.benchmarkId)
-	if (filter.charId) params.set('charId', filter.charId)
-	const query = params.toString()
-	return requestJson(`/runs${query ? '?' + query : ''}`)
+	return requestJson(`/runs${querySuffix(filter)}`)
 }
 
 /**

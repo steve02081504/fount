@@ -21,7 +21,7 @@ import {
 import { bindActivate } from '../lib/activate.mjs'
 import { fillCharOptions } from '../lib/charOptions.mjs'
 import { mountEmptyState } from '../lib/emptyState.mjs'
-import { truncate } from '../lib/format.mjs'
+import { safeFilename, truncate } from '../lib/format.mjs'
 import { state } from '../state.mjs'
 import { renderTemplate } from '../templates.mjs'
 
@@ -69,7 +69,7 @@ async function exportBenchmark() {
 	const url = URL.createObjectURL(blob)
 	const link = document.createElement('a')
 	link.href = url
-	link.download = `${benchmark.name.replace(/[\\/:*?"<>|]/g, '_')}.json`
+	link.download = `${safeFilename(benchmark.name)}.json`
 	link.click()
 	setTimeout(() => URL.revokeObjectURL(url), 1000)
 }

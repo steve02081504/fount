@@ -49,6 +49,16 @@ export function conversationKey(record) {
 }
 
 /**
+ * 一代生成所占的轮次数（复播 / 事件合并的唯一权威口径）：
+ * 优先采集到的请求数，其次复原对话的轮次；缺失时至少 1 轮。
+ * @param {generationRecordSummary_t & { dialogue?: { rounds?: number } }} record 生成记录
+ * @returns {number} 轮次数
+ */
+export function generationRoundSpan(record) {
+	return Math.max(record.requestCount ?? record.requests?.length ?? 0, record.dialogue?.rounds ?? 0, 1)
+}
+
+/**
  * 把生成记录摘要聚合为会话摘要列表（按最近活动倒序）。
  * @param {generationRecordSummary_t[]} records 生成记录摘要
  * @returns {Array<{ key: string, conversationId: string, chatId: string, source: string, charId: string, charname: string, startedAt: number|null, finishedAt: number|null, generationCount: number, errorCount: number, requestCount: number, lastModel: string|null, minCacheRate: number|null }>} 会话摘要
@@ -173,7 +183,7 @@ export function mergeDialogueEvents(generations) {
 			userId: lastUserMessageId(generationEvents),
 			superseded: false,
 		}
-		offset += Math.max(generation.requestCount, dialogue?.rounds, 1)
+		offset += generationRoundSpan(generation)
 		rounds = Math.max(rounds, offset)
 	}
 	if (pending) flush(pending)

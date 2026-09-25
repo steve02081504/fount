@@ -10,6 +10,7 @@ import { showToastI18n } from '/scripts/features/toast.mjs'
 import { getGeneration } from '../endpoints.mjs'
 
 import { formatTime } from './format.mjs'
+import { appendMetaChips } from './metaChip.mjs'
 import { textActions } from './textActions.mjs'
 
 /**
@@ -49,20 +50,14 @@ export async function openGenerationDialog(id) {
 		const response = document.getElementById('generationDialogResponse')
 		if (meta) {
 			meta.replaceChildren()
-			const chips = [
+			appendMetaChips(meta, [
 				geti18n('agent_studio.generation.meta', {
 					source: record.source || '-',
 					model: record.model || '-',
 				}),
 				record.charname ? geti18n('agent_studio.generation.character', { name: record.charname }) : '',
 				formatTime(record.startedAt, primaryLocale()),
-			].filter(Boolean)
-			for (const text of chips) {
-				const chip = document.createElement('span')
-				chip.className = 'meta-chip'
-				chip.textContent = text
-				meta.appendChild(chip)
-			}
+			])
 		}
 		const promptText = buildPromptText(record)
 		const responseText = typeof record.response === 'string'

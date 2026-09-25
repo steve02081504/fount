@@ -7,14 +7,7 @@
 import { geti18n } from '/scripts/i18n/index.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
 
-/**
- * 清洗下载文件名中的非法字符。
- * @param {string} name 原始文件名
- * @returns {string} 安全文件名
- */
-function safeFilename(name) {
-	return name.replace(/[\\/:*?"<>|]/g, '_')
-}
+import { safeFilename } from './format.mjs'
 
 /**
  * 生成绑定文本块的复制 / 下载按钮组。

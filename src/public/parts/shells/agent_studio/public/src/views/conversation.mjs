@@ -9,11 +9,14 @@ import { showToastI18n } from '/scripts/features/toast.mjs'
 import { onServerEvent } from '/scripts/endpoints/server_events.mjs'
 
 import { replayDialogue } from '../../shared/dialogueReplay.mjs'
+import { generationRoundSpan } from '../../shared/generationChain.mjs'
 import { commonPrefixLength, estimatePromptCache } from '../../shared/promptCache.mjs'
 import { messagesToText } from '../../shared/promptText.mjs'
 import { getConversation, getSubAgent, sendSubAgentMessage } from '../endpoints.mjs'
+import { CACHE_GOOD_RATIO } from '../lib/cacheBadge.mjs'
 import { formatTime } from '../lib/format.mjs'
 import { messageBody } from '../lib/messageBody.mjs'
+import { appendMetaChips } from '../lib/metaChip.mjs'
 import { requestNavigate } from '../lib/navigationEvents.mjs'
 import { stateBadge } from '../lib/stateBadge.mjs'
 import { textActions } from '../lib/textActions.mjs'
@@ -129,8 +132,7 @@ export function buildRoundUnits(items) {
 	const units = []
 	let round = 0
 	for (const [index, item] of (items || []).entries()) {
-		// 轮次数取每代权威计数：优先采集到的请求数，其次复原对话的轮次；缺失时至少 1 轮。
-		const span = Math.max(item.requestCount ?? item.requests?.length ?? 0, item.dialogue?.rounds ?? 0, 1)
+		const span = generationRoundSpan(item)
 		for (let offset = 0; offset < span; offset++) {
 			round++
 			units.push({
@@ -257,7 +259,7 @@ function paintCacheChart(canvas, units, metrics) {
 	for (const point of points) {
 		if (!point) continue
 		ctx.beginPath()
-		ctx.fillStyle = style.getPropertyValue(point.rate >= 0.6 ? '--color-success' : '--color-error')
+		ctx.fillStyle = style.getPropertyValue(point.rate >= CACHE_GOOD_RATIO ? '--color-success' : '--color-error')
 		ctx.arc(point.x, point.y, 4, 0, 2 * Math.PI)
 		ctx.fill()
 	}
@@ -284,12 +286,7 @@ async function loadSubagentConversation(key) {
 		chip.className = `badge ${stateBadge(run.state)}`
 		chip.textContent = geti18n(`agent_studio.run.state.${run.state}`)
 		meta.append(chip)
-		for (const text of [run.charname || run.charId, run.runId, `${run.rounds}/${run.roundLimit ?? '-'}`, formatTime(run.startedAt, primaryLocale())].filter(Boolean)) {
-			const item = document.createElement('span')
-			item.className = 'meta-chip'
-			item.textContent = text
-			meta.append(item)
-		}
+		appendMetaChips(meta, [run.charname || run.charId, run.runId, `${run.rounds}/${run.roundLimit ?? '-'}`, formatTime(run.startedAt, primaryLocale())])
 		const task = document.getElementById('subagentConversationTask')
 		if (task) task.textContent = run.task || ''
 		document.getElementById('subagentConversationTaskActions')?.replaceChildren(textActions(
@@ -344,17 +341,11 @@ function renderSubagentEntry(message) {
 function renderMeta(container, conversation) {
 	const generations = conversation.generations ?? []
 	const rounds = generations.reduce((sum, generation) => sum + (generation.requestCount ?? generation.requests?.length ?? 0), 0)
-	const chips = [
+	appendMetaChips(container, [
 		geti18n('agent_studio.conversation.generationsCount', { count: generations.length }),
 		geti18n('agent_studio.conversation.rounds', { count: rounds }),
 		conversation.key,
-	].filter(Boolean)
-	for (const text of chips) {
-		const chip = document.createElement('span')
-		chip.className = 'meta-chip'
-		chip.textContent = text
-		container.appendChild(chip)
-	}
+	])
 }
 
 /**
@@ -427,7 +418,7 @@ function renderGeneration(generation, cache, rounds, events, previousRequest = n
 	title.setAttribute('prompt-content', '')
 	title.textContent = generation.id
 	head.append(title)
-	if (rounds.length >= Math.max(generation.requestCount ?? generation.requests?.length ?? 0, generation.dialogue?.rounds ?? 0, 1)) {
+	if (rounds.length >= generationRoundSpan(generation)) {
 		const badge = document.createElement('span')
 		const state = generation.hasError ? 'failed' : 'done'
 		badge.className = `badge ${stateBadge(state)}`
@@ -470,7 +461,7 @@ function renderRound(generation, offset, round, cacheRate, events, previousReque
 	heading.className = 'conversation-request-head'
 	heading.textContent = geti18n('agent_studio.conversation.roundIndex', { index: round })
 	const badge = document.createElement('span')
-	badge.className = `badge ${cacheRate == null ? 'badge-neutral' : cacheRate >= 0.6 ? 'badge-success' : 'badge-error'}`
+	badge.className = `badge ${cacheRate == null ? 'badge-neutral' : cacheRate >= CACHE_GOOD_RATIO ? 'badge-success' : 'badge-error'}`
 	badge.textContent = cacheRate == null ? geti18n('agent_studio.conversation.cache.noRate') : geti18n('agent_studio.conversation.cache.rate', { rate: Math.round(cacheRate * 100) })
 	badge.title = geti18n('agent_studio.conversation.cache.hint')
 	head.append(heading, badge)

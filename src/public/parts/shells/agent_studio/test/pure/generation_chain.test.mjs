@@ -4,7 +4,7 @@
  */
 import { assertEquals } from 'jsr:@std/assert'
 
-import { buildChains, conversationKey, groupByConversation, mergeDialogueEvents, minCacheRateByChar, summarizeConversations } from '../../public/shared/generationChain.mjs'
+import { buildChains, conversationKey, generationRoundSpan, groupByConversation, mergeDialogueEvents, minCacheRateByChar, summarizeConversations } from '../../public/shared/generationChain.mjs'
 
 Deno.test('groupByConversation falls back to chatId and keeps empty key', () => {
 	const groups = groupByConversation([
@@ -157,6 +157,13 @@ Deno.test('mergeDialogueEvents keeps both finals when the next generation is a g
 	]
 	const merged = mergeDialogueEvents(generations)
 	assertEquals(merged.messages.map(message => message.content), ['hi', 'hello', 'bye', 'see ya'])
+})
+
+Deno.test('generationRoundSpan takes the largest of requestCount, requests length and dialogue rounds', () => {
+	assertEquals(generationRoundSpan({ requestCount: 4, requests: [1, 2], dialogue: { rounds: 2 } }), 4)
+	assertEquals(generationRoundSpan({ requestCount: 3, requests: [1, 2], dialogue: { rounds: 5 } }), 5)
+	assertEquals(generationRoundSpan({ requests: [1, 2], dialogue: { rounds: 5 } }), 5)
+	assertEquals(generationRoundSpan({}), 1)
 })
 
 Deno.test('minCacheRateByChar picks the lowest finite rate per character', () => {
