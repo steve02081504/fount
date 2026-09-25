@@ -399,6 +399,26 @@
 				"src/scripts/checks/walk.mjs",
 				"**/*.{mjs,js,ts}"
 			]
+		},
+		{
+			"name": "no_ts_import",
+			"expected": "1s",
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/checks/test/no_ts_import.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/checks/no_ts_import.mjs",
+				"src/scripts/checks/test/no_ts_import.test.mjs",
+				"src/scripts/checks/walk.mjs",
+				"**/*.{mjs,js,ts}"
+			]
 		}
 	]
 }
