@@ -6,11 +6,14 @@
 import { basename, dirname, join } from 'node:path'
 
 import { test, expect } from './fixtures.mjs'
-import { API_BASE, makeWorkspace, openCode, openFolderBrowserViaMenu, removeAllWorkspacesViaApi, rmDirRetry } from './helpers.mjs'
+import { API_BASE, leftoverWorkspaceDirs, makeWorkspace, openCode, openFolderBrowserViaMenu, removeAllWorkspacesViaApi, rmDirRetry, useLeftoverWorkspaceCleanup } from './helpers.mjs'
+
+useLeftoverWorkspaceCleanup(test)
 
 test.describe('code shell folder browser', () => {
 	test('lists drive roots on open and lists a directory after navigating by path', async ({ page, baseUrl }) => {
 		const dir = makeWorkspace('fe-browse', { 'inner/note.txt': 'hi' })
+		leftoverWorkspaceDirs.add(dir)
 		try {
 			await openCode(page, baseUrl)
 			await openFolderBrowserViaMenu(page)
@@ -40,6 +43,7 @@ test.describe('code shell folder browser', () => {
 			'beta/note.txt': 'b',
 			'gamma/note.txt': 'c',
 		})
+		leftoverWorkspaceDirs.add(dir)
 		try {
 			await openCode(page, baseUrl)
 			await openFolderBrowserViaMenu(page)
@@ -73,6 +77,7 @@ test.describe('code shell folder browser', () => {
 			'alpha/note.txt': 'a',
 			'beta/note.txt': 'b',
 		})
+		leftoverWorkspaceDirs.add(dir)
 		try {
 			await openCode(page, baseUrl)
 			await openFolderBrowserViaMenu(page)
@@ -105,13 +110,14 @@ test.describe('code shell folder browser', () => {
 			'current/.git/HEAD': 'ref: refs/heads/main',
 			'sibling/note.txt': 'hi',
 		})
+		leftoverWorkspaceDirs.add(dir)
 		try {
 			// 后端先保存工作区（boot 会把它选为当前工作区）
 			await page.request.post(`${baseUrl}${API_BASE}/workspaces`, { data: { name: 'current', machine: '0', path: join(dir, 'current') } })
 			await openCode(page, baseUrl)
 			await openFolderBrowserViaMenu(page)
 			// 根视图附带快速访问分组（兄弟目录 + 编辑器源）
-			await expect(page.locator('.folder-browser-group').first()).toContainText('快速访问')
+			await expect(page.locator('.folder-browser-group[data-i18n="util.folderBrowser.quickAccess"]')).toBeVisible()
 			await expect(page.locator('#folder-entries .folder-browser-entry', { hasText: 'sibling' })).toBeVisible()
 		}
 		finally {

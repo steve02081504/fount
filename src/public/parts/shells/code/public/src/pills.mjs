@@ -5,7 +5,7 @@ import { getPartList, runPart } from '/scripts/endpoints/parts.mjs'
 import { confirmAction } from '/scripts/features/promptDialog.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
 import { openFolderBrowser as openFolderBrowserComponent } from '/scripts/components/folderBrowser.mjs'
-import { geti18n } from '/scripts/i18n/index.mjs'
+import { geti18n, setElementI18n } from '/scripts/i18n/index.mjs'
 
 import { ensureHistory, removeGhost } from './composer.mjs'
 import * as api from './endpoints.mjs'
@@ -116,11 +116,17 @@ export function renderMachineMenu() {
 	))
 }
 
-/** 更新机器 pill 标签。 */
+/** 更新机器 pill 标签（本机为 chrome，走 data-i18n 自动重译；远程名为数据）。 */
 export function renderMachinePillLabel() {
 	const machine = store.machines.find(m => String(m.id) === store.machine)
+	const label = elements.machinePillLabel
+	if (machine && String(machine.id) === '0') {
+		setElementI18n(label, 'code.machine.local')
+		return
+	}
+	delete label.dataset.i18n
 	// 机器列表未就绪时保留 `#id` 兜底，避免标签空置（按钮无可访问名称）
-	elements.machinePillLabel.textContent = machine ? machineDisplayName(machine) : `#${store.machine}`
+	label.textContent = machine ? machineDisplayName(machine) : `#${store.machine}`
 }
 
 /**
@@ -375,7 +381,8 @@ function renderWorkspaceItems() {
 		onClick: () => void openFolderBrowser(),
 	}))
 	if (store.workspace)
-		menu.appendChild(menuItem(geti18n('code.workspaces.remove'), {
+		menu.appendChild(menuItem('', {
+			i18nKey: 'code.workspaces.remove',
 			className: 'text-error',
 			/**
 			 * 移除当前工作区。
@@ -385,9 +392,14 @@ function renderWorkspaceItems() {
 		}))
 }
 
-/** 更新工作区 pill 标签。 */
+/** 更新工作区 pill 标签（工作区名为数据；未选择为 chrome，走 data-i18n 自动重译）。 */
 export function renderWorkspacePillLabel() {
-	elements.workspacePillLabel.textContent = store.workspace?.name || store.workspace?.path || geti18n('code.workspaces.none')
+	const label = elements.workspacePillLabel
+	if (store.workspace) {
+		delete label.dataset.i18n
+		label.textContent = store.workspace.name || store.workspace.path
+	}
+	else setElementI18n(label, 'code.workspaces.none')
 	renderContextChip()
 }
 
@@ -477,7 +489,9 @@ async function removeCurrentWorkspace() {
 
 /** 渲染 shell pill 下拉（! 模式）。 */
 export function renderShellMenu() {
-	elements.shellMenu.replaceChildren(...(store.shells.length ? store.shells : ['']).map(shell => menuItem(shell || geti18n('code.composer.shellDefault'), {
+	elements.shellMenu.replaceChildren(...(store.shells.length ? store.shells : ['']).map(shell => menuItem(shell, {
+		// shell 名是数据，空占位项走 data-i18n（语种切换自动重译）
+		i18nKey: shell ? '' : 'code.composer.shellDefault',
 		active: shell === store.shell,
 		// 无可用 shell 时仅留占位项（执行时按目标机器默认 shell）
 		disabled: !shell,
@@ -497,7 +511,12 @@ export function renderShellMenu() {
 
 /** 更新 shell pill 标签。 */
 export function renderShellPillLabel() {
-	elements.shellPillLabel.textContent = store.shell || geti18n('code.composer.shellDefault')
+	const label = elements.shellPillLabel
+	if (store.shell) {
+		delete label.dataset.i18n
+		label.textContent = store.shell
+	}
+	else setElementI18n(label, 'code.composer.shellDefault')
 }
 
 /* ---------------- mode / AI 源 ---------------- */
@@ -590,7 +609,8 @@ export function renderAiSourceMenu() {
 				renderAiSourcePillLabel()
 			},
 		})),
-		menuItem(geti18n('code.aiSource.charOwn'), {
+		menuItem('', {
+			i18nKey: 'code.aiSource.charOwn',
 			active: !store.aiSource,
 			/**
 			 * 使用角色自带的 AI 源。
@@ -603,7 +623,8 @@ export function renderAiSourceMenu() {
 			},
 		}),
 		menuSeparator(),
-		menuItem(geti18n('code.aiSource.manage'), {
+		menuItem('', {
+			i18nKey: 'code.aiSource.manage',
 			/**
 			 * 打开 AI 源管理面板。
 			 * @returns {void}
@@ -613,9 +634,14 @@ export function renderAiSourceMenu() {
 	)
 }
 
-/** 更新 AI 源 pill 标签。 */
+/** 更新 AI 源 pill 标签（源名为数据；角色自带为 chrome，走 data-i18n 自动重译）。 */
 export function renderAiSourcePillLabel() {
-	elements.aiSourcePillLabel.textContent = store.aiSource || geti18n('code.aiSource.charOwn')
+	const label = elements.aiSourcePillLabel
+	if (store.aiSource) {
+		delete label.dataset.i18n
+		label.textContent = store.aiSource
+	}
+	else setElementI18n(label, 'code.aiSource.charOwn')
 }
 
 /**
@@ -654,9 +680,14 @@ async function openAiSourcePanel() {
 
 /* ---------------- 角色 ---------------- */
 
-/** 更新角色 pill 显示。 */
+/** 更新角色 pill 显示（角色名为数据；未选择为 chrome，走 data-i18n 自动重译）。 */
 export function updateCharMenu() {
-	elements.charPillLabel.textContent = store.charname || geti18n('code.char.none')
+	const label = elements.charPillLabel
+	if (store.charname) {
+		delete label.dataset.i18n
+		label.textContent = store.charname
+	}
+	else setElementI18n(label, 'code.char.none')
 	elements.charSettingsLink.href = `/parts/shells:config/?partpath=${encodeURIComponent('chars/' + (store.charname || ''))}`
 	renderContextChip()
 }

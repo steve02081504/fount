@@ -2,7 +2,9 @@
  * code shell 前端 UI 测试：slash 命令面板与 Enter 换行。
  */
 import { test, expect } from './fixtures.mjs'
-import { API_BASE, makeWorkspace, openCode, removeAllWorkspacesViaApi, rmDirRetry } from './helpers.mjs'
+import { API_BASE, leftoverWorkspaceDirs, makeWorkspace, openCode, removeAllWorkspacesViaApi, rmDirRetry, useLeftoverWorkspaceCleanup } from './helpers.mjs'
+
+useLeftoverWorkspaceCleanup(test)
 
 /**
  * 读取 composer 的可视高度（px），用于断言换行是否真的撑出一行。
@@ -14,6 +16,7 @@ const composerHeight = composer => composer.evaluate(el => el.getBoundingClientR
 test.describe('code shell composer keyboard handling', () => {
 	test('slash command panel lists workspace commands right after boot into a saved workspace', async ({ page, baseUrl }) => {
 		const dir = makeWorkspace('fe-slash', { '.agents/commands/test-cmd.md': '---\ndescription: 测试命令\n---\n渲染内容' })
+		leftoverWorkspaceDirs.add(dir)
 		try {
 			// 先保存工作区：boot 会把它选为当前工作区，草稿标签落在其上（不触发工作区切换）
 			await page.request.post(`${baseUrl}${API_BASE}/workspaces`, { data: { name: 'slash', machine: '0', path: dir } })

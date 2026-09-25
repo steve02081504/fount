@@ -4,11 +4,14 @@
 import { basename } from 'node:path'
 
 import { test, expect } from './fixtures.mjs'
-import { makeWorkspace, openCode, removeAllWorkspacesViaApi, rmDirRetry, selectWorkspaceViaBrowser } from './helpers.mjs'
+import { leftoverWorkspaceDirs, makeWorkspace, openCode, removeAllWorkspacesViaApi, rmDirRetry, selectWorkspaceViaBrowser, useLeftoverWorkspaceCleanup } from './helpers.mjs'
+
+useLeftoverWorkspaceCleanup(test)
 
 test.describe('code shell composer chrome', () => {
 	test('collapses hint/targets once a conversation starts, keeping power + context accessible', async ({ page, baseUrl }) => {
 		const dir = makeWorkspace('fe-chrome', {})
+		leftoverWorkspaceDirs.add(dir)
 		try {
 			await openCode(page, baseUrl)
 			await selectWorkspaceViaBrowser(page, dir)

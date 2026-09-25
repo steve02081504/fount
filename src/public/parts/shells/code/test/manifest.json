@@ -184,7 +184,7 @@
 				},
 				{
 					"name": "workspace_pill_search",
-					"expected": "30s",
+					"expected": "33s",
 					"triggers": [
 						"src/public/parts/shells/code/test/frontend/workspace_pill_search.spec.mjs",
 						"src/public/parts/shells/code/public/**"

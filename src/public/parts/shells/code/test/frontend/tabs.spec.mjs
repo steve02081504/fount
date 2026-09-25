@@ -6,11 +6,14 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
 import { test, expect } from './fixtures.mjs'
-import { API_BASE, holdLocale, openCode, releaseLocale, removeAllWorkspacesViaApi, rmDirRetry, selectWorkspaceViaBrowser } from './helpers.mjs'
+import { API_BASE, holdLocale, leftoverWorkspaceDirs, openCode, releaseLocale, removeAllWorkspacesViaApi, rmDirRetry, selectWorkspaceViaBrowser, useLeftoverWorkspaceCleanup } from './helpers.mjs'
+
+useLeftoverWorkspaceCleanup(test)
 
 test.describe('code shell tabs', () => {
 	test('tabs: draft → session conversion, switching, closing, and home menu opening', async ({ page, baseUrl }) => {
 		const dir = mkdtempSync(join(tmpdir(), 'fount-code-fe-tabs-'))
+		leftoverWorkspaceDirs.add(dir)
 		try {
 			await openCode(page, baseUrl)
 			await selectWorkspaceViaBrowser(page, dir)
@@ -69,6 +72,7 @@ test.describe('code shell tabs', () => {
 
 	test('tab right-click menu closes the tab and batches (left / others / all)', async ({ page, baseUrl }) => {
 		const dir = mkdtempSync(join(tmpdir(), 'fount-code-fe-tabmenu-'))
+		leftoverWorkspaceDirs.add(dir)
 		try {
 			await openCode(page, baseUrl)
 			await selectWorkspaceViaBrowser(page, dir)
@@ -106,6 +110,7 @@ test.describe('code shell tabs', () => {
 
 	test('unsent drafts persist per-tab and across reload (backend tabs)', async ({ page, baseUrl }) => {
 		const dir = mkdtempSync(join(tmpdir(), 'fount-code-fe-draft-'))
+		leftoverWorkspaceDirs.add(dir)
 		try {
 			await openCode(page, baseUrl)
 			await selectWorkspaceViaBrowser(page, dir)

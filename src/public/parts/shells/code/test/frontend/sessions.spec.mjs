@@ -6,7 +6,9 @@ import { tmpdir } from 'node:os'
 import { basename, join } from 'node:path'
 
 import { test, expect } from './fixtures.mjs'
-import { PREF_PREFIX, holdLocale, makeWorkspace, openCode, releaseLocale, removeAllWorkspacesViaApi, rmDirRetry, selectWorkspaceViaBrowser } from './helpers.mjs'
+import { PREF_PREFIX, holdLocale, leftoverWorkspaceDirs, makeWorkspace, openCode, releaseLocale, removeAllWorkspacesViaApi, rmDirRetry, selectWorkspaceViaBrowser, useLeftoverWorkspaceCleanup } from './helpers.mjs'
+
+useLeftoverWorkspaceCleanup(test)
 
 test.describe('code shell sessions & workspace', () => {
 	test('new tab button opens a new draft tab on each click', async ({ page, baseUrl }) => {
@@ -22,6 +24,7 @@ test.describe('code shell sessions & workspace', () => {
 
 	test('selecting a workspace via the folder browser enables the coding session flow', async ({ page, baseUrl }) => {
 		const dir = mkdtempSync(join(tmpdir(), 'fount-code-fe-'))
+		leftoverWorkspaceDirs.add(dir)
 		try {
 			await openCode(page, baseUrl)
 			await selectWorkspaceViaBrowser(page, dir)
@@ -30,7 +33,7 @@ test.describe('code shell sessions & workspace', () => {
 			// home 总览弹窗：左栏工作区列表含该目录，右栏显示空态
 			await page.locator('#home-toggle').click()
 			await expect(page.locator('#home-workspace-list')).toContainText(basename(dir))
-			await expect(page.locator('#home-session-list')).toContainText('暂无会话')
+			await expect(page.locator('#home-session-list [data-i18n="code.workspaces.overviewEmpty"]')).toBeVisible()
 			await page.keyboard.press('Escape')
 			// 清理：移除工作区，避免污染同相位后续测试
 			await removeAllWorkspacesViaApi(page, baseUrl)
@@ -42,6 +45,7 @@ test.describe('code shell sessions & workspace', () => {
 
 	test('home picker deletes a conversation (file + tab)', async ({ page, baseUrl }) => {
 		const dir = makeWorkspace('fe-home-delconv', {})
+		leftoverWorkspaceDirs.add(dir)
 		try {
 			await openCode(page, baseUrl)
 			await selectWorkspaceViaBrowser(page, dir)
@@ -84,6 +88,7 @@ test.describe('code shell sessions & workspace', () => {
 
 	test('home picker removes a workspace but keeps its session files on disk', async ({ page, baseUrl }) => {
 		const dir = makeWorkspace('fe-home-rmws', {})
+		leftoverWorkspaceDirs.add(dir)
 		try {
 			await openCode(page, baseUrl)
 			await selectWorkspaceViaBrowser(page, dir)
@@ -121,6 +126,7 @@ test.describe('code shell sessions & workspace', () => {
 
 	test('workspace .agents/fount/code.json overrides the selected character when installed', async ({ page, baseUrl }) => {
 		const dir = makeWorkspace('fe-char', { '.agents/fount/code.json': JSON.stringify({ char: { partname: 'codeBuddy' } }) })
+		leftoverWorkspaceDirs.add(dir)
 		try {
 			await page.addInitScript(pref => localStorage.setItem(pref + 'charname', 'testAgent'), PREF_PREFIX)
 			await openCode(page, baseUrl)
@@ -136,6 +142,7 @@ test.describe('code shell sessions & workspace', () => {
 
 	test('uninstalled recommended char shows a dismissible bottom-right card', async ({ page, baseUrl }) => {
 		const dir = makeWorkspace('fe-rec', { '.agents/fount/code.json': JSON.stringify({ char: { partname: 'GhostCharNotInstalled', install_url: 'x' } }) })
+		leftoverWorkspaceDirs.add(dir)
 		try {
 			await openCode(page, baseUrl)
 			await selectWorkspaceViaBrowser(page, dir)
