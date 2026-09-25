@@ -81,7 +81,7 @@ export function saveTabPrefs() {
 }
 
 /** 立即持久化待写的标签页（失焦/隐藏/卸载前调用）。 */
-export function flushTabPrefs() {
+function flushTabPrefs() {
 	if (!tabSaveTimer) return
 	clearTimeout(tabSaveTimer)
 	tabSaveTimer = 0
@@ -259,7 +259,7 @@ export function renderTabs() {
 let tabMenuDismiss = null
 
 /** 隐藏标签右键菜单。 */
-export function hideTabContextMenu() {
+function hideTabContextMenu() {
 	tabMenuDismiss?.unbind?.()
 	tabMenuDismiss = null
 	elements.tabMenu.classList.add('hidden')
@@ -699,7 +699,7 @@ export function markSessionDirty(session = store.session) {
 }
 
 /** 持久化待写标签的会话到其工作区 `.fount/code/sessions`（生成中、无变更、无工作区时跳过）。 */
-export async function flushSession() {
+async function flushSession() {
 	const key = store.dirtyTabKey
 	if (!key || store.generating) return
 	store.dirtyTabKey = ''
@@ -804,16 +804,64 @@ function isCurrentRunFrame(msg) {
 }
 
 /**
+ * 进入生成态：登记会话与运行 id、挂出流式气泡并标记待落盘。
+ * @param {object} session - 生成会话。
+ * @returns {string} 本轮运行 id。
+ */
+function beginGeneration(session) {
+	store.generatingSession = session
+	store.generating = true
+	store.generatingRunId = crypto.randomUUID()
+	updateSendButton()
+	startGeneratingBubble()
+	markSessionDirty(session)
+	return store.generatingRunId
+}
+
+/** 复位生成态：清理流式气泡与运行身份并刷新发送按钮。 */
+function resetGeneration() {
+	store.generating = false
+	store.generatingRunId = null
+	endGeneratingBubble()
+	store.generatingSession = null
+	updateSendButton()
+}
+
+/**
+ * 请求未送达时的收尾：复位生成态并提示错误。
+ * @param {unknown} error - 错误。
+ * @returns {void}
+ */
+function failGeneration(error) {
+	resetGeneration()
+	showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
+}
+
+/**
+ * 发送一轮「按当前会话原样生成」的 WS 请求（不新增用户消息）。
+ * @param {object} session - 会话。
+ * @param {string} runId - 运行 id。
+ * @returns {Promise<void>}
+ */
+async function sendTriggerFrame(session, runId) {
+	const ws = await getSocket()
+	ws.send(JSON.stringify({
+		type: 'trigger',
+		runId,
+		session,
+		...target(),
+		ai_source: store.aiSource || '',
+		profile: store.profile,
+	}))
+}
+
+/**
  * socket 断开：结束流式气泡但不丢弃后端生成——转为轮询磁盘，待后端收尾落盘后恢复。
  */
 function handleSocketClose() {
 	const session = store.generatingSession || store.session
 	const interrupted = store.generating
-	endGeneratingBubble()
-	store.generating = false
-	store.generatingSession = null
-	store.generatingRunId = null
-	updateSendButton()
+	resetGeneration()
 	if (interrupted) {
 		updateEmptyMode()
 		if (session) void recoverGeneration(session)
@@ -909,12 +957,8 @@ function onSocketMessage(event) {
 	}
 	if (msg.type === 'error') {
 		const session = store.generatingSession || store.session
-		store.generatingSession = null
-		store.generating = false
-		store.generatingRunId = null
-		endGeneratingBubble()
 		// 复位发送按钮（内部同步刷新 regen 按钮），与 finishGeneration 的收尾对齐
-		updateSendButton()
+		resetGeneration()
 		const fallback = geti18n('code.error.generate')
 		const text = msg.error ? `${fallback}\n\`\`\`\n${msg.error}\n\`\`\`` : fallback
 		const knownIds = new Set((session?.entries || []).map(entry => String(entry.id)))
@@ -1043,10 +1087,8 @@ export function endGeneratingBubble() {
  * @returns {Promise<void>}
  */
 async function finishGeneration(entries, memory, aborted = false) {
-	endGeneratingBubble()
 	const session = store.generatingSession || store.session
-	store.generatingSession = null
-	store.generatingRunId = null
+	resetGeneration()
 	if (!session) return
 	const isActive = session === store.session
 	// 后端已把权威结果落盘；此处只补齐流式期间未落地的条目（按 id 去重）
@@ -1059,8 +1101,6 @@ async function finishGeneration(entries, memory, aborted = false) {
 	session.updated = new Date().toISOString()
 	if (!session.title && session.entries.length)
 		session.title = (session.entries.find(e => e.role === 'user')?.content || '').slice(0, 40) || session.title
-	store.generating = false
-	updateSendButton()
 	if (isActive) {
 		for (const entry of freshEntries) appendEntryBubble(entry)
 		if (aborted) showToastI18n('info', 'code.error.aborted')
@@ -1109,17 +1149,12 @@ export async function regenerateLastReply() {
 	}
 	session.entries.pop()
 	renderMessages()
-	store.generating = true
-	store.generatingRunId = crypto.randomUUID()
-	store.generatingSession = session
-	updateSendButton()
-	startGeneratingBubble()
-	markSessionDirty(session)
+	const runId = beginGeneration(session)
 	try {
 		const ws = await getSocket()
 		ws.send(JSON.stringify({
 			type: 'regen',
-			runId: store.generatingRunId,
+			runId,
 			session,
 			...target(),
 			ai_source: store.aiSource || '',
@@ -1127,15 +1162,10 @@ export async function regenerateLastReply() {
 		}))
 	}
 	catch (error) {
-		store.generating = false
-		store.generatingRunId = null
-		endGeneratingBubble()
-		store.generatingSession = null
 		// 请求未送达服务端，旧回复原样放回
 		session.entries.push(last)
+		failGeneration(error)
 		renderMessages()
-		updateSendButton()
-		showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
 	}
 }
 
@@ -1156,31 +1186,9 @@ export async function retryFromError(entry) {
 	}
 	session.entries.splice(index)
 	renderMessages()
-	store.generatingSession = session
-	store.generating = true
-	store.generatingRunId = crypto.randomUUID()
-	updateSendButton()
-	startGeneratingBubble()
-	markSessionDirty(session)
-	try {
-		const ws = await getSocket()
-		ws.send(JSON.stringify({
-			type: 'trigger',
-			runId: store.generatingRunId,
-			session,
-			...target(),
-			ai_source: store.aiSource || '',
-			profile: store.profile,
-		}))
-	}
-	catch (error) {
-		store.generating = false
-		store.generatingRunId = null
-		endGeneratingBubble()
-		store.generatingSession = null
-		updateSendButton()
-		showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
-	}
+	const runId = beginGeneration(session)
+	try { await sendTriggerFrame(session, runId) }
+	catch (error) { failGeneration(error) }
 }
 
 /**
@@ -1190,31 +1198,9 @@ export async function retryFromError(entry) {
 async function triggerGeneration() {
 	const {session} = store
 	if (!session || store.generating || store.recovering || !session.charname) return
-	store.generatingSession = session
-	store.generating = true
-	store.generatingRunId = crypto.randomUUID()
-	updateSendButton()
-	startGeneratingBubble()
-	markSessionDirty(session)
-	try {
-		const ws = await getSocket()
-		ws.send(JSON.stringify({
-			type: 'trigger',
-			runId: store.generatingRunId,
-			session,
-			...target(),
-			ai_source: store.aiSource || '',
-			profile: store.profile,
-		}))
-	}
-	catch (error) {
-		store.generating = false
-		store.generatingRunId = null
-		endGeneratingBubble()
-		store.generatingSession = null
-		updateSendButton()
-		showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
-	}
+	const runId = beginGeneration(session)
+	try { await sendTriggerFrame(session, runId) }
+	catch (error) { failGeneration(error) }
 }
 
 /**
@@ -1291,7 +1277,6 @@ export async function sendMessage(content) {
 	}
 	store.session.profile = store.profile
 	store.session.ai_source = store.aiSource
-	store.generatingSession = store.session
 	appendLocalHistory('message', content)
 	try {
 		const gistFiles = await resolveGistAttachments(content)
@@ -1310,15 +1295,11 @@ export async function sendMessage(content) {
 		appendEntryBubble(userEntry)
 		store.pendingFiles = []
 		renderAttachmentPreview()
-		store.generating = true
-		store.generatingRunId = crypto.randomUUID()
-		updateSendButton()
-		startGeneratingBubble()
-		markSessionDirty(store.session)
+		const runId = beginGeneration(store.session)
 		const ws = await getSocket()
 		ws.send(JSON.stringify({
 			type: 'send',
-			runId: store.generatingRunId,
+			runId,
 			session: store.session,
 			...target(),
 			ai_source: store.aiSource || '',
@@ -1328,14 +1309,7 @@ export async function sendMessage(content) {
 			clientEntryId: userEntry.id,
 		}))
 	}
-	catch (error) {
-		store.generating = false
-		store.generatingRunId = null
-		endGeneratingBubble()
-		store.generatingSession = null
-		updateSendButton()
-		showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
-	}
+	catch (error) { failGeneration(error) }
 }
 
 /**
