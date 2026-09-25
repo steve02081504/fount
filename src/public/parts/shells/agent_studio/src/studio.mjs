@@ -150,7 +150,7 @@ export async function sendSubAgentMessage(username, runId, content) {
 export function summarizeSubAgentRuns(records = [], liveRuns = [], liveBatches = []) {
 	/** @type {Map<string, object>} */
 	const runsById = new Map()
-	for (const record of records || []) {
+	for (const record of records) {
 		const subAgent = record?.subAgent
 		if (!subAgent?.runId) continue
 		const startedAt = record.startedAt ?? null
@@ -174,7 +174,7 @@ export function summarizeSubAgentRuns(records = [], liveRuns = [], liveBatches =
 			entry.minCacheRate = entry.minCacheRate == null ? record.cacheRate : Math.min(entry.minCacheRate, record.cacheRate)
 		runsById.set(subAgent.runId, entry)
 	}
-	for (const live of liveRuns || []) {
+	for (const live of liveRuns) {
 		if (!live?.runId) continue
 		const entry = runsById.get(live.runId) ?? {
 			runId: live.runId,
@@ -201,7 +201,7 @@ export function summarizeSubAgentRuns(records = [], liveRuns = [], liveBatches =
 
 	/** @type {Map<string, object>} */
 	const batchesById = new Map()
-	for (const batch of liveBatches || []) {
+	for (const batch of liveBatches) {
 		if (!batch?.batchId) continue
 		batchesById.set(batch.batchId, { ...batch, runIds: batchesById.get(batch.batchId)?.runIds ?? [] })
 	}
@@ -249,15 +249,27 @@ export function listBenchmarks(username) {
 }
 
 /**
+ * 定位基准在存储中的下标；不存在时抛出 404。
+ * @param {string} username 用户
+ * @param {string} id 基准 id
+ * @returns {{ store: { benchmarks: object[] }, index: number }} 存储与其下标
+ */
+function locateBenchmark(username, id) {
+	const store = loadBenchmarkStore(username)
+	const index = store.benchmarks.findIndex(candidate => candidate.id === id)
+	if (index === -1) throw httpError(404, `benchmark not found: ${id}`)
+	return { store, index }
+}
+
+/**
  * 读取单个基准定义。
  * @param {string} username 用户
  * @param {string} id 基准 id
  * @returns {object} 基准
  */
 export function getBenchmark(username, id) {
-	const benchmark = loadBenchmarkStore(username).benchmarks.find(candidate => candidate.id === id)
-	if (!benchmark) throw httpError(404, `benchmark not found: ${id}`)
-	return benchmark
+	const { store, index } = locateBenchmark(username, id)
+	return store.benchmarks[index]
 }
 
 /**
@@ -283,9 +295,7 @@ export function createBenchmark(username, input) {
  * @returns {object} 更新后的基准
  */
 export function updateBenchmark(username, id, patch = {}) {
-	const store = loadBenchmarkStore(username)
-	const index = store.benchmarks.findIndex(candidate => candidate.id === id)
-	if (index === -1) throw httpError(404, `benchmark not found: ${id}`)
+	const { store, index } = locateBenchmark(username, id)
 	const merged = normalizeBenchmark({ ...store.benchmarks[index], ...patch, id })
 	store.benchmarks[index] = merged
 	saveShellData(username, SHELL_NAME, 'benchmarks')
@@ -299,9 +309,7 @@ export function updateBenchmark(username, id, patch = {}) {
  * @returns {object} 删除的基准
  */
 export function deleteBenchmark(username, id) {
-	const store = loadBenchmarkStore(username)
-	const index = store.benchmarks.findIndex(candidate => candidate.id === id)
-	if (index === -1) throw httpError(404, `benchmark not found: ${id}`)
+	const { store, index } = locateBenchmark(username, id)
 	const [removed] = store.benchmarks.splice(index, 1)
 	saveShellData(username, SHELL_NAME, 'benchmarks')
 	return removed

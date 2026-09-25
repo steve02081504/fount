@@ -185,7 +185,7 @@ function round(value, digits) {
  * @returns {{ total: number, empty: number, avgLength: number, judged: number, exactMatch?: number, avgScore?: number }} 统计
  */
 export function computeStats(results = [], cases = []) {
-	const expectedByCase = new Map((cases || []).map(item => [item.id, item.expected]))
+	const expectedByCase = new Map(cases.map(item => [item.id, item.expected]))
 	let empty = 0
 	let totalLength = 0
 	let exactMatches = 0
@@ -194,7 +194,7 @@ export function computeStats(results = [], cases = []) {
 	let scoreSum = 0
 	let programChecked = 0
 	let programPassed = 0
-	for (const result of results || []) {
+	for (const result of results) {
 		const response = String(result?.response ?? '')
 		if (!response.trim()) empty++
 		totalLength += response.length
@@ -214,9 +214,9 @@ export function computeStats(results = [], cases = []) {
 		}
 	}
 	const stats = {
-		total: results?.length ?? 0,
+		total: results.length,
 		empty,
-		avgLength: results?.length ? round(totalLength / results.length, 2) : 0,
+		avgLength: results.length ? round(totalLength / results.length, 2) : 0,
 		judged,
 	}
 	if (exactComparable) stats.exactMatch = round(exactMatches / exactComparable, 4)

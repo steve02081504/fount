@@ -29,7 +29,6 @@ import { buildDialogue } from '../public/shared/dialogueReplay.mjs'
  * @property {ReturnType<typeof createPromptRequestRecorder>} recorder
  * @property {object} [subAgent]
  * @property {object} [metadata]
- * @property {object} [extra]
  */
 
 /** 生成会话（以请求对象为键，避免并发生成互相串记录）。 @type {WeakMap<object, recordSession_t>} */

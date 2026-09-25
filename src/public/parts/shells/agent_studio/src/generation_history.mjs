@@ -222,6 +222,16 @@ function ensureUser(username) {
 }
 
 /**
+ * 记录自落盘至 `now` 的存续时长。
+ * @param {{ startedAt?: number, finishedAt?: number }} record 记录（或摘要）
+ * @param {number} now 当前时间
+ * @returns {number} 毫秒
+ */
+function ageMs(record, now) {
+	return now - (record.finishedAt || record.startedAt || 0)
+}
+
+/**
  * 应用 TTL：input 超 promptMs 清除；整条记录超 conversationMs 删除。
  * @param {generationRecord_t} record 记录
  * @param {{ promptMs: number, conversationMs: number }} retention 保留策略
@@ -229,7 +239,7 @@ function ensureUser(username) {
  * @returns {'keep' | 'strip-input' | 'delete'} 处置
  */
 function retentionAction(record, retention, now) {
-	const age = now - (record.finishedAt || record.startedAt || 0)
+	const age = ageMs(record, now)
 	if (age > retention.conversationMs) return 'delete'
 	if (age > retention.promptMs && (record.input !== undefined || record.requests !== undefined)) return 'strip-input'
 	return 'keep'
@@ -241,17 +251,13 @@ function retentionAction(record, retention, now) {
  * @returns {boolean} 是否发生了清除
  */
 function stripPromptPayloads(record) {
-	let stripped = false
-	if (record.input !== undefined) {
-		delete record.input
-		stripped = true
-	}
+	const stripped = record.input !== undefined || record.requests !== undefined
 	if (record.requests !== undefined) {
 		record.requestCount ??= record.requests.length
-		delete record.requests
 		record.requestsStripped = true
-		stripped = true
+		delete record.requests
 	}
+	delete record.input
 	return stripped
 }
 
@@ -269,7 +275,7 @@ export function pruneGenerations(username, { index } = {}) {
 	const kept = []
 	let removed = 0
 	for (const summary of loadedIndex.records) {
-		const age = now - (summary.finishedAt || summary.startedAt || 0)
+		const age = ageMs(summary, now)
 		if (age > retention.conversationMs) {
 			try { fs.rmSync(recordPath(username, summary.id), { force: true }) } catch { /* 忽略删除失败 */ }
 			removed++
