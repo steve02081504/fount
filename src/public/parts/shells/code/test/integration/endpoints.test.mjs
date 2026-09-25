@@ -862,7 +862,8 @@ Deno.test({
 	const dataPath = node.dataPath
 	const session = {
 		id: 'resume01', title: '', charname: 'wsRoundsChar', profile: '', ai_source: '',
-		created: new Date().toISOString(), updated: new Date().toISOString(), memory: {}, entries: []
+		created: new Date().toISOString(), updated: new Date().toISOString(),
+		memory: { coderunner_workspace: { marker: 'stale' } }, entries: []
 	}
 	let ws
 	try {
@@ -887,7 +888,10 @@ Deno.test({
 		await stopNode({ ...node, keepData: true })
 		ws.close()
 		const config = JSON.parse(await fs.readFile(path.join(dataPath, 'config.json'), 'utf8'))
-		assert(config.data.users[node.username].jobs['shells/code']?.[session.id], '信号退出后须保留待续跑作业')
+		const job = config.data.users[node.username].jobs['shells/code']?.[session.id]
+		assert(job, '信号退出后须保留待续跑作业')
+		assert(!job.session, '恢复作业不得携带会话内容（始终从 .fount/code/sessions 读回）')
+		assert(!config.data.users[node.username].jobs['shells/code'][session.id].session?.memory?.coderunner_workspace, '作业不得携带 JS 运行时工作区')
 		node = await launchCodeNode({ dataPath, keepData: true, starts: defaultTestStarts({ web: true, jobs: true }) })
 		let disk
 		for (let i = 0; i < 120; i++) {
@@ -898,6 +902,8 @@ Deno.test({
 		const reason = config.data.users[node.username].jobs['shells/code']?.[session.id]?.reason
 		const expectedReason = reason === 'restart' ? '正常退出或重启' : reason || '意外退出'
 		assert(disk?.entries.some(entry => entry.role === 'system' && entry.content.includes('此前') && entry.content.includes(expectedReason)), `续跑前应通知中断原因和间隔：${JSON.stringify(disk?.entries)}; ${node.peekOutput()}`)
+		assert(disk.entries.some(entry => entry.role === 'system' && entry.content.includes('工作区')), '续跑应提示 JS 工作区已清空')
+		assert(!disk.memory?.coderunner_workspace, '续跑后 JS 运行时工作区应被清空')
 		assert(disk.entries.some(entry => entry.role === 'char' && entry.content.includes('读取完成')), '自动续跑应完成原任务')
 		assertEquals(disk.entries.filter(entry => entry.role === 'tool').length, 1, '已落盘的工具调用不得在续跑后重复执行')
 	}

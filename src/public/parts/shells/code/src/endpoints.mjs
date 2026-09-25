@@ -69,6 +69,42 @@ function getWorkspaces(username) {
 	return data
 }
 
+/** 已补过 `.gitignore` 的工作区键（`machine\0path`），避免每次生成重复读写。 @type {Set<string>} */
+const sessionsGitignoreChecked = new Set()
+
+/**
+ * 确保工作区 `.gitignore` 忽略 `.fount/code/sessions`（best-effort，仅对 git 仓库或已有 `.gitignore` 的目录写入）。
+ * @param {string} username - 用户名。
+ * @param {{machine: string, path: string}} workTarget - 目标工作区。
+ * @returns {Promise<void>}
+ */
+async function ensureSessionsGitignored(username, workTarget) {
+	if (!workTarget?.path) return
+	const key = workTarget.machine + '\u0000' + workTarget.path
+	if (sessionsGitignoreChecked.has(key)) return
+	sessionsGitignoreChecked.add(key)
+	try {
+		const executor = createTargetExecutor(username, { machine: workTarget.machine, workdir: workTarget.path })
+		const entries = await executor.listDir(workTarget.path).catch(() => [])
+		const hasGit = entries.some(entry => entry.isDirectory && entry.name === '.git')
+		const gitignoreEntry = entries.find(entry => entry.isFile && entry.name === '.gitignore')
+		if (!hasGit && !gitignoreEntry) return
+		const file = workTarget.path.replace(/[\\/]+$/, '') + '/.gitignore'
+		const existing = gitignoreEntry ? await executor.readTextFile(file).catch(() => null) : ''
+		if (existing == null) return
+		const alreadyIgnored = existing.split(/\r?\n/).some(raw => {
+			const line = raw.trim()
+			return line === '.fount/code/sessions' || line === '.fount/code/sessions/' || line === '.fount' || line === '.fount/' || line === '/.fount' || line === '/.fount/'
+		})
+		if (alreadyIgnored) return
+		const separator = existing && !existing.endsWith('\n') ? '\n' : ''
+		await executor.writeTextFile(file, existing + separator + '.fount/code/sessions\n')
+	}
+	catch (error) {
+		console.warn('shells/code: 补充工作区 .gitignore 失败', error)
+	}
+}
+
 /**
  * 递归扫描工作区下含 `.git` 的子目录（自包含 lambda 在目标机器执行，深度≤4、条目≤100）。
  * @param {string} username - 用户名。
@@ -390,14 +426,20 @@ function claimExternalOpen(username, nonce) {
  */
 export function resumeCodeJob(username, data) {
 	void (async () => {
-		const { sessionId, workTarget, session: snapshot, ai_source, profile, interruptedAt, reason, startedAt } = data
-		const session = await loadSession(username, workTarget, sessionId) || snapshot
-		if (!session || !startCodeRun) return
+		const { sessionId, workTarget, ai_source, profile, interruptedAt, reason, startedAt } = data
+		const session = await loadSession(username, workTarget, sessionId)
+		if (!session) {
+			console.warn(`shells/code: 恢复生成失败，未找到工作区会话 ${sessionId}`)
+			try { EndJob(username, 'shells/code', sessionId) }
+			catch { /* 作业已不存在 */ }
+			return
+		}
+		if (!startCodeRun) return
 		session.entries = (session.entries || []).filter(entry => !entry.is_generating)
 		const elapsed = Math.max(0, Date.now() - (interruptedAt || startedAt || Date.now()))
 		session.entries.push({
 			id: randomUUID(), role: 'system', uid: 'system', name: 'system',
-			content: `fount 此前因${reason === 'restart' ? '正常退出或重启' : reason ? `收到 ${reason} 信号` : '意外退出'}而中断，距离中断已过约 ${Math.round(elapsed / 1000)} 秒。上一轮未完成的生成内容已清除，请继续处理原任务。如涉及子代理，这不影响你的时间预算（相关时间已顺延）；必要时重新委派未完成的子代理任务。`,
+			content: `fount 此前因${reason === 'restart' ? '正常退出或重启' : reason ? `收到 ${reason} 信号` : '意外退出'}而中断，距离中断已过约 ${Math.round(elapsed / 1000)} 秒。上一轮未完成的生成内容已清除，请继续处理原任务。JS 运行时工作区（\`workspace\`）已清空，如需请重新构建。如涉及子代理，这不影响你的时间预算（相关时间已顺延）；必要时重新委派未完成的子代理任务。`,
 			time: new Date().toISOString(), files: []
 		})
 		await startCodeRun(username, { type: 'trigger', session, machine: workTarget.machine, workdir: workTarget.path, ai_source, profile }, null)
@@ -416,6 +458,8 @@ async function regenCodeSession(username, ctx, content) {
 	const session = await loadSession(username, workTarget, ctx.sessionId)
 	if (!session || !startCodeRun) return
 	session.entries = Array.isArray(session.entries) ? session.entries : []
+	// 自动重生成次数随会话落盘（用户发消息时清零），跨进程重启仍生效。
+	if (ctx.attempt != null) session.regenAttempts = Number(ctx.attempt) || 0
 	session.entries.push({
 		id: randomUUID(),
 		role: 'system',
@@ -522,6 +566,7 @@ export function setEndpoints(router) {
 			throw httpError(400, 'workspace already exists.')
 		data.list.push(workspace)
 		saveShellData(username, 'code', 'workspaces', data)
+		void ensureSessionsGitignored(username, { machine: workspace.machine, path: workspace.path })
 		res.json(data)
 	})
 
@@ -845,8 +890,8 @@ export function setEndpoints(router) {
 		const thisRequestController = new AbortController()
 		let finishRun
 		const finished = new Promise(resolve => { finishRun = resolve })
-		/** 持久化的恢复参数。 */
-		const jobData = { sessionId: session.id, workTarget: { machine: String(machine ?? '0'), path: String(workdir || '') }, session: { ...session, entries: [...session.entries || []] }, ai_source, profile, startedAt: Date.now() }
+		// 持久化的恢复参数：只留标识与生成参数；会话内容始终从工作区 `.fount/code/sessions` 读回。
+		const jobData = { sessionId: session.id, workTarget: { machine: String(machine ?? '0'), path: String(workdir || '') }, ai_source, profile, startedAt: Date.now() }
 		const run = {
 			runId, controller: thisRequestController, socket: ws, finished, completed: false,
 			/**
@@ -860,6 +905,8 @@ export function setEndpoints(router) {
 		if (ws) ws.codeRun = run
 		const workPath = String(workdir || '')
 		const workTarget = { machine: String(machine ?? '0'), path: workPath }
+		// 打开/使用工作区时确保会话目录被 git 忽略（best-effort，不阻塞生成）。
+		void ensureSessionsGitignored(username, workTarget)
 		/**
 			 * 向本连接发送一帧（自动附带 runId/sessionId；socket 已断开时静默跳过）。
 			 * @param {object} payload - 帧负载（需含 type）。
@@ -979,6 +1026,8 @@ export function setEndpoints(router) {
 			}
 		}
 		if (msg.type === 'send') {
+			// 用户发来新消息即清零自动重生成计数（本轮是全新任务，不再受上次检查失败的次数上限影响）。
+			delete session.regenAttempts
 			// 前端已乐观插入用户条目（clientEntryId）时不再重复追加/回传，避免 AI 看到两条、UI 重复
 			const alreadyInSession = msg.clientEntryId && requestSession.entries.some(entry => entry?.id === msg.clientEntryId)
 			if (!alreadyInSession) {
@@ -989,7 +1038,6 @@ export function setEndpoints(router) {
 				}
 			}
 		}
-		jobData.session = { ...requestSession, entries: [...requestSession.entries] }
 		beginCodeGeneration(username)
 		const generationId = randomUUID()
 		if (workPath) StartJob(username, 'shells/code', session.id, jobData)

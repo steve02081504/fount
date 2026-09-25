@@ -13,6 +13,7 @@ import { loadShellData } from '../../../../../server/setting_loader.mjs'
 
 import { MAX_REGEN_ATTEMPTS, buildEnv, normalizeHooks } from './hooks_config.mjs'
 import { runShellCommand } from './runner.mjs'
+import { loadSession, saveSession } from './sessions.mjs'
 import { readWorkspaceConfig } from './workspace_config.mjs'
 
 /** 子代理运行终态。 */
@@ -28,8 +29,6 @@ const workInfo = new Map()
 const sessionWork = new Map()
 /** @type {Set<string>} 已开始计数的子代理运行 id。 */
 const seenSubRuns = new Set()
-/** @type {Map<string, number>} `username\0sessionId` → 已自动重生成次数。 */
-const regenAttempts = new Map()
 /** @type {Set<string>} 已在运行的常驻（detached）命令键。 */
 const runningSingletons = new Set()
 /** 子代理事件监听是否已注册。 */
@@ -246,7 +245,6 @@ export function dispatchAgentStart(username, ctx) {
  */
 export async function dispatchAgentFinish(username, ctx) {
 	const key = workKey(ctx.machine, ctx.path)
-	const skey = sessionKey(username, ctx.sessionId)
 	const work = { machine: String(ctx.machine ?? '0'), path: String(ctx.path ?? '') }
 	const envCtx = {
 		event: 'agent-finish', kind: 'code', username,
@@ -257,21 +255,29 @@ export async function dispatchAgentFinish(username, ctx) {
 		success: ctx.success ? '1' : '0', error: ctx.error ? String(ctx.error) : '', attempt: 0,
 	}
 	const failure = await runHooks(username, work, 'agentFinish', envCtx)
+	// 自动重生成次数随会话落盘（跨进程重启仍生效）；用户发消息时由 endpoints 清零。
+	const session = work.path ? await loadSession(username, work, ctx.sessionId).catch(() => null) : null
+	const attempt = Number(session?.regenAttempts) || 0
 	if (failure) {
-		const attempt = regenAttempts.get(skey) || 0
 		if (attempt >= MAX_REGEN_ATTEMPTS) {
 			console.warn(`shells/code: 工作区自动钩子连续失败 ${attempt} 次，停止回灌（会话 ${ctx.sessionId}）`)
-			regenAttempts.delete(skey)
+			if (session) {
+				delete session.regenAttempts
+				await saveSession(username, work, session).catch(error => console.warn('shells/code: 重置自动回灌计数失败', error))
+			}
 		}
-		else if (typeof runtime.regen === 'function') {
-			regenAttempts.set(skey, attempt + 1)
+		else if (typeof runtime.regen === 'function') 
 			try {
+				// 计数由 regenCodeSession 写入会话文件，这里只把新值随上下文传过去。
 				await runtime.regen(username, { ...ctx, attempt: attempt + 1 }, failure.output.slice(0, 20000))
 			}
 			catch (error) { console.warn('shells/code: 自动重生成触发失败', error) }
-		}
+		
 	}
-	else regenAttempts.delete(skey)
+	else if (session?.regenAttempts) {
+		delete session.regenAttempts
+		await saveSession(username, work, session).catch(error => console.warn('shells/code: 重置自动回灌计数失败', error))
+	}
 	await decrementWork(username, key)
 }
 

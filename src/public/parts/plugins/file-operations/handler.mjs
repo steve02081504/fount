@@ -396,7 +396,7 @@ export const globReplyHandler = defineReplyHandler({
 					: '（无匹配）\n'
 				const zeroHit = (result.patterns || []).filter(item => item.count === 0).map(item => item.pattern)
 				if (zeroHit.length)
-					system_content += `注意：以下模式 0 命中，可能写法有误——含 / 的模式相对起始目录解析（如应写 \`test/*.mjs\` 而非 \`src/scripts/test/*.mjs\`）：${zeroHit.map(inlineCode).join('、')}\n`
+					system_content += `注意：以下模式 0 命中，可能写法有误——所有模式都相对起始目录（path，默认当前工作目录）解析，例如起始目录为仓库根时写 \`src/scripts/test/*.mjs\`，起始目录为 \`src\` 时才写 \`scripts/test/*.mjs\`：${zeroHit.map(inlineCode).join('、')}\n`
 				if (result.truncated)
 					system_content += '结果过多，请使用更精确的 glob 模式或更小的 path。\n'
 			}
@@ -493,9 +493,12 @@ export const replaceFileReplyHandler = defineReplyHandler({
 			const fileRegex = /<file\s+path="(?<path>[^"]+)">(?<replacements_str>[^]*?)<\/file>/g
 			const replacementRegex = /<replacement(?<attributes>[^>]*)>\s*<search>(?<search>[^]*?)<\/search>\s*<replace>(?<replace>[^]*?)<\/replace>\s*<\/replacement>/g
 
+			let fileBlockCount = 0
+			let replacementCount = 0
 			for (const fileMatch of replace_file_content.matchAll(fileRegex)) {
 				const { path: filepath, replacements_str } = fileMatch.groups
 				if (!filepath) continue
+				fileBlockCount++
 				const fileData = { path: filepath, replacements: [] }
 				for (const repMatch of replacements_str.matchAll(replacementRegex)) {
 					const { attributes, search, replace } = repMatch.groups
@@ -503,6 +506,7 @@ export const replaceFileReplyHandler = defineReplyHandler({
 						console.warn('Skipping malformed <replacement> block for path:', filepath)
 						continue
 					}
+					replacementCount++
 					const isRegex = attributes?.includes('regex="true"') ?? false
 					const isReplaceAll = attributes?.includes('replaceAll="true"') ?? false
 					fileData.replacements.push({ search: search.trim(), replace, regex: isRegex, replaceAll: isReplaceAll })
@@ -511,8 +515,13 @@ export const replaceFileReplyHandler = defineReplyHandler({
 					replace_files_data.push(fileData)
 			}
 
-			if (!replace_files_data.length)
+			if (!replace_files_data.length) {
+				if (fileBlockCount && !replacementCount)
+					throw new Error('解析到 <file>，但其内没有有效的 <replacement>（每个 <replacement> 需含 <search> 与 <replace>）。')
+				if (!fileBlockCount)
+					throw new Error('未找到 <file path="…"> 块：请把操作写在 <replace-file><file path="…">…</file></replace-file> 中。')
 				throw new Error('解析<replace-file>标签后，未找到任何有效的<file>或<replacement>操作。')
+			}
 		}
 		catch (err) {
 			console.error('Error parsing replace-file content with regex:', err)

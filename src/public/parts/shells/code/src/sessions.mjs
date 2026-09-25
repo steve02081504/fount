@@ -16,7 +16,8 @@ import { createTargetExecutor, joinWorkdir } from '../../../plugins/file-operati
  * @property {string} [ai_source] 所选 AI 源（空 = 角色自带）
  * @property {string} created 创建时间（ISO）
  * @property {string} updated 更新时间（ISO）
- * @property {object} memory chat_scoped_char_memory
+ * @property {object} memory chat_scoped_char_memory（不含 JS 运行时工作区 `coderunner_workspace`，恢复时不保留）
+ * @property {number} [regenAttempts] 工作区自动检查失败后的连续回灌次数（用户发消息时清零）
  * @property {Array<import('../../../../../decl/chatLog.ts').chatLogEntry_t & {time: string}>} entries 消息列表（content=agent 层，content_for_show=人类展示层；同时保留 content_for_edit / charVisibility / files）
  */
 

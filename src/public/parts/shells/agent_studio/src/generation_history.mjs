@@ -1,11 +1,13 @@
 /**
  * 【文件】generation_history.mjs — 生成历史存储
  * 【职责】记录/查询一次生成（generation）的可观测数据，供 Agent Studio 使用；含两类 TTL 清理与串行落盘。
- * 【原理】按用户落盘 `data/users/<u>/shells/agent_studio/{settings.json,index.json,records/<id>.json}`：
- *   index.json 存列表摘要，records/<id>.json 存完整记录（含 input/response）。`input` 超 promptMs 清除，整条记录超 conversationMs 删除。
+ * 【原理】保留策略 `settings.json` 留在 `data/users/<u>/shells/agent_studio/`；摘要 `index.json` 与完整记录
+ *   `records/<id>.json` 落在系统临时目录 `temp/fount/agent_studio/<u>/`，避免污染用户数据、也被工作区 grep 命中。
+ *   `input` 超 promptMs 清除，整条记录超 conversationMs 删除。
  * 【关联】chat triggerReply、plugins/sub-agent 写入；public/shared/generationChain.mjs 纯链函数；events `GenerationRecorded`。
  */
 import fs from 'node:fs'
+import os from 'node:os'
 import path from 'node:path'
 
 import { loadJsonFileIfExists, saveJsonFile } from '../../../../../scripts/json_loader.mjs'
@@ -70,13 +72,25 @@ function enqueue(username, task) {
 	return next
 }
 
+/** 记录/索引相对系统临时目录的存放路径。 */
+const TEMP_STORE_REL = path.join('fount', 'agent_studio')
+
 /**
- * 用户数据目录。
+ * 用户设置目录（保留策略，跟随用户数据）。
  * @param {string} username 用户
  * @returns {string} 目录路径
  */
-function shellDir(username) {
+function settingsDir(username) {
 	return path.join(getUserDictionary(username), 'shells', 'agent_studio')
+}
+
+/**
+ * 用户记录/索引存放目录（系统临时目录，避免污染用户数据与工作区搜索）。
+ * @param {string} username 用户
+ * @returns {string} 目录路径
+ */
+function storeDir(username) {
+	return path.join(os.tmpdir(), TEMP_STORE_REL, username)
 }
 
 /**
@@ -84,7 +98,7 @@ function shellDir(username) {
  * @returns {string} settings.json 路径
  */
 function settingsPath(username) {
-	return path.join(shellDir(username), 'settings.json')
+	return path.join(settingsDir(username), 'settings.json')
 }
 
 /**
@@ -92,7 +106,7 @@ function settingsPath(username) {
  * @returns {string} index.json 路径
  */
 function indexPath(username) {
-	return path.join(shellDir(username), 'index.json')
+	return path.join(storeDir(username), 'index.json')
 }
 
 /**
@@ -101,7 +115,7 @@ function indexPath(username) {
  * @returns {string} 记录文件路径
  */
 function recordPath(username, id) {
-	return path.join(shellDir(username), 'records', `${id}.json`)
+	return path.join(storeDir(username), 'records', `${id}.json`)
 }
 
 /**
@@ -121,7 +135,7 @@ function loadRetention(username) {
  * @returns {void}
  */
 function saveRetention(username, retention) {
-	fs.mkdirSync(shellDir(username), { recursive: true })
+	fs.mkdirSync(settingsDir(username), { recursive: true })
 	const settings = loadJsonFileIfExists(settingsPath(username), {})
 	settings.retention = { ...DEFAULT_RETENTION, ...retention }
 	saveJsonFile(settingsPath(username), settings)
@@ -143,7 +157,7 @@ function loadIndex(username) {
  * @returns {void}
  */
 function saveIndex(username, index) {
-	fs.mkdirSync(shellDir(username), { recursive: true })
+	fs.mkdirSync(storeDir(username), { recursive: true })
 	saveJsonFile(indexPath(username), index)
 }
 
@@ -202,7 +216,7 @@ function previousConversationPrompt(username, index, record) {
  */
 function ensureUser(username) {
 	if (initializedUsers.has(username)) return
-	fs.mkdirSync(path.join(shellDir(username), 'records'), { recursive: true })
+	fs.mkdirSync(path.join(storeDir(username), 'records'), { recursive: true })
 	if (!fs.existsSync(indexPath(username))) saveIndex(username, { records: [] })
 	initializedUsers.add(username)
 }
