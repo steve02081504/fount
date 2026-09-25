@@ -119,6 +119,32 @@ Deno.test({
 	}
 })
 
+Deno.test({
+	name: 'opening a workspace appends .fount/code/sessions to its .gitignore',
+	sanitizeOps: false,
+	sanitizeResources: false,
+}, async () => {
+	const node = await launchCodeNode()
+	const root = await fs.mkdtemp(path.join(os.tmpdir(), 'fount_code_gitignore_'))
+	try {
+		await fs.writeFile(path.join(root, '.gitignore'), 'node_modules/\n', 'utf8')
+		const response = await codeFetch(node, 'POST', '/workspaces', { name: 'gitignore', machine: '0', path: root })
+		assertEquals(response.status, 200)
+		let content = ''
+		for (let i = 0; i < 50; i++) {
+			await new Promise(resolve => setTimeout(resolve, 50))
+			content = await fs.readFile(path.join(root, '.gitignore'), 'utf8').catch(() => '')
+			if (content.includes('.fount/code/sessions')) break
+		}
+		assert(content.includes('.fount/code/sessions'), `.gitignore 应补充会话目录：${JSON.stringify(content)}`)
+		assert(content.includes('node_modules/'), '原有 .gitignore 内容不得被覆盖')
+	}
+	finally {
+		await stopNode(node)
+		await fs.rm(root, { recursive: true, force: true })
+	}
+})
+
 Deno.test('parseVolumeLabels parses Win32_LogicalDisk JSON output', () => {
 	assertEquals(parseVolumeLabels('[{"DeviceID":"C:","VolumeName":"Windows"},{"DeviceID":"D:","VolumeName":null}]'), { 'C:\\': 'Windows', 'D:\\': '' })
 	// 单条时 pwsh 输出对象而非数组
@@ -885,6 +911,7 @@ Deno.test({
 			if (checkpoint.entries.some(entry => entry.role === 'tool') && checkpoint.entries.some(entry => entry.is_generating)) break
 		}
 		assert(checkpoint?.entries.some(entry => entry.role === 'tool') && checkpoint.entries.some(entry => entry.is_generating), '下一次 AI 调用之前须持久化已完成轮次')
+		assert(!checkpoint.memory?.coderunner_workspace, '会话落盘时不得写入 JS 运行时工作区')
 		await stopNode({ ...node, keepData: true })
 		ws.close()
 		const config = JSON.parse(await fs.readFile(path.join(dataPath, 'config.json'), 'utf8'))
@@ -903,7 +930,7 @@ Deno.test({
 		const expectedReason = reason === 'restart' ? '正常退出或重启' : reason || '意外退出'
 		assert(disk?.entries.some(entry => entry.role === 'system' && entry.content.includes('此前') && entry.content.includes(expectedReason)), `续跑前应通知中断原因和间隔：${JSON.stringify(disk?.entries)}; ${node.peekOutput()}`)
 		assert(disk.entries.some(entry => entry.role === 'system' && entry.content.includes('工作区')), '续跑应提示 JS 工作区已清空')
-		assert(!disk.memory?.coderunner_workspace, '续跑后 JS 运行时工作区应被清空')
+		assert(!disk.memory?.coderunner_workspace, `续跑后 JS 运行时工作区应被清空：${JSON.stringify(disk.memory)}`)
 		assert(disk.entries.some(entry => entry.role === 'char' && entry.content.includes('读取完成')), '自动续跑应完成原任务')
 		assertEquals(disk.entries.filter(entry => entry.role === 'tool').length, 1, '已落盘的工具调用不得在续跑后重复执行')
 	}

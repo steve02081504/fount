@@ -439,7 +439,7 @@ export function resumeCodeJob(username, data) {
 		const elapsed = Math.max(0, Date.now() - (interruptedAt || startedAt || Date.now()))
 		session.entries.push({
 			id: randomUUID(), role: 'system', uid: 'system', name: 'system',
-			content: `fount 此前因${reason === 'restart' ? '正常退出或重启' : reason ? `收到 ${reason} 信号` : '意外退出'}而中断，距离中断已过约 ${Math.round(elapsed / 1000)} 秒。上一轮未完成的生成内容已清除，请继续处理原任务。JS 运行时工作区（\`workspace\`）已清空，如需请重新构建。如涉及子代理，这不影响你的时间预算（相关时间已顺延）；必要时重新委派未完成的子代理任务。`,
+			content: `fount 此前因${reason === 'restart' ? '正常退出或重启' : reason ? `收到 ${reason} 信号` : '意外退出'}而中断，距离中断已过约 ${Math.round(elapsed / 1000)} 秒。上一轮未完成的生成内容已清除，请继续处理原任务。JS 运行时工作区（\`workspace\`）不跨进程保留，现已为空，如需请重新构建。如涉及子代理，这不影响你的时间预算（相关时间已顺延）；必要时重新委派未完成的子代理任务。`,
 			time: new Date().toISOString(), files: []
 		})
 		await startCodeRun(username, { type: 'trigger', session, machine: workTarget.machine, workdir: workTarget.path, ai_source, profile }, null)
