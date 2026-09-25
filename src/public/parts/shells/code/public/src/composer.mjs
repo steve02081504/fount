@@ -175,9 +175,8 @@ export function removeGhost() {
 /** 渲染影子补全（光标在末尾且历史存在前缀匹配时）。 */
 function updateGhost() {
 	removeGhost()
-	const value = richInput.value
-	if (!value || !historySuggestions().length) return
-	if (elements.composerInput.selectionStart !== value.length) return
+	const {value} = richInput
+	if (!value || elements.composerInput.selectionStart !== value.length) return
 	const ghostText = historySuggestions().find(entry => entry.length > value.length && entry.startsWith(value)) || ''
 	if (!ghostText) return
 	const ghost = document.createElement('span')
@@ -455,7 +454,7 @@ async function addComposerFiles(files) {
 /* ---------------- shell 模式 ---------------- */
 
 /** 退出 shell 模式（回到普通消息模式）。 */
-export function exitShellMode() {
+function exitShellMode() {
 	if (!store.shellMode) return
 	store.shellMode = false
 	elements.composerShell.classList.remove('shell-mode')
@@ -511,7 +510,7 @@ export function wireComposerEvents() {
 
 	elements.composerInput.addEventListener('input', () => {
 		if (!fromNav) store.historyNav.pos = null
-		const value = richInput.value
+		const {value} = richInput
 		syncActiveTabDraft()
 		// ！/! 切 shell 执行模式：内容为空时键入叹号，进入后移除该字符，供干净命令输入
 		if (!store.shellMode && (value === '！' || value === '!')) {

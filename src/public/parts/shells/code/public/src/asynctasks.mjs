@@ -11,14 +11,6 @@ import { subAgentChatId } from './subagents.mjs'
 /** 运行中的状态集合（显示转圈）。 */
 const ACTIVE_STATES = new Set(['running', 'start'])
 
-/** 各状态对应的图标。 */
-const STATE_ICON = {
-	running: icons.loading,
-	done: icons.checkCircle,
-	failed: icons.alertCircle,
-	idle: icons.timerSand,
-}
-
 /** 已知任务类型的图标（未列出者按 shell 名 / 通用计时兜底）。 */
 const KIND_ICON = {
 	subagent: icons.robot,

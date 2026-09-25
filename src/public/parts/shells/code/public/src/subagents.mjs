@@ -86,7 +86,7 @@ function stateLabel(state, view) {
  * @param {string} runId - 运行 id。
  * @returns {void}
  */
-export function openSubAgent(runId) {
+function openSubAgent(runId) {
 	if (!runId) return
 	window.open(AGENT_STUDIO_SUBAGENT_URL + encodeURIComponent(runId), '_blank', 'noopener')
 }
@@ -177,7 +177,7 @@ registerRunCardFeed(feed)
  */
 export function subAgentCardElement(entry) {
 	const meta = entry.extension?.subAgent ?? {}
-	const runId = meta.runId
+	const {runId} = meta
 	const card = createRunCard({
 		tag: 'button',
 		className: 'code-run-card code-subagent-card',

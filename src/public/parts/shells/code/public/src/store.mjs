@@ -141,7 +141,7 @@ export function initComposer() {
 	richInput = createMarkdownRichInput(elements.composerInput, {
 		inlineTokens: [{
 			kind: 'file',
-			regex: /@\[file:([^\]\n]+)\]/,
+			regex: /@\[file:([^\n\]]+)]/,
 			/**
 			 * 解析文件 token 原文。
 			 * @param {string} raw - 匹配的原文（`@[file:…]`）。
@@ -156,7 +156,7 @@ export function initComposer() {
 			resolveLabel: parsed => parsed.body,
 		}, {
 			kind: 'gist',
-			regex: /@\[gist:([^\]\n]+)\]/,
+			regex: /@\[gist:([^\n\]]+)]/,
 			/**
 			 * 解析 gist token 原文。
 			 * @param {string} raw - 匹配的原文（`@[gist:…]`）。

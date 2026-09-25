@@ -8,7 +8,7 @@ const ICONIFY_CDN = 'https://api.iconify.design'
  * @param {string} icon - 图标集 / 图标 id（如 `mdi/close`）。
  * @returns {string} 绝对 URL。
  */
-export function iconifyUrl(icon) {
+function iconifyUrl(icon) {
 	return `${ICONIFY_CDN}/${icon}.svg`
 }
 

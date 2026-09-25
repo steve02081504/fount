@@ -186,7 +186,7 @@ export function renderPowerButton() {
  * 更新顶栏上下文 chip（当前工作区 / 角色；对话态 targets 隐藏后仍可见，点击打开选择器）。
  * @returns {void}
  */
-export function renderContextChip() {
+function renderContextChip() {
 	const chip = elements.contextChip
 	if (!chip) return
 	const workspaceName = store.workspace?.name || store.workspace?.path || ''
@@ -202,14 +202,24 @@ export function renderContextChip() {
 	chip.hidden = !workspaceName && !charName
 }
 
-/** 打开「任务完成后的自动操作」设置对话框。 */
-export async function openPowerSettings() {
+/**
+ * 打开设置类对话框（失败时提示）。
+ * @param {string} name - 模板名。
+ * @param {(dialog: HTMLDialogElement) => void} onReady - 对话框就绪回调。
+ * @returns {Promise<void>}
+ */
+async function openSettingsDialog(name, onReady) {
 	try {
-		await openDialogFromTemplate('power_settings', {}, { onReady: renderPowerSettings })
+		await openDialogFromTemplate(name, {}, { onReady })
 	}
 	catch (error) {
 		showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
 	}
+}
+
+/** 打开「任务完成后的自动操作」设置对话框。 */
+export async function openPowerSettings() {
+	await openSettingsDialog('power_settings', renderPowerSettings)
 }
 
 /**
@@ -639,12 +649,7 @@ function renderAiSourcePanel(dialog) {
 
 /** 打开 AI 源可见性管理面板。 */
 async function openAiSourcePanel() {
-	try {
-		await openDialogFromTemplate('ai_source_panel', {}, { onReady: renderAiSourcePanel })
-	}
-	catch (error) {
-		showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
-	}
+	await openSettingsDialog('ai_source_panel', renderAiSourcePanel)
 }
 
 /* ---------------- 角色 ---------------- */
@@ -686,12 +691,7 @@ function renderCharSwitchList(dialog) {
 
 /** 打开角色切换对话框。 */
 export async function openCharSwitchDialog() {
-	try {
-		await openDialogFromTemplate('char_switch', {}, { onReady: renderCharSwitchList })
-	}
-	catch (error) {
-		showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
-	}
+	await openSettingsDialog('char_switch', renderCharSwitchList)
 }
 
 /* ---------------- 工作区角色覆盖 / 推荐 ---------------- */
@@ -814,8 +814,8 @@ export async function openFolderBrowser() {
 		 */
 		onSelect: async path => {
 			if (!path) return
-			const machine = store.machine
-			const name = path.split(/[\\/]/).filter(Boolean).pop() || path
+			const {machine} = store
+			const name = path.split(/[/\\]/).filter(Boolean).pop() || path
 			const data = await api.addWorkspace({ name, machine, path }).catch(error => {
 				showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
 				return null

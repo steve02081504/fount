@@ -22,7 +22,7 @@ import { renderTemplate } from './templates.mjs'
  * @param {object} entry - 会话条目。
  * @returns {string} 展示文本。
  */
-export function entryShowText(entry) {
+function entryShowText(entry) {
 	return entry?.content_for_show ?? entry?.content ?? ''
 }
 
@@ -447,7 +447,7 @@ function renderErrorRetry(entry) {
  * @param {object} entry - 会话条目。
  * @returns {HTMLElement|null} 气泡元素。
  */
-export function bubbleOfEntry(entry) {
+function bubbleOfEntry(entry) {
 	return elements.messages.querySelector(`.code-message[data-entry-id="${CSS.escape(String(entry.id))}"]`)
 }
 
@@ -637,14 +637,6 @@ let lastUserToggleAt = -Infinity
 /** 用户展开宽限期（毫秒）。 */
 const USER_TOGGLE_GRACE_MS = 1000
 
-/**
- * 消息流当前是否贴底跟随。
- * @returns {boolean} 是否贴底。
- */
-export function isPinnedToBottom() {
-	return pinned
-}
-
 /** 无动画地对齐到底部（贴底跟随用）。 */
 function alignBottom() {
 	const el = elements.messages
@@ -656,7 +648,7 @@ function alignBottom() {
  * @param {{smooth?: boolean}} [options] - 是否平滑滚动（仅用户点击「回到底部」时）。
  * @returns {void}
  */
-export function scrollMessagesBottom({ smooth = false } = {}) {
+function scrollMessagesBottom({ smooth = false } = {}) {
 	pinned = true
 	const el = elements.messages
 	if (smooth) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })

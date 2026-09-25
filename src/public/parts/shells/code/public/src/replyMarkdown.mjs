@@ -24,7 +24,7 @@ export function repairOrphanedReplyFence(text) {
 	const tail = lines.slice(open + 2).join('\n')
 	if (!lines.slice(0, open).some(line => line.trim())
 		|| !/^(?:\*\*[^\n]+\*\*|#{1,6}\s+.+)$/m.test(tail)
-		|| !/^\s*(?:[-*]\s|\d+[.)]\s)/m.test(tail)) return text
+		|| !/^\s*(?:[*-]\s|\d+[).]\s)/m.test(tail)) return text
 	lines.splice(open, 1)
 	return lines.join('\n')
 }
