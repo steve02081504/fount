@@ -238,7 +238,7 @@ Deno.test('code-execution run-js async="true" 登记统一异步任务并投递�
 		while (getTask(id) && Date.now() < deadline) await new Promise(resolve => setTimeout(resolve, 20))
 		assertEquals(getTask(id), undefined, '任务完成后应从注册表移除')
 		const notes = takePendingNotifications({ username: 'test-user', charId: 'test-char', chatName: 'code-test', parentRunId: null })
-		assert(notes.some(note => note.content.includes('output:') && note.content.includes('async-output') && note.content.includes('result: 42')), '应投递包含输出与结果的完成通知')
+		assert(notes.some(note => note.content.includes('输出：') && note.content.includes('async-output') && note.content.includes('结果：') && note.content.includes('42')), '应投递包含输出与结果的完成通知')
 	}
 	finally {
 		setAsyncToolingEnabled(false)
@@ -392,8 +392,8 @@ Deno.test('code-execution run-js 正常完成附耗时与结果', async () => {
 
 Deno.test('code-execution run-js 将 console 和返回值归为 output/result，错误归为 output/error', async () => {
 	for (const [code, expected] of [
-		['console.log("hello", 42); return { answer: 42 }', ['output:', 'hello 42', 'result:', 'answer: 42']],
-		['console.log("before error"); throw new Error("failed")', ['output:', 'before error', 'error:', 'failed']],
+		['console.log("hello", 42); return { answer: 42 }', ['输出：', 'hello 42', '结果：', 'answer: 42']],
+		['console.log("before error"); throw new Error("failed")', ['输出：', 'before error', '错误：', 'failed']],
 	]) {
 		const { logs, result, args } = createHandlerArgs()
 		result.content = `<run-js>${code}</run-js>`
@@ -406,6 +406,16 @@ Deno.test('code-execution run-js 将 console 和返回值归为 output/result，
 	}
 })
 
+Deno.test('code-execution run-js 输出与结果各自独立截断，互不影响', async () => {
+	const { logs, result, args } = createHandlerArgs()
+	result.content = '<run-js>console.log("A".repeat(25000)); return { answer: 42 }</run-js>'
+	assertEquals(await runReplyHandlers(result, args, getCodeExecutionReplyHandlers()), true)
+	const entry = findToolEntry(logs)
+	assert(entry, 'tool entry should exist')
+	assertStringIncludes(entry.content, '完整内容已保存到', '超大输出应单独落盘')
+	assertStringIncludes(entry.content, 'answer: 42', '结果片段应完整保留，不受输出截断影响')
+})
+
 Deno.test('code-execution run-js 把不可信结果包进 ansi 代码块，不按 markdown/HTML 解析', async () => {
 	const { logs, result, args } = createHandlerArgs()
 	result.content = '<run-js>return \'<img src=x onerror="alert(1)">\' + String.fromCharCode(10) + \'[x](javascript:alert(2))\'</run-js>'
@@ -413,7 +423,7 @@ Deno.test('code-execution run-js 把不可信结果包进 ansi 代码块，不�
 	const entry = findToolEntry(logs)
 	assert(entry, 'tool entry should exist')
 	assertStringIncludes(entry.content_for_show, '```ansi', '结果应包进 ansi 代码块')
-	const fenced = entry.content_for_show.split('```ansi')[1] ?? ''
+	const fenced = entry.content_for_show.split('```ansi').at(-1) ?? ''
 	assert(fenced.includes('<img src=x onerror='), '不可信原文应位于代码块内，交由前端 ansi2html 转义')
 })
 

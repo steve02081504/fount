@@ -163,6 +163,25 @@ function buildResultShow({ lang, code, body }) {
 }
 
 /**
+ * 构建一个独立护栏的 JS 运行输出片段：纯文本单独做长度判断与超限落盘，再各自渲染为代码块。
+ * 展示层未截断时用带色文本，截断时回退为护栏后的纯文本（不按 markdown 解析）。
+ * @param {object} options - 选项。
+ * @param {string} options.name - 落盘文件名提示。
+ * @param {string} options.label - 护栏提示中的名称。
+ * @param {string} options.plain - 纯文本（长度判断与落盘基于此）。
+ * @param {string} options.ansi - 带色文本（展示层未截断时使用）。
+ * @returns {Promise<{agent: string, show: string, truncated: boolean}>} agent 层代码块、展示层代码块、是否截断。
+ */
+async function guardRunPart({ name, label, plain, ansi }) {
+	const guarded = await guardOutput(plain, { name, label })
+	return {
+		agent: renderMarkdownCodeBlock(guarded.text, { lang: 'ansi' }),
+		show: renderMarkdownCodeBlock(guarded.truncated ? guarded.text : ansi, { lang: 'ansi' }),
+		truncated: guarded.truncated,
+	}
+}
+
+/**
  * 创建一个记录最近输出的滚动缓冲（供运行中异步任务检视「最后一段」输出）。
  * @param {number} [limit=4000] - 保留的最大字符数。
  * @returns {{push: (chunk: unknown) => void, read: () => string}} 缓冲区。
@@ -627,7 +646,8 @@ function createInlineHandle(lang) {
 }
 
 /**
- * 执行一次 `<run-js>` 并构造完整结果文本（同步执行与后台异步执行共用）。
+ * 执行一次 `<run-js>` 并构造结果文本（同步执行与后台异步执行共用）。
+ * 输出与结果/错误各自独立护栏（长度判断 + 超限落盘）并各自渲染为代码块，不再拼成一个转义对象。
  * @param {object} options - 执行参数。
  * @param {object} options.runtime - code-execution 运行时。
  * @param {object} options.args - 请求上下文。
@@ -635,7 +655,7 @@ function createInlineHandle(lang) {
  * @param {object} options.limits - 运行限制。
  * @param {boolean} options.remote - 是否远程执行。
  * @param {Function|null} options.stream - 流式输出回调（后台执行传 null）。
- * @returns {Promise<{fullOutput: string, showBlock: string, suffix: string, evalResult: object}>} 完整结果文本、结果值的 ANSI 代码块、耗时后缀，以及原始求值结果（用于展示层标题判断 error）。
+ * @returns {Promise<{content: string, showParts: string[], evalResult: object}>} agent 层完整文本、展示层结果区各片段，以及原始求值结果（用于展示层标题判断 error）。
  */
 async function executeRunJs({ runtime, args, call, limits, remote, stream }) {
 	const collecting = createCollectingConsole(stream ?? undefined)
@@ -652,28 +672,40 @@ async function executeRunJs({ runtime, args, call, limits, remote, stream }) {
 		: await runJsWithTimeout(() => runtime.runJscodeForAI(call.inner, collecting.console), limits.timeoutMs)
 	runtime.execedCodes[call.inner] = evalResult ?? { timedOut: true }
 	const elapsedText = formatElapsed(elapsedMs)
-	const parts = []
-	let showBlock = ''
 	const output = remote ? remoteOutput.join('') : collecting.text()
+	const contentParts = []
+	const showParts = []
+
+	const outputPart = await guardRunPart({ name: 'run-js-output', label: 'JS 输出', plain: output, ansi: output })
+	contentParts.push(`输出：\n\n${outputPart.agent}`)
+	showParts.push(`输出：\n\n${outputPart.show}`)
+
 	if (timedOut) {
-		parts.push(`执行超时（耗时 ${elapsedText}）：JS 无法强制终止，代码可能仍在后台运行。`)
-		if (output) parts.push('超时前捕获的输出：', output)
+		const timeoutBlock = renderMarkdownCodeBlock(`执行超时（耗时 ${elapsedText}）：JS 无法强制终止，代码可能仍在后台运行。`, { lang: 'ansi' })
+		contentParts.push(`错误：\n\n${timeoutBlock}`)
+		showParts.push(`错误：\n\n${timeoutBlock}`)
 	}
 	else if (evalResult?.error) {
-		const summary = { output, error: evalResult.error }
-		parts.push('执行出错：', util.inspect(summary, { depth: 4 }))
-		showBlock = renderAnsiBlock(renderAnsiText(summary))
+		const errorPart = await guardRunPart({ name: 'run-js-error', label: 'JS 错误', plain: util.inspect(evalResult.error, { depth: 4 }), ansi: renderAnsiText(evalResult.error) })
+		contentParts.push(`错误：\n\n${errorPart.agent}`)
+		showParts.push(`错误：\n\n${errorPart.show}`)
 	}
 	else {
-		const summary = { output, result: remote ? evalResult : evalResult?.result }
-		parts.push('执行结果：', util.inspect(summary, { depth: 4 }))
-		if (elapsedText) parts.push(`（耗时 ${elapsedText}）`)
-		showBlock = renderAnsiBlock(renderAnsiText(summary))
+		const value = remote ? evalResult : evalResult?.result
+		const resultPart = await guardRunPart({ name: 'run-js-result', label: 'JS 结果', plain: util.inspect(value, { depth: 4 }), ansi: renderAnsiText(value) })
+		contentParts.push(`结果：\n\n${resultPart.agent}`)
+		showParts.push(`结果：\n\n${resultPart.show}`)
+		if (elapsedText) {
+			contentParts.push(`（耗时 ${elapsedText}）`)
+			showParts.push(`（耗时 ${elapsedText}）`)
+		}
 	}
 	const notice = formatTimeoutNotice({ timedOut, elapsedMs, waitForever: limits.waitForever, expectMs: limits.expectMs, toleranceMs: limits.toleranceMs, kind: 'js' })
-	if (notice) parts.push(notice.trim())
-	const suffix = !timedOut && !evalResult?.error && elapsedText ? `（耗时 ${elapsedText}）` : ''
-	return { fullOutput: parts.join('\n'), showBlock, suffix, evalResult }
+	if (notice) {
+		contentParts.push(notice.trim())
+		showParts.push(notice.trim())
+	}
+	return { content: contentParts.join('\n\n'), showParts, evalResult }
 }
 
 /**
@@ -726,8 +758,8 @@ export const runJsReplyHandler = defineReplyHandler({
 				 * @returns {Promise<string>} 结果文本
 				 */
 				run: async () => {
-					const { fullOutput } = await executeRunJs({ runtime, args, call, limits, remote, stream: inspectStream })
-					return (await guardOutput(fullOutput, { name: 'run-js', label: 'JS 结果' })).text
+					const { content } = await executeRunJs({ runtime, args, call, limits, remote, stream: inspectStream })
+					return content
 				},
 				/**
 				 * 运行中检视：返回控制台输出的最后一段。
@@ -742,17 +774,13 @@ export const runJsReplyHandler = defineReplyHandler({
 
 		await logCode(`${args.Charname} running JS code:`, call.inner, 'js')
 		emit?.({ callId, phase: 'start', name, lang: 'js', code: call.inner })
-		const { fullOutput, showBlock, suffix, evalResult } = await executeRunJs({ runtime, args, call, limits, remote, stream })
+		const { content, showParts } = await executeRunJs({ runtime, args, call, limits, remote, stream })
 		emit?.({ callId, phase: 'end', name })
-		const guarded = await guardOutput(fullOutput, { name: 'run-js', label: 'JS 结果' })
-		const body = showBlock && !guarded.truncated
-			? `${evalResult?.error ? '执行出错' : '执行结果'}：\n\n${showBlock}${suffix ? `\n\n${suffix}` : ''}`
-			: renderAnsiBlock(guarded.text)
 		AddLongTimeLog({
 			name: 'code-execution.run-js',
 			role: 'tool',
-			content: guarded.text,
-			content_for_show: buildResultShow({ lang: 'js', code: call.inner, body }),
+			content,
+			content_for_show: buildResultShow({ lang: 'js', code: call.inner, body: showParts.join('\n\n') }),
 			files: [],
 		})
 		return { regen: true }
