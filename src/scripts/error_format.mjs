@@ -25,4 +25,3 @@ export function formatGenerationError(value) {
 export function formatErrorMessage(value) {
 	return value?.message ?? formatGenerationError(value)
 }
-
