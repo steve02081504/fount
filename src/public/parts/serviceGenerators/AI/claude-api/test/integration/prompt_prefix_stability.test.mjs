@@ -25,6 +25,10 @@ Deno.test(`claude-api ${ROUNDS} rounds keep an append-only prompt prefix`, async
 			context_size: 200000,
 			use_stream: false,
 			base_url: mock.baseUrl,
+			convert_config: {
+				// 前置稳定测试只关心可重放的历史前缀；末尾的 assistant 预填充是每轮瞬时尾块，刻意排除。
+				assistantPrefill: false,
+			},
 		})
 		const conversation = createPromptStructConversation({ charName: 'ZL-31', userName: 'Tester' })
 

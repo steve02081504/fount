@@ -69,7 +69,7 @@ Deno.test('proxy Responses mode replays the growing history in output-compatible
 
 		const body = JSON.parse(mock.calls[1].init.body)
 		assertEquals(typeof body.instructions, 'string')
-		assertEquals(body.input.map(item => item.role), ['user', 'assistant', 'user'])
+		assertEquals(body.input.map(item => item.role), ['user', 'assistant', 'user', 'assistant'])
 		assertEquals(body.input[0].type, 'message')
 		assertEquals(body.input[1].type, 'message')
 		assertEquals(body.input[1].role, 'assistant')
@@ -77,6 +77,11 @@ Deno.test('proxy Responses mode replays the growing history in output-compatible
 		assertEquals(body.input[1].content[0].type, 'output_text')
 		assert(body.input[1].content[0].text.includes(first.content))
 		assertEquals(body.input[2].type, 'message')
+		// 末尾的 assistant 预填充：信封开头，让模型直接续写角色正文。
+		assertEquals(body.input[3].role, 'assistant')
+		assertEquals(body.input[3].content[0].type, 'output_text')
+		assert(body.input[3].content[0].text.includes('<sender>ZL-31</sender>'))
+		assert(body.input[3].content[0].text.includes('<content>'))
 		assertEquals('messages' in body, false)
 		assertEquals('n' in body, false)
 		assertEquals('logprobs' in body, false)
@@ -113,7 +118,7 @@ Deno.test('proxy auto mode keeps using the Responses endpoint for later turns af
 			'https://example.com/v1/responses',
 		])
 		const secondBody = JSON.parse(mock.calls[2].init.body)
-		assertEquals(secondBody.input.map(item => item.role), ['user', 'assistant', 'user'])
+		assertEquals(secondBody.input.map(item => item.role), ['user', 'assistant', 'user', 'assistant'])
 		assertEquals(secondBody.input[1].content[0].type, 'output_text')
 		assert(secondBody.input[1].content[0].text.includes(first.content))
 	}

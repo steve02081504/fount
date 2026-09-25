@@ -2,6 +2,7 @@
 import * as mime from 'npm:mime-types'
 
 import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../shells/chat/src/prompt_struct/index.mjs'
+import { assistantPrefillEnabled, buildAssistantPrefillEnvelope } from '../proxy/src/assistantPrefill.mjs'
 import { identityTokenizer } from '../proxy/src/identityTokenizer.mjs'
 import { cleanupResponseText } from '../proxy/src/responseFormat.mjs'
 import { buildSourceInfo } from '../proxy/src/sourceInfo.mjs'
@@ -55,18 +56,21 @@ const configTemplate = {
 	base_url: '', // 例如 'https://api.deepseek.com/anthropic'
 	use_stream: true,
 	allowed_mime_types: defaultSupportedImageTypes,
+	convert_config: {
+		assistantPrefill: true,
+	},
 }
 
 /**
  * 把 prompt_struct 的聊天记录转成 Anthropic messages 结构（文本 + 图片块）。
  * @param {prompt_struct_t} prompt_struct - 结构化提示。
  * @param {string[]} supportedImageTypes - 支持的图片 MIME。
- * @param {{ binaryMode?: 'base64' | 'buffer' }} [options] - `binaryMode='buffer'` 时图片字节保留为 Buffer（供快照），默认 `'base64'`（真实出站）。
+ * @param {{ binaryMode?: 'base64' | 'buffer', prefill?: string | null }} [options] - `binaryMode='buffer'` 时图片字节保留为 Buffer（供快照），默认 `'base64'`（真实出站）；`prefill` 为 assistant 预填充信封开头。
  * @returns {Promise<Array<{ role: 'user' | 'assistant', content: object[] }>>} Anthropic messages。
  */
 async function buildClaudeMessages(prompt_struct, supportedImageTypes, options = {}) {
 	const binaryMode = options.binaryMode ?? 'base64'
-	return Promise.all(mergeStructPromptChatLog(prompt_struct).map(async chatLogEntry => {
+	const messages = await Promise.all(mergeStructPromptChatLog(prompt_struct).map(async chatLogEntry => {
 		const role = chatLogEntry.role === 'user' || chatLogEntry.role === 'system' ? 'user' : 'assistant'
 
 		// 内容可以是文本和图片的混合数组
@@ -121,6 +125,14 @@ ${chatLogEntry.content}
 
 		return { role, content }
 	}))
+
+	if (options.prefill) {
+		if (messages[messages.length - 1]?.role === 'assistant')
+			messages.push({ role: 'user', content: [{ type: 'text', text: '(继续)' }] })
+		messages.push({ role: 'assistant', content: [{ type: 'text', text: options.prefill }] })
+	}
+
+	return messages
 }
 
 /**
@@ -230,7 +242,9 @@ export async function GetSource(config, extra = {}) {
 			const system_prompt = structPromptToSingleNoChatLog(prompt_struct)
 
 			// 使用 fount 工具函数合并聊天记录，并转换为 Claude 的格式
-			const messages = await buildClaudeMessages(prompt_struct, supportedImageTypes)
+			const messages = await buildClaudeMessages(prompt_struct, supportedImageTypes, {
+				prefill: assistantPrefillEnabled(config, configTemplate) ? buildAssistantPrefillEnvelope(prompt_struct) : null,
+			})
 
 			// 构建最终的 API 请求参数
 			const params = {
@@ -296,7 +310,10 @@ export async function GetSource(config, extra = {}) {
 		 */
 		BuildPrompt: async prompt_struct => ({
 			system: structPromptToSingleNoChatLog(prompt_struct),
-			messages: await buildClaudeMessages(prompt_struct, supportedImageTypes, { binaryMode: 'buffer' }),
+			messages: await buildClaudeMessages(prompt_struct, supportedImageTypes, {
+				binaryMode: 'buffer',
+				prefill: assistantPrefillEnabled(config, configTemplate) ? buildAssistantPrefillEnvelope(prompt_struct) : null,
+			}),
 		}),
 	}
 

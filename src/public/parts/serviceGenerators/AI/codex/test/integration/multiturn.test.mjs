@@ -52,12 +52,16 @@ Deno.test('Codex Responses replays the growing history in output-compatible shap
 		const body = JSON.parse(mock.calls[1].init.body)
 		assertEquals(body.store, false)
 		assertEquals(typeof body.instructions, 'string')
-		assertEquals(body.input.map(item => item.role), ['user', 'assistant', 'user'])
+		assertEquals(body.input.map(item => item.role), ['user', 'assistant', 'user', 'assistant'])
 		const assistant = body.input[1]
 		assertEquals(assistant.type, 'message')
 		assertEquals(Array.isArray(assistant.content), true)
 		assertEquals(assistant.content[0].type, 'output_text')
 		assert(assistant.content[0].text.includes(first.content))
+		// 末尾的 assistant 预填充：信封开头，让模型直接续写角色正文。
+		assertEquals(body.input[3].role, 'assistant')
+		assertEquals(body.input[3].content[0].type, 'output_text')
+		assert(body.input[3].content[0].text.includes('<sender>ZL-31</sender>'))
 	}
 	finally {
 		mock.restore()

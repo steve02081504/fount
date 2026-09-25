@@ -40,3 +40,18 @@ Deno.test('claude-api BuildPrompt returns { system, messages } with Buffer image
 	assertInstanceOf(image.source.data, Uint8Array)
 	assertEquals(image.source.data.equals(PNG), true, 'image bytes must round-trip as Buffer')
 })
+
+Deno.test('claude-api BuildPrompt appends the assistant prefill envelope by default', async () => {
+	const source = await generator.interfaces.serviceGenerator.GetSource(
+		{ name: 'claude-build-prompt', apikey: 'test-key', model: 'claude-3-5-sonnet-20240620' },
+		{ getClient: stubClient },
+	)
+	const conversation = createPromptStructConversation({ charName: 'ZL-31', userName: 'Tester' })
+	conversation.addUser('你好')
+
+	const out = await source.BuildPrompt(conversation.makePromptStruct())
+	const last = out.messages[out.messages.length - 1]
+	assertEquals(last.role, 'assistant')
+	assert(last.content[0].text.includes('<sender>ZL-31</sender>'), 'prefill must carry the char name')
+	assert(last.content[0].text.includes('<content>'), 'prefill must open the content envelope')
+})

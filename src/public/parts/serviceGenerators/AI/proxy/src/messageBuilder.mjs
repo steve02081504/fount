@@ -1,5 +1,6 @@
 import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../../shells/chat/src/prompt_struct/index.mjs'
 
+import { assistantPrefillEnabled, buildAssistantPrefillEnvelope } from './assistantPrefill.mjs'
 import { buildFileContentParts } from './fileContentParts.mjs'
 import { assistantMessageCarriesDeniedFiles, normalizeMimePatterns, prependText, splitDeniedFiles, systemMessageCarriesDeniedFiles } from './messagePolicies.mjs'
 
@@ -78,7 +79,10 @@ ${chatLogEntry.content}
 			content: system_prompt
 		})
 
-	if (config.convert_config?.roleReminding ?? true) {
+	const convert_config = { ...configTemplate.convert_config, ...config.convert_config }
+	const assistantPrefill = assistantPrefillEnabled(config, configTemplate)
+
+	if (!assistantPrefill && (convert_config.roleReminding ?? true)) {
 		const isMultiChar = new Set(prompt_struct.chat_log.map(chatLogEntry => chatLogEntry.name).filter(Boolean)).size > 2
 		if (isMultiChar)
 			messages.push({
@@ -87,20 +91,20 @@ ${chatLogEntry.content}
 			})
 	}
 
-	if (config.convert_config?.forceNoSystemMessages)
+	if (convert_config.forceNoSystemMessages)
 		messages = messages.map(m => {
 			if (m.role !== 'system') return m
 			return { role: 'user', content: prependText(m.content, 'system: ') }
 		})
 
-	if (config.convert_config?.forceUserMessageEnding)
+	if (convert_config.forceUserMessageEnding)
 		if (messages[messages.length - 1]?.role !== 'user')
 			messages.push({
 				role: 'user',
 				content: '(继续)'
 			})
 
-	if (config.convert_config?.forceRoleAlternation) {
+	if (convert_config.forceRoleAlternation) {
 		const oldMessages = messages
 		messages = []
 		/**
@@ -118,6 +122,16 @@ ${chatLogEntry.content}
 			messages.push(m)
 			lastRole = m.role
 		}
+	}
+
+	// assistant 预填充：末尾追加角色信封开头，让模型直接从 <content> 续写；历史若以 assistant 结尾，先补一条 user 维持角色交替。
+	if (assistantPrefill) {
+		if (messages[messages.length - 1]?.role === 'assistant')
+			messages.push({ role: 'user', content: '(继续)' })
+		messages.push({
+			role: 'assistant',
+			content: buildAssistantPrefillEnvelope(prompt_struct)
+		})
 	}
 
 	return messages

@@ -103,3 +103,40 @@ Deno.test('proxy BuildPrompt keeps chat image_url but maps Responses input to in
 		.find(part => part.type === 'input_image')
 	assert(responsesImage, 'Responses style must map images to input_image')
 })
+
+Deno.test('proxy BuildPrompt appends the assistant prefill envelope by default', async () => {
+	const source = await makeSource()
+	const conversation = createPromptStructConversation({ charName: 'ZL-31', userName: 'Tester' })
+	conversation.addUser('你好')
+
+	const built = await source.BuildPrompt(conversation.makePromptStruct())
+	const last = built[built.length - 1]
+	assertEquals(last.role, 'assistant')
+	assert(last.content.includes('<sender>ZL-31</sender>'), 'prefill must carry the char name')
+	assert(last.content.includes('<content>'), 'prefill must open the content envelope')
+})
+
+Deno.test('proxy BuildPrompt skips roleReminding when prefill carries the continue cue', async () => {
+	const source = await makeSource()
+	const conversation = createPromptStructConversation({ charName: 'ZL-31', userName: 'Tester' })
+	conversation.addUser('你好')
+	conversation.chat_log.push({ name: 'Bob', uid: 'user', role: 'user', content: 'hi' })
+	conversation.chat_log.push({ name: 'Carol', uid: 'user', role: 'user', content: 'hello' })
+
+	const built = await source.BuildPrompt(conversation.makePromptStruct())
+	assertEquals(built.some(message => typeof message.content === 'string' && message.content.includes('续写对话')), false)
+	assertEquals(built[built.length - 1].role, 'assistant')
+})
+
+Deno.test('proxy BuildPrompt keeps roleReminding when assistantPrefill is disabled', async () => {
+	const source = await makeSource({ convert_config: { assistantPrefill: false, roleReminding: true } })
+	const conversation = createPromptStructConversation({ charName: 'ZL-31', userName: 'Tester' })
+	conversation.addUser('你好')
+	conversation.chat_log.push({ name: 'Bob', uid: 'user', role: 'user', content: 'hi' })
+	conversation.chat_log.push({ name: 'Carol', uid: 'user', role: 'user', content: 'hello' })
+
+	const built = await source.BuildPrompt(conversation.makePromptStruct())
+	const reminding = built.find(message => typeof message.content === 'string' && message.content.includes('续写对话'))
+	assert(reminding, 'roleReminding system message expected when prefill is off')
+	assertEquals(built[built.length - 1].role, 'system')
+})

@@ -46,6 +46,8 @@ Deno.test(`codex ${ROUNDS} rounds keep an append-only prompt prefix`, async () =
 			system_prompt_at_depth: 0,
 			convert_config: {
 				roleReminding: false,
+				// 前置稳定测试只关心可重放的历史前缀；末尾的 assistant 预填充是每轮瞬时尾块，刻意排除。
+				assistantPrefill: false,
 				ignoreFiles: ['.*'],
 				forceRoleAlternation: false,
 				forceUserMessageEnding: false,
