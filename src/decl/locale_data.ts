@@ -6953,6 +6953,9 @@ export type LocaleData = {
 			plainView: string
 			markdownView: string
 			switchView: string
+			jumpToChange: string
+			expand: string
+			collapse: string
 			replayProgress: {
 				'aria-label': string
 			}

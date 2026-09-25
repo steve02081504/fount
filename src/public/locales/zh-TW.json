@@ -6990,6 +6990,8 @@
 			"plainView": "純文字",
 			"markdownView": "Markdown",
 			"switchView": "切換 Markdown / 純文字",
+			"jumpToChange": null,
+			"expand": null,
 			"replayProgress": {
 				"aria-label": "會話回放進度"
 			},

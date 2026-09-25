@@ -6999,6 +6999,8 @@
 			"plainView": "Обычный текст",
 			"markdownView": "Markdown",
 			"switchView": "Переключить Markdown / обычный текст",
+			"jumpToChange": null,
+			"expand": null,
 			"replayProgress": {
 				"aria-label": "Ход воспроизведения диалога"
 			},

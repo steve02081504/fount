@@ -6997,6 +6997,8 @@
 			"plainView": "Testo semplice",
 			"markdownView": "Markdown",
 			"switchView": "Passa da Markdown a testo semplice",
+			"jumpToChange": null,
+			"expand": null,
 			"replayProgress": {
 				"aria-label": "Avanzamento della riproduzione della conversazione"
 			},

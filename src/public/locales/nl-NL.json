@@ -6997,6 +6997,8 @@
 			"plainView": "Platte tekst",
 			"markdownView": "Markdown",
 			"switchView": "Schakelen tussen Markdown en platte tekst",
+			"jumpToChange": null,
+			"expand": null,
 			"replayProgress": {
 				"aria-label": "Voortgang van gespreksweergave"
 			},

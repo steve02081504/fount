@@ -6997,6 +6997,8 @@
 			"plainView": "Texto sin formato",
 			"markdownView": "Markdown",
 			"switchView": "Cambiar entre Markdown y texto sin formato",
+			"jumpToChange": null,
+			"expand": null,
 			"replayProgress": {
 				"aria-label": "Progreso de reproducción de la conversación"
 			},
