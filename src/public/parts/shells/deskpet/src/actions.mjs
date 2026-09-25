@@ -1,4 +1,4 @@
-import { runPet, stopPet, getPetList, getRunningPetList } from './pet_runner.mjs'
+import { runPet, stopPet, getPetList, getRunningPets } from './pet_runner.mjs'
 
 /**
  * 定义了可用于桌面宠物功能的各种操作。
@@ -17,7 +17,7 @@ export const actions = {
 	 * @param {string} root0.user - 用户的名称。
 	 * @returns {Promise<Array<string>>} - 正在运行的桌面宠物列表。
 	 */
-	'list-running': ({ user }) => getRunningPetList(user),
+	'list-running': ({ user }) => getRunningPets(user),
 	/**
 	 * 启动一个桌面宠物。
 	 * @param {object} root0 - 参数对象。

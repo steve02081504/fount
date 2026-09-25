@@ -6991,7 +6991,7 @@
 			"plainView": "纯文字",
 			"markdownView": "Markdown",
 			"switchView": "切换 Markdown / 纯文字",
-			"jumpToChange": "跳到未复用处",
+			"jumpToChange": "跳到改动处",
 			"expand": "展开",
 			"collapse": "收起",
 			"replayProgress": {

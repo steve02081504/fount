@@ -6991,7 +6991,9 @@
 			"plainView": "일반 텍스트",
 			"markdownView": "Markdown",
 			"switchView": "Markdown / 일반 텍스트 전환",
-			"jumpToChange": null,
+			"jumpToChange": "변경 지점으로 이동",
+			"expand": "펼치기",
+			"collapse": "접기",
 			"replayProgress": {
 				"aria-label": "대화 재생 진행률"
 			},

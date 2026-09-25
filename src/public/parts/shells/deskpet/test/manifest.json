@@ -1,6 +1,17 @@
 {
 	"id": "shells/deskpet",
 	"triggerSets": {
+		"testFramework": [
+			"src/scripts/test/{deno/serial.mjs,node/boot.mjs}"
+		],
+		"shellBackend": [
+			"src/public/parts/shells/deskpet/src/**",
+			"src/public/parts/shells/deskpet/{main.mjs,fount.json,locales.json,home_registry.json,achievements_registry.json}",
+			"src/scripts/test/shellLoadProbe.mjs"
+		],
+		"shellIntegrationTests": [
+			"src/public/parts/shells/deskpet/test/integration/**"
+		],
 		"frontendShared": [
 			"src/public/parts/shells/deskpet/public/**",
 			"src/public/parts/shells/deskpet/test/frontend/**",
@@ -8,6 +19,25 @@
 		]
 	},
 	"suites": [
+		{
+			"name": "integration",
+			"expected": "5s",
+			"trigger": [
+				"shellBackend",
+				"shellIntegrationTests",
+				"testFramework"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/deno/serial.mjs",
+				"./src/public/parts/shells/deskpet/test/integration/"
+			]
+		},
 		{
 			"name": "frontend",
 			"expected": "1m43s",
@@ -24,6 +54,16 @@
 						"src/public/parts/shells/deskpet/test/frontend/fixtures.mjs",
 						"src/public/parts/shells/deskpet/public/index.{html,mjs}",
 						"src/public/parts/shells/deskpet/public/templates.mjs"
+					]
+				},
+				{
+					"name": "redirect",
+					"expected": "4s",
+					"triggers": [
+						"src/public/parts/shells/deskpet/test/frontend/redirect.spec.mjs",
+						"src/public/parts/shells/deskpet/test/frontend/fixtures.mjs",
+						"src/public/parts/shells/deskpet/public/set_cookie_and_redirect.html",
+						"src/public/parts/shells/deskpet/public/src/redirect.mjs"
 					]
 				}
 			],

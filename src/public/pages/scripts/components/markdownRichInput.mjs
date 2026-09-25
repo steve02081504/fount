@@ -358,6 +358,12 @@ export function createMarkdownRichInput(element, options = {}) {
 			cursor = end
 		}
 		if (cursor < rawText.length) appendTextRun(rawText.slice(cursor), cursor)
+		// contenteditable 块末尾的 `<br>` 不渲染空行：rawText 末尾的 `\n` 需再跟一个尾随 br 才能撑出光标可停的空行，
+		// 否则按一次回车视觉上不换行（必须按两次）。尾随 br 标记 emptySlot，不参与序列化与偏移映射。
+		const padding = document.createElement('br')
+		padding.dataset.emptySlot = '1'
+		element.appendChild(padding)
+		segments.push({ node: padding, kind: 'br', start: rawText.length, end: rawText.length })
 		for (const seg of segments) {
 			if (seg.kind !== 'chip') continue
 			const chip = /** @type {HTMLSpanElement} */ seg.node

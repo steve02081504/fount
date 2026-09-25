@@ -793,7 +793,7 @@
 		},
 		{
 			"name": "frontend",
-			"expected": "46m44s",
+			"expected": "35m49s",
 			"dependsOn": [
 				"server:live",
 				"e2e_single"

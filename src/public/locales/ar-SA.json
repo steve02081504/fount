@@ -7001,8 +7001,9 @@
 			"plainView": "نص عادي",
 			"markdownView": "Markdown",
 			"switchView": "تبديل Markdown / نص عادي",
-			"jumpToChange": null,
-			"expand": null,
+			"jumpToChange": "الانتقال إلى موضع التغيير",
+			"expand": "توسيع",
+			"collapse": "طي",
 			"replayProgress": {
 				"aria-label": "تقدم إعادة تشغيل المحادثة"
 			},

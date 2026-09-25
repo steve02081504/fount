@@ -6991,8 +6991,9 @@
 			"plainView": "सादा पाठ",
 			"markdownView": "Markdown",
 			"switchView": "Markdown / सादा पाठ बदलें",
-			"jumpToChange": null,
-			"expand": null,
+			"jumpToChange": "बदलाव पर जाएँ",
+			"expand": "विस्तृत करें",
+			"collapse": "संकुचित करें",
 			"replayProgress": {
 				"aria-label": "बातचीत पुनरावृत्ति की प्रगति"
 			},

@@ -6990,8 +6990,9 @@
 			"plainView": "純文字",
 			"markdownView": "Markdown",
 			"switchView": "切換 Markdown / 純文字",
-			"jumpToChange": null,
-			"expand": null,
+			"jumpToChange": "跳到變更處",
+			"expand": "展開",
+			"collapse": "收合",
 			"replayProgress": {
 				"aria-label": "會話回放進度"
 			},

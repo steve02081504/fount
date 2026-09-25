@@ -6991,8 +6991,9 @@
 			"plainView": "Nur Text",
 			"markdownView": "Markdown",
 			"switchView": "Markdown / Nur Text umschalten",
-			"jumpToChange": null,
-			"expand": null,
+			"jumpToChange": "Zur Änderung springen",
+			"expand": "Erweitern",
+			"collapse": "Einklappen",
 			"replayProgress": {
 				"aria-label": "Fortschritt der Gesprächswiedergabe"
 			},

@@ -6991,7 +6991,7 @@
 			"plainView": "Plain text",
 			"markdownView": "Markdown",
 			"switchView": "Switch Markdown / plain text",
-			"jumpToChange": "Jump to unreused text",
+			"jumpToChange": "Jump to change",
 			"expand": "Expand",
 			"collapse": "Collapse",
 			"replayProgress": {

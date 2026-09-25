@@ -16,6 +16,8 @@
 <body>
 	<main aria-hidden="true"><!-- Setup page; content is script-driven --></main>
 	<script type="module">
+		import { resolveRedirect } from './src/redirect.mjs'
+
 		const urlParams = new URLSearchParams(window.location.search)
 		const apikey = urlParams.get('apikey')
 		const redirect = urlParams.get('redirect')
@@ -25,21 +27,10 @@
 		else try {
 			const secure = location.protocol === 'https:' ? '; Secure' : ''
 			document.cookie = `fount-apikey=${encodeURIComponent(apikey)}; path=/; SameSite=Lax${secure}`
-			window.location.replace(resolveRedirect(redirect))
+			window.location.replace(resolveRedirect(redirect, window.location.origin))
 		}
 		catch (error) {
 			renderError(error.message || 'Failed to set cookie')
-		}
-
-		/**
-		 * 解析 redirect 参数为站内地址，拒绝跨源跳转。
-		 * @param {string} value 原始 redirect 参数。
-		 * @returns {string} 站内地址。
-		 */
-		function resolveRedirect(value) {
-			const url = new URL(decodeURIComponent(value), window.location.origin)
-			if (url.origin !== window.location.origin) throw new Error('Invalid redirect')
-			return url.href
 		}
 
 		/**

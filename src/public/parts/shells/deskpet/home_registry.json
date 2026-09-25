@@ -29,7 +29,7 @@
 				"info": "deskpet.home_char_interfaces.launch",
 				"level": 1,
 				"interface": "deskpet",
-				"url": "/parts/shells:deskpet/launch?char=${name}",
+				"url": "/parts/shells:deskpet/?char=${name}",
 				"button": "<img src=\"https://api.iconify.design/material-symbols/pets.svg\" class=\"text-icon\"/>"
 			}
 		]

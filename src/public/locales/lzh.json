@@ -6991,9 +6991,9 @@
 			"plainView": "白文",
 			"markdownView": "墨記",
 			"switchView": "易墨記與白文",
-			"jumpToChange": "跳到未复用处",
-			"expand": "展开",
-			"collapse": "收起",
+			"jumpToChange": "躍至更易處",
+			"expand": "展開",
+			"collapse": "折疊",
 			"replayProgress": {
 				"aria-label": "會話復播之進度"
 			},

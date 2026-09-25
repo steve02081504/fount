@@ -6997,8 +6997,9 @@
 			"plainView": "Texte brut",
 			"markdownView": "Markdown",
 			"switchView": "Basculer Markdown / texte brut",
-			"jumpToChange": null,
-			"expand": null,
+			"jumpToChange": "Aller à la modification",
+			"expand": "Développer",
+			"collapse": "Réduire",
 			"replayProgress": {
 				"aria-label": "Progression de la relecture de la conversation"
 			},
