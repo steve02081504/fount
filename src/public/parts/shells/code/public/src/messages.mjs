@@ -634,8 +634,14 @@ let lastUserScrollAt = -Infinity
 const USER_SCROLL_GRACE_MS = 400
 /** 最近一次用户在消息流内展开 / 点击的时间：此后短时间内上方气泡的尺寸变化不拉到底。 */
 let lastUserToggleAt = -Infinity
+/** 最近一次用户交互所在的气泡；其他气泡的尺寸变化仍应继续贴底。 */
+let lastUserToggleBubble = null
 /** 用户展开宽限期（毫秒）。 */
 const USER_TOGGLE_GRACE_MS = 1000
+/** 生成结束后的布局收敛窗口（毫秒），覆盖流式气泡替换后的延迟排版。 */
+const FOLLOW_SETTLE_MS = 500
+/** 最近一次消息流变化后的跟随截止时间。 */
+let followUntil = -Infinity
 
 /** 无动画地对齐到底部（贴底跟随用）。 */
 function alignBottom() {
@@ -710,9 +716,15 @@ elements.messages.addEventListener('pointerdown', event => {
 	if (event.target === elements.messages) releasePin()
 })
 // 程序重建折叠块也会触发 toggle；只有用户操作才应暂停贴底跟随。
-elements.messages.addEventListener('click', () => { lastUserToggleAt = performance.now() }, { capture: true })
+elements.messages.addEventListener('click', event => {
+	lastUserToggleAt = performance.now()
+	lastUserToggleBubble = event.target.closest('.code-message')
+}, { capture: true })
 elements.messages.addEventListener('keydown', event => {
-	if (event.target.closest('summary') && ['Enter', ' '].includes(event.key)) lastUserToggleAt = performance.now()
+	if (event.target.closest('summary') && ['Enter', ' '].includes(event.key)) {
+		lastUserToggleAt = performance.now()
+		lastUserToggleBubble = event.target.closest('.code-message')
+	}
 }, { capture: true })
 
 /**
@@ -721,23 +733,33 @@ elements.messages.addEventListener('keydown', event => {
  * 用 MutationObserver 而非只靠 ResizeObserver：气泡增高发生在 JS 里，MO 微任务先于绘制执行，
  * RO 要等下一帧，快速流式时会稳定落后一帧。用户刚展开上方气泡时不拉走视线。
  */
-function followIfPinned() {
+function followIfPinned({ allowDuringToggle = false } = {}) {
 	if (!pinned) return
-	if (performance.now() - lastUserToggleAt < USER_TOGGLE_GRACE_MS) return
+	if (!allowDuringToggle && performance.now() - lastUserToggleAt < USER_TOGGLE_GRACE_MS) return
 	alignBottom()
 	if (store.generating) ensureFollowLoop()
+	else {
+		followUntil = performance.now() + FOLLOW_SETTLE_MS
+		ensureFollowLoop()
+	}
+}
+
+/** 用户刚展开的气泡保持视线；别的气泡在此期间变化仍跟随底部。 */
+function followResizedBubbles(entries) {
+	const onlyUserInteractedBubble = entries.length > 0 && entries.every(({ target }) => target.closest('.code-message') === lastUserToggleBubble)
+	followIfPinned({ allowDuringToggle: !onlyUserInteractedBubble })
 }
 
 /** 生成期间的逐帧贴底循环句柄。 */
 let followFrame = 0
 /**
- * 生成期间每帧对齐一次：MutationObserver 在微任务里对齐，但 markdown 异步落定 / 字体换行可能让
+ * 生成期间与收尾阶段每帧对齐：MutationObserver 在微任务里对齐，但 markdown 异步落定 / 字体换行可能让
  * scrollHeight 在绘制前再次变化，逐帧兜底保证画面始终停在底部。
  * @returns {void}
  */
 function followTick() {
 	followFrame = 0
-	if (pinned && store.generating) {
+	if (pinned && (store.generating || performance.now() < followUntil)) {
 		alignBottom()
 		ensureFollowLoop()
 	}
@@ -751,11 +773,37 @@ function ensureFollowLoop() {
 }
 const followObserver = new ResizeObserver(followIfPinned)
 followObserver.observe(elements.messages)
-new MutationObserver(followIfPinned).observe(elements.messages, {
+
+/** 观察气泡内容的布局尺寸：滚动流容器通常固定高度，内部变化不会触发容器 ResizeObserver。 */
+const observedMessageElements = new Set()
+const messageResizeObserver = new ResizeObserver(followResizedBubbles)
+/** 同步观察当前气泡及内容节点，避免移除的节点被长期持有。 */
+function syncObservedMessageElements() {
+	const messageElements = new Set()
+	for (const bubble of elements.messages.querySelectorAll(':scope > .code-message')) {
+		messageElements.add(bubble)
+		for (const descendant of bubble.querySelectorAll('*')) messageElements.add(descendant)
+	}
+	for (const element of observedMessageElements) {
+		if (messageElements.has(element)) continue
+		messageResizeObserver.unobserve(element)
+		observedMessageElements.delete(element)
+	}
+	for (const element of messageElements) {
+		if (observedMessageElements.has(element)) continue
+		observedMessageElements.add(element)
+		messageResizeObserver.observe(element)
+	}
+}
+new MutationObserver(() => {
+	syncObservedMessageElements()
+	followIfPinned()
+}).observe(elements.messages, {
 	childList: true,
 	subtree: true,
 	characterData: true,
 })
+syncObservedMessageElements()
 
 /**
  * 空态布局开关：无条目且未在生成时 composer 垂直居中 + wordmark。

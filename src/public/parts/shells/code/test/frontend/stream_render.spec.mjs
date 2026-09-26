@@ -170,7 +170,7 @@ test('streaming reply keeps the message flow pinned to the bottom without page o
 		}
 		requestAnimationFrame(tick)
 	})
-	await expect(page.locator('.code-message.role-char:not(.generating)')).toContainText('第 36 段', { timeout: 60_000 })
+	await expect.poll(() => page.locator('#messages').evaluate(flow => [...flow.querySelectorAll('.code-message.role-char:not(.generating)')].some(bubble => bubble.textContent.includes('第 36 段'))), { timeout: 60_000 }).toBe(true)
 	const samples = await page.evaluate(() => globalThis.__followSamples)
 	const streaming = samples.filter(sample => sample.generating && sample.overflowing)
 	expect(streaming.length, '流式期间内容应超出一屏').toBeGreaterThan(20)
@@ -180,6 +180,30 @@ test('streaming reply keeps the message flow pinned to the bottom without page o
 	await expect(page.locator('.code-message.generating')).toHaveCount(0, { timeout: 60_000 })
 	await expect.poll(() => page.locator('#messages').evaluate(flow => flow.scrollHeight - flow.scrollTop - flow.clientHeight)).toBeLessThan(8)
 	await expect(page.locator('#code-back-to-bottom')).not.toHaveClass(/\bshow\b/)
+})
+
+test('pinned message flow follows a final bubble resize after generation ends', async ({ page, baseUrl }) => {
+	await page.setViewportSize({ width: 1280, height: 720 })
+	await page.addInitScript(pref => localStorage.setItem(pref + 'charname', 'streamAgent'), PREF_PREFIX)
+	await openCode(page, baseUrl)
+	await page.evaluate(() => globalThis.fount.test.watch.holdLocale())
+	await page.locator('#composer-input').click()
+	await page.keyboard.type('贴底测试')
+	await page.keyboard.press('Control+Enter')
+	await expect.poll(() => page.locator('#messages').evaluate(flow => [...flow.querySelectorAll('.code-message.role-char:not(.generating)')].some(bubble => bubble.textContent.includes('第 36 段'))), { timeout: 60_000 }).toBe(true)
+	await expect(page.locator('.code-message.generating')).toHaveCount(0, { timeout: 60_000 })
+	await expect.poll(() => page.locator('#messages').evaluate(flow => flow.scrollHeight - flow.scrollTop - flow.clientHeight)).toBeLessThan(8)
+
+	const resized = await page.locator('#messages').evaluate(flow => {
+		const bubble = flow.querySelector('.code-message.role-char:not(.generating):last-of-type')
+		const previousHeight = flow.scrollHeight
+		bubble.style.flex = 'none'
+		bubble.style.height = `${bubble.getBoundingClientRect().height + 600}px`
+		return { previousHeight, nextHeight: flow.scrollHeight }
+	})
+	expect(resized.nextHeight).toBeGreaterThan(resized.previousHeight)
+	await page.evaluate(() => new Promise(requestAnimationFrame))
+	await expect.poll(() => page.locator('#messages').evaluate(flow => flow.scrollHeight - flow.scrollTop - flow.clientHeight)).toBeLessThan(8)
 })
 
 for (const width of [1600, 390])
