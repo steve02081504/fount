@@ -5,7 +5,7 @@
 import { assertEquals, assertNotEquals } from 'jsr:@std/assert'
 
 import { generatePKCE, randomState } from '../../src/pkce.mjs'
-import { canonicalCallbackUrl, withQuery } from '../../src/portHook.mjs'
+import { callbackOriginForRequest, canonicalCallbackUrl, withQuery } from '../../src/portHook.mjs'
 
 Deno.test('PKCE verifier is base64url and challenge is S256', async () => {
 	const { verifier, challenge } = generatePKCE()
@@ -24,6 +24,19 @@ Deno.test('randomState is hex', () => {
 	const secondState = randomState()
 	assertEquals(/^[\da-f]+$/.test(firstState), true)
 	assertNotEquals(firstState, secondState)
+})
+
+Deno.test('PKCE callback returns to the authenticated loopback origin only', () => {
+	const server = 'http://localhost:8932'
+	assertEquals(callbackOriginForRequest('http://127.0.0.1:8932', '127.0.0.1:8932', server), 'http://127.0.0.1:8932')
+	assertEquals(callbackOriginForRequest('http://localhost:8932', 'localhost:8932', server), server)
+	assertEquals(callbackOriginForRequest('http://[::1]:8932', '[::1]:8932', server), 'http://[::1]:8932')
+	assertEquals(callbackOriginForRequest('http://127.0.0.1:8932', 'localhost:8932', server), server)
+	assertEquals(callbackOriginForRequest('https://127.0.0.1:8932', '127.0.0.1:8932', server), server)
+	assertEquals(callbackOriginForRequest('http://127.0.0.1:8933', '127.0.0.1:8933', server), server)
+	assertEquals(callbackOriginForRequest('http://evil.example:8932', 'evil.example:8932', server), server)
+	assertEquals(callbackOriginForRequest('http://127.0.0.1:8932/path', '127.0.0.1:8932', server), server)
+	assertEquals(callbackOriginForRequest(undefined, '127.0.0.1:8932', server), server)
 })
 
 Deno.test('canonical callback and query forward', () => {

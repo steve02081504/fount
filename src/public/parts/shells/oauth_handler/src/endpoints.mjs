@@ -21,7 +21,10 @@ export function setEndpoints(router) {
 		}
 		const spec = provider === 'openai-codex' ? CODEX : provider === 'anthropic' ? ANTHROPIC : undefined
 		if (!spec) throw httpError(400, `Unknown OAuth provider: ${provider}`)
-		res.status(200).json(await startPkceLogin({ username, provider: spec, sourceName, serviceSourcePath }))
+		res.status(200).json(await startPkceLogin({
+			username, provider: spec, sourceName, serviceSourcePath,
+			requestOrigin: req.get('origin'), requestHost: req.get('host'),
+		}))
 	})
 
 	router.post(`${PREFIX}/complete`, authenticate, async (req, res) => {
