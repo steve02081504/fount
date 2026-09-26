@@ -11,7 +11,8 @@ import {
 	scratch, fillCellDepths,
 } from '../world/index.mjs'
 
-/** @typedef {import('../world/index.mjs').FluidWorld} FluidWorld
+/**
+ * @typedef {import('../world/index.mjs').FluidWorld} FluidWorld
  * @typedef {{
  *   id: number,
  *   openToAtm: boolean,

@@ -42,8 +42,10 @@ Deno.test('assembleArchiveMonthBodyFromParts roundtrip', () => {
 	const body = `${line}\n`
 	const enc = encryptPlaintextToMultiParts(Buffer.from(body, 'utf8'), 'plain')
 	const parts = wirePartsFromEncParts(enc.parts)
-	/** 已拉取的分片原始字节映射。
-	 * @type {Record<string, Uint8Array>} */
+	/**
+	 * 已拉取的分片原始字节映射。
+	 * @type {Record<string, Uint8Array>}
+	 */
 	const fetched = {}
 	for (const part of enc.parts) fetched[part.hash] = part.raw
 	const restored = assembleArchiveMonthBodyFromParts(parts, fetched)

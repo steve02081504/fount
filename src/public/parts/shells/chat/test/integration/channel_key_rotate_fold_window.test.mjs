@@ -14,8 +14,10 @@ Deno.test('channel_key_rotate fold window does not block message interaction', a
 	const NODE_A = nodeName('A')
 	const NODE_B = nodeName('B')
 	const NODE_C = nodeName('C')
-	/** 各节点 sender 公钥哈希表。
-	 * @type {Record<string, string>} */
+	/**
+	 * 各节点 sender 公钥哈希表。
+	 * @type {Record<string, string>}
+	 */
 	const hash = {}
 	let channelId = ''
 
@@ -76,8 +78,10 @@ Deno.test('channel_key_rotate fold window does not block message interaction', a
 		assert(!bIds.has(mergedTipA), 'B has not adopted owner merge before window')
 	})
 
-	/** 窗口期内互发消息的 event id 列表。
-	 * @type {string[]} */
+	/**
+	 * 窗口期内互发消息的 event id 列表。
+	 * @type {string[]}
+	 */
 	const windowMsgIds = []
 	await t.step('窗口期：A/B/C 互发消息均可解密', async () => {
 		const mA = await postMessage(NODE_A, groupId, channelId, 'owner message in window', [NODE_B, NODE_C])

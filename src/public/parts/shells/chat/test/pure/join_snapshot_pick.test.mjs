@@ -41,8 +41,10 @@ Deno.test('pickJoinSnapshotByReputation accepts two-peer quorum on same tipsHash
 })
 
 Deno.test('pickJoinSnapshotByReputation prefers higher reputation tips bucket', async () => {
-	/** 按 peer 声誉打分的选取函数。
-	 * @type {(peerNodeHash: string) => number} */
+	/**
+	 * 按 peer 声誉打分的选取函数。
+	 * @type {(peerNodeHash: string) => number}
+	 */
 	const scoreOf = peerNodeHash => peerNodeHash === PEER_E ? 10 : 0
 	const picked = await pickJoinSnapshotByReputation(
 		[candidate(TIPS_A, PEER_C), candidate(TIPS_B, PEER_E)],

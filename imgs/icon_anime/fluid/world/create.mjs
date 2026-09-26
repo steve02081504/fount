@@ -8,7 +8,8 @@ import { createParticlePool, clearParticlePool } from '../particle_pool.mjs'
 
 /** @typedef {import('../../gravity.mjs').GravityState} GravityState */
 
-/** @typedef {{
+/**
+ * @typedef {{
  *   viewW: number, viewH: number, worldW: number, worldH: number,
  *   margin: number, ox: number, oy: number,
  *   mat: Uint8Array, land: Uint8Array,

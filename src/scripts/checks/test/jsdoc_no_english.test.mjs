@@ -7,11 +7,17 @@ import { assert, assertEquals } from 'jsr:@std/assert'
 import { REPO_ROOT } from '../../test/core/repo_root.mjs'
 import {
 	extractJsdocBlocks,
+	hasInlineJsdocClosing,
+	hasInlineJsdocOpening,
 	isEnglishJsdocSummary,
 	isTagOnlyJsdoc,
 	jsdocSummaryLines,
+	scanFileJsdocClosing,
 	scanFileJsdocNoEnglish,
+	scanFileJsdocOpening,
+	scanJsdocClosing,
 	scanJsdocNoEnglish,
+	scanJsdocOpening,
 } from '../jsdoc_no_english.mjs'
 
 Deno.test('jsdocSummaryLines: stops at first @tag', () => {
@@ -114,5 +120,70 @@ Deno.test('icon_anime: no English or missing JSDoc summaries', async () => {
 	if (issues.length) {
 		const sample = issues.slice(0, 8).map(i => `${i.path}:${i.line} ${i.summary || '(missing)'}`).join('\n')
 		assert(false, `English/missing JSDoc in icon_anime (${issues.length}):\n${sample}`)
+	}
+})
+
+Deno.test('hasInlineJsdocOpening: multi-line block must open on its own line', () => {
+	assertEquals(hasInlineJsdocOpening('/** 摘要 */'), false)
+	assertEquals(hasInlineJsdocOpening('/**\n * 摘要\n */'), false)
+	assertEquals(hasInlineJsdocOpening('/** 摘要\n * 第二行\n */'), true)
+	assertEquals(hasInlineJsdocOpening('/** @typedef {{ x: number }}\n * @property {number} x\n */'), true)
+	assertEquals(hasInlineJsdocOpening('/**\n *\n */'), false)
+})
+
+Deno.test('scanFileJsdocOpening: flags inline opening, ignores single-line', () => {
+	const flagged = scanFileJsdocOpening('foo.mjs', '/** 摘要\n * 第二行\n */\nexport const x = 1')
+	assertEquals(flagged.length, 1)
+	assertEquals(flagged[0].line, 1)
+
+	const clean = scanFileJsdocOpening('foo.mjs', '/** 摘要 */\n/**\n * 摘要\n */\n')
+	assertEquals(clean.length, 0)
+})
+
+Deno.test('repo: multi-line JSDoc opens with /** alone on the first line', async () => {
+	const { issues } = await scanJsdocOpening(REPO_ROOT)
+	if (issues.length) {
+		const sample = issues.slice(0, 12).map(i => `${i.path}:${i.line}`).join('\n')
+		assert(false, `Multi-line JSDoc with content on the /** line (${issues.length}):\n${sample}`)
+	}
+})
+
+Deno.test('icon_anime: multi-line JSDoc opens with /** alone on the first line', async () => {
+	const { issues } = await scanJsdocOpening(REPO_ROOT, { under: 'imgs/icon_anime' })
+	if (issues.length) {
+		const sample = issues.slice(0, 8).map(i => `${i.path}:${i.line}`).join('\n')
+		assert(false, `Inline JSDoc opening in icon_anime (${issues.length}):\n${sample}`)
+	}
+})
+
+Deno.test('hasInlineJsdocClosing: multi-line block must close on its own line', () => {
+	assertEquals(hasInlineJsdocClosing('/** 摘要 */'), false)
+	assertEquals(hasInlineJsdocClosing('/**\n * 摘要\n */'), false)
+	assertEquals(hasInlineJsdocClosing('/**\n * 摘要 */'), true)
+	assertEquals(hasInlineJsdocClosing('/**\n * @typedef {{ x: number }} */'), true)
+})
+
+Deno.test('scanFileJsdocClosing: flags inline closing, ignores single-line', () => {
+	const flagged = scanFileJsdocClosing('foo.mjs', '/**\n * 摘要 */\nexport const x = 1')
+	assertEquals(flagged.length, 1)
+	assertEquals(flagged[0].line, 1)
+
+	const clean = scanFileJsdocClosing('foo.mjs', '/** 摘要 */\n/**\n * 摘要\n */\n')
+	assertEquals(clean.length, 0)
+})
+
+Deno.test('repo: multi-line JSDoc closes with */ alone on the last line', async () => {
+	const { issues } = await scanJsdocClosing(REPO_ROOT)
+	if (issues.length) {
+		const sample = issues.slice(0, 12).map(i => `${i.path}:${i.line}`).join('\n')
+		assert(false, `Multi-line JSDoc with content on the */ line (${issues.length}):\n${sample}`)
+	}
+})
+
+Deno.test('icon_anime: multi-line JSDoc closes with */ alone on the last line', async () => {
+	const { issues } = await scanJsdocClosing(REPO_ROOT, { under: 'imgs/icon_anime' })
+	if (issues.length) {
+		const sample = issues.slice(0, 8).map(i => `${i.path}:${i.line}`).join('\n')
+		assert(false, `Inline JSDoc closing in icon_anime (${issues.length}):\n${sample}`)
 	}
 })

@@ -323,8 +323,10 @@ export async function querySocialPostIndex(username, ownerEntityHashes, query, l
 	for (const owner of ownerEntityHashes)
 		await ensureTimelineIndexed(username, owner)
 
-	/** @param {object} doc 索引文档
-	 *  @returns {boolean} 是否通过子串真值校验 */
+	/**
+	 * @param {object} doc 索引文档
+	 *  @returns {boolean} 是否通过子串真值校验
+	 */
 	const verifyHit = doc => postMatchesQuery({ content: { text: doc.text }, entityHash: doc.fields?.entityHash }, query)
 
 	return queryIndex({

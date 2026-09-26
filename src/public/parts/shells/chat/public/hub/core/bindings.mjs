@@ -8,14 +8,16 @@ import { dismissShunBanner } from '../../src/endpoints/groupFederation.mjs'
 
 import { store, setState, watchState } from './state.mjs'
 
-/** @typedef {{
+/**
+ * @typedef {{
  *   id: string
  *   textId?: string
  *   visible: () => boolean
  *   i18n?: () => string
  *   dataset?: () => Record<string, string>
  *   progressId?: string
- * }} BannerBinding */
+ * }}
+ */
 
 /** @returns {boolean} 是否显示明文侧车横幅 */
 function plaintextBannerVisible() {

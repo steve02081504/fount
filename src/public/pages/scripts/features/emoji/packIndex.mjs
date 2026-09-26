@@ -251,7 +251,8 @@ export async function resolveEmojiRefLabel(emojiRef) {
 	const parsed = parseEmojiRef(emojiRef)
 	if (!parsed) return ''
 	if (parsed.kind === 'unicode') return parsed.unicode
-	/** 从缓存读取单条 label。
+	/**
+	 * 从缓存读取单条 label。
 	 * @returns {Promise<string | undefined>} label
 	 */
 	const find = async () => (await getCachedPackMeta(parsed.packId))?.find(item => item.id === parsed.emojiId)?.alt

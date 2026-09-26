@@ -97,9 +97,7 @@ Deno.test('run-js-on-page forwards a plugin callback token and logs safe output'
 	const jsCalls = []
 	const logs = []
 	const handler = createBrowserIntegrationReplyHandler({
-		/**
-		 *
-		 */
+		/** 注入记录调用的 fake 浏览器 API 取值器。 */
 		getApi: apiGetter(makeFakeApi(jsCalls))
 	})
 	const runJs = findHandler(handler, 'browser-integration.run-js-on-page')
@@ -124,9 +122,7 @@ Deno.test('run-js-on-page forwards a plugin callback token and logs safe output'
 Deno.test('run-js-on-page reports a missing script tag', async () => {
 	const logs = []
 	const handler = createBrowserIntegrationReplyHandler({
-		/**
-		 *
-		 */
+		/** 注入空 fake 浏览器 API 的取值器。 */
 		getApi: apiGetter(makeFakeApi([]))
 	})
 	const runJs = findHandler(handler, 'browser-integration.run-js-on-page')

@@ -63,12 +63,14 @@ const xyz = (vector) => {
  * @returns {Promise<(() => void) | null>} stop；不可用则 null
  */
 const startGravitySensor = async (onSample, signal) => {
-	const GravitySensorCtor = /** @type {undefined | (new (opts?: { frequency?: number }) => {
+	const GravitySensorCtor = /**
+	 * @type {undefined | (new (opts?: { frequency?: number }) => {
 		x: number, y: number, z: number,
 		start: () => void, stop: () => void,
 		addEventListener: (type: string, fn: (ev: Event) => void) => void,
 		removeEventListener: (type: string, fn: (ev: Event) => void) => void,
-	})} */ globalThis.GravitySensor
+	})}
+	*/ globalThis.GravitySensor
 	if (typeof GravitySensorCtor !== 'function') return null
 	if (signal?.aborted) return null
 	if (!await ensureAccelerometerPermission()) return null

@@ -207,7 +207,41 @@ export function isTagOnlyJsdoc(block) {
 }
 
 /**
+ * 多行 JSDoc 是否在开头同行就写了内容（应让 `/**` 独占首行）。
+ * 单行块不受约束。
+ * @param {string} block JSDoc 块全文
+ * @returns {boolean} 多行且首行 `/**` 后有内容则为 true
+ */
+export function hasInlineJsdocOpening(block) {
+	if (!block.startsWith('/**')) return false
+	const body = block.slice(3)
+	const newlineIndex = body.search(/\r?\n/)
+	if (newlineIndex < 0) return false
+	return body.slice(0, newlineIndex).trim() !== ''
+}
+
+/**
+ * 多行 JSDoc 是否把结尾星号斜杠写在内容行上（应换行缩进后再收尾）。
+ * 单行块不受约束。
+ * @param {string} block JSDoc 块全文
+ * @returns {boolean} 多行且未前置换行缩进收尾则为 true
+ */
+export function hasInlineJsdocClosing(block) {
+	if (!block.startsWith('/**') || !block.endsWith('*/')) return false
+	if (!/\r?\n/.test(block)) return false
+	return !/\n\s+$/.test(block.slice(0, -2))
+}
+
+/**
  * @typedef {{ path: string, line: number, summary: string, missingSummary: boolean }} JsdocNoEnglishIssue
+ */
+
+/**
+ * @typedef {{ path: string, line: number }} JsdocOpeningIssue
+ */
+
+/**
+ * @typedef {{ path: string, line: number }} JsdocClosingIssue
  */
 
 /**
@@ -245,6 +279,74 @@ export async function scanJsdocNoEnglish(repoRoot, options = {}) {
 	for (const relativePath of files) {
 		const text = await readFile(join(repoRoot, relativePath), 'utf8')
 		issues.push(...scanFileJsdocNoEnglish(relativePath, text))
+	}
+	const hitFiles = [...new Set(issues.map(issue => issue.path))].sort()
+	return { files: hitFiles, issues }
+}
+
+/**
+ * 扫描单文件中「多行 JSDoc 首行 `/**` 后带内容」的块。
+ * @param {string} relativePath 相对仓库根
+ * @param {string} text 文件内容
+ * @returns {JsdocOpeningIssue[]} 命中列表
+ */
+export function scanFileJsdocOpening(relativePath, text) {
+	/** @type {JsdocOpeningIssue[]} */
+	const issues = []
+	for (const { text: block, startLine } of extractJsdocBlocks(text))
+		if (hasInlineJsdocOpening(block))
+			issues.push({ path: relativePath, line: startLine })
+	return issues
+}
+
+/**
+ * 扫描仓库中匹配后缀文件的「多行 JSDoc 首行 `/**` 后带内容」问题。
+ * @param {string} repoRoot 仓库根
+ * @param {{ under?: string, suffixes?: string[] }} [options] 选项
+ * @returns {Promise<{ files: string[], issues: JsdocOpeningIssue[] }>} 命中文件路径与问题列表
+ */
+export async function scanJsdocOpening(repoRoot, options = {}) {
+	const suffixes = options.suffixes ?? JSDOC_SCAN_SUFFIXES
+	const files = await listRepoFiles(repoRoot, suffixes, { under: options.under })
+	/** @type {JsdocOpeningIssue[]} */
+	const issues = []
+	for (const relativePath of files) {
+		const text = await readFile(join(repoRoot, relativePath), 'utf8')
+		issues.push(...scanFileJsdocOpening(relativePath, text))
+	}
+	const hitFiles = [...new Set(issues.map(issue => issue.path))].sort()
+	return { files: hitFiles, issues }
+}
+
+/**
+ * 扫描单文件中「多行 JSDoc 的收尾写在内容行上」的块。
+ * @param {string} relativePath 相对仓库根
+ * @param {string} text 文件内容
+ * @returns {JsdocClosingIssue[]} 命中列表
+ */
+export function scanFileJsdocClosing(relativePath, text) {
+	/** @type {JsdocClosingIssue[]} */
+	const issues = []
+	for (const { text: block, startLine } of extractJsdocBlocks(text))
+		if (hasInlineJsdocClosing(block))
+			issues.push({ path: relativePath, line: startLine })
+	return issues
+}
+
+/**
+ * 扫描仓库中匹配后缀文件的「多行 JSDoc 收尾写在内容行上」问题。
+ * @param {string} repoRoot 仓库根
+ * @param {{ under?: string, suffixes?: string[] }} [options] 选项
+ * @returns {Promise<{ files: string[], issues: JsdocClosingIssue[] }>} 命中文件路径与问题列表
+ */
+export async function scanJsdocClosing(repoRoot, options = {}) {
+	const suffixes = options.suffixes ?? JSDOC_SCAN_SUFFIXES
+	const files = await listRepoFiles(repoRoot, suffixes, { under: options.under })
+	/** @type {JsdocClosingIssue[]} */
+	const issues = []
+	for (const relativePath of files) {
+		const text = await readFile(join(repoRoot, relativePath), 'utf8')
+		issues.push(...scanFileJsdocClosing(relativePath, text))
 	}
 	const hitFiles = [...new Set(issues.map(issue => issue.path))].sort()
 	return { files: hitFiles, issues }

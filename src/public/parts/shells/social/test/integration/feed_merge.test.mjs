@@ -58,15 +58,20 @@ Deno.test('buildEngagementIndex counts likes and reposts', async () => {
 
 Deno.test('pushFeedUpdate sends to registered mock socket', async () => {
 	const { username } = await getSession()
-	/** 已发送的 WebSocket 载荷记录。
-	 * @type {string[]} */
+	/**
+	 * 已发送的 WebSocket 载荷记录。
+	 * @type {string[]}
+	 */
 	const sent = []
-	/** 事件名到回调集合的注册表。
-	 * @type {Map<string, Set<() => void>>} */
+	/**
+	 * 事件名到回调集合的注册表。
+	 * @type {Map<string, Set<() => void>>}
+	 */
 	const handlers = new Map()
 	const mockSocket = {
 		readyState: 1,
-		/** 记录推送载荷。
+		/**
+		 * 记录推送载荷。
 		 * @param {string} text JSON 字符串
 		 */
 		send(text) { sent.push(text) },

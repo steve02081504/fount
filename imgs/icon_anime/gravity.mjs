@@ -14,7 +14,8 @@ const SMOOTH = 0.18
 /** 标准重力（m/s²）。 */
 const G0 = 9.81
 
-/** @typedef {{
+/**
+ * @typedef {{
  *   gx: number, gy: number, mag: number,
  * }} GravityState
  */

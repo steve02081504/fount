@@ -26,8 +26,10 @@ Deno.test('chat 3-node E2E', async t => {
 	const NODE_A = nodeName('A')
 	const NODE_B = nodeName('B')
 	const NODE_C = nodeName('C')
-	/** 各节点 member pubKeyHash。
-	 * @type {Record<string, string>} */
+	/**
+	 * 各节点 member pubKeyHash。
+	 * @type {Record<string, string>}
+	 */
 	const memberPubKeyByNode = {}
 	let publicChannelId = ''
 

@@ -169,15 +169,20 @@ Deno.test('types filter limits aggregated inbox page', async () => {
 Deno.test('appendInboxFromTimelineEvent pushes notification over feed WS', async () => {
 	const feedHub = await import('../../src/ws/feedHub.mjs')
 	const { username, operator } = await getSession()
-	/** 已发送的 WebSocket 载荷记录。
-	 * @type {string[]} */
+	/**
+	 * 已发送的 WebSocket 载荷记录。
+	 * @type {string[]}
+	 */
 	const sent = []
-	/** 事件名到回调集合的注册表。
-	 * @type {Map<string, Set<() => void>>} */
+	/**
+	 * 事件名到回调集合的注册表。
+	 * @type {Map<string, Set<() => void>>}
+	 */
 	const handlers = new Map()
 	const mockSocket = {
 		readyState: 1,
-		/** 记录推送载荷。
+		/**
+		 * 记录推送载荷。
 		 * @param {string} text JSON 字符串
 		 */
 		send(text) { sent.push(text) },

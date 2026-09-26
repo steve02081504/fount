@@ -93,7 +93,8 @@ function tempEnv() {
 		env: { FOUNT_PKG_STATE_DIR: stateDir, FOUNT_DIR: fountDir },
 		stateDir,
 		fountDir,
-		/** 递归删除本次创建的临时目录。
+		/**
+		 * 递归删除本次创建的临时目录。
 		 * @returns {void} 删除完成。
 		 */
 		cleanup: () => rmSync(root, { recursive: true, force: true }),

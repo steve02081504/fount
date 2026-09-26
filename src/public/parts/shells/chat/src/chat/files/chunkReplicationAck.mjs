@@ -6,13 +6,15 @@
  * 【关联】federation/chunks.mjs、groupFiles putEncryptedChunk、npm:@steve02081504/fount-p2p/reputation/engine。
  */
 
-/** @type {Map<string, {
+/**
+ * @type {Map<string, {
  *   requiredAcks: number,
  *   ackPeers: Set<string>,
  *   expectedPeerKeys: Set<string>,
  *   timer: ReturnType<typeof setTimeout>,
  *   resolve: Function,
- * }>} */
+ * }>}
+ */
 const pendingWaits = new Map()
 
 /**

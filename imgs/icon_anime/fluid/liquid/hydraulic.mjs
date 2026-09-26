@@ -18,10 +18,12 @@ import {
 
 /** @typedef {import('../world/index.mjs').FluidWorld} FluidWorld */
 
-/** @typedef {{
+/**
+ * @typedef {{
  *   x: Int32Array, y: Int32Array, c: Int32Array, p: Float32Array, phi: Float32Array, n: number,
  *   prefix: string,
- * }} SurfSoa */
+ * }} SurfSoa
+ */
 
 /**
  * 空自由面 SoA 壳（typed 缓冲挂在 world.scratch）。

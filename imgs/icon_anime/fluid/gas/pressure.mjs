@@ -10,7 +10,8 @@ import {
 
 import { openHydroPressure, sealedHydroPressure } from './regions.mjs'
 
-/** @typedef {import('../world/index.mjs').FluidWorld} FluidWorld
+/**
+ * @typedef {import('../world/index.mjs').FluidWorld} FluidWorld
  * @typedef {import('./regions.mjs').AirRegion} AirRegion
  */
 

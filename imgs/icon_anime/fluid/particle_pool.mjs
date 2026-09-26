@@ -2,12 +2,14 @@
  * 雨/溅射粒子 SoA 池分配与质量统计。
  */
 
-/** @typedef {{
+/**
+ * @typedef {{
  *   x: Float32Array, y: Float32Array,
  *   vx: Float32Array, vy: Float32Array,
  *   life: Float32Array, amt: Float32Array,
  *   count: number,
- * }} ParticlePool */
+ * }} ParticlePool
+ */
 
 /** 粒子池默认容量。 */
 export const PARTICLE_CAP = 1200
