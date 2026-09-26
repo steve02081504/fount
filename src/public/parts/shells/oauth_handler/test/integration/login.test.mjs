@@ -8,6 +8,7 @@ import { assertEquals } from 'jsr:@std/assert'
 
 import { cancelLogin, completePkceLogin, loginStatus } from '../../src/login.mjs'
 import { deletePending, getPending, putPending } from '../../src/pending.mjs'
+import { withOAuthCredentials } from '../../src/persist.mjs'
 import { CODEX } from '../../src/providers.mjs'
 
 /**
@@ -21,6 +22,17 @@ function fakeJwt(accountId) {
 	})).toString('base64url')
 	return `h.${payload}.s`
 }
+
+Deno.test('saving OAuth credentials does not alias and erase the service source config', () => {
+	const cached = { generator: 'codex', config: { model: 'existing-model' } }
+	const oauth = { access: 'synthetic-access', refresh: 'synthetic-refresh' }
+	const next = withOAuthCredentials(cached, oauth)
+	assertEquals(cached.config, { model: 'existing-model' })
+	// The installed source SetData clears its cached config before copying from the new data.
+	for (const key in cached.config) delete cached.config[key]
+	Object.assign(cached.config, next.config)
+	assertEquals(cached.config, { model: 'existing-model', oauth })
+})
 
 Deno.test('complete PKCE keeps oauth server-side and omits it from API snapshots', async () => {
 	const originalFetch = globalThis.fetch
