@@ -29,104 +29,243 @@
 			]
 		},
 		"ar-SA": {
-			"name": null,
+			"name": "تصفّح الويب",
 			"avatar": "https://api.iconify.design/line-md/clipboard.svg",
-			"description": null
-		},
-		"de-DE": {
-			"name": null,
-			"avatar": "https://api.iconify.design/line-md/clipboard.svg",
-			"description": null
-		},
-		"emoji": {
-			"name": "网页浏览",
-			"avatar": "https://api.iconify.design/line-md/clipboard.svg",
-			"description": "让 AI 角色打开网页并阅读其内容",
-			"description_markdown": "**网页浏览**插件为 AI 角色提供 `<web-browse>` 工具：抓取指定网址、清理页面并转换为 Markdown 供模型阅读。\n\n部分代码来自[龙胆](https://github.com/steve02081504/GentianAphrodite)。",
+			"description": "يتيح لشخصيات الذكاء الاصطناعي فتح صفحة ويب وقراءة محتواها.",
+			"description_markdown": "يمنح المكوّن الإضافي **تصفّح الويب** شخصيات الذكاء الاصطناعي أداة `<web-browse>` تجلب عنوان URL وتنظّف الصفحة وتحوّلها إلى Markdown ليقرأها النموذج.\n\nجزء من الكود مستمد من [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
-				"浏览",
-				"网络",
-				"插件"
+				"تصفّح",
+				"ويب",
+				"إضافة"
+			]
+		},
+		"de-DE": {
+			"name": "Web-Browsing",
+			"avatar": "https://api.iconify.design/line-md/clipboard.svg",
+			"description": "Ermöglicht KI-Charakteren, eine Webseite zu öffnen und ihren Inhalt zu lesen.",
+			"description_markdown": "Das **Web-Browsing**-Plugin gibt KI-Charakteren ein `<web-browse>`-Werkzeug, das eine URL abruft, die Seite bereinigt und sie für das Modell in Markdown umwandelt.\n\nEin Teil des Codes stammt von [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"browsen",
+				"web",
+				"plugin"
+			]
+		},
+		"emoji": {
+			"name": "🌐📋",
+			"avatar": "https://api.iconify.design/line-md/clipboard.svg",
+			"description": "🤖🌐📄👀",
+			"description_markdown": "**🌐📋** ➡️ 🤖🛠️.\n📥🔗 → 🧹📄 → 📝.\n\n⬅️ [🪻](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"🌐",
+				"📋",
+				"👀",
+				"🔌"
 			]
 		},
 		"es-ES": {
-			"name": null,
+			"name": "Navegación web",
 			"avatar": "https://api.iconify.design/line-md/clipboard.svg",
-			"description": null
-		},
-		"fr-FR": {
-			"name": null,
-			"avatar": "https://api.iconify.design/line-md/clipboard.svg",
-			"description": null
-		},
-		"hi-IN": {
-			"name": null,
-			"avatar": "https://api.iconify.design/line-md/clipboard.svg"
-		},
-		"is-IS": {
-			"name": null,
-			"avatar": "https://api.iconify.design/line-md/clipboard.svg",
-			"description": null
-		},
-		"it-IT": {
-			"name": null,
-			"avatar": "https://api.iconify.design/line-md/clipboard.svg"
-		},
-		"ja-JP": {
-			"name": null,
-			"avatar": "https://api.iconify.design/line-md/clipboard.svg",
-			"description": null
-		},
-		"ko-KR": {
-			"name": null,
-			"avatar": "https://api.iconify.design/line-md/clipboard.svg"
-		},
-		"lzh": {
-			"name": "网页浏览",
-			"avatar": "https://api.iconify.design/line-md/clipboard.svg",
-			"description": "让 AI 角色打开网页并阅读其内容",
-			"description_markdown": "**网页浏览**插件为 AI 角色提供 `<web-browse>` 工具：抓取指定网址、清理页面并转换为 Markdown 供模型阅读。\n\n部分代码来自[龙胆](https://github.com/steve02081504/GentianAphrodite)。",
+			"description": "Permite a los personajes de IA abrir una página web y leer su contenido.",
+			"description_markdown": "El complemento **Navegación web** ofrece a los personajes de IA una herramienta `<web-browse>` que descarga una URL, limpia la página y la convierte a Markdown para que el modelo la lea.\n\nParte del código proviene de [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
-				"浏览",
-				"网络",
+				"navegación",
+				"web",
+				"complemento"
+			]
+		},
+		"fr-FR": {
+			"name": "Navigation web",
+			"avatar": "https://api.iconify.design/line-md/clipboard.svg",
+			"description": "Permet aux personnages IA d'ouvrir une page web et d'en lire le contenu.",
+			"description_markdown": "Le plugin **Navigation web** fournit aux personnages IA un outil `<web-browse>` qui récupère une URL, nettoie la page et la convertit en Markdown pour que le modèle puisse la lire.\n\nUne partie du code provient de [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"navigation",
+				"web",
+				"plugin"
+			]
+		},
+		"hi-IN": {
+			"name": "वेब ब्राउज़",
+			"avatar": "https://api.iconify.design/line-md/clipboard.svg",
+			"description": "AI पात्रों को वेब पृष्ठ खोलकर उसकी सामग्री पढ़ने देता है।",
+			"description_markdown": "**वेब ब्राउज़** प्लगइन AI पात्रों को `<web-browse>` उपकरण देता है जो किसी URL को लाता है, पृष्ठ को साफ़ करता है और मॉडल के पढ़ने के लिए उसे Markdown में बदल देता है।\n\nकुछ कोड [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite) से लिया गया है।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"ब्राउज़",
+				"वेब",
+				"प्लगइन"
+			]
+		},
+		"is-IS": {
+			"name": "Vefskoðun",
+			"avatar": "https://api.iconify.design/line-md/clipboard.svg",
+			"description": "Leyfir gervigreindarkarakterum að opna vefsíðu og lesa efni hennar.",
+			"description_markdown": "**Vefskoðun** viðbótin veitir gervigreindarkarakterum `<web-browse>` verkfæri sem sækir slóð, hreinsar síðuna og breytir henni í Markdown svo líkanið geti lesið hana.\n\nHluti af kóðanum kemur frá [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"vafra",
+				"vefur",
+				"viðbót"
+			]
+		},
+		"it-IT": {
+			"name": "Navigazione web",
+			"avatar": "https://api.iconify.design/line-md/clipboard.svg",
+			"description": "Consente ai personaggi IA di aprire una pagina web e leggerne il contenuto.",
+			"description_markdown": "Il plugin **Navigazione web** fornisce ai personaggi IA uno strumento `<web-browse>` che scarica un URL, ripulisce la pagina e la converte in Markdown perché il modello possa leggerla.\n\nParte del codice proviene da [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"navigazione",
+				"web",
+				"plugin"
+			]
+		},
+		"ja-JP": {
+			"name": "ウェブ閲覧",
+			"avatar": "https://api.iconify.design/line-md/clipboard.svg",
+			"description": "AI キャラクターがウェブページを開いて内容を読めるようにします。",
+			"description_markdown": "**ウェブ閲覧**プラグインは AI キャラクターに `<web-browse>` ツールを提供します。URL を取得してページを整理し、モデルが読めるよう Markdown に変換します。\n\n一部のコードは [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite) に由来します。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"閲覧",
+				"ウェブ",
+				"プラグイン"
+			]
+		},
+		"ko-KR": {
+			"name": "웹 브라우징",
+			"avatar": "https://api.iconify.design/line-md/clipboard.svg",
+			"description": "AI 캐릭터가 웹 페이지를 열고 내용을 읽을 수 있게 합니다.",
+			"description_markdown": "**웹 브라우징** 플러그인은 AI 캐릭터에게 `<web-browse>` 도구를 제공합니다. URL을 가져와 페이지를 정리하고 모델이 읽을 수 있도록 Markdown으로 변환합니다.\n\n일부 코드는 [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite)에서 유래되었습니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"브라우징",
+				"웹",
+				"플러그인"
+			]
+		},
+		"lzh": {
+			"name": "網覽",
+			"avatar": "https://api.iconify.design/line-md/clipboard.svg",
+			"description": "使化身得啟網頁而覽其文",
+			"description_markdown": "此**網覽**插件，為化身供 `<web-browse>` 之具：取指定之網址、滌淨其頁、轉為 Markdown 以供模型覽讀。\n\n其術蓋取於[龍膽](https://github.com/steve02081504/GentianAphrodite)。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"網覽",
+				"網路",
 				"插件"
 			]
 		},
 		"nl-NL": {
-			"name": null,
+			"name": "Webpagina's lezen",
 			"avatar": "https://api.iconify.design/line-md/clipboard.svg",
-			"description": null
+			"description": "Laat AI-personages een webpagina openen en de inhoud ervan lezen.",
+			"description_markdown": "De **Webpagina's lezen**-plugin geeft AI-personages een `<web-browse>`-tool die een URL ophaalt, de pagina opschoont en naar Markdown converteert zodat het model die kan lezen.\n\nEen deel van de code is afkomstig van [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"browsen",
+				"web",
+				"plugin"
+			]
 		},
 		"pt-PT": {
-			"name": null,
+			"name": "Navegação web",
 			"avatar": "https://api.iconify.design/line-md/clipboard.svg",
-			"description": null
+			"description": "Permite que os personagens de IA abram uma página web e leiam o seu conteúdo.",
+			"description_markdown": "O plugin **Navegação web** dá aos personagens de IA uma ferramenta `<web-browse>` que obtém um URL, limpa a página e converte-a em Markdown para o modelo ler.\n\nParte do código provém de [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"navegação",
+				"web",
+				"plugin"
+			]
 		},
 		"ru-RU": {
-			"name": null,
+			"name": "Просмотр веб-страниц",
 			"avatar": "https://api.iconify.design/line-md/clipboard.svg",
-			"description": null
+			"description": "Позволяет ИИ-персонажам открывать веб-страницу и читать её содержимое.",
+			"description_markdown": "Плагин **Просмотр веб-страниц** даёт ИИ-персонажам инструмент `<web-browse>`, который загружает URL, очищает страницу и преобразует её в Markdown для чтения моделью.\n\nЧасть кода заимствована из [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"просмотр",
+				"веб",
+				"плагин"
+			]
 		},
 		"uk-UA": {
-			"name": null,
+			"name": "Перегляд вебсторінок",
 			"avatar": "https://api.iconify.design/line-md/clipboard.svg",
-			"description": null
+			"description": "Дозволяє ШІ-персонажам відкривати вебсторінку та читати її вміст.",
+			"description_markdown": "Плагін **Перегляд вебсторінок** надає ШІ-персонажам інструмент `<web-browse>`, який завантажує URL, очищає сторінку та перетворює її на Markdown для читання моделлю.\n\nЧастина коду взята з [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"перегляд",
+				"веб",
+				"плагін"
+			]
 		},
 		"vi-VN": {
-			"name": null,
+			"name": "Duyệt web",
 			"avatar": "https://api.iconify.design/line-md/clipboard.svg",
-			"description": null
+			"description": "Cho phép nhân vật AI mở một trang web và đọc nội dung của nó.",
+			"description_markdown": "Plugin **Duyệt web** cung cấp cho nhân vật AI công cụ `<web-browse>` để tải một URL, làm sạch trang và chuyển thành Markdown cho mô hình đọc.\n\nMột phần mã nguồn đến từ [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"duyệt",
+				"web",
+				"plugin"
+			]
 		},
 		"zh-TW": {
-			"name": null,
+			"name": "網頁瀏覽",
 			"avatar": "https://api.iconify.design/line-md/clipboard.svg",
-			"description": null
+			"description": "讓 AI 角色開啟網頁並閱讀其內容",
+			"description_markdown": "**網頁瀏覽**外掛為 AI 角色提供 `<web-browse>` 工具：抓取指定網址、清理頁面並轉換為 Markdown 供模型閱讀。\n\n部分程式碼來自[龍膽](https://github.com/steve02081504/GentianAphrodite)。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"瀏覽",
+				"網路",
+				"外掛"
+			]
 		}
 	}
 }

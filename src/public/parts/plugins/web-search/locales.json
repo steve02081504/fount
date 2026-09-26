@@ -28,22 +28,244 @@
 				"插件"
 			]
 		},
-		"ar-SA": {},
-		"de-DE": {},
-		"emoji": {},
-		"es-ES": {},
-		"fr-FR": {},
-		"hi-IN": {},
-		"is-IS": {},
-		"it-IT": {},
-		"ja-JP": {},
-		"ko-KR": {},
-		"lzh": {},
-		"nl-NL": {},
-		"pt-PT": {},
-		"ru-RU": {},
-		"uk-UA": {},
-		"vi-VN": {},
-		"zh-TW": {}
+		"ar-SA": {
+			"name": "البحث في الويب",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "يتيح لشخصيات الذكاء الاصطناعي البحث في الويب عبر مصدر البحث المُهيّأ.",
+			"description_markdown": "يمنح المكوّن الإضافي **البحث في الويب** شخصيات الذكاء الاصطناعي أداة `<web-search>` مدعومة بمصدر خدمة البحث الذي يفضّله المستخدم.\n\nجزء من الكود مستمد من [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"بحث",
+				"ويب",
+				"إضافة"
+			]
+		},
+		"de-DE": {
+			"name": "Websuche",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "Ermöglicht KI-Charakteren die Websuche über die konfigurierte Suchquelle.",
+			"description_markdown": "Das **Websuche**-Plugin gibt KI-Charakteren ein `<web-search>`-Werkzeug, das auf der bevorzugten Suchdienstquelle des Nutzers basiert.\n\nEin Teil des Codes stammt von [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"suche",
+				"web",
+				"plugin"
+			]
+		},
+		"emoji": {
+			"name": "🌐🔍",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "🤖🌐🔍",
+			"description_markdown": "**🌐🔍** ➡️ 🤖🛠️.\n⚙️📡 → 🔎.\n\n⬅️ [🪻](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"🌐",
+				"🔍",
+				"📡",
+				"🔌"
+			]
+		},
+		"es-ES": {
+			"name": "Búsqueda web",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "Permite a los personajes de IA buscar en la web mediante la fuente de búsqueda configurada.",
+			"description_markdown": "El complemento **Búsqueda web** ofrece a los personajes de IA una herramienta `<web-search>` respaldada por la fuente de servicio de búsqueda preferida del usuario.\n\nParte del código proviene de [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"búsqueda",
+				"web",
+				"complemento"
+			]
+		},
+		"fr-FR": {
+			"name": "Recherche web",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "Permet aux personnages IA de rechercher sur le web via la source de recherche configurée.",
+			"description_markdown": "Le plugin **Recherche web** fournit aux personnages IA un outil `<web-search>` adossé à la source de service de recherche préférée de l'utilisateur.\n\nUne partie du code provient de [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"recherche",
+				"web",
+				"plugin"
+			]
+		},
+		"hi-IN": {
+			"name": "वेब खोज",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "AI पात्रों को कॉन्फ़िगर किए गए खोज स्रोत के ज़रिए वेब पर खोजने देता है।",
+			"description_markdown": "**वेब खोज** प्लगइन AI पात्रों को `<web-search>` उपकरण देता है, जो उपयोगकर्ता के पसंदीदा खोज सेवा स्रोत पर आधारित होता है।\n\nकुछ कोड [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite) से लिया गया है।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"खोज",
+				"वेब",
+				"प्लगइन"
+			]
+		},
+		"is-IS": {
+			"name": "Vefleit",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "Leyfir gervigreindarkarakterum að leita á vefnum í gegnum uppsettu leitaruppsprettuna.",
+			"description_markdown": "**Vefleit** viðbótin veitir gervigreindarkarakterum `<web-search>` verkfæri sem styðst við valda leitarþjónustuuppsprettu notandans.\n\nHluti af kóðanum kemur frá [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"leit",
+				"vefur",
+				"viðbót"
+			]
+		},
+		"it-IT": {
+			"name": "Ricerca web",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "Consente ai personaggi IA di cercare sul web tramite la fonte di ricerca configurata.",
+			"description_markdown": "Il plugin **Ricerca web** fornisce ai personaggi IA uno strumento `<web-search>` basato sulla fonte del servizio di ricerca preferita dall'utente.\n\nParte del codice proviene da [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"ricerca",
+				"web",
+				"plugin"
+			]
+		},
+		"ja-JP": {
+			"name": "ウェブ検索",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "設定された検索ソースを通じて AI キャラクターがウェブ検索を行えるようにします。",
+			"description_markdown": "**ウェブ検索**プラグインは、ユーザーが優先する検索サービスソースを基盤とする `<web-search>` ツールを AI キャラクターに提供します。\n\n一部のコードは [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite) に由来します。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"検索",
+				"ウェブ",
+				"プラグイン"
+			]
+		},
+		"ko-KR": {
+			"name": "웹 검색",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "설정된 검색 소스를 통해 AI 캐릭터가 웹을 검색할 수 있게 합니다.",
+			"description_markdown": "**웹 검색** 플러그인은 사용자가 선호하는 검색 서비스 소스를 기반으로 하는 `<web-search>` 도구를 AI 캐릭터에게 제공합니다.\n\n일부 코드는 [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite)에서 유래되었습니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"검색",
+				"웹",
+				"플러그인"
+			]
+		},
+		"lzh": {
+			"name": "網路搜索",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "使化身得藉所設之搜索源而索於網路",
+			"description_markdown": "此**網路搜索**插件，為化身供 `<web-search>` 之具，以用戶所善之搜索服務源為憑。\n\n其術蓋取於[龍膽](https://github.com/steve02081504/GentianAphrodite)。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"搜索",
+				"網路",
+				"插件"
+			]
+		},
+		"nl-NL": {
+			"name": "Webzoeken",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "Laat AI-personages op het web zoeken via de geconfigureerde zoekbron.",
+			"description_markdown": "De **Webzoeken**-plugin geeft AI-personages een `<web-search>`-tool op basis van de favoriete zoekdienstbron van de gebruiker.\n\nEen deel van de code is afkomstig van [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"zoeken",
+				"web",
+				"plugin"
+			]
+		},
+		"pt-PT": {
+			"name": "Pesquisa web",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "Permite que os personagens de IA pesquisem na web através da fonte de pesquisa configurada.",
+			"description_markdown": "O plugin **Pesquisa web** dá aos personagens de IA uma ferramenta `<web-search>` baseada na fonte de serviço de pesquisa preferida do utilizador.\n\nParte do código provém de [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"pesquisa",
+				"web",
+				"plugin"
+			]
+		},
+		"ru-RU": {
+			"name": "Веб-поиск",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "Позволяет ИИ-персонажам искать в интернете через настроенный источник поиска.",
+			"description_markdown": "Плагин **Веб-поиск** даёт ИИ-персонажам инструмент `<web-search>`, опирающийся на предпочитаемый пользователем источник поисковой службы.\n\nЧасть кода заимствована из [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"поиск",
+				"веб",
+				"плагин"
+			]
+		},
+		"uk-UA": {
+			"name": "Вебпошук",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "Дозволяє ШІ-персонажам шукати в інтернеті через налаштоване джерело пошуку.",
+			"description_markdown": "Плагін **Вебпошук** надає ШІ-персонажам інструмент `<web-search>`, що спирається на бажане користувачем джерело пошукової служби.\n\nЧастина коду взята з [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"пошук",
+				"веб",
+				"плагін"
+			]
+		},
+		"vi-VN": {
+			"name": "Tìm kiếm web",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "Cho phép nhân vật AI tìm kiếm trên web thông qua nguồn tìm kiếm đã cấu hình.",
+			"description_markdown": "Plugin **Tìm kiếm web** cung cấp cho nhân vật AI công cụ `<web-search>` dựa trên nguồn dịch vụ tìm kiếm mà người dùng ưa thích.\n\nMột phần mã nguồn đến từ [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"tìm kiếm",
+				"web",
+				"plugin"
+			]
+		},
+		"zh-TW": {
+			"name": "網路搜尋",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "透過已設定的搜尋服務源為 AI 角色提供網路搜尋能力",
+			"description_markdown": "**網路搜尋**外掛為 AI 角色提供 `<web-search>` 工具，並使用使用者偏好的搜尋服務源。\n\n部分程式碼來自[龍膽](https://github.com/steve02081504/GentianAphrodite)。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"搜尋",
+				"網路",
+				"外掛"
+			]
+		}
 	}
 }

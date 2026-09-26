@@ -28,22 +28,244 @@
 				"插件"
 			]
 		},
-		"ar-SA": {},
-		"de-DE": {},
-		"emoji": {},
-		"es-ES": {},
-		"fr-FR": {},
-		"hi-IN": {},
-		"is-IS": {},
-		"it-IT": {},
-		"ja-JP": {},
-		"ko-KR": {},
-		"lzh": {},
-		"nl-NL": {},
-		"pt-PT": {},
-		"ru-RU": {},
-		"uk-UA": {},
-		"vi-VN": {},
-		"zh-TW": {}
+		"ar-SA": {
+			"name": "تكامل المتصفح",
+			"avatar": "https://api.iconify.design/line-md/globe.svg",
+			"description": "يتيح لشخصيات الذكاء الاصطناعي قراءة صفحات متصفح المستخدم والتحكم بها.",
+			"description_markdown": "يمنح المكوّن الإضافي **تكامل المتصفح** شخصيات الذكاء الاصطناعي أدوات لفحص صفحات المتصفح المتصلة عبر shell تكامل المتصفح والتحكم بها: قراءة HTML المرئي أو الكامل، وتنفيذ JavaScript، وإدارة النصوص البرمجية التلقائية، وإرسال الدانماكو.\n\nجزء من الكود مستمد من [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"متصفح",
+				"ويب",
+				"إضافة"
+			]
+		},
+		"de-DE": {
+			"name": "Browser-Integration",
+			"avatar": "https://api.iconify.design/line-md/globe.svg",
+			"description": "Ermöglicht KI-Charakteren, die Seiten im Browser des Nutzers zu lesen und zu bedienen.",
+			"description_markdown": "Das **Browser-Integration**-Plugin gibt KI-Charakteren Werkzeuge, um die über die Browser-Integrations-Shell verbundenen Browserseiten zu untersuchen und zu bedienen: sichtbares oder vollständiges HTML lesen, JavaScript ausführen, automatische Skripte verwalten und Danmaku senden.\n\nEin Teil des Codes stammt von [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"browser",
+				"web",
+				"plugin"
+			]
+		},
+		"emoji": {
+			"name": "🌐🔌",
+			"avatar": "https://api.iconify.design/line-md/globe.svg",
+			"description": "🤖🌐🖱️",
+			"description_markdown": "**🌐🔌** ➡️ 🤖🛠️.\n👀📄 + ▶️📜 + 🔁🗂️ + 💬.\n\n⬅️ [🪻](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"🌐",
+				"🔌",
+				"🖱️",
+				"👀"
+			]
+		},
+		"es-ES": {
+			"name": "Integración con el navegador",
+			"avatar": "https://api.iconify.design/line-md/globe.svg",
+			"description": "Permite a los personajes de IA leer y controlar las páginas del navegador del usuario.",
+			"description_markdown": "El complemento **Integración con el navegador** ofrece a los personajes de IA herramientas para inspeccionar y controlar las páginas del navegador conectadas mediante el shell de integración con el navegador: leer el HTML visible o completo, ejecutar JavaScript, gestionar scripts de ejecución automática y enviar danmaku.\n\nParte del código proviene de [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"navegador",
+				"web",
+				"complemento"
+			]
+		},
+		"fr-FR": {
+			"name": "Intégration du navigateur",
+			"avatar": "https://api.iconify.design/line-md/globe.svg",
+			"description": "Permet aux personnages IA de lire et de manipuler les pages du navigateur de l'utilisateur.",
+			"description_markdown": "Le plugin **Intégration du navigateur** fournit aux personnages IA des outils pour inspecter et manipuler les pages du navigateur connectées via le shell d'intégration du navigateur : lire le HTML visible ou complet, exécuter JavaScript, gérer les scripts d'exécution automatique et envoyer des danmaku.\n\nUne partie du code provient de [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"navigateur",
+				"web",
+				"plugin"
+			]
+		},
+		"hi-IN": {
+			"name": "ब्राउज़र एकीकरण",
+			"avatar": "https://api.iconify.design/line-md/globe.svg",
+			"description": "AI पात्रों को उपयोगकर्ता के ब्राउज़र के पृष्ठ पढ़ने और संचालित करने देता है।",
+			"description_markdown": "**ब्राउज़र एकीकरण** प्लगइन AI पात्रों को ब्राउज़र एकीकरण shell से जुड़े ब्राउज़र पृष्ठों का निरीक्षण और संचालन करने के उपकरण देता है: दृश्यमान या पूरा HTML पढ़ना, JavaScript चलाना, स्वतः-चलने वाली स्क्रिप्ट प्रबंधित करना और डैनमाकू भेजना।\n\nकुछ कोड [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite) से लिया गया है।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"ब्राउज़र",
+				"वेब",
+				"प्लगइन"
+			]
+		},
+		"is-IS": {
+			"name": "Vafrasamþætting",
+			"avatar": "https://api.iconify.design/line-md/globe.svg",
+			"description": "Leyfir gervigreindarkarakterum að lesa og stýra síðum vafrans hjá notandanum.",
+			"description_markdown": "**Vafrasamþætting** viðbótin veitir gervigreindarkarakterum verkfæri til að skoða og stýra vafrasíðum sem eru tengdar í gegnum vafrasamþættingarskelina: lesa sýnilegt eða fullt HTML, keyra JavaScript, stýra sjálfvirkum forskriftum og senda danmaku.\n\nHluti af kóðanum kemur frá [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"vafri",
+				"vefur",
+				"viðbót"
+			]
+		},
+		"it-IT": {
+			"name": "Integrazione browser",
+			"avatar": "https://api.iconify.design/line-md/globe.svg",
+			"description": "Consente ai personaggi IA di leggere e controllare le pagine del browser dell'utente.",
+			"description_markdown": "Il plugin **Integrazione browser** fornisce ai personaggi IA strumenti per ispezionare e controllare le pagine del browser connesse tramite la shell di integrazione del browser: leggere l'HTML visibile o completo, eseguire JavaScript, gestire gli script di esecuzione automatica e inviare danmaku.\n\nParte del codice proviene da [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"browser",
+				"web",
+				"plugin"
+			]
+		},
+		"ja-JP": {
+			"name": "ブラウザ連携",
+			"avatar": "https://api.iconify.design/line-md/globe.svg",
+			"description": "AI キャラクターがユーザーのブラウザのページを読み取り、操作できるようにします。",
+			"description_markdown": "**ブラウザ連携**プラグインは、ブラウザ連携 shell を介して接続されたブラウザページを調査・操作するツールを AI キャラクターに提供します。表示中または完全な HTML の読み取り、JavaScript の実行、自動実行スクリプトの管理、弾幕の送信ができます。\n\n一部のコードは [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite) に由来します。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"ブラウザ",
+				"ウェブ",
+				"プラグイン"
+			]
+		},
+		"ko-KR": {
+			"name": "브라우저 연동",
+			"avatar": "https://api.iconify.design/line-md/globe.svg",
+			"description": "AI 캐릭터가 사용자 브라우저의 페이지를 읽고 조작할 수 있게 합니다.",
+			"description_markdown": "**브라우저 연동** 플러그인은 브라우저 연동 shell을 통해 연결된 브라우저 페이지를 검사하고 조작하는 도구를 AI 캐릭터에게 제공합니다. 표시되거나 전체 HTML 읽기, JavaScript 실행, 자동 실행 스크립트 관리, 탄막 전송을 할 수 있습니다.\n\n일부 코드는 [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite)에서 유래되었습니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"브라우저",
+				"웹",
+				"플러그인"
+			]
+		},
+		"lzh": {
+			"name": "瀏覽器集成",
+			"avatar": "https://api.iconify.design/line-md/globe.svg",
+			"description": "使化身得覽用戶瀏覽器之頁並操之",
+			"description_markdown": "此**瀏覽器集成**插件，為化身供瀏覽器集成 shell 之具：覽可見或全頁之 HTML、行 JavaScript、理自動之腳本、發彈幕。\n\n其術蓋取於[龍膽](https://github.com/steve02081504/GentianAphrodite)。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"瀏覽器",
+				"網路",
+				"插件"
+			]
+		},
+		"nl-NL": {
+			"name": "Browserintegratie",
+			"avatar": "https://api.iconify.design/line-md/globe.svg",
+			"description": "Laat AI-personages de pagina's in de browser van de gebruiker lezen en bedienen.",
+			"description_markdown": "De **Browserintegratie**-plugin geeft AI-personages tools om de via de browserintegratie-shell verbonden browserpagina's te inspecteren en te bedienen: zichtbare of volledige HTML lezen, JavaScript uitvoeren, automatische scripts beheren en danmaku versturen.\n\nEen deel van de code is afkomstig van [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"browser",
+				"web",
+				"plugin"
+			]
+		},
+		"pt-PT": {
+			"name": "Integração com o navegador",
+			"avatar": "https://api.iconify.design/line-md/globe.svg",
+			"description": "Permite que os personagens de IA leiam e controlem as páginas do navegador do utilizador.",
+			"description_markdown": "O plugin **Integração com o navegador** dá aos personagens de IA ferramentas para inspecionar e controlar as páginas do navegador ligadas através do shell de integração com o navegador: ler o HTML visível ou completo, executar JavaScript, gerir scripts de execução automática e enviar danmaku.\n\nParte do código provém de [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"navegador",
+				"web",
+				"plugin"
+			]
+		},
+		"ru-RU": {
+			"name": "Интеграция с браузером",
+			"avatar": "https://api.iconify.design/line-md/globe.svg",
+			"description": "Позволяет ИИ-персонажам читать страницы браузера пользователя и управлять ими.",
+			"description_markdown": "Плагин **Интеграция с браузером** даёт ИИ-персонажам инструменты для просмотра и управления страницами браузера, подключёнными через shell интеграции с браузером: чтение видимого или полного HTML, выполнение JavaScript, управление автоскриптами и отправка данмаку.\n\nЧасть кода заимствована из [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"браузер",
+				"веб",
+				"плагин"
+			]
+		},
+		"uk-UA": {
+			"name": "Інтеграція з браузером",
+			"avatar": "https://api.iconify.design/line-md/globe.svg",
+			"description": "Дозволяє ШІ-персонажам читати сторінки браузера користувача та керувати ними.",
+			"description_markdown": "Плагін **Інтеграція з браузером** надає ШІ-персонажам інструменти для огляду та керування сторінками браузера, під'єднаними через shell інтеграції з браузером: читання видимого або повного HTML, виконання JavaScript, керування автоскриптами та надсилання данмаку.\n\nЧастина коду взята з [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"браузер",
+				"веб",
+				"плагін"
+			]
+		},
+		"vi-VN": {
+			"name": "Tích hợp trình duyệt",
+			"avatar": "https://api.iconify.design/line-md/globe.svg",
+			"description": "Cho phép nhân vật AI đọc và điều khiển các trang trên trình duyệt của người dùng.",
+			"description_markdown": "Plugin **Tích hợp trình duyệt** cung cấp cho nhân vật AI các công cụ để xem xét và điều khiển các trang trình duyệt được kết nối qua shell tích hợp trình duyệt: đọc HTML hiển thị hoặc toàn bộ, chạy JavaScript, quản lý script tự chạy và gửi danmaku.\n\nMột phần mã nguồn đến từ [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"trình duyệt",
+				"web",
+				"plugin"
+			]
+		},
+		"zh-TW": {
+			"name": "瀏覽器整合",
+			"avatar": "https://api.iconify.design/line-md/globe.svg",
+			"description": "讓 AI 角色閱讀並操作使用者瀏覽器中的頁面",
+			"description_markdown": "**瀏覽器整合**外掛為 AI 角色提供瀏覽器整合 shell 的工具：讀取頁面可見或完整 HTML、執行 JavaScript、管理自動執行腳本以及發送彈幕。\n\n部分程式碼來自[龍膽](https://github.com/steve02081504/GentianAphrodite)。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"瀏覽器",
+				"網路",
+				"外掛"
+			]
+		}
 	}
 }
