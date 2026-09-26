@@ -1,0 +1,24 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Web Search",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "Lets AI characters search the web through the configured search source.",
+			"description_markdown": "The **Web Search** plugin gives AI characters a `<web-search>` tool backed by the user's preferred search service source.\n\nSome code is derived from [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": ["search", "web", "plugin"]
+		},
+		"zh-CN": {
+			"name": "网络搜索",
+			"avatar": "https://api.iconify.design/line-md/search.svg",
+			"description": "通过已配置的搜索服务源为 AI 角色提供网络搜索能力",
+			"description_markdown": "**网络搜索**插件为 AI 角色提供 `<web-search>` 工具，并使用用户首选的搜索服务源。\n\n部分代码来自[龙胆](https://github.com/steve02081504/GentianAphrodite)。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": ["搜索", "网络", "插件"]
+		}
+	}
+}

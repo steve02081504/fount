@@ -1,0 +1,29 @@
+{
+	"id": "plugins/web-search",
+	"triggerSets": {
+		"testFramework": [
+			"src/scripts/test/{deno/serial.mjs,node/boot.mjs}"
+		],
+		"pluginCore": [
+			"src/public/parts/plugins/web-search/**",
+			"src/public/parts/shells/chat/src/{reply,streaming}/**"
+		]
+	},
+	"suites": [
+		{
+			"name": "pure",
+			"expected": "10s",
+			"trigger": ["pluginCore", "testFramework"],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/deno/serial.mjs",
+				"./src/public/parts/plugins/web-search/test/pure/"
+			]
+		}
+	]
+}
