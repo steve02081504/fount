@@ -16,7 +16,7 @@ import { getUserDictionary } from '../../../../../server/auth/index.mjs'
 import { events } from '../../../../../server/events.mjs'
 import { buildDialogue } from '../public/shared/dialogueReplay.mjs'
 import { conversationKey, mergeDialogueEvents, summarizeConversations } from '../public/shared/generationChain.mjs'
-import { estimateGenerationCache, serializeRequest } from '../public/shared/promptCache.mjs'
+import { estimateGenerationCache } from '../public/shared/promptCache.mjs'
 
 /**
  * 重导出生成链 / 会话聚合纯函数，供调用方从本模块统一获取。
@@ -42,7 +42,7 @@ export const DEFAULT_RETENTION = {
  * @property {number} startedAt
  * @property {number} [finishedAt]
  * @property {any} [input] 请求 chat_log 快照（非组装后 prompt；旧格式兼容字段）
- * @property {object[]} [requests] 逐轮 AI 请求快照 `{ index, startedAt, finishedAt, model, systemPrompt, messages }`
+ * @property {object[]} [requests] 逐轮 AI 请求快照 `{ index, startedAt, finishedAt, model, systemPrompt, messages, snapshot?, output? }`
  * @property {number} [requestCount] 采集到的轮次数（requests 被 TTL 清除后仍保留）
  * @property {{ rounds: number, events: object[] }} [dialogue] 由逐轮请求复原的对话事件流（独立于 requests，保留至整条记录 TTL）
  * @property {number | null} [cacheRate] 该生成相对上一轮 prompt 的估算缓存复用率（记录时预计算，requests 被清除后仍保留）
@@ -187,11 +187,11 @@ function toSummary(record) {
 }
 
 /**
- * 读取同一会话中在本条记录之前、时序最近的上一轮序列化 prompt（用于跨生成估算缓存复用）。
+ * 读取同一会话中在本条记录之前、时序最近的请求与输出（用于跨生成估算缓存复用）。
  * @param {string} username 用户
  * @param {{ records: object[] }} index 生成索引（尚未写入本条摘要）
  * @param {generationRecord_t} record 当前记录
- * @returns {string | null} 上一轮序列化 prompt；无则 null
+ * @returns {object | null} 上一轮请求及输出；无则 null
  */
 function previousConversationPrompt(username, index, record) {
 	const key = conversationKey(record)
@@ -206,7 +206,7 @@ function previousConversationPrompt(username, index, record) {
 	if (!best) return null
 	const previous = loadJsonFileIfExists(recordPath(username, best.id), null)
 	const last = previous?.requests?.at(-1)
-	return last ? serializeRequest(last) : null
+	return last ? { ...last, response: previous.response } : null
 }
 
 /**

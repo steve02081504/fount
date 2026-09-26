@@ -1053,47 +1053,18 @@
 	gap: 0.9rem;
 }
 
-.conversation-generation {
+.conversation-entry {
 	padding: 0.85rem;
-	display: flex;
-	flex-direction: column;
-	gap: 0.6rem;
-}
-
-.conversation-generation-head {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: baseline;
-	gap: 0.5rem 0.75rem;
-}
-
-.conversation-generation-id {
-	margin: 0;
-	font-family: var(--font-code);
-	font-size: 0.76rem;
-	color: var(--text-muted);
-	word-break: break-all;
-}
-
-.conversation-generation-meta {
-	margin: 0;
-	flex-basis: 100%;
-	font-size: 0.74rem;
-	color: var(--text-muted);
-}
-
-.conversation-round {
-	border-top: var(--border) solid var(--border-color);
-	padding-top: 0.65rem;
 	display: flex;
 	flex-direction: column;
 	gap: 0.55rem;
 }
 
-.conversation-round-head {
+.conversation-entry-meta {
 	display: flex;
 	align-items: center;
-	gap: 0.65rem;
+	flex-wrap: wrap;
+	gap: 0.55rem;
 }
 
 .conversation-section {

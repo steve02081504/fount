@@ -93,7 +93,7 @@ Deno.test('collectGenerationRecord returns null and warns when chat_id is missin
 Deno.test('beginPromptRequest records message ids so consecutive rounds can align by id', async () => {
 	const args = makeArgs()
 	const first = await beginPromptRequest(args, makePromptStruct())
-	finishPromptRequest(first)
+	finishPromptRequest(first, { output: 'hello' })
 	const second = await beginPromptRequest(args, makePromptStruct([
 		{ id: 'm1', role: 'user', name: 'User', uid: 'user', content: 'hi' },
 		{ id: 'm2', role: 'char', name: 'Demo', uid: 'char', content: 'hello' },
@@ -101,6 +101,7 @@ Deno.test('beginPromptRequest records message ids so consecutive rounds can alig
 	finishPromptRequest(second)
 	const record = collectGenerationRecord(args, { response: 'again' })
 	const ops = record.dialogue.events.map(event => event.op)
+	assertEquals(record.requests[0].output, 'hello')
 	assertEquals(ops, ['insert', 'insert', 'insert'])
 	assertEquals(record.dialogue.events[1].message.id, 'm2')
 })

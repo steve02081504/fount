@@ -152,11 +152,11 @@ test.describe('Agent Studio shell boot', () => {
 		}))
 		await openAgentStudio(page, baseUrl)
 		await page.evaluate(() => { window.location.hash = '#conversation/demo-replay' })
-		await expect(page.locator('#conversationGenerations .conversation-generation')).toHaveCount(2)
-		await expect(page.locator('#conversationGenerations .conversation-round-head .badge-success')).toHaveCount(1)
-		await expect(page.locator('#conversationGenerations .conversation-round-head .badge-neutral')).toHaveCount(1)
+		await expect(page.locator('#conversationGenerations .conversation-entry')).toHaveCount(2)
+		await expect(page.locator('#conversationGenerations .conversation-entry-meta .badge-success')).toHaveCount(1)
+		await expect(page.locator('#conversationGenerations .conversation-entry-meta .badge-neutral')).toHaveCount(1)
 
-		const actions = page.locator('#conversationGenerations .conversation-round > .conversation-section .section-actions').first()
+		const actions = page.locator('#conversationGenerations .conversation-entry-meta .section-actions').first()
 		await expect(actions).toBeVisible()
 		const downloadPromise = page.waitForEvent('download')
 		await actions.getByRole('button').nth(1).click()
@@ -168,9 +168,8 @@ test.describe('Agent Studio shell boot', () => {
 		expect(clipboard).toContain('reply 1')
 
 		await page.locator('#conversationReplaySlider').fill('1')
-		await expect(page.locator('#conversationGenerations .conversation-generation')).toHaveCount(1)
-		await expect(page.locator('#conversationGenerations .conversation-round')).toHaveCount(1)
-		const body = page.locator('#conversationGenerations .conversation-round > .conversation-section .message-view').first()
+		await expect(page.locator('#conversationGenerations .conversation-entry')).toHaveCount(1)
+		const body = page.locator('#conversationGenerations .conversation-entry .message-view').first()
 		await expect(body.locator('pre')).toContainText('**reply 1**')
 		await body.locator('button').click()
 		await expect(body.locator('strong')).toHaveText('reply 1')
@@ -186,7 +185,11 @@ test.describe('Agent Studio shell boot', () => {
 				{ index: 1, systemPrompt: `${shared}A`, messages: [{ role: 'user', id: 'u1', content: 'hello' }] },
 				{ index: 2, systemPrompt: `${shared}B`, messages: [{ role: 'user', id: 'u1', content: 'hello' }, { role: 'char', id: 'a1', content: 'first answer' }] },
 			],
-			dialogue: { rounds: 2, events: [{ round: 2, op: 'insert', message: { id: 'g1:final', role: 'char', content: 'final' } }] },
+			dialogue: { rounds: 2, events: [
+				{ round: 1, op: 'insert', message: { id: 'u1', role: 'user', content: 'hello' } },
+				{ round: 1, op: 'insert', message: { id: 'a1', role: 'char', content: 'first answer' } },
+				{ round: 2, op: 'insert', message: { id: 'g1:final', role: 'char', content: 'final' } },
+			] },
 			response: 'final',
 		}]
 		await page.route('**/api/parts/shells:agent_studio/conversation/demo-reuse', route => route.fulfill({
@@ -195,7 +198,7 @@ test.describe('Agent Studio shell boot', () => {
 		await openAgentStudio(page, baseUrl)
 		await page.evaluate(() => { window.location.hash = '#conversation/demo-reuse' })
 		await expect(page.locator('#conversationReplaySlider')).toHaveValue('2')
-		const rounds = page.locator('#conversationGenerations .conversation-round')
+		const rounds = page.locator('#conversationGenerations .conversation-entry.role-char')
 		// 首轮没有上一轮基准：无复用高亮、无跳转按钮。
 		await expect(rounds.nth(0).locator('.prompt-reused')).toHaveCount(0)
 		await expect(rounds.nth(0).locator('.conversation-jump')).toHaveCount(0)
@@ -234,7 +237,7 @@ test.describe('Agent Studio shell boot', () => {
 		}))
 		await openAgentStudio(page, baseUrl)
 		await page.evaluate(() => { window.location.hash = '#conversation/demo-tool-collapse' })
-		const rows = page.locator('#conversationGenerations .conversation-round > .conversation-messages .conversation-message.role-tool')
+		const rows = page.locator('#conversationGenerations .conversation-entry > .conversation-message.role-tool')
 		const longRow = rows.filter({ hasText: 'tool line 12' })
 		await expect(longRow.locator('.message-view-plain')).toHaveClass(/is-collapsed/)
 		const toggle = longRow.locator('.message-collapse-toggle')
@@ -242,6 +245,29 @@ test.describe('Agent Studio shell boot', () => {
 		await toggle.click()
 		await expect(longRow.locator('.message-view-plain')).not.toHaveClass(/is-collapsed/)
 		await expect(rows.filter({ hasText: 'short line 7' }).locator('.message-collapse-toggle')).toHaveCount(0)
+	})
+
+	test('replay keeps one conversation history and expands prompts on model outputs only', async ({ page, baseUrl }) => {
+		const requests = [
+			{ index: 1, systemPrompt: 'instruction', messages: [{ id: 'user', role: 'user', content: 'question' }] },
+			{ index: 2, systemPrompt: 'instruction', messages: [{ id: 'user', role: 'user', content: 'question' }, { id: 'reply', role: 'char', content: 'first reply' }] },
+		]
+		await page.route('**/api/parts/shells:agent_studio/conversation/deduplicated', route => route.fulfill({ json: {
+			key: 'deduplicated', generations: [{ id: 'gen', startedAt: 1000, requestCount: 2, requests, response: 'second reply' }],
+			dialogue: { events: [
+				{ round: 1, op: 'insert', message: { id: 'user', role: 'user', content: 'question' } },
+				{ round: 1, op: 'insert', message: { id: 'reply', role: 'char', content: 'first reply' } },
+				{ round: 2, op: 'insert', message: { id: 'gen:final', role: 'char', content: 'second reply' } },
+			] },
+		} }))
+		await openAgentStudio(page, baseUrl)
+		await page.evaluate(() => { window.location.hash = '#conversation/deduplicated' })
+		await expect(page.locator('#conversationGenerations .conversation-entry.role-user')).toHaveCount(1)
+		await expect(page.locator('#conversationGenerations .conversation-entry.role-char')).toHaveCount(2)
+		await expect(page.locator('#conversationGenerations .conversation-requests')).toHaveCount(2)
+		await page.locator('#conversationReplaySlider').fill('1')
+		await expect(page.locator('#conversationGenerations .conversation-entry')).toHaveCount(2)
+		await expect(page.locator('#conversationGenerations')).not.toContainText('second reply')
 	})
 
 	test('conversation timeline lists one node per round across multi-round generations', async ({ page, baseUrl }) => {
@@ -263,34 +289,31 @@ test.describe('Agent Studio shell boot', () => {
 		await expect(page.locator('#conversationReplaySlider')).toHaveAttribute('max', '5')
 		// 回放到第 1 轮即可看到本轮结果、缓存和该轮 prompt，但没有后续轮次。
 		await page.locator('#conversationReplaySlider').fill('1')
-		await expect(page.locator('#conversationGenerations .conversation-generation')).toHaveCount(1)
-		await expect(page.locator('#conversationGenerations .conversation-round')).toHaveCount(1)
-		await expect(page.locator('#conversationGenerations .conversation-round > .conversation-messages .conversation-message')).toContainText('round 1')
-		await expect(page.locator('#conversationGenerations .conversation-round-head .badge')).toHaveCount(1)
+		await expect(page.locator('#conversationGenerations .conversation-entry')).toHaveCount(1)
+		await expect(page.locator('#conversationGenerations .conversation-entry > .conversation-message')).toContainText('round 1')
+		await expect(page.locator('#conversationGenerations .conversation-entry-meta .badge')).toHaveCount(1)
 		await expect(page.locator('#conversationGenerations .conversation-request')).toHaveCount(1)
-		await page.locator('#conversationGenerations .conversation-round .conversation-requests').first().click()
-		await expect(page.locator('#conversationGenerations .conversation-round').first()).toContainText('instruction 1')
+		await page.locator('#conversationGenerations .conversation-entry .conversation-requests').first().click()
+		await expect(page.locator('#conversationGenerations .conversation-entry').first()).toContainText('instruction 1')
 		await expect(page.locator('#conversationGenerations')).not.toContainText('round 2')
 		await expect(page.locator('#conversationGenerations')).not.toContainText('instruction 4')
 		// 回放到第 2 轮仍属于同一生成
 		await page.locator('#conversationReplaySlider').fill('2')
-		await expect(page.locator('#conversationGenerations .conversation-generation')).toHaveCount(1)
-		await expect(page.locator('#conversationGenerations .conversation-round')).toHaveCount(2)
-		await expect(page.locator('#conversationGenerations .conversation-round').nth(1)).toContainText('round 2')
-		await expect(page.locator('#conversationGenerations .conversation-round').nth(1).locator('.badge')).toHaveCount(1)
+		await expect(page.locator('#conversationGenerations .conversation-entry')).toHaveCount(2)
+		await expect(page.locator('#conversationGenerations .conversation-entry').nth(1)).toContainText('round 2')
+		await expect(page.locator('#conversationGenerations .conversation-entry').nth(1).locator('.badge')).toHaveCount(1)
 		await expect(page.locator('#conversationGenerations .conversation-request')).toHaveCount(2)
-		await page.locator('#conversationGenerations .conversation-round .conversation-requests').nth(1).click()
-		await expect(page.locator('#conversationGenerations .conversation-round').nth(1)).toContainText('instruction 2')
-		await expect(page.locator('#conversationGenerations .conversation-round > .conversation-section')).toHaveCount(0)
+		await page.locator('#conversationGenerations .conversation-entry .conversation-requests').nth(1).click()
+		await expect(page.locator('#conversationGenerations .conversation-entry').nth(1)).toContainText('instruction 2')
 		// 本代最后一轮才展示最终回复；后续生成仍不可见。
 		await page.locator('#conversationReplaySlider').fill('4')
-		await expect(page.locator('#conversationGenerations .conversation-generation')).toHaveCount(1)
+		await expect(page.locator('#conversationGenerations .conversation-entry')).toHaveCount(4)
 		await expect(page.locator('#conversationGenerations .conversation-request')).toHaveCount(4)
-		await expect(page.locator('#conversationGenerations .conversation-round-head .badge')).toHaveCount(4)
-		await expect(page.locator('#conversationGenerations .conversation-round').last().locator(':scope > .conversation-section .message-view')).toContainText('round 4')
+		await expect(page.locator('#conversationGenerations .conversation-entry-meta .badge')).toHaveCount(4)
+		await expect(page.locator('#conversationGenerations .conversation-entry').last().locator('.message-view').first()).toContainText('round 4')
 		// 回放到最后一轮显示两条生成
 		await page.locator('#conversationReplaySlider').fill('5')
-		await expect(page.locator('#conversationGenerations .conversation-generation')).toHaveCount(2)
+		await expect(page.locator('#conversationGenerations .conversation-entry')).toHaveCount(5)
 	})
 
 	test('live sub-agent composer accepts a user message only at the latest replay node', async ({ page, baseUrl }) => {
@@ -320,8 +343,8 @@ test.describe('Agent Studio shell boot', () => {
 		await expect(page.locator('#subagentMessageForm')).toBeVisible()
 		await page.locator('#conversationReplaySlider').fill('1')
 		await expect(page.locator('#subagentMessageForm')).toBeHidden()
-		await expect(page.locator('#subagentTranscript')).toContainText('reply 1')
-		await expect(page.locator('#subagentTranscript')).not.toContainText('reply 2')
+		await expect(page.locator('#conversationGenerations')).toContainText('reply 1')
+		await expect(page.locator('#conversationGenerations')).not.toContainText('reply 2')
 		await page.locator('#conversationReplaySlider').fill('2')
 		await page.locator('#subagentMessageInput').fill('new instruction')
 		await page.locator('#subagentMessageForm button').click()

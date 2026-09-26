@@ -104,3 +104,20 @@ Deno.test('serializeRequest and commonPrefixLength expose the character-level ba
 	assertEquals(commonPrefixLength('abcd', 'abef'), 2)
 	assertEquals(commonPrefixLength('', 'ab'), 0)
 })
+
+Deno.test('the previous model output is part of the cache basis across rounds and generations', () => {
+	const first = { systemPrompt: 'sys', messages: [{ id: 'u', role: 'user', content: 'hi' }], output: 'answer' }
+	const carried = { systemPrompt: 'sys', messages: [...first.messages, { id: 'a', role: 'char', content: 'answer' }] }
+	const changed = { systemPrompt: 'sys', messages: [...first.messages, { id: 'a', role: 'char', content: 'different' }] }
+	const metrics = estimatePromptCache([{ requests: [first] }, { requests: [carried] }])
+	assertEquals(metrics[1].rounds[0].rate, 1)
+	assertEquals(estimateGenerationCache(first, [carried]).rate, 1)
+	assertEquals(estimateGenerationCache(first, [changed]).rate < 1, true)
+	assertEquals(metrics[1].rounds[0].total, serializeRequest(first).length + 'answer'.length)
+})
+
+Deno.test('a JSON snapshot with appended model output does not lose its closing container as cached prefix', () => {
+	const first = { systemPrompt: 'sys', messages: [{ role: 'user', content: 'hi' }], snapshot: '{\n\t"messages": [\n\t\t"hi"\n\t]\n}', output: 'reply' }
+	const next = { systemPrompt: 'sys', messages: [...first.messages, { role: 'char', content: 'reply' }], snapshot: '{\n\t"messages": [\n\t\t"hi",\n\t\t"reply"\n\t]\n}' }
+	assertEquals(estimatePromptCache([{ requests: [first, next] }])[0].rounds[1].rate, 1)
+})

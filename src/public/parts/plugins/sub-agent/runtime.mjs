@@ -595,7 +595,7 @@ export async function executeSubAgentRun(run, deps = defaultSubAgentDeps) {
 				await run.aiSource.StructCall(promptStruct, generationOptions)
 			}
 			finally {
-				finishPromptRequest(promptRequest)
+				finishPromptRequest(promptRequest, { output: result.content })
 			}
 			propagateRoundsToAncestors(run, getRun)
 			emitRunStatus(run, deps)

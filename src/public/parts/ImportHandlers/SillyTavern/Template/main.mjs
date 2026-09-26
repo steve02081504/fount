@@ -271,7 +271,7 @@ export default {
 							await activeSource.StructCall(prompt_struct, args.generation_options)
 						}
 						finally {
-							finishPromptRequest(promptRequest)
+							finishPromptRequest(promptRequest, { output: result.content })
 						}
 						args.generation_options.signal?.throwIfAborted()
 						// 达到 72.9% 上下文阈值时压缩历史后重新生成

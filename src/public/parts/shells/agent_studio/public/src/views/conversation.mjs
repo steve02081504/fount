@@ -1,7 +1,7 @@
 /**
  * 【文件】public/src/views/conversation.mjs — 会话详情视图
- * 【职责】按会话键深链展示该对话的全部生成记录，以及每条生成内部的逐轮 prompt 请求。
- * 【原理】数据经 `/conversation/:key` 拉取（含逐轮 `requests`）；纯文本 `textContent` 写入避免注入；逐轮请求与旧格式过期状态分别提示。
+ * 【职责】按会话键深链展示单份可回放对话历史，在模型输出条目上展开生成该条目的请求。
+ * 【原理】数据经 `/conversation/:key` 拉取；按消息 id 去重并在选中轮次复播，纯文本 `textContent` 写入避免注入；过期请求在折叠面板中提示。
  * 【关联】endpoints.mjs、lib/navigationEvents.mjs、index.html 的 #conversationView、lib/format.mjs。
  */
 import { geti18n, geti18n_nowarn, primaryLocale } from '/scripts/i18n/index.mjs'
@@ -110,8 +110,7 @@ export async function loadConversationView({ key } = {}) {
 		const metrics = estimatePromptCache(items)
 		const units = buildRoundUnits(items)
 		renderReplay(units, metrics, count => {
-			const revealed = generationsForRounds(items, units, count)
-			generations.replaceChildren(...revealed.map(({ item, index, rounds }) => renderGeneration(item, metrics[index], rounds, conversation.dialogue?.events ?? [], previousRequestFor(items, index))))
+			generations.replaceChildren(...renderTranscript(conversation.dialogue?.events ?? [], items, units, metrics, count))
 		})
 	}
 	catch (error) {
@@ -144,23 +143,6 @@ export function buildRoundUnits(items) {
 		}
 	}
 	return units
-}
-
-/**
- * 取在某轮回放位置下应展示的生成记录（首个轮次已被揭示者即展示）。
- * @param {object[]} items 生成记录
- * @param {ReturnType<typeof buildRoundUnits>} units 逐轮单元
- * @param {number} count 已揭示的轮次数
- * @returns {Array<{ item: object, index: number, rounds: number[] }>} 生成记录、原始下标与已揭示轮次
- */
-function generationsForRounds(items, units, count) {
-	const revealed = new Map()
-	for (const unit of units.slice(0, count)) {
-		const index = unit.generationIndex
-		if (!revealed.has(index)) revealed.set(index, { item: items[index], index, rounds: [] })
-		revealed.get(index).rounds.push(unit.round)
-	}
-	return [...revealed.values()]
 }
 
 /**
@@ -302,10 +284,9 @@ async function loadSubagentConversation(key) {
 		renderReplay(units, metrics, count => {
 			// 运行中的增量对话没有逐条轮次信息；历史部分用逐轮快照复播。
 			const atLatest = count === units.length
-			transcript.replaceChildren(...(atLatest ? run.conversation || [] : replayDialogue(record?.dialogue?.events ?? [], { upToRound: units[count - 1]?.round ?? 0 })).map(renderSubagentEntry))
+			transcript.replaceChildren(...(atLatest ? run.conversation || [] : []).map(renderSubagentEntry))
 			form?.classList.toggle('hidden', !run.canSend || !atLatest)
-			const revealed = generationsForRounds(items, units, count)
-			list.replaceChildren(...revealed.filter(({ item }) => item.requests?.length).map(({ item, index, rounds }) => renderGeneration(item, metrics[index], rounds, record?.dialogue?.events ?? [], previousRequestFor(items, index))))
+			list.replaceChildren(...atLatest && run.conversation?.length ? [] : renderTranscript(record?.dialogue?.events ?? [], items, units, metrics, count))
 		})
 		const preview = document.getElementById('subagentLivePreview')
 		if (!run.canSend && preview) { preview.textContent = ''; preview.classList.add('hidden') }
@@ -349,17 +330,15 @@ function renderMeta(container, conversation) {
 }
 
 /**
- * 取某次生成之前的最近一次请求快照，作为首轮的缓存比较基准（跨生成沿用同一会话）。
+ * 取紧邻上一代的最后一次请求快照；若请求过期则不能跨过缺口推测复用。
  * @param {object[]} items 会话内按开始时间升序的生成记录
  * @param {number} index 目标生成下标
  * @returns {object | null} 上一请求快照或 null
  */
 function previousRequestFor(items, index) {
-	for (let cursor = index - 1; cursor >= 0; cursor--) {
-		const requests = items[cursor]?.requests
-		if (requests?.length) return requests[requests.length - 1]
-	}
-	return null
+	const previous = items[index - 1]
+	const last = previous?.requests?.at(-1)
+	return last ? { ...last, output: last.output ?? previous.response } : null
 }
 
 /**
@@ -384,6 +363,10 @@ function reusableBlocks(request) {
 function computeReuse(request, previous) {
 	const blocks = reusableBlocks(request)
 	const previousBlocks = reusableBlocks(previous)
+	const firstAdded = request.messages?.[previous.messages?.length ?? 0]
+	const output = previous.output ?? firstAdded?.content
+	if (firstAdded?.role === 'char' && firstAdded.content === output)
+		previousBlocks.push({ text: String(output) })
 	const prefix = commonPrefixLength(blocks.map(block => block.text).join('\n'), previousBlocks.map(block => block.text).join('\n'))
 	const reusedLengths = []
 	let remaining = prefix
@@ -400,90 +383,50 @@ function computeReuse(request, previous) {
 }
 
 /**
- * 渲染一条生成记录及其逐轮请求。
- * @param {object} generation 生成记录
- * @param {object} cache 缓存复用估算
- * @param {number[]} rounds 已揭示的全局轮次
- * @param {object[]} events 会话事件
- * @param {object | null} previousRequest 本代首轮的上一请求快照（跨生成）
- * @returns {HTMLElement} 元素
+ * 单份对话历史按事件复播；角色输出上的折叠面板指向生成这条输出的那次请求。
+ * @param {object[]} events 合并事件
+ * @param {object[]} items 生成记录
+ * @param {ReturnType<typeof buildRoundUnits>} units 回放节点
+ * @param {object[]} metrics 缓存指标
+ * @param {number} count 当前轮次
+ * @returns {HTMLElement[]} 消息条目
  */
-function renderGeneration(generation, cache, rounds, events, previousRequest = null) {
-	const article = document.createElement('article')
-	article.className = 'conversation-generation surface'
-	const head = document.createElement('header')
-	head.className = 'conversation-generation-head'
-	const title = document.createElement('h3')
-	title.className = 'conversation-generation-id'
-	title.setAttribute('prompt-content', '')
-	title.textContent = generation.id
-	head.append(title)
-	if (rounds.length >= generationRoundSpan(generation)) {
+function renderTranscript(events, items, units, metrics, count) {
+	const messageRounds = new Map(events.filter(event => event.op === 'insert' && event.message?.id).map(event => [event.message.id, event.round]))
+	const firstRound = new Map()
+	units.forEach((unit, index) => { if (!firstRound.has(unit.generationIndex)) firstRound.set(unit.generationIndex, index) })
+	return replayDialogue(events, { upToRound: units[count - 1]?.round ?? 0 }).map(message => {
+		const article = document.createElement('article')
+		article.className = `conversation-entry surface role-${message.role || 'system'}`
+		article.append(...renderMessages([message]))
+		if (message.role !== 'char') return article
+		const round = messageRounds.get(message.id)
+		const unit = units[round - 1]
+		if (!unit) return article
+		const index = unit.generationIndex
+		const generation = items[index]
+		const offset = round - 1 - firstRound.get(index)
+		const request = generation.requests?.[offset]
+		const previous = offset > 0 ? generation.requests?.[offset - 1] : previousRequestFor(items, index)
+		const reuse = request && previous ? computeReuse(request, previous) : null
+		const prompt = renderRoundPrompt(generation, offset, reuse)
+		const rate = metrics[index]?.rounds?.[offset]?.rate
+		const head = document.createElement('div')
+		head.className = 'conversation-entry-meta'
+		const label = document.createElement('span')
+		label.className = 'conversation-request-head'
+		label.textContent = `${geti18n('agent_studio.conversation.roundIndex', { index: round })} · ${request?.model || generation.model || generation.charname || generation.charId || generation.id}`
 		const badge = document.createElement('span')
-		const state = generation.hasError ? 'failed' : 'done'
-		badge.className = `badge ${stateBadge(state)}`
-		badge.textContent = geti18n(`agent_studio.run.state.${state}`)
-		head.append(badge)
-	}
-	const meta = document.createElement('p')
-	meta.className = 'conversation-generation-meta'
-	meta.setAttribute('user-content', '')
-	meta.textContent = [
-		generation.source || '',
-		generation.charname || generation.charId || '',
-		generation.requests?.[rounds.length - 1]?.model || generation.model,
-		formatTime(generation.startedAt, primaryLocale()),
-	].filter(Boolean).join(' · ')
-	head.appendChild(meta)
-	article.appendChild(head)
-	for (const [offset, round] of rounds.entries())
-		article.append(renderRound(generation, offset, round, cache.rounds?.[offset]?.rate, events, previousRequest))
-	return article
-}
-
-/**
- * 每个节点同时展示本轮的产出、缓存复用率和本轮 prompt，避免回放到早期时读到未来结果。
- * @param {object} generation 生成记录
- * @param {number} offset 该生成中的轮次下标
- * @param {number} round 全局轮次
- * @param {number|null} cacheRate 本轮缓存率
- * @param {object[]} events 合并后的会话事件
- * @param {object | null} previousRequest 本代首轮的上一请求快照（跨生成）
- * @returns {HTMLElement} 节点
- */
-function renderRound(generation, offset, round, cacheRate, events, previousRequest = null) {
-	const node = document.createElement('section')
-	node.className = 'conversation-round'
-	node.dataset.round = String(round)
-	const head = document.createElement('header')
-	head.className = 'conversation-round-head'
-	const heading = document.createElement('h4')
-	heading.className = 'conversation-request-head'
-	heading.textContent = geti18n('agent_studio.conversation.roundIndex', { index: round })
-	const badge = document.createElement('span')
-	badge.className = `badge ${cacheRate == null ? 'badge-neutral' : cacheRate >= CACHE_GOOD_RATIO ? 'badge-success' : 'badge-error'}`
-	badge.textContent = cacheRate == null ? geti18n('agent_studio.conversation.cache.noRate') : geti18n('agent_studio.conversation.cache.rate', { rate: Math.round(cacheRate * 100) })
-	badge.title = geti18n('agent_studio.conversation.cache.hint')
-	head.append(heading, badge)
-	const request = generation.requests?.[offset]
-	const previous = offset > 0 ? generation.requests?.[offset - 1] : previousRequest
-	const reuse = request && previous ? computeReuse(request, previous) : null
-	const prompt = renderRoundPrompt(generation, offset, reuse)
-	if (reuse?.boundary) head.append(buildJumpButton(prompt))
-	node.append(head)
-	node.append(prompt)
-	const roundEvents = events.filter(event => event.round === round)
-	const changedIds = new Set(roundEvents.map(event => event.message?.id ?? event.id))
-	const messages = replayDialogue(events, { upToRound: round }).filter(message => changedIds.has(message.id) && message.id !== `${generation.id}:final`)
-	if (messages.length) {
-		const output = document.createElement('div')
-		output.className = 'conversation-messages'
-		output.append(...renderMessages(messages))
-		node.append(output)
-	}
-	if (roundEvents.some(event => event.message?.id === `${generation.id}:final`))
-		node.append(buildSection(geti18n('agent_studio.conversation.response'), generation.response, `generation-${generation.id}-response.txt`))
-	return node
+		badge.className = `badge ${rate == null ? 'badge-neutral' : rate >= CACHE_GOOD_RATIO ? 'badge-success' : 'badge-error'}`
+		badge.textContent = rate == null ? geti18n('agent_studio.conversation.cache.noRate') : geti18n('agent_studio.conversation.cache.rate', { rate: Math.round(rate * 100) })
+		badge.title = geti18n('agent_studio.conversation.cache.hint')
+		head.append(label, badge)
+		if (reuse?.boundary) head.append(buildJumpButton(prompt))
+		if (message.id === `${generation.id}:final`) head.append(textActions(() => message.content, { filename: `generation-${generation.id}-response.txt` }))
+		article.prepend(head)
+		article.append(prompt)
+		return article
+	})
 }
 
 /**
@@ -504,7 +447,7 @@ function renderRoundPrompt(generation, offset, reuse = null) {
 	if (request) {
 		const content = document.createElement('div')
 		content.className = 'conversation-request'
-		const requestHeading = document.createElement('h5')
+		const requestHeading = document.createElement('h3')
 		requestHeading.className = 'conversation-request-head'
 		requestHeading.textContent = geti18n('agent_studio.conversation.round', {
 			index: request.index,

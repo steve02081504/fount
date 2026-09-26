@@ -92,12 +92,13 @@ export async function beginPromptRequest(args, promptStruct, extra = {}) {
 /**
  * 标记一轮请求结束。
  * @param {{ session: recordSession_t, entry: object } | null} handle 轮次句柄
- * @param {{ error?: unknown }} [outcome] 结果（错误信息）
+ * @param {{ error?: unknown, output?: string }} [outcome] 结果（模型原始输出与错误信息）
  * @returns {void}
  */
 export function finishPromptRequest(handle, outcome = {}) {
 	if (!handle?.entry) return
 	handle.entry.finishedAt = Date.now()
+	if (typeof outcome.output === 'string') handle.entry.output = outcome.output
 	if (outcome.error)
 		handle.entry.error = {
 			name: outcome.error?.name,
