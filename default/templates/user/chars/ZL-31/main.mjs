@@ -746,6 +746,9 @@ export default {
 				data.plugins ??= [
 					'code-execution',
 					'file-operations',
+					'web-search',
+					'web-browse',
+					'browser-integration',
 					'timer',
 					'fount-api',
 					'sub-agent',
