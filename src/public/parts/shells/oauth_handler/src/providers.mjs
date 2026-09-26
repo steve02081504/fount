@@ -91,6 +91,46 @@ export const CODEX = {
 }
 
 /**
+ * 用已登录账号从 Codex 模型目录取得可选模型和各自的推理强度。
+ * client_version 取自 Codex CLI 最新正式发行版，避免写死会过期的目录版本；
+ * 版本查询不携带 OAuth 凭证，凭证仅送往 ChatGPT。
+ * @param {{ access: string, accountId: string }} credentials - Codex OAuth 凭证。
+ * @returns {Promise<Array<object>>} 不含凭证或上游内部字段的模型资料。
+ */
+export async function fetchCodexModels(credentials) {
+	const versionResponse = await fetch('https://registry.npmjs.org/@openai%2fcodex/latest')
+	if (!versionResponse.ok) throw new Error(`Codex client version lookup ${versionResponse.status}`)
+	const { version } = await versionResponse.json()
+	if (typeof version !== 'string' || !/^\d+\.\d+\.\d+$/.test(version))
+		throw new Error('Codex client version is unavailable')
+
+	const url = new URL('https://chatgpt.com/backend-api/codex/models')
+	url.searchParams.set('client_version', version)
+	const response = await fetch(url, {
+		redirect: 'error',
+		headers: {
+			Authorization: `Bearer ${credentials.access}`,
+			'ChatGPT-Account-Id': credentials.accountId,
+			'OpenAI-Beta': 'responses=v1',
+			originator: 'fount',
+		},
+	})
+	if (!response.ok) throw new Error(`Codex model catalog ${response.status}`)
+	const catalog = await response.json()
+	if (!Array.isArray(catalog.models)) throw new Error('Invalid Codex model catalog')
+	return catalog.models
+		.filter(model => model.visibility === 'list' && model.supported_in_api !== false && typeof model.slug === 'string' && model.slug)
+		.map(model => ({
+			slug: model.slug,
+			displayName: typeof model.display_name === 'string' ? model.display_name : model.slug,
+			defaultReasoningLevel: typeof model.default_reasoning_level === 'string' ? model.default_reasoning_level : null,
+			supportedReasoningLevels: Array.isArray(model.supported_reasoning_levels)
+				? model.supported_reasoning_levels.map(level => typeof level === 'string' ? level : level?.effort).filter(level => typeof level === 'string' && level)
+				: [],
+		}))
+}
+
+/**
  * Claude Pro/Max PKCE 登录参数。
  */
 export const ANTHROPIC = {

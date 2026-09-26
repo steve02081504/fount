@@ -4,10 +4,12 @@
 		"frontendShared": [
 			"src/public/parts/shells/serviceSourceManage/public/**",
 			"src/public/parts/shells/serviceSourceManage/test/frontend/**",
+			"src/public/parts/shells/serviceSourceManage/test/node_bootstrap.mjs",
 			"src/public/parts/shells/serviceSourceManage/test/fixtures/**",
 			"src/public/pages/scripts/test/**",
 			"src/public/pages/scripts/components/jsonEditor.mjs",
-			"src/public/parts/serviceGenerators/AI/proxy/**"
+			"src/public/parts/serviceGenerators/AI/proxy/**",
+			"src/public/parts/serviceGenerators/AI/codex/display.mjs"
 		]
 	},
 	"suites": [
@@ -37,9 +39,12 @@
 						"src/public/parts/shells/serviceSourceManage/test/frontend/generatorDisplay.spec.mjs",
 						"src/public/parts/shells/serviceSourceManage/test/frontend/phases.mjs",
 						"src/public/parts/shells/serviceSourceManage/test/frontend/run.mjs",
+						"src/public/parts/shells/serviceSourceManage/test/node_bootstrap.mjs",
 						"src/public/parts/shells/serviceSourceManage/test/fixtures/proxy_source/**",
+						"src/public/parts/shells/serviceSourceManage/test/fixtures/codex_source/**",
 						"src/public/parts/shells/serviceSourceManage/public/index.{html,mjs}",
 						"src/public/parts/serviceGenerators/AI/proxy/display.mjs",
+						"src/public/parts/serviceGenerators/AI/codex/display.mjs",
 						"src/public/parts/serviceGenerators/AI/proxy/public/**"
 					]
 				}

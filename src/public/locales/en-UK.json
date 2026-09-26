@@ -4067,6 +4067,13 @@
 				"deviceCode": "Open ${uri} and enter code ${code}",
 				"credentialsRequired": "Fill in the required JSON fields (region / project / location / account_id / gateway_id / API key). Credentials may also come from local environment variables."
 			},
+			"codexModelPicker": {
+				"selectModel": "Select a model…",
+				"reasoningEffort": "Reasoning effort",
+				"providerDefault": "Use model default",
+				"providerDefaultWithLevel": "Use model default (${level})",
+				"unsupportedEffort": "The current reasoning effort is not listed for this model; your existing setting will not be changed automatically."
+			},
 			"copyModelIdTooltip": "Click to copy model ID",
 			"loadModelsFailed": "Failed to load model: ${message}",
 			"modelSearchTitle": "Browse model catalog",

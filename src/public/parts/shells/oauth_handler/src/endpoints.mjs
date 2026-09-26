@@ -1,8 +1,9 @@
 import { httpError } from '../../../../../scripts/http_error.mjs'
 import { authenticate, getUserByReq } from '../../../../../server/auth/index.mjs'
+import { getServiceSourceFile, saveServiceSourceFile } from '../../serviceSourceManage/src/manager.mjs'
 
 import { cancelLogin, completePkceLogin, loginStatus, startCopilotLogin, startPkceLogin } from './login.mjs'
-import { ANTHROPIC, CODEX } from './providers.mjs'
+import { ANTHROPIC, CODEX, ensureOAuthCredentials, fetchCodexModels } from './providers.mjs'
 
 const PREFIX = '/api/parts/shells\\:oauth_handler'
 
@@ -12,6 +13,21 @@ const PREFIX = '/api/parts/shells\\:oauth_handler'
  * @returns {void}
  */
 export function setEndpoints(router) {
+	router.get(`${PREFIX}/codex/models`, authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const { sourceName } = req.query
+		if (typeof sourceName !== 'string' || !sourceName) throw httpError(400, 'Codex source name is required')
+		const sourcePath = 'serviceSources/AI'
+		const source = await getServiceSourceFile(username, sourceName, sourcePath)
+		if (source.generator !== 'codex') throw httpError(400, 'Not a Codex service source')
+		if (!source.config?.oauth?.access) throw httpError(409, 'Codex OAuth login required')
+		const config = { ...source.config }
+		const credentials = await ensureOAuthCredentials(config, CODEX.id, async () => {
+			await saveServiceSourceFile(username, sourceName, { ...source, config }, sourcePath)
+		})
+		res.status(200).json({ models: await fetchCodexModels(credentials) })
+	})
+
 	router.post(`${PREFIX}/start`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		const { provider, sourceName, serviceSourcePath } = req.body || {}

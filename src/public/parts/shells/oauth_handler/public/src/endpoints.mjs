@@ -49,6 +49,15 @@ export async function oauthStatus(state) {
 }
 
 /**
+ * 列出当前账号的 Codex 模型及其推理强度；此接口不回传 OAuth 凭证。
+ * @param {string} sourceName - Codex 服务源名。
+ * @returns {Promise<{ models: Array<object> }>} 可选模型。
+ */
+export async function codexModels(sourceName) {
+	return readJson(await fetch(`/api/parts/shells:oauth_handler/codex/models?sourceName=${encodeURIComponent(sourceName)}`))
+}
+
+/**
  * 取消登录。
  * @param {string} state - OAuth state。
  * @returns {Promise<object>} 空对象。

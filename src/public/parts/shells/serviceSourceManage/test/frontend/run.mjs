@@ -17,5 +17,6 @@ process.exit(await runShellFrontendTests({
 	bootstrapPath: join(testDir, '../node_bootstrap.mjs'),
 	fixtureCopies: [
 		{ from: join(testDir, '../fixtures/proxy_source'), to: 'serviceSources/AI/test-proxy-source' },
+		{ from: join(testDir, '../fixtures/codex_source'), to: 'serviceSources/AI/test-codex-source' },
 	],
 }))

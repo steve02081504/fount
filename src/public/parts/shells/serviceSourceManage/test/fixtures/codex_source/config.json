@@ -1,0 +1,19 @@
+{
+	"generator": "codex",
+	"config": {
+		"model": "custom-existing-model",
+		"model_arguments": {
+			"temperature": 0.4,
+			"reasoning": {
+				"effort": "high",
+				"summary": "auto"
+			}
+		},
+		"oauth": {
+			"access": "synthetic-ui-token",
+			"refresh": "synthetic-ui-refresh",
+			"accountId": "synthetic-account",
+			"expires": 9999999999999
+		}
+	}
+}

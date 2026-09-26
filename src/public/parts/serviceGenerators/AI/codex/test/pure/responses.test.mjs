@@ -22,6 +22,16 @@ Deno.test('Responses body and output_text parse', () => {
 	}), 'z')
 })
 
+Deno.test('Responses body keeps chosen Codex reasoning effort and other model arguments', () => {
+	const body = messagesToResponsesBody([{ role: 'user', content: 'hi' }], {
+		model: 'chosen-model',
+		model_arguments: { reasoning: { effort: 'ultra', summary: 'auto' }, custom_option: 3 },
+	})
+	assertEquals(body.model, 'chosen-model')
+	assertEquals(body.reasoning, { effort: 'ultra', summary: 'auto' })
+	assertEquals(body.custom_option, 3)
+})
+
 Deno.test('Responses body serializes a multi-turn assistant history as output_text parts', () => {
 	const body = messagesToResponsesBody([
 		{ role: 'system', content: 'sys' },
