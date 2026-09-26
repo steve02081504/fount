@@ -8,7 +8,11 @@
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
-			"tags": ["search", "web", "plugin"]
+			"tags": [
+				"search",
+				"web",
+				"plugin"
+			]
 		},
 		"zh-CN": {
 			"name": "网络搜索",
@@ -18,7 +22,28 @@
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
-			"tags": ["搜索", "网络", "插件"]
-		}
+			"tags": [
+				"搜索",
+				"网络",
+				"插件"
+			]
+		},
+		"ar-SA": {},
+		"de-DE": {},
+		"emoji": {},
+		"es-ES": {},
+		"fr-FR": {},
+		"hi-IN": {},
+		"is-IS": {},
+		"it-IT": {},
+		"ja-JP": {},
+		"ko-KR": {},
+		"lzh": {},
+		"nl-NL": {},
+		"pt-PT": {},
+		"ru-RU": {},
+		"uk-UA": {},
+		"vi-VN": {},
+		"zh-TW": {}
 	}
 }

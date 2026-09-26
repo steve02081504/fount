@@ -8,7 +8,11 @@
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
-			"tags": ["browser", "web", "plugin"]
+			"tags": [
+				"browser",
+				"web",
+				"plugin"
+			]
 		},
 		"zh-CN": {
 			"name": "浏览器集成",
@@ -18,7 +22,28 @@
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
-			"tags": ["浏览器", "网络", "插件"]
-		}
+			"tags": [
+				"浏览器",
+				"网络",
+				"插件"
+			]
+		},
+		"ar-SA": {},
+		"de-DE": {},
+		"emoji": {},
+		"es-ES": {},
+		"fr-FR": {},
+		"hi-IN": {},
+		"is-IS": {},
+		"it-IT": {},
+		"ja-JP": {},
+		"ko-KR": {},
+		"lzh": {},
+		"nl-NL": {},
+		"pt-PT": {},
+		"ru-RU": {},
+		"uk-UA": {},
+		"vi-VN": {},
+		"zh-TW": {}
 	}
 }
