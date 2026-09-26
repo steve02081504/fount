@@ -1,6 +1,7 @@
 /**
  * 读取文件时的上下文收集：沿目录向上查找 AGENTS.md 与 `.agents/docs/*.md`（yaml 头 glob 触发）。
  * 供 file-operations / code shell 等共用，配合 `target.mjs` 的执行器实现本机/远程一致。
+ * 向上止于 workspaceRoot、git 仓库根（`.git/config`）或 32 层硬上限，避免混入仓库外项目的噪音。
  */
 
 import { createHash } from 'node:crypto'
@@ -160,6 +161,10 @@ export async function collectUpwardContext(executor, workspaceRoot, filePath) {
 				}
 			}
 		}
+		// 命中 git 仓库根（`.git/config`，或 worktree/submodule 的 `.git` 文件）即停止向上：
+		// 完备项目之外可能躺着别的项目，继续向上会把它们的 AGENTS.md 噪音一并注入。
+		const gitMarker = entries.find(e => e.name === '.git')
+		if (gitMarker && (gitMarker.isFile || await executor.pathExists(dir + '/.git/config').catch(() => false))) break
 		if (!root || dir === root || !dir.includes('/')) break
 		dir = dir.replace(/\/[^/]+$/, '') || '/'
 	}

@@ -54,6 +54,27 @@ Deno.test('hashContent is a stable sha256 hex and collectLoadedHashes reads prec
 	assertEquals(collectLoadedHashes(undefined).size, 0)
 })
 
+Deno.test('collectUpwardContext stops at a git repo root (.git/config)', async () => {
+	const base = await tempDir()
+	try {
+		const executor = createTargetExecutor('u', { machine: 0 })
+		await fs.mkdir(path.join(base, 'repo', 'src'), { recursive: true })
+		await fs.mkdir(path.join(base, 'repo', '.git'), { recursive: true })
+		await fs.writeFile(path.join(base, 'repo', '.git', 'config'), '[core]\n', 'utf8')
+		await fs.writeFile(path.join(base, 'AGENTS.md'), '# outer noise', 'utf8')
+		await fs.writeFile(path.join(base, 'repo', 'AGENTS.md'), '# repo rules', 'utf8')
+		await fs.writeFile(path.join(base, 'repo', 'src', 'a.ts'), 'export {}', 'utf8')
+
+		const context = await collectUpwardContext(executor, base, path.join(base, 'repo', 'src', 'a.ts'))
+		assertEquals(context.agents.length, 1, '仓库根之上不再向上收集')
+		assert(context.agents[0].content.includes('repo rules'))
+		assert(!context.agents.some(a => a.content.includes('outer noise')), '不应混入仓库外项目的 AGENTS.md')
+	}
+	finally {
+		await fs.rm(base, { recursive: true, force: true })
+	}
+})
+
 Deno.test('collectUpwardContext walks up for AGENTS.md and triggered docs', async () => {
 	const root = await tempDir()
 	try {
