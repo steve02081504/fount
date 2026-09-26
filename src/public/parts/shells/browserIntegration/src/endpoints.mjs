@@ -68,7 +68,7 @@ export function setEndpoints(router) {
 
 	router.post('/api/parts/shells\\:browserIntegration/callback', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const { partpath, data, pageId, script } = req.body
+		const { partpath, ...callbackPayload } = req.body
 
 		if (!partpath) return res.status(400).json({ error: 'partpath is required.' })
 
@@ -77,8 +77,8 @@ export function setEndpoints(router) {
 		const browserIntegrationPart = await loadPart(username, normalizedPartpath)
 
 		// Call the callback method on the part's interface
-		if (browserIntegrationPart.interfaces?.browserIntegration?.callback) {
-			await browserIntegrationPart.interfaces.browserIntegration.BrowserJsCallback({ data, pageId, script })
+		if (browserIntegrationPart.interfaces?.browserIntegration?.BrowserJsCallback) {
+			await browserIntegrationPart.interfaces.browserIntegration.BrowserJsCallback({ ...callbackPayload, username })
 			res.status(200).json({ message: 'Callback processed successfully.' })
 		}
 		else res.status(500).json({ error: 'Browser integration part or callback interface not found.' })
