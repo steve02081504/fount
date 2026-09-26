@@ -37,11 +37,13 @@ async function makeSource(overrides = {}) {
 			forceNoSystemMessages: false,
 		},
 		...overrides,
-	}, { /**
-	 * 忽略配置持久化的桩函数。
-	 * @returns {void}
-	 */
-		SaveConfig: () => { } })
+	}, {
+		/**
+		 * 忽略配置持久化的桩函数。
+		 * @returns {void}
+		 */
+		SaveConfig: () => { }
+	})
 }
 
 Deno.test('proxy BuildPrompt keeps attachment bytes as Buffer', async () => {

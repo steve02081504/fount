@@ -180,7 +180,7 @@
 	"suites": [
 		{
 			"name": "pure",
-			"expected": "5m49s",
+			"expected": "2m26s",
 			"trigger": [
 				"shellBackend",
 				"shellPureExtra",
@@ -929,6 +929,7 @@
 				},
 				{
 					"name": "messageSelection",
+					"expected": "18s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/messageSelection.spec.mjs",
 						"src/public/parts/shells/chat/public/hub/messages/**",

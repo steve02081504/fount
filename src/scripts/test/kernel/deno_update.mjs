@@ -36,17 +36,16 @@ export const STALE_LOCK_MS = ms('15m')
  * @returns {import('node:fs').FsFile | null} 锁句柄（未获取到为 null）
  */
 export function acquireLock(lockPath) {
-	for (let attempt = 0; attempt < 2; attempt++) 
-		try {
-			const handle = Deno.openSync(lockPath, { createNew: true, write: true })
-			handle.writeSync(new TextEncoder().encode(JSON.stringify({ pid: process.pid, at: Date.now() })))
-			return handle
-		}
-		catch {
-			if (attempt === 0 && clearStaleLock(lockPath)) continue
-			return null
-		}
-	
+	for (let attempt = 0; attempt < 2; attempt++) try {
+		const handle = Deno.openSync(lockPath, { createNew: true, write: true })
+		handle.writeSync(new TextEncoder().encode(JSON.stringify({ pid: process.pid, at: Date.now() })))
+		return handle
+	}
+	catch {
+		if (attempt === 0 && clearStaleLock(lockPath)) continue
+		return null
+	}
+
 	return null
 }
 

@@ -168,7 +168,7 @@ export function removeGhost() {
 /** 渲染影子补全（光标在末尾且历史存在前缀匹配时）。 */
 function updateGhost() {
 	removeGhost()
-	const {value} = richInput
+	const { value } = richInput
 	if (!value || elements.composerInput.selectionStart !== value.length) return
 	const ghostText = historySuggestions().find(entry => entry.length > value.length && entry.startsWith(value)) || ''
 	if (!ghostText) return
@@ -503,7 +503,7 @@ export function wireComposerEvents() {
 
 	elements.composerInput.addEventListener('input', () => {
 		if (!fromNav) store.historyNav.pos = null
-		const {value} = richInput
+		const { value } = richInput
 		syncActiveTabDraft()
 		// ！/! 切 shell 执行模式：内容为空时键入叹号，进入后移除该字符，供干净命令输入
 		if (!store.shellMode && (value === '！' || value === '!')) {

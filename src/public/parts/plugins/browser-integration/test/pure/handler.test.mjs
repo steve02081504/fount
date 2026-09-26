@@ -96,10 +96,12 @@ Deno.test('parseDanmakuOptions reads required and optional tags', () => {
 Deno.test('run-js-on-page forwards a plugin callback token and logs safe output', async () => {
 	const jsCalls = []
 	const logs = []
-	const handler = createBrowserIntegrationReplyHandler({ /**
-	 *
-	 */
-		getApi: apiGetter(makeFakeApi(jsCalls)) })
+	const handler = createBrowserIntegrationReplyHandler({
+		/**
+		 *
+		 */
+		getApi: apiGetter(makeFakeApi(jsCalls))
+	})
 	const runJs = findHandler(handler, 'browser-integration.run-js-on-page')
 	const result = await runJs.handle({}, {
 		username: 'u',
@@ -121,10 +123,12 @@ Deno.test('run-js-on-page forwards a plugin callback token and logs safe output'
 
 Deno.test('run-js-on-page reports a missing script tag', async () => {
 	const logs = []
-	const handler = createBrowserIntegrationReplyHandler({ /**
-	 *
-	 */
-		getApi: apiGetter(makeFakeApi([])) })
+	const handler = createBrowserIntegrationReplyHandler({
+		/**
+		 *
+		 */
+		getApi: apiGetter(makeFakeApi([]))
+	})
 	const runJs = findHandler(handler, 'browser-integration.run-js-on-page')
 	await runJs.handle({}, {
 		username: 'u',

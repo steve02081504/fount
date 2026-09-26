@@ -33,15 +33,13 @@ export function formatSearchResults(query, searchResults, includeQuery) {
  * @returns {Promise<any>} 搜索结果。
  */
 async function retrySearch(search, { attempts, delayMs, sleep }) {
-	for (let attempt = 1; ; attempt++) 
-		try {
-			return await search()
-		}
-		catch (error) {
-			if (attempt >= attempts) throw error
-			await sleep(delayMs)
-		}
-	
+	for (let attempt = 1; ; attempt++) try {
+		return await search()
+	}
+	catch (error) {
+		if (attempt >= attempts) throw error
+		await sleep(delayMs)
+	}
 }
 
 /**
@@ -91,22 +89,20 @@ export function createWebSearchReplyHandler({ getSearchSource, retry = retrySear
 			}
 
 			console.info('AI 搜索关键词：', queries)
-			for (const query of queries) 
-				try {
-					const results = await retry(
-						() => searchSource.Search(query, { limit: 5 }),
-						{ attempts: MAX_SEARCH_ATTEMPTS, delayMs: RETRY_DELAY_MS, sleep },
-					)
-					const formattedResults = formatSearchResults(query, results, queries.length > 1)
-					addToolLog(formattedResults)
-				}
-				catch (error) {
-					console.error('web search failed:', error)
-					const message = error?.stack || error?.message || String(error)
-					addToolLog(`搜索“${query}”时出现错误：\n${message}`)
-					break
-				}
-			
+			for (const query of queries) try {
+				const results = await retry(
+					() => searchSource.Search(query, { limit: 5 }),
+					{ attempts: MAX_SEARCH_ATTEMPTS, delayMs: RETRY_DELAY_MS, sleep },
+				)
+				const formattedResults = formatSearchResults(query, results, queries.length > 1)
+				addToolLog(formattedResults)
+			}
+			catch (error) {
+				console.error('web search failed:', error)
+				const message = error?.stack || error?.message || String(error)
+				addToolLog(`搜索“${query}”时出现错误：\n${message}`)
+				break
+			}
 
 			return { regen: true }
 		},

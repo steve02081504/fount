@@ -134,7 +134,7 @@ async function applyRemoteTabs({ tabs, activeTab: remoteActive } = {}) {
 }
 
 tabsChannel?.addEventListener('message', event => {
-	const {data} = event
+	const { data } = event
 	if (!data || data.source === pageId) return
 	void applyRemoteTabs(data)
 })
@@ -1154,7 +1154,7 @@ export function abortGeneration() {
  * @returns {Promise<void>}
  */
 export async function regenerateLastReply() {
-	const {session} = store
+	const { session } = store
 	if (!session || store.generating || store.recovering) return
 	const last = session.entries.at(-1)
 	if (last?.role !== 'char') return
@@ -1191,7 +1191,7 @@ export async function regenerateLastReply() {
  * @returns {Promise<void>}
  */
 export async function retryFromError(entry) {
-	const {session} = store
+	const { session } = store
 	if (!session || store.generating || store.recovering) return
 	const index = session.entries.findIndex(candidate => candidate.id === entry.id)
 	if (index < 0) return
@@ -1211,7 +1211,7 @@ export async function retryFromError(entry) {
  * @returns {Promise<void>}
  */
 async function triggerGeneration() {
-	const {session} = store
+	const { session } = store
 	if (!session || store.generating || store.recovering || !session.charname) return
 	const runId = beginGeneration(session)
 	try { await sendTriggerFrame(session, runId) }
@@ -1227,7 +1227,7 @@ async function triggerGeneration() {
  */
 export function handleAsyncEntryEvent(payload) {
 	const { chatName, entry } = payload || {}
-	const {session} = store
+	const { session } = store
 	if (!session || !entry || chatName !== 'code-' + session.id) return
 	const knownIds = new Set(session.entries.map(e => String(e.id)))
 	if (!knownIds.has(String(entry.id))) {
@@ -1247,7 +1247,7 @@ export function handleAsyncEntryEvent(payload) {
  */
 export function handleAsyncConsumedEvent(payload) {
 	const { chatName } = payload || {}
-	const {session} = store
+	const { session } = store
 	if (!session || chatName !== 'code-' + session.id) return
 	session.awaitingAsyncTrigger = false
 }

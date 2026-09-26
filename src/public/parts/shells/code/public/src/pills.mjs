@@ -845,7 +845,7 @@ export async function openFolderBrowser() {
 		 */
 		onSelect: async path => {
 			if (!path) return
-			const {machine} = store
+			const { machine } = store
 			const name = path.split(/[/\\]/).filter(Boolean).pop() || path
 			const data = await api.addWorkspace({ name, machine, path }).catch(error => {
 				showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })

@@ -13,7 +13,10 @@
 		{
 			"name": "pure",
 			"expected": "10s",
-			"trigger": ["pluginCore", "testFramework"],
+			"trigger": [
+				"pluginCore",
+				"testFramework"
+			],
 			"run": [
 				"deno",
 				"run",

@@ -32,7 +32,7 @@ export function registerFountUserApi() {
 		}
 		const content = String(payload.content.content ?? '').trim()
 		if (!content) return
-		const {generating} = store
+		const { generating } = store
 		if (payload.files.length && !generating) {
 			store.pendingFiles.push(...payload.files)
 			renderAttachmentPreview()

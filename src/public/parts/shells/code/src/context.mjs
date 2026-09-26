@@ -331,7 +331,7 @@ async function replaceAsync(text, regexp, replacer) {
  */
 export async function renderCommand(command, argv, executor) {
 	const { async_eval } = await import('npm:@steve02081504/async-eval')
-	let {template} = command
+	let { template } = command
 	// 内联 shell：!`cmd`{:shell?} → stdout
 	template = await replaceAsync(template, /!`([^`]+)`(?:{:(\w+)})?/g, async match => {
 		const cmd = match[1]

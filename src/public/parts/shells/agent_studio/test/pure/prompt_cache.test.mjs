@@ -16,11 +16,13 @@ Deno.test('estimates contiguous prompt reuse across generations without claiming
 
 Deno.test('estimatePromptCache exposes per-round rates aligned with each generation request', () => {
 	const metrics = estimatePromptCache([
-		{ requests: [
-			{ systemPrompt: 'instruction', messages: [{ role: 'user', content: 'hello' }] },
-			{ systemPrompt: 'instruction', messages: [{ role: 'user', content: 'hello world' }] },
-			{ systemPrompt: 'instruction', messages: [{ role: 'user', content: 'hello world!' }] },
-		] },
+		{
+			requests: [
+				{ systemPrompt: 'instruction', messages: [{ role: 'user', content: 'hello' }] },
+				{ systemPrompt: 'instruction', messages: [{ role: 'user', content: 'hello world' }] },
+				{ systemPrompt: 'instruction', messages: [{ role: 'user', content: 'hello world!' }] },
+			]
+		},
 		{ requests: [{ systemPrompt: 'instruction', messages: [{ role: 'user', content: 'hello world!' }] }] },
 	])
 	assertEquals(metrics[0].rounds.length, 3)

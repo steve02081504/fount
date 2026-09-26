@@ -732,6 +732,9 @@ elements.messages.addEventListener('keydown', event => {
  * 或消息流自身尺寸变化（composer 伸缩挤压）都在绘制前重新对齐到底部，不会先画出错位的一帧。
  * 用 MutationObserver 而非只靠 ResizeObserver：气泡增高发生在 JS 里，MO 微任务先于绘制执行，
  * RO 要等下一帧，快速流式时会稳定落后一帧。用户刚展开上方气泡时不拉走视线。
+ * @param {object} [root0] - 选项对象。
+ * @param {boolean} [root0.allowDuringToggle] - 用户展开宽限期内是否也强制贴底；默认 false，即不拉走视线。
+ * @returns {void}
  */
 function followIfPinned({ allowDuringToggle = false } = {}) {
 	if (!pinned) return
@@ -744,7 +747,11 @@ function followIfPinned({ allowDuringToggle = false } = {}) {
 	}
 }
 
-/** 用户刚展开的气泡保持视线；别的气泡在此期间变化仍跟随底部。 */
+/**
+ * 用户刚展开的气泡保持视线；别的气泡在此期间变化仍跟随底部。
+ * @param {ResizeObserverEntry[]} entries - 本次尺寸变化的观察条目。
+ * @returns {void}
+ */
 function followResizedBubbles(entries) {
 	const onlyUserInteractedBubble = entries.length > 0 && entries.every(({ target }) => target.closest('.code-message') === lastUserToggleBubble)
 	followIfPinned({ allowDuringToggle: !onlyUserInteractedBubble })

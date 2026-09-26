@@ -177,7 +177,7 @@ registerRunCardFeed(feed)
  */
 export function subAgentCardElement(entry) {
 	const meta = entry.extension?.subAgent ?? {}
-	const {runId} = meta
+	const { runId } = meta
 	const card = createRunCard({
 		tag: 'button',
 		className: 'code-run-card code-subagent-card',
