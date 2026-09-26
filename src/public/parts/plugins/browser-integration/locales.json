@@ -1,0 +1,24 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Browser Integration",
+			"avatar": "https://api.iconify.design/line-md/globe.svg",
+			"description": "Lets AI characters read and operate the pages of the user's browser.",
+			"description_markdown": "The **Browser Integration** plugin gives AI characters tools to inspect and operate the browser pages connected through the browser integration shell: reading visible or full HTML, running JavaScript, managing auto-run scripts and sending danmaku.\n\nSome code is derived from [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": ["browser", "web", "plugin"]
+		},
+		"zh-CN": {
+			"name": "浏览器集成",
+			"avatar": "https://api.iconify.design/line-md/globe.svg",
+			"description": "让 AI 角色阅读并操作用户浏览器中的页面",
+			"description_markdown": "**浏览器集成**插件为 AI 角色提供浏览器集成 shell 的工具：读取页面可见或完整 HTML、执行 JavaScript、管理自动运行脚本以及发送弹幕。\n\n部分代码来自[龙胆](https://github.com/steve02081504/GentianAphrodite)。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": ["浏览器", "网络", "插件"]
+		}
+	}
+}
