@@ -6,7 +6,7 @@ import { getServiceSourceFile } from '../../serviceSourceManage/src/manager.mjs'
 import { deletePending, getPending, putPending, sweepExpired } from './pending.mjs'
 import { persistOAuthToSource } from './persist.mjs'
 import { generatePKCE, randomState } from './pkce.mjs'
-import { canonicalCallbackUrl, startPortHook } from './portHook.mjs'
+import { callbackOriginForRequest, canonicalCallbackUrl, startPortHook } from './portHook.mjs'
 import {
 	ANTHROPIC,
 	CODEX,
@@ -24,16 +24,18 @@ import {
  * @param {object} args.provider - CODEX 或 ANTHROPIC 常量。
  * @param {string} [args.sourceName] - 服务源名。
  * @param {string} [args.serviceSourcePath] - 服务源路径。
+ * @param {string} [args.requestOrigin] - 发起请求的浏览器 Origin。
+ * @param {string} [args.requestHost] - 发起请求的 Host。
  * @returns {Promise<object>} start 响应。
  */
-export async function startPkceLogin({ username, provider, sourceName, serviceSourcePath }) {
+export async function startPkceLogin({ username, provider, sourceName, serviceSourcePath, requestOrigin, requestHost }) {
 	await sweepExpired()
 	const { verifier, challenge } = generatePKCE()
 	const state = provider === ANTHROPIC ? verifier : randomState()
 	const hook = await startPortHook({
 		port: provider.hookPort,
 		pathname: provider.hookPath,
-		targetUrl: canonicalCallbackUrl(hosturl),
+		targetUrl: canonicalCallbackUrl(callbackOriginForRequest(requestOrigin, requestHost, hosturl)),
 	})
 	putPending(state, {
 		username,

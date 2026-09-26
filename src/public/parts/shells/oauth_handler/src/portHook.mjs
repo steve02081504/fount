@@ -1,6 +1,31 @@
 import http from 'node:http'
 
 /**
+ * 回调回到发起登录的浏览器 origin，才能带上其 host-only 会话 Cookie。
+ * 仅接受与请求 Host 一致、且端口/协议与服务一致的回环地址。
+ * @param {string | undefined} origin - 浏览器 Origin header。
+ * @param {string | undefined} requestHost - 请求 Host header。
+ * @param {string} serverOrigin - 服务默认 origin。
+ * @returns {string} 经验证的回调 origin。
+ */
+export function callbackOriginForRequest(origin, requestHost, serverOrigin) {
+	if (!origin || !requestHost) return serverOrigin
+	try {
+		const browser = new URL(origin)
+		const server = new URL(serverOrigin)
+		if (
+			['localhost', '127.0.0.1', '[::1]'].includes(browser.hostname) &&
+			browser.host === requestHost.toLowerCase() &&
+			browser.port === server.port &&
+			browser.protocol === server.protocol &&
+			browser.href === `${browser.origin}/`
+		) return browser.origin
+	}
+	catch { /* 非法 Origin 使用预期的服务地址 */ }
+	return serverOrigin
+}
+
+/**
  * 在写死的 localhost 端口上接收 OAuth redirect，再 302 到 fount canonical callback。
  * @param {object} options - 监听选项。
  * @param {number} options.port - 官方 client 登记的端口。
