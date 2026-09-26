@@ -1,9 +1,9 @@
-/* global cache, hosturl, sourceName, serviceSourcePath */
+/* global cache, hosturl, parturl, sourceName, serviceSourcePath */
 const { renderOauthPanel } = await import(new URL('/parts/shells:oauth_handler/src/oauthDisplay.mjs', hosturl).href)
-const { codexModels } = await import(new URL('/parts/shells:oauth_handler/src/endpoints.mjs', hosturl).href)
+const { codexModels } = await import(`${parturl}/endpoints.mjs`)
+const { getServiceSourceFile } = await import(new URL('/parts/shells:serviceSourceManage/src/endpoints.mjs', hosturl).href)
 
 const i18nBase = 'serviceSource_manager.common_config_interface'
-const pickerI18n = `${i18nBase}.codexModelPicker`
 
 /**
  * Codex 服务源附加配置：模型与推理强度只是 JSON 编辑器的快捷选择，不校验或限制手填值。
@@ -23,18 +23,17 @@ return async function onJsonUpdate({ data, containers, editors }) {
 	})
 	if (renderId !== cache.codexRenderId) return
 
+	if (!sourceName || !data.oauth?.access) {
+		delete cache.codexCatalogPromise
+		return
+	}
+
 	const panel = document.createElement('div')
 	panel.className = 'flex flex-col gap-3 mb-4'
 	const status = document.createElement('p')
 	status.className = 'text-sm opacity-80'
 	panel.append(status)
 	containers.generatorDisplay.append(panel)
-
-	if (!sourceName || !data.oauth?.access) {
-		delete cache.codexCatalogPromise
-		panel.remove() // OAuth 面板已经显示登录状态。
-		return
-	}
 
 	const catalogKey = `${sourceName}\0${data.oauth.accountId ?? ''}`
 	if (cache.codexCatalogKey !== catalogKey || !cache.codexCatalogPromise) {
@@ -45,19 +44,33 @@ return async function onJsonUpdate({ data, containers, editors }) {
 		})
 	}
 	status.dataset.i18n = `${i18nBase}.loadingModels`
-	let models
+	let models, catalogError
 	try {
-		const catalog = await cache.codexCatalogPromise
-		models = catalog.models
+		models = (await cache.codexCatalogPromise).models
 	}
 	catch (error) {
-		if (renderId === cache.codexRenderId && panel.isConnected) {
-			status.dataset.message = error.message
-			status.dataset.i18n = `${i18nBase}.loadModelsFailed`
+		catalogError = error
+	}
+	// 服务端可能在读取目录时刷新 OAuth；只合并新凭证，保留正在编辑的其他字段。
+	try {
+		const latest = (await getServiceSourceFile(sourceName, serviceSourcePath)).config?.oauth
+		if (renderId !== cache.codexRenderId || !panel.isConnected) return
+		const current = editors.json.getJson()
+		if (latest?.access && latest.access !== data.oauth.access && current.oauth?.access === data.oauth.access) {
+			const updated = { ...current, oauth: latest }
+			editors.json.set({ json: updated })
+			return onJsonUpdate({ data: updated, containers, editors }) // 程序设置 JSON 不触发编辑器的 onChange。
 		}
-		return
+	}
+	catch (error) {
+		catalogError = error
 	}
 	if (renderId !== cache.codexRenderId || !panel.isConnected) return
+	if (catalogError) {
+		status.dataset.message = catalogError.message
+		status.dataset.i18n = `${i18nBase}.loadModelsFailed`
+		return
+	}
 
 	status.remove()
 	const modelLabel = document.createElement('label')
@@ -74,23 +87,23 @@ return async function onJsonUpdate({ data, containers, editors }) {
 	effortLabel.className = 'form-control w-full'
 	const effortTitle = document.createElement('span')
 	effortTitle.className = 'label-text mb-1'
-	effortTitle.dataset.i18n = `${pickerI18n}.reasoningEffort`
+	effortTitle.dataset.i18n = `${i18nBase}.reasoningEffort`
 	const effortSelect = document.createElement('select')
 	effortSelect.className = 'select select-bordered w-full'
 	effortSelect.dataset.codexEffortSelect = ''
 	effortLabel.append(effortTitle, effortSelect)
 	const effortWarning = document.createElement('p')
 	effortWarning.className = 'text-sm text-warning'
-	effortWarning.dataset.i18n = `${pickerI18n}.unsupportedEffort`
+	effortWarning.dataset.i18n = `${i18nBase}.unsupportedEffort`
 	panel.append(modelLabel, effortLabel, effortWarning)
 
-	const getConfig = () => editors?.json?.getJson() ?? data
+	const getConfig = () => editors.json.getJson()
 	const currentModel = getConfig().model ?? ''
 	if (!currentModel) {
 		const placeholder = new Option('', '')
 		placeholder.disabled = true
 		placeholder.selected = true
-		placeholder.dataset.i18n = `${pickerI18n}.selectModel`
+		placeholder.dataset.i18n = `${i18nBase}.selectModel`
 		modelSelect.add(placeholder)
 	}
 	if (currentModel && !models.some(model => model.slug === currentModel)) {
@@ -105,7 +118,7 @@ return async function onJsonUpdate({ data, containers, editors }) {
 	}
 	// 空目录也不擦掉用户原先手填的模型。
 	if (currentModel) modelSelect.value = currentModel
-	modelSelect.disabled = !editors?.json || !modelSelect.options.length
+	modelSelect.disabled = !modelSelect.options.length
 
 	function updateEffortOptions() {
 		const selectedModel = models.find(model => model.slug === modelSelect.value)
@@ -113,8 +126,8 @@ return async function onJsonUpdate({ data, containers, editors }) {
 		effortSelect.replaceChildren()
 		const providerDefault = new Option('', '')
 		providerDefault.dataset.i18n = selectedModel?.defaultReasoningLevel
-			? `${pickerI18n}.providerDefaultWithLevel`
-			: `${pickerI18n}.providerDefault`
+			? `${i18nBase}.useDefaultReasoningWithLevel`
+			: `${i18nBase}.useDefaultReasoning`
 		providerDefault.dataset.level = selectedModel?.defaultReasoningLevel ?? ''
 		effortSelect.add(providerDefault)
 		const levels = selectedModel?.supportedReasoningLevels ?? []
@@ -129,7 +142,6 @@ return async function onJsonUpdate({ data, containers, editors }) {
 			effortSelect.add(option)
 		}
 		effortSelect.value = currentEffort ?? ''
-		effortSelect.disabled = !editors?.json
 		effortWarning.hidden = !selectedModel || !currentEffort || levels.includes(currentEffort)
 	}
 	updateEffortOptions()

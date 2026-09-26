@@ -4067,13 +4067,11 @@
 				"deviceCode": "打开 ${uri} 并输入代码 ${code}",
 				"credentialsRequired": "请在 JSON 中填写所需字段（region / project / location / account_id / gateway_id / API key 等）。凭证也可来自本机环境变量。"
 			},
-			"codexModelPicker": {
-				"selectModel": "选择模型…",
-				"reasoningEffort": "推理强度",
-				"providerDefault": "使用模型默认值",
-				"providerDefaultWithLevel": "使用模型默认值（${level}）",
-				"unsupportedEffort": "当前推理强度不在此模型的支持列表中；不会自动更改已有设置。"
-			},
+			"selectModel": "选择模型…",
+			"reasoningEffort": "推理强度",
+			"useDefaultReasoning": "使用模型默认值",
+			"useDefaultReasoningWithLevel": "使用模型默认值（${level}）",
+			"unsupportedEffort": "当前推理强度不在此模型的支持列表中；不会自动更改已有设置。",
 			"copyModelIdTooltip": "点击以复制模型 ID",
 			"loadModelsFailed": "加载模型失败：${message}",
 			"modelSearchTitle": "浏览模型目录",

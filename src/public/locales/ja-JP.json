@@ -4067,13 +4067,11 @@
 				"deviceCode": "${uri} を開き、コード ${code} を入力してください",
 				"credentialsRequired": "JSON に必要な項目（region / project / location / account_id / gateway_id / API key など）を記入してください。資格情報は環境変数でも渡せます。"
 			},
-			"codexModelPicker": {
-				"selectModel": "モデルを選択…",
-				"reasoningEffort": "推論の強度",
-				"providerDefault": "モデルの既定値を使用",
-				"providerDefaultWithLevel": "モデルの既定値を使用（${level}）",
-				"unsupportedEffort": "現在の推論の強度はこのモデルの対応一覧にありません。既存の設定は自動変更されません。"
-			},
+			"selectModel": "モデルを選択…",
+			"reasoningEffort": "推論の強度",
+			"useDefaultReasoning": "モデルの既定値を使用",
+			"useDefaultReasoningWithLevel": "モデルの既定値を使用（${level}）",
+			"unsupportedEffort": "現在の推論の強度はこのモデルの対応一覧にありません。既存の設定は自動変更されません。",
 			"copyModelIdTooltip": "クリックしてモデル ID をコピーします",
 			"loadModelsFailed": "モデルの読み込みに失敗しました: ${message}",
 			"modelSearchTitle": "モデルカタログを閲覧",

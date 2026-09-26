@@ -1,6 +1,3 @@
-/**
- * Service source manager 前端 Playwright driver。
- */
 import { dirname, join } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
@@ -11,11 +8,10 @@ const testDir = dirname(fileURLToPath(import.meta.url))
 
 process.exit(await runShellFrontendTests({
 	configPath: join(testDir, 'playwright.config.mjs'),
-	testUsername: 'ssrc-fe-user',
-	apiKeyPrefix: 'fount-ssrc-fe-key',
-	loadParts: ['shells/serviceSourceManage'],
-	bootstrapPath: join(testDir, '../node_bootstrap.mjs'),
+	testUsername: 'codex-fe-user',
+	apiKeyPrefix: 'fount-codex-fe-key',
+	loadParts: ['shells/serviceSourceManage', 'serviceGenerators/AI/codex'],
 	fixtureCopies: [
-		{ from: join(testDir, '../fixtures/proxy_source'), to: 'serviceSources/AI/test-proxy-source' },
+		{ from: join(testDir, '../fixtures/source'), to: 'serviceSources/AI/test-codex-source' },
 	],
 }))
