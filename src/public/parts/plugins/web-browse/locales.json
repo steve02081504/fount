@@ -1,0 +1,24 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Web Browse",
+			"avatar": "https://api.iconify.design/line-md/clipboard.svg",
+			"description": "Lets AI characters open a web page and read its content.",
+			"description_markdown": "The **Web Browse** plugin gives AI characters a `<web-browse>` tool that fetches a URL, cleans the page and converts it to Markdown for the model to read.\n\nSome code is derived from [GentianAphrodite](https://github.com/steve02081504/GentianAphrodite).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": ["browse", "web", "plugin"]
+		},
+		"zh-CN": {
+			"name": "网页浏览",
+			"avatar": "https://api.iconify.design/line-md/clipboard.svg",
+			"description": "让 AI 角色打开网页并阅读其内容",
+			"description_markdown": "**网页浏览**插件为 AI 角色提供 `<web-browse>` 工具：抓取指定网址、清理页面并转换为 Markdown 供模型阅读。\n\n部分代码来自[龙胆](https://github.com/steve02081504/GentianAphrodite)。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": ["浏览", "网络", "插件"]
+		}
+	}
+}
