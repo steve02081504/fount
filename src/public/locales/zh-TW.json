@@ -4066,6 +4066,11 @@
 				"deviceCode": "打開 ${uri} 並輸入代碼 ${code}",
 				"credentialsRequired": "請在 JSON 中填寫所需欄位（region / project / location / account_id / gateway_id / API key 等）。憑證也可來自本機環境變數。"
 			},
+			"selectModel": "選擇模型…",
+			"reasoningEffort": "推理強度",
+			"useDefaultReasoning": "使用模型預設值",
+			"useDefaultReasoningWithLevel": "使用模型預設值（${level}）",
+			"unsupportedEffort": "目前的推理強度不在此模型的支援清單中；不會自動更改既有設定。",
 			"copyModelIdTooltip": "點擊以複製模型 ID",
 			"loadModelsFailed": "載入模型失敗：${message}",
 			"modelSearchTitle": "瀏覽模型目錄",

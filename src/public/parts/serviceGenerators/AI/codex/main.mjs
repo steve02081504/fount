@@ -1,9 +1,16 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
+import sanitize from 'npm:sanitize-filename'
+
+import { httpError } from '../../../../../scripts/http_error.mjs'
+import { authenticate, getUserByReq } from '../../../../../server/auth/index.mjs'
+import { setPartData } from '../../../shells/config/src/manager.mjs'
 import { CODEX, ensureOAuthCredentials } from '../../../shells/oauth_handler/src/providers.mjs'
+import { getServiceSourceFile } from '../../../shells/serviceSourceManage/src/manager.mjs'
 import { defaultConvertConfig } from '../proxy/src/convertConfig.mjs'
 
+import { fetchCodexModels } from './src/models.mjs'
 import { createResponsesSource } from './src/responsesSource.mjs'
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
@@ -27,6 +34,20 @@ const configTemplate = {
  */
 export default {
 	info,
+	Load({ router }) {
+		router.get('/api/parts/serviceGenerators\\:AI\\:codex/models', authenticate, async (req, res) => {
+			const { sourceName } = req.query
+			if (typeof sourceName !== 'string' || !sourceName || sanitize(sourceName) !== sourceName)
+				throw httpError(400, 'Invalid Codex source name')
+			const { username } = getUserByReq(req)
+			const source = await getServiceSourceFile(username, sourceName, 'serviceSources/AI')
+			if (source.generator !== 'codex') throw httpError(400, 'Not a Codex service source')
+			if (!source.config?.oauth?.access) throw httpError(409, 'Codex OAuth login required')
+			const credentials = await ensureOAuthCredentials(source.config, CODEX.id, () =>
+				setPartData(username, `serviceSources/AI/${sourceName}`, source))
+			res.status(200).json({ models: await fetchCodexModels(credentials) })
+		})
+	},
 	interfaces: {
 		serviceGenerator: {
 			/**
