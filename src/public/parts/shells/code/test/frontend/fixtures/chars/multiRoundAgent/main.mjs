@@ -15,6 +15,17 @@ const ROUND2 = '读取完成，这是最终回答。'
 const CHUNK_DELAY = 30
 
 /**
+ * 加载本角色声明的插件（code shell 不再默认注入）。
+ * @param {string} username - 用户名。
+ * @param {string[]} names - 插件名列表。
+ * @returns {Promise<object>} 插件表（名 -> 部件实例）。
+ */
+async function loadPlugins(username, names) {
+	const { loadPart } = await import('fount/server/parts_loader.mjs')
+	return Object.fromEntries(await Promise.all(names.map(async name => [name, await loadPart(username, 'plugins/' + name)])))
+}
+
+/**
  * 等待指定毫秒。
  * @param {number} ms - 毫秒。
  * @returns {Promise<void>} 完成。
@@ -88,6 +99,7 @@ export default {
 			 */
 			GetReply: async args => {
 				args.generation_options ??= {}
+				args.plugins = { ...args.plugins, ...await loadPlugins(args.username, ['file-operations']) }
 				const previewUpdater = args.generation_options.replyPreviewUpdater
 				/** @type {object} */
 				const result = { content: '', logContextBefore: [], logContextAfter: [], files: [], extension: {} }

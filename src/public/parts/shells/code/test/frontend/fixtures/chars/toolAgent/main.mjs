@@ -7,6 +7,17 @@ import { runReplyHandlers } from 'fount/public/parts/shells/chat/src/reply/handl
 const REPLY = '<run-js>for (let i = 0; i < 5; i++) { console.log("live-tool-output"); await new Promise(resolve => setTimeout(resolve, 400)) } return 1</run-js>'
 
 /**
+ * 加载本角色声明的插件（code shell 不再默认注入）。
+ * @param {string} username - 用户名。
+ * @param {string[]} names - 插件名列表。
+ * @returns {Promise<object>} 插件表（名 -> 部件实例）。
+ */
+async function loadPlugins(username, names) {
+	const { loadPart } = await import('fount/server/parts_loader.mjs')
+	return Object.fromEntries(await Promise.all(names.map(async name => [name, await loadPart(username, 'plugins/' + name)])))
+}
+
+/**
  * code shell 前端测试用工具角色：返回 `<run-js>` 并按真实模板方式驱动消息管线。
  * @type {CharAPI_t}
  */
@@ -72,6 +83,7 @@ export default {
 			 */
 			GetReply: async args => {
 				const prompt_struct = { char_prompt: { additional_chat_log: [] } }
+				const plugins = { ...args.plugins, ...await loadPlugins(args.username, ['code-execution']) }
 				const result = { content: REPLY, logContextBefore: [], logContextAfter: [], files: [], extension: {} }
 				const continueAfterTool = args.chat_log.some(entry => entry.role === 'user' && entry.content === '工具后继续生成')
 				/**
@@ -85,7 +97,7 @@ export default {
 					result.logContextBefore.push(entry)
 					prompt_struct.char_prompt.additional_chat_log.push(entry)
 				}
-				const handlers = Object.values(args.plugins || {}).map(plugin => plugin.interfaces?.chat?.ReplyHandler).filter(Boolean)
+				const handlers = Object.values(plugins || {}).map(plugin => plugin.interfaces?.chat?.ReplyHandler).filter(Boolean)
 				args.generation_options ??= {}
 				args.generation_options.replyPreviewUpdater?.(result)
 				await runReplyHandlers(result, { ...args, prompt_struct, AddLongTimeLog }, handlers)

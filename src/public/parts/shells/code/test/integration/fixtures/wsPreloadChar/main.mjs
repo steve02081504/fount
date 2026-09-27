@@ -13,6 +13,17 @@ const SEEN = '首轮已见预读内容，直接回答。'
 const CHUNK_DELAY = 10
 
 /**
+ * 加载本角色声明的插件（code shell 不再默认注入）。
+ * @param {string} username - 用户名。
+ * @param {string[]} names - 插件名列表。
+ * @returns {Promise<object>} 插件表（名 -> 部件实例）。
+ */
+async function loadPlugins(username, names) {
+	const { loadPart } = await import('fount/server/parts_loader.mjs')
+	return Object.fromEntries(await Promise.all(names.map(async name => [name, await loadPart(username, 'plugins/' + name)])))
+}
+
+/**
  * code shell 集成测试用预读角色：在首次 StructCall 前调用 `runBeforeReplyHooks`，
  * 并把首轮 `prompt_struct.char_prompt.additional_chat_log` 追加写入工作区的
  * `preload_observations.jsonl` 供测试观测（fixture 专用钩子，不影响生产路径）。
@@ -80,6 +91,7 @@ export default {
 			 */
 			GetReply: async args => {
 				args.generation_options ??= {}
+				args.plugins = { ...args.plugins, ...await loadPlugins(args.username, ['file-operations']) }
 				const previewUpdater = args.generation_options.replyPreviewUpdater
 				/** @type {object} */
 				const result = { content: '', logContextBefore: [], logContextAfter: [], files: [], extension: {} }

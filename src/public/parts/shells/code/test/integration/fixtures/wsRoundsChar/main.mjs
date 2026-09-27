@@ -9,6 +9,17 @@ const ROUND1 = '读取文件。<view-file>\nnote.txt\n</view-file>'
 const ROUND2 = '读取完成。'
 
 /**
+ * 加载本角色声明的插件（code shell 不再默认注入）。
+ * @param {string} username - 用户名。
+ * @param {string[]} names - 插件名列表。
+ * @returns {Promise<object>} 插件表（名 -> 部件实例）。
+ */
+async function loadPlugins(username, names) {
+	const { loadPart } = await import('fount/server/parts_loader.mjs')
+	return Object.fromEntries(await Promise.all(names.map(async name => [name, await loadPart(username, 'plugins/' + name)])))
+}
+
+/**
  * code shell 集成测试用多轮角色：第一轮工具调用后重生成，
  * 用于验证 WS 在生成中增量推送已完成条目（entries-append）。
  * @type {CharAPI_t}
@@ -75,6 +86,7 @@ export default {
 			 */
 			GetReply: async args => {
 				args.generation_options ??= {}
+				args.plugins = { ...args.plugins, ...await loadPlugins(args.username, ['file-operations']) }
 				const previewUpdater = args.generation_options.replyPreviewUpdater
 				/** @type {object} */
 				const result = { content: '', logContextBefore: [], logContextAfter: [], files: [], extension: {} }

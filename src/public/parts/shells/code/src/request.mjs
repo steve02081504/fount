@@ -91,11 +91,6 @@ export async function buildCodeChatRequest({ username, session, requestSession, 
 	const char = await loadPart(username, 'chars/' + session.charname)
 	const personaName = getAnyPreferredDefaultPart(username, 'personas')
 	const user = personaName ? await loadPart(username, 'personas/' + personaName) : null
-	const plugins = {
-		'code-execution': await loadPart(username, 'plugins/code-execution'),
-		'file-operations': await loadPart(username, 'plugins/file-operations'),
-		'async-task': await loadPart(username, 'plugins/async-task'),
-	}
 	// ai_source 请求级覆盖：loadPart 出实例后传给角色（args.ai_source 为部件实例）
 	const aiSourceInstance = ai_source ? await loadPart(username, 'serviceSources/AI/' + ai_source) : undefined
 	const Charname = (await getPartInfo(char, localhostLocales)).name
@@ -159,7 +154,8 @@ export async function buildCodeChatRequest({ username, session, requestSession, 
 		user,
 		char,
 		other_chars: [],
-		plugins,
+		// 插件由角色自身声明并在其 GetReply 中合并；shell 不再默认注入任何插件。
+		plugins: {},
 		chat_summary: '',
 		chat_scoped_char_memory: session.memory ??= {},
 		extension: {
