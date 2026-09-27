@@ -170,7 +170,7 @@ function createDeps(aiSource, plugin) {
 			world_prompt: { text: [], additional_chat_log: [], extension: {} },
 			other_chars_prompts: {},
 			other_personas_prompts: {},
-			chat_log: args.chat_log,
+			chat_log: [...args.chat_log ?? []],
 			plugin_prompts: {},
 			timelines: [],
 			locales: args.locales,

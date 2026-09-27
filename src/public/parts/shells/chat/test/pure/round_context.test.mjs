@@ -1,10 +1,9 @@
 /* global Deno */
 /**
- * roundContext 纯测试：封存旧追加上下文为 container、按 Update 差量追加新条目、保持时序且幂等。
+ * roundContext 纯测试：按 Update 差量追加新时间线条目、保持时序、幂等、各请求级追加上下文桶不受影响。
  */
-import { assert, assertEquals } from 'jsr:@std/assert'
+import { assertEquals } from 'jsr:@std/assert'
 
-import { CONTAINER_ENTRY_TYPE, isContainerEntry } from '../../src/chat/logEntryTypes.mjs'
 import { mergeStructPromptChatLog } from '../../src/prompt_struct/index.mjs'
 import { injectRoundEntries } from '../../src/reply/roundContext.mjs'
 
@@ -39,31 +38,7 @@ function entry(id, content) {
 	return { id, uid: 'user', role: 'user', name: 'U', content, time_stamp: 0 }
 }
 
-Deno.test('injectRoundEntries seals old additional logs into a container and clears them', async () => {
-	const base = entry('a', 'hello')
-	const tool = { id: 't1', uid: 'system', role: 'tool', name: 'tool', content: 'result', charVisibility: ['c'] }
-	const prompt = makePrompt({ chatLog: [base], additional: [tool] })
-	const args = {
-		char_id: 'c',
-		/**
-		 * 返回刷新后的 chat_log。
-		 * @returns {Promise<{chat_log: object[]}>} 刷新结果
-		 */
-		Update: async () => ({ chat_log: [base] }),
-	}
-
-	await injectRoundEntries(args, prompt)
-
-	assertEquals(prompt.char_prompt.additional_chat_log, [], '封存后追加日志桶应清空')
-	assertEquals(prompt.chat_log.length, 2)
-	const container = prompt.chat_log.at(-1)
-	assert(isContainerEntry(container), '应追加 container 条目')
-	assertEquals(container.type, CONTAINER_ENTRY_TYPE)
-	assertEquals(container.charVisibility, ['c'])
-	assertEquals(container.logContextAfter, [tool], '旧追加日志应放入 container.logContextAfter')
-})
-
-Deno.test('injectRoundEntries appends only new entries collected via Update, keeping order', async () => {
+Deno.test('injectRoundEntries appends fresh timeline entries after existing ones and leaves additional buckets untouched', async () => {
 	const base = entry('a', 'hello')
 	const tool = { id: 't1', uid: 'system', role: 'tool', name: 'tool', content: 'result', charVisibility: ['c'] }
 	const fresh = entry('u2', 'world')
@@ -79,10 +54,33 @@ Deno.test('injectRoundEntries appends only new entries collected via Update, kee
 
 	await injectRoundEntries(args, prompt)
 
-	// 合并后时序：基础消息 → 旧工具日志 → 新消息（container 自身不出现）
+	assertEquals(prompt.chat_log.map(e => e.id), ['a', 'u2'], '新条目应追加到时间线末尾')
+	assertEquals(prompt.char_prompt.additional_chat_log, [tool], '请求级追加桶不应被清空或封存')
+	// 合并后时序：时间线（基础消息 → 新消息）→ 请求级追加上下文
 	const merged = mergeStructPromptChatLog(prompt).map(e => e.content)
-	assertEquals(merged, ['hello', 'result', 'world'])
-	assertEquals(prompt.chat_log.map(e => e.id), ['a', prompt.chat_log[1].id, 'u2'])
+	assertEquals(merged, ['hello', 'world', 'result'])
+})
+
+Deno.test('injectRoundEntries registers timeline entries appended since the previous call', async () => {
+	const base = entry('a', 'hello')
+	const t1 = entry('t1', 'one')
+	const t2 = entry('t2', 'two')
+	const prompt = makePrompt({ chatLog: [base] })
+	let round = 0
+	const args = {
+		char_id: 'c',
+		/**
+		 * 首轮返回 t1，次轮返回 t1 + 期间新增的 t2。
+		 * @returns {Promise<{chat_log: object[]}>} 刷新结果
+		 */
+		Update: async () => ({ chat_log: round++ === 0 ? [base, t1] : [base, t1, t2] }),
+	}
+
+	await injectRoundEntries(args, prompt)
+	prompt.chat_log.push(t2)
+	await injectRoundEntries(args, prompt)
+
+	assertEquals(prompt.chat_log.map(e => e.id), ['a', 't1', 't2'], '上一次调用后追加的时间线条目不应被重复加入')
 })
 
 Deno.test('injectRoundEntries is idempotent across repeated calls', async () => {
@@ -103,6 +101,23 @@ Deno.test('injectRoundEntries is idempotent across repeated calls', async () => 
 
 	assertEquals(prompt.chat_log.filter(e => e.id === 'u2').length, 1, '新条目不应重复追加')
 	assertEquals(prompt.chat_log.length, 2)
+})
+
+Deno.test('injectRoundEntries does not re-add timeline entries already present', async () => {
+	const base = entry('a', 'hello')
+	const t1 = entry('t1', 'one')
+	const prompt = makePrompt({ chatLog: [base] })
+	const args = {
+		char_id: 'c',
+		/**
+		 * 返回已包含 t1 的刷新结果。
+		 * @returns {Promise<{chat_log: object[]}>} 刷新结果
+		 */
+		Update: async () => ({ chat_log: [base, t1] }),
+	}
+
+	await injectRoundEntries(args, prompt)
+	assertEquals(prompt.chat_log.map(e => e.id), ['a', 't1'])
 })
 
 Deno.test('injectRoundEntries tolerates a missing Update', async () => {

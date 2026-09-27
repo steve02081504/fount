@@ -1,6 +1,6 @@
 /**
  * BeforeReply 生成前钩子测试：并发运行、按插件键顺序确定性回放、失败隔离、
- * 条目同时落入 logContextBefore 与 char_prompt.additional_chat_log、无钩子时 no-op。
+ * 条目同时落入 logContextBefore 与 prompt_struct.chat_log、无钩子时 no-op。
  */
 /* global Deno */
 import { assert, assertEquals } from 'jsr:@std/assert'
@@ -19,7 +19,7 @@ function makeArgs() {
 		char_id: 'tester',
 		locales: [],
 		supported_functions: { markdown: true },
-		prompt_struct: { char_prompt: { additional_chat_log: [] } },
+		prompt_struct: { chat_log: [] },
 		extension: {},
 	}
 }
@@ -57,7 +57,7 @@ Deno.test('BeforeReply：并发完成但按插件键顺序确定性回放', asyn
 	await runBeforeReplyHooks(args)
 	assertEquals(result.logContextBefore.map(entry => entry.name), ['slow', 'fast'])
 	assertEquals(
-		args.prompt_struct.char_prompt.additional_chat_log.map(entry => entry.name),
+		args.prompt_struct.chat_log.map(entry => entry.name),
 		['slow', 'fast'],
 	)
 })
@@ -107,7 +107,7 @@ Deno.test('BeforeReply：单个插件失败被隔离且不影响其他插件', a
 	assertEquals(result.logContextBefore.map(entry => entry.name), ['good'])
 })
 
-Deno.test('BeforeReply：条目同时落入 logContextBefore 与 char_prompt.additional_chat_log，并补 uid/可见性', async () => {
+Deno.test('BeforeReply：条目同时落入 logContextBefore 与 prompt_struct.chat_log，并补 uid/可见性', async () => {
 	const args = makeArgs()
 	const result = makeResult()
 	args.AddLongTimeLog = createLongTimeLogger(args, result, args.prompt_struct)
@@ -119,7 +119,7 @@ Deno.test('BeforeReply：条目同时落入 logContextBefore 与 char_prompt.add
 	await runBeforeReplyHooks(args)
 	const entry = result.logContextBefore[0]
 	assert(entry)
-	assertEquals(args.prompt_struct.char_prompt.additional_chat_log[0], entry)
+	assertEquals(args.prompt_struct.chat_log[0], entry)
 	assertEquals(entry.uid, 'system')
 	assertEquals(entry.charVisibility, ['tester'])
 })

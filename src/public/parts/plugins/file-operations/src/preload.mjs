@@ -1,6 +1,6 @@
 /**
  * 对话提及文件的持久化预读：从最新用户消息提取路径候选与报错定位，经目标执行器读取后，
- * 以工具日志形式经 `AddLongTimeLog` 写入本轮结果——当前轮即通过 `prompt_struct.char_prompt.additional_chat_log`
+ * 以工具日志形式经 `AddLongTimeLog` 写入本轮结果——当前轮即通过 `prompt_struct.chat_log`
  * 可见，随后经 `result.logContextBefore` 随会话落盘，成为该角色聊天记录的一部分，
  * 跨轮/跨生成以稳定前缀参与提示缓存，而非每轮重算的临时追加上下文。
  * 由 `interfaces.chat.BeforeReply` 在每次生成开始时调用，须保持幂等。
@@ -9,7 +9,7 @@
  */
 
 import { inferCodeLanguageFromPath, renderMarkdownCodeBlock } from '../../../shells/chat/src/streaming/index.mjs'
-// chat shell 的 prompt_struct 合并器同时承担事实共享层：插件直接用其展开容器与摘要边界属预期设计。
+// chat shell 的 prompt_struct 合并器同时承担事实共享层：插件直接用其展开上下文与摘要边界属预期设计。
 
 import { hashContent, mergePluginData, PLUGIN_DATA_KEY, resolveEffectiveLog } from './context_files.mjs'
 import { collectMentionedFiles } from './mentioned_files.mjs'

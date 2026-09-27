@@ -2,18 +2,12 @@
  * 聊天日志条目的运行时类型标记与谓词。
  *
  * 类型声明仍在 `src/decl/chatLog.ts`（fount 约定 `.ts` 只作 JSDoc 类型）；这里是实际逻辑，
- * 供 chat 引擎在运行时判定摘要 / 容器 / 问候条目。类型引用用 JSDoc `import('…/chatLog.ts')`。
+ * 供 chat 引擎在运行时判定摘要 / 问候条目与 prompt 载荷。类型引用用 JSDoc `import('…/chatLog.ts')`。
  */
 /** @typedef {import('../../../../../../decl/chatLog.ts').chatLogEntry_t} chatLogEntry_t */
 
 /** 上下文压缩摘要条目的模型标记（同时用作条目 `name` 与 `type`）。 */
 export const SUMMARY_ENTRY_TYPE = 'summary'
-
-/**
- * 容器条目的模型标记：自身不贡献 chat log，只展开其 `logContextBefore` / `logContextAfter`。
- * 用于在轮次刷新时把已累积的追加上下文“封存”为一个锚点，保证后续新条目的时序正确。
- */
-export const CONTAINER_ENTRY_TYPE = 'container'
 
 /**
  * 问候条目的模型标记前缀：`type` 形如 `greeting:<subtype>`（subtype 为 `single` / `group` / `world_single` / `world_group`）。
@@ -40,12 +34,14 @@ export function isSummaryEntry(entry) {
 }
 
 /**
- * 判断条目是否为容器条目（自身不贡献 log，只展开前后追加内容）。
- * @param {chatLogEntry_t} entry 日志条目
- * @returns {boolean} 是否为容器条目
+ * 条目是否携带对 prompt 有意义的内容：正文去空白后非空，或带附件。
+ * 显示层/编辑层（content_for_show / content_for_edit）与思考字段不参与 prompt 序列化，不作为判断依据。
+ * @param {chatLogEntry_t | undefined} entry 日志条目
+ * @returns {boolean} 是否会在 prompt 里产生内容
  */
-export function isContainerEntry(entry) {
-	return entry.type === CONTAINER_ENTRY_TYPE
+export function hasPromptPayload(entry) {
+	if (String(entry?.content ?? '').trim()) return true
+	return Array.isArray(entry?.files) && entry.files.length > 0
 }
 
 /**

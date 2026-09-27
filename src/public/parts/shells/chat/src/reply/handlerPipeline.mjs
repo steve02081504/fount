@@ -36,6 +36,7 @@ function buildRawGenerationEntry(result, args) {
 	if (result.extension?.reasoning_content) extension.reasoning_content = result.extension.reasoning_content
 	if (result.extension?.reasoning_summary) extension.reasoning_summary = result.extension.reasoning_summary
 	return {
+		id: crypto.randomUUID(),
 		name: args.Charname,
 		uid: args.CharUid,
 		role: 'char',
@@ -74,7 +75,10 @@ function createLogCollector(buffer) {
 }
 
 /**
- * 构造模板共用的长时间日志写入器：补 uid、默认仅本角色可见，并同时写入本轮结果容器与 char 追加上下文。
+ * 构造模板共用的长时间日志写入器：补 id、uid、默认仅本角色可见，并同时写入本轮结果容器与 prompt 时间线。
+ *
+ * 时间线目标在每次调用时解析（而非创建时捕获），使 `compressContext` 在生成中替换 `prompt_struct.chat_log` 后，
+ * 后续日志仍落在摘要之后。
  * @param {chatReplyRequest_t & { prompt_struct?: prompt_struct_t }} args 请求上下文
  * @param {chatReply_t} result 本轮结果容器
  * @param {prompt_struct_t} [prompt_struct] 提示结构（缺省用 `args.prompt_struct`）
@@ -82,14 +86,15 @@ function createLogCollector(buffer) {
  */
 export function createLongTimeLogger(args, result, prompt_struct) {
 	const contextLog = result.logContextBefore ??= []
-	const promptLog = (prompt_struct ?? args.prompt_struct)?.char_prompt?.additional_chat_log
 	return entry => {
+		entry.id ??= crypto.randomUUID()
 		entry.uid ??= entry.role === 'char' ? args.CharUid
 			: entry.role === 'user' ? args.UserUid
 				: 'system'
 		entry.charVisibility ??= [args.char_id]
 		contextLog.push(entry)
-		promptLog?.push(entry)
+		const timeline = (prompt_struct ?? args.prompt_struct)?.chat_log
+		timeline?.push(entry)
 	}
 }
 
@@ -180,7 +185,7 @@ function prepareCallEvaluation(content, handler, call, args, handlerArgs) {
 export async function runReplyHandlers(result, args, handlers) {
 	const executor = flattenReplyHandlers(handlers)
 	const contextLog = result.logContextBefore ??= []
-	const promptLog = args.prompt_struct?.char_prompt?.additional_chat_log
+	const promptLog = args.prompt_struct?.chat_log
 
 	const AddLongTimeLog = args.AddLongTimeLog ?? createLongTimeLogger(args, result, args.prompt_struct)
 	const handlerArgs = { ...args, AddLongTimeLog }
@@ -347,6 +352,8 @@ export async function runReplyHandlers(result, args, handlers) {
 	if (wantRegen && !stopped) {
 		const rawEntry = buildRawGenerationEntry(result, args)
 		contextLog.splice(logStart, 0, rawEntry)
+		// 若本轮 `<compress-context/>` 已替换 chat_log，则此处捕获的数组已脱离 prompt，插入对其不可见——
+		// 这正是 summaryBoundary 下一代应有的效果；工具日志经写时解析时间线，会落在摘要之后。
 		promptLog?.splice(promptStart, 0, rawEntry)
 	}
 

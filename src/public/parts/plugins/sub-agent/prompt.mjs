@@ -2,7 +2,7 @@
  * 【文件】src/public/parts/plugins/sub-agent/prompt.mjs
  * 【职责】sub-agent 插件的 GetPrompt：注入子代理工具说明，并在子代理运行中注入「Round/Elapsed」预算条目，同时把待注入的异步完成通知带进父代生成。
  * 【原理】父代普通生成时注册活跃频道（供异步通知回投），并从根队列取通知；子代理运行中则按本次 runId 取后代完成通知，避免跨生成串扰。
- *   轮次预算采用「追加一条 system additional_chat_log」的方式注入（已文档化、不改写生成结果），而不是改写 `plugin_prompts['sub-agent'].text`。
+ *   轮次预算由运行链以「向生成时间线 `promptStruct.chat_log` 追加一条 system 条目」的方式注入（已文档化、不改写生成结果），而不是改写 `plugin_prompts['sub-agent'].text`；GetPrompt 只贡献请求级附加日志。
  *   频道/通知队列由通用 `plugins/async-task/registry.mjs` 持有；async-task 插件的 GetPrompt 亦会取走同一队列，先到先得、不会重复注入。
  * 【数据结构】单段提示 = { text: [{ content, description, important }], additional_chat_log, extension }。
  * 【关联】main.mjs 的 interfaces.chat.GetPrompt；state.mjs 的运行注册表；async-task/registry.mjs。

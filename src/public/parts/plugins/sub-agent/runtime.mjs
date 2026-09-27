@@ -11,7 +11,7 @@ import { onSystemWake, setAwakeTimeout } from '../../../../scripts/sleep_watch.m
 import { isStopping } from '../../../../scripts/stopping.mjs'
 import { beginPromptRequest, collectGenerationRecord, finishPromptRequest } from '../../shells/agent_studio/src/request_record.mjs'
 import { buildPromptStruct } from '../../shells/chat/src/prompt_struct/index.mjs'
-import { runBeforeReplyHooks, runReplyHandlers } from '../../shells/chat/src/reply/handlerPipeline.mjs'
+import { createLongTimeLogger, runBeforeReplyHooks, runReplyHandlers } from '../../shells/chat/src/reply/handlerPipeline.mjs'
 import { finishAsyncGeneration, ownerFromArgs, registerTask } from '../async-task/registry.mjs'
 
 import { cleanupExpiredArchives, projectArchiveEntries, removeParentArchive, writeParentArchive } from './archive.mjs'
@@ -304,7 +304,7 @@ async function loadPluginMap(username, names, deps) {
  * 写入子代理自己的对话（绝不写父代）。
  * @param {object} run 运行
  * @param {object} entry 条目
- * @param {boolean} [addToPrompt] 是否写入 prompt 的聊天历史（工具日志已由 additional_chat_log 提供）
+ * @param {boolean} [addToPrompt] 是否写入 prompt 的聊天历史（工具日志已由生成时间线 `promptStruct.chat_log` 提供）
  * @returns {object} 规范化后的条目
  */
 function appendChildConversationEntry(run, entry, addToPrompt = true) {
@@ -537,25 +537,13 @@ export async function executeSubAgentRun(run, deps = defaultSubAgentDeps) {
 			run.deadline += duration
 			const content = `fount 检测到系统休眠约 ${Math.round(duration / 1000)} 秒；这不影响你的时间预算，相关时间已顺延。继续完成原任务。`
 			appendChildConversationEntry(run, { role: 'system', uid: 'system', name: 'system', content }, false)
-			promptStruct.char_prompt.additional_chat_log.push({ role: 'system', uid: 'system', name: 'system', content, charVisibility: [run.charId] })
+			promptStruct.chat_log.push({ role: 'system', uid: 'system', name: 'system', content, charVisibility: [run.charId] })
 		})
 		const result = run.result = { content: '', logContextBefore: [], logContextAfter: [], files: [], extension: {} }
 		const handlers = Object.values(run.plugins)
 			.map(plugin => plugin?.interfaces?.chat?.ReplyHandler)
 			.filter(Boolean)
-		/**
-		 * 子代理本地的长时间日志写入：追加到结果上下文与 char additional_chat_log。
-		 * @param {object} entry 日志条目
-		 * @returns {void}
-		 */
-		const AddLongTimeLog = entry => {
-			entry.uid ??= entry.role === 'char' ? childArgs.CharUid
-				: entry.role === 'user' ? childArgs.UserUid
-					: 'system'
-			entry.charVisibility ??= [run.charId]
-			result.logContextBefore.push(entry)
-			promptStruct.char_prompt.additional_chat_log.push(entry)
-		}
+		const AddLongTimeLog = createLongTimeLogger(childArgs, result, promptStruct)
 		// 子代理同样是独立生成链：在首次 StructCall 前给插件一次生成前钩子。
 		await deps.runBeforeReplyHooks?.({ ...childArgs, prompt_struct: promptStruct, AddLongTimeLog })
 		const generationOptions = {
@@ -623,7 +611,7 @@ export async function executeSubAgentRun(run, deps = defaultSubAgentDeps) {
 				result.content = 'fount 正在退出，子代理已完成当前轮处理；重启后请重新委派尚未完成的任务。'
 				break
 			}
-			promptStruct.char_prompt.additional_chat_log.push(makeRoundBudgetEntry(run, deps.now()))
+			promptStruct.chat_log.push(makeRoundBudgetEntry(run, deps.now()))
 		}
 		if (!summarized) {
 			run.finalText = result.content ?? ''

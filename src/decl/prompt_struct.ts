@@ -29,6 +29,9 @@ export class single_part_prompt_t {
 	}[]
 	/**
 	 * 附加的聊天记录条目数组。
+	 *
+	 * 请求级上下文：每次提示构建重新生成，始终由合并器拼接在 `prompt_struct_t.chat_log` 之后，从不封存进历史。
+	 * 仅用于随每轮重算的上下文（如占用率、归因警告）；生成期工具日志等应写入 `chat_log` 时间线，不要写到这里。
 	 */
 	additional_chat_log: chatLogEntry_t[]
 	/**
@@ -175,7 +178,8 @@ export interface prompt_struct_t {
 	 */
 	plugin_prompts: Record<string, single_part_prompt_t>
 	/**
-	 * 聊天记录。
+	 * 聊天记录：唯一有序时间线 = 历史 + 本代时间线条目（BeforeReply 工具日志、工具结果、原始生成、
+	 * 生成中 `Update` 到达的条目）。持久化条目携带 id；合并时无 prompt 载荷（正文去空白为空且无附件）的条目被丢弃。
 	 */
 	chat_log: chatLogEntry_t[]
 	/**

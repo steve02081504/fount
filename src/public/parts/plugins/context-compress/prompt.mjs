@@ -5,7 +5,8 @@
  *   占用统计放在 `TweakPrompt(arg, prompt_struct, my_prompt, detail_level)`——此时 `prompt_struct` 已由 buildPromptStruct 装配完成，
  *   可用 `structPromptToSingle` 统计真实 token 数（含系统提示与历史）。
  *   占用条目使用固定 id 并置于 `my_prompt.additional_chat_log`：同一会话内固定 id 使 Agent Studio 复原对话时按 update 处理而非每轮新增；
- *   条目只随 TweakPrompt 原地更新，不进入 system prompt，因此不破坏按前缀命中的 prompt 缓存。
+ *   `additional_chat_log` 是请求级上下文，始终拼接在 `chat_log` 之后且从不封存进历史，故条目在多轮 / 多次生成间始终处于稳定末尾，
+ *   只随 TweakPrompt 原地更新，不破坏按前缀命中的 prompt 缓存。
  *   提示词固定中文（提示词不做多语言化）。
  * 【数据结构】single_part_prompt_t：{ text: [{ content, description, important }], additional_chat_log, extension: {} }。
  * 【关联】summarize.mjs（countTokens / 阈值语义）、state.mjs（阈值）、main.mjs（TweakPrompt 装配）。
@@ -28,7 +29,11 @@ export const USAGE_ENTRY_ID = 'context-compress:usage'
 /** 占用提示条目 `name`（人类可读标签）。 */
 export const USAGE_ENTRY_NAME = 'context-usage'
 
-/** 占用提示条目的 extension 标记，供 TweakPrompt 原地识别。 */
+/**
+ * 占用提示条目的 extension 标记，供 TweakPrompt 原地识别。
+ * 条目落在插件自己的 `additional_chat_log`：它是请求级上下文，始终拼接在 `chat_log` 之后且从不封存进历史，
+ * 因此条目在多轮 / 多次生成间保持稳定末尾位置，无需额外标记即不破坏 prompt 缓存前缀。
+ */
 export const USAGE_EXTENSION = { contextCompress: true }
 
 /**

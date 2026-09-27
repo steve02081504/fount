@@ -125,7 +125,7 @@ export class PluginAPI_t {
 			GetPrompt?: (arg: chatReplyRequest_t) => Promise<single_part_prompt_t>;
 			/**
 			 * 生成前钩子：在 buildPromptStruct 之后、首次 StructCall 之前调用一次。
-			 * 通过参数中的 AddLongTimeLog 写入的条目本轮立即可见（char_prompt.additional_chat_log），
+			 * 通过参数中的 AddLongTimeLog 写入的条目本轮立即可见（prompt_struct.chat_log 本代时间线），
 			 * 并随 result.logContextBefore 持久化进会话。必须幂等：后台通知触发的生成、用户重新生成会再次调用。
 			 * 不得在 GetPrompt 中做副作用写入——次级 prompt 构建（get-tool-info / sub-agent）也会调用 GetPrompt。
 			 * @param arg 请求上下文（含 prompt_struct 与 AddLongTimeLog）

@@ -1,17 +1,15 @@
 /**
  * 【文件】src/public/parts/shells/chat/src/reply/roundContext.mjs
- * 【职责】轮次上下文刷新：regen 循环在下一轮 `StructCall` 前调用，把本轮期间新到达的条目追加进 prompt_struct 并保证时序。
- * 【原理】先把各 part 已累积的 `additional_chat_log` 收拢为一个 `type:'container'` 条目（自身不贡献 log，只展开 `logContextAfter`）
- *   追加到 `prompt_struct.chat_log` 末尾并清空各 additional；再调用 `args.Update()` 重读权威日志，按 id 去重后追加新条目。
- *   这样旧工具日志被封存在 base chat_log 内，新条目排在其后，避免 merge 顺序（base → additional）导致新条目插到旧日志之前。
+ * 【职责】轮次上下文刷新：regen 循环在下一轮 `StructCall` 前调用，把本轮期间新到达的权威时间线条目追加进 prompt_struct。
+ * 【原理】`chat_log` 是唯一有序时间线（历史 + 本代 BeforeReply 工具日志、工具结果、原始生成、生成中 `Update` 到达的条目）；
+ *   各 part 的 `additional_chat_log` 只是请求级上下文，每次构建重新生成，始终由 mergeStructPromptChatLog 拼在 chat_log 之后且从不封存。
+ *   本函数每次调用都先登记当前 `chat_log` 的 id，再 `await args.Update()` 重读权威日志，按 id 去重后把新条目追加到时间线末尾。
  *   `consumeWakes`：表示角色已能看到本次读取时刻的权威日志，shell 的 `Update({ forRound: true })` 据此消费该槽位待触发唤醒；
  *   二级 prompt 构建（如 deep-research thinking）传 false，避免误消费主槽位的待触发唤醒。
  * 【数据结构】WeakMap<args, Set<string>> 记录本代已注入 id（即使 summarize 替换了 chat_log 仍能正确去重）。
- * 【关联】prompt_struct/index.mjs 的 mergeStructPromptChatLog 展开 container；decl/chatLog.ts 的 CONTAINER_ENTRY_TYPE；各 char 模板 regen 循环调用。
+ * 【关联】prompt_struct/index.mjs 的 mergeStructPromptChatLog；decl/chatLog.ts 的 Update；各 char 模板 regen 循环调用。
  */
 /** @typedef {import('../../../../../../decl/chatLog.ts').chatLogEntry_t} chatLogEntry_t */
-
-import { CONTAINER_ENTRY_TYPE } from '../chat/logEntryTypes.mjs'
 
 /** 每个请求本代已注入过的日志 id。 @type {WeakMap<object, Set<string>>} */
 const injectedIds = new WeakMap()
@@ -23,59 +21,6 @@ const injectedIds = new WeakMap()
  */
 function entryKey(entry) {
 	return String(entry?.id ?? entry?.extension?.chat?.eventId ?? '')
-}
-
-/**
- * 按 mergeStructPromptChatLog 的合并顺序列出各 part 的 additional_chat_log 数组（可变引用）。
- * @param {object} prompt_struct 提示结构
- * @returns {chatLogEntry_t[][]} 追加日志数组列表
- */
-function collectSectionLogs(prompt_struct) {
-	const buckets = []
-	/**
-	 * 收集一个 part 的追加日志。
-	 * @param {object} [part] 单部分提示
-	 * @returns {void}
-	 */
-	const push = part => {
-		if (part?.additional_chat_log?.length) buckets.push(part.additional_chat_log)
-	}
-	push(prompt_struct.user_prompt)
-	push(prompt_struct.world_prompt)
-	for (const part of Object.values(prompt_struct.other_chars_prompts || {})) push(part)
-	for (const part of Object.values(prompt_struct.other_personas_prompts || {})) push(part)
-	for (const part of Object.values(prompt_struct.plugin_prompts || {})) push(part)
-	push(prompt_struct.char_prompt)
-	return buckets
-}
-
-/**
- * 把已累积的追加上下文封存进一个新 container 条目，并清空各 additional 数组。
- * @param {object} args 请求上下文
- * @param {object} prompt_struct 提示结构
- * @returns {void}
- */
-function sealAdditionalChatLog(args, prompt_struct) {
-	const buckets = collectSectionLogs(prompt_struct)
-	if (!buckets.length) return
-	const old = []
-	for (const bucket of buckets) {
-		old.push(...bucket)
-		bucket.length = 0
-	}
-	prompt_struct.chat_log ??= []
-	prompt_struct.chat_log.push({
-		id: crypto.randomUUID(),
-		type: CONTAINER_ENTRY_TYPE,
-		role: 'system',
-		name: 'system',
-		uid: 'system',
-		content: '',
-		content_for_show: '',
-		files: [],
-		...args?.char_id ? { charVisibility: [args.char_id] } : {},
-		logContextAfter: old,
-	})
 }
 
 /**
@@ -94,7 +39,7 @@ function rememberEntries(seen, entries) {
 }
 
 /**
- * 轮次上下文刷新：封存旧追加上下文，并追加 `args.Update()` 返回的新条目。
+ * 轮次上下文刷新：登记当前时间线，并追加 `args.Update()` 返回的新条目。
  * @param {object} args 请求上下文（需含 `Update` 才可采集新条目）
  * @param {object} prompt_struct 提示结构
  * @param {object} [options] 选项
@@ -109,13 +54,12 @@ export async function injectRoundEntries(args, prompt_struct, options = {}) {
 	if (!seen) {
 		seen = new Set()
 		injectedIds.set(args, seen)
-		rememberEntries(seen, prompt_struct.chat_log)
-		for (const bucket of collectSectionLogs(prompt_struct)) rememberEntries(seen, bucket)
 	}
-
-	sealAdditionalChatLog(args, prompt_struct)
+	// 每次调用都登记：上一次调用之后新追加的本代时间线条目也要纳入去重
+	rememberEntries(seen, prompt_struct.chat_log)
 
 	if (typeof args?.Update !== 'function') return
+
 	let fresh
 	try {
 		fresh = await args.Update(consumeWakes ? { forRound: true } : {})

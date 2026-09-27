@@ -14,7 +14,7 @@
 /** @typedef {import('../../../../../../decl/chatLog.ts').chatReplyRequest_t} chatReplyRequest_t */
 
 import { entryVisibleToViewer } from '../chat/lib/visibility.mjs'
-import { isContainerEntry } from '../chat/logEntryTypes.mjs'
+import { hasPromptPayload } from '../chat/logEntryTypes.mjs'
 import { flattenReplyHandlers } from '../reply/defineReplyHandler.mjs'
 
 import { applySummaryBoundary } from './summaryBoundary.mjs'
@@ -48,6 +48,7 @@ function injectAttributionWarnings(promptStruct, args) {
 	promptStruct.world_prompt ??= getSinglePartPrompt()
 	promptStruct.world_prompt.additional_chat_log ??= []
 	promptStruct.world_prompt.additional_chat_log.push({
+		id: 'attribution-warning',
 		name: 'system',
 		uid: 'system',
 		role: 'system',
@@ -139,7 +140,7 @@ export async function buildPromptStruct(
 		other_personas_prompts: {},
 		world_prompt: getSinglePartPrompt(),
 		plugin_prompts: {},
-		chat_log,
+		chat_log: [...chat_log ?? []],
 		timelines: timelines || [],
 		locales,
 	}
@@ -272,6 +273,8 @@ export function structPromptToSingleNoChatLog(/** @type {prompt_struct_t} */ pro
 /**
  * 合并结构化提示聊天记录。
  *
+ * 顺序固定：`chat_log` 时间线在前，各 part 的请求级 `additional_chat_log` 永远拼接在其后且从不封存；
+ * 无 prompt 载荷（正文去空白为空且无附件）的条目自身不产生内容，但其上下文/feedback 仍展开。
  * @param {prompt_struct_t} prompt - 提示结构。
  * @returns {chatLogEntry_t[]} - 聊天记录条目数组。
  */
@@ -289,12 +292,13 @@ export function mergeStructPromptChatLog(/** @type {prompt_struct_t} */ prompt) 
 	const mergedChatLog = []
 	for (const entry of result) {
 		if (entry.logContextBefore) mergedChatLog.push(...entry.logContextBefore)
-		// 容器条目自身不贡献 log，只展开其前后追加内容
-		if (!isContainerEntry(entry)) mergedChatLog.push(entry)
+		// 无 prompt 载荷的条目自身不产生内容，但其上下文与 feedback 仍展开（显示层/思考不参与序列化）
+		if (hasPromptPayload(entry)) mergedChatLog.push(entry)
 		const feedback = entry.extension?.feedback
 		if (feedback) {
 			const label = feedback.type === 'up' ? 'upvote' : 'downvote'
 			mergedChatLog.push({
+				id: `${entry.id ?? 'message'}:feedback`,
 				role: 'system',
 				name: 'feedback',
 				uid: 'system',
@@ -303,11 +307,12 @@ export function mergeStructPromptChatLog(/** @type {prompt_struct_t} */ prompt) 
 		}
 		if (entry.logContextAfter) mergedChatLog.push(...entry.logContextAfter)
 	}
-	for (const timelineEntry of prompt.timelines || []) {
+	for (const [index, timelineEntry] of (prompt.timelines || []).entries()) {
 		const feedback = timelineEntry.extension?.feedback
 		if (!feedback?.content) continue
 		const label = feedback.type === 'up' ? 'upvote' : 'downvote'
 		mergedChatLog.push({
+			id: `timeline-feedback:${timelineEntry.id ?? index}`,
 			role: 'system',
 			name: 'feedback',
 			uid: 'system',

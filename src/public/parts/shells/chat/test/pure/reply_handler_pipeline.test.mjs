@@ -22,7 +22,7 @@ function makeArgs() {
 		char_id: 'tester',
 		locales: [],
 		supported_functions: { markdown: true },
-		prompt_struct: { char_prompt: { additional_chat_log: [] } },
+		prompt_struct: { chat_log: [] },
 		extension: {},
 	}
 }
@@ -214,7 +214,7 @@ Deno.test('管线：声明 parallel 的同一工具多次调用并发执行（�
 	])
 	assertEquals(probe.max, 5, '本机一次读 5 个文件的同类调用应全部并发')
 	assertEquals(
-		args.prompt_struct.char_prompt.additional_chat_log.map(entry => entry.name),
+		args.prompt_struct.chat_log.map(entry => entry.name),
 		['p-1', 'p-2', 'p-3', 'p-4', 'p-5'],
 		'日志应按生成文本顺序回放',
 	)
@@ -369,7 +369,7 @@ Deno.test('管线：声明 evaluate 的 inline 结果自动回执给角色', asy
 		defineReplyHandler({ tag: 'p', evaluate: renderedEvaluate, display: renderedDisplay, handle: noopHandle }),
 	])
 	assertEquals(result.content_for_show, 'RENDERED')
-	const report = args.prompt_struct.char_prompt.additional_chat_log.find(entry => entry.name === 'inline-rendered')
+	const report = args.prompt_struct.chat_log.find(entry => entry.name === 'inline-rendered')
 	assert(report, '应追加 inline-rendered 回执')
 	assertStringIncludes(report.content, '<p>hi</p>')
 	assertStringIncludes(report.content, 'RENDERED')
@@ -381,7 +381,7 @@ Deno.test('管线：inline 回执每个结果分别按上限截断', async () =>
 	await runReplyHandlers(result, args, [
 		defineReplyHandler({ tag: 'p', evaluate: oversizedEvaluate, display: oversizedDisplay, handle: noopHandle }),
 	])
-	const report = args.prompt_struct.char_prompt.additional_chat_log.find(entry => entry.name === 'inline-rendered')
+	const report = args.prompt_struct.chat_log.find(entry => entry.name === 'inline-rendered')
 	assertStringIncludes(report.content, '省略')
 	assert(report.content.length < 3000, `单个 inline 结果应被截断，实际 ${report.content.length}`)
 })
@@ -393,7 +393,7 @@ Deno.test('管线：inline 结果与原文相同则不回执', async () => {
 		defineReplyHandler({ tag: 'p', evaluate: renderedEvaluate, display: identityRawDisplay, handle: noopHandle }),
 	])
 	assertEquals(
-		args.prompt_struct.char_prompt.additional_chat_log.some(entry => entry.name === 'inline-rendered'),
+		args.prompt_struct.chat_log.some(entry => entry.name === 'inline-rendered'),
 		false,
 		'无可见变化时不应回执',
 	)
