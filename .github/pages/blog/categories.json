@@ -3,42 +3,48 @@
 		"order": 0,
 		"name": {
 			"en-UK": "Reading guide",
-			"zh-CN": "阅读指南"
+			"zh-CN": "阅读指南",
+			"ja-JP": "読むガイド"
 		}
 	},
 	"foundation": {
 		"order": 1,
 		"name": {
 			"en-UK": "Definitions & architecture",
-			"zh-CN": "定义与架构"
+			"zh-CN": "定义与架构",
+			"ja-JP": "定義とアーキテクチャ"
 		}
 	},
 	"context": {
 		"order": 2,
 		"name": {
 			"en-UK": "Context engineering",
-			"zh-CN": "上下文工程"
+			"zh-CN": "上下文工程",
+			"ja-JP": "コンテキスト工学"
 		}
 	},
 	"economics": {
 		"order": 3,
 		"name": {
 			"en-UK": "Cost & verification",
-			"zh-CN": "成本与验证"
+			"zh-CN": "成本与验证",
+			"ja-JP": "コストと検証"
 		}
 	},
 	"safety": {
 		"order": 4,
 		"name": {
 			"en-UK": "Safety & trust",
-			"zh-CN": "安全与信任"
+			"zh-CN": "安全与信任",
+			"ja-JP": "安全と信頼"
 		}
 	},
 	"practice": {
 		"order": 5,
 		"name": {
 			"en-UK": "fount in practice",
-			"zh-CN": "fount 实践"
+			"zh-CN": "fount 实践",
+			"ja-JP": "fount の実践"
 		}
 	}
 }

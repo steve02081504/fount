@@ -82,12 +82,17 @@ test.describe('agent institute', () => {
 		await expect(page.locator('#article-body h1')).toHaveText('为什么 fount 的 Agent 不是聊天机器人', { timeout: 30_000 })
 		await page.locator('#language-dropdown .btn').click()
 		const items = page.locator('#language-menu button')
-		await expect(items).toHaveCount(2)
+		await expect(items).toHaveCount(3)
+		// 切到日文：偏好写入 localStorage，正文切为日文，URL 不带 lang
+		await items.filter({ hasText: '日本語' }).click()
+		await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('fountUserPreferredLanguages') || '[]'))).toEqual(['ja-JP'])
+		await expect(page.locator('#article-body h1')).toHaveText('fount のエージェントはなぜチャットボットではないのか', { timeout: 30_000 })
+		await expect(page).toHaveURL(/\/blog\/article\/\?article=agents-are-not-chatbots$/)
+		// 再切到英文
+		await page.locator('#language-dropdown .btn').click()
 		await items.filter({ hasText: 'English (UK)' }).click()
-		// 语言偏好写入 localStorage，正文切为英文，URL 不带 lang
 		await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('fountUserPreferredLanguages') || '[]'))).toEqual(['en-UK'])
 		await expect(page.locator('#article-body h1')).toHaveText('Why fount Agents Are Not Chatbots', { timeout: 30_000 })
-		await expect(page).toHaveURL(/\/blog\/article\/\?article=agents-are-not-chatbots$/)
 	})
 
 	test('in-article links point to sibling articles keeping the language', async ({ page, baseUrl }) => {
@@ -155,6 +160,8 @@ test.describe('agent institute', () => {
 		// 带 hash 打开：异步渲染完成后滚动到对应标题
 		await page.goto(`${baseUrl}/blog/article/?article=agents-are-not-chatbots#${encodeURIComponent(id)}`, { waitUntil: 'domcontentloaded' })
 		await expect(page.locator('#article-body h1')).toHaveText('为什么 fount 的 Agent 不是聊天机器人', { timeout: 30_000 })
+		// 语种轮换会临时隐藏 user-content 正文引起布局塌缩（滚动复位），滚动断言前冻结
+		await page.evaluate(() => globalThis.fount.test.watch.holdLocale())
 		await expect.poll(() => page.evaluate(target => Math.round(document.getElementById(target).getBoundingClientRect().top), id)).toBeLessThan(160)
 
 		// 标题锚点链接指向自身 id，悬停标题后点击更新 URL hash
