@@ -35,6 +35,102 @@ export const TEMP_RETENTION_MS = ms('3d')
 /** 上次清理临时输出目录的时间戳。 */
 let lastTempCleanup = 0
 
+/** 压缩连续重复行时，夹在省略标记两端的原行数（开头/结尾各保留）。 */
+export const OUTPUT_DEDUPE_EDGE_LINES = 3
+
+/**
+ * 创建流式行压缩器：逐行喂入，连续完全相同的整行在保持开头 `edge` 行后即被折叠为省略标记，
+ * 段结束时补回结尾 `edge` 行。内部对一段连续重复只保存一份正文与一个计数，因此任意多行的同一重复
+ * 都只占常数内存——这正是它相对「先收集再压缩」的价值（一个印 `while(true)` 的进程不会撑爆内存）。
+ * 末尾需调用一次 `finish()` 提交残余。
+ * @param {{edge?: number}} [options] - `edge` 为压缩块两端保留的行数（默认 {@link OUTPUT_DEDUPE_EDGE_LINES}）。
+ * @returns {{push: (chunk: unknown) => void, finish: () => {text: string, omittedLines: number}}} 流式压缩器。
+ */
+export function createLineDedupe(options = {}) {
+	const { edge = OUTPUT_DEDUPE_EDGE_LINES } = options
+	/** @type {string[]} 已提交的完整行。 */
+	const committed = []
+	/** 当前连续相同行的正文（仅存一份）与计数。 */
+	let runLine = ''
+	let runCount = 0
+	/** 跨 chunk 尚未成行的残余片段。 */
+	let carry = null
+	let omittedLines = 0
+	let finalized = null
+
+	/**
+	 * 结算当前连续行：超过阈值时提交「首 edge 行 / 省略标记 / 尾 edge 行」，否则原样提交。
+	 * 尾 edge 行在此一并提交——它们随段结束即确定，无需再驻留内存等待后续输入。
+	 * @returns {void}
+	 */
+	const settleRun = () => {
+		if (!runCount) return
+		if (runCount > edge * 2 + 1) {
+			for (let k = 0; k < edge; k++) committed.push(runLine)
+			committed.push(`…[已省略 ${runCount - edge * 2} 行相同内容]…`)
+			omittedLines += runCount - edge * 2
+			for (let k = 0; k < edge; k++) committed.push(runLine)
+		}
+		else for (let k = 0; k < runCount; k++) committed.push(runLine)
+		runCount = 0
+	}
+
+	/**
+	 * 吸收入一整行（不含换行）。
+	 * @param {string} line - 行文本。
+	 * @returns {void}
+	 */
+	const absorb = line => {
+		if (!runCount) { runLine = line; runCount = 1; return }
+		if (line === runLine) { runCount++; return }
+		settleRun()
+		runLine = line
+		runCount = 1
+	}
+
+	return {
+		/**
+		 * 追加一段文本；按换行切分，只有完整行被吸收，末段跨 chunk 暂存（不复制已提交内容）。
+		 * 已 `finish()` 后忽略后续输入。
+		 * @param {unknown} chunk - 文本片段。
+		 * @returns {void}
+		 */
+		push(chunk) {
+			if (finalized) return
+			const text = carry === null ? String(chunk ?? '') : carry + String(chunk ?? '')
+			carry = null
+			const pieces = text.split('\n')
+			carry = pieces.pop() ?? ''
+			for (const line of pieces) absorb(line)
+		},
+		/**
+		 * 结束输入：提交残余行，返回完整压缩文本。幂等，可重复调用。
+		 * @returns {{text: string, omittedLines: number}} 压缩后的文本与被省略的重复行总数。
+		 */
+		finish() {
+			if (finalized) return finalized
+			// carry 为尚未成行的残余（可能为空串，对应文本以换行结束时的空尾行）；一并提交以贴合 split 语义。
+			if (carry !== null) { absorb(carry); carry = null }
+			settleRun()
+			finalized = { text: committed.join('\n'), omittedLines }
+			return finalized
+		},
+	}
+}
+
+/**
+ * 压缩「连续完全相同的整行」：开头保留 `edge` 行、结尾保留 `edge` 行，中间以一行省略标记替代。
+ * 非流式整段处理（流式场景请用 {@link createLineDedupe}，避免为中间部分额外占用内存）。
+ * @param {string} text - 原始文本。
+ * @param {{edge?: number}} [options] - `edge` 为压缩块两端保留的行数（默认 {@link OUTPUT_DEDUPE_EDGE_LINES}）。
+ * @returns {{text: string, omittedLines: number}} 压缩后的文本与被省略的重复行总数。
+ */
+export function dedupeConsecutiveLines(text, options = {}) {
+	const deduper = createLineDedupe(options)
+	deduper.push(text)
+	return deduper.finish()
+}
+
 /**
  * 将时长字符串解析为毫秒。支持 `ms` / `s`（缺省）/ `m` / `h` 后缀。
  * @param {unknown} value - 属性值。
@@ -94,13 +190,14 @@ export function formatElapsed(ms) {
 
 /**
  * 对文本做头尾截断（纯函数，不落盘）。
+ * 先压缩连续完全相同的整行（见 {@link dedupeConsecutiveLines}），再做头尾截断。
  * @param {string} text - 原始文本。
  * @param {{limit?: number, head?: number, tail?: number}} [options] - 截断参数。
- * @returns {{text: string, truncated: boolean, omitted: number}} 截断后的文本已含尾部片段；`omitted` 为省略字符数。
+ * @returns {{text: string, truncated: boolean, omitted: number}} 截断后的文本已含尾部片段；`omitted` 为截断省略字符数。
  */
 export function truncateOutput(text, options = {}) {
 	const { limit = OUTPUT_GUARD_LIMIT, head = OUTPUT_GUARD_HEAD, tail = OUTPUT_GUARD_TAIL } = options
-	const value = String(text ?? '')
+	const value = dedupeConsecutiveLines(text).text
 	if (value.length <= limit) return { text: value, truncated: false, omitted: 0 }
 	return {
 		text: value.slice(0, head) + '\n' + value.slice(value.length - tail),
@@ -145,14 +242,15 @@ export async function writeTempOutput(name, text) {
 }
 
 /**
- * 输出护栏：超限时保留头尾、完整内容落盘并在中间插入路径提示。
+ * 输出护栏：先压缩连续完全相同的整行，再在超限时保留头尾、完整内容落盘并在中间插入路径提示。
+ * 落盘的是压缩后的文本（重复行已折叠）——压缩只丢重复，不丢有效信息，却能让落盘文件小得多。
  * @param {string} text - 完整输出文本。
  * @param {{name?: string, label?: string, writeTemp?: (name: string, text: string) => Promise<string>}} [options] - 选项。
  * @returns {Promise<{text: string, truncated: boolean, omitted: number, savedPath: string|null}>} 护栏结果。
  */
 export async function guardOutput(text, options = {}) {
 	const { name = 'output', label = '输出', writeTemp = writeTempOutput } = options
-	const value = String(text ?? '')
+	const value = dedupeConsecutiveLines(text).text
 	if (value.length <= OUTPUT_GUARD_LIMIT) return { text: value, truncated: false, omitted: 0, savedPath: null }
 	const omitted = value.length - OUTPUT_GUARD_HEAD - OUTPUT_GUARD_TAIL
 	let savedPath = null
@@ -249,24 +347,29 @@ export async function execShellWithTimeout(shell, code, options = {}, timeoutMs 
 /**
  * 创建收集型虚拟控制台：记录输出供超时后回读，转发真实 console，并可逐条回调实现流式回显。
  * 直接返回 `VirtualConsole` 实例，`async_eval` 会原样复用（不走二次包裹）。
+ * 读出文本时对连续完全相同的整行做流式压缩（见 {@link createLineDedupe}），回读结果与一次性压缩一致。
  * @param {(channel: 'stdout'|'stderr', text: string) => void} [onOutput] - 每条输出后回调。
  * @returns {{console: import('npm:@steve02081504/virtual-console').VirtualConsole, text: () => string}} 虚拟控制台与其文本读取函数。
  */
 export function createCollectingConsole(onOutput) {
 	const vc = new VirtualConsole({ realConsoleOutput: true })
-	if (onOutput)
-		vc.addLogEntryListener(entry => {
+	const deduper = createLineDedupe()
+	vc.addLogEntryListener(entry => {
+		const text = entry.toString()
+		deduper.push(text)
+		if (onOutput) {
 			const stream = entry.level === 'error' || entry.level === 'warn' || entry.level === 'stderr' ? 'stderr' : 'stdout'
-			try { onOutput(stream, entry.toString()) }
+			try { onOutput(stream, text) }
 			catch { /* 流式回调失败不影响执行 */ }
-		})
+		}
+	})
 	return {
 		console: vc,
 		/**
-		 * 读取已捕获的输出文本。
-		 * @returns {string} 已捕获输出（各条 `toString()` 拼接）。
+		 * 读取已捕获的输出文本（重复行已压缩）。
+		 * @returns {string} 已捕获输出。
 		 */
-		text: () => vc.outputs,
+		text: () => deduper.finish().text,
 	}
 }
 

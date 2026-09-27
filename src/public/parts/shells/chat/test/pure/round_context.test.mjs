@@ -187,4 +187,3 @@ Deno.test('injectRoundEntries does not call ClearPendingMessages', async () => {
 	await injectRoundEntries(args, prompt)
 	assertEquals(cleared, 0, '清除待触发已改由 Update({ forRound: true }) 消费')
 })
-

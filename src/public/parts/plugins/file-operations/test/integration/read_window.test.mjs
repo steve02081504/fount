@@ -87,3 +87,20 @@ Deno.test('isProbablyTextBuffer detects NUL bytes', () => {
 	assert(isProbablyTextBuffer(Buffer.from('hello world')))
 	assert(!isProbablyTextBuffer(Buffer.from([0x68, 0x00, 0x69])))
 })
+
+Deno.test('windowText compresses long identical-line runs and reports omittedLines', () => {
+	const text = ['top', ...Array.from({ length: 40 }, () => 'repeat'), 'bottom'].join('\n')
+	const result = windowText(text)
+	assert(result.omittedLines > 0, '应报告压缩掉的重复行')
+	assert(result.text.includes('已省略'), '应插入省略标记')
+	assert(!result.text.includes('repeat\nrepeat\nrepeat\nrepeat'), '连续重复行应被压缩')
+	const notice = formatReadWindowNotice(result)
+	assert(notice.includes('连续重复内容已压缩'), '提示应说明重复行被压缩')
+})
+
+Deno.test('windowText leaves short repeats intact', () => {
+	const result = windowText('a\na\na\na')
+	assertEquals(result.omittedLines, 0)
+	assertEquals(result.text, 'a\na\na\na')
+})
+

@@ -22,6 +22,7 @@ function defaultGetApi() {
 
 /**
  * 护栏一条工具日志正文：超大时头尾保留并把完整内容落盘，再按单行上限截断过长行。
+ * `guardOutput` 已先压缩连续完全相同的整行，浏览器脚本返回的超长重复结果不会撑爆上下文 / 落盘文件。
  * 浏览器可见 HTML / JS 返回值常为 minify 后的超长单行，落盘保证完整内容可回查，单行截断保证正文可读。
  * @param {string} content - 原始正文。
  * @param {string} name - 工具名（用作落盘文件名提示）。

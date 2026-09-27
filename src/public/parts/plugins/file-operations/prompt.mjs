@@ -17,7 +17,7 @@ export async function getFileOperationsPrompt(args) {
 </view-file>
 
 - 大文件分页读取：\`offset\` 为起始行（默认 1），\`limit\` 为最多读取行数（默认 2000）
-- 单行超过 \`max-line-chars\`（默认 2000 字符）会被截断；整体超过 \`max-chars\`（默认 50000 字符）会提前停止并提示续读
+- 单行超过 \`max-line-chars\`（默认 2000）会被截断；整体超过 \`max-chars\`（默认 50000）会提前停止并提示续读；连续完全相同的行会折叠
 - 结果被截断时按提示用 \`offset\`/\`limit\` 续读；避免反复读取同样的小片段，编辑请用 <replace-file> 而不是重复查看
 - 最新用户消息中提及的、能按当前工作目录解析的本地文件会被自动预读并注入，无需再次 <view-file>
 

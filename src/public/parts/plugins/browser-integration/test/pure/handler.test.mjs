@@ -1,5 +1,5 @@
 /* global Deno */
-import { assertEquals, assertStringIncludes } from 'jsr:@std/assert'
+import { assert, assertEquals, assertStringIncludes } from 'jsr:@std/assert'
 
 import { flattenReplyHandlers } from '../../../../shells/chat/src/reply/defineReplyHandler.mjs'
 import {
@@ -141,6 +141,31 @@ Deno.test('get-visible-html guards oversized page HTML', async () => {
 	}, { inner: '1' })
 	assertStringIncludes(logs[0].content, '完整内容已保存到')
 	assertStringIncludes(logs[0].content, '本行已截断')
+})
+
+Deno.test('run-js-on-page compresses long identical-line runs in the result', async () => {
+	const logs = []
+	const api = {
+		...makeFakeApi([]),
+		/**
+		 * 返回一个含大量连续重复行的脚本结果。
+		 * @returns {Promise<object>} 运行结果。
+		 */
+		runJsOnPage: async () => ({ result: ['same line', ...Array.from({ length: 3000 }, () => 'same line')] }),
+	}
+	const handler = createBrowserIntegrationReplyHandler({
+		/** 注入返回重复行结果的 fake API 取值器。 */
+		getApi: apiGetter(api)
+	})
+	const runJs = findHandler(handler, 'browser-integration.run-js-on-page')
+	await runJs.handle({}, {
+		username: 'u',
+		char_id: 'c',
+		AddLongTimeLog: collectLog(logs),
+	}, { inner: '<pageId>1</pageId><script>return list</script>' })
+	assert(logs[0], '应写入工具日志')
+	assertStringIncludes(logs[0].content, '已省略', '连续重复行应被压缩')
+	assert(!logs[0].content.includes('\'same line\',\n  \'same line\',\n  \'same line\',\n  \'same line\''), '不应保留巨量重复行')
 })
 
 Deno.test('run-js-on-page reports a missing script tag', async () => {

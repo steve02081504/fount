@@ -13,9 +13,12 @@ import { available } from 'npm:@steve02081504/exec'
 
 import {
 	createCollectingConsole,
+	createLineDedupe,
+	dedupeConsecutiveLines,
 	execShellWithTimeout,
 	formatElapsed,
 	guardOutput,
+	OUTPUT_DEDUPE_EDGE_LINES,
 	parseRunLimits,
 	runJsWithTimeout,
 	SHELL_DEFAULT_TIMEOUT_MS,
@@ -42,15 +45,15 @@ async function pickShell() {
 /**
  * 生成指定用途的 shell 命令。
  * @param {string} shell - shell 名。
- * @param {'large'|'sleep'} kind - 用途。
+ * @param {'large'|'sleep'} [kind='large'] - 用途；`large` 为各行互不相同的大输出（不会被重复行压缩），`sleep` 为长睡眠。
  * @returns {string} 命令。
  */
-function commandFor(shell, kind) {
+function commandFor(shell, kind = 'large') {
 	const posix = shell === 'bash' || shell === 'sh'
 	if (kind === 'sleep') return posix ? 'sleep 5' : 'Start-Sleep -Seconds 5'
 	return posix
-		? 'i=0; while [ $i -lt 2000 ]; do printf \'xxxxxxxxxxxxxxxxxxxx\\n\'; i=$((i+1)); done'
-		: 'for ($i = 0; $i -lt 2000; $i++) { \'xxxxxxxxxxxxxxxxxxxx\' }'
+		? 'i=0; while [ $i -lt 2000 ]; do printf \'line-%s-xxxxxxxxxxxxxx\\n\' "$i"; i=$((i+1)); done'
+		: 'for ($i = 0; $i -lt 2000; $i++) { "line-$i-xxxxxxxxxxxxxx" }'
 }
 
 /**
@@ -345,7 +348,7 @@ Deno.test('code-execution run-* 截断大 shell 输出并保留完整展示', as
 	const shell = await pickShell()
 	if (!shell) return
 	const { logs, result, args } = createHandlerArgs()
-	result.content = `<run-${shell}>${commandFor(shell, 'large')}</run-${shell}>`
+	result.content = `<run-${shell}>${commandFor(shell)}</run-${shell}>`
 	assertEquals(await runReplyHandlers(result, args, getCodeExecutionReplyHandlers()), true)
 	const entry = findToolEntry(logs)
 	assert(entry, 'tool entry should exist')
@@ -353,7 +356,7 @@ Deno.test('code-execution run-* 截断大 shell 输出并保留完整展示', as
 	assertStringIncludes(entry.content, '完整内容已保存到')
 	assertStringIncludes(entry.content, '耗时')
 	assert(entry.content_for_show.length > entry.content.length, 'full content should be kept for display')
-	assertStringIncludes(entry.content_for_show, commandFor(shell, 'large'), '人类展示层应含执行代码')
+	assertStringIncludes(entry.content_for_show, commandFor(shell), '人类展示层应含执行代码')
 	assert(!logs.some(log => log.role === 'char'), 'run 步骤不应再以 char 角色重放（原始生成由管线负责）')
 })
 
@@ -512,4 +515,95 @@ Deno.test('融合调用：跨插件工具按生成文本顺序依次执行后再
 	finally {
 		await fs.rm(root, { recursive: true, force: true })
 	}
+})
+
+Deno.test('dedupeConsecutiveLines collapses long identical-line runs into head/notice/tail', () => {
+	const text = ['head', ...Array.from({ length: 10 }, () => 'same'), 'tail'].join('\n')
+	const { text: compressed, omittedLines } = dedupeConsecutiveLines(text)
+	assertEquals(omittedLines, 10 - OUTPUT_DEDUPE_EDGE_LINES * 2)
+	assertEquals(compressed.split('\n'), [
+		'head',
+		'same', 'same', 'same',
+		`…[已省略 ${10 - OUTPUT_DEDUPE_EDGE_LINES * 2} 行相同内容]…`,
+		'same', 'same', 'same',
+		'tail',
+	])
+	// 短重复段原样保留（不值得压缩）
+	assertEquals(dedupeConsecutiveLines('a\na\na\na').text, 'a\na\na\na')
+	assertEquals(dedupeConsecutiveLines('a\na\na\na').omittedLines, 0)
+})
+
+Deno.test('createLineDedupe streams to the same result regardless of chunk boundaries', () => {
+	const text = ['head', ...Array.from({ length: 50 }, () => 'dup'), 'tail'].join('\n')
+	const reference = dedupeConsecutiveLines(text)
+	for (const chunkSize of [1, 3, 7, 9999]) {
+		const deduper = createLineDedupe()
+		for (let i = 0; i < text.length; i += chunkSize) deduper.push(text.slice(i, i + chunkSize))
+		const got = deduper.finish()
+		assertEquals(got.text, reference.text, `chunkSize=${chunkSize} 文本应一致`)
+		assertEquals(got.omittedLines, reference.omittedLines, `chunkSize=${chunkSize} 省略数应一致`)
+	}
+	// finish 幂等
+	const idempotent = createLineDedupe()
+	idempotent.push('x\ny\n')
+	const first = idempotent.finish()
+	idempotent.push('z\n')
+	assertEquals(idempotent.finish(), first)
+})
+
+Deno.test('createCollectingConsole compresses repeated console lines', () => {
+	const { console: vc, text } = createCollectingConsole()
+	for (let i = 0; i < 20; i++) vc.log('repeated')
+	vc.log('done')
+	assertEquals(text(), dedupeConsecutiveLines('repeated\n'.repeat(20) + 'done\n').text)
+	assert(!text().includes('repeated\nrepeated\nrepeated\nrepeated\n'), '连续重复行应被压缩')
+})
+
+Deno.test('guardOutput dedupes repeated lines before deciding to spill', async () => {
+	// 前段各不相同（保证未压缩时超限），后段大量连续重复（应被压缩，压缩后小到不必落盘）
+	const varied = Array.from({ length: 300 }, (_, i) => `unique-prefix-${i}-xxxxxxxxxxxxxxxx`).join('\n')
+	const repeated = Array.from({ length: 3000 }, () => 'duplicated-line').join('\n')
+	const result = await guardOutput(`${varied}\n${repeated}`, { name: 'dedupe-unit' })
+	assert(!result.truncated, '压缩后未超限，不应再落盘（避免无谓的写盘 + 后续读取）')
+	assert(!result.text.includes('duplicated-line\nduplicated-line\nduplicated-line\nduplicated-line'), '返回文本应是压缩后的')
+	assert(result.text.includes('…[已省略'), '返回文本应含省略标记')
+	assert(!result.savedPath, '未超限时不应有落盘路径')
+})
+
+Deno.test('guardOutput spills the already-deduped text when it still exceeds the limit', async () => {
+	// 大量各不相同的行（压缩后仍超限）+ 一段重复行（应被压缩进落盘内容）
+	const varied = Array.from({ length: 4000 }, (_, i) => `unique-${i}-${'x'.repeat(20)}`).join('\n')
+	const repeated = Array.from({ length: 2000 }, () => 'duplicated-line').join('\n')
+	const result = await guardOutput(`${varied}\n${repeated}`, { name: 'dedupe-spill' })
+	assert(result.truncated, '压缩后仍超限，应落盘')
+	const saved = await fs.readFile(result.savedPath, 'utf8')
+	assert(!saved.includes('duplicated-line\nduplicated-line\nduplicated-line\nduplicated-line'), '落盘内容应是压缩后的')
+	assert(saved.includes('…[已省略'), '落盘内容应含省略标记')
+})
+
+Deno.test('code-execution run-js 压缩 console 连续重复行后再进上下文', async () => {
+	const { logs, result, args } = createHandlerArgs()
+	result.content = '<run-js>for (let i = 0; i < 50; i++) console.log("spam-line"); return "ok"</run-js>'
+	assertEquals(await runReplyHandlers(result, args, getCodeExecutionReplyHandlers()), true)
+	const entry = findToolEntry(logs)
+	assert(entry, 'tool entry should exist')
+	assert(entry.content.includes('已省略'), '连续重复行应被压缩进省略标记')
+	assert(!entry.content.includes('spam-line\nspam-line\nspam-line\nspam-line'), '不应保留全部重复行')
+	assertStringIncludes(entry.content, 'ok', '结果部分不受重复行压缩影响')
+})
+
+Deno.test('code-execution run-* 压缩 shell 连续重复行', async () => {
+	const shell = await pickShell()
+	if (!shell) return
+	const { logs, result, args } = createHandlerArgs()
+	const posix = shell === 'bash' || shell === 'sh'
+	const command = posix
+		? 'for i in $(seq 1 50); do echo spam-line; done'
+		: 'for ($i = 0; $i -lt 50; $i++) { \'spam-line\' }'
+	result.content = `<run-${shell}>${command}</run-${shell}>`
+	assertEquals(await runReplyHandlers(result, args, getCodeExecutionReplyHandlers()), true)
+	const entry = findToolEntry(logs)
+	assert(entry, 'tool entry should exist')
+	assert(entry.content.includes('已省略'), '连续重复行应被压缩进省略标记')
+	assert(!entry.content.includes('spam-line\nspam-line\nspam-line\nspam-line'), '不应保留全部重复行')
 })

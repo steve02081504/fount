@@ -10,6 +10,8 @@ import { available, removeTerminalSequences, shell_exec_map } from 'npm:@steve02
 
 import {
 	createCollectingConsole,
+	createLineDedupe,
+	dedupeConsecutiveLines,
 	formatElapsed,
 	formatTimeoutNotice,
 	guardOutput,
@@ -650,20 +652,24 @@ function createInlineHandle(lang) {
  */
 async function executeRunJs({ runtime, args, call, limits, remote, stream }) {
 	const collecting = createCollectingConsole(stream ?? undefined)
-	const remoteOutput = []
+	// 远程控制台文本同样在进入时流式压缩连续重复行。
+	const remoteDeduper = createLineDedupe()
 	/**
-	 * 收集远程控制台文本并转发实时输出。
+	 * 收集远程控制台文本（流式压缩）并转发实时输出。
 	 * @param {'stdout'|'stderr'} channel - 输出通道。
 	 * @param {string} data - 输出分片。
 	 * @returns {void} 无返回值。
 	 */
-	const onRemoteOutput = (channel, data) => { remoteOutput.push(String(data ?? '')); stream?.(channel, data) }
+	const onRemoteOutput = (channel, data) => {
+		remoteDeduper.push(String(data ?? ''))
+		stream?.(channel, data)
+	}
 	const { evalResult, timedOut, elapsedMs } = remote
 		? await runJsWithTimeout(() => runtime.executorFor(call.params).execJsWithTimeout(call.inner, limits.timeoutMs, { onOutput: onRemoteOutput, callbackPartpath: remoteToolCallbackPartpath(args) }), limits.timeoutMs)
 		: await runJsWithTimeout(() => runtime.runJscodeForAI(call.inner, collecting.console), limits.timeoutMs)
 	runtime.execedCodes[call.inner] = evalResult ?? { timedOut: true }
 	const elapsedText = formatElapsed(elapsedMs)
-	const output = remote ? remoteOutput.join('') : collecting.text()
+	const output = remote ? remoteDeduper.finish().text : collecting.text()
 	const contentParts = []
 	const showParts = []
 
@@ -813,7 +819,10 @@ async function executeRunShell({ runtime, args, call, limits, shellName, stream 
 			 * @param {string} data - 分片文本。
 			 * @returns {void}
 			 */
-			onOutput: (channel, data) => { chunks.push(String(data ?? '')); stream?.(channel, data) },
+			onOutput: (channel, data) => {
+				chunks.push(String(data ?? ''))
+				stream?.(channel, data)
+			},
 			callbackPartpath: remoteToolCallbackPartpath(args),
 		})
 	} catch (err) { shell_result = err }
@@ -833,9 +842,9 @@ async function executeRunShell({ runtime, args, call, limits, shellName, stream 
 		showBody = fullOutput
 	}
 	else {
-		// agent 层不含终端控制序列；优先用流式累积的原始输出（去掉序列）以覆盖远程未清理的情形
+		// agent 层不含终端控制序列：优先用流式累积的原始输出以覆盖远程未清理的情形，再去序列、压缩连续重复行
 		const buffered = shell_result?.stdall ?? [shell_result?.stdout, shell_result?.stderr].filter(Boolean).join('\n') ?? ''
-		const output = removeTerminalSequences(rawOutput || buffered)
+		const output = dedupeConsecutiveLines(removeTerminalSequences(rawOutput || buffered)).text
 		const header = `退出码 ${shell_result?.code ?? '(无)'}${shell_result?.signal ? `，信号 ${shell_result.signal}` : ''}${timedOut ? '（超时）' : ''}${elapsedText ? `，耗时 ${elapsedText}` : ''}：`
 		fullOutput = header + '\n' + output + notice
 		// 展示层保留原始 ANSI：用 ansi 代码块呈色
