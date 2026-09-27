@@ -46,11 +46,13 @@ AI 编码会话 shell：与任意角色就工作区对话，在本机或已连�
   - 运行身份：客户端可在请求中带 `runId`（缺省由服务端生成）；服务端在每个回帧附带 `runId` 与 `sessionId`，并先回一帧 `{ type: 'run-start' }`。客户端据此丢弃被新请求取代的过期运行的流式事件（避免跨轮串写）。同一会话已有生成运行时，新请求会先中止旧运行（各自收尾落盘）。
   - 客户端 → `{ type: 'send', runId?, session, machine, workdir, ai_source?, profile?, content, files?, clientEntryId? }`：触发角色回复。`files`（可选）为附件数组 `{ name, mime_type, buffer: base64, description }`，并入用户消息条目（sessionToChatLog 解码后随 chat_log 供角色读取）。`clientEntryId`（可选）为前端已乐观插入 `session.entries` 的用户条目 id；服务端若在该 session 中找到同 id 条目则不再追加/回传用户消息（避免重复）。服务端先回 `{ type: 'run-start' }`，流式回 `{ type: 'preview', content }`；多轮生成中每轮已完成的 tool 日志 / 角色轮次经 `{ type: 'entries-append', entries }` 增量推送（在对应 `preview` 之前，`done` 只补发剩余条目，不重复）；执行工具（`<run-*>` / `<inline-*>`）时穿插回 `{ type: 'tool-output', callId, phase: 'start'|'chunk'|'end', name, lang?, code?, stream?, data? }` 实时转发工具输出；结束回 `{ type: 'done', entries, memory }`（entries = 用户消息（未带 clientEntryId 时）+ tool 日志 + 角色回复）。会话条目同时保留 agent 层 `content` 与展示层 `content_for_show`/`content_for_edit`、`charVisibility`，重载时据此完整还原。
   - 客户端 → `{ type: 'regen', runId?, session, machine, workdir, ai_source?, profile? }`：以现有 entries 重新生成最后一条角色回复（前端应先弹出旧回复）。服务端同样先流式 `preview`，结束回 `{ type: 'done', entries, memory }`（entries 仅含 tool 日志 + 新角色回复；中断回 `{ type: 'aborted', entries }`，此时旧回复已被弹出、会话暂无该回复）。
-  - 客户端 → `{ type: 'trigger', runId?, session, machine, workdir, ai_source?, profile? }`：按当前会话原样生成（不新增用户消息），供异步完成通知在空闲时让角色回应。
+  - 客户端 → `{ type: 'trigger', runId?, session, machine, workdir, ai_source?, profile? }`：按当前会话原样生成（不新增用户消息）；后端唤醒在无页面连接时也会自行发起该运行。
+  - 客户端 → `{ type: 'attach', sessionId }`：接入一个后端已启动（无对应 socket）的当前会话运行；服务端回 `run-start` 并补发本运行已产生的全部新条目（`entries-append`，含运行中追加的系统通告，按 id 去重），随后继续推送 `preview` / `entries-append`。无活跃运行时回 `{ type: 'error', error: 'no active run' }`。
   - 客户端 → `{ type: 'abort', sessionId? }`：中断该会话当前生成；服务端回 `{ type: 'aborted', entries }`。
   - 持久化：服务端在运行开始前写一份含「生成中」占位（`is_generating: true`）的会话到工作区磁盘，收尾（`done`/`aborted`/`error`）时用最终条目替换后写回；`ws.close()` 不会中断生成，生成会继续并落盘（旧运行收尾同样落盘）。页面据此可在重载后轮询 `/sessions/:id` 恢复。
   - 出错回 `{ type: 'error', entries, error }`。
   - 每次 `done` 后服务端向用户发送「对话已完成」通知：浏览器在线经 `/ws/notify`，其次 Web Push，均不可达时回退桌面通知（点击打开对应页面）。
+  - 服务端事件（经全局事件通道，非本 WS）：`code-run-started { chatName, runId }`（后端无页面连接时启动了运行，打开着的页面据此进入生成态并发 `attach`）；`code-session-entry { chatName, entry }`（非角色条目（异步完成通告等）的追加，仅用于展示——运行中追加进 `run.requestSession.entries` 并随运行收尾落盘，同时发出该事件供打开着的页面即时合并；无活跃运行时直接落盘工作区会话后发出）。
 
 ## 工作区钩子（`.agents/fount/code.json` → `hooks`）
 

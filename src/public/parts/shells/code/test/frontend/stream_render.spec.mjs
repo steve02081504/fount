@@ -68,7 +68,7 @@ test('background completion notices appear before the ongoing reply', async ({ p
 	await holdLocale(page)
 	const result = await page.evaluate(async () => {
 		const { store } = await import('/parts/shells:code/src/store.mjs')
-		const { handleAsyncEntryEvent, newSessionObject, startGeneratingBubble } = await import('/parts/shells:code/src/session.mjs')
+		const { handleSessionEntryEvent, newSessionObject, startGeneratingBubble } = await import('/parts/shells:code/src/session.mjs')
 		const { renderMessages } = await import('/parts/shells:code/src/messages.mjs')
 		const session = store.session = newSessionObject('async-notice-test')
 		session.entries = [{ id: 'prompt', role: 'user', uid: 'user', content: '启动后台任务', time: new Date().toISOString() }]
@@ -77,7 +77,7 @@ test('background completion notices appear before the ongoing reply', async ({ p
 		store.generatingSession = session
 		startGeneratingBubble()
 		for (const id of ['notice-a', 'notice-b', 'notice-c'])
-			handleAsyncEntryEvent({
+			handleSessionEntryEvent({
 				chatName: `code-${session.id}`, entry: {
 					id, uid: 'system', role: 'system', name: 'async-task', content: `后台任务 ${id} 已完成`, time: new Date().toISOString(),
 				}

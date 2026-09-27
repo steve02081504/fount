@@ -12,8 +12,11 @@ import { localhostLocales } from '../../../../../scripts/i18n/bare.mjs'
 import { getPartInfo } from '../../../../../scripts/locale.mjs'
 import { guardOutput } from '../../../../../scripts/shell_guard.mjs'
 import { getAnyPreferredDefaultPart, loadPart } from '../../../../../server/parts_loader.mjs'
+import { sendEventToUser } from '../../../../../server/web_server/event_dispatcher.mjs'
 import { finishAsyncGeneration } from '../../../plugins/async-task/registry.mjs'
 
+import { activeCodeRuns, codeRunKey, codeWakes, requestCodeRunStart } from './runs.mjs'
+import { loadSession, saveSession } from './sessions.mjs'
 import { codeWorld } from './world.mjs'
 
 /** `!` 用户命令 prompt 层截断结果的缓存（键：entry.id + 内容长度）。 */
@@ -84,7 +87,7 @@ async function sessionToChatLog(entries) {
  * @param {AbortSignal} [options.signal] - 中断信号。
  * @returns {Promise<chatReplyRequest_t>} 构建好的请求。
  */
-async function buildCodeChatRequest({ username, session, requestSession, machine, workdir, ai_source, profile, generationId, onPreview, onToolOutput, finishRound, signal }) {
+export async function buildCodeChatRequest({ username, session, requestSession, machine, workdir, ai_source, profile, generationId, onPreview, onToolOutput, finishRound, signal }) {
 	const char = await loadPart(username, 'chars/' + session.charname)
 	const personaName = getAnyPreferredDefaultPart(username, 'personas')
 	const user = personaName ? await loadPart(username, 'personas/' + personaName) : null
@@ -167,16 +170,26 @@ async function buildCodeChatRequest({ username, session, requestSession, machine
 		},
 		/**
 		 * 重读会话条目并重建请求（供轮次刷新 `injectRoundEntries` 采集新条目）。
+		 * `forRound: true` 时在读取前后取/记唤醒序号，消费该槽位已到达的唤醒。
+		 * @param {{forRound?: boolean}} [updateOptions] 刷新选项
 		 * @returns {Promise<object>} 刷新后的请求
 		 */
-		Update: () => buildCodeChatRequest({ username, session, machine, workdir, ai_source, profile, generationId, onPreview, onToolOutput, finishRound, signal }),
+		Update: async (updateOptions = {}) => {
+			const { forRound = false } = updateOptions
+			const snapshot = forRound ? codeWakes.snapshot() : null
+			const rebuilt = await buildCodeChatRequest({ username, session, machine, workdir, ai_source, profile, generationId, onPreview, onToolOutput, finishRound, signal })
+			if (forRound) codeWakes.observe(codeRunKey(username, session.id), snapshot)
+			return rebuilt
+		},
 		/**
-		 * 追加一条日志条目。`role === 'char'`（或缺省）作为角色回复写入；其余 role（异步完成通知等）额外
-		 * 推送 `code-async-entry` 事件，让前端持久化并在空闲时触发生成。
+		 * 追加一条日志条目。`role === 'char'`（或缺省）作为角色回复写入（由生成流与 `done` 帧呈现）；
+		 * 其余 role（异步完成通知等）按原样写入，并广播 `code-session-entry` 让已打开的页面即时合并。
+		 * 有进行中的运行时写入其权威副本（随运行收尾落盘，并登记进 `run.allNewEntries` 以便 attach 回放）；
+		 * 否则写入工作区磁盘，由调用方的 `RequestCharReply` 决定何时唤醒生成。
 		 * @param {object} entry 条目
-		 * @returns {Promise<void>}
+		 * @returns {Promise<object>} 规整后的条目
 		 */
-		AddChatLogEntry: async entry => {
+		AppendChatLogEntry: async entry => {
 			const role = entry?.role ?? 'char'
 			const content = String(entry?.content ?? '')
 			const show = entry?.content_for_show
@@ -193,26 +206,36 @@ async function buildCodeChatRequest({ username, session, requestSession, machine
 				time: entry?.time_stamp instanceof Date ? entry.time_stamp.toISOString() : String(entry?.time_stamp ?? new Date().toISOString()),
 				files: [],
 			}
-			session.entries.push(normalized)
-			if (role === 'char') return
-			try {
-				const { sendEventToUser } = await import('../../../../../server/web_server/event_dispatcher.mjs')
-				sendEventToUser(username, 'code-async-entry', { chatName: 'code-' + session.id, entry: normalized })
+			// 写入运行中的权威副本：`buildFinalEntries` 会把 requestSession.entries 合并进收尾落盘；
+			// 同时登记进 allNewEntries，使 attach 回放与 done 帧的 entries 都包含该条目。
+			const run = activeCodeRuns.get(codeRunKey(username, session.id))
+			if (run?.requestSession) {
+				run.requestSession.entries.push(normalized)
+				run.allNewEntries?.push(normalized)
 			}
-			catch (error) {
-				console.warn('code shell: 异步通知事件发送失败', error)
+			else {
+				// 无进行中的运行（过期请求）：直接落盘工作区会话
+				const workTarget = { machine: String(machine ?? '0'), path: String(workdir || '') }
+				const latest = await loadSession(username, workTarget, session.id)
+				if (latest) {
+					latest.entries = Array.isArray(latest.entries) ? latest.entries : []
+					latest.entries.push(normalized)
+					await saveSession(username, workTarget, latest)
+				}
 			}
+			// 非角色条目的展示事件（与旧 code-async-entry 语义一致）：已打开的页面据此即时合并
+			if (role !== 'char')
+				sendEventToUser(username, 'code-session-entry', { chatName: 'code-' + session.id, entry: normalized })
+			return normalized
 		},
 		/**
-		 * 轮次刷新已让角色看到新内容：通知前端清除「待补触发」标记，避免生成结束再补一次。
-		 * @returns {void}
+		 * 纯唤醒：请后端至少再看一次本会话的权威日志（空闲时启动生成，生成中标记待观察）。
+		 * 调度完成即返回，不等生成结束。
+		 * @returns {Promise<void>}
 		 */
-		ClearPendingMessages: () => {
-			void import('../../../../../server/web_server/event_dispatcher.mjs').then(({ sendEventToUser }) => {
-				sendEventToUser(username, 'code-async-consumed', { chatName: 'code-' + session.id })
-			}).catch(error => {
-				console.warn('code shell: 异步通知消费事件发送失败', error)
-			})
+		RequestCharReply: async () => {
+			void requestCodeRunStart({ username, sessionId: session.id, machine, workdir, ai_source: ai_source || undefined, profile })
+				.catch(error => console.warn('code shell: 唤醒生成失败', error))
 		},
 		ai_source: aiSourceInstance,
 		workdir: session.memory.workdir ?? { machine: String(machine ?? '0'), path: workdir },

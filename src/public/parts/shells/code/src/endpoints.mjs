@@ -43,6 +43,7 @@ import {
 } from './lifecycle.mjs'
 import { triggerCodeReply } from './request.mjs'
 import { runShellCommand } from './runner.mjs'
+import { activeCodeRuns, codeRunKey, codeWakes, requestCodeRunStart, setCodeRunStarter } from './runs.mjs'
 import { deleteSession, listSessions, loadSession, saveSession } from './sessions.mjs'
 import { registerCodeShutdown } from './shutdown.mjs'
 import { readWorkspaceConfig } from './workspace_config.mjs'
@@ -357,12 +358,6 @@ function sanitizeEntry(entry) {
 	}
 }
 
-/**
- * 进行中的生成运行：`username\0sessionId` → `{ runId, controller, socket }`。
- * 后端持有运行身份：WS 断开不再立即中断生成，运行照常收尾并落盘，避免页面重置丢结果。
- * @type {Map<string, {runId: string, controller: AbortController, socket: object|null}>}
- */
-const activeCodeRuns = new Map()
 let startCodeRun
 let shutdownRegistered = false
 
@@ -481,16 +476,6 @@ async function regenCodeSession(username, ctx, content) {
 }
 
 /**
- * 生成运行键（用户 + 会话）。
- * @param {string} username - 用户名。
- * @param {string} sessionId - 会话 id。
- * @returns {string} 键。
- */
-function codeRunKey(username, sessionId) {
-	return username + '\u0000' + sessionId
-}
-
-/**
  * 设置 API 端点。
  * @param {object} router - Express 的路由实例。
  */
@@ -500,6 +485,14 @@ export function setEndpoints(router) {
 		shutdownRegistered = true
 	}
 	setHookRuntime({ regen: regenCodeSession })
+	// 唤醒启动器：从工作区磁盘读回最新会话（去掉生成中占位）后触发一次后端生成；
+	// request.mjs 的过期请求对象据此请求唤醒，而无需反向依赖 endpoints。
+	setCodeRunStarter(async ({ username, sessionId, machine, workdir, ai_source, profile }) => {
+		const session = await loadSession(username, { machine: String(machine ?? '0'), path: String(workdir || '') }, sessionId)
+		if (!session || !startCodeRun) return
+		session.entries = (session.entries || []).filter(entry => !entry.is_generating)
+		await startCodeRun(username, { type: 'trigger', session, machine, workdir, ai_source, profile }, null)
+	})
 	// 机器列表（含本机与已连接 subfount）
 	router.get('/api/parts/shells\\:code/machines', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
@@ -871,7 +864,29 @@ export function setEndpoints(router) {
 			run?.controller.abort()
 			return
 		}
-		// trigger：按当前会话原样生成（不新增用户消息），供异步通知空闲时由前端触发
+		// attach：页面接入一个后端已启动（无 socket）的运行，先补发运行身份与已产生的条目，再接收后续流式帧
+		if (msg.type === 'attach') {
+			const run = activeCodeRuns.get(codeRunKey(username, msg.sessionId))
+			if (!run) {
+				ws?.send(JSON.stringify({ type: 'error', sessionId: msg.sessionId, error: 'no active run' }))
+				return
+			}
+			run.socket = ws
+			if (ws) ws.codeRun = run
+			/**
+			 * 向接入连接回放一帧（已附带运行身份）。
+			 * @param {object} payload - 帧负载（需含 type）。
+			 * @returns {void}
+			 */
+			const emit = payload => { try { ws?.send(JSON.stringify({ runId: run.runId, sessionId: msg.sessionId, ...payload })) } catch { /* 连接已关闭 */ } }
+			emit({ type: 'run-start' })
+			// 回放本运行已产生的权威新条目（allNewEntries + requestSession 追加，按 id 去重）；
+			// 前端按 id 去重，故一次回放完整集合不会重复渲染。
+			const replayEntries = run.buildReplayEntries?.() || run.allNewEntries || []
+			if (replayEntries.length) emit({ type: 'entries-append', entries: [...replayEntries] })
+			return
+		}
+		// trigger：按当前会话原样生成（不新增用户消息），供异步通知空闲时由后端唤醒
 		if (msg.type !== 'send' && msg.type !== 'regen' && msg.type !== 'trigger') return
 
 		const { session, machine = 0, workdir, ai_source, profile, content } = msg
@@ -880,12 +895,15 @@ export function setEndpoints(router) {
 			return
 		}
 		const runKey = codeRunKey(username, session.id)
-		// 同一会话已有进行中的生成：中止旧运行（各自收尾落盘），避免事件串台
+		// 同一会话已有进行中的生成：中止旧运行（各自收尾落盘），标记其被取代以抑制它的补触发，避免事件串台
 		const previous = activeCodeRuns.get(runKey)
 		if (previous) {
+			previous.superseded = true
 			previous.controller.abort()
 			await previous.finished
 		}
+		// 本运行持有一份唤醒调度槽：期间到达的唤醒由 Update({ forRound: true }) 观察消费，未消费则 finally 补触发
+		codeWakes.tryBegin(runKey)
 		const runId = typeof msg.runId === 'string' && msg.runId ? msg.runId : randomUUID()
 		const thisRequestController = new AbortController()
 		let finishRun
@@ -894,6 +912,7 @@ export function setEndpoints(router) {
 		const jobData = { sessionId: session.id, workTarget: { machine: String(machine ?? '0'), path: String(workdir || '') }, ai_source, profile, startedAt: Date.now() }
 		const run = {
 			runId, controller: thisRequestController, socket: ws, finished, completed: false,
+			wakeHeld: true, superseded: false, requestSession: null, allNewEntries: null,
 			/**
 			 * 记录导致中断的原因和时间。
 			 * @param {string} reason - 信号名或普通重启。
@@ -921,6 +940,8 @@ export function setEndpoints(router) {
 		const baseEntries = [...session.entries || []]
 		const baseIds = new Set(baseEntries.map(entry => String(entry?.id)))
 		const requestSession = { ...session, entries: [...baseEntries] }
+		// 暴露给 request.mjs：过期请求对象可把异步追加写进运行中的权威副本
+		run.requestSession = requestSession
 		const stopWake = onSystemWake(duration => {
 			requestSession.entries.push({
 				id: randomUUID(), role: 'system', uid: 'system', name: 'system',
@@ -929,6 +950,8 @@ export function setEndpoints(router) {
 		})
 		/** 本轮新增条目（持久化用；按 id 去重、保持顺序）。 */
 		const allNewEntries = []
+		// 暴露给 attach 重放：页面接入时补发已产生的新条目
+		run.allNewEntries = allNewEntries
 		/** 原始日志下标对应的已发送条目 ID；中断时只保留已完成的轮次。 */
 		const logEntryIds = []
 		/** 已完成轮次的日志数水位；硬中断时丢弃其后的半成品。 */
@@ -948,10 +971,11 @@ export function setEndpoints(router) {
 			return entry
 		}
 		/**
-			 * 合并本轮权威会话条目：基础条目 + 本轮新增 + 请求侧追加（异步通知等）。
-			 * @returns {object[]} 去重后的完整条目列表。
+			 * 按 id 去重后依次追加条目。
+			 * @param {object[]} entries - 待追加的条目序列。
+			 * @returns {object[]} 去重后的条目列表。
 			 */
-		const buildFinalEntries = () => {
+		const dedupeEntries = entries => {
 			const seen = new Set()
 			const out = []
 			/**
@@ -966,11 +990,34 @@ export function setEndpoints(router) {
 				seen.add(id)
 				out.push(entry)
 			}
+			for (const entry of entries) push(entry)
+			return out
+		}
+		/**
+			 * 合并本轮权威会话条目：基础条目 + 本轮新增 + 请求侧追加（异步通知等）。
+			 * @returns {object[]} 去重后的完整条目列表。
+			 */
+		const buildFinalEntries = () => {
+			const out = []
+			/**
+			 * 收集一条非空条目（最终统一去重）。
+			 * @param {object} entry - 待收集的条目。
+			 * @returns {void}
+			 */
+			const push = entry => { if (entry && entry.id != null) out.push(entry) }
 			for (const entry of baseEntries) push(entry)
 			for (const entry of allNewEntries) push(entry)
 			for (const entry of requestSession.entries || []) push(entry)
-			return out
+			return dedupeEntries(out)
 		}
+		/**
+			 * 本运行已产生的权威新条目（不含前端送来的基础条目）：供 attach 页面回放。
+			 * @returns {object[]} 去重后的新条目列表。
+			 */
+		run.buildReplayEntries = () => dedupeEntries([
+			...allNewEntries,
+			...(requestSession.entries || []).filter(entry => !baseIds.has(String(entry?.id))),
+		])
 		/** 已确定条目（send = 用户消息；失败/中断时原样返回）。 */
 		const entries = []
 		/**
@@ -1043,6 +1090,8 @@ export function setEndpoints(router) {
 		if (workPath) StartJob(username, 'shells/code', session.id, jobData)
 		// 生成运行身份：带回 runId 的 run-start 帧（前端据此接纳本运行的事件）
 		send({ type: 'run-start' })
+		// 无 socket 的后台运行（唤醒 / 钩子重生成 / 作业恢复）：广播运行开始，已打开的页面据此 attach 接入
+		if (!ws) sendEventToUser(username, 'code-run-started', { chatName: 'code-' + session.id, runId })
 		// 工作区钩子：任意 agent 开始运行（闭包内 fire-and-forget，不阻塞生成）
 		dispatchAgentStart(username, { machine: workTarget.machine, path: workPath, sessionId: session.id, char: session.charname, generationId, runId })
 		/** 本轮是否成功完成（供工作区钩子判定成功/失败）。 */
@@ -1154,7 +1203,10 @@ export function setEndpoints(router) {
 		}
 		finally {
 			stopWake()
+			const superseded = run.superseded
 			if (activeCodeRuns.get(runKey) === run) activeCodeRuns.delete(runKey)
+			// 本运行结束：返回期间是否有未被 Update({ forRound: true }) 观察到的唤醒
+			const pending = run.wakeHeld ? codeWakes.release(runKey) : false
 			// 工作区钩子：单个 agent 完毕（含失败回灌与重生成）；先于计数递减，避免误触「全部完毕」
 			try {
 				await dispatchAgentFinish(username, {
@@ -1167,6 +1219,13 @@ export function setEndpoints(router) {
 			catch (error) { console.warn('shells/code: agentFinish 钩子失败', error) }
 			finishRun()
 			finishCodeGeneration(username)
+			// 有未消费唤醒且本运行未被更新的运行取代：补一次后端生成（未被取代时磁盘已含唤醒条目）
+			if (pending && !superseded)
+				void requestCodeRunStart({
+					username, sessionId: session.id,
+					machine: workTarget.machine, workdir: workTarget.path,
+					ai_source, profile,
+				}).catch(error => console.warn('shells/code: 补触发唤醒失败', error))
 		}
 	}
 	router.ws('/ws/parts/shells\\:code/session', authenticate, (ws, req) => {

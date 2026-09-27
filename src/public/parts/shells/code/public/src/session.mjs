@@ -820,12 +820,13 @@ function isCurrentRunFrame(msg) {
 /**
  * 进入生成态：登记会话与运行 id、挂出流式气泡并标记待落盘。
  * @param {object} session - 生成会话。
+ * @param {string} [runId] - 权威运行 id（attach 后端已启动的运行时传入；缺省新生成）。
  * @returns {string} 本轮运行 id。
  */
-function beginGeneration(session) {
+function beginGeneration(session, runId = crypto.randomUUID()) {
 	store.generatingSession = session
 	store.generating = true
-	store.generatingRunId = crypto.randomUUID()
+	store.generatingRunId = runId
 	updateSendButton()
 	startGeneratingBubble()
 	markSessionDirty(session)
@@ -867,6 +868,16 @@ async function sendTriggerFrame(session, runId) {
 		ai_source: store.aiSource || '',
 		profile: store.profile,
 	}))
+}
+
+/**
+ * 向后端发送接入帧：接管一个后端已启动（无页面连接）的运行，接收其运行身份与后续流式帧。
+ * @param {object} session - 会话。
+ * @returns {Promise<void>}
+ */
+async function sendAttachFrame(session) {
+	const ws = await getSocket()
+	ws.send(JSON.stringify({ type: 'attach', sessionId: session.id }))
 }
 
 /**
@@ -1124,11 +1135,6 @@ async function finishGeneration(entries, memory, aborted = false) {
 	renderTabs()
 	void refreshAllSessions()
 	void refreshShutdownState()
-	// 生成期间到达、本轮未被轮次刷新消费的通知：补一次生成，避免通知被漏掉
-	if (session.awaitingAsyncTrigger && session === store.session && !aborted) {
-		session.awaitingAsyncTrigger = false
-		void triggerGeneration()
-	}
 }
 
 /** 更新发送按钮（生成中变停止图标）。 */
@@ -1207,25 +1213,12 @@ export async function retryFromError(entry) {
 }
 
 /**
- * 按当前会话原样触发一次生成（不新增用户消息）；用于异步通知抵达时让角色作出回应。
- * @returns {Promise<void>}
- */
-async function triggerGeneration() {
-	const { session } = store
-	if (!session || store.generating || store.recovering || !session.charname) return
-	const runId = beginGeneration(session)
-	try { await sendTriggerFrame(session, runId) }
-	catch (error) { failGeneration(error) }
-}
-
-/**
- * 处理服务端 `code-async-entry` 事件（异步完成通知，仅当前会话）：
- * 追加条目；若当前未在生成则触发一次生成，生成中则记「待补触发」，
- * 由后端轮次刷新（`code-async-consumed`）清除，或在生成结束时补触发。
+ * 处理服务端 `code-session-entry` 事件（后端在无运行时的追加，仅展示层）：
+ * 把条目合并进当前会话并渲染，不触发任何生成（触发由后端自行决定）。
  * @param {object} payload - 事件负载（`{ chatName, entry }`）。
  * @returns {void}
  */
-export function handleAsyncEntryEvent(payload) {
+export function handleSessionEntryEvent(payload) {
 	const { chatName, entry } = payload || {}
 	const { session } = store
 	if (!session || !entry || chatName !== 'code-' + session.id) return
@@ -1234,22 +1227,23 @@ export function handleAsyncEntryEvent(payload) {
 		session.entries.push(entry)
 		if (session === store.session && isEntryVisible(entry)) appendEntryBubble(entry, { before: generatingBubble?.bubble })
 	}
-	markSessionDirty(session)
 	updateEmptyMode()
-	if (!store.generating) void triggerGeneration()
-	else session.awaitingAsyncTrigger = true
 }
 
 /**
- * 处理服务端 `code-async-consumed` 事件：本轮刷新已让角色看到新内容，清除「待补触发」标记。
- * @param {object} payload - 事件负载（`{ chatName }`）。
- * @returns {void}
+ * 处理服务端 `code-run-started` 事件（后端在无页面连接时启动的运行）：
+ * 当前展示该会话且空闲时进入生成态，并向后端发送 `attach` 接入该运行的后续帧。
+ * @param {object} payload - 事件负载（`{ chatName, runId }`）。
+ * @returns {Promise<void>}
  */
-export function handleAsyncConsumedEvent(payload) {
-	const { chatName } = payload || {}
+export async function handleRunStartedEvent(payload) {
+	const { chatName, runId } = payload || {}
 	const { session } = store
 	if (!session || chatName !== 'code-' + session.id) return
-	session.awaitingAsyncTrigger = false
+	if (store.generating || store.recovering) return
+	beginGeneration(session, runId)
+	try { await sendAttachFrame(session) }
+	catch (error) { failGeneration(error) }
 }
 
 /** 消息中的 `@[gist:id]` token。 */
