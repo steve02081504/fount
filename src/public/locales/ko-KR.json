@@ -4067,8 +4067,11 @@
 				"deviceCode": "${uri}를 열고 코드 ${code}를 입력하세요",
 				"credentialsRequired": "JSON에 필요한 필드(region / project / location / account_id / gateway_id / API key 등)를 채우세요. 자격 증명은 환경 변수에서도 올 수 있습니다."
 			},
-			"selectModel": null,
-			"reasoningEffort": null,
+			"selectModel": "모델 선택…",
+			"reasoningEffort": "추론 강도",
+			"useDefaultReasoning": "모델 기본값 사용",
+			"useDefaultReasoningWithLevel": "모델 기본값 사용 (${level})",
+			"unsupportedEffort": "현재 추론 강도가 이 모델의 지원 목록에 없습니다. 기존 설정은 자동으로 변경되지 않습니다.",
 			"copyModelIdTooltip": "모델 ID를 복사하려면 클릭하세요.",
 			"loadModelsFailed": "모델 로드 실패: ${message}",
 			"modelSearchTitle": "모델 카탈로그 탐색",

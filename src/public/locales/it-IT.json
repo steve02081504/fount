@@ -4073,8 +4073,11 @@
 				"deviceCode": "Apri ${uri} e inserisci il codice ${code}",
 				"credentialsRequired": "Compila i campi JSON richiesti (region / project / location / account_id / gateway_id / API key). Le credenziali possono arrivare anche dalle variabili d’ambiente."
 			},
-			"selectModel": null,
-			"reasoningEffort": null,
+			"selectModel": "Seleziona un modello…",
+			"reasoningEffort": "Sforzo di ragionamento",
+			"useDefaultReasoning": "Usa il valore predefinito del modello",
+			"useDefaultReasoningWithLevel": "Usa il valore predefinito del modello (${level})",
+			"unsupportedEffort": "Lo sforzo di ragionamento attuale non è incluso nell'elenco supportato per questo modello; l'impostazione esistente non verrà modificata automaticamente.",
 			"copyModelIdTooltip": "Fare clic per copiare l'ID del modello",
 			"loadModelsFailed": "Impossibile caricare il modello: ${message}",
 			"modelSearchTitle": "Sfoglia il catalogo modelli",

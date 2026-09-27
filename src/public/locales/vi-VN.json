@@ -4067,7 +4067,11 @@
 				"deviceCode": "Mở ${uri} và nhập mã ${code}",
 				"credentialsRequired": "Điền các trường JSON cần thiết (region / project / location / account_id / gateway_id / API key). Thông tin xác thực cũng có thể lấy từ biến môi trường."
 			},
-			"selectModel": null,
+			"selectModel": "Chọn một mô hình…",
+			"reasoningEffort": "Mức độ suy luận",
+			"useDefaultReasoning": "Dùng giá trị mặc định của mô hình",
+			"useDefaultReasoningWithLevel": "Dùng giá trị mặc định của mô hình (${level})",
+			"unsupportedEffort": "Mức độ suy luận hiện tại không có trong danh sách được hỗ trợ cho mô hình này; cài đặt hiện có sẽ không tự động thay đổi.",
 			"copyModelIdTooltip": "Nhấp để sao chép ID mẫu",
 			"loadModelsFailed": "Không tải được mô hình: ${message}",
 			"modelSearchTitle": "Duyệt danh mục mô hình",

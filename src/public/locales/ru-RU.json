@@ -4075,8 +4075,11 @@
 				"deviceCode": "Откройте ${uri} и введите код ${code}",
 				"credentialsRequired": "Заполните нужные поля JSON (region / project / location / account_id / gateway_id / API key). Учётные данные также могут быть в переменных окружения."
 			},
-			"selectModel": null,
-			"reasoningEffort": null,
+			"selectModel": "Выбрать модель…",
+			"reasoningEffort": "Усилие рассуждения",
+			"useDefaultReasoning": "Использовать значение по умолчанию для модели",
+			"useDefaultReasoningWithLevel": "Использовать значение по умолчанию для модели (${level})",
+			"unsupportedEffort": "Текущее усилие рассуждения отсутствует в списке поддерживаемых для этой модели; существующая настройка не будет изменена автоматически.",
 			"copyModelIdTooltip": "Нажмите, чтобы скопировать идентификатор модели",
 			"loadModelsFailed": "Не удалось загрузить модель: `${message}",
 			"modelSearchTitle": "Каталог моделей",

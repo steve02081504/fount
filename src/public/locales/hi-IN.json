@@ -4067,8 +4067,11 @@
 				"deviceCode": "${uri} खोलें और कोड ${code} दर्ज करें",
 				"credentialsRequired": "आवश्यक JSON फ़ील्ड भरें (region / project / location / account_id / gateway_id / API key)। क्रेडेंशियल पर्यावरण चर से भी आ सकते हैं।"
 			},
-			"selectModel": null,
-			"reasoningEffort": null,
+			"selectModel": "मॉडल चुनें…",
+			"reasoningEffort": "तर्क प्रयास",
+			"useDefaultReasoning": "मॉडल डिफ़ॉल्ट का उपयोग करें",
+			"useDefaultReasoningWithLevel": "मॉडल डिफ़ॉल्ट का उपयोग करें (${level})",
+			"unsupportedEffort": "वर्तमान तर्क प्रयास इस मॉडल की समर्थित सूची में नहीं है; मौजूदा सेटिंग स्वतः नहीं बदली जाएगी।",
 			"copyModelIdTooltip": "मॉडल आईडी कॉपी करने के लिए क्लिक करें",
 			"loadModelsFailed": "मॉडल लोड करने में विफल: ${message}",
 			"modelSearchTitle": "मॉडल कैटलॉग देखें",

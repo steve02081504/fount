@@ -4067,8 +4067,11 @@
 				"deviceCode": "Opnaðu ${uri} og sláðu inn kóðann ${code}",
 				"credentialsRequired": "Fylltu út nauðsynlega JSON-reiti (region / project / location / account_id / gateway_id / API key). Aðgangsupplýsingar geta einnig komið úr umhverfisbreytum."
 			},
-			"selectModel": null,
-			"reasoningEffort": null,
+			"selectModel": "Veldu líkan…",
+			"reasoningEffort": "Rökhugsunarstig",
+			"useDefaultReasoning": "Nota sjálfgefið gildi líkans",
+			"useDefaultReasoningWithLevel": "Nota sjálfgefið gildi líkans (${level})",
+			"unsupportedEffort": "Núverandi rökhugsunarstig er ekki á studdum lista þessa líkans; núverandi stilling verður ekki breytt sjálfkrafa.",
 			"copyModelIdTooltip": "Smelltu til að afrita auðkenni fyrirmyndar",
 			"loadModelsFailed": "Mistókst að hlaða líkani: ${message}",
 			"modelSearchTitle": "Skoða líkanaskrá",

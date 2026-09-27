@@ -4067,8 +4067,11 @@
 				"deviceCode": "Öffnen Sie ${uri} und geben Sie den Code ${code} ein",
 				"credentialsRequired": "Füllen Sie die erforderlichen JSON-Felder aus (region / project / location / account_id / gateway_id / API key). Zugangsdaten können auch aus Umgebungsvariablen kommen."
 			},
-			"selectModel": null,
-			"reasoningEffort": null,
+			"selectModel": "Modell auswählen…",
+			"reasoningEffort": "Denkaufwand",
+			"useDefaultReasoning": "Standard des Modells verwenden",
+			"useDefaultReasoningWithLevel": "Standard des Modells verwenden (${level})",
+			"unsupportedEffort": "Der aktuelle Denkaufwand ist für dieses Modell nicht aufgeführt; die vorhandene Einstellung wird nicht automatisch geändert.",
 			"copyModelIdTooltip": "Klicken Sie, um die Modell-ID zu kopieren",
 			"loadModelsFailed": "Modell konnte nicht geladen werden: ${message}",
 			"modelSearchTitle": "Modellkatalog durchstöbern",

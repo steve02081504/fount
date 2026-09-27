@@ -4077,8 +4077,11 @@
 				"deviceCode": "افتح ${uri} وأدخل الرمز ${code}",
 				"credentialsRequired": "املأ حقول JSON المطلوبة (region / project / location / account_id / gateway_id / API key). يمكن أن تأتي الاعتمادات من متغيرات البيئة."
 			},
-			"selectModel": null,
-			"reasoningEffort": null,
+			"selectModel": "اختر نموذجًا…",
+			"reasoningEffort": "جهد الاستدلال",
+			"useDefaultReasoning": "استخدام الإعداد الافتراضي للنموذج",
+			"useDefaultReasoningWithLevel": "استخدام الإعداد الافتراضي للنموذج (${level})",
+			"unsupportedEffort": "جهد الاستدلال الحالي ليس ضمن القائمة المدعومة لهذا النموذج؛ لن يُغيَّر الإعداد الموجود تلقائيًا.",
 			"copyModelIdTooltip": "انقر لنسخ معرف النموذج",
 			"loadModelsFailed": "فشل تحميل النموذج: ${message}",
 			"modelSearchTitle": "تصفّح دليل النماذج",

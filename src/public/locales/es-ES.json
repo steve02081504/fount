@@ -4073,8 +4073,11 @@
 				"deviceCode": "Abre ${uri} e introduce el código ${code}",
 				"credentialsRequired": "Rellena los campos JSON necesarios (region / project / location / account_id / gateway_id / API key). Las credenciales también pueden venir del entorno."
 			},
-			"selectModel": null,
-			"reasoningEffort": null,
+			"selectModel": "Seleccionar un modelo…",
+			"reasoningEffort": "Esfuerzo de razonamiento",
+			"useDefaultReasoning": "Usar el valor predeterminado del modelo",
+			"useDefaultReasoningWithLevel": "Usar el valor predeterminado del modelo (${level})",
+			"unsupportedEffort": "El esfuerzo de razonamiento actual no figura en la lista admitida para este modelo; la configuración existente no se cambiará automáticamente.",
 			"copyModelIdTooltip": "Haga clic para copiar el ID del modelo",
 			"loadModelsFailed": "No se pudo cargar el modelo: ${message}",
 			"modelSearchTitle": "Explorar catálogo de modelos",

@@ -4073,8 +4073,11 @@
 				"deviceCode": "Abra ${uri} e introduza o código ${code}",
 				"credentialsRequired": "Os campos necessários dependem do fornecedor selecionado (region / project / location / account_id / gateway_id / API key; Azure OpenAI Responses: AZURE_OPENAI_API_KEY e endpoint). As credenciais também podem vir do ambiente."
 			},
-			"selectModel": null,
-			"reasoningEffort": null,
+			"selectModel": "Selecionar um modelo…",
+			"reasoningEffort": "Esforço de raciocínio",
+			"useDefaultReasoning": "Usar a predefinição do modelo",
+			"useDefaultReasoningWithLevel": "Usar a predefinição do modelo (${level})",
+			"unsupportedEffort": "O esforço de raciocínio atual não consta na lista suportada para este modelo; a definição existente não será alterada automaticamente.",
 			"copyModelIdTooltip": "Clique para copiar o ID do modelo",
 			"loadModelsFailed": "Falha ao carregar modelo: ${message}",
 			"modelSearchTitle": "Explorar catálogo de modelos",

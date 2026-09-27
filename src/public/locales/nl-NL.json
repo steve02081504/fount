@@ -4073,8 +4073,11 @@
 				"deviceCode": "Open ${uri} en voer code ${code} in",
 				"credentialsRequired": "Vul de vereiste JSON-velden in (region / project / location / account_id / gateway_id / API key). Credentials kunnen ook uit omgevingsvariabelen komen."
 			},
-			"selectModel": null,
-			"reasoningEffort": null,
+			"selectModel": "Een model selecteren…",
+			"reasoningEffort": "Redeneerinspanning",
+			"useDefaultReasoning": "Modelstandaard gebruiken",
+			"useDefaultReasoningWithLevel": "Modelstandaard gebruiken (${level})",
+			"unsupportedEffort": "De huidige redeneerinspanning staat niet in de ondersteunde lijst van dit model; de bestaande instelling wordt niet automatisch gewijzigd.",
 			"copyModelIdTooltip": "Klik om de model-ID te kopiëren",
 			"loadModelsFailed": "Kan model niet laden: ${message}",
 			"modelSearchTitle": "Modelcatalogus doorbladeren",
