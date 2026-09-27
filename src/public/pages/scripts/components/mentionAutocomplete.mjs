@@ -13,7 +13,7 @@ import { currentMentionQuery } from '/parts/shells:chat/shared/mentionQuery.mjs'
  * @property {() => { groupId?: string, channelId?: string, channelIds?: string[] }} [getContext] 当前上下文读取
  * @property {Array<(ctx: object, query: string, limit: number) => Promise<object[] | null>>} [providers] 候选 provider（按序调用，首个非 null 数组作为候选；全 null 走空态）
  * @property {string} [listboxPrefix] 面板 id 前缀
- * @property {string} [emptyI18n] 空态文案 i18n key
+ * @property {string} [emptyI18n] 空态文案 i18n key（缺省时无候选即隐藏面板，不渲染空盒）
  * @property {string} [accessibleLabelI18n] 面板 aria-label 的 i18n key（如 `chat.hub.mentionSuggest`）
  * @property {boolean} [trailingSpace] 插入 token 后是否追加空格
  * @property {number} [limit] 候选条数上限
@@ -110,6 +110,11 @@ export function attachMentionAutocomplete(textarea, options = {}) {
 		activeIndex = 0
 		panel.innerHTML = ''
 		if (!rows.length) {
+			// 未提供空态文案时直接隐藏面板，避免留下一个无内容但有边框的空盒
+			if (!emptyI18n) {
+				hide()
+				return
+			}
 			panel.classList.remove('hidden')
 			// 空态不是 listbox（无 option 子元素会触犯 aria-required-children）
 			panel.removeAttribute('role')

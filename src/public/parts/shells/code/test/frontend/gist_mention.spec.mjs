@@ -41,4 +41,34 @@ test.describe('code shell @ gist mention', () => {
 			await page.request.post(`${baseUrl}/api/parts/shells:gist/gists/batch-delete`, { data: { ids: [gistId] } })
 		}
 	})
+
+	test('empty candidate list hides the mention panel instead of leaving a blank box', async ({ page, baseUrl }) => {
+		const gistTitle = `mention-empty-${Date.now()}`
+		const created = await (await page.request.post(`${baseUrl}/api/parts/shells:gist/gists`, {
+			data: { markdown: `# ${gistTitle}\n\nbody`, title: gistTitle, securityLevel: 'trusted' },
+		})).json()
+		const gistId = created.gist.id
+		try {
+			await page.addInitScript(pref => localStorage.setItem(pref + 'charname', 'codeBuddy'), PREF_PREFIX)
+			await openCode(page, baseUrl)
+			const composer = page.locator('#composer-input')
+			await composer.click()
+			await holdLocale(page)
+			try {
+				await page.keyboard.type('@' + gistTitle)
+				// 先确认候选面板正常工作（provider 已返回）
+				await expect(page.locator('.mention-panel .mention-option', { hasText: gistTitle })).toBeVisible()
+				// 追加字符清空候选：面板应直接隐藏，而非留下无内容有边框的空盒
+				await page.keyboard.type('-nomatch')
+				await expect(page.locator('.mention-panel')).toBeHidden()
+				await expect(page.locator('.mention-panel .mention-empty')).toHaveCount(0)
+			}
+			finally {
+				await releaseLocale(page)
+			}
+		}
+		finally {
+			await page.request.post(`${baseUrl}/api/parts/shells:gist/gists/batch-delete`, { data: { ids: [gistId] } })
+		}
+	})
 })

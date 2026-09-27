@@ -145,6 +145,7 @@
 					"expected": "25s",
 					"triggers": [
 						"src/public/parts/shells/code/test/frontend/gist_mention.spec.mjs",
+						"src/public/pages/scripts/components/mentionAutocomplete.mjs",
 						"src/public/parts/shells/code/public/**",
 						"src/public/parts/shells/gist/public/**"
 					]
