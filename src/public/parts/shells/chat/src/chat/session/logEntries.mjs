@@ -3,7 +3,7 @@
  * 【职责】buildChatLogEntryFromCharReply 将部件接口返回值转为 chatLogEntry_t；getChannelForCharStream 推断流式回复所属频道。
  * 【原理】角色条目合并 getPartDetails 的 name/avatar；getChannelForCharStream 向前扫描 chatLog 找最近 user 消息的频道。
  * 【数据结构】chatLogEntry_t 字段（role/content/extension.timeSlice/files/extension/logContext*）。
- * 【关联】models、channelContent、messages、triggerReply、chatRequest.AddChatLogEntry。
+ * 【关联】models、channelContent、messages、triggerReply、chatRequest.AppendChatLogEntry。
  */
 import { getPartDetails } from '../../../../../../../server/parts_loader.mjs'
 import { ensureLocalAgentEntityHash } from '../../entity/member.mjs'

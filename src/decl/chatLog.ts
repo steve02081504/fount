@@ -32,7 +32,7 @@ export class chatReply_t {
 }
 
 /**
- * `AddChatLogEntry` 的可追加条目：在角色回复形状之上允许携带任意条目字段（`role` / `type` / `uid` / `charVisibility` 等），
+ * `AppendChatLogEntry` 的可追加条目：在角色回复形状之上允许携带任意条目字段（`role` / `type` / `uid` / `charVisibility` 等），
  * 使角色与插件能追加任意日志条目，而非一律被规整为角色回复。
  */
 export type chatLogAppendInput_t = chatReply_t & {
@@ -212,15 +212,27 @@ export class chatReplyRequest_t {
 	/** 当前 viewer 在群内的角色 id 列表（供 prompt visibility 等使用） */
 	member_roles?: string[]
 	/**
-	 * 追加一条日志条目。`role === 'char'`（或缺省）走角色回复规整；其余 role 按原样追加，并通知 shell 安排一次生成。
-	 * 条目带 `charVisibility` 时仅本地角色可见，shell 不应写入 DAG。
+	 * 纯写入：把一条日志条目追加进权威会话，绝不安排生成。
+	 * `role` 缺省或为 `'char'` 时按角色回复规整；其它 role 按原样写入。`role` 只决定条目形状，不影响控制流。
+	 * 带 `charVisibility` 的条目仅在本地、只对列出的角色可见，shell 不应写入 DAG 或平台出站。
+	 * 生成中写入的条目：当前这次模型调用看不到；同一次生成的下一次轮次刷新可见，否则下一次生成可见。
+	 * 角色不在该会话（或会话已失效）时 shells 统一 reject。
+	 * 方法缺失表示该 shell 不支持运行时追加。
 	 */
-	AddChatLogEntry?: (entry: chatLogAppendInput_t) => Promise<chatLogEntry_t>
-	Update?: () => Promise<chatReplyRequest_t>
+	AppendChatLogEntry?: (entry: chatLogAppendInput_t) => Promise<chatLogEntry_t>
 	/**
-	 * 清除本频道待触发的生成队列：shell 的轮次刷新（`Update` / container 封存）已让角色看到新内容，无需再补一次生成。
+	 * 纯唤醒：不写任何日志，请求该角色在本会话至少再看一次权威日志。
+	 * 保证：调用后该槽位至少有一次生成读到了调用时刻及以后的日志。
+	 * 空闲时立即开始生成；生成中时，若这次生成后续的 `Update({ forRound: true })` 在唤醒之后才开始读取，即视为已满足，否则生成结束后补一次。
+	 * 多次唤醒合并为最多补一次。调度完成即返回，不等生成结束。方法缺失表示 shell 不支持唤醒。
 	 */
-	ClearPendingMessages?: () => void
+	RequestCharReply?: () => Promise<void>
+	/**
+	 * 刷新请求上下文。无副作用。
+	 * `forRound: true` 仅由本请求所属生成的主轮次刷新（`injectRoundEntries`）传入：表示角色已能看到本次读取时刻的权威日志，
+	 * 据此消费该槽位待触发唤醒。普通调用方（含二级 prompt）不得传 `forRound`，以免误消费他人的唤醒。
+	 */
+	Update?: (options?: { forRound?: boolean }) => Promise<chatReplyRequest_t>
 	world: WorldAPI_t
 	user: UserAPI_t
 	char: CharAPI_t

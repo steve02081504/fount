@@ -112,23 +112,47 @@ Deno.test('injectRoundEntries tolerates a missing Update', async () => {
 	assertEquals(prompt.chat_log, [base])
 })
 
-Deno.test('injectRoundEntries clears pending triggers via args.ClearPendingMessages', async () => {
+Deno.test('injectRoundEntries calls Update with forRound by default', async () => {
 	const base = entry('a', 'hello')
 	const prompt = makePrompt({ chatLog: [base] })
-	let cleared = 0
+	const seenOptions = []
 	const args = {
 		char_id: 'c',
 		/**
-		 * 记录清空调用。
-		 * @returns {void}
+		 * 记录 Refresh 选项并返回刷新后的 chat_log。
+		 * @param {object} options 刷新选项
+		 * @returns {Promise<{chat_log: object[]}>} 刷新结果
 		 */
-		ClearPendingMessages: () => { cleared++ },
+		Update: async options => {
+			seenOptions.push(options)
+			return { chat_log: [base] }
+		},
 	}
 	await injectRoundEntries(args, prompt)
-	assertEquals(cleared, 1, '轮次刷新后应清除待触发标记')
+	assertEquals(seenOptions, [{ forRound: true }], '默认应由主轮次刷新消费唤醒')
 })
 
-Deno.test('injectRoundEntries clears pending triggers even without Update', async () => {
+Deno.test('injectRoundEntries calls Update without forRound when consumeWakes is false', async () => {
+	const base = entry('a', 'hello')
+	const prompt = makePrompt({ chatLog: [base] })
+	const seenOptions = []
+	const args = {
+		char_id: 'c',
+		/**
+		 * 记录 Refresh 选项并返回刷新后的 chat_log。
+		 * @param {object} options 刷新选项
+		 * @returns {Promise<{chat_log: object[]}>} 刷新结果
+		 */
+		Update: async options => {
+			seenOptions.push(options)
+			return { chat_log: [base] }
+		},
+	}
+	await injectRoundEntries(args, prompt, { consumeWakes: false })
+	assertEquals(seenOptions, [{}], '二级 prompt 构建不应消费主槽位唤醒')
+})
+
+Deno.test('injectRoundEntries does not call ClearPendingMessages', async () => {
 	const base = entry('a', 'hello')
 	const prompt = makePrompt({ chatLog: [base] })
 	let cleared = 0
@@ -139,7 +163,13 @@ Deno.test('injectRoundEntries clears pending triggers even without Update', asyn
 		 * @returns {void}
 		 */
 		ClearPendingMessages: () => { cleared++ },
+		/**
+		 * 返回刷新后的 chat_log。
+		 * @returns {Promise<{chat_log: object[]}>} 刷新结果
+		 */
+		Update: async () => ({ chat_log: [base] }),
 	}
 	await injectRoundEntries(args, prompt)
-	assertEquals(cleared, 1, 'container 封存即代表角色看到新内容')
+	assertEquals(cleared, 0, '清除待触发已改由 Update({ forRound: true }) 消费')
 })
+

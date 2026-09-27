@@ -35,11 +35,11 @@ import {
 	selectOtherCharNames,
 	topActiveKeys,
 } from './channelActivity.mjs'
+import { chatReplyWakes, charReplyFlightKey } from './charWakeRegistry.mjs'
 import {
 	buildChatLogEntryFromCharReply,
 } from './logEntries.mjs'
 import { chatLogEntry_t } from './models.mjs'
-import { charReplyFlightKey, clearPendingCharTrigger } from './pendingCharTriggers.mjs'
 import { resolveChar, resolveLocalPlugins, resolvePersona, resolveWorld } from './resolvePart.mjs'
 import { getGroupRuntime } from './runtime.mjs'
 import { getScopedCharState } from './scopedState.mjs'
@@ -184,6 +184,8 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 
 	const scopedState = await getScopedCharState(replicaUsername, groupId, effectiveChannelId, charname)
 
+	const requestOptions = options
+
 	/** @type {import('../../../../../../../decl/chatLog.ts').chatReplyRequest_t} */
 	const chatReplyRequest = {
 		supported_functions: {
@@ -213,28 +215,35 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 		timelines: chatMetadata.timeLines,
 		member_roles,
 		/**
-		 * 刷新请求上下文；并清除本槽位待触发标记（轮次刷新即代表角色已看到新内容）。
+		 * 刷新请求上下文；`forRound` 时取当前唤醒序号并在重建后观察，表示角色已看到该时刻的权威日志。
+		 * @param {object} [updateOptions] 刷新选项
+		 * @param {boolean} [updateOptions.forRound] 是否为主轮次刷新（消费本槽位唤醒）
 		 * @returns {Promise<object>} 刷新后的请求上下文
 		 */
-		Update: () => {
-			clearPendingCharTrigger(charReplyFlightKey(groupId, effectiveChannelId, charname))
-			return getChatRequest(groupId, charname, channelId, options)
+		Update: async (updateOptions = {}) => {
+			const { forRound = false } = updateOptions
+			const snapshot = forRound ? chatReplyWakes.snapshot() : null
+			const rebuilt = await getChatRequest(groupId, charname, channelId, requestOptions)
+			if (forRound) chatReplyWakes.observe(charReplyFlightKey(groupId, channelId, charname), snapshot)
+			return rebuilt
 		},
 		/**
-		 * 清除本槽位待触发标记（`Update` / container 封存让角色看到新内容后调用）。
-		 * @returns {void}
+		 * 请求 shell 为该角色安排一次生成（空闲即触发，生成中则等本轮结束补一次）。
+		 * @returns {Promise<void>}
 		 */
-		ClearPendingMessages: () => {
-			clearPendingCharTrigger(charReplyFlightKey(groupId, effectiveChannelId, charname))
+		RequestCharReply: async () => {
+			if (!charname) throw new Error('Char not in this chat')
+			if (!await resolveChar(groupId, charname, replicaUsername)) throw new Error('Char not in this chat')
+			const { requestCharReply } = await import('./triggerReply.mjs')
+			requestCharReply(groupId, effectiveChannelId, charname)
 		},
 		/**
-		 * 追加一条日志条目。`role === 'char'`（或缺省）走角色回复规整；其余 role 按原样写入，
-		 * 并请求 shell 安排一次生成（空闲即触发，生成中则等本轮结束或轮次刷新消费）。
+		 * 追加一条日志条目（纯写入，不触发生成）。`role === 'char'`（或缺省）走角色回复规整；其余 role 按原样写入。
 		 * 带 `charVisibility` 的条目仅本地角色可见，`chatLogAppend` 不会将其写入 DAG。
 		 * @param {object} entry 条目（chatLogEntry_t 形状，缺省补全）
 		 * @returns {Promise<chatLogEntry_t>} 写入后的日志条目
 		 */
-		AddChatLogEntry: async entry => {
+		AppendChatLogEntry: async entry => {
 			if (!charname) throw new Error('Char not in this chat')
 			if (!await resolveChar(groupId, charname, replicaUsername)) throw new Error('Char not in this chat')
 			const { addChatLogEntry } = await import('./chatLogAppend.mjs')
@@ -261,10 +270,7 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 				extension: { ...entry.extension, timeSlice: chatMetadata.LastTimeSlice.copy() },
 			}
 			appended.extension.chat = { ...appended.extension.chat, channelId: effectiveChannelId }
-			const written = await addChatLogEntry(groupId, appended)
-			const { requestCharReply } = await import('./triggerReply.mjs')
-			requestCharReply(groupId, effectiveChannelId, charname)
-			return written
+			return addChatLogEntry(groupId, appended)
 		},
 		world: resolvedWorld,
 		char: charPart,

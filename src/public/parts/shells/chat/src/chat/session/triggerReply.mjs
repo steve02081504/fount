@@ -1,8 +1,8 @@
 /**
  * 【文件】triggerReply.mjs — 角色回复触发、生成执行与多轮自动对话
  * 【职责】triggerCharReply 启动占位条目与 DAG generating 占位；executeGeneration 调用 char.GetReply 并 finalize；getCharReplyFrequency/handleAutoReply 实现发言顺序与加权轮询；跨机角色走 invokeGroupRpc。
- * 【原理】charReplyInFlight 防同 group+channel+char 并发；requestCharReply 生成中记入 pendingCharTriggers，生成结束 drain 补一次；流式经 charPreviewStream 发签名 stream_chunk（slices）；结束后走 handleAutoReply（AfterAddChatLogEntry 已收归 DAG persist）；本机 bind 外发 RPC 带 buildSerializableRequest。
- * 【数据结构】charReplyInFlight（Set）、pendingCharTriggers（Set，见 pendingCharTriggers.mjs）、占位 chatLogEntry_t（is_generating、`extension.chat.eventId`/`channelId`）、replyFrequency 表。
+ * 【原理】chatReplyWakes 调度器（见 charWakeRegistry.mjs）防同 group+raw channel+char 并发，并用单调序号记录生成读取权威日志期间到达、未被观察的唤醒，生成结束补一次；流式经 charPreviewStream 发签名 stream_chunk（slices）；结束后走 handleAutoReply（AfterAddChatLogEntry 已收归 DAG persist）；本机 bind 外发 RPC 带 buildSerializableRequest。
+ * 【数据结构】chatReplyWakes（单例，见 charWakeRegistry.mjs）、占位 chatLogEntry_t（is_generating、`extension.chat.eventId`/`channelId`）、replyFrequency 表。
  * 【关联】generationAbort、charPreviewStream、chatRequest、logEntries、dag/chatLogMirror、rpcInvoke。
  */
 /** @typedef {import('../../../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
@@ -34,6 +34,7 @@ import { finishStreamBuffer } from '../ws/groupWsStreamBuffer.mjs'
 import { broadcastGroupEvent } from './broadcast.mjs'
 import { dispatchCharError } from './charError.mjs'
 import { createCharPreviewStream } from './charPreviewStream.mjs'
+import { chatReplyWakes, charReplyFlightKey } from './charWakeRegistry.mjs'
 import { getChatRequest } from './chatRequest.mjs'
 import { getMaterializedSession } from './dagSession.mjs'
 import { createGenerationStream } from './generationAbort.mjs'
@@ -44,7 +45,6 @@ import {
 import { deleteMessage } from './messages.mjs'
 import { chatLogEntry_t } from './models.mjs'
 import { addchar } from './partConfig.mjs'
-import { charReplyFlightKey, clearPendingCharTrigger, markPendingCharTrigger, takePendingCharTrigger } from './pendingCharTriggers.mjs'
 import { getActiveGroupRuntime } from './persistence.mjs'
 import {
 	autoReplyBucketKey,
@@ -59,9 +59,6 @@ import { saveScopedState } from './scopedState.mjs'
 import { buildSerializableRequest } from './serializableRequest.mjs'
 import { groupMetadatas } from './wsLifecycle.mjs'
 
-/** @type {Set<string>} 进行中的角色生成（groupId\\0channelId\\0charname） */
-const charReplyInFlight = new Set()
-
 /**
  * @param {string} groupId 群 ID
  * @param {string | null | undefined} channelId 频道 ID
@@ -69,12 +66,11 @@ const charReplyInFlight = new Set()
  * @returns {boolean} 是否已有同槽位生成在进行
  */
 export function isCharReplyInFlight(groupId, channelId, charname) {
-	return charReplyInFlight.has(charReplyFlightKey(groupId, channelId, charname))
+	return chatReplyWakes.isRunning(charReplyFlightKey(groupId, channelId, charname))
 }
 
 /**
- * 请求在指定槽位触发一次角色生成：空闲则立即触发，生成中则记入待触发队列，
- * 由当前生成结束时的 drain 或轮次刷新（`ClearPendingMessages`）消费。
+ * 请求在指定槽位触发一次角色生成：空闲则立即触发，生成中则标记唤醒，由当前生成结束时的补触发或轮次刷新（`Update({ forRound: true })`）消费。
  * @param {string} groupId 群 ID
  * @param {string | null | undefined} channelId 频道 ID
  * @param {string | null | undefined} charname 角色名
@@ -83,25 +79,13 @@ export function isCharReplyInFlight(groupId, channelId, charname) {
 export function requestCharReply(groupId, channelId, charname) {
 	if (!charname) return
 	const key = charReplyFlightKey(groupId, channelId, charname)
-	if (charReplyInFlight.has(key)) {
-		markPendingCharTrigger(key)
+	if (!chatReplyWakes.tryBegin(key)) {
+		chatReplyWakes.mark(key)
 		return
 	}
-	void triggerCharReply(groupId, channelId, charname).catch(error => {
+	void runCharReplySlot(key, groupId, channelId, charname, null, {}).catch(error => {
 		console.error('requestCharReply failed:', error)
 	})
-}
-
-/**
- * 清除指定槽位的待触发标记（角色已通过 Update / container 封存看到新内容）。
- * @param {string} groupId 群 ID
- * @param {string | null | undefined} channelId 频道 ID
- * @param {string | null | undefined} charname 角色名
- * @returns {void}
- */
-export function clearPendingCharTriggers(groupId, channelId, charname) {
-	if (!charname) return
-	clearPendingCharTrigger(charReplyFlightKey(groupId, channelId, charname))
 }
 
 /**
@@ -202,9 +186,10 @@ export async function handleAutoReply(groupId, channelId, replyFrequency, lastSp
  * @param {ReturnType<typeof createGenerationStream>} stream 流式推送句柄
  * @param {chatLogEntry_t} placeholderEntry 占位日志条目
  * @param {import('./models.mjs').chatMetadata_t} chatMetadata 会话元数据
+ * @param {{ key: string, channelId: string | null | undefined, charname: string } | null} [wake] 唤醒槽位上下文；提供时生成结束释放槽位并按需补触发
  * @returns {Promise<void>}
  */
-export async function executeGeneration(groupId, request, stream, placeholderEntry, chatMetadata) {
+export async function executeGeneration(groupId, request, stream, placeholderEntry, chatMetadata, wake = null) {
 	const entryId = placeholderEntry.id
 	const pendingStreamId = placeholderEntry.extension?.chat?.eventId || entryId
 	const channelForStream = getChannelForCharStream(chatMetadata, placeholderEntry)
@@ -360,14 +345,9 @@ export async function executeGeneration(groupId, request, stream, placeholderEnt
 		if (Object.keys(values).length)
 			await saveScopedState(chatMetadata.username, groupId, channelForStream, request.char_id, values)
 				.catch(console.error)
-		const flightChannelId = placeholderEntry.extension?.chat?.channelId || channelForStream
-		const flightKey = charReplyFlightKey(groupId, flightChannelId, request.char_id)
-		charReplyInFlight.delete(flightKey)
-		// 生成中收到但本轮未消费的触发：补一次生成，保证外部追加的消息不会被漏掉
-		if (takePendingCharTrigger(flightKey))
-			void triggerCharReply(groupId, flightChannelId, request.char_id).catch(error => {
-				console.error('pending char trigger drain failed:', error)
-			})
+		// 释放唤醒槽位；读取期间到达且未被观察的唤醒在此补一次生成，保证外部追加不被漏掉
+		if (wake && chatReplyWakes.release(wake.key))
+			requestCharReply(groupId, wake.channelId, wake.charname)
 	}
 }
 
@@ -486,63 +466,69 @@ async function buildCharReplyPlaceholder(chatMetadata, groupId, charname, channe
 }
 
 /**
- * 触发指定角色在群频道内开始一次生成回复。
+ * 在某已占用的唤醒槽位内完成生成准备并启动一次生成；调用方须已 `tryBegin` 占位，本函数不再重复占位。
+ * @param {string} key 唤醒槽位键（按原始参数算好，结束时释放）
  * @param {string} groupId 群 ID
- * @param {string | null} channelId 频道 ID
+ * @param {string | null | undefined} channelId 频道 ID（原始值）
  * @param {string | null} charname 角色名；为空时按频率随机
- * @param {object | null} [requestOverride] 合并进 `getChatRequest` 的字段
- * @param {object} [options] 额外选项
+ * @param {object | null} requestOverride 合并进 `getChatRequest` 的字段
+ * @param {object} options 额外选项
  * @param {string} [options.replicaUsername] 编排 replica
  * @param {boolean} [options.fromRpc] 已在归属节点，跳过远端 RPC
  * @returns {Promise<void>}
  */
-export async function triggerCharReply(groupId, channelId, charname, requestOverride = null, options = {}) {
-	const chatMetadata = await ensureCharSession(groupId, channelId, charname)
-	const { username } = chatMetadata
-
-	if (!charname) {
-		charname = pickNextCharForReply(
-			(await getCharReplyFrequency(groupId)).filter(entry => entry.charname != null),
-		)
-		if (!charname) return
-	}
-
-	const session = await getMaterializedSession(username, groupId)
-	const bind = getCharBind(session, charname)
-	if (!bind) throw httpError(404, 'char not found')
-
-	if (!options.fromRpc && !isLocalNode(bind.homeNodeHash)) {
-		const owner = bind.ownerUsername || username
-		await invokeGroupRpc(groupId, username, {
-			memberId: `${owner}:${charname}`,
-			method: 'GetReply',
-			args: [buildSerializableRequest({
-				groupId,
-				channelId,
-				charname,
-				replicaUsername: owner,
-			})],
-			targetNodeId: bind.homeNodeHash,
-			partKind: 'char',
-		})
-		return
-	}
-
-	const char = chatMetadata.LastTimeSlice.chars[charname]
-		|| await resolveChar(groupId, charname, username)
-	if (!char) throw httpError(404, 'char not found')
-
-	const flightKey = charReplyFlightKey(groupId, channelId, charname)
-	if (charReplyInFlight.has(flightKey)) return
-	charReplyInFlight.add(flightKey)
-
-	const placeholder = await buildCharReplyPlaceholder(chatMetadata, groupId, charname, channelId)
-	const owner = groupMetadatas.get(groupId)?.username
-
+async function runCharReplySlot(key, groupId, channelId, charname, requestOverride, options) {
+	/** @type {chatLogEntry_t | null} */
+	let placeholder = null
+	let owner = null
 	try {
+		const chatMetadata = await ensureCharSession(groupId, channelId, charname)
+		const { username } = chatMetadata
+
+		if (!charname) {
+			charname = pickNextCharForReply(
+				(await getCharReplyFrequency(groupId)).filter(entry => entry.charname != null),
+			)
+			if (!charname) {
+				chatReplyWakes.discard(key)
+				return
+			}
+		}
+
+		const session = await getMaterializedSession(username, groupId)
+		const bind = getCharBind(session, charname)
+		if (!bind) throw httpError(404, 'char not found')
+
+		if (!options.fromRpc && !isLocalNode(bind.homeNodeHash)) {
+			const rpcOwner = bind.ownerUsername || username
+			await invokeGroupRpc(groupId, username, {
+				memberId: `${rpcOwner}:${charname}`,
+				method: 'GetReply',
+				args: [buildSerializableRequest({
+					groupId,
+					channelId,
+					charname,
+					replicaUsername: rpcOwner,
+				})],
+				targetNodeId: bind.homeNodeHash,
+				partKind: 'char',
+			})
+			chatReplyWakes.discard(key)
+			return
+		}
+
+		const char = chatMetadata.LastTimeSlice.chars[charname]
+			|| await resolveChar(groupId, charname, username)
+		if (!char) throw httpError(404, 'char not found')
+
+		placeholder = await buildCharReplyPlaceholder(chatMetadata, groupId, charname, channelId)
+		owner = groupMetadatas.get(groupId)?.username
+
+		const snapshot = chatReplyWakes.snapshot()
 		const request = await getChatRequest(groupId, charname, channelId, {
 			replicaUsername: options.replicaUsername || username,
 		})
+		chatReplyWakes.observe(key, snapshot)
 		if (requestOverride)
 			Object.assign(request, requestOverride)
 
@@ -563,7 +549,7 @@ export async function triggerCharReply(groupId, channelId, charname, requestOver
 			if (!rate.ok) {
 				const text = `角色 ${charname} 已达到本群消息限速，本次未写入 DAG。`
 				await appendLocalSystemChatLog(groupId, channelId, text)
-				charReplyInFlight.delete(flightKey)
+				chatReplyWakes.discard(key)
 				return
 			}
 			await appendDagGeneratingPlaceholder(groupId, placeholder, owner)
@@ -575,15 +561,43 @@ export async function triggerCharReply(groupId, channelId, charname, requestOver
 			placeholder.extension?.chat?.eventId || null,
 		)
 
-		void executeGeneration(groupId, request, stream, placeholder, chatMetadata)
+		void executeGeneration(groupId, request, stream, placeholder, chatMetadata, {
+			key,
+			channelId,
+			charname,
+		})
 			.catch(err => {
 				console.error('executeGeneration error:', err)
-				charReplyInFlight.delete(flightKey)
+				chatReplyWakes.discard(key)
 			})
 	}
 	catch (error) {
-		await rollbackCharReplySetup(groupId, placeholder, owner)
-		charReplyInFlight.delete(flightKey)
+		if (placeholder)
+			await rollbackCharReplySetup(groupId, placeholder, owner)
+		chatReplyWakes.discard(key)
+		throw error
+	}
+}
+
+/**
+ * 触发指定角色在群频道内开始一次生成回复；同槽位已有生成在飞则跳过。
+ * @param {string} groupId 群 ID
+ * @param {string | null} channelId 频道 ID
+ * @param {string | null} charname 角色名；为空时按频率随机
+ * @param {object | null} [requestOverride] 合并进 `getChatRequest` 的字段
+ * @param {object} [options] 额外选项
+ * @param {string} [options.replicaUsername] 编排 replica
+ * @param {boolean} [options.fromRpc] 已在归属节点，跳过远端 RPC
+ * @returns {Promise<void>}
+ */
+export async function triggerCharReply(groupId, channelId, charname, requestOverride = null, options = {}) {
+	const key = charReplyFlightKey(groupId, channelId, charname)
+	if (!chatReplyWakes.tryBegin(key)) return
+	try {
+		await runCharReplySlot(key, groupId, channelId, charname, requestOverride, options)
+	}
+	catch (error) {
+		chatReplyWakes.discard(key)
 		throw error
 	}
 }

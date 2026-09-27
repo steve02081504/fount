@@ -1,5 +1,6 @@
 /**
- * 异步通知触发的 shell 侧待触发队列：生成中追加的系统条目未消费则结束后补一次生成，已消费则不重复。
+ * 异步通知触发的 shell 侧唤醒调度：生成读取权威日志后到达的唤醒在生成结束补一次；
+ * 已被 `Update({ forRound: true })` 观察消费的唤醒不重复；未发唤醒的纯写入不补生成。
  */
 /* global Deno */
 import { assertEquals } from 'jsr:@std/assert'
@@ -30,19 +31,20 @@ function countText(rows, text) {
 }
 
 /**
- * 轮询等待角色回复进入在飞状态（触发已发出、生成尚未完成）。
+ * 轮询等待生成的 DAG 占位出现 —— 表示该轮已读取权威日志（`observe` 已完成），此后追加的唤醒必落在读取之后。
+ * @param {string} username 用户
  * @param {string} groupId 群
  * @param {string} channelId 频道
  * @returns {Promise<void>}
  */
-async function waitForCharReplyInFlight(groupId, channelId) {
-	const { isCharReplyInFlight } = await import('../../src/chat/session/triggerReply.mjs')
+async function waitForGeneratingPlaceholder(username, groupId, channelId) {
 	const start = Date.now()
 	while (Date.now() - start < 20000) {
-		if (isCharReplyInFlight(groupId, channelId, CHAR)) return
-		await new Promise(resolve => setTimeout(resolve, 60))
+		const rows = await listMessages(username, groupId, channelId)
+		if (rows.some(row => row.content?.is_generating)) return
+		await new Promise(resolve => setTimeout(resolve, 40))
 	}
-	throw new Error('char reply never became in-flight')
+	throw new Error('generating placeholder never appeared')
 }
 
 /**
@@ -73,7 +75,7 @@ async function waitForTextAndQuiet(username, groupId, channelId, expected) {
 }
 
 /**
- * 建群、加慢速角色并启动一次生成。
+ * 建群、加慢速角色并启动一次生成，直到该轮已读取权威日志。
  * @param {string} name 群名
  * @returns {Promise<{ username: string, groupId: string, channelId: string }>} 会话上下文
  */
@@ -92,7 +94,7 @@ async function setupGeneratingSession(name) {
 	await addchar(groupId, CHAR, username)
 
 	await triggerCharReply(groupId, channelId, CHAR)
-	await waitForCharReplyInFlight(groupId, channelId)
+	await waitForGeneratingPlaceholder(username, groupId, channelId)
 	return { username, groupId, channelId }
 }
 
@@ -101,24 +103,37 @@ Deno.test('a notification appended mid-generation drains into a follow-up genera
 
 	const { getChatRequest } = await import('../../src/chat/session/chatRequest.mjs')
 	const request = await getChatRequest(groupId, CHAR, channelId)
-	await request.AddChatLogEntry({ role: 'system', content: '后台任务完成', charVisibility: [CHAR] })
+	await request.AppendChatLogEntry({ role: 'system', content: '后台任务完成', charVisibility: [CHAR] })
+	await request.RequestCharReply()
 
 	const rows = await waitForTextAndQuiet(username, groupId, channelId, 2)
-	assertEquals(countText(rows, REPLY_TEXT), 2, '未消费的待触发应在生成结束后补一次')
+	assertEquals(countText(rows, REPLY_TEXT), 2, '未观察到的唤醒应在生成结束后补一次')
 
 	const rebuilt = await getChatRequest(groupId, CHAR, channelId)
 	assertEquals(rebuilt.chat_log.some(entry => String(entry.content).includes('后台任务完成')), true,
 		'本地角色可见条目应补入后续请求（不入 DAG）')
 })
 
-Deno.test('a notification cleared mid-generation does not produce a follow-up', async () => {
-	const { username, groupId, channelId } = await setupGeneratingSession('async-consumed')
+Deno.test('a notification observed via Update({ forRound: true }) does not produce a follow-up', async () => {
+	const { username, groupId, channelId } = await setupGeneratingSession('async-observed')
 
 	const { getChatRequest } = await import('../../src/chat/session/chatRequest.mjs')
 	const request = await getChatRequest(groupId, CHAR, channelId)
-	await request.AddChatLogEntry({ role: 'system', content: '后台任务完成', charVisibility: [CHAR] })
-	request.ClearPendingMessages()
+	await request.AppendChatLogEntry({ role: 'system', content: '后台任务完成', charVisibility: [CHAR] })
+	await request.RequestCharReply()
+	await request.Update({ forRound: true })
 
 	const rows = await waitForTextAndQuiet(username, groupId, channelId, 1)
-	assertEquals(countText(rows, REPLY_TEXT), 1, '已消费则不补触发')
+	assertEquals(countText(rows, REPLY_TEXT), 1, '已观察则不补触发')
+})
+
+Deno.test('appending without a wake produces no follow-up', async () => {
+	const { username, groupId, channelId } = await setupGeneratingSession('async-nowake')
+
+	const { getChatRequest } = await import('../../src/chat/session/chatRequest.mjs')
+	const request = await getChatRequest(groupId, CHAR, channelId)
+	await request.AppendChatLogEntry({ role: 'system', content: '后台任务完成', charVisibility: [CHAR] })
+
+	const rows = await waitForTextAndQuiet(username, groupId, channelId, 1)
+	assertEquals(countText(rows, REPLY_TEXT), 1, '纯写入不补生成')
 })

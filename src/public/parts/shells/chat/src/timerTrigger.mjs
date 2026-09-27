@@ -4,7 +4,7 @@ import { getDefaultChannelId } from './chat/dag/queries.mjs'
 import { newGroup } from './chat/session/groupLifecycle.mjs'
 import { addchar } from './chat/session/partConfig.mjs'
 import { getActiveGroupRuntime } from './chat/session/persistence.mjs'
-import { triggerCharReply } from './chat/session/triggerReply.mjs'
+import { requestCharReply } from './chat/session/triggerReply.mjs'
 import { renderMarkdownCodeBlock } from './streaming/index.mjs'
 
 /**
@@ -52,7 +52,7 @@ async function triggerViaGroupId(username, groupId, char_id, reason, chatLogSnip
 	setPendingNotification(groupId, char_id, makeTimerSystemEntry(reason, chatLogSnip, char_id))
 	const channelId = await getDefaultChannelId(username, groupId)
 	if (!channelId) return false
-	await triggerCharReply(groupId, channelId, char_id)
+	requestCharReply(groupId, channelId, char_id)
 	return true
 }
 
@@ -73,7 +73,7 @@ async function triggerViaNewGroup(username, uid, callbackdata, dependencies) {
 	await addchar(groupId, char_id, username)
 	setPendingNotification(groupId, char_id, makeTimerSystemEntry(reason, chatLogSnip, char_id))
 	const channelId = await getDefaultChannelId(username, groupId)
-	await triggerCharReply(groupId, channelId, char_id)
+	requestCharReply(groupId, channelId, char_id)
 
 	try {
 		const timerRecord = getTimers(username, pluginPath)[uid]

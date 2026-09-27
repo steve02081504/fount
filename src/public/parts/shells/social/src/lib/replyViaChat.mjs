@@ -102,7 +102,7 @@ export async function replyViaChat(username, charPartName, char, messageEvent) {
 			},
 		},
 		/** @returns {Promise<null>} social 请求不支持追加消息 */
-		AddChatLogEntry: async () => null,
+		AppendChatLogEntry: async () => null,
 		/** @returns {Promise<object>} 原样返回请求自身（无会话可刷新） */
 		Update: async function update() { return this },
 	}

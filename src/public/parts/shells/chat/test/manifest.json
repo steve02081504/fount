@@ -247,7 +247,7 @@
 		},
 		{
 			"name": "smoke_ai",
-			"expected": "1m57s",
+			"expected": "38s",
 			"dependsOn": [
 				"server:live",
 				"smoke_chat"
