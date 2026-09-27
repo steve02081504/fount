@@ -8,6 +8,9 @@ const i18nBase = 'serviceSource_manager.common_config_interface'
 /**
  * Codex 服务源附加配置：模型与推理强度只是 JSON 编辑器的快捷选择，不校验或限制手填值。
  * @param {object} args - 管理页提供的配置、容器及编辑器。
+ * @param {object} args.data - 当前配置数据。
+ * @param {{ generatorDisplay: HTMLElement }} args.containers - 生成器配置展示容器。
+ * @param {{ json: { getJson: () => object, set: (content: object) => void } }} args.editors - JSON 编辑器。
  * @returns {Promise<void>} 完成当前轮渲染。
  */
 return async function onJsonUpdate({ data, containers, editors }) {
@@ -97,6 +100,10 @@ return async function onJsonUpdate({ data, containers, editors }) {
 	effortWarning.dataset.i18n = `${i18nBase}.unsupportedEffort`
 	panel.append(modelLabel, effortLabel, effortWarning)
 
+	/**
+	 * 读取当前编辑器中的 JSON 配置。
+	 * @returns {object} 当前配置数据。
+	 */
 	const getConfig = () => editors.json.getJson()
 	const currentModel = getConfig().model ?? ''
 	if (!currentModel) {
@@ -120,6 +127,9 @@ return async function onJsonUpdate({ data, containers, editors }) {
 	if (currentModel) modelSelect.value = currentModel
 	modelSelect.disabled = !modelSelect.options.length
 
+	/**
+	 * 按当前模型刷新推理强度下拉选项与警告。
+	 */
 	function updateEffortOptions() {
 		const selectedModel = models.find(model => model.slug === modelSelect.value)
 		const currentEffort = getConfig().model_arguments?.reasoning?.effort

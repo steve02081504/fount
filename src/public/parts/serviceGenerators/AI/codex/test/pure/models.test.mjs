@@ -8,15 +8,25 @@ import { fetchCodexModels } from '../../src/models.mjs'
 
 Deno.test('目录查询使用当前 client_version，仅回传可选模型和推理强度', async () => {
 	const calls = []
+	/**
+	 * 记录请求并按要求返回伪造响应。
+	 * @param {string} url - 请求地址。
+	 * @param {object} init - 请求选项。
+	 * @returns {Promise<Response>} 伪造的响应。
+	 */
 	const fetcher = async (url, init) => {
 		calls.push({ url: String(url), init })
 		if (calls.length === 1) return Response.json({ version: '0.157.1' })
-		return Response.json({ models: [
-			{ slug: 'model-a', display_name: 'Model A', visibility: 'list', supported_in_api: true,
-				default_reasoning_level: 'medium', supported_reasoning_levels: [{ effort: 'low' }, { effort: 'ultra' }], secret: 'provider-private' },
-			{ slug: 'hidden', visibility: 'hide', supported_reasoning_levels: [{ effort: 'high' }] },
-			{ slug: 'unsupported', visibility: 'list', supported_in_api: false },
-		] })
+		return Response.json({
+			models: [
+				{
+					slug: 'model-a', display_name: 'Model A', visibility: 'list', supported_in_api: true,
+					default_reasoning_level: 'medium', supported_reasoning_levels: [{ effort: 'low' }, { effort: 'ultra' }], secret: 'provider-private'
+				},
+				{ slug: 'hidden', visibility: 'hide', supported_reasoning_levels: [{ effort: 'high' }] },
+				{ slug: 'unsupported', visibility: 'list', supported_in_api: false },
+			]
+		})
 	}
 	const models = await fetchCodexModels({ access: 'synthetic-access', accountId: 'account-1' }, fetcher)
 	assertEquals(calls[0].url, 'https://registry.npmjs.org/@openai%2fcodex/latest')
@@ -34,6 +44,10 @@ Deno.test('目录查询使用当前 client_version，仅回传可选模型和推
 
 Deno.test('目录版本不可用时不向 Codex 发送任何凭证', async () => {
 	let calls = 0
+	/**
+	 * 返回版本不可用的响应。
+	 * @returns {Promise<Response>} 伪造的响应。
+	 */
 	const fetcher = async () => {
 		calls++
 		return Response.json({ version: 'not-a-version' })

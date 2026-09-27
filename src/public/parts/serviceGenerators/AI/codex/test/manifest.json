@@ -43,7 +43,9 @@
 		{
 			"name": "frontend",
 			"expected": "45s",
-			"dependsOn": ["server:live"],
+			"dependsOn": [
+				"server:live"
+			],
 			"triggers": [
 				"src/public/parts/serviceGenerators/AI/codex/{display,main}.mjs",
 				"src/public/parts/serviceGenerators/AI/codex/public/**",

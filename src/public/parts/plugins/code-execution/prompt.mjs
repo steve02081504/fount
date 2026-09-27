@@ -2,7 +2,7 @@ import process from 'node:process'
 
 import { available } from 'npm:@steve02081504/exec'
 
-import { OUTPUT_GUARD_LIMIT, SHELL_DEFAULT_TIMEOUT_MS } from '../../../../scripts/shell_guard.mjs'
+import { SHELL_DEFAULT_TIMEOUT_MS } from '../../../../scripts/shell_guard.mjs'
 import { getConnectedSubfounts } from '../../shells/subfounts/src/api.mjs'
 
 /**

@@ -179,15 +179,21 @@ test.describe('Agent Studio shell boot', () => {
 
 	test('lists the lowest cache-rate rounds and jumps to the selected one', async ({ page, baseUrl }) => {
 		const generations = [
-			{ id: 'g1', startedAt: 1000, source: 'shells/code', charId: 'demo', requestCount: 1,
+			{
+				id: 'g1', startedAt: 1000, source: 'shells/code', charId: 'demo', requestCount: 1,
 				requests: [{ index: 1, systemPrompt: 'S', messages: [{ role: 'user', id: 'u1', content: 'q' }] }],
-				dialogue: { events: [{ round: 1, op: 'insert', message: { id: 'g1:final', role: 'char', content: 'answer' } }] }, response: 'answer' },
-			{ id: 'g2', startedAt: 2000, source: 'shells/code', charId: 'demo', requestCount: 1,
+				dialogue: { events: [{ round: 1, op: 'insert', message: { id: 'g1:final', role: 'char', content: 'answer' } }] }, response: 'answer'
+			},
+			{
+				id: 'g2', startedAt: 2000, source: 'shells/code', charId: 'demo', requestCount: 1,
 				requests: [{ index: 1, systemPrompt: 'S', messages: [{ role: 'user', id: 'u1', content: 'q' }, { role: 'char', id: 'a1', content: 'answer' }] }],
-				dialogue: { events: [{ round: 2, op: 'insert', message: { id: 'g2:final', role: 'char', content: 'answer2' } }] }, response: 'answer2' },
-			{ id: 'g3', startedAt: 3000, source: 'shells/code', charId: 'demo', requestCount: 1,
+				dialogue: { events: [{ round: 2, op: 'insert', message: { id: 'g2:final', role: 'char', content: 'answer2' } }] }, response: 'answer2'
+			},
+			{
+				id: 'g3', startedAt: 3000, source: 'shells/code', charId: 'demo', requestCount: 1,
 				requests: [{ index: 1, systemPrompt: 'DIFFERENT', messages: [{ role: 'user', id: 'u2', content: 'q2' }] }],
-				dialogue: { events: [{ round: 3, op: 'insert', message: { id: 'g3:final', role: 'char', content: 'answer3' } }] }, response: 'answer3' },
+				dialogue: { events: [{ round: 3, op: 'insert', message: { id: 'g3:final', role: 'char', content: 'answer3' } }] }, response: 'answer3'
+			},
 		]
 		await page.route('**/api/parts/shells:agent_studio/conversation/demo-low-rate', route => route.fulfill({
 			json: { key: 'demo-low-rate', generations, dialogue: { events: generations.map(generation => generation.dialogue.events[0]) } },
@@ -213,11 +219,13 @@ test.describe('Agent Studio shell boot', () => {
 				{ index: 1, systemPrompt: `${shared}A`, messages: [{ role: 'user', id: 'u1', content: 'hello' }] },
 				{ index: 2, systemPrompt: `${shared}B`, messages: [{ role: 'user', id: 'u1', content: 'hello' }, { role: 'char', id: 'a1', content: 'first answer' }] },
 			],
-			dialogue: { rounds: 2, events: [
-				{ round: 1, op: 'insert', message: { id: 'u1', role: 'user', content: 'hello' } },
-				{ round: 1, op: 'insert', message: { id: 'a1', role: 'char', content: 'first answer' } },
-				{ round: 2, op: 'insert', message: { id: 'g1:final', role: 'char', content: 'final' } },
-			] },
+			dialogue: {
+				rounds: 2, events: [
+					{ round: 1, op: 'insert', message: { id: 'u1', role: 'user', content: 'hello' } },
+					{ round: 1, op: 'insert', message: { id: 'a1', role: 'char', content: 'first answer' } },
+					{ round: 2, op: 'insert', message: { id: 'g1:final', role: 'char', content: 'final' } },
+				]
+			},
 			response: 'final',
 		}]
 		await page.route('**/api/parts/shells:agent_studio/conversation/demo-reuse', route => route.fulfill({
@@ -280,14 +288,18 @@ test.describe('Agent Studio shell boot', () => {
 			{ index: 1, systemPrompt: 'instruction', messages: [{ id: 'user', role: 'user', content: 'question' }] },
 			{ index: 2, systemPrompt: 'instruction', messages: [{ id: 'user', role: 'user', content: 'question' }, { id: 'reply', role: 'char', content: 'first reply' }] },
 		]
-		await page.route('**/api/parts/shells:agent_studio/conversation/deduplicated', route => route.fulfill({ json: {
-			key: 'deduplicated', generations: [{ id: 'gen', startedAt: 1000, requestCount: 2, requests, response: 'second reply' }],
-			dialogue: { events: [
-				{ round: 1, op: 'insert', message: { id: 'user', role: 'user', content: 'question' } },
-				{ round: 1, op: 'insert', message: { id: 'reply', role: 'char', content: 'first reply' } },
-				{ round: 2, op: 'insert', message: { id: 'gen:final', role: 'char', content: 'second reply' } },
-			] },
-		} }))
+		await page.route('**/api/parts/shells:agent_studio/conversation/deduplicated', route => route.fulfill({
+			json: {
+				key: 'deduplicated', generations: [{ id: 'gen', startedAt: 1000, requestCount: 2, requests, response: 'second reply' }],
+				dialogue: {
+					events: [
+						{ round: 1, op: 'insert', message: { id: 'user', role: 'user', content: 'question' } },
+						{ round: 1, op: 'insert', message: { id: 'reply', role: 'char', content: 'first reply' } },
+						{ round: 2, op: 'insert', message: { id: 'gen:final', role: 'char', content: 'second reply' } },
+					]
+				},
+			}
+		}))
 		await openAgentStudio(page, baseUrl)
 		await page.evaluate(() => { window.location.hash = '#conversation/deduplicated' })
 		await expect(page.locator('#conversationGenerations .conversation-entry.role-user')).toHaveCount(1)

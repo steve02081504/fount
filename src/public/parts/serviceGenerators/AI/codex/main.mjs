@@ -34,6 +34,11 @@ const configTemplate = {
  */
 export default {
 	info,
+	/**
+	 * 加载 Codex 生成器并注册模型目录路由。
+	 * @param {object} root0 - 根对象。
+	 * @param {object} root0.router - Express 路由实例。
+	 */
 	Load({ router }) {
 		router.get('/api/parts/serviceGenerators\\:AI\\:codex/models', authenticate, async (req, res) => {
 			const { sourceName } = req.query
