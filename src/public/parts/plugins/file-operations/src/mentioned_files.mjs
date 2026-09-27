@@ -3,7 +3,6 @@
  * 路径提取思路源自龙胆 `prompt/functions/file-change.mjs`，改为异步执行器以兼容远程机器。
  * 报错命中时只读取出错行及前后 2 行；整份读取遇超大文本（默认 >600 行）只取首尾各 300 行。
  */
-import { hashBuffer, hashContent } from './context_files.mjs'
 import { mergeLineWindows, parseErrorLocations } from './error_windows.mjs'
 import { DEFAULT_READ_MAX_CHARS, DEFAULT_READ_MAX_LINE_CHARS, formatLargeTextForContext, isProbablyTextBuffer, truncateLongLines } from './read_window.mjs'
 
@@ -54,9 +53,9 @@ export function extractPathCandidates(text) {
 /**
  * 预读取结果。
  * @typedef {object} mentionedFiles_t
- * @property {{path: string, resolved: string, mode: textFileMode_t, hash: string, content?: string, head?: string, tail?: string, edge?: number, omitted?: number, windows?: {start: number, end: number, text: string}[], errorLines?: number[], totalLines?: number, notice?: string}[]} textFiles - 文本文件。
- * @property {{path: string, resolved: string, name: string, buffer: Buffer, mime_type: string, hash: string}[]} binaryFiles - 二进制文件（附件）。
- * @property {{path: string, resolved: string, entries: string[], hash: string}[]} dirs - 目录及其条目。
+ * @property {{path: string, resolved: string, mode: textFileMode_t, content?: string, head?: string, tail?: string, edge?: number, omitted?: number, windows?: {start: number, end: number, text: string}[], errorLines?: number[], totalLines?: number, notice?: string}[]} textFiles - 文本文件。
+ * @property {{path: string, resolved: string, name: string, buffer: Buffer, mime_type: string}[]} binaryFiles - 二进制文件（附件）。
+ * @property {{path: string, resolved: string, entries: string[]}[]} dirs - 目录及其条目。
  */
 
 /**
@@ -106,19 +105,6 @@ function clampWindows(windows, remaining) {
 }
 
 /**
- * 计算预读结果的去重哈希（同文件、同读法、同正文视为已读）。
- * @param {object} file - 预读条目。
- * @returns {string} sha256 hex。
- */
-function hashPreloadedFile(file) {
-	if (file.mode === 'errors')
-		return hashContent(file.windows.map(window => window.text).join('\n'))
-	if (file.mode === 'truncated')
-		return hashContent(`${file.head}\n…省略${file.omitted}行…\n${file.tail}`)
-	return hashContent(file.content)
-}
-
-/**
  * 把整份/首尾截断的文本收进剩余字符预算。
  * @param {string} candidate - 候选路径（原样）。
  * @param {string} resolved - 解析后的绝对路径。
@@ -154,7 +140,7 @@ function formatWithBudget(candidate, resolved, formatted, remaining) {
  * 报错文件优先（只读出错行窗口）；整份读取遇超大文本只取首尾各若干行；渲染后统一收进字符预算。
  * @param {import('./target.mjs').targetExecutor_t} executor - 目标执行器。
  * @param {string} text - 聊天文本。
- * @param {{maxFiles?: number, maxChars?: number, maxLineChars?: number, knownFiles?: Set<string>}} [options] - 上限（maxFiles 同时限制目录数）与已知文件集合（`resolved\0hash`）。
+ * @param {{maxFiles?: number, maxChars?: number, maxLineChars?: number, knownFiles?: Set<string>}} [options] - 上限（maxFiles 同时限制目录数）与已读文件的 realpath 集合（按路径身份去重，与内容无关）。
  * @returns {Promise<mentionedFiles_t>} 预读结果。
  */
 export async function collectMentionedFiles(executor, text, options = {}) {
@@ -184,16 +170,20 @@ export async function collectMentionedFiles(executor, text, options = {}) {
 		return statCache.get(candidate)
 	}
 	/**
-	 * 缓存 resolvePath 结果：同一候选只查一次执行器。
+	 * 缓存 canonical 路径（realpath，失败回退绝对路径）：同一候选只查一次执行器。
+	 * realpath 跨符号链接并归一化大小写，同一文件的不同写法归并为同一身份，作为跨轮去重的键。
 	 * @param {string} candidate - 候选路径。
-	 * @returns {Promise<string>} 解析后的绝对路径（失败时回退原值）。
+	 * @returns {Promise<string>} 真实绝对路径（失败时回退绝对路径，再回退原值）。
 	 */
-	const resolvePath = async candidate => {
-		if (!resolvedCache.has(candidate)) resolvedCache.set(candidate, await executor.resolvePath(candidate).catch(() => candidate))
-		return resolvedCache.get(candidate)
+	const canonicalPath = async candidate => {
+		if (resolvedCache.has(candidate)) return resolvedCache.get(candidate)
+		let resolved = await executor.realpath?.(candidate).catch(() => null) ?? null
+		if (resolved == null) resolved = await executor.resolvePath(candidate).catch(() => candidate)
+		resolvedCache.set(candidate, resolved)
+		return resolved
 	}
 
-	// 报错定位：解析出走错文件与行号，按解析后的绝对路径归并；命中时按窗口读取，而非整份读取。
+	// 报错定位：解析出走错文件与行号，按 realpath 归并；命中时按窗口读取，而非整份读取。
 	const errorLocations = parseErrorLocations(text)
 	/** @type {Map<string, Set<number>>} */
 	const errorFilesByResolved = new Map()
@@ -202,7 +192,7 @@ export async function collectMentionedFiles(executor, text, options = {}) {
 	for (const location of errorLocations) {
 		const stat = await statEntry(location.path)
 		if (!stat?.isFile) continue
-		const resolved = await resolvePath(location.path)
+		const resolved = await canonicalPath(location.path)
 		if (!errorFilesByResolved.has(resolved)) errorFilesByResolved.set(resolved, new Set())
 		if (!errorFilesByRaw.has(location.path)) errorFilesByRaw.set(location.path, new Set())
 		for (const line of location.lines) {
@@ -218,7 +208,7 @@ export async function collectMentionedFiles(executor, text, options = {}) {
 		if (textFiles.length + binaryFiles.length >= maxFiles) break
 		const stat = await statEntry(candidate)
 		if (!stat) continue
-		const canonical = await resolvePath(candidate)
+		const canonical = await canonicalPath(candidate)
 		if (seen.has(canonical)) continue
 		seen.add(canonical)
 
@@ -226,9 +216,8 @@ export async function collectMentionedFiles(executor, text, options = {}) {
 			if (dirs.length >= maxFiles) continue
 			const entries = await executor.listDir(candidate).catch(() => [])
 			const names = entries.map(e => e.name + (e.isDirectory ? '/' : '')).slice(0, MAX_DIR_ENTRIES)
-			const hash = hashContent(names.join('\n'))
-			if (knownFiles.has(`${canonical}\0${hash}`)) continue
-			dirs.push({ path: candidate, resolved: canonical, entries: names, hash })
+			if (knownFiles.has(canonical)) continue
+			dirs.push({ path: candidate, resolved: canonical, entries: names })
 			continue
 		}
 		if (!stat.isFile) continue
@@ -236,15 +225,13 @@ export async function collectMentionedFiles(executor, text, options = {}) {
 		const buffer = await executor.readFileBuffer(candidate).catch(() => null)
 		if (!buffer) continue
 		if (!isProbablyTextBuffer(buffer)) {
-			const hash = hashBuffer(buffer)
-			if (knownFiles.has(`${canonical}\0${hash}`)) continue
+			if (knownFiles.has(canonical)) continue
 			binaryFiles.push({
 				path: candidate,
 				resolved: canonical,
 				name: candidate.split(/[\\/]/).pop() || 'file',
 				buffer,
 				mime_type: 'application/octet-stream',
-				hash,
 			})
 			continue
 		}
@@ -266,8 +253,7 @@ export async function collectMentionedFiles(executor, text, options = {}) {
 				totalLines: rawText.split(/\r?\n/).length,
 				...notice ? { notice } : {},
 			}
-			file.hash = hashPreloadedFile(file)
-			if (knownFiles.has(`${canonical}\0${file.hash}`)) continue
+			if (knownFiles.has(canonical)) continue
 			usedChars += windows.reduce((sum, window) => sum + window.text.length, 0) + (notice ? notice.length : 0)
 			textFiles.push(file)
 			if (maxChars > 0 && usedChars >= maxChars) break
@@ -276,8 +262,7 @@ export async function collectMentionedFiles(executor, text, options = {}) {
 
 		const formatted = formatLargeTextForContext(rawText)
 		const { file, renderedChars } = formatWithBudget(candidate, canonical, formatted, remaining)
-		file.hash = hashPreloadedFile(file)
-		if (knownFiles.has(`${canonical}\0${file.hash}`)) continue
+		if (knownFiles.has(canonical)) continue
 		usedChars += renderedChars
 		textFiles.push(file)
 		if (maxChars > 0 && usedChars >= maxChars) break

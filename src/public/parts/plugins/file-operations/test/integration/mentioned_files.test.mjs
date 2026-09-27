@@ -75,7 +75,7 @@ Deno.test('collectMentionedFiles preloads existing relative files under workdir'
 		assertEquals(result.textFiles.length, 1, '重复提及应去重')
 		assertEquals(result.textFiles[0].path, 'note.txt')
 		assert(result.textFiles[0].content.includes('hello'))
-		assert(/^[0-9a-f]{64}$/.test(result.textFiles[0].hash), '每个文本文件应带内容哈希')
+		assert(result.textFiles[0].resolved, '每个文本文件应带 realpath')
 	}
 	finally {
 		await fs.rm(root, { recursive: true, force: true })
@@ -92,7 +92,7 @@ Deno.test('collectMentionedFiles deduplicates equivalent absolute and relative p
 		const result = await collectMentionedFiles(executor, text)
 		assertEquals(result.textFiles.length, 1)
 		assertEquals(result.dirs.length, 1)
-		assert(/^[0-9a-f]{64}$/.test(result.dirs[0].hash), '目录应带条目列表哈希')
+		assert(result.dirs[0].resolved, '目录应带 realpath')
 	}
 	finally { await fs.rm(root, { recursive: true, force: true }) }
 })
@@ -117,7 +117,7 @@ Deno.test('preloadMentionedFiles preloads newest user message as a persistent to
 		assert(!run.logs[0].content.includes('old-context'))
 		const data = pluginData(run.logs[0])
 		assertEquals(data.preload.forUser, 'u2')
-		assert(data.preload.files.some(item => item.path === 'new.md' && item.resolved && item.hash))
+		assert(data.preload.files.some(item => item.path === 'new.md' && item.resolved))
 	}
 	finally { await fs.rm(root, { recursive: true, force: true }) }
 })
@@ -138,7 +138,7 @@ Deno.test('preloadMentionedFiles is idempotent for the same user message', async
 	finally { await fs.rm(root, { recursive: true, force: true }) }
 })
 
-Deno.test('preloadMentionedFiles skips unchanged file across a new message but re-reads a changed one', async () => {
+Deno.test('preloadMentionedFiles skips a mentioned file across messages regardless of content changes', async () => {
 	const root = await tempDir()
 	try {
 		await fs.writeFile(path.join(root, 'note.txt'), 'first-version', 'utf8')
@@ -146,22 +146,21 @@ Deno.test('preloadMentionedFiles skips unchanged file across a new message but r
 		await preloadMentionedFiles(first.args)
 		assertEquals(first.logs.length, 1)
 
-		// 新用户消息提及同一文件但内容未变：按内容哈希跳过
+		// 新用户消息提及同一文件但内容未变：按 realpath 跳过
 		const same = makeArgs(root, [{ id: 'u1', role: 'user', content: '看 `note.txt`' }, ...first.logs, { id: 'u2', role: 'user', content: '再看 `note.txt`' }])
 		await preloadMentionedFiles(same.args)
-		assertEquals(same.logs, [], '内容未变的文件不应跨轮重复预读')
+		assertEquals(same.logs, [], '同一文件不应跨轮重复预读')
 
-		// 文件内容变了：应重新预读
+		// 文件内容变了（agent 改过）：仍按 realpath 跳过，不把改动后的文件重新塞进上下文
 		await fs.writeFile(path.join(root, 'note.txt'), 'second-version', 'utf8')
 		const changed = makeArgs(root, [{ id: 'u1', role: 'user', content: '看 `note.txt`' }, ...first.logs, { id: 'u3', role: 'user', content: '再看 `note.txt`' }])
 		await preloadMentionedFiles(changed.args)
-		assertEquals(changed.logs.length, 1, '内容变化的文件应重新预读')
-		assert(changed.logs[0].content.includes('second-version'))
+		assertEquals(changed.logs, [], '内容变化的同一文件也不应重新预读')
 	}
 	finally { await fs.rm(root, { recursive: true, force: true }) }
 })
 
-Deno.test('preloadMentionedFiles re-reads a file whose diagnostics moved to a new line', async () => {
+Deno.test('preloadMentionedFiles skips a file already preloaded even when diagnostics point at a new line', async () => {
 	const root = await tempDir()
 	try {
 		const file = path.join(root, 'messages.mjs')
@@ -172,11 +171,10 @@ Deno.test('preloadMentionedFiles re-reads a file whose diagnostics moved to a ne
 		assert(first.logs[0].content.includes('line-10') && first.logs[0].content.includes('line-14'))
 		assert(!first.logs[0].content.includes('line-20'), '报错窗口之外的内容不应预读')
 
-		// 同一文件、新的报错行 → 窗口变化 → 哈希变化 → 重新预读
+		// 同一文件、新的报错行：仍按 realpath 跳过
 		const second = makeArgs(root, [{ id: 'u1', role: 'user', content: `${file}\n  12:1  error  Missing JSDoc  jsdoc/require-param-type` }, ...first.logs, { id: 'u2', role: 'user', content: `${file}\n  20:1  error  Missing JSDoc  jsdoc/require-param-type` }])
 		await preloadMentionedFiles(second.args)
-		assertEquals(second.logs.length, 1, '报错行变化应重新预读')
-		assert(second.logs[0].content.includes('line-18') && second.logs[0].content.includes('line-22'))
+		assertEquals(second.logs, [], '同一文件不应因报错行变化而重新预读')
 	}
 	finally { await fs.rm(root, { recursive: true, force: true }) }
 })
@@ -296,7 +294,7 @@ Deno.test('formatLargeTextForContext keeps only head and tail beyond the line li
 	assertEquals(formatLargeTextForContext('a\nb').mode, 'full')
 })
 
-Deno.test('collectMentionedFiles truncates over-large files and skips known content', async () => {
+Deno.test('collectMentionedFiles truncates over-large files and skips known paths', async () => {
 	const root = await tempDir()
 	try {
 		const big = path.join(root, 'big.txt')
@@ -307,8 +305,8 @@ Deno.test('collectMentionedFiles truncates over-large files and skips known cont
 		assertEquals(result.textFiles[0].mode, 'truncated')
 		assertEquals(result.textFiles[0].omitted, 100)
 
-		const { resolved, hash } = result.textFiles[0]
-		const skipped = await collectMentionedFiles(executor, '再看 `big.txt`', { maxFiles: 5, knownFiles: new Set([`${resolved}\0${hash}`]) })
+		const { resolved } = result.textFiles[0]
+		const skipped = await collectMentionedFiles(executor, '再看 `big.txt`', { maxFiles: 5, knownFiles: new Set([resolved]) })
 		assertEquals(skipped.textFiles.length, 0)
 	}
 	finally { await fs.rm(root, { recursive: true, force: true }) }

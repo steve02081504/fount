@@ -42,9 +42,9 @@ export function findLatestUserEntry(log) {
 }
 
 /**
- * 收集合并日志中已预读 / 已查看文件的 `resolved\0hash` 键（供跨轮去重：内容不变则跳过，内容变了则重读）。
+ * 收集合并日志中已预读 / 已查看文件的 realpath（供跨轮去重：同一路径身份即视为已读，与内容无关——避免 agent 改过的文件被再次塞进上下文）。
  * @param {chatLogEntry_t[]} log - 合并日志。
- * @returns {Set<string>} 已知文件键集合。
+ * @returns {Set<string>} 已知文件的 realpath 集合。
  */
 export function collectKnownFiles(log) {
 	const known = new Set()
@@ -52,7 +52,7 @@ export function collectKnownFiles(log) {
 		const data = entry?.extension?.pluginData?.[PLUGIN_DATA_KEY]
 		for (const group of [data?.preload?.files, data?.view?.files])
 			for (const item of group || [])
-				if (item?.resolved && item?.hash) known.add(`${item.resolved}\0${item.hash}`)
+				if (typeof item?.resolved === 'string' && item.resolved) known.add(item.resolved)
 	}
 	return known
 }
@@ -108,7 +108,7 @@ export async function preloadMentionedFiles(args) {
 	})
 	if (!textFiles.length && !binaryFiles.length && !dirs.length) return
 
-	const preloadFiles = [...textFiles, ...binaryFiles, ...dirs].map(item => ({ path: item.path, resolved: item.resolved, hash: item.hash }))
+	const preloadFiles = [...textFiles, ...binaryFiles, ...dirs].map(item => ({ path: item.path, resolved: item.resolved }))
 	/**
 	 * 构造带插件私有预读元数据的工具日志条目。
 	 * @param {object} entry 日志主体。

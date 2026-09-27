@@ -6,7 +6,7 @@ import { defineReplyHandler } from '../../shells/chat/src/reply/defineReplyHandl
 import { defaultDisplay } from '../../shells/chat/src/reply/display.mjs'
 import { getChatI18n, inferCodeLanguageFromPath, renderMarkdownCodeBlock } from '../../shells/chat/src/streaming/index.mjs'
 
-import { collectLoadedHashes, collectUpwardContext, formatUpwardContext, hashBuffer, hashContent, mergePluginData, PLUGIN_DATA_KEY, resolveEffectiveLog } from './src/context_files.mjs'
+import { collectLoadedHashes, collectUpwardContext, formatUpwardContext, hashContent, mergePluginData, PLUGIN_DATA_KEY, resolveEffectiveLog } from './src/context_files.mjs'
 import { applyEol, applyReplacement, detectTextStyle, renderLineDiff, restoreBom, similarityRatio, stripBom, toLf } from './src/edit_safety.mjs'
 import { formatReadWindowNotice, isProbablyTextBuffer, parseReadWindow, windowText } from './src/read_window.mjs'
 import { runRipgrep } from './src/search.mjs'
@@ -212,7 +212,7 @@ function pendingDisplay(render) {
  * @param {object} args - 请求上下文。
  * @param {string} call - 工具调用文本。
  * @param {string} resultText - agent 层执行结果。
- * @param {{name?: string, files?: object[], loadedContextHashes?: string[], viewedFiles?: {resolved: string, hash: string}[]}} [options] - 工具名（供人类侧区分读写/搜索）、结果附件、本次注入的上下文哈希与被查看文件。
+ * @param {{name?: string, files?: object[], loadedContextHashes?: string[], viewedFiles?: {resolved: string}[]}} [options] - 工具名（供人类侧区分读写/搜索）、结果附件、本次注入的上下文哈希与被查看文件的 realpath。
  * @returns {void}
  */
 function addFileToolLog(args, call, resultText, { name = 'file-operations', files = [], loadedContextHashes, viewedFiles } = {}) {
@@ -325,11 +325,11 @@ export const viewFileReplyHandler = defineReplyHandler({
 					continue
 				}
 				const buffer = await executor.readFileBuffer(filepath)
-				const resolved = await executor.resolvePath(filepath).catch(() => filepath)
+				const resolved = await executor.realpath?.(filepath).catch(() => null) ?? await executor.resolvePath(filepath).catch(() => filepath)
 				if (isProbablyTextBuffer(buffer)) {
 					const text = buffer.toString('utf-8')
 					file_content += renderReadResult(filepath, text, readWindow)
-					viewedFiles.push({ resolved, hash: hashContent(text) })
+					viewedFiles.push({ resolved })
 					const shown = windowText(text, readWindow)
 					if (shown.startLine === 1 && shown.endLine === shown.totalLines && !shown.truncatedLineCount)
 						knownContextHashes.add(hashContent(text))
@@ -346,7 +346,7 @@ export const viewFileReplyHandler = defineReplyHandler({
 				}
 				else {
 					files.push({ name: filepath.split(/[\\/]/).pop() || 'file', buffer, mime_type: 'application/octet-stream' })
-					viewedFiles.push({ resolved, hash: hashBuffer(buffer) })
+					viewedFiles.push({ resolved })
 					file_content += `文件：${inlineCode(filepath)}读取成功，放置于附件。\n`
 				}
 			}
