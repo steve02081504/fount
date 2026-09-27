@@ -2,7 +2,8 @@
  * Proxy 的 Responses API 对 assistant（角色）历史附件的处理。
  *
  * Responses 的 assistant 回合只接受 output_text / refusal，附件 part（input_image / input_audio）非法。
- * 是否把携带附件的 assistant 历史降级为 user 由 `convert_config.forbidAssistantFiles` 决定，与 Chat Completions 共用同一策略；默认不降级。
+ * `messagesToResponsesBody` 默认把非文本 part 移到紧随其后的 user 消息（规范要求，始终启用）；
+ * `convert_config.forbidAssistantFiles` 另可把整条 assistant 历史降级为 user，与 Chat Completions 共用同一策略。
  */
 /* global Deno */
 import { Buffer } from 'node:buffer'
@@ -76,11 +77,16 @@ async function callWithAssistantImage(forbidAssistantFiles) {
 	}
 }
 
-Deno.test('proxy Responses keeps an assistant attachment as-is when forbidAssistantFiles is empty', async () => {
+Deno.test('proxy Responses spills an assistant attachment into a following user message by default', async () => {
 	const { body } = await callWithAssistantImage([])
-	const assistant = body.input.find(item => item.role === 'assistant')
+	const assistantIndex = body.input.findIndex(item => item.role === 'assistant')
+	assert(assistantIndex !== -1, 'assistant history expected')
+	const assistant = body.input[assistantIndex]
 	assertEquals(assistant.content[0].type, 'output_text')
-	assertEquals(assistant.content.some(part => part.type === 'input_image'), true)
+	assertEquals(assistant.content.some(part => part.type === 'input_image'), false)
+	const spilled = body.input[assistantIndex + 1]
+	assertEquals(spilled.role, 'user')
+	assertEquals(spilled.content.some(part => part.type === 'input_image'), true)
 })
 
 Deno.test('proxy Responses downgrades an assistant attachment to user when forbidAssistantFiles hits', async () => {

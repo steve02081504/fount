@@ -14,8 +14,10 @@ Deno.test('Responses body and output_text parse', () => {
 	assertEquals(body.model, 'gpt-4.1')
 	assertEquals(body.stream, true)
 	assertEquals(body.store, false)
-	assertEquals(body.instructions, 'sys')
-	assertEquals(body.input[0].role, 'user')
+	// system 内联进 input，保留位置，不再有顶层 instructions。
+	assertEquals('instructions' in body, false)
+	assertEquals(body.input[0], { type: 'message', role: 'system', content: 'sys' })
+	assertEquals(body.input[1].role, 'user')
 	assertEquals(textFromResponsesJson({ output_text: 'done' }), 'done')
 	assertEquals(textFromResponsesJson({
 		output: [{ type: 'message', content: [{ type: 'output_text', text: 'z' }] }],
@@ -40,8 +42,8 @@ Deno.test('Responses body serializes a multi-turn assistant history as output_te
 		{ role: 'user', content: 'turn two' },
 	], { model: 'gpt-4.1', stream: false })
 
-	assertEquals(body.input.map(item => item.role), ['user', 'assistant', 'user'])
-	const assistant = body.input[1]
+	assertEquals(body.input.map(item => item.role), ['system', 'user', 'assistant', 'user'])
+	const assistant = body.input[2]
 	assertEquals(assistant.type, 'message')
 	assertEquals(Array.isArray(assistant.content), true)
 	assertEquals(assistant.content, [{ type: 'output_text', text: 'turn one answer' }])
@@ -67,4 +69,27 @@ Deno.test('Responses body maps chat multimodal parts to Responses content types'
 		{ type: 'input_image', image_url: 'data:image/png;base64,abc' },
 	])
 	assertEquals(body.input[1].content, [{ type: 'output_text', text: 'seen' }])
+})
+
+Deno.test('Responses body spills non-text assistant parts into a following user message', () => {
+	const body = messagesToResponsesBody([
+		{ role: 'user', content: 'hi' },
+		{
+			role: 'assistant',
+			content: [
+				{ type: 'text', text: 'look' },
+				{ type: 'image_url', image_url: { url: 'data:image/png;base64,abc' } },
+				{ type: 'refusal', refusal: 'nope' },
+			],
+		},
+	], { model: 'gpt-4.1', stream: false })
+
+	assertEquals(body.input.map(item => item.role), ['user', 'assistant', 'user'])
+	assertEquals(body.input[1].content, [
+		{ type: 'output_text', text: 'look' },
+		{ type: 'refusal', refusal: 'nope' },
+	])
+	assertEquals(body.input[2].content, [
+		{ type: 'input_image', image_url: 'data:image/png;base64,abc' },
+	])
 })

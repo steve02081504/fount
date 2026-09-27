@@ -68,20 +68,25 @@ Deno.test('proxy Responses mode replays the growing history in output-compatible
 		])
 
 		const body = JSON.parse(mock.calls[1].init.body)
-		assertEquals(typeof body.instructions, 'string')
-		assertEquals(body.input.map(item => item.role), ['user', 'assistant', 'user', 'assistant'])
+		// system 提示内联进 input 并保留位置（schema 固定的 system_prompt_at_depth）。
+		assertEquals('instructions' in body, false)
+		assertEquals(body.input.map(item => item.role), ['system', 'user', 'assistant', 'user', 'assistant'])
 		assertEquals(body.input[0].type, 'message')
+		assertEquals(body.input[0].role, 'system')
 		assertEquals(body.input[1].type, 'message')
-		assertEquals(body.input[1].role, 'assistant')
-		assertEquals(Array.isArray(body.input[1].content), true)
-		assertEquals(body.input[1].content[0].type, 'output_text')
-		assert(body.input[1].content[0].text.includes(first.content))
-		assertEquals(body.input[2].type, 'message')
+		assertEquals(body.input[1].role, 'user')
+		const assistant = body.input[2]
+		assertEquals(assistant.type, 'message')
+		assertEquals(assistant.role, 'assistant')
+		assertEquals(Array.isArray(assistant.content), true)
+		assertEquals(assistant.content[0].type, 'output_text')
+		assert(assistant.content[0].text.includes(first.content))
+		assertEquals(body.input[3].type, 'message')
 		// 末尾的 assistant 预填充：信封开头，让模型直接续写角色正文。
-		assertEquals(body.input[3].role, 'assistant')
-		assertEquals(body.input[3].content[0].type, 'output_text')
-		assert(body.input[3].content[0].text.includes('<sender>ZL-31</sender>'))
-		assert(body.input[3].content[0].text.includes('<content>'))
+		assertEquals(body.input[4].role, 'assistant')
+		assertEquals(body.input[4].content[0].type, 'output_text')
+		assert(body.input[4].content[0].text.includes('<sender>ZL-31</sender>'))
+		assert(body.input[4].content[0].text.includes('<content>'))
 		assertEquals('messages' in body, false)
 		assertEquals('n' in body, false)
 		assertEquals('logprobs' in body, false)
@@ -95,7 +100,7 @@ Deno.test('proxy Responses mode replays the growing history in output-compatible
 Deno.test('proxy auto mode keeps using the Responses endpoint for later turns after a fallback', async () => {
 	const mock = mockJsonFetch(request => {
 		if (request.url.endsWith('/chat/completions'))
-			return new Response(JSON.stringify({ error: { message: 'Endpoint is unavailable.' } }), { status: 503 })
+			return new Response(JSON.stringify({ error: { message: 'Endpoint is unavailable.' } }), { status: 404 })
 		return strictResponsesHandler('fallback-answer')(request)
 	})
 	try {
@@ -118,9 +123,9 @@ Deno.test('proxy auto mode keeps using the Responses endpoint for later turns af
 			'https://example.com/v1/responses',
 		])
 		const secondBody = JSON.parse(mock.calls[2].init.body)
-		assertEquals(secondBody.input.map(item => item.role), ['user', 'assistant', 'user', 'assistant'])
-		assertEquals(secondBody.input[1].content[0].type, 'output_text')
-		assert(secondBody.input[1].content[0].text.includes(first.content))
+		assertEquals(secondBody.input.map(item => item.role), ['system', 'user', 'assistant', 'user', 'assistant'])
+		assertEquals(secondBody.input[2].content[0].type, 'output_text')
+		assert(secondBody.input[2].content[0].text.includes(first.content))
 	}
 	finally {
 		mock.restore()

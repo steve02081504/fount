@@ -28,9 +28,10 @@ Deno.test('Azure Responses inherits BuildPrompt with Buffer attachment bytes', a
 
 	const body = await source.BuildPrompt(conversation.makePromptStruct())
 	assertEquals(Array.isArray(body.input), true)
-	assertEquals(body.input[0].role, 'user')
+	assertEquals(body.input[0].role, 'system')
 
-	const imagePart = body.input[0].content.find(part => part.type === 'input_image')
+	const userItem = body.input.find(item => item.role === 'user')
+	const imagePart = userItem.content.find(part => part.type === 'input_image')
 	assert(imagePart, 'expected an input_image part')
 	assert(imagePart.image_url.data instanceof Uint8Array, 'attachment bytes must stay bytes')
 	assertEquals('url' in imagePart.image_url, false)

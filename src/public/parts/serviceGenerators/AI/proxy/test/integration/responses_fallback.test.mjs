@@ -2,7 +2,7 @@
  * Proxy 的 Responses API 调用与自动回退。
  */
 /* global Deno */
-import { assertEquals } from 'jsr:@std/assert'
+import { assertEquals, assertRejects } from 'jsr:@std/assert'
 
 import { createPromptStructConversation } from 'fount/scripts/test/fixtures/ai_conversation.mjs'
 
@@ -42,7 +42,7 @@ async function makeSource(config, onSave = () => { }) {
 
 Deno.test('proxy auto mode falls back from Chat Completions to Responses and stores the working URL', async () => {
 	const mock = mockJsonFetch(({ url }) => url.endsWith('/chat/completions')
-		? new Response(JSON.stringify({ error: { message: 'Endpoint is unavailable.' } }), { status: 503 })
+		? new Response(JSON.stringify({ error: { message: 'Endpoint is unavailable.' } }), { status: 404 })
 		: responsesOutputResponse('responses-ok'))
 	let saveCount = 0
 	try {
@@ -55,8 +55,9 @@ Deno.test('proxy auto mode falls back from Chat Completions to Responses and sto
 			'https://example.com/v1/responses',
 		])
 		const responseBody = JSON.parse(mock.calls[1].init.body)
-		assertEquals(responseBody.instructions, 'hello')
-		assertEquals(responseBody.input, [])
+		// system 消息内联进 input，位置保留，不再提到 instructions。
+		assertEquals('instructions' in responseBody, false)
+		assertEquals(responseBody.input, [{ type: 'message', role: 'system', content: 'hello' }])
 		assertEquals(responseBody.temperature, 0)
 		assertEquals('messages' in responseBody, false)
 		assertEquals('n' in responseBody, false)
@@ -90,6 +91,22 @@ Deno.test('proxy auto mode falls back from Responses to Chat Completions', async
 		])
 		const chatBody = JSON.parse(mock.calls[1].init.body)
 		assertEquals(chatBody.messages, [{ role: 'system', content: 'hello' }])
+	}
+	finally {
+		mock.restore()
+	}
+})
+
+Deno.test('proxy auto mode does not fall back on a content error (400)', async () => {
+	const mock = mockJsonFetch(({ url }) => url.endsWith('/chat/completions')
+		? new Response(JSON.stringify({ error: { message: 'bad request' } }), { status: 400 })
+		: responsesOutputResponse('should-not-be-used'))
+	try {
+		const { source } = await makeSource({ url: 'https://example.com/v1/chat/completions' })
+		const error = await assertRejects(() => source.Call('hello'))
+		assertEquals(error.name, 'AIRequestError')
+		assertEquals(error.status, 400)
+		assertEquals(mock.calls.map(call => call.url), ['https://example.com/v1/chat/completions'])
 	}
 	finally {
 		mock.restore()

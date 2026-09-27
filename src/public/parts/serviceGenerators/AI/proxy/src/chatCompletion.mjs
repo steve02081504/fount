@@ -1,6 +1,9 @@
+import { Buffer } from 'node:buffer'
+
 import { fetchResponses, messagesToResponsesBody } from '../../codex/src/responsesClient.mjs'
 
 import { completionsUrlCandidates } from './completionsUrl.mjs'
+import { AIRequestError, isRetryableCandidateError, readErrorResponse } from './requestError.mjs'
 import { responsesUrlCandidates, urlImpliesResponses } from './responsesUrl.mjs'
 
 /** Chat Completions 专有的请求参数，Responses API 不接受，转发前需剔除。 */
@@ -8,6 +11,22 @@ const CHAT_ONLY_ARGUMENTS = new Set([
 	'n', 'logprobs', 'top_logprobs', 'stop', 'frequency_penalty', 'presence_penalty',
 	'seed', 'response_format', 'stream_options', 'logit_bias', 'user',
 ])
+
+/** 请求携带 assistant 附件、且后端拒绝时给出的配置提示（不针对具体来源）。 */
+const ASSISTANT_ATTACHMENT_HINT = 'the request carries attachments on assistant messages; if the backend rejects them, configure convert_config.forbidAssistantFiles (e.g. ["^image/"])'
+
+/**
+ * 出站消息里是否存在携带附件（非文本 part）的 assistant 消息。
+ * @param {Array<object>} messages - 消息数组。
+ * @returns {boolean} 是否存在。
+ */
+function hasAssistantAttachments(messages) {
+	return messages.some(message =>
+		message.role === 'assistant'
+		&& Array.isArray(message.content)
+		&& message.content.some(part => part?.type && part.type !== 'text')
+	)
+}
 
 /**
  * 把 proxy 的 `model_arguments` 过滤成 Responses API 可接受的参数。
@@ -17,7 +36,8 @@ const CHAT_ONLY_ARGUMENTS = new Set([
 export function toResponsesArguments(model_arguments) {
 	const result = {}
 	for (const [key, value] of Object.entries(model_arguments ?? {}))
-		if (key === 'max_tokens') result.max_output_tokens ??= value
+		if (key === 'max_tokens' || key === 'max_completion_tokens') result.max_output_tokens ??= value
+		else if (key === 'reasoning_effort') result.reasoning = { ...result.reasoning, effort: value }
 		else if (!CHAT_ONLY_ARGUMENTS.has(key)) result[key] = value
 
 	return result
@@ -130,20 +150,8 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 			signal
 		})
 
-		if (!response.ok) {
-			let errorPayload
-			try {
-				const text = await response.text()
-				try {
-					errorPayload = { data: JSON.parse(text), response }
-				} catch {
-					errorPayload = { text, response }
-				}
-			} catch {
-				errorPayload = response
-			}
-			throw errorPayload
-		}
+		if (!response.ok)
+			throw await readErrorResponse(response, { url: requestConfig.url, apiStyle: 'chat' })
 
 		const reader = response.body.getReader()
 		signal?.addEventListener?.('abort', () => {
@@ -159,21 +167,44 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 		const imageProcessingPromises = []
 
 		/**
-		 * 处理图片 URL 数组
-		 * @param {string[]} imageUrls - 图片 URL 数组。
+		 * 从流式 choice 的 `images` 字段收集图片 URL。
+		 *
+		 * 各来源形状不一：裸 URL 字符串、`{url}`，以及 OpenRouter 的
+		 * `{type:'image_url', image_url:{url}}`。
+		 * @param {any} images - choice 里的 images 字段。
+		 * @returns {string[]} 图片 URL 列表。
 		 */
-		const processImages = (imageUrls) => {
-			if (!imageUrls || !Array.isArray(imageUrls)) return
+		const imageUrlsOf = (images) => {
+			if (!images) return []
+			const list = Array.isArray(images) ? images : [images]
+			const urls = []
+			for (const image of list)
+				if (typeof image === 'string') urls.push(image)
+				else if (typeof image?.url === 'string') urls.push(image.url)
+				else if (typeof image?.image_url === 'string') urls.push(image.image_url)
+				else if (typeof image?.image_url?.url === 'string') urls.push(image.image_url.url)
+			return urls
+		}
+
+		/**
+		 * 下载图片 URL 并加入结果文件。
+		 * @param {any} images - choice 里的 images 字段。
+		 */
+		const processImages = (images) => {
+			const urls = imageUrlsOf(images)
+			if (!urls.length) return
 
 			const promise = (async () => {
-				const newFiles = await Promise.all(imageUrls.map(async (url) => {
+				const newFiles = await Promise.all(urls.map(async (url) => {
 					try {
 						const imageResponse = await fetch(url)
 						if (!imageResponse.ok) return null
+						const mimeType = (imageResponse.headers.get('content-type') || 'image/png').split(';')[0].trim()
+						const extension = mimeType.split('/')[1]?.replace('jpeg', 'jpg') || 'png'
 						return {
-							name: `image${imageIndex++}.png`,
-							buffer: await imageResponse.arrayBuffer(),
-							mimetype: 'image/png'
+							name: `image${imageIndex++}.${extension}`,
+							buffer: Buffer.from(await imageResponse.arrayBuffer()),
+							mime_type: mimeType,
 						}
 					} catch (error) {
 						console.error('Failed to fetch image:', url, error)
@@ -188,6 +219,78 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 				}
 			})()
 			imageProcessingPromises.push(promise)
+		}
+
+		/**
+		 * 处理一行 SSE `data:`。
+		 * @param {string} line - 原始行。
+		 * @returns {void}
+		 */
+		const handleSseLine = (line) => {
+			const trimmed = line.trim()
+			if (!trimmed.startsWith('data:')) return
+
+			const data = trimmed.slice(5).trim()
+			if (!data || data === '[DONE]') return
+
+			let json
+			try {
+				json = JSON.parse(data)
+			} catch (error) {
+				console.warn('Error parsing stream data:', error)
+				return
+			}
+
+			// 流中夹带的错误对象：过去被静默忽略，导致得到空回复。
+			if (json.error)
+				throw new AIRequestError(
+					`chat stream error: ${json.error.message ?? JSON.stringify(json.error)}`,
+					{ apiStyle: 'chat', url: requestConfig.url, data: json },
+				)
+
+			const delta = json.choices?.[0]?.delta
+			const message = json.choices?.[0]?.message
+
+			const content = delta?.content || message?.content || ''
+			if (content) result.content += content
+
+			appendLogprobsFromChoice(json.choices?.[0])
+
+			// 推理字段：DeepSeek 用 reasoning_content，OpenRouter / 新版 vLLM 用 reasoning
+			const reasoningChunk = delta?.reasoning_content ?? message?.reasoning_content ?? delta?.reasoning ?? message?.reasoning ?? ''
+			if (reasoningChunk) {
+				result.extension ??= {}
+				result.extension.reasoning_content = (result.extension.reasoning_content ?? '') + reasoningChunk
+			}
+
+			if (content || reasoningChunk) previewUpdater(result)
+
+			const images = delta?.images || message?.images
+			if (images) processImages(images)
+		}
+
+		/**
+		 * 处理非流式 JSON 响应。
+		 * @param {object} json - 响应 JSON。
+		 * @returns {void}
+		 */
+		const applyNonStreamJson = json => {
+			if (json.error)
+				throw new AIRequestError(
+					`chat error: ${json.error.message ?? JSON.stringify(json.error)}`,
+					{ apiStyle: 'chat', url: requestConfig.url, data: json },
+				)
+
+			const message = json.choices?.[0]?.message
+			appendLogprobsFromChoice(json.choices?.[0])
+			if (message) {
+				result.content = message.content || ''
+				if (message.images) processImages(message.images)
+				if (message.reasoning_content ?? message.reasoning) {
+					result.extension ??= {}
+					result.extension.reasoning_content = message.reasoning_content ?? message.reasoning
+				}
+			}
 		}
 
 		try {
@@ -208,82 +311,22 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 				if (isSSE) {
 					const lines = buffer.split('\n')
 					buffer = lines.pop()
-
-					for (const line of lines) {
-						const trimmed = line.trim()
-						if (!trimmed.startsWith('data:')) continue
-
-						const data = trimmed.slice(5).trim()
-						if (data === '[DONE]') continue
-
-						try {
-							const json = JSON.parse(data)
-							const delta = json.choices?.[0]?.delta
-							const message = json.choices?.[0]?.message
-
-							const content = delta?.content || message?.content || ''
-							if (content)
-								result.content += content
-
-							appendLogprobsFromChoice(json.choices?.[0])
-
-							// 提取 reasoning_content（DeepSeek / reasoning models，Chat Completions 格式）
-							const reasoningChunk = delta?.reasoning_content ?? message?.reasoning_content ?? ''
-							if (reasoningChunk) {
-								result.extension ??= {}
-								result.extension.reasoning_content = (result.extension.reasoning_content ?? '') + reasoningChunk
-							}
-
-							// 提取 OpenAI Responses API 流式 reasoning summary delta
-							if (json.type === 'response.reasoning_summary_text.delta') {
-								result.extension ??= {}
-								result.extension.reasoning_summary ??= []
-								const idx = json.content_index ?? 0
-								while (result.extension.reasoning_summary.length <= idx)
-									result.extension.reasoning_summary.push('')
-								result.extension.reasoning_summary[idx] += json.delta ?? ''
-							}
-
-							if (content || reasoningChunk || json.type === 'response.reasoning_summary_text.delta')
-								previewUpdater(result)
-
-							const images = delta?.images || message?.images
-							if (images) processImages(images)
-						} catch (error) {
-							console.warn('Error parsing stream data:', error)
-						}
-					}
+					for (const line of lines) handleSseLine(line)
 				}
 			}
 
-			if (!isSSE && buffer.trim()) try {
-				const json = JSON.parse(buffer)
-				const message = json.choices?.[0]?.message
-				appendLogprobsFromChoice(json.choices?.[0])
-				if (message) {
-					result.content = message.content || ''
-					if (message.images) processImages(message.images)
-					// 提取 reasoning_content（DeepSeek / reasoning models）
-					if (message.reasoning_content) {
-						result.extension ??= {}
-						result.extension.reasoning_content = message.reasoning_content
-					}
+			// 冲刷解码器与最后一行（流末尾可能没有换行结尾）。
+			buffer += decoder.decode()
+			if (isSSE)
+				for (const line of buffer.split('\n')) handleSseLine(line)
+			else if (buffer.trim()) {
+				let json
+				try {
+					json = JSON.parse(buffer)
+				} catch (error) {
+					if (!result.content) console.error('Failed to parse response as JSON:', error)
 				}
-				// 提取 OpenAI Responses API 非流式格式（output 数组）
-				if (json.output) for (const item of json.output) {
-					if (item.type === 'reasoning') {
-						result.extension ??= {}
-						result.extension.reasoning_summary ??= []
-						for (const s of item.summary ?? [])
-							if (s.type === 'summary_text' && s.text)
-								result.extension.reasoning_summary.push(s.text)
-					}
-					if (item.type === 'message' && !result.content)
-						for (const c of item.content ?? [])
-							if (c.type === 'output_text') result.content += c.text ?? ''
-				}
-			} catch (error) {
-				if (!result.content) console.error('Failed to parse response as JSON:', error)
+				if (json) applyNonStreamJson(json)
 			}
 		} catch (error) {
 			if (error.name === 'AbortError') throw error
@@ -349,8 +392,15 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 			} catch (error) {
 				if (error.name === 'AbortError') throw error
 				errors.push(error)
+				// 只有端点不对才继续尝试下一个候选；内容错误立刻抛出，避免放大请求量并掩盖真错。
+				if (!isRetryableCandidateError(error)) break
 			}
 
-		throw errors.length == 1 ? errors[0] : errors
+		const failure = errors.length == 1 ? errors[0] : new AggregateError(
+			errors,
+			`all ${errors.length} request candidates failed:\n${errors.map(error => `- ${error?.message ?? error}`).join('\n')}`,
+		)
+		if (hasAssistantAttachments(messages)) failure.message += `\n${ASSISTANT_ATTACHMENT_HINT}`
+		throw failure
 	}
 }

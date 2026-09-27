@@ -34,12 +34,13 @@ Deno.test('Codex BuildPrompt builds Responses body with attachment bytes as Buff
 	entry.files = [{ name: 'a.png', mime_type: 'image/png', buffer: PNG, description: '' }]
 
 	const body = await source.BuildPrompt(conversation.makePromptStruct())
-	assertEquals(typeof body.instructions, 'string')
+	assertEquals('instructions' in body, false)
 	assertEquals(Array.isArray(body.input), true)
 	assertEquals(body.input[0].type, 'message')
-	assertEquals(body.input[0].role, 'user')
+	assertEquals(body.input[0].role, 'system')
 
-	const imagePart = body.input[0].content.find(part => part.type === 'input_image')
+	const userItem = body.input.find(item => item.role === 'user')
+	const imagePart = userItem.content.find(part => part.type === 'input_image')
 	assert(imagePart, 'expected an input_image part')
 	assert(imagePart.image_url.data instanceof Uint8Array, 'attachment bytes must stay bytes')
 	assertEquals('url' in imagePart.image_url, false)

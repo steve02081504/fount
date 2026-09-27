@@ -54,18 +54,50 @@ export function responsesOutputResponse(content) {
 
 /**
  * 模拟严格 Responses 后端（vLLM / LiteLLM 等）：带 `type:'message'` 的 assistant
- * 多轮历史若以字符串为 content，会按 `ResponseOutputMessage` 逐字符校验并返回 400。
+ * 多轮历史若以字符串为 content，会按 `ResponseOutputMessage` 逐字符校验并返回 400；
+ * assistant 回合只接受 output_text / refusal 内容块。
  * @param {string} [content] - 合法请求的回复文本。
  * @returns {(request: {url: string, init?: RequestInit}) => Response} mockFetch handler。
  */
 export function strictResponsesHandler(content = 'mock-ok') {
 	return ({ init }) => {
 		const body = JSON.parse(init.body)
-		for (const item of body.input ?? [])
-			if (item?.type === 'message' && item.role === 'assistant' && !Array.isArray(item.content))
+		let position = -1
+		for (const item of body.input ?? []) {
+			position++
+			if (item?.type !== 'message' || item.role !== 'assistant') continue
+			if (!Array.isArray(item.content))
 				return new Response(JSON.stringify({
 					error: { message: 'Input should be a valid dictionary', param: item.content },
 				}), { status: 400, headers: { 'Content-Type': 'application/json' } })
+			const invalid = item.content.find(part => part?.type !== 'output_text' && part?.type !== 'refusal')
+			if (invalid)
+				return new Response(JSON.stringify({
+					error: { message: `the message at position ${position} with role 'assistant' contains an invalid part type: ${invalid.type}` },
+				}), { status: 400, headers: { 'Content-Type': 'application/json' } })
+		}
 		return responsesOutputResponse(content)
+	}
+}
+
+/**
+ * 模拟严格 Chat Completions 后端（如 Kimi / Moonshot）：assistant 消息只接受文本，
+ * 携带 image_url 等 part 时返回 400。
+ * @param {string} [content] - 合法请求的回复文本。
+ * @returns {(request: {url: string, init?: RequestInit}) => Response} mockFetch handler。
+ */
+export function strictChatHandler(content = 'mock-ok') {
+	return ({ init }) => {
+		const body = JSON.parse(init.body)
+		const messages = body.messages ?? []
+		for (const [position, message] of messages.entries())
+			if (message.role === 'assistant' && Array.isArray(message.content)) {
+				const invalid = message.content.find(part => part?.type && part.type !== 'text')
+				if (invalid)
+					return new Response(JSON.stringify({
+						error: { message: `Invalid request: the message at position ${position} with role 'assistant' contains an invalid part type: ${invalid.type}` },
+					}), { status: 400, headers: { 'Content-Type': 'application/json' } })
+			}
+		return openaiMessageResponse(content)
 	}
 }
