@@ -7009,6 +7009,7 @@
 				},
 				"hint": "与上一轮请求比较的 prompt 公共前缀估算（字符口径，非计费 token）",
 				"lowest": "最低缓存 ≈${rate}%",
+				"lowestTitle": "缓存命中率最低的 7 轮",
 				"missing": "Prompt 前缀复用率暂无数据",
 				"noRate": "缓存率 —",
 				"rate": "缓存率 ≈${rate}%",

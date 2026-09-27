@@ -7009,6 +7009,7 @@
 				},
 				"hint": "Estimated shared prompt prefix vs previous request (characters, not billed tokens)",
 				"lowest": "Lowest cache ≈${rate}%",
+				"lowestTitle": "7 rounds with the lowest cache hit rate",
 				"missing": "Prompt prefix reuse unavailable",
 				"noRate": "Cache —",
 				"rate": "Cache ≈${rate}%",

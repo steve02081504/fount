@@ -7015,6 +7015,7 @@
 				},
 				"hint": "Prefixo comum estimado do prompt em relação ao pedido anterior (caracteres, não tokens faturados)",
 				"lowest": "Cache mínima ≈${rate}%",
+				"lowestTitle": "As 7 rondas com a taxa de acertos de cache mais baixa",
 				"missing": "Sem dados de reutilização do prefixo do prompt",
 				"noRate": "Cache —",
 				"rate": "Cache ≈${rate}%",

@@ -7008,6 +7008,7 @@
 				},
 				"hint": "與上一輪請求相比的 prompt 共用前綴估算（字元計，非計費 token）",
 				"lowest": "最低快取 ≈${rate}%",
+				"lowestTitle": "快取命中率最低的 7 輪",
 				"missing": "Prompt 前綴複用率暫無資料",
 				"noRate": "快取率 —",
 				"rate": "快取率 ≈${rate}%",

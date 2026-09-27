@@ -7009,6 +7009,7 @@
 				},
 				"hint": "Ước tính tiền tố prompt chung so với yêu cầu trước đó (theo ký tự, không phải token tính phí)",
 				"lowest": "Đệm thấp nhất ≈${rate}%",
+				"lowestTitle": "7 vòng có tỷ lệ trúng bộ đệm thấp nhất",
 				"missing": "Chưa có dữ liệu tái sử dụng tiền tố prompt",
 				"noRate": "Tỷ lệ đệm —",
 				"rate": "Tỷ lệ đệm ≈${rate}%",

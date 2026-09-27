@@ -7015,6 +7015,7 @@
 				},
 				"hint": "Préfixe commun estimé du prompt par rapport à la requête précédente (caractères, pas de jetons facturés)",
 				"lowest": "Cache minimale ≈${rate} %",
+				"lowestTitle": "Les 7 tours au taux de réussite du cache le plus bas",
 				"missing": "Aucune donnée de réutilisation du préfixe du prompt",
 				"noRate": "Cache —",
 				"rate": "Cache ≈${rate} %",

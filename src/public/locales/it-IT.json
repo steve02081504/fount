@@ -7015,6 +7015,7 @@
 				},
 				"hint": "Prefisso comune stimato del prompt rispetto alla richiesta precedente (caratteri, non token fatturati)",
 				"lowest": "Cache minima ≈${rate}%",
+				"lowestTitle": "I 7 round con il tasso di successo della cache più basso",
 				"missing": "Nessun dato sul riutilizzo del prefisso del prompt",
 				"noRate": "Cache —",
 				"rate": "Cache ≈${rate}%",

@@ -7009,6 +7009,7 @@
 				},
 				"hint": "Áætlað sameiginlegt forskeyti kvaðar miðað við fyrri beiðni (stafir, ekki gjaldtökutókar)",
 				"lowest": "Lægsta skyndiminni ≈${rate}%",
+				"lowestTitle": "7 umferðir með lægsta skyndiminnishlutfall",
 				"missing": "Engin gögn um endurnýtingu forskeytis kvaðar",
 				"noRate": "Skyndiminni —",
 				"rate": "Skyndiminni ≈${rate}%",

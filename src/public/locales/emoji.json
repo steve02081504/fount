@@ -7009,6 +7009,7 @@
 				},
 				"hint": "💬🔁♻️ (🔤, ⚖️🪙)",
 				"lowest": "⬇️♻️ ≈${rate}%",
+				"lowestTitle": "⬇️♻️ 7️⃣",
 				"missing": "🈳♻️",
 				"noRate": "♻️ —",
 				"rate": "♻️ ≈${rate}%",

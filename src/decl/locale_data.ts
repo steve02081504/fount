@@ -6971,6 +6971,7 @@ export type LocaleData = {
 				}
 				hint: string
 				lowest: string
+				lowestTitle: string
 				missing: string
 				noRate: string
 				rate: string

@@ -7015,6 +7015,7 @@
 				},
 				"hint": "Geschat gemeenschappelijk promptvoorvoegsel ten opzichte van het vorige verzoek (tekens, geen gefactureerde tokens)",
 				"lowest": "Laagste cache ≈${rate}%",
+				"lowestTitle": "De 7 rondes met het laagste cachetrefferpercentage",
 				"missing": "Geen gegevens over hergebruik van promptvoorvoegsel",
 				"noRate": "Cache —",
 				"rate": "Cache ≈${rate}%",

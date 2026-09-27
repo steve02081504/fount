@@ -7009,6 +7009,7 @@
 				},
 				"hint": "Geschätzter gemeinsamer Prompt-Präfix gegenüber der vorherigen Anfrage (Zeichen, keine abgerechneten Token)",
 				"lowest": "Niedrigster Cache ≈${rate}%",
+				"lowestTitle": "Die 7 Runden mit der niedrigsten Cache-Trefferrate",
 				"missing": "Keine Daten zur Wiederverwendung des Prompt-Präfixes",
 				"noRate": "Cache —",
 				"rate": "Cache ≈${rate}%",

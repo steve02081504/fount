@@ -7015,6 +7015,7 @@
 				},
 				"hint": "Prefijo común estimado del prompt respecto a la petición anterior (caracteres, no tokens facturados)",
 				"lowest": "Caché más baja ≈${rate}%",
+				"lowestTitle": "Las 7 rondas con la tasa de aciertos de caché más baja",
 				"missing": "No hay datos de reutilización del prefijo del prompt",
 				"noRate": "Caché —",
 				"rate": "Caché ≈${rate}%",
