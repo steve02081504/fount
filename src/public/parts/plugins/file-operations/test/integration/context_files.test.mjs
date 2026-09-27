@@ -8,8 +8,8 @@ import path from 'node:path'
 
 import { assert, assertEquals } from 'jsr:@std/assert'
 
-import { collectLoadedHashes, collectUpwardContext, formatUpwardContext, globToRegExp, hashContent, parseFrontmatter } from '../../../../plugins/file-operations/src/context_files.mjs'
-import { createTargetExecutor } from '../../../../plugins/file-operations/src/target.mjs'
+import { collectLoadedHashes, collectUpwardContext, formatUpwardContext, globToRegExp, hashContent, parseFrontmatter } from '../../src/context_files.mjs'
+import { createTargetExecutor } from '../../src/target.mjs'
 
 /**
  * 创建临时目录。
@@ -44,10 +44,10 @@ Deno.test('hashContent is a stable sha256 hex and collectLoadedHashes reads prec
 	assert(hashContent('# other') !== hash)
 
 	const entries = [
-		{ extension: { loadedContextHashes: [hash, 'other'] } },
+		{ extension: { pluginData: { 'file-operations': { contextHashes: [hash, 'other'] } } } },
 		{ extension: {} },
 		{},
-		{ extension: { loadedContextHashes: hash } },
+		{ extension: { pluginData: { 'file-operations': { contextHashes: hash } } } },
 	]
 	const collected = collectLoadedHashes(entries)
 	assertEquals([...collected].sort(), ['other', hash].sort())

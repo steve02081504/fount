@@ -8,7 +8,11 @@ import { createHash } from 'node:crypto'
 
 // chat shell 的 streaming/markdown.mjs 同时承担事实共享层：part（char/插件构建 prompt 链路）直接导入其提供的
 // markdown 工具属预期设计，依赖方向正常（无需迁出到额外共享模块）。
+import { mergeStructPromptChatLog } from '../../../shells/chat/src/prompt_struct/index.mjs'
 import { inferCodeLanguageFromPath, renderMarkdownCodeBlock } from '../../../shells/chat/src/streaming/markdown.mjs'
+
+/** 插件在 `entry.extension.pluginData` 中使用的私有数据键。 */
+export const PLUGIN_DATA_KEY = 'file-operations'
 
 /**
  * 计算注入上下文内容的内容哈希（sha256 hex）。
@@ -21,15 +25,61 @@ export function hashContent(text) {
 }
 
 /**
+ * 计算二进制内容的内容哈希（sha256 hex）。
+ * @param {Buffer|Uint8Array} buffer - 二进制内容。
+ * @returns {string} sha256 十六进制摘要。
+ */
+export function hashBuffer(buffer) {
+	return createHash('sha256').update(buffer).digest('hex')
+}
+
+/**
+ * 把插件私有数据合并进条目的 `extension.pluginData[pluginName]`（浅合并，保留既有键）。
+ * @param {object} extension - 条目扩展对象（就地 mutate）。
+ * @param {string} pluginName - 插件名。
+ * @param {Record<string, unknown>} patch - 要合并的键值。
+ * @returns {Record<string, unknown>} 合并后的插件私有数据桶。
+ */
+export function mergePluginData(extension, pluginName, patch) {
+	extension.pluginData ??= {}
+	const current = extension.pluginData[pluginName] ?? {}
+	extension.pluginData[pluginName] = { ...current, ...patch }
+	return extension.pluginData[pluginName]
+}
+
+/**
+ * 读取条目中 file-operations 的插件私有数据桶。
+ * @param {object} entry - 日志条目。
+ * @returns {object|undefined} 插件私有数据（不存在时 undefined）。
+ */
+export function getFileOperationsPluginData(entry) {
+	return entry?.extension?.pluginData?.[PLUGIN_DATA_KEY]
+}
+
+/**
+ * 取「对当前角色生效」的合并日志：优先 `prompt_struct`（自带摘要边界与可见性过滤），缺失时回退 `args.chat_log`。
+ * @param {object} args - 请求上下文。
+ * @returns {object[]} 合并后的日志条目数组。
+ */
+export function resolveEffectiveLog(args) {
+	if (Array.isArray(args?.prompt_struct?.chat_log))
+		try {
+			return mergeStructPromptChatLog(args.prompt_struct)
+		}
+		catch { /* prompt_struct 结构不完整时回退 */ }
+	return Array.isArray(args?.chat_log) ? args.chat_log : []
+}
+
+/**
  * 收集一组日志条目里已预存的注入上下文哈希。
- * 读取工具日志 `extension.loadedContextHashes`（`hashContent` 结果数组），避免重复扫描/重算正文。
+ * 读取工具日志 `extension.pluginData['file-operations'].contextHashes`（`hashContent` 结果数组），避免重复扫描/重算正文。
  * @param {object[]} entries - 日志条目数组（chatLogEntry_t 形状）。
  * @returns {Set<string>} 已注入内容哈希集合。
  */
 export function collectLoadedHashes(entries) {
 	const hashes = new Set()
 	for (const entry of entries || []) {
-		const stored = entry?.extension?.loadedContextHashes
+		const stored = getFileOperationsPluginData(entry)?.contextHashes
 		if (!Array.isArray(stored)) continue
 		for (const hash of stored)
 			if (typeof hash === 'string' && hash) hashes.add(hash)

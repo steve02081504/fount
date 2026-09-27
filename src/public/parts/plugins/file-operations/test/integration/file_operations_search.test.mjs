@@ -8,10 +8,10 @@ import path from 'node:path'
 
 import { assert, assertEquals } from 'jsr:@std/assert'
 
-import { fileOperationsReplyHandlers } from '../../../../plugins/file-operations/handler.mjs'
-import { runRipgrep } from '../../../../plugins/file-operations/src/search.mjs'
-import { createTargetExecutor } from '../../../../plugins/file-operations/src/target.mjs'
-import { runReplyHandlers } from '../../../chat/src/reply/handlerPipeline.mjs'
+import { runReplyHandlers } from '../../../../shells/chat/src/reply/handlerPipeline.mjs'
+import { fileOperationsReplyHandlers } from '../../handler.mjs'
+import { runRipgrep } from '../../src/search.mjs'
+import { createTargetExecutor } from '../../src/target.mjs'
 
 /**
  * 通过回复管线运行文件操作 handler。

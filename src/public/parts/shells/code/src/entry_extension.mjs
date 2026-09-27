@@ -1,9 +1,11 @@
 /**
- * code shell 会话条目扩展白名单：仅透传前端渲染所需字段与上下文去重元数据（历史默认清空，避免把内部结构写进会话）。
+ * code shell 会话条目扩展白名单：仅透传前端渲染所需字段与插件私有数据（历史默认清空，避免把内部结构写进会话）。
  */
 
 /**
- * 挑选需随会话落盘的前端可见扩展字段（子代理运行定位、结构化工具卡、统一异步任务、随文件注入上下文哈希）。
+ * 挑选需随会话落盘的前端可见扩展字段（子代理运行定位、结构化工具卡、统一异步任务、插件私有数据）。
+ * `pluginData` 为插件自有的 JSON 可序列化命名空间：shell 整体透传该字段本身，不解释其内部键，
+ * 并做 JSON 往返深拷贝以保证落盘内容可序列化。
  * @param {object} extension - 条目扩展。
  * @returns {object} 白名单后的扩展。
  */
@@ -17,6 +19,7 @@ export function pickEntryExtension(extension) {
 	if (extension.asyncAwait) picked.asyncAwait = extension.asyncAwait
 	if (extension.asyncInspect) picked.asyncInspect = extension.asyncInspect
 	if (extension.error) picked.error = extension.error
-	if (Array.isArray(extension.loadedContextHashes)) picked.loadedContextHashes = extension.loadedContextHashes
+	if (extension.pluginData && typeof extension.pluginData === 'object' && !Array.isArray(extension.pluginData))
+		picked.pluginData = JSON.parse(JSON.stringify(extension.pluginData))
 	return picked
 }

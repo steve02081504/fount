@@ -1,51 +1,4 @@
-import { inferCodeLanguageFromPath, renderMarkdownCodeBlock } from '../../shells/chat/src/streaming/index.mjs'
 import { getConnectedSubfounts } from '../../shells/subfounts/src/api.mjs'
-
-import { collectMentionedFiles } from './src/mentioned_files.mjs'
-import { createArgsExecutorResolver, resolveTarget } from './src/target.mjs'
-
-/** 单次预读的文件数上限。 */
-const PRELOAD_MAX_FILES = 5
-
-/**
- * 预读对话中提及的、按当前工作目录可解析的本地文件，生成附加聊天日志条目。
- * @param {import('../../../../../src/decl/pluginAPI.ts').chatReplyRequest_t} args - 聊天回复请求参数。
- * @returns {Promise<import('../../../../../src/decl/chatLog.ts').chatLogEntry_t[]>} 附加日志条目。
- */
-async function preloadMentionedFiles(args) {
-	const target = resolveTarget(args)
-	if (!target.workdir) return []
-	// 后台通知触发的新生成没有新用户提及；旧的路径已在历史对话/工具日志中，无需反复预读。
-	const latest = args.chat_log?.at(-1)
-	if (latest?.role !== 'user') return []
-	const text = latest.content || ''
-	if (!text.trim()) return []
-
-	const executor = createArgsExecutorResolver(args)()
-	const { textFiles, binaryFiles, dirs } = await collectMentionedFiles(executor, text, { maxFiles: PRELOAD_MAX_FILES })
-	const entries = []
-	if (textFiles.length) {
-		let content = '以下对话中提及的文件已按当前工作目录自动预读：\n'
-		for (const file of textFiles)
-			content += `文件：${file.path}\n${renderMarkdownCodeBlock(file.content, { lang: inferCodeLanguageFromPath(file.path) })}\n`
-		entries.push({ name: 'file-operations.preload', role: 'tool', content, files: [] })
-	}
-	if (binaryFiles.length)
-		entries.push({
-			name: 'file-operations.preload',
-			role: 'tool',
-			content: `以下对话中提及的二进制文件已作为附件预读：\n${binaryFiles.map(file => `- ${file.name}`).join('\n')}\n`,
-			files: binaryFiles,
-		})
-	for (const dir of dirs)
-		entries.push({
-			name: 'file-operations.preload',
-			role: 'tool',
-			content: `以下对话中提及的目录内容：\n目录：${dir.path}\n${dir.entries.map(name => `- ${name}`).join('\n')}\n`,
-			files: [],
-		})
-	return entries
-}
 
 /**
  * 文件操作插件的 GetPrompt：向角色提示中注入文件操作能力说明。
@@ -145,14 +98,9 @@ ${args.Charname}: <view-file machine="1">~/Desktop/新建文本文件.txt</view-
 - 操作文件时请谨慎，避免误删除或覆盖重要文件
 `
 
-	const additional_chat_log = await preloadMentionedFiles(args).catch(err => {
-		console.warn('预读对话提及文件失败：', err)
-		return []
-	})
-
 	return {
 		text: [{ content: prompt, description: '文件操作能力说明', important: 0 }],
-		additional_chat_log,
+		additional_chat_log: [],
 		extension: {},
 	}
 }

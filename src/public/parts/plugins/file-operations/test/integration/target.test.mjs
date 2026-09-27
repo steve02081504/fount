@@ -8,7 +8,7 @@ import path from 'node:path'
 
 import { assert, assertEquals } from 'jsr:@std/assert'
 
-import { createArgsExecutorResolver, createTargetExecutor, joinWorkdir, listMachines, resolveTarget } from '../../../../plugins/file-operations/src/target.mjs'
+import { createArgsExecutorResolver, createTargetExecutor, joinWorkdir, listMachines, resolveTarget } from '../../src/target.mjs'
 
 Deno.test('resolveTarget explicit overrides request defaults', () => {
 	const args = { username: 'u', workdir: { machine: '0', path: '/base' } }

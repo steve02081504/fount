@@ -1,7 +1,7 @@
 /* global Deno */
 /**
  * 文件操作 · 读取时向上上下文（AGENTS.md / .agents/docs）内容哈希去重单元测试。
- * 覆盖：跨轮（靠日志 extension.loadedContextHashes）、分页非首页、摘要边界重置。
+ * 覆盖：跨轮（靠日志 extension.pluginData['file-operations'].contextHashes）、分页非首页、摘要边界重置。
  */
 import fs from 'node:fs/promises'
 import os from 'node:os'
@@ -9,8 +9,8 @@ import path from 'node:path'
 
 import { assert, assertEquals } from 'jsr:@std/assert'
 
-import { fileOperationsReplyHandlers } from '../../../../plugins/file-operations/handler.mjs'
-import { runReplyHandlers } from '../../../chat/src/reply/handlerPipeline.mjs'
+import { runReplyHandlers } from '../../../../shells/chat/src/reply/handlerPipeline.mjs'
+import { fileOperationsReplyHandlers } from '../../handler.mjs'
 
 /**
  * 通过回复管线运行文件操作 handler。
@@ -116,8 +116,9 @@ Deno.test('view-file 首次读取注入两级 AGENTS.md 并在 extension 预存�
 		assert(entry, '应追加 view-file 工具日志')
 		assert(entry.content.includes('随文件一并加载的上下文'), '首次读取应注入上下文')
 		assert(entry.content.includes('# root rules') && entry.content.includes('# src rules'))
-		assertEquals(entry.extension.loadedContextHashes.length, 2, '两级 AGENTS.md 各预存一个哈希')
-		for (const hash of entry.extension.loadedContextHashes)
+		const contextHashes = entry.extension.pluginData['file-operations'].contextHashes
+		assertEquals(contextHashes.length, 2, '两级 AGENTS.md 各预存一个哈希')
+		for (const hash of contextHashes)
 			assert(/^[0-9a-f]{64}$/.test(hash), `应为 sha256 hex：${hash}`)
 	}
 	finally {
@@ -169,7 +170,8 @@ Deno.test('view-file 跨轮读取同一文件：生效窗口内已注入过的�
 		const secondEntry = viewEntry(second.logs)
 		assert(!secondEntry.content.includes('随文件一并加载的上下文'), '已注入过的上下文应被跳过')
 		assert(secondEntry.content.includes('export {}'), '文件正文仍应正常返回')
-		assert(!secondEntry.extension, '无新注入时不写哈希扩展字段')
+		assert(!secondEntry.extension?.pluginData?.['file-operations']?.contextHashes, '无新注入时不写上下文哈希')
+		assert(secondEntry.extension.pluginData['file-operations'].view.files.length, '应记录本次查看的文件以便预读去重')
 	}
 	finally {
 		await fs.rm(root, { recursive: true, force: true })
@@ -205,7 +207,7 @@ Deno.test('view-file 非首页（offset 非 1）读取同样注入上下文', as
 
 		const entry = viewEntry(run.logs)
 		assert(entry.content.includes('随文件一并加载的上下文'), '移除首页判定后任意页读取都应注入')
-		assertEquals(entry.extension.loadedContextHashes.length, 2)
+		assertEquals(entry.extension.pluginData['file-operations'].contextHashes.length, 2)
 	}
 	finally {
 		await fs.rm(root, { recursive: true, force: true })

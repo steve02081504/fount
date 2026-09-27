@@ -8,9 +8,9 @@ import path from 'node:path'
 
 import { assert, assertEquals } from 'jsr:@std/assert'
 
-import { fileOperationsReplyHandlers } from '../../../../plugins/file-operations/handler.mjs'
-import { applyEol, applyReplacement, detectTextStyle, renderLineDiff, restoreBom, similarityRatio, stripBom, toLf } from '../../../../plugins/file-operations/src/edit_safety.mjs'
-import { runReplyHandlers } from '../../../chat/src/reply/handlerPipeline.mjs'
+import { runReplyHandlers } from '../../../../shells/chat/src/reply/handlerPipeline.mjs'
+import { fileOperationsReplyHandlers } from '../../handler.mjs'
+import { applyEol, applyReplacement, detectTextStyle, renderLineDiff, restoreBom, similarityRatio, stripBom, toLf } from '../../src/edit_safety.mjs'
 
 /**
  * 通过回复管线运行文件操作 handler。

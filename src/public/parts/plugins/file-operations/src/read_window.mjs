@@ -9,6 +9,48 @@ export const DEFAULT_READ_MAX_LINES = 2000
 export const DEFAULT_READ_MAX_LINE_CHARS = 2000
 /** 默认总体字符上限。 */
 export const DEFAULT_READ_MAX_CHARS = 50000
+/** 预读整份文件的行数阈值：超过则只取首尾。 */
+export const PRELOAD_FULL_FILE_LINE_LIMIT = 600
+/** 预读超大文件时首尾各保留的行数。 */
+export const PRELOAD_FULL_FILE_EDGE_LINES = 300
+
+/**
+ * 按单行字符上限截断过长行（行数不变，便于按行号定位）。
+ * @param {string} text - 原始文本。
+ * @param {number} maxLineChars - 单行字符上限（0 表示不限）。
+ * @returns {string} 截断后的文本。
+ */
+export function truncateLongLines(text, maxLineChars) {
+	if (!(maxLineChars > 0)) return String(text ?? '')
+	return String(text ?? '').split(/\r?\n/).map(line =>
+		line.length > maxLineChars ? line.slice(0, maxLineChars) + ` …[本行已截断，共 ${line.length} 字符]` : line
+	).join('\n')
+}
+
+/**
+ * 预读整份文本时对超大文件的处理：超过阈值只保留首尾各 `edge` 行，中间省略。
+ * @param {string} text - 原始文本。
+ * @param {{lineLimit?: number, edge?: number}} [options] - 阈值与保留行数。
+ * @returns {{mode: 'full', content: string, totalLines: number} | {mode: 'truncated', head: string, tail: string, edge: number, omitted: number, totalLines: number}} 处理结果。
+ */
+export function formatLargeTextForContext(text, options = {}) {
+	const {
+		lineLimit = PRELOAD_FULL_FILE_LINE_LIMIT,
+		edge = PRELOAD_FULL_FILE_EDGE_LINES,
+	} = options
+	const content = String(text ?? '')
+	const lines = content.split(/\r?\n/)
+	const totalLines = lines.length
+	if (totalLines <= lineLimit) return { mode: 'full', content, totalLines }
+	return {
+		mode: 'truncated',
+		head: lines.slice(0, edge).join('\n'),
+		tail: lines.slice(-edge).join('\n'),
+		edge,
+		omitted: totalLines - edge * 2,
+		totalLines,
+	}
+}
 
 /**
  * 读取窗口参数。

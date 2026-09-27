@@ -1,13 +1,18 @@
 /**
- * 聊天提及文件预读取：从文本中提取路径候选，经目标执行器按当前工作目录解析并读取。
+ * 聊天提及文件预读取：从文本中提取路径候选与常见诊断输出的报错定位，经目标执行器按当前工作目录解析并读取。
  * 路径提取思路源自龙胆 `prompt/functions/file-change.mjs`，改为异步执行器以兼容远程机器。
+ * 报错命中时只读取出错行及前后 2 行；整份读取遇超大文本（默认 >600 行）只取首尾各 300 行。
  */
-import { DEFAULT_READ_MAX_CHARS, DEFAULT_READ_MAX_LINE_CHARS, isProbablyTextBuffer, windowText } from './read_window.mjs'
+import { hashBuffer, hashContent } from './context_files.mjs'
+import { mergeLineWindows, parseErrorLocations } from './error_windows.mjs'
+import { DEFAULT_READ_MAX_CHARS, DEFAULT_READ_MAX_LINE_CHARS, formatLargeTextForContext, isProbablyTextBuffer, truncateLongLines } from './read_window.mjs'
 
 /** 单个候选块允许切分的最大片段数（防 O(n²) 爆炸）。 */
 const MAX_SPLIT_PARTS = 40
 /** 目录预读最多列出的条目数。 */
 const MAX_DIR_ENTRIES = 64
+/** 报错窗口每侧扩展行数。 */
+export const ERROR_WINDOW_RADIUS = 2
 
 const PATH_LIKE_REGEX = /(`|[A-Za-z]:\\|(\.|\.\.|~)[/\\]|[/\\])[^\n`:]+/gu
 const ABSOLUTE_OR_RELATIVE_REGEX = /^([A-Za-z]:\\|(\.|\.\.|~)[/\\]|[/\\])[^\n:`]+/u
@@ -42,18 +47,114 @@ export function extractPathCandidates(text) {
 }
 
 /**
- * 预读取结果。
- * @typedef {object} mentionedFiles_t
- * @property {{path: string, content: string, window: import('./read_window.mjs').readWindowResult_t}[]} textFiles - 文本文件。
- * @property {{name: string, buffer: Buffer, mime_type: string}[]} binaryFiles - 二进制文件（附件）。
- * @property {{path: string, entries: string[]}[]} dirs - 目录及其条目。
+ * 预读文本文件的呈现模式。
+ * @typedef {'full' | 'truncated' | 'errors'} textFileMode_t
  */
 
 /**
- * 从文本中提取候选路径并尝试预读。
+ * 预读取结果。
+ * @typedef {object} mentionedFiles_t
+ * @property {{path: string, resolved: string, mode: textFileMode_t, hash: string, content?: string, head?: string, tail?: string, edge?: number, omitted?: number, windows?: {start: number, end: number, text: string}[], errorLines?: number[], totalLines?: number, notice?: string}[]} textFiles - 文本文件。
+ * @property {{path: string, resolved: string, name: string, buffer: Buffer, mime_type: string, hash: string}[]} binaryFiles - 二进制文件（附件）。
+ * @property {{path: string, resolved: string, entries: string[], hash: string}[]} dirs - 目录及其条目。
+ */
+
+/**
+ * 按出错行读取窗口（每处向两侧扩展 `radius` 行，窗口相邻则合并）。
+ * @param {string} text - 文件文本。
+ * @param {Iterable<number>} lines - 出错行号集合。
+ * @param {number} radius - 前后扩展行数。
+ * @returns {{start: number, end: number, text: string}[]} 窗口内容。
+ */
+function readErrorWindows(text, lines, radius) {
+	const fileLines = String(text ?? '').split(/\r?\n/)
+	return mergeLineWindows([...lines], radius).map(({ start, end }) => {
+		const clampedStart = Math.min(start, fileLines.length)
+		const clampedEnd = Math.min(end, fileLines.length)
+		return {
+			start: clampedStart,
+			end: clampedEnd,
+			text: fileLines.slice(clampedStart - 1, clampedEnd).join('\n'),
+		}
+	}).filter(window => window.text !== '')
+}
+
+/**
+ * 把报错窗口收进剩余字符预算：整窗优先，末窗按剩余切片，超出部分省略。
+ * @param {{start: number, end: number, text: string}[]} windows - 原始窗口。
+ * @param {number} remaining - 剩余字符预算（`Infinity` 表示不限）。
+ * @returns {{windows: {start: number, end: number, text: string}[], notice: string}} 收窄后的窗口与提示。
+ */
+function clampWindows(windows, remaining) {
+	if (!Number.isFinite(remaining)) return { windows, notice: '' }
+	const total = windows.reduce((sum, window) => sum + window.text.length, 0)
+	if (total <= remaining) return { windows, notice: '' }
+	const kept = []
+	let left = remaining
+	for (const window of windows) {
+		if (left <= 0) break
+		if (window.text.length <= left) {
+			kept.push(window)
+			left -= window.text.length
+			continue
+		}
+		kept.push({ ...window, text: window.text.slice(0, left) })
+		left = 0
+		break
+	}
+	return { windows: kept, notice: '已达总体字符上限，报错窗口部分省略。' }
+}
+
+/**
+ * 计算预读结果的去重哈希（同文件、同读法、同正文视为已读）。
+ * @param {object} file - 预读条目。
+ * @returns {string} sha256 hex。
+ */
+function hashPreloadedFile(file) {
+	if (file.mode === 'errors')
+		return hashContent(file.windows.map(window => window.text).join('\n'))
+	if (file.mode === 'truncated')
+		return hashContent(`${file.head}\n…省略${file.omitted}行…\n${file.tail}`)
+	return hashContent(file.content)
+}
+
+/**
+ * 把整份/首尾截断的文本收进剩余字符预算。
+ * @param {string} candidate - 候选路径（原样）。
+ * @param {string} resolved - 解析后的绝对路径。
+ * @param {{mode: 'full', content: string, totalLines: number} | {mode: 'truncated', head: string, tail: string, edge: number, omitted: number, totalLines: number}} formatted - `formatLargeTextForContext` 结果。
+ * @param {number} remaining - 剩余字符预算（`Infinity` 表示不限）。
+ * @returns {{file: object, renderedChars: number}} 收窄后的文本文件与占用字符数。
+ */
+function formatWithBudget(candidate, resolved, formatted, remaining) {
+	const base = { path: candidate, resolved, totalLines: formatted.totalLines }
+	if (formatted.mode === 'full') {
+		if (!Number.isFinite(remaining) || formatted.content.length <= remaining) return { file: { ...base, mode: 'full', content: formatted.content }, renderedChars: formatted.content.length }
+		const content = formatted.content.slice(0, Math.max(0, Math.floor(remaining)))
+		const notice = `已达总体字符上限，省略 ${formatted.content.length - content.length} 字符。`
+		return { file: { ...base, mode: 'full', content, notice }, renderedChars: content.length + notice.length }
+	}
+	if (!Number.isFinite(remaining) || formatted.head.length + formatted.tail.length <= remaining) return {
+		file: { ...base, mode: 'truncated', head: formatted.head, tail: formatted.tail, edge: formatted.edge, omitted: formatted.omitted },
+		renderedChars: formatted.head.length + formatted.tail.length,
+	}
+	const headBudget = Math.max(0, Math.floor(remaining / 2))
+	const tailBudget = Math.max(0, Math.floor(remaining) - headBudget)
+	const head = formatted.head.slice(0, headBudget)
+	const tail = tailBudget >= formatted.tail.length ? formatted.tail : formatted.tail.slice(formatted.tail.length - tailBudget)
+	const notice = '已达总体字符上限，首尾截断已进一步收窄。'
+	return {
+		file: { ...base, mode: 'truncated', head, tail, edge: formatted.edge, omitted: formatted.omitted, notice },
+		renderedChars: head.length + tail.length + notice.length,
+	}
+}
+
+/**
+ * 从文本中提取候选路径与报错定位并尝试预读。
+ * 报错文件优先（只读出错行窗口）；整份读取遇超大文本只取首尾各若干行；渲染后统一收进字符预算。
  * @param {import('./target.mjs').targetExecutor_t} executor - 目标执行器。
  * @param {string} text - 聊天文本。
- * @param {{maxFiles?: number, maxChars?: number, maxLineChars?: number}} [options] - 上限（maxFiles 同时限制目录数）。
+ * @param {{maxFiles?: number, maxChars?: number, maxLineChars?: number, knownFiles?: Set<string>}} [options] - 上限（maxFiles 同时限制目录数）与已知文件集合（`resolved\0hash`）。
  * @returns {Promise<mentionedFiles_t>} 预读结果。
  */
 export async function collectMentionedFiles(executor, text, options = {}) {
@@ -61,28 +162,73 @@ export async function collectMentionedFiles(executor, text, options = {}) {
 		maxFiles = 5,
 		maxChars = DEFAULT_READ_MAX_CHARS,
 		maxLineChars = DEFAULT_READ_MAX_LINE_CHARS,
+		knownFiles = new Set(),
 	} = options
 	const textFiles = []
 	const binaryFiles = []
 	const dirs = []
+	// within-call 去重：不同候选串可能解析到同一路径。
 	const seen = new Set()
 	let usedChars = 0
 
-	for (const candidate of extractPathCandidates(text)) {
+	// 每个候选只查一次 stat / realpath：报错定位与主循环共用缓存。
+	const statCache = new Map()
+	const resolvedCache = new Map()
+	/**
+	 * 缓存 statEntry 结果：同一候选只查一次执行器。
+	 * @param {string} candidate - 候选路径。
+	 * @returns {Promise<object|null>} 统计结果（不存在时为 null）。
+	 */
+	const statEntry = async candidate => {
+		if (!statCache.has(candidate)) statCache.set(candidate, await executor.statEntry(candidate).catch(() => null))
+		return statCache.get(candidate)
+	}
+	/**
+	 * 缓存 resolvePath 结果：同一候选只查一次执行器。
+	 * @param {string} candidate - 候选路径。
+	 * @returns {Promise<string>} 解析后的绝对路径（失败时回退原值）。
+	 */
+	const resolvePath = async candidate => {
+		if (!resolvedCache.has(candidate)) resolvedCache.set(candidate, await executor.resolvePath(candidate).catch(() => candidate))
+		return resolvedCache.get(candidate)
+	}
+
+	// 报错定位：解析出走错文件与行号，按解析后的绝对路径归并；命中时按窗口读取，而非整份读取。
+	const errorLocations = parseErrorLocations(text)
+	/** @type {Map<string, Set<number>>} */
+	const errorFilesByResolved = new Map()
+	/** @type {Map<string, Set<number>>} */
+	const errorFilesByRaw = new Map()
+	for (const location of errorLocations) {
+		const stat = await statEntry(location.path)
+		if (!stat?.isFile) continue
+		const resolved = await resolvePath(location.path)
+		if (!errorFilesByResolved.has(resolved)) errorFilesByResolved.set(resolved, new Set())
+		if (!errorFilesByRaw.has(location.path)) errorFilesByRaw.set(location.path, new Set())
+		for (const line of location.lines) {
+			errorFilesByResolved.get(resolved).add(line)
+			errorFilesByRaw.get(location.path).add(line)
+		}
+	}
+
+	// 报错文件优先，避免被前面的普通候选挤掉额度。
+	const candidates = [...new Set([...errorLocations.map(location => location.path), ...extractPathCandidates(text)])]
+
+	for (const candidate of candidates) {
 		if (textFiles.length + binaryFiles.length >= maxFiles) break
-		const stat = await executor.statEntry(candidate).catch(() => null)
+		const stat = await statEntry(candidate)
 		if (!stat) continue
-		const canonical = await executor.resolvePath(candidate).catch(() => candidate)
+		const canonical = await resolvePath(candidate)
 		if (seen.has(canonical)) continue
 		seen.add(canonical)
 
 		if (stat.isDirectory) {
 			if (dirs.length >= maxFiles) continue
 			const entries = await executor.listDir(candidate).catch(() => [])
-			dirs.push({
-				path: candidate,
-				entries: entries.map(e => e.name + (e.isDirectory ? '/' : '')).slice(0, MAX_DIR_ENTRIES),
-			})
+			const names = entries.map(e => e.name + (e.isDirectory ? '/' : '')).slice(0, MAX_DIR_ENTRIES)
+			const hash = hashContent(names.join('\n'))
+			if (knownFiles.has(`${canonical}\0${hash}`)) continue
+			dirs.push({ path: candidate, resolved: canonical, entries: names, hash })
 			continue
 		}
 		if (!stat.isFile) continue
@@ -90,18 +236,51 @@ export async function collectMentionedFiles(executor, text, options = {}) {
 		const buffer = await executor.readFileBuffer(candidate).catch(() => null)
 		if (!buffer) continue
 		if (!isProbablyTextBuffer(buffer)) {
+			const hash = hashBuffer(buffer)
+			if (knownFiles.has(`${canonical}\0${hash}`)) continue
 			binaryFiles.push({
+				path: candidate,
+				resolved: canonical,
 				name: candidate.split(/[\\/]/).pop() || 'file',
 				buffer,
 				mime_type: 'application/octet-stream',
+				hash,
 			})
 			continue
 		}
 		if (maxChars > 0 && usedChars >= maxChars) break
-		const remaining = maxChars > 0 ? maxChars - usedChars : 0
-		const result = windowText(buffer.toString('utf-8'), { maxLineChars, maxChars: remaining })
-		usedChars += result.text.length
-		textFiles.push({ path: candidate, content: result.text, window: result })
+
+		const remaining = maxChars > 0 ? maxChars - usedChars : Number.POSITIVE_INFINITY
+		const rawText = truncateLongLines(buffer.toString('utf-8'), maxLineChars)
+		const errorLines = errorFilesByResolved.get(canonical) ?? errorFilesByRaw.get(candidate)
+		if (errorLines?.size) {
+			const allWindows = readErrorWindows(rawText, errorLines, ERROR_WINDOW_RADIUS)
+			const { windows, notice } = clampWindows(allWindows, remaining)
+			if (!windows.length) continue
+			const file = {
+				path: candidate,
+				resolved: canonical,
+				mode: /** @type {textFileMode_t} */ 'errors',
+				windows,
+				errorLines: [...errorLines].sort((a, b) => a - b),
+				totalLines: rawText.split(/\r?\n/).length,
+				...notice ? { notice } : {},
+			}
+			file.hash = hashPreloadedFile(file)
+			if (knownFiles.has(`${canonical}\0${file.hash}`)) continue
+			usedChars += windows.reduce((sum, window) => sum + window.text.length, 0) + (notice ? notice.length : 0)
+			textFiles.push(file)
+			if (maxChars > 0 && usedChars >= maxChars) break
+			continue
+		}
+
+		const formatted = formatLargeTextForContext(rawText)
+		const { file, renderedChars } = formatWithBudget(candidate, canonical, formatted, remaining)
+		file.hash = hashPreloadedFile(file)
+		if (knownFiles.has(`${canonical}\0${file.hash}`)) continue
+		usedChars += renderedChars
+		textFiles.push(file)
+		if (maxChars > 0 && usedChars >= maxChars) break
 	}
 	return { textFiles, binaryFiles, dirs }
 }

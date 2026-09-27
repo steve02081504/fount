@@ -14,7 +14,7 @@ import {
 	isProbablyTextBuffer,
 	parseReadWindow,
 	windowText,
-} from '../../../../plugins/file-operations/src/read_window.mjs'
+} from '../../src/read_window.mjs'
 
 Deno.test('parseReadWindow defaults and parsing', () => {
 	assertEquals(parseReadWindow(), {

@@ -48,7 +48,8 @@ function decodeFileBuffer(value) {
 
 /**
  * 会话条目转 chatLogEntry_t。
- * `!` 用户命令的 tool 日志在 prompt 层做头尾截断（完整内容仍保留在页面条目中）。
+ * `!` 用户命令的 tool 日志在 prompt 层做头尾截断（完整内容仍保留在页面条目中）；
+ * 保留 `charVisibility`（与 `endpoints.mjs` `sanitizeEntry` 一致）以维持 prompt 侧可见性。
  * @param {codeSession_t['entries']} entries - 会话条目。
  * @returns {Promise<chatLogEntry_t[]>} 聊天日志条目。
  */
@@ -59,6 +60,7 @@ async function sessionToChatLog(entries) {
 		role: entry.role,
 		name: entry.name,
 		content: entry.role === 'tool' && entry.name === 'shell' ? await guardShellLogContent(entry) : entry.content,
+		...Array.isArray(entry.charVisibility) && entry.charVisibility.length ? { charVisibility: entry.charVisibility.map(String) } : {},
 		time_stamp: entry.time,
 		files: (entry.files || []).map(file => ({ name: file.name, mime_type: file.mime_type, buffer: decodeFileBuffer(file.buffer), description: file.description || '' })),
 		extension: entry.extension ?? {},
