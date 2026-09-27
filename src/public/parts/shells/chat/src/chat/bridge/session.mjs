@@ -397,6 +397,32 @@ export function appendVirtualBridgeCharReply(username, groupId, channelId, reply
 }
 
 /**
+ * 纯写入：把非角色条目按原样追加到虚拟 log，不改 role、不触发出站。
+ * 供桥接会话承载内部角色可见通知（异步任务 / 定时器 / 浏览器集成）等。
+ * @param {string} username replica
+ * @param {string} groupId 虚拟群 ID
+ * @param {string} channelId 频道 ID
+ * @param {object} entry chatLogEntry_t 形状
+ * @returns {object} 规范化后的条目
+ */
+export function appendVirtualBridgeLogEntry(username, groupId, channelId, entry) {
+	const channel = ensureVirtualBridgeChannel(username, groupId, channelId)
+	const text = String(entry?.content ?? '')
+	const normalized = {
+		...entry,
+		name: entry?.name || entry?.uid || 'system',
+		uid: entry?.uid || 'system',
+		role: entry?.role || 'system',
+		content: text,
+		content_for_show: entry?.content_for_show ?? text,
+		time_stamp: entry?.time_stamp ?? new Date(),
+		files: entry?.files || [],
+	}
+	pushLog(channel, normalized)
+	return normalized
+}
+
+/**
  * @param {string} username replica
  * @param {string} [platform] 可选平台过滤
  * @param {string} [botname] 可选 bot 过滤

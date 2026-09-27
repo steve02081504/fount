@@ -8,6 +8,7 @@ import { resolveOperatorEntityHash } from '../lib/replica.mjs'
 import { BUILTIN_PERSONA, BUILTIN_WORLD } from '../session/builtinParts.mjs'
 
 import { getVirtualBridgeSession } from './session.mjs'
+import { bridgeWakeKey, bridgeWakes } from './wake.mjs'
 
 /**
  * @param {string} username replica
@@ -22,7 +23,10 @@ export async function buildVirtualBridgeChatRequest(username, groupId, channelId
 	const session = getVirtualBridgeSession(username, groupId)
 	if (!session) throw new Error(`virtual bridge session not found: ${groupId}`)
 	const channel = session.channels[channelId] || session.channels.default
-	const chat_log = [...channel?.logs || []]
+	// charVisibility 白名单条目仅对列出的角色可见，未列出本角色时不进本请求 prompt
+	const chat_log = [...channel?.logs || []].filter(entry =>
+		!(Array.isArray(entry.charVisibility) && entry.charVisibility.length
+			&& !entry.charVisibility.includes(charname)))
 	const locales = localesForUser(username)
 	const charInfo = pickLocalizedSlice(charAPI.info, locales) || {}
 	const operatorUid = await resolveOperatorEntityHash(username) || 'user'
@@ -95,20 +99,41 @@ export async function buildVirtualBridgeChatRequest(username, groupId, channelId
 		 * @param {object} entry 角色追加消息
 		 * @returns {Promise<object>} 写入后的日志条目
 		 */
-		AddChatLogEntry: async entry => {
-			const { appendVirtualBridgeCharReply } = await import('./session.mjs')
-			const { notifyVirtualBridgeOutbound } = await import('./outbound.mjs')
-			const { entry: written } = appendVirtualBridgeCharReply(
-				username, groupId, channelId, entry, charname, charUid,
-			)
-			await notifyVirtualBridgeOutbound(username, groupId, channelId, written, charname)
-			return written
+		AppendChatLogEntry: async entry => {
+			if (!entry?.role || entry.role === 'char') {
+				const { appendVirtualBridgeCharReply } = await import('./session.mjs')
+				const { notifyVirtualBridgeOutbound } = await import('./outbound.mjs')
+				const { entry: written } = appendVirtualBridgeCharReply(
+					username, groupId, channelId, entry, charname, charUid,
+				)
+				await notifyVirtualBridgeOutbound(username, groupId, channelId, written, charname)
+				return written
+			}
+			// 非角色条目为纯写入：不进平台出站，也不触发回复
+			const { appendVirtualBridgeLogEntry } = await import('./session.mjs')
+			return appendVirtualBridgeLogEntry(username, groupId, channelId, entry)
 		},
 		/**
+		 * 纯唤醒：请求本角色在本会话至少再看一次权威日志。
+		 * @returns {Promise<void>}
+		 */
+		RequestCharReply: async () => {
+			const { requestVirtualBridgeReply } = await import('./trigger.mjs')
+			await requestVirtualBridgeReply(username, groupId, channelId, charname, charAPI, triggerEntry)
+		},
+		/**
+		 * @param {{ forRound?: boolean }} [updateOptions] 刷新选项
 		 * @returns {Promise<object>} 刷新后的请求
 		 */
-		Update: async function update() {
-			return buildVirtualBridgeChatRequest(username, groupId, channelId, charname, charAPI, triggerEntry)
+		Update: async function update(updateOptions) {
+			const { forRound = false } = updateOptions ?? {}
+			const snapshot = forRound ? bridgeWakes.snapshot() : 0
+			const updated = await buildVirtualBridgeChatRequest(
+				username, groupId, channelId, charname, charAPI, triggerEntry,
+			)
+			if (forRound)
+				bridgeWakes.observe(bridgeWakeKey(username, groupId, channelId, charname), snapshot)
+			return updated
 		},
 	}
 

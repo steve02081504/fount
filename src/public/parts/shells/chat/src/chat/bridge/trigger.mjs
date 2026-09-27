@@ -12,20 +12,7 @@ import { notifyVirtualBridgeOutbound } from './outbound.mjs'
 import { buildVirtualBridgeChatRequest, buildVirtualBridgeOnMessageEvent } from './request.mjs'
 import { appendVirtualBridgeCharReply, getVirtualBridgeSession } from './session.mjs'
 import { recordVirtualBridgeTyping } from './typing.mjs'
-
-/** @type {Set<string>} */
-const inflight = new Set()
-
-/**
- * @param {string} username replica
- * @param {string} groupId 群 ID
- * @param {string} channelId 频道 ID
- * @param {string} charname 角色名
- * @returns {string} flight key
- */
-function flightKey(username, groupId, channelId, charname) {
-	return `${username}\0${groupId}\0${channelId}\0${charname}`
-}
+import { bridgeWakeKey, bridgeWakes } from './wake.mjs'
 
 /**
  * @param {string} username replica
@@ -81,15 +68,52 @@ export async function runVirtualBridgeTrigger(username, groupId, channelId, entr
 	})
 	if (!allowed) return
 
-	const key = flightKey(username, groupId, channelId, charname)
-	if (inflight.has(key)) return
-	inflight.add(key)
+	// 入站消息在生成中直接丢弃（不排队）；生成结束后只补跑请求路径记下的唤醒
+	const key = bridgeWakeKey(username, groupId, channelId, charname)
+	if (!bridgeWakes.tryBegin(key)) return
+	await runVirtualBridgeReplySlot(key, username, groupId, channelId, charname, charAPI, entry)
+}
 
+/**
+ * 纯唤醒：请求本角色在虚拟会话至少再看一次权威日志。空闲立即生成；生成中记下唤醒，结束后补一次。
+ * @param {string} username replica
+ * @param {string} groupId 虚拟群 ID
+ * @param {string} channelId 频道 ID
+ * @param {string} charname 角色名
+ * @param {import('../../../../../../../decl/charAPI.ts').CharAPI_t} charAPI 角色 API
+ * @param {object} [triggerEntry] 触发消息行
+ * @returns {Promise<void>}
+ */
+export async function requestVirtualBridgeReply(username, groupId, channelId, charname, charAPI, triggerEntry) {
+	const key = bridgeWakeKey(username, groupId, channelId, charname)
+	if (!bridgeWakes.tryBegin(key)) {
+		bridgeWakes.mark(key)
+		return
+	}
+	await runVirtualBridgeReplySlot(key, username, groupId, channelId, charname, charAPI, triggerEntry)
+}
+
+/**
+ * 已成功 tryBegin 后的生成槽位：执行回复；结束后若期间记下未观察唤醒则补一次。
+ * 不在此处 tryBegin，由调用方负责。
+ * @param {string} key 槽位键
+ * @param {string} username replica
+ * @param {string} groupId 虚拟群 ID
+ * @param {string} channelId 频道 ID
+ * @param {string} charname 角色名
+ * @param {import('../../../../../../../decl/charAPI.ts').CharAPI_t} charAPI 角色 API
+ * @param {object} [triggerEntry] 触发消息行
+ * @returns {Promise<void>}
+ */
+async function runVirtualBridgeReplySlot(key, username, groupId, channelId, charname, charAPI, triggerEntry) {
 	try {
-		await executeVirtualBridgeReply(username, session, channelId, entry, charAPI, charname)
+		const session = getVirtualBridgeSession(username, groupId)
+		if (session)
+			await executeVirtualBridgeReply(username, session, channelId, triggerEntry, charAPI, charname)
 	}
 	finally {
-		inflight.delete(key)
+		if (bridgeWakes.release(key))
+			void requestVirtualBridgeReply(username, groupId, channelId, charname, charAPI, triggerEntry)
 	}
 }
 
