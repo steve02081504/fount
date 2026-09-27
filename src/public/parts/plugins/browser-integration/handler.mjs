@@ -1,6 +1,7 @@
 import { Buffer } from 'node:buffer'
 import util from 'node:util'
 
+import { appendAndWake } from '../../shells/chat/src/lib/charWake.mjs'
 import { defineReplyHandler, defineReplyHandlers } from '../../shells/chat/src/reply/defineReplyHandler.mjs'
 import { renderMarkdownCodeBlock } from '../../shells/chat/src/streaming/index.mjs'
 
@@ -340,5 +341,5 @@ ${util.inspect(data, { depth: null })}
 		files: [],
 	}
 	if (char_id) entry.charVisibility = [char_id]
-	await channels[0].AddChatLogEntry?.(entry)
+	await appendAndWake(channels[0], entry)
 }

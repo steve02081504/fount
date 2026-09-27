@@ -2,12 +2,13 @@
  * 【文件】src/public/parts/plugins/async-task/registry.mjs
  * 【职责】通用异步任务注册表的纯内存实现：登记后台任务、列出/等待（all|any）、完成通知与父生成内的结果回捞。
  * 【原理】任意生产者（sub-agent、code-execution）把后台 Promise 交给 registerTask 换取统一 id；任务完成时若尚未被 <await-async> 消费，
- *   就按其所属频道投递完成通知（根频道经 shell 的 `AddChatLogEntry` 追加只角色可见的系统条目并安排生成，子代落入待注入队列）；已结算结果在父生成结束或被 await 取走时释放。
+ *   就按其所属频道投递完成通知（根频道经 `appendAndWake` 追加只角色可见的系统条目，唤醒由 shell 通过 `RequestCharReply` 决定，子代落入待注入队列）；已结算结果在父生成结束或被 await 取走时释放。
  *   本模块不 import `src/server/**`，只依赖全局 `AbortController` / `crypto`，因此可在 `test/pure` 零 I/O 直接测试。
  * 【数据结构】asyncTask_t；任务表 `Map<id, task>`；频道注册表 `Map<agentKey, args[]>`；待注入通知 `Map<queueKey, entry[]>`。
  * 【关联】prompt.mjs 注入工具说明与通知；handler.mjs 解析 `<list-async>` / `<await-async>`；sub-agent/runtime.mjs 与 code-execution/handler.mjs 注册任务。
  */
 import { setAwakeTimeout } from '../../../../scripts/sleep_watch.mjs'
+import { appendAndWake } from '../../shells/chat/src/lib/charWake.mjs'
 import { chatScopeId } from '../../shells/chat/src/lib/chatScopeId.mjs'
 
 /**
@@ -306,7 +307,8 @@ function inspectValue(value) {
 }
 
 /**
- * 投递任务完成通知：根任务把通知作为只角色可见的系统条目追加进其所属频道（`AddChatLogEntry`）。
+ * 投递任务完成通知：根任务把通知作为只角色可见的系统条目追加进其所属频道（`appendAndWake`）。
+ * 追加与唤醒分工：`AppendChatLogEntry` 纯写入、`RequestCharReply` 纯唤醒；后者缺失时只追加不唤醒（append-only）。
  * 条目带 `charVisibility`，故 shell 只写内存 chatLog、不入 DAG。空闲时 shell 会立即触发生成；
  * 生成中则记入待触发队列，由运行中的轮次刷新（`Update` / container 封存）消费，否则本轮结束补一次。
  * 子任务或找不到频道时落入待注入队列兜底。
@@ -321,8 +323,8 @@ async function deliverNotification(task) {
 	if (!parentRunId) {
 		const channel = getChannels(username, charId).find(candidate =>
 			chatScopeId(candidate.chat_name, candidate.extension?.channelId) === scope) ?? null
-		if (channel?.AddChatLogEntry) try {
-			await channel.AddChatLogEntry(entry)
+		if (channel) try {
+			await appendAndWake(channel, entry)
 			task.notified = true
 			return
 		}

@@ -340,11 +340,11 @@ Deno.test('deliverNotification never posts to another chat thread', async () => 
 		 */
 		Update: async () => channel,
 		/**
-		 * 记录角色回复。
+		 * 记录追加条目。
 		 * @param {object} entry 条目
 		 * @returns {Promise<void>}
 		 */
-		AddChatLogEntry: async entry => { replies.push(entry) },
+		AppendChatLogEntry: async entry => { replies.push(entry) },
 		char: {
 			interfaces: {
 				chat: {
@@ -366,26 +366,31 @@ Deno.test('deliverNotification never posts to another chat thread', async () => 
 })
 
 /**
- * 构造一个记录 `AddChatLogEntry` 的假频道。
+ * 构造一个记录 `AppendChatLogEntry`（可含 `RequestCharReply`）的假频道。
  * @param {object} [options] 选项
  * @param {string} [options.chatName] 频道名
  * @param {string} [options.channelId] 频道 id
- * @returns {{channel: object, appended: object[]}} 假频道与捕获数组
+ * @param {boolean} [options.wake] 是否提供 `RequestCharReply`
+ * @returns {{channel: object, appended: object[], wakes: boolean[]}} 假频道与捕获数组
  */
-function deliveryChannel({ chatName = 'chat-1', channelId = undefined } = {}) {
+function deliveryChannel({ chatName = 'chat-1', channelId = undefined, wake = false } = {}) {
 	const appended = []
-	/**
-	 * 记录追加条目。
-	 * @param {object} entry 条目
-	 * @returns {Promise<void>}
-	 */
-	const addChatLogEntry = async entry => { appended.push(entry) }
+	const wakes = []
 	const channel = {
 		chat_name: chatName,
 		extension: channelId ? { channelId } : {},
-		AddChatLogEntry: addChatLogEntry,
+		/**
+		 * 记录追加条目。
+		 * @param {object} entry 条目
+		 * @returns {Promise<void>}
+		 */
+		AppendChatLogEntry: async entry => { appended.push(entry) },
+		...wake ? {
+			/** 记录一次唤醒请求。 @returns {Promise<void>} */
+			RequestCharReply: async () => { wakes.push(true) },
+		} : {},
 	}
-	return { channel, appended }
+	return { channel, appended, wakes }
 }
 
 /**
@@ -396,7 +401,7 @@ async function flushAsync() {
 	for (let i = 0; i < 8; i++) await Promise.resolve()
 }
 
-Deno.test('deliverNotification appends a char-visible notice via AddChatLogEntry', async () => {
+Deno.test('deliverNotification appends a char-visible notice and wakes only when RequestCharReply exists', async () => {
 	resetAsyncTaskState()
 	const fake = deliveryChannel()
 	registerChannel('u', 'c', fake.channel)
@@ -407,7 +412,20 @@ Deno.test('deliverNotification appends a char-visible notice via AddChatLogEntry
 	assertEquals(fake.appended.length, 1, '应把通知作为条目追加进频道')
 	assertEquals(fake.appended[0].role, 'system')
 	assertEquals(fake.appended[0].charVisibility, ['c'], '通知只对目标角色可见（不入 DAG）')
+	assertEquals(fake.wakes.length, 0, '无 RequestCharReply 时只追加不唤醒')
 	assertEquals(takePendingNotifications(target), [], '已投递则为空')
+})
+
+Deno.test('deliverNotification requests a wake when the channel supports RequestCharReply', async () => {
+	resetAsyncTaskState()
+	const fake = deliveryChannel({ wake: true })
+	registerChannel('u', 'c', fake.channel)
+	const target = owner()
+	const task = registerTask({ kind: 'js', owner: target, run: resolveWith('done') })
+	await task.done
+	await flushAsync()
+	assertEquals(fake.appended.length, 1, '应先追加通知')
+	assertEquals(fake.wakes.length, 1, 'RequestCharReply 存在时应请求唤醒')
 })
 
 Deno.test('deliverNotification wraps untrusted result / label in an ansi code block', async () => {

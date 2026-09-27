@@ -362,13 +362,11 @@ function buildChildArgs(run) {
 			},
 		},
 		/**
-		 * 把条目写入子代理自己的对话。
+		 * 把条目写入子代理自己的对话。子代理会话仅追加、不可唤醒（无 `RequestCharReply`），不会派生顶层生成。
 		 * @param {object} entry 回复条目
 		 * @returns {Promise<object>} 规范化后的日志条目
 		 */
-		AddChatLogEntry: async entry => appendChildConversationEntry(run, entry),
-		/** 子代理对话独立于父频道，不触碰父请求的待触发队列。 */
-		ClearPendingMessages: () => { },
+		AppendChatLogEntry: async entry => appendChildConversationEntry(run, entry),
 	}
 	/**
 	 * 返回当前子请求上下文。

@@ -20,6 +20,7 @@ import {
 	OUTPUT_GUARD_LIMIT,
 	truncateOutput,
 } from '../../../../scripts/shell_guard.mjs'
+import { appendAndWake } from '../../shells/chat/src/lib/charWake.mjs'
 import { defineReplyHandler } from '../../shells/chat/src/reply/defineReplyHandler.mjs'
 import { defaultDisplay } from '../../shells/chat/src/reply/display.mjs'
 import { getChatI18n, renderMarkdownCodeBlock, renderMarkdownInlineCode } from '../../shells/chat/src/streaming/index.mjs'
@@ -294,7 +295,6 @@ async function toFileObj(pathOrFileObj) {
  * @param {any} result - 回调的结果。
  */
 async function callback_handler(args, reason, code, result) {
-	let logger = args.AddChatLogEntry
 	const feedback = {
 		role: 'tool',
 		name: 'code-execution.callback',
@@ -313,22 +313,13 @@ ${renderAnsiBlock(renderAnsiText(result))}
 		charVisibility: [args.char_id],
 	}
 	try {
-		const new_req = await args.Update()
-		logger = new_req.AddChatLogEntry
-		new_req.chat_log = [...new_req.chat_log, feedback]
-		new_req.extension.from_callback = true
-		const reply = await new_req.char.interfaces.chat.GetReply(new_req)
-		if (reply) {
-			reply.logContextBefore ??= []
-			reply.logContextBefore.push(feedback)
-			await logger({ name: args.Charname, ...reply })
-		}
-
+		// 只负责写入，由 shell 决定是否/何时安排生成；无 RequestCharReply 的 shell 即为 append-only
+		await appendAndWake(args, feedback)
 	}
 	catch (error) {
 		console.error(`Error processing callback for "${reason}":`, error)
 		feedback.content += `处理callback时出错：${error.stack}\n`
-		logger(feedback)
+		await args.AppendChatLogEntry?.(feedback)
 	}
 }
 

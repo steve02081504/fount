@@ -26,6 +26,19 @@ alwaysApply: false
 - **Human-invisible logs**: entries added with `charVisibility` are still shown to code-shell users via their `content_for_show` (a friendly tool card), so give them a readable show layer rather than leaving raw tool syntax.
 - **Tool output safety is the tool's own responsibility**: the reply pipeline and the host shells do **not** sanitize or wrap tool `content` / `content_for_show`. Command / file / console text can carry remote HTML or markdown (`<img onerror>`, `[x](javascript:…)`), and the shell renders tool/system show layers as markdown — so each producing plugin must make its own output safe before it is logged (escape it, or wrap it in a fenced code block: `renderMarkdownCodeBlock(text, { lang: 'ansi' })`, or a safe-length local fence in pure modules). Put safety work in the human show layer while keeping the agent layer (`content`) readable, and never leave raw untrusted text in a field the shell markdown-renders. New producers must not assume the framework will clean up after them.
 
+### When to write chat logs
+
+Request-level `AppendChatLogEntry` is a **pure write** (`role` only shapes the entry) and `RequestCharReply` is a **pure wake**; the shell owns generation scheduling. The shared helper `shells/chat/src/lib/charWake.mjs` `appendAndWake(channel, entry)` appends (if `AppendChatLogEntry` exists) then wakes (if `RequestCharReply` exists) — `RequestCharReply` absent means **append-only**.
+
+| 场景 | 用法 |
+| --- | --- |
+| 生成中的工具结果 | ReplyHandler + `AddLongTimeLog` |
+| 首轮必须可见且持久化 | `BeforeReply` + `AddLongTimeLog` |
+| 生成之外的后台事件需角色回应 | `AppendChatLogEntry` 然后 `RequestCharReply`（或用 `appendAndWake`） |
+| 只存档不回应 | 只 `AppendChatLogEntry` |
+| 只唤醒 | 只 `RequestCharReply` |
+| 永远不要 | 调用方自己跑 `GetReply` 再写回 |
+
 ## Guidelines
 
 - I18n: add global strings to `src/public/locales/zh-CN.json`; plugin-specific copy may use part-local `locales.json`.

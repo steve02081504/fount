@@ -134,11 +134,14 @@ Deno.test('run-js-on-page reports a missing script tag', async () => {
 	assertStringIncludes(logs[0].content, '缺少 <script> 标签')
 })
 
-Deno.test('browser JS callback is injected into the registered channel', async () => {
+Deno.test('browser JS callback is injected into the registered channel and wakes it', async () => {
 	const entries = []
+	const wakes = []
 	registerChannel('callback-user', 'callback-char', {
 		chat_name: 'c1',
-		AddChatLogEntry: collectLog(entries),
+		AppendChatLogEntry: collectLog(entries),
+		/** 记录一次唤醒请求。 @returns {Promise<void>} */
+		RequestCharReply: async () => { wakes.push(true) },
 	})
 	await handleBrowserJsCallback({
 		username: 'callback-user',
@@ -152,4 +155,5 @@ Deno.test('browser JS callback is injected into the registered channel', async (
 	assertEquals(entries[0].charVisibility, ['callback-char'])
 	assertStringIncludes(entries[0].content, 'callback 函数被调用了')
 	assertStringIncludes(entries[0].content_for_show, '```')
+	assertEquals(wakes.length, 1, '应在追加后请求一次唤醒')
 })

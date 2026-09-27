@@ -1,3 +1,4 @@
+import { appendAndWake } from '../../shells/chat/src/lib/charWake.mjs'
 import { defineReplyHandlers } from '../../shells/chat/src/reply/defineReplyHandler.mjs'
 import { handleTimerGroupFallback, makeTimerSystemEntry } from '../../shells/chat/src/timerTrigger.mjs'
 
@@ -23,8 +24,8 @@ const { info } = (await import('./locales.json', { with: { type: 'json' } })).de
  */
 async function replyViaChannel(channel, char_id, reason, chatLogSnip) {
 	// 只角色可见（charVisibility），shell 仅写内存 chatLog 并安排一次生成；空闲即触发，生成中由轮次刷新消费
-	await channel.AddChatLogEntry(makeTimerSystemEntry(reason, chatLogSnip, char_id))
-	return true
+	const { entry, woke } = await appendAndWake(channel, makeTimerSystemEntry(reason, chatLogSnip, char_id))
+	return Boolean(entry) || woke
 }
 
 /**
