@@ -1,5 +1,7 @@
+import { guardOutput } from '../../../../scripts/shell_guard.mjs'
 import { defineReplyHandler } from '../../shells/chat/src/reply/defineReplyHandler.mjs'
 import { renderMarkdownCodeBlock } from '../../shells/chat/src/streaming/index.mjs'
+import { DEFAULT_READ_MAX_LINE_CHARS, truncateLongLines } from '../file-operations/src/read_window.mjs'
 
 const MAX_SEARCH_ATTEMPTS = 3
 const RETRY_DELAY_MS = 2000
@@ -94,8 +96,9 @@ export function createWebSearchReplyHandler({ getSearchSource, retry = retrySear
 					() => searchSource.Search(query, { limit: 5 }),
 					{ attempts: MAX_SEARCH_ATTEMPTS, delayMs: RETRY_DELAY_MS, sleep },
 				)
-				const formattedResults = formatSearchResults(query, results, queries.length > 1)
-				addToolLog(formattedResults)
+				// 搜索源返回的 title/description 长度不可控，超限时头尾保留并把完整内容落盘，再截断过长单行。
+				const guarded = await guardOutput(formatSearchResults(query, results, queries.length > 1), { name: 'web-search', label: '搜索结果' })
+				addToolLog(truncateLongLines(guarded.text, DEFAULT_READ_MAX_LINE_CHARS))
 			}
 			catch (error) {
 				console.error('web search failed:', error)

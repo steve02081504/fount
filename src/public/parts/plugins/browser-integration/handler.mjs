@@ -1,9 +1,11 @@
 import { Buffer } from 'node:buffer'
 import util from 'node:util'
 
+import { guardOutput } from '../../../../scripts/shell_guard.mjs'
 import { appendAndWake } from '../../shells/chat/src/lib/charWake.mjs'
 import { defineReplyHandler, defineReplyHandlers } from '../../shells/chat/src/reply/defineReplyHandler.mjs'
 import { renderMarkdownCodeBlock } from '../../shells/chat/src/streaming/index.mjs'
+import { DEFAULT_READ_MAX_LINE_CHARS, truncateLongLines } from '../file-operations/src/read_window.mjs'
 
 import { getChannels, registerChannel } from './state.mjs'
 
@@ -19,20 +21,32 @@ function defaultGetApi() {
 }
 
 /**
+ * 护栏一条工具日志正文：超大时头尾保留并把完整内容落盘，再按单行上限截断过长行。
+ * 浏览器可见 HTML / JS 返回值常为 minify 后的超长单行，落盘保证完整内容可回查，单行截断保证正文可读。
+ * @param {string} content - 原始正文。
+ * @param {string} name - 工具名（用作落盘文件名提示）。
+ * @returns {Promise<string>} 护栏后的正文。
+ */
+async function guardToolContent(content, name) {
+	const guarded = await guardOutput(String(content ?? ''), { name: `browser-${name}`, label: '浏览器输出' })
+	return truncateLongLines(guarded.text, DEFAULT_READ_MAX_LINE_CHARS)
+}
+
+/**
  * 追加一条浏览器集成工具日志（人类展示层包进代码块，避免被 markdown / HTML 解析）。
  * @param {object} args - 回复请求上下文。
  * @param {string} name - 工具名。
  * @param {string} content - 提供给角色的日志正文。
- * @param {string} [contentForShow=content] - 人类展示层正文。
  * @param {object[]} [files] - 结果附件。
- * @returns {void}
+ * @returns {Promise<void>} 写入完成。
  */
-function logBrowserTool(args, name, content, contentForShow = content, files = []) {
+async function logBrowserTool(args, name, content, files = []) {
+	const text = await guardToolContent(content, name)
 	args.AddLongTimeLog?.({
 		name,
 		role: 'tool',
-		content,
-		content_for_show: renderMarkdownCodeBlock(contentForShow, { lang: 'text' }),
+		content: text,
+		content_for_show: renderMarkdownCodeBlock(text, { lang: 'text' }),
 		files,
 	})
 }
@@ -121,11 +135,11 @@ export function createBrowserIntegrationReplyHandler({ getApi = defaultGetApi } 
 			handle: async (_reply, args, call) => {
 				try {
 					const content = await action(args, call)
-					logBrowserTool(args, name, content)
+					await logBrowserTool(args, name, content)
 				}
 				catch (error) {
 					console.error(`Error executing browser integration command "${command}":`, error)
-					logBrowserTool(args, name, `执行 ${command} 时出错：\n${error?.stack || error?.message || error}`)
+					await logBrowserTool(args, name, `执行 ${command} 时出错：\n${error?.stack || error?.message || error}`)
 				}
 				return { regen: true }
 			},
@@ -185,15 +199,14 @@ export function createBrowserIntegrationReplyHandler({ getApi = defaultGetApi } 
 				const api = await getApi()
 				const pageId = resolvePageId(api, args.username, call.inner)
 				const html = await api.getPageHtml(args.username, pageId)
-				logBrowserTool(args, 'browser-integration.get-page-html',
-					`页面 ${pageId} 的 HTML 内容已作为文件附件提供。`,
+				await logBrowserTool(args, 'browser-integration.get-page-html',
 					`页面 ${pageId} 的 HTML 内容已作为文件附件提供。`,
 					[{ name: `page-${pageId}.html`, buffer: Buffer.from(html.html, 'utf-8'), mime_type: 'text/html' }],
 				)
 			}
 			catch (error) {
 				console.error('Error executing browser integration command "get-page-html":', error)
-				logBrowserTool(args, 'browser-integration.get-page-html', `执行 get-page-html 时出错：\n${error?.stack || error?.message || error}`)
+				await logBrowserTool(args, 'browser-integration.get-page-html', `执行 get-page-html 时出错：\n${error?.stack || error?.message || error}`)
 			}
 			return { regen: true }
 		},
@@ -332,12 +345,13 @@ ${util.inspect(data, { depth: null })}
 \`\`\`
 请根据 callback 的内容进行回复。
 `
+	const text = await guardToolContent(content, 'browser-integration.callback')
 	const entry = {
 		name: 'system',
 		uid: 'system',
 		role: 'system',
-		content,
-		content_for_show: renderMarkdownCodeBlock(content, { lang: 'text' }),
+		content: text,
+		content_for_show: renderMarkdownCodeBlock(text, { lang: 'text' }),
 		files: [],
 	}
 	if (char_id) entry.charVisibility = [char_id]

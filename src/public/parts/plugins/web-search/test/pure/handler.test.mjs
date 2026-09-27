@@ -131,3 +131,19 @@ Deno.test('web search reports a missing source and retries failed searches', asy
 	assertEquals(calls.length, 3)
 	assertStringIncludes(logs[0].content, '未找到相关搜索结果')
 })
+
+Deno.test('web search guards oversized provider descriptions', async () => {
+	const calls = []
+	const logs = []
+	const handler = createWebSearchReplyHandler({
+		getSearchSource: sourceGetter(fakeSearchSource(calls, {
+			results: [{ title: 'title', link: 'https://example.com', description: 'D'.repeat(30_000) }],
+		})),
+		retry: noRetry,
+	})
+	await handler.handle({}, {
+		AddLongTimeLog: collectLog(logs),
+	}, { inner: 'query' })
+	assertStringIncludes(logs[0].content, '完整内容已保存到')
+	assertStringIncludes(logs[0].content, '本行已截断')
+})

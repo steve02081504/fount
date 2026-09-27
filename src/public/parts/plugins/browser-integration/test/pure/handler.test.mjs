@@ -119,6 +119,30 @@ Deno.test('run-js-on-page forwards a plugin callback token and logs safe output'
 	assertStringIncludes(logs[0].content_for_show, '```')
 })
 
+Deno.test('get-visible-html guards oversized page HTML', async () => {
+	const logs = []
+	const api = {
+		...makeFakeApi([]),
+		/**
+		 * 返回超长可见 HTML。
+		 * @returns {Promise<{html: string}>} 可见 HTML。
+		 */
+		getVisibleHtml: async () => ({ html: 'H'.repeat(30_000) }),
+	}
+	const handler = createBrowserIntegrationReplyHandler({
+		/** 注入带超长可见 HTML 的 fake API 取值器。 */
+		getApi: apiGetter(api)
+	})
+	const getVisible = findHandler(handler, 'browser-integration.get-visible-html')
+	await getVisible.handle({}, {
+		username: 'u',
+		char_id: 'c',
+		AddLongTimeLog: collectLog(logs),
+	}, { inner: '1' })
+	assertStringIncludes(logs[0].content, '完整内容已保存到')
+	assertStringIncludes(logs[0].content, '本行已截断')
+})
+
 Deno.test('run-js-on-page reports a missing script tag', async () => {
 	const logs = []
 	const handler = createBrowserIntegrationReplyHandler({
@@ -156,4 +180,23 @@ Deno.test('browser JS callback is injected into the registered channel and wakes
 	assertStringIncludes(entries[0].content, 'callback 函数被调用了')
 	assertStringIncludes(entries[0].content_for_show, '```')
 	assertEquals(wakes.length, 1, '应在追加后请求一次唤醒')
+})
+
+Deno.test('browser JS callback guards oversized payloads', async () => {
+	const entries = []
+	registerChannel('callback-big-user', 'callback-big-char', {
+		chat_name: 'c2',
+		AppendChatLogEntry: collectLog(entries),
+		/** 记录一次唤醒请求。 @returns {Promise<void>} */
+		RequestCharReply: async () => { },
+	})
+	await handleBrowserJsCallback({
+		username: 'callback-big-user',
+		data: ['x'.repeat(10_000), 'y'.repeat(10_000), 'z'.repeat(10_000)],
+		pageId: 1,
+		script: 'callback()',
+		char_id: 'callback-big-char',
+	})
+	assertEquals(entries.length, 1)
+	assertStringIncludes(entries[0].content, '完整内容已保存到')
 })
