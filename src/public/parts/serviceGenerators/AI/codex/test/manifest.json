@@ -5,7 +5,7 @@
 			"name": "pure",
 			"expected": "1s",
 			"triggers": [
-				"src/public/parts/serviceGenerators/AI/codex/src/responsesClient.mjs",
+				"src/public/parts/serviceGenerators/AI/codex/src/{models,responsesClient}.mjs",
 				"src/public/parts/serviceGenerators/AI/codex/test/pure/**"
 			],
 			"run": [
@@ -38,6 +38,28 @@
 				"./deno.json",
 				"./src/scripts/test/deno/serial.mjs",
 				"./src/public/parts/serviceGenerators/AI/codex/test/integration/"
+			]
+		},
+		{
+			"name": "frontend",
+			"expected": "45s",
+			"dependsOn": ["server:live"],
+			"triggers": [
+				"src/public/parts/serviceGenerators/AI/codex/{display,main}.mjs",
+				"src/public/parts/serviceGenerators/AI/codex/public/**",
+				"src/public/parts/serviceGenerators/AI/codex/src/models.mjs",
+				"src/public/parts/serviceGenerators/AI/codex/test/{frontend,fixtures}/**",
+				"src/public/parts/shells/serviceSourceManage/public/index.mjs",
+				"src/public/locales/{zh-CN,en-UK,ja-JP}.json"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/serviceGenerators/AI/codex/test/frontend/run.mjs"
 			]
 		}
 	]
