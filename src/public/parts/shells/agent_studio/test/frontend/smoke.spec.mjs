@@ -177,6 +177,34 @@ test.describe('Agent Studio shell boot', () => {
 		await expect(page.locator('#conversationReplaySlider')).toHaveValue('1')
 	})
 
+	test('lists the lowest cache-rate rounds and jumps to the selected one', async ({ page, baseUrl }) => {
+		const generations = [
+			{ id: 'g1', startedAt: 1000, source: 'shells/code', charId: 'demo', requestCount: 1,
+				requests: [{ index: 1, systemPrompt: 'S', messages: [{ role: 'user', id: 'u1', content: 'q' }] }],
+				dialogue: { events: [{ round: 1, op: 'insert', message: { id: 'g1:final', role: 'char', content: 'answer' } }] }, response: 'answer' },
+			{ id: 'g2', startedAt: 2000, source: 'shells/code', charId: 'demo', requestCount: 1,
+				requests: [{ index: 1, systemPrompt: 'S', messages: [{ role: 'user', id: 'u1', content: 'q' }, { role: 'char', id: 'a1', content: 'answer' }] }],
+				dialogue: { events: [{ round: 2, op: 'insert', message: { id: 'g2:final', role: 'char', content: 'answer2' } }] }, response: 'answer2' },
+			{ id: 'g3', startedAt: 3000, source: 'shells/code', charId: 'demo', requestCount: 1,
+				requests: [{ index: 1, systemPrompt: 'DIFFERENT', messages: [{ role: 'user', id: 'u2', content: 'q2' }] }],
+				dialogue: { events: [{ round: 3, op: 'insert', message: { id: 'g3:final', role: 'char', content: 'answer3' } }] }, response: 'answer3' },
+		]
+		await page.route('**/api/parts/shells:agent_studio/conversation/demo-low-rate', route => route.fulfill({
+			json: { key: 'demo-low-rate', generations, dialogue: { events: generations.map(generation => generation.dialogue.events[0]) } },
+		}))
+		await openAgentStudio(page, baseUrl)
+		await page.evaluate(() => { window.location.hash = '#conversation/demo-low-rate' })
+		// g1 无上一轮基准（rate 为 null）不入列，剩 g3（低）在前、g2（满）在后。
+		await expect(page.locator('#conversationLowRates')).toBeVisible()
+		const items = page.locator('#conversationLowRates .conversation-low-rate-item')
+		await expect(items).toHaveCount(2)
+		await expect(items.nth(0)).toContainText('3')
+		await expect(items.nth(1)).toContainText('2')
+		await items.nth(0).click()
+		await expect(page.locator('#conversationReplaySlider')).toHaveValue('3')
+		await expect(page.locator('#conversationGenerations')).toContainText('answer3')
+	})
+
 	test('highlights prompt text reused from the previous round and jumps to the reuse boundary', async ({ page, baseUrl }) => {
 		const shared = 'S'.repeat(70)
 		const generations = [{

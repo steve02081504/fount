@@ -29,6 +29,8 @@ let refreshTimer = null
 const REPLAY_INSET = 8
 /** 工具条目输出超过该行数时默认折叠。 */
 const TOOL_COLLAPSE_LINES = 7
+/** 缓存命中率最低列表展示的轮次数。 */
+const LOW_RATE_COUNT = 7
 
 /**
  * 内部对话角色标签的 i18n 键（缺失时回落原始角色名）。
@@ -98,6 +100,7 @@ export async function loadConversationView({ key } = {}) {
 	if (!meta || !generations || !empty) return
 	meta.replaceChildren()
 	generations.replaceChildren()
+	document.getElementById('conversationLowRates')?.classList.add('hidden')
 	if (!currentKey) {
 		empty.classList.remove('hidden')
 		return
@@ -191,7 +194,52 @@ function renderReplay(units, metrics, onChange) {
 	const reused = metrics.reduce((sum, metric) => sum + metric.reused, 0)
 	summary.textContent = total ? geti18n('agent_studio.conversation.cache.summary', { rate: Math.round(reused / total * 100) }) : geti18n('agent_studio.conversation.cache.missing')
 	paintCacheChart(chart, units, metrics)
+	renderLowRates(document.getElementById('conversationLowRates'), units, metrics, entry => {
+		slider.value = String(entry.index + 1)
+		update()
+		document.querySelector(`.conversation-entry[data-round="${entry.unit.round}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+	})
 	update()
+}
+
+/**
+ * 渲染缓存命中率最低的若干轮次，与缓存折线图同口径（逐轮 `rate`），点击跳转到该轮。
+ * @param {HTMLElement | null} container 容器
+ * @param {ReturnType<typeof buildRoundUnits>} units 逐轮单元
+ * @param {object[]} metrics 每次生成的缓存指标（含逐轮 `rounds`）
+ * @param {(entry: { unit: object, index: number, rate: number }) => void} onJump 跳转回调
+ * @returns {void}
+ */
+function renderLowRates(container, units, metrics, onJump) {
+	const list = container?.querySelector('.conversation-low-rate-list')
+	if (!list) return
+	const firstIndex = new Map()
+	units.forEach((unit, index) => { if (!firstIndex.has(unit.generationIndex)) firstIndex.set(unit.generationIndex, index) })
+	const entries = units
+		.map((unit, index) => {
+			const offset = index - (firstIndex.get(unit.generationIndex) ?? 0)
+			return { unit, index, rate: metrics[unit.generationIndex]?.rounds?.[offset]?.rate }
+		})
+		.filter(entry => typeof entry.rate === 'number' && Number.isFinite(entry.rate))
+		.sort((a, b) => a.rate - b.rate)
+		.slice(0, LOW_RATE_COUNT)
+	container.classList.toggle('hidden', entries.length === 0)
+	list.replaceChildren(...entries.map(entry => {
+		const item = document.createElement('li')
+		const button = document.createElement('button')
+		button.type = 'button'
+		button.className = 'conversation-low-rate-item'
+		const round = document.createElement('span')
+		round.className = 'conversation-low-rate-round'
+		round.textContent = geti18n('agent_studio.conversation.roundIndex', { index: entry.unit.round })
+		const value = document.createElement('span')
+		value.className = `badge ${entry.rate >= CACHE_GOOD_RATIO ? 'badge-success' : 'badge-error'}`
+		value.textContent = geti18n('agent_studio.conversation.cache.rate', { rate: Math.round(entry.rate * 100) })
+		button.append(round, value)
+		button.addEventListener('click', () => onJump(entry))
+		item.append(button)
+		return item
+	}))
 }
 
 /**
@@ -405,6 +453,7 @@ function renderTranscript(events, items, units, metrics, count) {
 		if (!unit) return article
 		const index = unit.generationIndex
 		const generation = items[index]
+		article.dataset.round = String(round)
 		const offset = round - 1 - firstRound.get(index)
 		const request = generation.requests?.[offset]
 		const previous = offset > 0 ? generation.requests?.[offset - 1] : previousRequestFor(items, index)

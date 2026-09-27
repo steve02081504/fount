@@ -119,7 +119,7 @@ export async function getSubAgentRun(username, runId) {
 			id: entry.id, role: entry.role, name: entry.name, time_stamp: entry.time_stamp,
 			content: entry.content, content_for_show: entry.content_for_show,
 		})) : record?.conversation ?? [],
-		canSend: typeof live?.childArgs?.AddChatLogEntry === 'function',
+		canSend: typeof live?.childArgs?.AppendChatLogEntry === 'function',
 	}
 }
 
@@ -133,11 +133,11 @@ export async function getSubAgentRun(username, runId) {
 export async function sendSubAgentMessage(username, runId, content) {
 	const run = getLiveRun(runId)
 	if (!run || run.username !== username) throw httpError(404, 'subagent run not found')
-	if (typeof run.childArgs?.AddChatLogEntry !== 'function')
+	if (typeof run.childArgs?.AppendChatLogEntry !== 'function')
 		throw httpError(409, 'subagent is no longer accepting messages')
 	if (typeof content !== 'string' || !content.trim() || content.length > 20000)
 		throw httpError(400, 'message must contain 1-20000 characters')
-	return run.childArgs.AddChatLogEntry({ role: 'user', name: username, uid: run.childArgs.UserUid, content, time_stamp: new Date() })
+	return run.childArgs.AppendChatLogEntry({ role: 'user', name: username, uid: run.childArgs.UserUid, content, time_stamp: new Date() })
 }
 
 /**
@@ -520,7 +520,7 @@ export function buildBenchmarkRequest({ username, charId, benchmark, caseItem, c
 		},
 		ai_source: aiSource,
 		/** @returns {Promise<null>} 基准请求不追加消息 */
-		AddChatLogEntry: async () => null,
+		AppendChatLogEntry: async () => null,
 		/** @returns {Promise<object>} 原样返回请求自身 */
 		Update: async function update() { return this },
 	}

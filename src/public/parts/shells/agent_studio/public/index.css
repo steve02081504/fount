@@ -1012,6 +1012,36 @@
 	width: 100%;
 }
 
+.conversation-low-rates {
+	padding: 0.8rem;
+}
+
+.conversation-low-rate-list {
+	margin-top: 0.5rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+	list-style: none;
+}
+
+.conversation-low-rate-item {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.55rem;
+	padding: 0.4rem 0.6rem;
+	border: var(--border) solid var(--border-color);
+	border-radius: var(--radius-selector);
+	background: var(--surface-sunken);
+	color: var(--text);
+	cursor: pointer;
+}
+
+.conversation-low-rate-item:hover {
+	border-color: var(--color-primary);
+}
+
 .conversation-timeline {
 	position: relative;
 	height: 1.75rem;

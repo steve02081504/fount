@@ -35,7 +35,7 @@ Agent Studio 经 shell 的 `ArgumentsHandler` 暴露 CLI，便于 agent dump 数
 
 ### POST /api/parts/shells:agent_studio/subagent/:runId/messages
 - Body：`{ content: string }`，非空且不超过 20000 字符。
-- 用途：运行中的子代理仍保有 `AddChatLogEntry` 时追加用户消息；仅运行所有者可写。已结束或运行上下文因重启丢失时不可写。
+- 用途：运行中的子代理仍保有 `AppendChatLogEntry`（仅追加、不可唤醒）时追加用户消息；仅运行所有者可写。已结束或运行上下文因重启丢失时不可写。
 
 ### 服务端事件 `subagent-run`
 - 经用户事件通道推送（前端 `onServerEvent('subagent-run', cb)`）。状态负载：`{ runId, backgroundId, parentRunId, batchId, chat_name, charId, state, rounds, roundLimit, depth, isAsync, task, startedAt, finishedAt, error }`；运行开始、每轮、结束各推送一次；同一事件还可携带 `{ runId, entry }`（新增对话）、`{ runId, preview }`（流式回复）或 `{ runId, toolOutput }`（工具输出）。

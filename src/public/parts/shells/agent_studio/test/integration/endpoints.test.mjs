@@ -91,7 +91,7 @@ Deno.test('sub-agent message endpoint only appends to the owned active run', asy
 			 * @param {object} entry 消息
 			 * @returns {Promise<object>} 已保存的消息
 			 */
-			AddChatLogEntry: async entry => { entries.push(entry); return entry },
+			AppendChatLogEntry: async entry => { entries.push(entry); return entry },
 		}
 	})
 	try {
