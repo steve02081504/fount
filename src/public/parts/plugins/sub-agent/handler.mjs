@@ -6,6 +6,7 @@
  * 【数据结构】handler = defineReplyHandler(...)；批次 id 形如 `batch-<uuid>`。
  * 【关联】runtime.mjs 的 runSubAgent / terminateSubAgentRun / listAvailableAiSources / SubAgentError；state.mjs 的 createBatch / parsePluginListAttr；main.mjs 汇总为 ReplyHandler。
  */
+import { guardOutput } from '../../../../scripts/shell_guard.mjs'
 import { defineReplyHandler, defineReplyHandlers } from '../../shells/chat/src/reply/defineReplyHandler.mjs'
 
 import {
@@ -18,20 +19,6 @@ import {
 	terminateSubAgentRun,
 } from './runtime.mjs'
 import { createBatch, parsePluginListAttr } from './state.mjs'
-
-/** 单个工具回执的长度上限。 */
-const TOOL_ECHO_LIMIT = 4000
-
-/**
- * 截断工具回执文本。
- * @param {string} text 文本
- * @param {number} [limit] 上限
- * @returns {string} 截断文本
- */
-function echo(text, limit = TOOL_ECHO_LIMIT) {
-	const value = String(text ?? '')
-	return value.length > limit ? `${value.slice(0, limit)}\n…（已截断 ${value.length - limit} 字符）` : value
-}
 
 /**
  * 写一条 sub-agent 工具回执。
@@ -148,8 +135,10 @@ export const runSubAgentHandler = defineReplyHandler({
 			const outcome = await runSubAgent(args, request)
 			if (request.async)
 				writeToolLog(args, 'sub-agent.run', `子代理已在后台运行，backgroundId=${outcome.backgroundId}。可用 <await-async ids="${outcome.backgroundId}"/> 等待，或用 <list-async/> 查看；未被等待时完成后会以系统消息通知你。`, false, runToolMeta(outcome.run, true))
-			else
-				writeToolLog(args, 'sub-agent.run', `子代理已完成，最终结果：\n\n${echo(outcome.text)}`, false, runToolMeta(outcome.run, false))
+			else {
+				const guarded = await guardOutput(String(outcome.text ?? ''), { name: 'sub-agent', label: '子代理结果' })
+				writeToolLog(args, 'sub-agent.run', `子代理已完成，最终结果：\n\n${guarded.text}`, false, runToolMeta(outcome.run, false))
+			}
 		}
 		catch (error) {
 			if (error instanceof SubAgentError)

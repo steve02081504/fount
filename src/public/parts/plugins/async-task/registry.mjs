@@ -242,7 +242,7 @@ function wrapAnsiBlock(text) {
 }
 
 /**
- * 生成默认完成通知文本。
+ * 生成默认完成通知文本。结果由生产者自行护栏（超限已落盘），此处原样透传，不再二次截断。
  * @param {asyncTask_t} task 任务
  * @returns {string} 通知文本
  */
@@ -252,7 +252,7 @@ function defaultNotificationText(task) {
 	]
 	if (task.label) lines.push(`任务：\n${wrapAnsiBlock(task.label)}`)
 	if (task.state === 'failed') lines.push(`错误：\n${wrapAnsiBlock(task.error?.message ?? '未知错误')}`)
-	else lines.push(`结果：\n${wrapAnsiBlock(truncate(task.result))}`)
+	else lines.push(`结果：\n${wrapAnsiBlock(inspectValue(task.result))}`)
 	return lines.join('\n')
 }
 
@@ -281,17 +281,6 @@ function makeNotificationEntry(task) {
 		time_stamp: new Date(),
 		...charId ? { charVisibility: [charId] } : {},
 	}
-}
-
-/**
- * 截断长文本用于通知。
- * @param {unknown} value 值
- * @param {number} [limit] 上限
- * @returns {string} 截断文本
- */
-function truncate(value, limit = 4000) {
-	const text = typeof value === 'string' ? value : inspectValue(value)
-	return text.length > limit ? `${text.slice(0, limit)}\n…（已截断 ${text.length - limit} 字符）` : text
 }
 
 /**

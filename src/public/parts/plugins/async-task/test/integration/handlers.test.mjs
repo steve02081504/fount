@@ -163,3 +163,16 @@ Deno.test('inspect-async reports failures for missing ids', async () => {
 	assertEquals(args.logs.at(-1).extension?.error, true)
 	assert(args.logs.at(-1).content.includes('未找到'))
 })
+
+Deno.test('await-async spills oversized results to a temp file instead of truncating', async () => {
+	resetAsyncTaskState()
+	const args = createArgs()
+	const big = 'A'.repeat(30_000)
+	const task = registerTask({ kind: 'js', owner: ownerFromArgs(args), run: resolveWith(big) })
+
+	await awaitAsyncHandler.handle(null, args, { params: { ids: task.id, mode: 'all' } })
+	const log = args.logs.at(-1)
+	assert(log.content.includes('完整内容已保存到'), '超大结果应落盘并给出路径')
+	assert(!log.content.includes('A'.repeat(30_000)), '正文应只保留头尾')
+	assert(log.extension.asyncAwait.settled[0].result.includes('完整内容已保存到'))
+})

@@ -9,7 +9,8 @@
 			"src/public/parts/plugins/async-task/{registry,duration}.mjs",
 			"src/public/parts/shells/chat/src/{prompt_struct,reply}/**",
 			"src/public/parts/shells/chat/src/chat/lib/visibility.mjs",
-			"src/scripts/ms.mjs"
+			"src/scripts/ms.mjs",
+			"src/scripts/shell_guard.mjs"
 		],
 		"integrationDeps": [
 			"src/server/parts_loader.mjs",

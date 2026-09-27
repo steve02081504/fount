@@ -7,25 +7,12 @@
  * 【关联】registry.mjs 的 listTasksForOwner / awaitTasks；prompt.mjs 注入说明；main.mjs 汇总为 ReplyHandler。
  */
 import { msstr } from '../../../../scripts/ms.mjs'
+import { guardOutput } from '../../../../scripts/shell_guard.mjs'
 import { defineReplyHandler, defineReplyHandlers } from '../../shells/chat/src/reply/defineReplyHandler.mjs'
 import { renderMarkdownCodeBlock } from '../../shells/chat/src/streaming/index.mjs'
 
 import { DEFAULT_AWAIT_TIMEOUT_MS, parseDurationMs } from './duration.mjs'
 import { awaitTasks, inspectTask, listTasksForOwner, ownerFromArgs } from './registry.mjs'
-
-/** 单个工具回执的长度上限。 */
-const TOOL_ECHO_LIMIT = 4000
-
-/**
- * 截断工具回执文本。
- * @param {string} text 文本
- * @param {number} [limit] 上限
- * @returns {string} 截断文本
- */
-function echo(text, limit = TOOL_ECHO_LIMIT) {
-	const value = String(text ?? '')
-	return value.length > limit ? `${value.slice(0, limit)}\n…（已截断 ${value.length - limit} 字符）` : value
-}
 
 /**
  * 写一条 async-task 工具回执。
@@ -64,6 +51,16 @@ function taskResultText(task) {
 }
 
 /**
+ * 取任务结果文本并过输出护栏（超限时头尾保留、完整内容落盘并在中间给出路径）。
+ * @param {object} task 任务
+ * @returns {Promise<string>} 护栏后的结果文本
+ */
+async function guardTaskResult(task) {
+	const guarded = await guardOutput(taskResultText(task), { name: `async-${task.kind}`, label: '异步任务结果' })
+	return guarded.text
+}
+
+/**
  * 把不可信的任务结果 / 错误包进 ansi 代码块（前端转义着 color，且不按 markdown 解析）。
  * @param {unknown} text 原始文本
  * @returns {string} Markdown 代码块
@@ -76,16 +73,17 @@ function ansiBlock(text) {
  * 把等待结果格式化为工具回执文本。
  * @param {{ settled: object[], pending: string[], unknown: string[], timedOut: boolean }} result 等待结果
  * @param {'all' | 'any'} mode 等待模式
+ * @param {Map<string, string>} resultTexts 任务 id → 已护栏的结果文本
  * @returns {string} 回执文本
  */
-function formatAwaitResult(result, mode) {
+function formatAwaitResult(result, mode, resultTexts) {
 	const lines = [`等待结果（mode=${mode}${result.timedOut ? '，已超时' : ''}）：`]
 	if (result.settled.length) {
 		lines.push(`已完成（${result.settled.length}）：`)
 		for (const task of result.settled) {
 			const detail = task.state === 'failed'
 				? `失败：${task.error?.message ?? '未知错误'}`
-				: `结果：${echo(taskResultText(task), 2000)}`
+				: `结果：${resultTexts.get(task.id) ?? ''}`
 			lines.push(`- ${task.id}（${task.kind}）：${detail}`)
 		}
 	}
@@ -161,7 +159,10 @@ export const awaitAsyncHandler = defineReplyHandler({
 		const timeoutMs = parseDurationMs(call.params['time-limit']) ?? DEFAULT_AWAIT_TIMEOUT_MS
 		try {
 			const result = await awaitTasks(ids, { mode, timeoutMs, signal: args.generation_options?.signal, requester: ownerFromArgs(args) })
-			writeToolLog(args, 'async-task.await', formatAwaitResult(result, mode), false, {
+			const resultTexts = new Map(await Promise.all(result.settled.map(async task =>
+				[task.id, task.state === 'failed' ? '' : await guardTaskResult(task)]
+			)))
+			writeToolLog(args, 'async-task.await', formatAwaitResult(result, mode, resultTexts), false, {
 				extension: {
 					asyncAwait: {
 						mode,
@@ -170,7 +171,7 @@ export const awaitAsyncHandler = defineReplyHandler({
 							id: task.id,
 							kind: task.kind,
 							state: task.state,
-							result: task.state === 'failed' ? '' : ansiBlock(echo(taskResultText(task), 4000)),
+							result: task.state === 'failed' ? '' : ansiBlock(resultTexts.get(task.id)),
 							error: task.state === 'failed' ? ansiBlock(task.error?.message ?? '未知错误') : '',
 						})),
 						pending: result.pending,
@@ -245,7 +246,8 @@ export const inspectAsyncHandler = defineReplyHandler({
 		}
 		const { task, preview } = result
 		const head = `异步任务 ${task.id}（类型：${task.kind}，状态：${task.state}）${task.label ? `\n任务：${task.label}` : ''}`
-		writeToolLog(args, 'async-task.inspect', `${head}\n\n最新进展：\n${inspectPreviewText(preview)}`, false, {
+		const guardedPreview = await guardOutput(inspectPreviewText(preview), { name: 'async-task-inspect', label: '任务进展' })
+		writeToolLog(args, 'async-task.inspect', `${head}\n\n最新进展：\n${guardedPreview.text}`, false, {
 			extension: {
 				asyncInspect: {
 					id: task.id,
@@ -255,7 +257,7 @@ export const inspectAsyncHandler = defineReplyHandler({
 					rounds: preview?.rounds ?? null,
 					roundLimit: preview?.roundLimit ?? null,
 					entries: Array.isArray(preview?.entries) ? preview.entries : null,
-					preview: Array.isArray(preview?.entries) ? null : typeof preview === 'string' ? ansiBlock(echo(preview)) : null,
+					preview: Array.isArray(preview?.entries) ? null : typeof preview === 'string' ? ansiBlock(guardedPreview.text) : null,
 				},
 			},
 		})

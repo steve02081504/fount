@@ -6,7 +6,8 @@
 		],
 		"pluginCore": [
 			"src/public/parts/plugins/async-task/**",
-			"src/public/parts/shells/chat/src/{prompt_struct,reply}/**"
+			"src/public/parts/shells/chat/src/{prompt_struct,reply}/**",
+			"src/scripts/shell_guard.mjs"
 		]
 	},
 	"suites": [

@@ -5,7 +5,7 @@
 import { assertEquals, assertFalse, assert } from 'jsr:@std/assert'
 
 import { notificationQueueKey, pushPendingNotification, resetAsyncTaskState, takePendingNotifications } from '../../../async-task/registry.mjs'
-import { describeRunEntries, parseBooleanAttr, parseDurationMs, parseRoundLimit, terminateSubAgentRun } from '../../runtime.mjs'
+import { describeRunEntries, parseBooleanAttr, parseDurationMs, parseRoundLimit, serializeConversation, terminateSubAgentRun } from '../../runtime.mjs'
 import {
 	countActiveRunsForAgent,
 	countActiveRunsInBatch,
@@ -215,4 +215,11 @@ Deno.test('describeRunEntries slices, prefers the show layer, and truncates', ()
 	assertEquals(entries[1].role, 'tool')
 	assert(entries[1].content.startsWith('x'.repeat(10)))
 	assert(entries[1].content.length < 60, 'expected truncation')
+})
+
+Deno.test('serializeConversation keeps full content for persistence', async () => {
+	const long = 'y'.repeat(30_000)
+	const [entry] = serializeConversation([{ role: 'tool', name: 't', uid: 'u', content: long }])
+	assertEquals(entry.content, long, '落盘副本应保留完整内容')
+	assertEquals(entry.content_for_show, long)
 })

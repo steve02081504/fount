@@ -7,6 +7,7 @@
  * 【数据结构】run_t 见 state.mjs；deps = { loadPart, loadAnyPreferredDefaultPart, listAiSources, recordGeneration, notifyRun, buildPromptStruct, runBeforeReplyHooks, runReplyHandlers, archive, now, config }。
  * 【关联】handler.mjs 解析标签后调用 `runSubAgent` / `terminateSubAgentRun` / `listAvailableAiSources`；prompt.mjs 注入预算；archive.mjs 管理父代档案；state.mjs 保存注册表。
  */
+import { guardOutput } from '../../../../scripts/shell_guard.mjs'
 import { onSystemWake, setAwakeTimeout } from '../../../../scripts/sleep_watch.mjs'
 import { isStopping } from '../../../../scripts/stopping.mjs'
 import { beginPromptRequest, collectGenerationRecord, finishPromptRequest } from '../../shells/agent_studio/src/request_record.mjs'
@@ -32,9 +33,6 @@ import {
 
 /** 时长解析统一由 async-task 提供（`<await-async time-limit>` 与 `run-subagent` 共用）。 */
 export { parseDurationMs } from '../async-task/duration.mjs'
-
-/** 单条工具回执 / 通知中保留的结果长度上限。 */
-const RESULT_ECHO_LIMIT = 4000
 
 /**
  * 子代理运行错误（带机器可读 code，供 handler 写严格错误工具日志）。
@@ -238,28 +236,28 @@ function emitRunChange(run, deps, change) {
 }
 
 /**
- * 序列化子代理内部对话供落盘（剥离文件 buffer，逐条限长）。
+ * 序列化子代理内部对话供落盘（剥离文件 buffer；正文原样保留，记录本身即完整副本）。
  * @param {object[]} conversation 对话
  * @returns {object[]} 可 JSON 化的条目
  */
-function serializeConversation(conversation) {
+export function serializeConversation(conversation) {
 	return (conversation ?? []).map(entry => ({
 		role: entry.role,
 		name: entry.name,
 		uid: entry.uid,
 		time_stamp: entry.time_stamp,
-		content: truncate(entry.content ?? '', 20000),
-		content_for_show: truncate(entry.content_for_show ?? entry.content ?? '', 20000),
+		content: entry.content ?? '',
+		content_for_show: entry.content_for_show ?? entry.content ?? '',
 	}))
 }
 
 /**
- * 截断长文本用于回执。
+ * 截取长文本作为预览窗口（超长内容由各生产者的落盘护栏负责，不在此处丢弃原文）。
  * @param {string} text 文本
- * @param {number} [limit] 上限
+ * @param {number} limit 上限
  * @returns {string} 截断文本
  */
-function truncate(text, limit = RESULT_ECHO_LIMIT) {
+function clip(text, limit) {
 	const value = String(text ?? '')
 	return value.length > limit ? `${value.slice(0, limit)}\n…（已截断 ${value.length - limit} 字符）` : value
 }
@@ -436,17 +434,18 @@ ${transcript}
 /**
  * 生成 sub-agent 异步任务的完成通知文本（由 registerTask 的 format 在结算时调用；run 经闭包提供，失败结算同样可用）。
  * @param {object} run 运行
- * @returns {string} 通知文本
+ * @returns {Promise<string>} 通知文本
  */
-function subAgentNotificationText(run) {
+async function subAgentNotificationText(run) {
 	const batchActive = run.batchId ? countActiveRunsInBatch(run.batchId) : 0
 	const agentActive = run.username ? countActiveRunsForAgent(run.username, run.charId) : 0
+	const guarded = await guardOutput(String(run.finalText ?? run.error?.message ?? ''), { name: 'sub-agent', label: '子代理结果' })
 	return `\
 [sub-agent] 后台子代理 ${run.backgroundId} 已完成（状态：${run.state}）。
 同批次进行中：${batchActive} 个；该角色剩余活跃子代理：${agentActive} 个。
 
 结果：
-${truncate(run.finalText ?? run.error?.message ?? '')}`
+${guarded.text}`
 }
 
 /**
@@ -467,8 +466,10 @@ async function summarizeRun(run, deps, reason) {
 		console.warn('sub-agent: 摘要调用失败', error)
 	}
 	if (text && typeof text === 'object') text = text.content ?? text.text ?? ''
-	if (typeof text !== 'string' || !text.trim())
-		text = `子代理已${reason === 'terminated' ? '被终止' : '达到上限'}，未能生成摘要。最后产出：\n${truncate(run.result?.content ?? '', 1000)}`
+	if (typeof text !== 'string' || !text.trim()) {
+		const guarded = await guardOutput(String(run.result?.content ?? ''), { name: 'sub-agent', label: '子代理结果' })
+		text = `子代理已${reason === 'terminated' ? '被终止' : '达到上限'}，未能生成摘要。最后产出：\n${guarded.text}`
+	}
 	run.finalText = text
 	run.state = reason === 'terminated' ? 'terminated' : 'done'
 }
@@ -813,7 +814,7 @@ export function describeRunEntries(run, limit = 3, contentLimit = 1000) {
 	return entries.slice(-limit).map(entry => ({
 		role: entry.role ?? 'system',
 		name: entry.name ?? '',
-		content: truncate(entry.content_for_show ?? entry.content ?? '', contentLimit),
+		content: clip(entry.content_for_show ?? entry.content ?? '', contentLimit),
 	}))
 }
 
