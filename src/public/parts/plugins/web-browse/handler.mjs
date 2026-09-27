@@ -1,5 +1,7 @@
+import { guardOutput as defaultGuardOutput } from '../../../../scripts/shell_guard.mjs'
 import { defineReplyHandler } from '../../shells/chat/src/reply/defineReplyHandler.mjs'
 import { renderMarkdownCodeBlock } from '../../shells/chat/src/streaming/index.mjs'
+import { DEFAULT_READ_MAX_LINE_CHARS, truncateLongLines } from '../file-operations/src/read_window.mjs'
 
 import { MarkdownWebFetch } from './fetch.mjs'
 
@@ -31,9 +33,10 @@ export function formatWebBrowseResult(url, markdown, question) {
  * 创建网页浏览工具处理器。
  * @param {object} [options] - 依赖项。
  * @param {(url: string) => Promise<string>} [options.fetchMarkdown] - 抓取网页并转换为 Markdown。
+ * @param {(text: string, options: object) => Promise<{text: string}>} [options.guardOutput] - 超大输出护栏（超限时头尾保留并落盘）。
  * @returns {import('../../../../decl/pluginAPI.ts').ReplyHandler_t} 网页浏览回复处理器。
  */
-export function createWebBrowseReplyHandler({ fetchMarkdown = MarkdownWebFetch } = {}) {
+export function createWebBrowseReplyHandler({ fetchMarkdown = MarkdownWebFetch, guardOutput = defaultGuardOutput } = {}) {
 	return defineReplyHandler({
 		tag: 'web-browse',
 		name: 'web-browse.browse',
@@ -68,7 +71,10 @@ export function createWebBrowseReplyHandler({ fetchMarkdown = MarkdownWebFetch }
 			console.info('AI 浏览网页：', url)
 			try {
 				const markdown = await fetchMarkdown(url)
-				addToolLog(formatWebBrowseResult(url, markdown, question))
+				// 先按整体大小护栏（超限时完整原文落盘、正文只留头尾），再按单行字符上限截断过长行：
+				// 网页常含 minify 后的超长单行，落盘保证完整内容可回查，单行截断保证正文仍可读。
+				const guarded = await guardOutput(formatWebBrowseResult(url, markdown, question), { name: 'web-browse', label: '网页内容' })
+				addToolLog(truncateLongLines(guarded.text, DEFAULT_READ_MAX_LINE_CHARS))
 			}
 			catch (error) {
 				console.error('web browse failed:', error)

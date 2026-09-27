@@ -1,5 +1,5 @@
 /* global Deno */
-import { assertEquals, assertStringIncludes } from 'jsr:@std/assert'
+import { assert, assertEquals, assertStringIncludes } from 'jsr:@std/assert'
 
 import { createWebBrowseReplyHandler, formatWebBrowseResult, parseWebBrowseCall } from '../../handler.mjs'
 
@@ -61,6 +61,52 @@ Deno.test('web browse fetches the page and logs a code-fenced result', async () 
 	assertStringIncludes(logs[0].content, 'markdown of the page')
 	assertStringIncludes(logs[0].content, 'summary?')
 	assertStringIncludes(logs[0].content_for_show, '```')
+})
+
+Deno.test('web browse truncates over-long single lines', async () => {
+	const logs = []
+	const longLine = 'x'.repeat(3000)
+	await createWebBrowseReplyHandler({ fetchMarkdown: fetchReturning(`short\n${longLine}`) }).handle({}, {
+		AddLongTimeLog: collectLog(logs),
+	}, { inner: '<url>https://example.com</url>' })
+	assertStringIncludes(logs[0].content, '本行已截断')
+	assertStringIncludes(logs[0].content, 'short')
+	assert(!logs[0].content.includes(longLine))
+})
+
+Deno.test('web browse passes the formatted result through the output guard', async () => {
+	const logs = []
+	const guardedCalls = []
+	/**
+	 * 记录调用参数的假护栏。
+	 * @param {string} text - 待护栏文本。
+	 * @param {object} options - 护栏选项。
+	 * @returns {Promise<{text: string, truncated: boolean, omitted: number, savedPath: null}>} 固定护栏结果。
+	 */
+	const guardOutput = async (text, options) => {
+		guardedCalls.push({ text, options })
+		return { text: 'GUARDED', truncated: false, omitted: 0, savedPath: null }
+	}
+	await createWebBrowseReplyHandler({ fetchMarkdown: fetchReturning('page body'), guardOutput }).handle({}, {
+		AddLongTimeLog: collectLog(logs),
+	}, { inner: '<url>https://example.com/x</url><question>why?</question>' })
+
+	assertEquals(guardedCalls.length, 1)
+	assertStringIncludes(guardedCalls[0].text, 'page body')
+	assertStringIncludes(guardedCalls[0].text, 'why?')
+	assertEquals(guardedCalls[0].options.name, 'web-browse')
+	assertEquals(logs[0].content, 'GUARDED')
+})
+
+Deno.test('web browse dumps oversized content to a temp file via the default guard', async () => {
+	const logs = []
+	const markdown = 'HEAD' + 'A'.repeat(30_000) + 'TAIL'
+	await createWebBrowseReplyHandler({ fetchMarkdown: fetchReturning(markdown) }).handle({}, {
+		AddLongTimeLog: collectLog(logs),
+	}, { inner: '<url>https://example.com/big</url>' })
+
+	assertStringIncludes(logs[0].content, '完整内容已保存到')
+	assertStringIncludes(logs[0].content, '本行已截断')
 })
 
 Deno.test('web browse reports a missing url and a fetch failure without leaking raw html', async () => {
