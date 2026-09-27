@@ -77,8 +77,8 @@ Deno.test({
 		const observations = await readObservations(root)
 		assertEquals(observations.length, 1, '首次生成只应调用一次 GetReply')
 		assert(
-			observations[0].additionalChatLog.some(entry => String(entry.content).includes('PRELOAD_MARKER_CONTENT')),
-			`首轮合并 prompt 应含预读文件内容：${JSON.stringify(observations[0].additionalChatLog).slice(0, 400)}`
+			observations[0].chatLog.some(entry => String(entry.content).includes('PRELOAD_MARKER_CONTENT')),
+			`首轮合并 prompt 应含预读文件内容：${JSON.stringify(observations[0].chatLog).slice(0, 400)}`
 		)
 		assertEquals(done.entries.filter(entry => entry.role === 'char').length, 1, '预读不得触发额外的重生成轮次')
 		assert(!done.entries.some(entry => entry.name === 'file-operations.view-file'), '预读后不应再调用 view-file')

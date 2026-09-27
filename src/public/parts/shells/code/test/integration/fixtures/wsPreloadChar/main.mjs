@@ -97,16 +97,17 @@ export default {
 				const result = { content: '', logContextBefore: [], logContextAfter: [], files: [], extension: {} }
 				// 与真实模板一致：把本轮 result 暴露为 base_result，供后端在预览时读取累积日志
 				args.generation_options.base_result = result
-				// 与 wsRoundsChar 一致：不提供 prompt_struct.chat_log，让插件回退到 args.chat_log 解析最新用户消息
-				const prompt_struct = { char_prompt: { additional_chat_log: [] } }
+				// 与真实模板一致：提供 prompt_struct.chat_log 作为生成本轮时间线，插件把预读日志写入其中；
+				// 插件仍通过 args.chat_log 解析最新用户消息。
+				const prompt_struct = { chat_log: [] }
 				const AddLongTimeLog = createLongTimeLogger(args, result, prompt_struct)
 				await runBeforeReplyHooks({ ...args, prompt_struct, AddLongTimeLog })
-				// fixture 观测钩子：记录首轮 StructCall 看到的追加日志（合并后的 prompt 侧额外日志）
+				// fixture 观测钩子：记录首轮 StructCall 看到的时间线日志
 				try {
 					if (args.workdir?.path)
 						fs.appendFileSync(
 							path.join(args.workdir.path, 'preload_observations.jsonl'),
-							JSON.stringify({ additionalChatLog: prompt_struct.char_prompt.additional_chat_log.map(entry => ({ name: entry.name, content: entry.content })) }) + '\n',
+							JSON.stringify({ chatLog: prompt_struct.chat_log.map(entry => ({ name: entry.name, content: entry.content })) }) + '\n',
 							'utf8'
 						)
 				}
