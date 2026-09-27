@@ -11,7 +11,7 @@ import { showToastI18n } from '/scripts/features/toast.mjs'
 import * as api from './endpoints.mjs'
 import { iconElement, icons } from './icons.mjs'
 import { cycleMode } from './pills.mjs'
-import { sendMessage, syncActiveTabDraft } from './session.mjs'
+import { notifyTyping, sendMessage, syncActiveTabDraft } from './session.mjs'
 import { ATTACHMENT_MAX_BYTES, elements, getPref, richInput, setPref, store, target } from './store.mjs'
 import { openDialogFromTemplate } from './templates.mjs'
 
@@ -505,6 +505,8 @@ export function wireComposerEvents() {
 		if (!fromNav) store.historyNav.pos = null
 		const { value } = richInput
 		syncActiveTabDraft()
+		// 用户开始/继续输入：通知后端重置延迟收尾，避免生成刚结束就运行 agentFinish 钩子
+		if (!fromNav) notifyTyping()
 		// ！/! 切 shell 执行模式：内容为空时键入叹号，进入后移除该字符，供干净命令输入
 		if (!store.shellMode && (value === '！' || value === '!')) {
 			store.shellMode = true

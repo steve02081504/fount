@@ -6,6 +6,7 @@
 		],
 		"pureCore": [
 			"src/public/parts/shells/code/src/hooks_config.mjs",
+			"src/public/parts/shells/code/src/finish_scheduler.mjs",
 			"src/public/parts/shells/code/test/pure/**"
 		],
 		"shellBackend": [

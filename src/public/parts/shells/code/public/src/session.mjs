@@ -870,14 +870,39 @@ async function sendTriggerFrame(session, runId) {
 	}))
 }
 
+/** 待决的 `attach` 接入请求：`run-start` 回帧即成功，`no active run` / 超时即无活跃运行。 */
+let attachWaiter = null
+/** 接入等待超时（ms）：超时视为无活跃运行，回退磁盘恢复。 */
+const ATTACH_TIMEOUT_MS = 3000
+
 /**
- * 向后端发送接入帧：接管一个后端已启动（无页面连接）的运行，接收其运行身份与后续流式帧。
- * @param {object} session - 会话。
- * @returns {Promise<void>}
+ * 结束待决的接入等待（只对仍是当前的那个 waiter 生效）。
+ * @param {{resolve: (ok: boolean) => void, timer: number}} waiter - 接入请求。
+ * @param {boolean} ok - 是否接入成功。
+ * @returns {void}
  */
-async function sendAttachFrame(session) {
-	const ws = await getSocket()
-	ws.send(JSON.stringify({ type: 'attach', sessionId: session.id }))
+function settleAttach(waiter, ok) {
+	if (attachWaiter !== waiter) return
+	attachWaiter = null
+	clearTimeout(waiter.timer)
+	waiter.resolve(ok)
+}
+
+/**
+ * 向后端发送接入帧：接管一个后端正在进行的运行，接收其运行身份与后续流式帧。
+ * 刷新/断线恢复时用于重新显示停止按钮并继续接收流。
+ * @param {object} session - 会话。
+ * @returns {Promise<boolean>} 是否成功接入一个活跃运行。
+ */
+function attachToRun(session) {
+	return new Promise(resolve => {
+		const waiter = { resolve, timer: 0 }
+		waiter.timer = setTimeout(() => settleAttach(waiter, false), ATTACH_TIMEOUT_MS)
+		attachWaiter = waiter
+		void getSocket()
+			.then(ws => ws.send(JSON.stringify({ type: 'attach', sessionId: session.id })))
+			.catch(() => settleAttach(waiter, false))
+	})
 }
 
 /**
@@ -916,6 +941,11 @@ async function recoverGeneration(session) {
 	updateSendButton()
 	const deadline = Date.now() + RECOVER_TIMEOUT_MS
 	try {
+		// 后端可能仍在生成（页面刷新/断线）：接入活跃运行，重建流式态并显示停止按钮
+		if (await attachToRun(session)) {
+			beginGeneration(session, store.generatingRunId)
+			return
+		}
 		while (Date.now() < deadline) {
 			// 本轮又开始了新生成：让位给正常流，停止恢复轮询
 			if (store.generating) return
@@ -956,6 +986,8 @@ function onSocketMessage(event) {
 	if (msg.type === 'run-start') {
 		// 后端确认运行身份：记录权威 runId，后续过期运行的事件据此丢弃
 		if (msg.runId) store.generatingRunId = msg.runId
+		// attach 回帧：页面刷新/断线后成功接入仍在进行的运行（进入生成态、显示停止按钮）
+		settleAttach(attachWaiter, true)
 		return
 	}
 	// 过期运行（同一 socket 上被新请求取代）的事件一律丢弃，避免跨轮串写
@@ -981,6 +1013,11 @@ function onSocketMessage(event) {
 		return
 	}
 	if (msg.type === 'error') {
+		// attach 失败（后端已无该运行）：不算生成错误，交由恢复流程回退磁盘轮询
+		if (attachWaiter && msg.error === 'no active run') {
+			settleAttach(attachWaiter, false)
+			return
+		}
 		const session = store.generatingSession || store.session
 		// 复位发送按钮（内部同步刷新 regen 按钮），与 finishGeneration 的收尾对齐
 		resetGeneration()
@@ -1155,6 +1192,24 @@ export function abortGeneration() {
 	void getSocket().then(ws => ws.send(JSON.stringify({ type: 'abort', sessionId }))).catch(() => { })
 }
 
+/** 输入通知节流间隔（ms）：后端据此重置延迟收尾计时。 */
+const TYPING_NOTIFY_INTERVAL_MS = 1000
+/** 上次发送输入通知的时间。 */
+let lastTypingNotify = 0
+
+/**
+ * 告知后端用户正在输入（节流；有活动会话且非生成中时）。后端据此重置 agentFinish 收尾计时。
+ * @returns {void}
+ */
+export function notifyTyping() {
+	const session = store.session
+	if (!session?.id || store.generating) return
+	const now = Date.now()
+	if (now - lastTypingNotify < TYPING_NOTIFY_INTERVAL_MS) return
+	lastTypingNotify = now
+	void getSocket().then(ws => ws.send(JSON.stringify({ type: 'typing', sessionId: session.id }))).catch(() => { })
+}
+
 /**
  * 重新生成最后一条角色消息（弹出后走 WS regen，流式预览复用生成中气泡）。
  * @returns {Promise<void>}
@@ -1242,8 +1297,11 @@ export async function handleRunStartedEvent(payload) {
 	if (!session || chatName !== 'code-' + session.id) return
 	if (store.generating || store.recovering) return
 	beginGeneration(session, runId)
-	try { await sendAttachFrame(session) }
-	catch (error) { failGeneration(error) }
+	// 接入失败（运行已收尾且 done 已错过）：回退磁盘恢复，避免卡在生成态
+	if (!await attachToRun(session)) {
+		resetGeneration()
+		void recoverGeneration(session)
+	}
 }
 
 /** 消息中的 `@[gist:id]` token。 */

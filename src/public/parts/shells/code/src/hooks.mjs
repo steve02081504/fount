@@ -11,7 +11,8 @@ import { launchDetachedProgram } from '../../../../../scripts/launch_external.mj
 import { events } from '../../../../../server/events.mjs'
 import { loadShellData } from '../../../../../server/setting_loader.mjs'
 
-import { MAX_REGEN_ATTEMPTS, buildEnv, normalizeHooks } from './hooks_config.mjs'
+import { createDeferredFinish } from './finish_scheduler.mjs'
+import { AGENT_FINISH_DELAY_MS, MAX_REGEN_ATTEMPTS, buildEnv, normalizeHooks } from './hooks_config.mjs'
 import { runShellCommand } from './runner.mjs'
 import { loadSession, saveSession } from './sessions.mjs'
 import { readWorkspaceConfig } from './workspace_config.mjs'
@@ -33,6 +34,20 @@ const seenSubRuns = new Set()
 const runningSingletons = new Set()
 /** 子代理事件监听是否已注册。 */
 let subEventsRegistered = false
+
+/**
+ * 顶层生成完毕后的延迟收尾调度：用户继续输入则重置计时，用户发新消息则取消并交给下一轮。
+ * @type {ReturnType<typeof createDeferredFinish>}
+ */
+const deferredFinishes = createDeferredFinish({
+	delayMs: AGENT_FINISH_DELAY_MS,
+	/**
+	 * 到期运行 agentFinish 钩子（失败仅记录日志，不阻塞）。
+	 * @param {object} payload - 收尾载荷。
+	 * @returns {void}
+	 */
+	onRun: payload => { void finalizeAgentFinish(payload).catch(error => console.warn('shells/code: agentFinish 钩子失败', error)) },
+})
 
 /**
  * 注入运行回调（由端点模块调用一次）。
@@ -238,7 +253,8 @@ export function dispatchAgentStart(username, ctx) {
 }
 
 /**
- * 顶层 code 生成结束：运行 `agentFinish` 钩子；失败则回灌并触发重生成（带上限）；随后计数与 `agentsIdle`。
+ * 顶层 code 生成结束：登记延迟收尾（等待用户可能的继续输入），到期后再运行 `agentFinish` 钩子。
+ * 用户发新消息（endpoints 调 `cancelAgentFinish`）会取消本轮的收尾，交下一轮生成处理。
  * @param {string} username - 用户名。
  * @param {object} ctx - 上下文（machine/path/sessionId/char/generationId/runId/success/error/ai_source/profile）。
  * @returns {Promise<void>}
@@ -254,6 +270,17 @@ export async function dispatchAgentFinish(username, ctx) {
 		generationId: ctx.generationId ?? '', runId: ctx.runId ?? '',
 		success: ctx.success ? '1' : '0', error: ctx.error ? String(ctx.error) : '', attempt: 0,
 	}
+	const replaced = deferredFinishes.schedule(sessionKey(username, ctx.sessionId), { username, ctx, work, key, envCtx })
+	// 同一会话重复登记（异常路径）：被覆盖的那轮只做计数收尾，不运行钩子。
+	if (replaced) await decrementWork(username, replaced.key)
+}
+
+/**
+ * 延迟到期：运行 `agentFinish` 钩子；失败则回灌并触发重生成（带上限）；随后计数与 `agentsIdle`。
+ * @param {{username: string, ctx: object, work: {machine: string, path: string}, key: string, envCtx: object}} payload - 收尾载荷。
+ * @returns {Promise<void>}
+ */
+async function finalizeAgentFinish({ username, ctx, work, key, envCtx }) {
 	const failure = await runHooks(username, work, 'agentFinish', envCtx)
 	// 自动重生成次数随会话落盘（跨进程重启仍生效）；用户发消息时由 endpoints 清零。
 	const session = work.path ? await loadSession(username, work, ctx.sessionId).catch(() => null) : null
@@ -278,6 +305,29 @@ export async function dispatchAgentFinish(username, ctx) {
 		await saveSession(username, work, session).catch(error => console.warn('shells/code: 重置自动回灌计数失败', error))
 	}
 	await decrementWork(username, key)
+}
+
+/**
+ * 用户继续输入：重置该会话延迟收尾的计时（无待收尾时为无操作）。
+ * @param {string} username - 用户名。
+ * @param {string} sessionId - 会话 id。
+ * @returns {boolean} 是否重置了计时。
+ */
+export function touchAgentFinish(username, sessionId) {
+	return deferredFinishes.touch(sessionKey(username, sessionId))
+}
+
+/**
+ * 用户发新消息 / 服务端开始新生成：取消该会话待运行的收尾钩子（计数照常递减，交给下一轮）。
+ * @param {string} username - 用户名。
+ * @param {string} sessionId - 会话 id。
+ * @returns {Promise<boolean>} 是否取消了待收尾任务。
+ */
+export async function cancelAgentFinish(username, sessionId) {
+	const payload = deferredFinishes.cancel(sessionKey(username, sessionId))
+	if (!payload) return false
+	await decrementWork(username, payload.key)
+	return true
 }
 
 /**

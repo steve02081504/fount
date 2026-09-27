@@ -114,6 +114,8 @@ export type GenerationOptions_t = {
 			description: string
 		}[]
 		extension?: object
+		/** 本轮已累计的工具日志（含 BeforeReply 预读等）；预览时增量读取，随会话持久化。 */
+		logContextBefore?: chatLogEntry_t[]
 	}
 }
 

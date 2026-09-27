@@ -55,3 +55,6 @@ export function buildEnv(ctx) {
 		FOUNT_CODE_ATTEMPT: String(ctx.attempt ?? 0),
 	}
 }
+
+/** 顶层生成完毕后运行 `agentFinish` 钩子前的等待时长（毫秒）。 */
+export const AGENT_FINISH_DELAY_MS = 13_000

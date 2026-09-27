@@ -47,7 +47,8 @@ AI 编码会话 shell：与任意角色就工作区对话，在本机或已连�
   - 客户端 → `{ type: 'send', runId?, session, machine, workdir, ai_source?, profile?, content, files?, clientEntryId? }`：触发角色回复。`files`（可选）为附件数组 `{ name, mime_type, buffer: base64, description }`，并入用户消息条目（sessionToChatLog 解码后随 chat_log 供角色读取）。`clientEntryId`（可选）为前端已乐观插入 `session.entries` 的用户条目 id；服务端若在该 session 中找到同 id 条目则不再追加/回传用户消息（避免重复）。服务端先回 `{ type: 'run-start' }`，流式回 `{ type: 'preview', content }`；多轮生成中每轮已完成的 tool 日志 / 角色轮次经 `{ type: 'entries-append', entries }` 增量推送（在对应 `preview` 之前，`done` 只补发剩余条目，不重复）；执行工具（`<run-*>` / `<inline-*>`）时穿插回 `{ type: 'tool-output', callId, phase: 'start'|'chunk'|'end', name, lang?, code?, stream?, data? }` 实时转发工具输出；结束回 `{ type: 'done', entries, memory }`（entries = 用户消息（未带 clientEntryId 时）+ tool 日志 + 角色回复）。会话条目同时保留 agent 层 `content` 与展示层 `content_for_show`/`content_for_edit`、`charVisibility`，重载时据此完整还原。
   - 客户端 → `{ type: 'regen', runId?, session, machine, workdir, ai_source?, profile? }`：以现有 entries 重新生成最后一条角色回复（前端应先弹出旧回复）。服务端同样先流式 `preview`，结束回 `{ type: 'done', entries, memory }`（entries 仅含 tool 日志 + 新角色回复；中断回 `{ type: 'aborted', entries }`，此时旧回复已被弹出、会话暂无该回复）。
   - 客户端 → `{ type: 'trigger', runId?, session, machine, workdir, ai_source?, profile? }`：按当前会话原样生成（不新增用户消息）；后端唤醒在无页面连接时也会自行发起该运行。
-  - 客户端 → `{ type: 'attach', sessionId }`：接入一个后端已启动（无对应 socket）的当前会话运行；服务端回 `run-start` 并补发本运行已产生的全部新条目（`entries-append`，含运行中追加的系统通告，按 id 去重），随后继续推送 `preview` / `entries-append`。无活跃运行时回 `{ type: 'error', error: 'no active run' }`。
+  - 客户端 → `{ type: 'attach', sessionId }`：接入一个后端正在进行的当前会话运行（页面刷新/断线后重新显示停止按钮并继续接收流，包括无页面连接时由后端启动的运行）；服务端回 `run-start` 并补发本运行已产生的全部新条目（`entries-append`，含运行中追加的系统通告，按 id 去重），随后继续推送 `preview` / `entries-append`。无活跃运行时回 `{ type: 'error', error: 'no active run' }`。
+  - 客户端 → `{ type: 'typing', sessionId }`：用户正在输入（前端节流发送）；后端据此重置该会话「生成完毕后延迟运行 `agentFinish` 钩子」的计时。
   - 客户端 → `{ type: 'abort', sessionId? }`：中断该会话当前生成；服务端回 `{ type: 'aborted', entries }`。
   - 持久化：服务端在运行开始前写一份含「生成中」占位（`is_generating: true`）的会话到工作区磁盘，收尾（`done`/`aborted`/`error`）时用最终条目替换后写回；`ws.close()` 不会中断生成，生成会继续并落盘（旧运行收尾同样落盘）。页面据此可在重载后轮询 `/sessions/:id` 恢复。
   - 出错回 `{ type: 'error', entries, error }`。
@@ -60,6 +61,7 @@ AI 编码会话 shell：与任意角色就工作区对话，在本机或已连�
 
 - `hooks.agentStart` / `hooks.agentFinish` / `hooks.agentsIdle`：各为条目数组，条目为命令字符串或 `{ command, shell?, cwd?, timeoutMs?, detached?, singleton? }`。
   - `agentStart`：任意 agent 开始运行（顶层 code 生成 + 该会话的子代理 run）。`agentFinish`：单个 agent 完毕（顶层或子代理）。`agentsIdle`：该工作区活跃 agent 数归零。
+  - 顶层 code 生成完毕后的 `agentFinish` 会延迟 13 秒再运行：期间用户继续输入（WS `typing`）会重置该计时，用户发送新消息则取消本轮 `agentFinish`、改由下一轮生成完毕时运行（子代理的 `agentFinish` 不延迟）。
   - `detached` 经脱离进程树的隐藏方式运行（仅本机；不捕获退出码）；`singleton` 保证同工作区同命令只起一个实例。
   - `agentFinish` 命令退出码非 0 → 把 stdout+stderr 合并追加为系统条目并触发重生成（同一会话最多 3 次，随后停止）；`agentStart`/`agentsIdle` 非 0 仅记录日志。
 - 环境变量：`FOUNT_CODE_EVENT`（agent-start|agent-finish|agents-idle）、`FOUNT_CODE_KIND`（code|subagent）、`FOUNT_CODE_USERNAME`、`FOUNT_CODE_SESSION_ID`、`FOUNT_CODE_CONVERSATION_ID`（`code-<sessionId>`）、`FOUNT_CODE_WORKSPACE_ID`、`FOUNT_CODE_WORKSPACE_PATH`、`FOUNT_CODE_MACHINE`、`FOUNT_CODE_CHAR`、`FOUNT_CODE_GENERATION_ID`、`FOUNT_CODE_RUN_ID`、`FOUNT_CODE_SUCCESS`、`FOUNT_CODE_ERROR`、`FOUNT_CODE_ATTEMPT`。

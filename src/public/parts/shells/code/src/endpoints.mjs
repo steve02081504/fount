@@ -30,7 +30,7 @@ import {
 import { collectEditorSources } from './editor_sources.mjs'
 import { pickEntryExtension } from './entry_extension.mjs'
 import { appendOwnHistory, getHistory } from './history.mjs'
-import { dispatchAgentFinish, dispatchAgentStart, setHookRuntime } from './hooks.mjs'
+import { cancelAgentFinish, dispatchAgentFinish, dispatchAgentStart, setHookRuntime, touchAgentFinish } from './hooks.mjs'
 import {
 	beginCodeGeneration,
 	cancelAllPowerActions,
@@ -1092,6 +1092,8 @@ export function setEndpoints(router) {
 		send({ type: 'run-start' })
 		// 无 socket 的后台运行（唤醒 / 钩子重生成 / 作业恢复）：广播运行开始，已打开的页面据此 attach 接入
 		if (!ws) sendEventToUser(username, 'code-run-started', { chatName: 'code-' + session.id, runId })
+		// 新生成开始：取消上一轮待运行的 agentFinish 收尾（计数照常递减，交给本轮）
+		await cancelAgentFinish(username, session.id)
 		// 工作区钩子：任意 agent 开始运行（闭包内 fire-and-forget，不阻塞生成）
 		dispatchAgentStart(username, { machine: workTarget.machine, path: workPath, sessionId: session.id, char: session.charname, generationId, runId })
 		/** 本轮是否成功完成（供工作区钩子判定成功/失败）。 */
@@ -1234,6 +1236,11 @@ export function setEndpoints(router) {
 		ws.on('message', raw => {
 			let msg
 			try { msg = JSON.parse(String(raw)) } catch { return }
+			// 用户正在输入：重置该会话延迟收尾（agentFinish 钩子）的计时，避免打断用户续写
+			if (msg.type === 'typing') {
+				touchAgentFinish(username, msg.sessionId)
+				return
+			}
 			void startCodeRun(username, msg, ws).catch(error => console.error('shells/code: 生成启动失败', error))
 		})
 	})
