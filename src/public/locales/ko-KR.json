@@ -4067,6 +4067,8 @@
 				"deviceCode": "${uri}를 열고 코드 ${code}를 입력하세요",
 				"credentialsRequired": "JSON에 필요한 필드(region / project / location / account_id / gateway_id / API key 등)를 채우세요. 자격 증명은 환경 변수에서도 올 수 있습니다."
 			},
+			"selectModel": null,
+			"reasoningEffort": null,
 			"copyModelIdTooltip": "모델 ID를 복사하려면 클릭하세요.",
 			"loadModelsFailed": "모델 로드 실패: ${message}",
 			"modelSearchTitle": "모델 카탈로그 탐색",

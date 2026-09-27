@@ -4073,6 +4073,8 @@
 				"deviceCode": "Open ${uri} en voer code ${code} in",
 				"credentialsRequired": "Vul de vereiste JSON-velden in (region / project / location / account_id / gateway_id / API key). Credentials kunnen ook uit omgevingsvariabelen komen."
 			},
+			"selectModel": null,
+			"reasoningEffort": null,
 			"copyModelIdTooltip": "Klik om de model-ID te kopiëren",
 			"loadModelsFailed": "Kan model niet laden: ${message}",
 			"modelSearchTitle": "Modelcatalogus doorbladeren",

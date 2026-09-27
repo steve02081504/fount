@@ -4067,6 +4067,8 @@
 				"deviceCode": "Öffnen Sie ${uri} und geben Sie den Code ${code} ein",
 				"credentialsRequired": "Füllen Sie die erforderlichen JSON-Felder aus (region / project / location / account_id / gateway_id / API key). Zugangsdaten können auch aus Umgebungsvariablen kommen."
 			},
+			"selectModel": null,
+			"reasoningEffort": null,
 			"copyModelIdTooltip": "Klicken Sie, um die Modell-ID zu kopieren",
 			"loadModelsFailed": "Modell konnte nicht geladen werden: ${message}",
 			"modelSearchTitle": "Modellkatalog durchstöbern",

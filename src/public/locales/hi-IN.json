@@ -4067,6 +4067,8 @@
 				"deviceCode": "${uri} खोलें और कोड ${code} दर्ज करें",
 				"credentialsRequired": "आवश्यक JSON फ़ील्ड भरें (region / project / location / account_id / gateway_id / API key)। क्रेडेंशियल पर्यावरण चर से भी आ सकते हैं।"
 			},
+			"selectModel": null,
+			"reasoningEffort": null,
 			"copyModelIdTooltip": "मॉडल आईडी कॉपी करने के लिए क्लिक करें",
 			"loadModelsFailed": "मॉडल लोड करने में विफल: ${message}",
 			"modelSearchTitle": "मॉडल कैटलॉग देखें",

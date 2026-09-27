@@ -4075,6 +4075,8 @@
 				"deviceCode": "Откройте ${uri} и введите код ${code}",
 				"credentialsRequired": "Заполните нужные поля JSON (region / project / location / account_id / gateway_id / API key). Учётные данные также могут быть в переменных окружения."
 			},
+			"selectModel": null,
+			"reasoningEffort": null,
 			"copyModelIdTooltip": "Нажмите, чтобы скопировать идентификатор модели",
 			"loadModelsFailed": "Не удалось загрузить модель: `${message}",
 			"modelSearchTitle": "Каталог моделей",

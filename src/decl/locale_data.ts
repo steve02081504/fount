@@ -4029,6 +4029,11 @@ export type LocaleData = {
 				deviceCode: string
 				credentialsRequired: string
 			}
+			selectModel: string
+			reasoningEffort: string
+			useDefaultReasoning: string
+			useDefaultReasoningWithLevel: string
+			unsupportedEffort: string
 			copyModelIdTooltip: string
 			loadModelsFailed: string
 			modelSearchTitle: string
@@ -7559,6 +7564,7 @@ export type LocaleKeyParams = {
 	'serviceSource_manager.common_config_interface.promotedProviders.atlasCloud': { url: string | number }
 	'serviceSource_manager.common_config_interface.providerDocLink': { url: string | number }
 	'serviceSource_manager.common_config_interface.providerLabel': { provider: string | number }
+	'serviceSource_manager.common_config_interface.useDefaultReasoningWithLevel': { level: string | number }
 	'social.actions.blockFailed': { error: string | number }
 	'social.actions.deleteFailed': { error: string | number }
 	'social.actions.dislikeFailed': { error: string | number }

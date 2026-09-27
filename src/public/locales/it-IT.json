@@ -4073,6 +4073,8 @@
 				"deviceCode": "Apri ${uri} e inserisci il codice ${code}",
 				"credentialsRequired": "Compila i campi JSON richiesti (region / project / location / account_id / gateway_id / API key). Le credenziali possono arrivare anche dalle variabili d’ambiente."
 			},
+			"selectModel": null,
+			"reasoningEffort": null,
 			"copyModelIdTooltip": "Fare clic per copiare l'ID del modello",
 			"loadModelsFailed": "Impossibile caricare il modello: ${message}",
 			"modelSearchTitle": "Sfoglia il catalogo modelli",

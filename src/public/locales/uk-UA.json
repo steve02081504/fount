@@ -4067,6 +4067,8 @@
 				"deviceCode": "Відкрийте ${uri} і введіть код ${code}",
 				"credentialsRequired": "Потрібні поля залежать від постачальника (region / project / location / account_id / gateway_id / API key; Azure OpenAI Responses: AZURE_OPENAI_API_KEY і endpoint). Облікові дані також можуть бути в змінних середовища."
 			},
+			"selectModel": null,
+			"reasoningEffort": null,
 			"copyModelIdTooltip": "Натисніть, щоб скопіювати ідентифікатор моделі",
 			"loadModelsFailed": "Не вдалося завантажити модель: ${message}",
 			"modelSearchTitle": "Каталог моделей",

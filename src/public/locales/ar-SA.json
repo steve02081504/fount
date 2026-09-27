@@ -4077,6 +4077,8 @@
 				"deviceCode": "افتح ${uri} وأدخل الرمز ${code}",
 				"credentialsRequired": "املأ حقول JSON المطلوبة (region / project / location / account_id / gateway_id / API key). يمكن أن تأتي الاعتمادات من متغيرات البيئة."
 			},
+			"selectModel": null,
+			"reasoningEffort": null,
 			"copyModelIdTooltip": "انقر لنسخ معرف النموذج",
 			"loadModelsFailed": "فشل تحميل النموذج: ${message}",
 			"modelSearchTitle": "تصفّح دليل النماذج",

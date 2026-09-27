@@ -4067,6 +4067,7 @@
 				"deviceCode": "Mở ${uri} và nhập mã ${code}",
 				"credentialsRequired": "Điền các trường JSON cần thiết (region / project / location / account_id / gateway_id / API key). Thông tin xác thực cũng có thể lấy từ biến môi trường."
 			},
+			"selectModel": null,
 			"copyModelIdTooltip": "Nhấp để sao chép ID mẫu",
 			"loadModelsFailed": "Không tải được mô hình: ${message}",
 			"modelSearchTitle": "Duyệt danh mục mô hình",

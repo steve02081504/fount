@@ -4073,6 +4073,8 @@
 				"deviceCode": "Ouvrez ${uri} et saisissez le code ${code}",
 				"credentialsRequired": "Les champs requis dépendent du fournisseur (region / project / location / account_id / gateway_id / clé API ; Azure OpenAI Responses : AZURE_OPENAI_API_KEY et endpoint). Les identifiants peuvent aussi venir des variables d’environnement."
 			},
+			"selectModel": null,
+			"reasoningEffort": null,
 			"copyModelIdTooltip": "Cliquez pour copier l'ID du modèle",
 			"loadModelsFailed": "Échec du chargement du modèle : ${message}",
 			"modelSearchTitle": "Parcourir le catalogue de modèles",
