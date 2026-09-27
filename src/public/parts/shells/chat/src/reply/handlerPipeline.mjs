@@ -1,6 +1,6 @@
 /**
  * 【文件】src/reply/handlerPipeline.mjs
- * 【职责】统一驱动 ReplyHandler 链：按 level 分组，在每个分组内按「内容型先跑、标签调用按生成文本顺序」逐个解析执行，聚合是否重新生成，并把本轮原始生成作为 char 日志追加。
+ * 【职责】驱动生成前插件钩子与 ReplyHandler 链：生成前逐插件并发跑 `BeforeReply`（`runBeforeReplyHooks`）；生成后按 level 分组，在每个分组内按「内容型先跑、标签调用按生成文本顺序」逐个解析执行，聚合是否重新生成，并把本轮原始生成作为 char 日志追加。
  * 【原理】level 越小越先；同一 level 内先跑无 tag 的内容型 handler，再对带 tag/pattern 者取「最靠前的未消耗调用」整段执行——容器标签整段消耗，天然防止内层标签被单独触发，跨插件也保持文本顺序。无 fixpoint。
  *   声明了 `parallel` 的 handler 之间可并发：`parallel: true` 与所有启用并行者兼容，`parallel: string[]` 只与列出的 handler 名兼容（需双向）；同组内文本相邻的兼容调用并发执行，未声明者视为屏障串行。并行批次的工具日志按文本顺序回放，保证确定性。
  *   提前求值（evaluate）结果按 name 缓存在 `args.extension.evaluatedToolCalls`，签名变化（重生成）即重置；展示层由 `display` 纯派生，handler 不得直接改写整条 content_for_show。
@@ -74,6 +74,57 @@ function createLogCollector(buffer) {
 }
 
 /**
+ * 构造模板共用的长时间日志写入器：补 uid、默认仅本角色可见，并同时写入本轮结果容器与 char 追加上下文。
+ * @param {chatReplyRequest_t & { prompt_struct?: prompt_struct_t }} args 请求上下文
+ * @param {chatReply_t} result 本轮结果容器
+ * @param {prompt_struct_t} [prompt_struct] 提示结构（缺省用 `args.prompt_struct`）
+ * @returns {(entry: chatLogEntry_t) => void} 日志写入器
+ */
+export function createLongTimeLogger(args, result, prompt_struct) {
+	const contextLog = result.logContextBefore ??= []
+	const promptLog = (prompt_struct ?? args.prompt_struct)?.char_prompt?.additional_chat_log
+	return entry => {
+		entry.uid ??= entry.role === 'char' ? args.CharUid
+			: entry.role === 'user' ? args.UserUid
+				: 'system'
+		entry.charVisibility ??= [args.char_id]
+		contextLog.push(entry)
+		promptLog?.push(entry)
+	}
+}
+
+/**
+ * 驱动生成前插件钩子 `BeforeReply`：在 buildPromptStruct 之后、首次 StructCall 之前调用一次，让插件把「本轮立即可见且需持久化」的条目写入会话。
+ *
+ * 逐个取 `args.plugins` 中实现了 `interfaces.chat.BeforeReply` 的插件，为每个插件配一个本地缓冲收集器后**并发**运行；
+ * 全部 settle 后按插件键的迭代顺序把各自缓冲回放到 `args.AddLongTimeLog`——回放顺序与完成先后无关，保证确定性。
+ * 单个插件失败只 `console.error` 并丢弃其缓冲，其余插件照常回放，且整个过程绝不抛出——预读失败不得中断生成。
+ * 无插件实现或缺少 `AddLongTimeLog` 时立即返回。
+ * @param {chatReplyRequest_t & { prompt_struct: prompt_struct_t, AddLongTimeLog?: (entry: chatLogEntry_t) => void }} args 请求上下文
+ * @returns {Promise<void>}
+ */
+export async function runBeforeReplyHooks(args) {
+	const plugins = Object.entries(args?.plugins ?? {})
+		.filter(([, plugin]) => typeof plugin?.interfaces?.chat?.BeforeReply === 'function')
+	if (!plugins.length) return
+	if (typeof args.AddLongTimeLog !== 'function') return
+
+	const buffers = await Promise.all(plugins.map(async ([name, plugin]) => {
+		const buffer = []
+		try {
+			await plugin.interfaces.chat.BeforeReply({ ...args, AddLongTimeLog: createLogCollector(buffer) })
+		}
+		catch (error) {
+			console.error(`runBeforeReplyHooks: 插件 "${name}" 的 BeforeReply 失败`, error)
+		}
+		return buffer
+	}))
+
+	for (const buffer of buffers)
+		for (const entry of buffer) args.AddLongTimeLog(entry)
+}
+
+/**
  * 找出文本中 cursor 之后最靠前的未消耗调用（同一位置时按 handler 声明顺序取先者）。
  * @param {string} content 当前解析文本
  * @param {object[]} handlers 本组 handler
@@ -131,20 +182,7 @@ export async function runReplyHandlers(result, args, handlers) {
 	const contextLog = result.logContextBefore ??= []
 	const promptLog = args.prompt_struct?.char_prompt?.additional_chat_log
 
-	/**
-	 * 默认日志写入：char/user 角色自动补 uid，并默认仅对本角色可见。
-	 * @param {chatLogEntry_t} entry 聊天日志条目
-	 * @returns {void}
-	 */
-	function defaultAddLongTimeLog(entry) {
-		entry.uid ??= entry.role === 'char' ? args.CharUid
-			: entry.role === 'user' ? args.UserUid
-				: 'system'
-		entry.charVisibility ??= [args.char_id]
-		contextLog.push(entry)
-		promptLog?.push(entry)
-	}
-	const AddLongTimeLog = args.AddLongTimeLog ?? defaultAddLongTimeLog
+	const AddLongTimeLog = args.AddLongTimeLog ?? createLongTimeLogger(args, result, args.prompt_struct)
 	const handlerArgs = { ...args, AddLongTimeLog }
 
 	const logStart = contextLog.length

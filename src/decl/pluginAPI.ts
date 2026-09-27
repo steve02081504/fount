@@ -13,6 +13,9 @@ import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from './prompt_
  * - `display(call, state, args)` 决定该调用段在人类展示层的呈现（`state = { stage, open, value?, error? }`）；
  * - `parallel` 声明与其他 handler 的并行兼容性：`true` = 与任何启用并行者兼容，`string[]` = 只与列出的 handler 名双向兼容；未声明即屏障（串行）；
  * - `handle` 返回 `{ regen?, content?, stop? }`：`regen` 建议下一轮生成、`content` 整条替换 `reply.content`、`stop` 立即终止本轮。
+ *
+ * 整个管线在**生成之后**运行：`defineReplyHandler` 的 `phase`（`before`/`action`/`after`）只是 `level` 的语法糖（-100/0/+100），
+ * `before` 并不代表生成前；任何必须在首次生成前可见并持久化的写入请用 `interfaces.chat.BeforeReply`。
  */
 export type ReplyHandlerLeaf_t = {
 	/** 可读标识（日志标签 / 求值缓存键）。 */
@@ -120,6 +123,15 @@ export class PluginAPI_t {
 			 * @returns {Promise<single_part_prompt_t>} - 单部分提示。
 			 */
 			GetPrompt?: (arg: chatReplyRequest_t) => Promise<single_part_prompt_t>;
+			/**
+			 * 生成前钩子：在 buildPromptStruct 之后、首次 StructCall 之前调用一次。
+			 * 通过参数中的 AddLongTimeLog 写入的条目本轮立即可见（char_prompt.additional_chat_log），
+			 * 并随 result.logContextBefore 持久化进会话。必须幂等：后台通知触发的生成、用户重新生成会再次调用。
+			 * 不得在 GetPrompt 中做副作用写入——次级 prompt 构建（get-tool-info / sub-agent）也会调用 GetPrompt。
+			 * @param arg 请求上下文（含 prompt_struct 与 AddLongTimeLog）
+			 * @returns {Promise<void>}
+			 */
+			BeforeReply?: (arg: chatReplyRequest_t & { prompt_struct: prompt_struct_t, AddLongTimeLog: (entry: chatLogEntry_t) => void }) => Promise<void>
 			/**
 			 * 调整提示。
 			 * @param {chatReplyRequest_t} arg - 聊天回复请求。

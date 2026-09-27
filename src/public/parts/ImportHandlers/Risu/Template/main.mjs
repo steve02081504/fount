@@ -8,7 +8,7 @@ import { runRegex } from 'fount/public/parts/ImportHandlers/SillyTavern/engine/r
 import { beginPromptRequest, finishGeneration, finishPromptRequest } from 'fount/public/parts/shells/agent_studio/src/request_record.mjs'
 import { needsCompression, compressContext } from 'fount/public/parts/shells/chat/src/chat/session/summarize.mjs'
 import { buildPromptStruct } from 'fount/public/parts/shells/chat/src/prompt_struct/index.mjs'
-import { runReplyHandlers } from 'fount/public/parts/shells/chat/src/reply/handlerPipeline.mjs'
+import { createLongTimeLogger, runBeforeReplyHooks, runReplyHandlers } from 'fount/public/parts/shells/chat/src/reply/handlerPipeline.mjs'
 import { injectRoundEntries } from 'fount/public/parts/shells/chat/src/reply/roundContext.mjs'
 import { saveJsonFile } from 'fount/scripts/json_loader.mjs'
 import { loadAnyPreferredDefaultPart, loadPart } from 'fount/server/parts_loader.mjs'
@@ -320,14 +320,9 @@ const charAPI_definition = {
 				 * 添加长时间日志
 				 * @param {any} entry 条目
 				 */
-				function AddLongTimeLog(entry) {
-					entry.uid ??= entry.role === 'char' ? args.CharUid
-						: entry.role === 'user' ? args.UserUid
-							: 'system'
-					entry.charVisibility = [args.char_id] // char_id 来自 fount 的参数
-					result?.logContextBefore?.push?.(entry)
-					prompt_struct.char_prompt.additional_chat_log.push(entry)
-				}
+				const AddLongTimeLog = createLongTimeLogger(args, result, prompt_struct)
+
+				await runBeforeReplyHooks({ ...args, prompt_struct, AddLongTimeLog })
 
 				// 构建更新预览管线
 				args.generation_options ??= {}

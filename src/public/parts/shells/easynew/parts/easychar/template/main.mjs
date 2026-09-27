@@ -17,7 +17,7 @@ import { finishAsyncGeneration } from 'fount/public/parts/plugins/async-task/reg
 import { beginPromptRequest, finishGeneration, finishPromptRequest } from 'fount/public/parts/shells/agent_studio/src/request_record.mjs'
 import { needsCompression, compressContext } from 'fount/public/parts/shells/chat/src/chat/session/summarize.mjs'
 import { buildPromptStruct } from 'fount/public/parts/shells/chat/src/prompt_struct/index.mjs'
-import { runReplyHandlers } from 'fount/public/parts/shells/chat/src/reply/handlerPipeline.mjs'
+import { createLongTimeLogger, runBeforeReplyHooks, runReplyHandlers } from 'fount/public/parts/shells/chat/src/reply/handlerPipeline.mjs'
 import { injectRoundEntries } from 'fount/public/parts/shells/chat/src/reply/roundContext.mjs'
 import { formatStr } from 'fount/scripts/format.mjs'
 import { loadJsonFile, saveJsonFile } from 'fount/scripts/json_loader.mjs'
@@ -227,19 +227,9 @@ export default {
 					extension: {},
 				}
 				// 构建插件可能需要的追加上下文函数
-				/**
-				 * 添加长时间日志。
-				 * @param {import('../../../../../src/public/parts/shells/chat/decl/chatLog.ts').chatLogEntry_t} entry - 聊天日志条目。
-				 * @returns {void}
-				 */
-				function AddLongTimeLog(entry) {
-					entry.uid ??= entry.role === 'char' ? args.CharUid
-						: entry.role === 'user' ? args.UserUid
-							: 'system'
-					entry.charVisibility = [args.char_id]
-					result?.logContextBefore?.push?.(entry)
-					prompt_struct.char_prompt.additional_chat_log.push(entry)
-				}
+				const AddLongTimeLog = createLongTimeLogger(args, result, prompt_struct)
+
+				await runBeforeReplyHooks({ ...args, prompt_struct, AddLongTimeLog })
 
 				// 构建更新预览管线
 				args.generation_options ??= {}

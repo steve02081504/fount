@@ -1,4 +1,4 @@
-import { runReplyHandlers } from 'fount/public/parts/shells/chat/src/reply/handlerPipeline.mjs'
+import { createLongTimeLogger, runBeforeReplyHooks, runReplyHandlers } from 'fount/public/parts/shells/chat/src/reply/handlerPipeline.mjs'
 /**
  * 角色 API 类型别名。
  * @typedef {import('../../../../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t
@@ -81,17 +81,8 @@ export default {
 				// 与真实模板一致：把本轮 result 暴露为 base_result，供后端在预览时读取累积日志
 				args.generation_options.base_result = result
 				const prompt_struct = { char_prompt: { additional_chat_log: [] } }
-				/**
-				 * 追加长时间日志。
-				 * @param {object} entry - 日志条目。
-				 * @returns {void}
-				 */
-				function AddLongTimeLog(entry) {
-					entry.uid ??= entry.role === 'char' ? args.CharUid : entry.role === 'user' ? args.UserUid : 'system'
-					entry.charVisibility ??= [args.char_id]
-					result.logContextBefore.push(entry)
-					prompt_struct.char_prompt.additional_chat_log.push(entry)
-				}
+				const AddLongTimeLog = createLongTimeLogger(args, result, prompt_struct)
+				await runBeforeReplyHooks({ ...args, prompt_struct, AddLongTimeLog })
 				const handlers = Object.values(args.plugins || {}).map(plugin => plugin.interfaces?.chat?.ReplyHandler).filter(Boolean)
 				regen: while (true) {
 					const text = result.logContextBefore.length || args.chat_log.some(entry => entry.role === 'tool') ? ROUND2 : ROUND1

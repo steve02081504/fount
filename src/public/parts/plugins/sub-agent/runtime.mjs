@@ -4,14 +4,14 @@
  * 【原理】子代理是一条独立生成链：`buildPromptStruct(args)`（仍含 char.GetPrompt，因此保持人格）→ `aiSource.StructCall` → `runReplyHandlers` 循环；
  *   `args.plugins` 严格等于 resolvePluginList 的结果，绝不与父代插件并集。每轮 `propagateRoundsToAncestors` 让当前运行与所有祖先共同消费轮次，任一祖先超限即转摘要。
  *   服务器依赖（parts_loader / agent_studio）通过动态 import 与可注入的 `deps` 提供，便于集成测试在不启动节点的情况下替换。
- * 【数据结构】run_t 见 state.mjs；deps = { loadPart, loadAnyPreferredDefaultPart, listAiSources, recordGeneration, notifyRun, buildPromptStruct, runReplyHandlers, archive, now, config }。
+ * 【数据结构】run_t 见 state.mjs；deps = { loadPart, loadAnyPreferredDefaultPart, listAiSources, recordGeneration, notifyRun, buildPromptStruct, runBeforeReplyHooks, runReplyHandlers, archive, now, config }。
  * 【关联】handler.mjs 解析标签后调用 `runSubAgent` / `terminateSubAgentRun` / `listAvailableAiSources`；prompt.mjs 注入预算；archive.mjs 管理父代档案；state.mjs 保存注册表。
  */
 import { onSystemWake, setAwakeTimeout } from '../../../../scripts/sleep_watch.mjs'
 import { isStopping } from '../../../../scripts/stopping.mjs'
 import { beginPromptRequest, collectGenerationRecord, finishPromptRequest } from '../../shells/agent_studio/src/request_record.mjs'
 import { buildPromptStruct } from '../../shells/chat/src/prompt_struct/index.mjs'
-import { runReplyHandlers } from '../../shells/chat/src/reply/handlerPipeline.mjs'
+import { runBeforeReplyHooks, runReplyHandlers } from '../../shells/chat/src/reply/handlerPipeline.mjs'
 import { finishAsyncGeneration, ownerFromArgs, registerTask } from '../async-task/registry.mjs'
 
 import { cleanupExpiredArchives, projectArchiveEntries, removeParentArchive, writeParentArchive } from './archive.mjs'
@@ -170,6 +170,7 @@ export const defaultSubAgentDeps = {
 	recordGeneration: defaultRecordGeneration,
 	notifyRun: defaultNotifyRun,
 	buildPromptStruct,
+	runBeforeReplyHooks,
 	runReplyHandlers,
 	isStopping,
 	archive: { cleanupExpiredArchives, projectArchiveEntries, removeParentArchive, writeParentArchive },
@@ -557,6 +558,8 @@ export async function executeSubAgentRun(run, deps = defaultSubAgentDeps) {
 			result.logContextBefore.push(entry)
 			promptStruct.char_prompt.additional_chat_log.push(entry)
 		}
+		// 子代理同样是独立生成链：在首次 StructCall 前给插件一次生成前钩子。
+		await deps.runBeforeReplyHooks?.({ ...childArgs, prompt_struct: promptStruct, AddLongTimeLog })
 		const generationOptions = {
 			signal: run.controller.signal,
 			supported_functions: childArgs.supported_functions,

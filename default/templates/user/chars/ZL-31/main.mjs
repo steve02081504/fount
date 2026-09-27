@@ -9,7 +9,7 @@ import { beginPromptRequest, finishGeneration, finishPromptRequest } from '../..
 import { needsCompression, compressContext } from '../../../../../src/public/parts/shells/chat/src/chat/session/summarize.mjs'
 import { buildPromptStruct } from '../../../../../src/public/parts/shells/chat/src/prompt_struct/index.mjs'
 import { defineReplyHandler } from '../../../../../src/public/parts/shells/chat/src/reply/defineReplyHandler.mjs'
-import { runReplyHandlers } from '../../../../../src/public/parts/shells/chat/src/reply/handlerPipeline.mjs'
+import { createLongTimeLogger, runBeforeReplyHooks, runReplyHandlers } from '../../../../../src/public/parts/shells/chat/src/reply/handlerPipeline.mjs'
 import { injectRoundEntries } from '../../../../../src/public/parts/shells/chat/src/reply/roundContext.mjs'
 import { defineReplyPreviews } from '../../../../../src/public/parts/shells/chat/src/streaming/index.mjs'
 import { formatErrorMessage, formatGenerationError } from '../../../../../src/scripts/error_format.mjs'
@@ -85,7 +85,7 @@ fount角色以mjs文件语法所书写，其可以自由导入任何npm或jsr包
 
 import { loadPart, loadAnyPreferredDefaultPart } from '../../../../../src/server/parts_loader.mjs'
 import { buildPromptStruct } from '../../../../../src/public/parts/shells/chat/src/prompt_struct/index.mjs'
-import { runReplyHandlers } from '../../../../../src/public/parts/shells/chat/src/reply/handlerPipeline.mjs'
+import { createLongTimeLogger, runBeforeReplyHooks, runReplyHandlers } from '../../../../../src/public/parts/shells/chat/src/reply/handlerPipeline.mjs'
 import { injectRoundEntries } from '../../../../../src/public/parts/shells/chat/src/reply/roundContext.mjs'
 
 /**
@@ -248,11 +248,9 @@ export default {
 					extension: {},
 				}
 				// 构建插件可能需要的追加上下文函数
-				function AddLongTimeLog(entry) {
-					entry.charVisibility = [args.char_id]
-					result?.logContextBefore?.push?.(entry)
-					prompt_struct.char_prompt.additional_chat_log.push(entry)
-				}
+				const AddLongTimeLog = createLongTimeLogger(args, result, prompt_struct)
+
+				await runBeforeReplyHooks({ ...args, prompt_struct, AddLongTimeLog })
 				// 构建更新预览管线
 				args.generation_options ??= {}
 				const oriReplyPreviewUpdater = args.generation_options?.replyPreviewUpdater
@@ -294,7 +292,7 @@ export default {
 import fs from 'node:fs'
 import path from 'node:path'
 import { defineReplyHandler } from '../../../../../src/public/parts/shells/chat/src/reply/defineReplyHandler.mjs'
-import { runReplyHandlers } from '../../../../../src/public/parts/shells/chat/src/reply/handlerPipeline.mjs'
+import { createLongTimeLogger, runBeforeReplyHooks, runReplyHandlers } from '../../../../../src/public/parts/shells/chat/src/reply/handlerPipeline.mjs'
 import { injectRoundEntries } from '../../../../../src/public/parts/shells/chat/src/reply/roundContext.mjs'
 
 /**
@@ -367,11 +365,9 @@ const CharGenerator = defineReplyHandler({
 					extension: {},
 				}
 				// 构建插件可能需要的追加上下文函数
-				function AddLongTimeLog(entry) {
-					entry.charVisibility = [args.char_id]
-					result?.logContextBefore?.push?.(entry)
-					prompt_struct.char_prompt.additional_chat_log.push(entry)
-				}
+				const AddLongTimeLog = createLongTimeLogger(args, result, prompt_struct)
+
+				await runBeforeReplyHooks({ ...args, prompt_struct, AddLongTimeLog })
 				// 构建更新预览管线
 				args.generation_options ??= {}
 				const oriReplyPreviewUpdater = args.generation_options?.replyPreviewUpdater
@@ -859,16 +855,9 @@ ${sourceLine}`,
 					extension: {},
 				}
 				// 构建插件可能需要的追加上下文函数
-				/**
-				 * 添加长时间日志。
-				 * @param {object} entry - 日志条目。
-				 * @returns {void}
-				 */
-				function AddLongTimeLog(entry) {
-					entry.charVisibility = [args.char_id]
-					result?.logContextBefore?.push?.(entry)
-					prompt_struct.char_prompt.additional_chat_log.push(entry)
-				}
+				const AddLongTimeLog = createLongTimeLogger(args, result, prompt_struct)
+
+				await runBeforeReplyHooks({ ...args, prompt_struct, AddLongTimeLog })
 
 				// 正在回复的不是自己的用户时注入安全警告（参考 GentianAphrodite 的 master-recognize）
 				if (args.ReplyToUid && args.UserUid && args.ReplyToUid !== args.UserUid) {
