@@ -60,7 +60,8 @@ export async function getFileOperationsPrompt(args) {
 </file>
 </replace-file>
 
-- \`<search>\` 必须唯一命中：命中多处会被拒绝以避免误改，请补充上下文使其唯一；确需替换全部时使用 \`replaceAll="true"\`
+- \`<search>\` 必须唯一命中：命中多处会被拒绝以避免误改。确认需替换全部时使用 \`replaceAll="true"\`
+- \`<search>\` / \`<replace>\` 的正文是无需xml转义的字面量：行首、行尾的tab和空格、内部空行都会原样参与匹配与写入。正文若另起一行书写，只会去掉紧贴标签的首尾各一个换行。
 - 忽略行尾空白的模糊匹配会自动兜底并在结果中标注匹配方式；\`regex="true"\` 时按你给的正则（\`$1\` 反向引用可用）
 - 行尾（CRLF/LF）与 BOM 会自动保持，无需自行适配
 
@@ -69,7 +70,8 @@ export async function getFileOperationsPrompt(args) {
 文件的新内容
 </override-file>
 
-- 覆写与原文差异超过 70%（或新内容为空）会被拒绝以避免误清空；确认整体重写时加 \`force="true"\`：\`<override-file path="..." force="true">\`
+- 覆写与原文差异超过 70%（或新内容为空）会被拒绝以避免误清空；确认整体重写时加 \`force="true"\`
+- 正文是无需xml转义的字面量：行首、行尾的tab和空格；正文若另起一行书写，只会去掉紧贴标签的首尾各一个换行。
 
 ${getConnectedSubfounts(args.username).length !== 1 ? `\
 **列出可用机器**：

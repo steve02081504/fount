@@ -69,6 +69,20 @@ export function applyEol(text, eol) {
 }
 
 /**
+ * 仅剥离标签正文的格式化边界：恰好一个起始换行与一个结尾换行（CRLF 感知）。
+ *
+ * `<search>` / `<replace>` / `<override-file>` 的正文是字面量：行内缩进、tab、行尾空格、内部空行都属于内容。
+ * 但模型常把正文另起一行书写，于是正文首尾各多出一个换行；这里只吃掉这一个边界换行，
+ * 不做 `trim()`（那会连同有意义的行首缩进一起吞掉，正是此前空格转移/累积的根因）。
+ * 多余的空行（连续多个换行）会保留，空正文仍交由调用方按空处理。
+ * @param {string} text - 标签正文。
+ * @returns {string} 去掉边界换行后的正文。
+ */
+export function normalizeTagBody(text) {
+	return String(text ?? '').replace(/^\r?\n/, '').replace(/\r?\n$/, '')
+}
+
+/**
  * 去掉起始 BOM。
  * @param {string} text - 文本。
  * @returns {string} 无 BOM 文本。

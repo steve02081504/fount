@@ -7,7 +7,7 @@ import { defaultDisplay } from '../../shells/chat/src/reply/display.mjs'
 import { getChatI18n, inferCodeLanguageFromPath, renderMarkdownCodeBlock } from '../../shells/chat/src/streaming/index.mjs'
 
 import { collectLoadedHashes, collectUpwardContext, formatUpwardContext, hashContent, mergePluginData, PLUGIN_DATA_KEY, resolveEffectiveLog } from './src/context_files.mjs'
-import { applyEol, applyReplacement, detectTextStyle, renderLineDiff, restoreBom, similarityRatio, stripBom, toLf } from './src/edit_safety.mjs'
+import { applyEol, applyReplacement, detectTextStyle, normalizeTagBody, renderLineDiff, restoreBom, similarityRatio, stripBom, toLf } from './src/edit_safety.mjs'
 import { formatReadWindowNotice, isProbablyTextBuffer, parseReadWindow, windowText } from './src/read_window.mjs'
 import { runRipgrep } from './src/search.mjs'
 import { createArgsExecutorResolver, listMachines, resolveLocalPath, resolveTarget } from './src/target.mjs'
@@ -505,7 +505,7 @@ export const replaceFileReplyHandler = defineReplyHandler({
 					replacementCount++
 					const isRegex = attributes?.includes('regex="true"') ?? false
 					const isReplaceAll = attributes?.includes('replaceAll="true"') ?? false
-					fileData.replacements.push({ search: search.trim(), replace, regex: isRegex, replaceAll: isReplaceAll })
+					fileData.replacements.push({ search: normalizeTagBody(search), replace: normalizeTagBody(replace), regex: isRegex, replaceAll: isReplaceAll })
 				}
 				if (fileData.replacements.length)
 					replace_files_data.push(fileData)
@@ -590,7 +590,7 @@ export const replaceFileReplyHandler = defineReplyHandler({
 
 			if (changed) {
 				const diff = renderLineDiff(lfOriginal, modifiedContent)
-				system_content += `\n变更摘要（行级 diff）：\n${renderMarkdownCodeBlock(diff || '（无可见变更）', { lang: 'diff' })}\n若和你的预期不一致，考虑重新替换或使用override-file覆写修正。`
+				system_content += `\n变更摘要（行级 diff）：\n${renderMarkdownCodeBlock(diff || '（无可见变更）', { lang: 'diff' })}\n若和你的预期不一致，请先用 <view-file> 确认当前内容与版本，再重新 <replace-file> 修正。`
 				try {
 					await executor.writeTextFile(filepath, finalContent)
 				}
@@ -629,7 +629,7 @@ export const overrideFileReplyHandler = defineReplyHandler({
 		console.info('AI写入的文件：', filepath, call.inner)
 		try {
 			const executor = executorFor(call.params)
-			const newText = call.inner.trim() + '\n'
+			const newText = normalizeTagBody(call.inner) + '\n'
 			// 读取原文以做防呆：存在且新内容差异过大（或为空）时，需显式 force="true" 才允许整体覆写。
 			const existing = await executor.readTextFile(filepath).catch(() => null)
 			if (existing != null) {

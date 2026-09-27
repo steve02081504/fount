@@ -10,7 +10,7 @@ import { assert, assertEquals } from 'jsr:@std/assert'
 
 import { runReplyHandlers } from '../../../../shells/chat/src/reply/handlerPipeline.mjs'
 import { fileOperationsReplyHandlers } from '../../handler.mjs'
-import { applyEol, applyReplacement, detectTextStyle, renderLineDiff, restoreBom, similarityRatio, stripBom, toLf } from '../../src/edit_safety.mjs'
+import { applyEol, applyReplacement, detectTextStyle, normalizeTagBody, renderLineDiff, restoreBom, similarityRatio, stripBom, toLf } from '../../src/edit_safety.mjs'
 
 /**
  * 通过回复管线运行文件操作 handler。
@@ -70,6 +70,14 @@ Deno.test('edit_safety keeps CRLF and BOM through round trip', () => {
 	const lf = toLf(stripBom('\uFEFFa\r\nb\r\n'))
 	assertEquals(lf, 'a\nb\n')
 	assertEquals(restoreBom(applyEol(lf, style.eol), style.bom), '\uFEFFa\r\nb\r\n')
+})
+
+Deno.test('normalizeTagBody strips only boundary newlines and keeps inner whitespace', () => {
+	assertEquals(normalizeTagBody('\n\tline   \n'), '\tline   ')
+	assertEquals(normalizeTagBody('inline'), 'inline')
+	assertEquals(normalizeTagBody('\n\nline\n\n'), '\nline\n')
+	assertEquals(normalizeTagBody('\r\nline\r\n'), 'line')
+	assertEquals(normalizeTagBody(''), '')
 })
 
 Deno.test('applyReplacement rejects empty search', () => {
@@ -169,6 +177,90 @@ Deno.test('handler replaceAll replaces every occurrence', async () => {
 		const content = '<replace-file><file path="f.txt"><replacement replaceAll="true"><search>dup</search><replace>one</replace></replacement></file></replace-file>'
 		await runFileOps(content, run.args)
 		assertEquals(await fs.readFile(path.join(root, 'f.txt'), 'utf8'), 'one\none\n')
+	}
+	finally {
+		await fs.rm(root, { recursive: true, force: true })
+	}
+})
+
+Deno.test('handler replace preserves leading indentation of search and replace', async () => {
+	const root = await tempDir()
+	try {
+		await fs.writeFile(path.join(root, 'f.txt'), ' * before\n * target\n', 'utf8')
+		const run = createHandlerArgs(root)
+		const content = '<replace-file><file path="f.txt"><replacement><search> * target</search><replace> * targetX</replace></replacement></file></replace-file>'
+		await runFileOps(content, run.args)
+		assertEquals(await fs.readFile(path.join(root, 'f.txt'), 'utf8'), ' * before\n * targetX\n')
+	}
+	finally {
+		await fs.rm(root, { recursive: true, force: true })
+	}
+})
+
+Deno.test('handler replace strips one tag-boundary newline from search and replace', async () => {
+	const root = await tempDir()
+	try {
+		await fs.writeFile(path.join(root, 'f.txt'), ' * before\n * target\n', 'utf8')
+		const run = createHandlerArgs(root)
+		const content = '<replace-file><file path="f.txt"><replacement>\n<search>\n * target\n</search>\n<replace>\n * targetX\n</replace>\n</replacement></file></replace-file>'
+		await runFileOps(content, run.args)
+		assertEquals(await fs.readFile(path.join(root, 'f.txt'), 'utf8'), ' * before\n * targetX\n')
+	}
+	finally {
+		await fs.rm(root, { recursive: true, force: true })
+	}
+})
+
+Deno.test('handler replace does not accumulate spaces across consecutive edits', async () => {
+	const root = await tempDir()
+	try {
+		await fs.writeFile(path.join(root, 'f.txt'), ' * target\n', 'utf8')
+		const first = createHandlerArgs(root)
+		await runFileOps('<replace-file><file path="f.txt"><replacement><search> * target</search><replace> * step1</replace></replacement></file></replace-file>', first.args)
+		const second = createHandlerArgs(root)
+		await runFileOps('<replace-file><file path="f.txt"><replacement><search> * step1</search><replace> * step2</replace></replacement></file></replace-file>', second.args)
+		assertEquals(await fs.readFile(path.join(root, 'f.txt'), 'utf8'), ' * step2\n')
+	}
+	finally {
+		await fs.rm(root, { recursive: true, force: true })
+	}
+})
+
+Deno.test('handler replace preserves tabs and trailing spaces', async () => {
+	const root = await tempDir()
+	try {
+		await fs.writeFile(path.join(root, 'f.txt'), '\tvalue   \n', 'utf8')
+		const run = createHandlerArgs(root)
+		const content = '<replace-file><file path="f.txt"><replacement><search>\tvalue   </search><replace>\tnewValue   </replace></replacement></file></replace-file>'
+		await runFileOps(content, run.args)
+		assertEquals(await fs.readFile(path.join(root, 'f.txt'), 'utf8'), '\tnewValue   \n')
+	}
+	finally {
+		await fs.rm(root, { recursive: true, force: true })
+	}
+})
+
+Deno.test('handler replace keeps leading indentation in CRLF file', async () => {
+	const root = await tempDir()
+	try {
+		await fs.writeFile(path.join(root, 'f.txt'), '  a\r\n  b\r\n', 'utf8')
+		const run = createHandlerArgs(root)
+		const content = '<replace-file><file path="f.txt"><replacement><search>  b</search><replace>  c</replace></replacement></file></replace-file>'
+		await runFileOps(content, run.args)
+		assertEquals(await fs.readFile(path.join(root, 'f.txt'), 'utf8'), '  a\r\n  c\r\n')
+	}
+	finally {
+		await fs.rm(root, { recursive: true, force: true })
+	}
+})
+
+Deno.test('handler override preserves leading indentation and trailing spaces', async () => {
+	const root = await tempDir()
+	try {
+		await fs.writeFile(path.join(root, 'f.txt'), '\tkeep\n', 'utf8')
+		const run = createHandlerArgs(root)
+		await runFileOps('<override-file path="f.txt" force="true">\n\tindented   \n</override-file>', run.args)
+		assertEquals(await fs.readFile(path.join(root, 'f.txt'), 'utf8'), '\tindented   \n')
 	}
 	finally {
 		await fs.rm(root, { recursive: true, force: true })
