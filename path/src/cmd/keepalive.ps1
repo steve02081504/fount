@@ -3,6 +3,7 @@
 	bootstrap_server @args
 	Start-Job -ScriptBlock {
 		$FOUNT_DIR = $args[0]
+		Get-ChildItem $env:TEMP -Force -ErrorAction Ignore | Where-Object Name -ne 'fount' | Remove-Item -Force -Recurse -ErrorAction Ignore
 		if (Get-Command compact.exe -ErrorAction SilentlyContinue) {
 			$qualifier = Split-Path -Qualifier $FOUNT_DIR
 			if ($qualifier) {
