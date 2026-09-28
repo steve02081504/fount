@@ -3600,7 +3600,7 @@
 					"success": "✅🔗📋❗ <br>✨ ${provider} <br>[💖](${sponsorLink})"
 				},
 				"commonToolCalling": "🛠️🔄",
-				"commonToolSkipped": "已跳过（前序操作失败）",
+				"commonToolSkipped": "🛠️⏭️",
 				"reasoningDetailsTitle": "🧠📜",
 				"logprobsNotApplicable": "N/A",
 				"logprobsTopLogprobsMeta": "📊 top_logprobs 👉 ${token}",

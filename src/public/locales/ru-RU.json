@@ -3600,7 +3600,7 @@
 					"success": "Ссылка успешно создана! Скопирована в буфер обмена. <br>Эта функция поддерживается ${provider}. <br>[Поддержать их.](${sponsorLink})"
 				},
 				"commonToolCalling": "Вызов инструмента...",
-				"commonToolSkipped": null,
+				"commonToolSkipped": "Пропущено (предыдущая операция не удалась)",
 				"reasoningDetailsTitle": "Процесс рассуждения",
 				"logprobsNotApplicable": "н/д",
 				"logprobsTopLogprobsMeta": "top_logprobs (выбрано: ${token})",
