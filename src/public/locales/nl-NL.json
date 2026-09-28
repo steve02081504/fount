@@ -172,6 +172,7 @@
 			"moduleCheck": {
 				"missedReady": "Modulecontrole: proces beëindigd zonder ready-signaal: ${label}"
 			},
+			"serialZeroTests": null,
 			"frontend": {
 				"isolatedRequired": "De ${shellLabel} front-end test moet via test/frontend/run.mjs worden gestart (dat zelf een geïsoleerd knooppunt opstart). Voer hem niet uit tegen een lokale ontwikkelomgeving of echte gebruikersgegevens.",
 				"isolatedUser": "Tests moeten draaien onder de geïsoleerde gebruiker \"${expectedUsername}\"; de huidige sessie draait als \"${username}\". Start via run.mjs en wijs niet naar een productie- of ontwikkelings-fount."

@@ -155,6 +155,7 @@ export type LocaleData = {
 			moduleCheck: {
 				missedReady: string
 			}
+			serialZeroTests: string
 			frontend: {
 				isolatedRequired: string
 				isolatedUser: string
@@ -7477,6 +7478,7 @@ export type LocaleKeyParams = {
 	'fountConsole.test.runningSuite.base': { manifestId: string | number; name: string | number }
 	'fountConsole.test.runningSuite.expected': { expected: string | number }
 	'fountConsole.test.selectedSuites': { selected: string | number; total: string | number }
+	'fountConsole.test.serialZeroTests': { path: string | number }
 	'fountConsole.test.silentPassedMany': { count: string | number }
 	'fountConsole.test.skipBecause.fail': { label: string | number; url: string | number }
 	'fountConsole.test.skipBecause.pass': { label: string | number; url: string | number }

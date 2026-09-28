@@ -172,6 +172,7 @@
 			"moduleCheck": {
 				"missedReady": "فحص الوحدات: انتهت العملية دون إرسال إشارة ready: ${label}"
 			},
+			"serialZeroTests": null,
 			"frontend": {
 				"isolatedRequired": "يجب بدء اختبار الواجهة الأمامية ${shellLabel} من خلال test/frontend/run.mjs (الذي يُشغّل عقدة معزولة ذاتيًا). لا تُشغّله على بيئة تطوير محلية أو على بيانات مستخدمين حقيقية.",
 				"isolatedUser": "يجب أن تُنفَّذ الاختبارات ضمن المستخدم المعزول \"${expectedUsername}\"؛ الجلسة الحالية تعمل باسم \"${username}\". يُرجى البدء عبر run.mjs وعدم الإشارة إلى fount للإنتاج أو التطوير."

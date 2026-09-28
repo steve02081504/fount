@@ -172,6 +172,7 @@
 			"moduleCheck": {
 				"missedReady": "🔍🚫✅🚪：${label}"
 			},
+			"serialZeroTests": "[serial] ${path} 注册了 0 个测试",
 			"frontend": {
 				"isolatedRequired": "🚧 ${shellLabel} 🧪：🚀`test/frontend/run.mjs`（🔒🕸️⚡）；🚫💻🔧／🧑💾",
 				"isolatedUser": "🧪🔒👤：“${expectedUsername}”≠“${username}”→🔄`run.mjs`；🚫🏭💻 fount"

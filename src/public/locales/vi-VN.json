@@ -172,6 +172,7 @@
 			"moduleCheck": {
 				"missedReady": "Kiểm tra module: tiến trình thoát mà chưa gửi tín hiệu ready: ${label}"
 			},
+			"serialZeroTests": null,
 			"frontend": {
 				"isolatedRequired": "Kiểm thử giao diện ${shellLabel} phải được khởi động qua test/frontend/run.mjs (tự động tạo một nút cô lập). Đừng chạy nó trên bản phát triển cục bộ hoặc dữ liệu người dùng thật.",
 				"isolatedUser": "Kiểm thử phải chạy dưới người dùng cô lập \"${expectedUsername}\"; phiên hiện tại đang chạy với \"${username}\". Hãy khởi động qua run.mjs, đừng trỏ vào fount sản xuất hoặc phát triển."
