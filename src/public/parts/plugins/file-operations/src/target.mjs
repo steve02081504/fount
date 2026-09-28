@@ -439,11 +439,15 @@ function createRemoteExecutor(username, target) {
 	 */
 	const runStreaming = async (scriptFactory, onOutput, callbackPartpath, timeoutMs) => {
 		const execId = randomUUID()
-		return await withRemoteStreamSink(execId, onOutput, async () =>
-			unwrapEval(await executeCodeOnSubfount(username, machine, scriptFactory(execId),
-				{ username, partpath: callbackPartpath }, null, {
+		return await withRemoteStreamSink(execId, onOutput, async () => unwrapEval(
+			await executeCodeOnSubfount(username, machine, scriptFactory(execId),
+				{ username, partpath: callbackPartpath },
+				null,
+				{
 					requestTimeoutMs: timeoutMs === null ? null : timeoutMs + KILL_GRACE_MS + 5000,
-				})))
+				}
+			)
+		))
 	}
 	return {
 		/**
