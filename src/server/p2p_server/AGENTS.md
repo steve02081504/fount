@@ -28,6 +28,8 @@ Core: [@steve02081504/fount-p2p](https://www.npmjs.com/package/@steve02081504/fo
 | S3 / multi-replica group files | `shells/chat/src/chat/lib/remoteStoragePlugins.mjs` |
 | Frontend entityHash / mentions | `shells/chat/public/shared/` |
 
+**Local identity with P2P off:** `src/server/server.mjs` `init()` calls `configureNodeStorage({ nodeDir: {dataPath}/p2p/node })` unconditionally (storage only — no runtime, no network). `initP2PServer` then calls `initNode` on the same dir when `P2P` is enabled. Entity identity (operator / agent) must keep working with `P2P: false`; never require a live node for local hash derivation.
+
 ## EVFS cross-node reads (targeted fanout)
 
 - When pulling a public file across nodes (`profile.json` / avatar / banner / `cabinets.public.json` / …), **pass `fanoutTargets`** targeting the owner node or group roster — do not rely on the node-scope public fanout: it dials the full peer set before sending, and with many peers the dialing can block past the 8s wait window and the request is lost.
