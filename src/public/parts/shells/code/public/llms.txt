@@ -32,7 +32,11 @@ AI 编码会话 shell：与任意角色就工作区对话，在本机或已连�
 - `PUT /shutdown {machine, action}` → 预定「所有任务生成完毕后对指定主机执行该电源操作」（`action` 为空则取消该主机，`machine` 为空/null 则取消全部；未知 action 或主机不可用 400）
 - `GET /async-tasks?chatId=` → `{ tasks: [{ id, kind, label, startedAt, meta }] }`（该会话进行中的统一异步任务，`chatId` = `code-<sessionId>`；已完成任务已从内存注册表释放，其结果由完成通知承载）
 - `GET /sessions?machine&workdir=` → `{ sessions: [{ id, title, charname, profile, ai_source, created, updated }] }`
-- `POST /sessions {machine, workdir, session}` / `GET /sessions/:id?machine&workdir=` / `PUT /sessions/:id {machine, workdir, session}` / `DELETE /sessions/:id?machine&workdir=` → 会话存取（写目标机器工作区）
+- `POST /sessions {machine, workdir, session}` / `GET /sessions/:id?machine&workdir=` / `PUT /sessions/:id {machine, workdir, session}` / `DELETE /sessions/:id?machine&workdir=` → 会话存取（写目标机器工作区）；`GET /sessions/:id` 会触达该会话文件的最后修改时间（不改内容），视为一次「打开」
+- `GET /retention` → `{ days }`；`PUT /retention {days}` → 会话保留天数（默认 30，`0` = 禁用自动清理）
+- `POST /sessions/cleanup` → `{ days, removed: [{ id, workspaceId }] }`：立即清理超过保留期未活动的会话（见下）
+- `GET /sessions` / `GET /sessions/all` 的会话摘要附 `mtimeMs`（会话文件的最后修改时间）
+- 会话保留：最后活动时间取会话文件 mtime（生成/编辑写文件、`GET /sessions/:id` 触达都会更新它），超过保留天数的会话被清理；带未发送草稿的会话、生成中的会话永不清理。清理在选择工作区时后台惰性触发（`PUT /workspaces/:id/use`，按用户+工作区节流），也可经 `POST /sessions/cleanup` 手动触发。
 
 ## WS API
 
