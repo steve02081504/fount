@@ -204,7 +204,8 @@ Deno.test('AddChatLogEntry during a run lands in the live session and a wake dra
 		await waitUntil(async () => {
 			disk = await loadSession(username, { machine: '0', path: root }, 'wake03')
 			const replies = disk?.entries?.filter(entry => entry.role === 'char').length ?? 0
-			return replies >= 2 && !disk.entries.some(entry => entry.is_generating)
+			// 同时等运行完全释放，避免清理工作区时后台收尾落盘竞态（ENOENT 噪声）
+			return replies >= 2 && !disk.entries.some(entry => entry.is_generating) && !activeCodeRuns.has(key)
 		}, 30000, 50)
 		assert(disk.entries.some(entry => entry.content === 'live-notice'), '运行中追加的条目应随运行收尾落盘')
 		assert(disk.entries.filter(entry => entry.role === 'char').length >= 2, '未消费的唤醒应在运行结束后补一次生成')

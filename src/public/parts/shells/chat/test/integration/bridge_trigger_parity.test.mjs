@@ -51,16 +51,18 @@ async function openEnd(end, username, options) {
 			const peer = await randomKeyPair()
 			const peerPub = Buffer.from(peer.publicKey).toString('hex')
 			const dm = await createEcdhDmGroup(username, myPub, peerPub)
+			// DM 群无默认频道：落到首个可打开的占位频道
+			const dmChannelId = await getDefaultChannelId(username, dm.groupId)
 			const { postChannelMessage } = await import('../../src/chat/channel/postMessage.mjs')
 			return {
 				groupId: dm.groupId,
-				channelId: dm.defaultChannelId,
+				channelId: dmChannelId,
 				/**
 				 * @param {string} text 正文
 				 * @returns {Promise<void>}
 				 */
 				post: async text => {
-					await postChannelMessage(username, dm.groupId, dm.defaultChannelId, { text })
+					await postChannelMessage(username, dm.groupId, dmChannelId, { text })
 				},
 			}
 		}

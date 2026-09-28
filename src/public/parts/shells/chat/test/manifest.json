@@ -200,7 +200,7 @@
 		},
 		{
 			"name": "integration",
-			"expected": "14m44s",
+			"expected": "7m33s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -391,7 +391,7 @@
 		},
 		{
 			"name": "ws_stream",
-			"expected": "25s",
+			"expected": "2m12s",
 			"dependsOn": [
 				"server:live",
 				"ws_rpc"

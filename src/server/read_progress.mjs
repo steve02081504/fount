@@ -27,7 +27,9 @@ const writeChains = new Map()
  */
 function assertScope(scope) {
 	const value = String(scope ?? '')
-	if (!/^[\w-]{1,64}$/.test(value))
+	// social 作用域形如 `social-<128 hex entityHash>`，故上限需覆盖到 135+；
+	// 仅允许文件名安全字符，防止路径穿越。
+	if (!/^[\w-]{1,160}$/.test(value))
 		throw new Error(`invalid read_progress scope: ${value}`)
 	return value
 }

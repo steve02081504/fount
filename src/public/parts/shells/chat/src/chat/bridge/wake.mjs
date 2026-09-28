@@ -16,6 +16,6 @@ export function bridgeWakeKey(username, groupId, channelId, charname) {
 }
 
 /**
- *
+ * 虚拟桥接会话共享的唤醒调度器单例。
  */
 export const bridgeWakes = createWakeScheduler()

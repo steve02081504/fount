@@ -65,24 +65,30 @@ async function buildDmIntro(node) {
 }
 
 /**
+ * 从频道表里挑第一个可发消息的频道（跳过不可发的根频道）。
+ * @param {Record<string, unknown> | undefined} channels 频道表
+ * @returns {string | null} 频道 ID
+ */
+function pickOpenableChannel(channels) {
+	for (const id of Object.keys(channels ?? {}))
+		if (id !== 'root') return id
+	return null
+}
+
+/**
  * @param {LiveNodeHandle} node 联邦 live 节点
  * @param {string} gid 群 ID
  * @param {string} currentCid 当前频道 ID
  * @returns {Promise<string | null>} 可用频道 ID
  */
 async function resolveUsableChannelId(node, gid, currentCid) {
-	if (currentCid) return currentCid
+	if (currentCid && currentCid !== 'root') return currentCid
 	return pollUntil(async () => {
 		const st = await Api(node, 'GET', `/groups/${gid}/state`)
 		if (st.status !== 200) return null
 		const defaultCid = st.json.meta?.groupSettings?.defaultChannelId
 		if (defaultCid) return defaultCid
-		const channels = st.json.meta?.channels
-		if (channels) {
-			const chNames = Object.keys(channels)
-			if (chNames.length >= 1) return chNames[0]
-		}
-		return null
+		return pickOpenableChannel(st.json.meta?.channels)
 	}, 120, 3)
 }
 
@@ -144,7 +150,10 @@ await testCase('lower-pubkey node POST template=dm', async () => {
 	})
 	if (r.status !== 201) throw new Error(`create ${r.status}: ${r.raw}`)
 	gid = r.json.groupId
-	cid = r.json.defaultChannelId
+	// DM 群无默认频道：显式建一个可发消息的频道
+	const ch = await Api(creator, 'POST', `/groups/${gid}/channels`, { name: 'dm', type: 'text' })
+	if (ch.status !== 201) throw new Error(`create channel ${ch.status}: ${ch.raw}`)
+	cid = ch.json.channelId
 	return Boolean(gid && cid)
 })
 
@@ -173,20 +182,14 @@ await testCase('peer join with dmIntro proof', async () => {
 		return false
 	}, 120, 4)
 	if (!joined) throw new Error('join did not return 200')
-	if (joined.json?.defaultChannelId) cid = joined.json.defaultChannelId
 	const channelsReady = await pollUntil(async () => {
 		await Api(joiner, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('6s') })
 		await Api(creator, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('6s') })
 		await Api(joiner, 'POST', `/groups/${gid}/dag/merge-tips`, {})
 		const st = await Api(joiner, 'GET', `/groups/${gid}/state`)
-		if (st.json.meta?.groupSettings?.defaultChannelId)
-			cid = st.json.meta.groupSettings.defaultChannelId
-
-		else if (st.json.meta?.channels) {
-			const chNames = Object.keys(st.json.meta.channels)
-			if (chNames.length >= 1) cid = chNames[0]
-		}
-		return Object.keys(st.json.meta?.channels ?? {}).length >= 1
+		const openable = pickOpenableChannel(st.json.meta?.channels)
+		if (openable) cid = openable
+		return Boolean(openable)
 	}, 180, 4)
 	if (!channelsReady) throw new Error('joiner channels not materialized after DM join')
 	return true
@@ -221,17 +224,12 @@ await testCase('creator join-snapshot + catchup sees joiner', async () => {
 
 await testCase('creator members>=2 after DM join', async () => WaitFedMembers(creator, gid, 2, 120))
 
-await testCase('joiner state has default channel', async () => pollUntil(async () => {
+await testCase('joiner state has openable channel', async () => pollUntil(async () => {
 	await Api(joiner, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('4s') })
 	const s = await Api(joiner, 'GET', `/groups/${gid}/state`)
-	if (s.json.meta?.groupSettings?.defaultChannelId)
-		cid = s.json.meta.groupSettings.defaultChannelId
-
-	else if (s.json.meta?.channels) {
-		const chNames = Object.keys(s.json.meta.channels)
-		if (chNames.length >= 1) cid = chNames[0]
-	}
-	return s.status === 200 && Object.keys(s.json.meta?.channels ?? {}).length >= 1
+	const openable = pickOpenableChannel(s.json.meta?.channels)
+	if (openable) cid = openable
+	return s.status === 200 && Boolean(openable)
 }, 90, 3))
 
 console.log('\n=== 4. Bidirectional messages ===')
@@ -259,14 +257,9 @@ await testCase('joiner sends DM-B', async () => {
 	const ready = await pollUntil(async () => {
 		await Api(joiner, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('4s') })
 		const s = await Api(joiner, 'GET', `/groups/${gid}/state`)
-		if (s.json.meta?.groupSettings?.defaultChannelId)
-			cid = s.json.meta.groupSettings.defaultChannelId
-
-		else if (s.json.meta?.channels) {
-			const chNames = Object.keys(s.json.meta.channels)
-			if (chNames.length >= 1) cid = chNames[0]
-		}
-		return s.status === 200 && Object.keys(s.json.meta?.channels ?? {}).length >= 1
+		const openable = pickOpenableChannel(s.json.meta?.channels)
+		if (openable) cid = openable
+		return s.status === 200 && Boolean(openable)
 	}, 90, 3)
 	if (!ready) throw new Error('joiner channels not materialized')
 	const r = await Api(joiner, 'POST', `/groups/${gid}/channels/${cid}/messages`, {

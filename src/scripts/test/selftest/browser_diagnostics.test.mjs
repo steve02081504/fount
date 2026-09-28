@@ -4,6 +4,7 @@
 /* global Deno */
 import { assertEquals } from 'jsr:@std/assert'
 
+import { allowNoise } from '../core/allowNoise.mjs'
 import { detectNoiseHits } from '../core/output_filter.mjs'
 import {
 	BROWSER_NETWORK_PREFIX,
@@ -261,9 +262,11 @@ Deno.test('createBrowserDiagnostics merges shouldIgnoreNetwork with the default 
 	// 默认豁免之外的 8931 探活经扩展谓词丢弃
 	page.emitRequestFailed(requestFailed('http://localhost:8931/parts/shells/home?cold_bootting=true', 'net::ERR_CONNECTION_REFUSED'))
 	assertEquals(diagnostics.flushNetworkDiagnostics(), [])
-	// 未豁免的仍记录
-	page.emitRequestFailed(requestFailed('http://localhost:8930/not-installer', 'net::ERR_CONNECTION_REFUSED'))
-	assertEquals(diagnostics.flushNetworkDiagnostics().length, 1)
+	// 未豁免的仍记录（flush 打印的 `[browser:network]` 行是测试自有输出，置于噪声豁免窗口内）
+	await allowNoise('browser:network', () => {
+		page.emitRequestFailed(requestFailed('http://localhost:8930/not-installer', 'net::ERR_CONNECTION_REFUSED'))
+		assertEquals(diagnostics.flushNetworkDiagnostics().length, 1)
+	})
 })
 
 Deno.test('isBrowserResourceFailureConsoleText matches failed resource loads', () => {

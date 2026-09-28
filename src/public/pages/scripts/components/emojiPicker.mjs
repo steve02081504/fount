@@ -96,6 +96,8 @@ function appendEmojiGridItem(grid, item) {
 		gridButton.dataset.groupEmojiId = item.emojiId
 		gridButton.dataset.groupEmojiRef = item.emojiRef || (packId && item.emojiId ? `:[emoji:${packId}/${item.emojiId}]:` : '')
 		gridButton.title = item.name || item.label || item.emojiId
+		// 网格项展示的就是 emoji 内容本身（包名 / unicode 字形），不参与 chrome emoji 扫描
+		gridButton.setAttribute('user-content', '')
 		if (item.previewUrl) {
 			const img = document.createElement('img')
 			img.src = item.previewUrl
@@ -117,6 +119,7 @@ function appendEmojiGridItem(grid, item) {
 		gridButton.dataset.emoji = item.unicode
 		gridButton.title = item.name || item.unicode
 		gridButton.textContent = item.unicode
+		gridButton.setAttribute('user-content', '')
 		grid.appendChild(gridButton)
 	}
 }

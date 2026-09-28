@@ -88,7 +88,7 @@ Deno.test('BeforeReply：单个插件失败被隔离且不影响其他插件', a
 	const originalError = console.error
 	let errorCount = 0
 	/**
-	 *
+	 * 静默钩子失败日志并计数。
 	 */
 	console.error = () => { errorCount++ }
 	try {
@@ -141,7 +141,7 @@ Deno.test('BeforeReply：无插件实现钩子时立即返回', async () => {
 	const args = makeArgs()
 	let called = 0
 	/**
-	 *
+	 * 计数钩子调用次数。
 	 */
 	args.AddLongTimeLog = () => { called++ }
 	args.plugins = {}

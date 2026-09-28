@@ -224,7 +224,13 @@ for (const width of [1600, 390])
 		await page.keyboard.press('Control+Enter')
 
 		const generating = page.locator('.code-message.generating')
+		// StreamRenderer 逐帧平滑揭示文本：等代码块已横向与纵向溢出（整块已渲染足够多）再量，避免量到半显态；
+		// 直接等最后一行会拖到生成收尾（生成中气泡被移除，pre 变 null）。
 		await expect(generating.locator('.markdown-code-block pre')).toContainText('LONG-LINE-', { timeout: 60_000 })
+		await expect.poll(() => page.locator('#messages').evaluate(flow => {
+			const pre = flow.querySelector('.code-message.generating .markdown-code-block pre')
+			return Boolean(pre && pre.scrollWidth > pre.clientWidth && pre.scrollHeight > pre.clientHeight)
+		}), { timeout: 60_000 }).toBe(true)
 		// 此时服务端只发了开围栏与 119 行代码，尚未发结束围栏及报告尾部。
 		expect(frames.some(frame => frame.type === 'preview' && frame.content.includes('LONG-LINE-') && !frame.content.includes('修复计划'))).toBe(true)
 		const during = await page.locator('#messages').evaluate(flow => {

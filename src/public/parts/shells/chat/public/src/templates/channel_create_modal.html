@@ -5,16 +5,16 @@
 		<input type="text" id="new-channel-name" class="input input-bordered" data-i18n="chat.hub.channel.nameInput" />
 	</div>
 	<div class="form-control mb-4">
-		<label class="label"><span class="label-text" data-i18n="chat.hub.channel.type"></span></label>
-		<select id="new-channel-type" class="select select-bordered">
+		<label class="label"><span class="label-text" id="new-channel-type-label" data-i18n="chat.hub.channel.type"></span></label>
+		<select id="new-channel-type" class="select select-bordered" aria-labelledby="new-channel-type-label">
 			<option value="text" data-i18n="chat.hub.channel.typeText"></option>
 			<option value="list" data-i18n="chat.hub.channel.typeList"></option>
 			<option value="streaming" data-i18n="chat.hub.channel.typeStreaming"></option>
 		</select>
 	</div>
 	<div class="form-control mb-4 hidden" id="new-channel-parent-wrap">
-		<label class="label"><span class="label-text" data-i18n="chat.hub.channel.parent"></span></label>
-		<select id="new-channel-parent" class="select select-bordered"></select>
+		<label class="label"><span class="label-text" id="new-channel-parent-label" data-i18n="chat.hub.channel.parent"></span></label>
+		<select id="new-channel-parent" class="select select-bordered" aria-labelledby="new-channel-parent-label"></select>
 	</div>
 	<div class="modal-action">
 		<button id="new-channel-cancel" class="btn btn-ghost" data-i18n="util.common.cancel"></button>

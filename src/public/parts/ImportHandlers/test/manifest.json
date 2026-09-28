@@ -22,7 +22,7 @@
 		},
 		{
 			"name": "integration",
-			"expected": "43s",
+			"expected": "2m34s",
 			"dependsOn": [
 				"server:live"
 			],

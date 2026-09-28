@@ -103,4 +103,3 @@ Deno.test('windowText leaves short repeats intact', () => {
 	assertEquals(result.omittedLines, 0)
 	assertEquals(result.text, 'a\na\na\na')
 })
-

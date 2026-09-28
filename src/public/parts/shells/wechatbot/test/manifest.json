@@ -25,7 +25,7 @@
 	"suites": [
 		{
 			"name": "pure",
-			"expected": "12s",
+			"expected": "2m1s",
 			"trigger": [
 				"shellPureTests",
 				"testFramework"
@@ -89,7 +89,7 @@
 				},
 				{
 					"name": "urlChar",
-					"expected": "14s",
+					"expected": "1m22s",
 					"triggers": [
 						"src/public/parts/shells/wechatbot/test/frontend/urlChar.spec.mjs",
 						"src/public/parts/shells/wechatbot/test/frontend/fixtures.mjs",

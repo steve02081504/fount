@@ -1,6 +1,8 @@
 /* global Deno */
 import { assert, assertEquals, assertStringIncludes } from 'jsr:@std/assert'
 
+import { allowNoise } from 'fount/scripts/test/core/allowNoise.mjs'
+
 import { createWebBrowseReplyHandler, formatWebBrowseResult, parseWebBrowseCall } from '../../handler.mjs'
 
 /**
@@ -117,9 +119,11 @@ Deno.test('web browse reports a missing url and a fetch failure without leaking 
 	assertStringIncludes(missingLogs[0].content, '未找到 <url> 标签')
 
 	const errorLogs = []
-	await createWebBrowseReplyHandler({
-		fetchMarkdown: fetchThrowing(new Error('<img onerror=alert(1)>')),
-	}).handle({}, { AddLongTimeLog: collectLog(errorLogs) }, { inner: '<url>https://example.com</url>' })
+	await allowNoise('web browse failed:', async () => {
+		await createWebBrowseReplyHandler({
+			fetchMarkdown: fetchThrowing(new Error('<img onerror=alert(1)>')),
+		}).handle({}, { AddLongTimeLog: collectLog(errorLogs) }, { inner: '<url>https://example.com</url>' })
+	})
 	assertStringIncludes(errorLogs[0].content, '浏览网页“https://example.com”时出现错误')
 	assertStringIncludes(errorLogs[0].content_for_show, '```')
 })

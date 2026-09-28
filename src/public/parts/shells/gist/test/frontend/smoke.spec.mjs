@@ -4,7 +4,17 @@
 import { test, expect } from './fixtures.mjs'
 
 test.describe('gist shell smoke', () => {
-	test('list page boots with empty state and new button', async ({ page, baseUrl }) => {
+	test('list page boots with empty state and new button', async ({ page, baseUrl, apiKey }) => {
+		// 隔离节点数据跨轮次复用：先清空既有 gist，空态断言才不受上一轮残留影响。
+		const list = await page.request.get(`${baseUrl}/api/parts/shells:gist/gists`, { headers: { 'fount-apikey': apiKey } })
+		if (list.ok()) {
+			const gists = await list.json()
+			const ids = (Array.isArray(gists) ? gists : []).map(gist => gist.id).filter(Boolean)
+			if (ids.length)
+				await page.request.post(`${baseUrl}/api/parts/shells:gist/gists/batch-delete`, { headers: { 'fount-apikey': apiKey }, data: { ids } })
+		}
+		const remaining = await (await page.request.get(`${baseUrl}/api/parts/shells:gist/gists`, { headers: { 'fount-apikey': apiKey } })).json()
+		expect(Array.isArray(remaining) ? remaining.length : -1, `gists not cleared: ${JSON.stringify(remaining)}`).toBe(0)
 		await page.goto(`${baseUrl}/parts/shells:gist/`, { waitUntil: 'domcontentloaded' })
 		await expect(page.locator('h1')).toHaveCount(1)
 		await expect(page.locator('#new-gist-button')).toBeVisible({ timeout: 30_000 })

@@ -33,10 +33,14 @@ test.describe('Social post detail', () => {
 		await waitForSocialReady(page)
 		const paragraphs = page.locator('#postDetailView .body.markdown-body > p')
 		await expect(paragraphs.nth(39)).toBeVisible({ timeout: 30_000 })
+		// 等回复面板落定，避免其完成时的重排把刚滚出的位置重置回顶部。
+		await expect(page.locator('#postDetailView .post-detail-replies[data-loaded="1"]')).toBeAttached({ timeout: 30_000 })
 
-		// 首屏恢复（无记录）绑定完成后滚到第 40 段并等待节流保存
+		// 首屏恢复（无记录）绑定完成后滚到第 40 段并等待节流保存。
+		// 裁剪祖先会让 `scrollIntoView` 停在最近滚动容器而滚不动窗口，显式滚窗口。
 		await page.waitForTimeout(1000)
-		await paragraphs.nth(39).evaluate(element => element.scrollIntoView({ block: 'start' }))
+		await paragraphs.nth(39).evaluate(element => window.scrollTo(0, element.getBoundingClientRect().top + window.scrollY))
+		await expect.poll(() => page.evaluate(() => window.scrollY), { timeout: 5_000 }).toBeGreaterThan(200)
 		await expect.poll(async () => {
 			const response = await page.request.get(
 				`${baseUrl}/api/parts/shells:social/read-progress/${entityHash}/${postId}`,

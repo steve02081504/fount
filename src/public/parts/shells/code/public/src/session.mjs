@@ -877,12 +877,12 @@ const ATTACH_TIMEOUT_MS = 3000
 
 /**
  * 结束待决的接入等待（只对仍是当前的那个 waiter 生效）。
- * @param {{resolve: (ok: boolean) => void, timer: number}} waiter - 接入请求。
+ * @param {{resolve: (ok: boolean) => void, timer: number} | null} waiter - 接入请求；无待决接入时可为 null。
  * @param {boolean} ok - 是否接入成功。
  * @returns {void}
  */
 function settleAttach(waiter, ok) {
-	if (attachWaiter !== waiter) return
+	if (!waiter || attachWaiter !== waiter) return
 	attachWaiter = null
 	clearTimeout(waiter.timer)
 	waiter.resolve(ok)

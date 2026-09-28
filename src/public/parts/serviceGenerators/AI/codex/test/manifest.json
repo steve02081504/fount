@@ -51,8 +51,7 @@
 				"src/public/parts/serviceGenerators/AI/codex/public/**",
 				"src/public/parts/serviceGenerators/AI/codex/src/models.mjs",
 				"src/public/parts/serviceGenerators/AI/codex/test/{frontend,fixtures}/**",
-				"src/public/parts/shells/serviceSourceManage/public/index.mjs",
-				"src/public/locales/{zh-CN,en-UK,ja-JP}.json"
+				"src/public/parts/shells/serviceSourceManage/public/index.mjs"
 			],
 			"run": [
 				"deno",

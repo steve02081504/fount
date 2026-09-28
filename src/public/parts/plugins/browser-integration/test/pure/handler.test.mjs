@@ -1,6 +1,8 @@
 /* global Deno */
 import { assert, assertEquals, assertStringIncludes } from 'jsr:@std/assert'
 
+import { allowNoise } from 'fount/scripts/test/core/allowNoise.mjs'
+
 import { flattenReplyHandlers } from '../../../../shells/chat/src/reply/defineReplyHandler.mjs'
 import {
 	createBrowserIntegrationReplyHandler,
@@ -175,11 +177,13 @@ Deno.test('run-js-on-page reports a missing script tag', async () => {
 		getApi: apiGetter(makeFakeApi([]))
 	})
 	const runJs = findHandler(handler, 'browser-integration.run-js-on-page')
-	await runJs.handle({}, {
-		username: 'u',
-		char_id: 'c',
-		AddLongTimeLog: collectLog(logs),
-	}, { inner: '<pageId>1</pageId>' })
+	await allowNoise('Error executing browser integration command', async () => {
+		await runJs.handle({}, {
+			username: 'u',
+			char_id: 'c',
+			AddLongTimeLog: collectLog(logs),
+		}, { inner: '<pageId>1</pageId>' })
+	})
 	assertStringIncludes(logs[0].content, '缺少 <script> 标签')
 })
 
