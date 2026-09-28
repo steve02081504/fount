@@ -172,6 +172,7 @@
 			"moduleCheck": {
 				"missedReady": "模組檢未成 ready 而進程已退：${label}"
 			},
+			"serialZeroTests": "[serial] ${path}：所註之測凡零",
 			"frontend": {
 				"isolatedRequired": "${shellLabel} 前端之測，應假 `test/frontend/run.mjs` 以行（其自舉隔離之節）。切莫施於本機開發之例，或真實用戶之據。",
 				"isolatedUser": "諸測應以隔離之用戶「${expectedUsername}」行之；今所行者乃「${username}」也。宜自 `run.mjs` 啟之，毋指生產或開發之 fount。"

@@ -172,6 +172,7 @@
 			"moduleCheck": {
 				"missedReady": "Einingapróf: ferli lauk án ready-merkis: ${label}"
 			},
+			"serialZeroTests": "[serial] ${path} skráði engin próf",
 			"frontend": {
 				"isolatedRequired": "Framendaprófið ${shellLabel} verður að ræsa í gegnum test/frontend/run.mjs (sem ræsir einangraðan hnút sjálfur). Ekki keyra það gegn staðbundnu þróunarumhverfi eða raunverulegum notendagögnum.",
 				"isolatedUser": "Próf verða að keyra undir einangraða notandanum „${expectedUsername}“; núverandi seta keyrir sem „${username}“. Ræstu gjarnan í gegnum run.mjs í stað þess að benda á framleiðslu- eða þróunarfount."

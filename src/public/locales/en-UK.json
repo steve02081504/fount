@@ -172,6 +172,7 @@
 			"moduleCheck": {
 				"missedReady": "Module check: process exited without ready signal: ${label}"
 			},
+			"serialZeroTests": "[serial] ${path} registered 0 tests",
 			"frontend": {
 				"isolatedRequired": "The ${shellLabel} front-end test must be launched through test/frontend/run.mjs, which self-starts an isolated node. Do not run it against a local development instance or real user data.",
 				"isolatedUser": "Tests must run under the isolated user \"${expectedUsername}\"; the current session is running as \"${username}\". Please launch via run.mjs instead of pointing at a production or development fount."

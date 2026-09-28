@@ -171,6 +171,7 @@
 			"moduleCheck": {
 				"missedReady": "模組檢查未發 ready，程序已結束：${label}"
 			},
+			"serialZeroTests": "[serial] ${path} 註冊了 0 個測試",
 			"frontend": {
 				"isolatedRequired": "${shellLabel} 前端測試必須透過 test/frontend/run.mjs 啟動（由它自行拉起隔離節點）。請勿在本地開發執行個體或真實使用者資料上執行。",
 				"isolatedUser": "測試必須以隔離使用者 \"${expectedUsername}\" 執行，目前工作階段為 \"${username}\"。請透過 run.mjs 啟動，勿指向生產或開發所用的 fount。"
