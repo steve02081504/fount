@@ -8,6 +8,8 @@ import path from 'node:path'
 
 import { assert, assertEquals, assertRejects } from 'jsr:@std/assert'
 
+import { allowNoise } from 'fount/scripts/test/core/allowNoise.mjs'
+
 import { runReplyHandlers } from '../../../../shells/chat/src/reply/handlerPipeline.mjs'
 import { fileOperationsReplyHandlers } from '../../handler.mjs'
 import { applyEol, applyReplacement, detectTextStyle, normalizeTagBody, renderLineDiff, restoreBom, similarityRatio, stripBom, toLf } from '../../src/edit_safety.mjs'
@@ -176,7 +178,8 @@ Deno.test('handler replace parse failure marks failed and skips the next same-ro
 		const run = createHandlerArgs(root)
 		const content = '<replace-file><file path="f.txt"></file></replace-file>\n'
 			+ '<override-file path="new.txt">hello</override-file>'
-		await runFileOps(content, run.args)
+		// 该用例故意触发解析失败：product 的 console.error 回执属预期输出，豁免其噪声判定。
+		await allowNoise('Error parsing replace-file', () => runFileOps(content, run.args))
 		await assertRejects(() => fs.access(path.join(root, 'new.txt')))
 		assert(logText(run.logs).includes('解析replace-file失败'), '失败回执应存在')
 		assert(run.logs.some(entry => entry.name === 'chat.skipped-calls'), '应追加跳过提示')
