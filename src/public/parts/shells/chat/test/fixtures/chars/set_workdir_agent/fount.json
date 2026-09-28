@@ -1,0 +1,9 @@
+{
+	"name": "set_workdir_agent",
+	"description": "chat <set-workdir> persistence fixture",
+	"author": "fount",
+	"version": "1.0.0",
+	"tags": [
+		"test"
+	]
+}

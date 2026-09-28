@@ -907,6 +907,59 @@ Deno.test({
 })
 
 Deno.test({
+	name: 'session WS <set-workdir> default persists across rounds and runs',
+	timeout: 120_000,
+}, async () => {
+	const fixtureDir = path.join(path.dirname(fileURLToPath(import.meta.url)), 'fixtures', 'wsSetWorkdirChar')
+	const node = await launchCodeNode({
+		fixtureCopies: [{ from: fixtureDir, to: 'chars/wsSetWorkdirChar' }],
+	})
+	const root = await fs.mkdtemp(path.join(os.tmpdir(), 'fount_code_setworkdir_'))
+	try {
+		await fs.mkdir(path.join(root, 'sub'), { recursive: true })
+		await fs.writeFile(path.join(root, 'note.txt'), 'ROOT NOTE', 'utf8')
+		await fs.writeFile(path.join(root, 'sub', 'note.txt'), 'SUB NOTE', 'utf8')
+		const session = {
+			id: 'swd001', title: '', charname: 'wsSetWorkdirChar', profile: '', ai_source: '',
+			created: new Date().toISOString(), updated: new Date().toISOString(), memory: {},
+			entries: [{ id: 'swd-u1', uid: 'user', role: 'user', name: node.username, content: '读取文件', time: new Date().toISOString(), files: [] }],
+		}
+		/**
+		 * 归一化路径分隔符，便于跨平台比较。
+		 * @param {unknown} value - 原始路径。
+		 * @returns {string} 以 `/` 分隔的路径。
+		 */
+		const normalize = value => String(value ?? '').replace(/\\/g, '/')
+		const first = await sessionStream(node, {
+			type: 'send', session, machine: '0', workdir: root,
+			ai_source: '', profile: '', content: '读取文件', files: [], clientEntryId: 'swd-u1',
+		})
+		assertEquals(first.done.type, 'done', `expected done, got ${JSON.stringify(first.done).slice(0, 300)}`)
+		const firstEntries = [...first.frames.filter(f => f.type === 'entries-append').flatMap(f => f.entries), ...first.done.entries || []]
+		const firstView = firstEntries.find(entry => entry.role === 'tool' && entry.name === 'file-operations.view-file')
+		assert(firstView, '首轮应产生 view-file 工具日志')
+		assert(firstView.content.includes('SUB NOTE'), `<set-workdir> 后下一轮应读取新工作目录：${firstView.content}`)
+		assert(!firstView.content.includes('ROOT NOTE'), '设置工作目录后不得回落原目录')
+
+		// 权威会话落盘后 memory 应记录 workdir，供下次运行沿用
+		const saved = JSON.parse(await fs.readFile(path.join(root, '.fount', 'code', 'sessions', 'swd001.json'), 'utf8'))
+		assertEquals(normalize(saved.memory?.workdir?.path), normalize(path.join(root, 'sub')), `磁盘会话应持久化 workdir：${JSON.stringify(saved.memory)}`)
+
+		// 第二次运行（trigger，沿用磁盘 memory）：首轮即应读取新工作目录
+		const second = await sessionStream(node, { type: 'trigger', session: saved, machine: '0', workdir: root, ai_source: '', profile: '' })
+		assertEquals(second.done.type, 'done', `expected done, got ${JSON.stringify(second.done).slice(0, 300)}`)
+		const secondEntries = [...second.frames.filter(f => f.type === 'entries-append').flatMap(f => f.entries), ...second.done.entries || []]
+		const secondView = secondEntries.find(entry => entry.role === 'tool' && entry.name === 'file-operations.view-file')
+		assert(secondView, '第二次运行应产生 view-file 工具日志')
+		assert(secondView.content.includes('SUB NOTE'), `第二次运行应沿用持久化 workdir：${secondView.content}`)
+	}
+	finally {
+		await fs.rm(root, { recursive: true, force: true })
+		await stopNode(node)
+	}
+})
+
+Deno.test({
 	name: 'active code generation protects its conversation from deletion and external writes',
 	timeout: 120_000,
 }, async () => {

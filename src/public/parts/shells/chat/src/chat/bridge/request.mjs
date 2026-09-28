@@ -81,6 +81,8 @@ export async function buildVirtualBridgeChatRequest(username, groupId, channelId
 		timelines: [chat_log],
 		chat_summary: '',
 		chat_scoped_char_memory: memory,
+		// 虚拟会话无独立 workdir 存储：沿用 memory.workdir（ReplyHandler 写入处），并保证是可就地 mutate 的对象。
+		workdir: memory.workdir ?? {},
 		extension: {
 			groupId,
 			channelId,

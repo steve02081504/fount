@@ -50,6 +50,8 @@ export function GetDefaultShellAssistInterface(char_API, username, char_name) {
 	 * }>}
 	 */
 	async function shellAssistMain(args) {
+		// 私域记忆以共享引用传出：ReplyHandler 就地 mutate；workdir 同样必须始终是对象，否则 `<set-workdir>` 只改到浅拷贝副本上。
+		const chat_scoped_char_memory = args.chat_scoped_char_memory ??= {}
 		/**
 		 * 聊天记录条目数组。
 		 * @type {chatLogEntry_t[]}
@@ -137,7 +139,8 @@ ${args.screen}
 				recommend_command: recommend_command_plugin
 			},
 			chat_summary: '',
-			chat_scoped_char_memory: args.chat_scoped_char_memory,
+			chat_scoped_char_memory,
+			workdir: chat_scoped_char_memory.workdir ?? {},
 			chat_log
 		})
 		if (!AIsuggestion) return
@@ -146,7 +149,7 @@ ${args.screen}
 			recommend_command: AIsuggestion.recommend_command,
 			content: AIsuggestion.content,
 			content_for_show: AIsuggestion.content_for_show,
-			chat_scoped_char_memory: args.chat_scoped_char_memory,
+			chat_scoped_char_memory,
 			shellhistory: args.shellhistory,
 			extension: AIsuggestion.extension,
 		}

@@ -278,7 +278,10 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 		other_chars,
 		other_personas,
 		chat_scoped_char_memory: scopedState.memory,
-		workdir: scopedState.workdir,
+		// workdir 必须是可就地 mutate 的对象：ReplyHandler 通过 `args.workdir ??= {}` 改它，
+		// 而 triggerReply 收尾据此持久化。若首轮传 undefined，handlers 拿到的浅拷贝会把新对象丢在副本上、
+		// request.workdir 仍是 undefined，`<set-workdir>` 就永远存不下来。
+		workdir: scopedState.workdir ?? {},
 		plugins: localPlugins,
 		extension: {
 			groupId,
