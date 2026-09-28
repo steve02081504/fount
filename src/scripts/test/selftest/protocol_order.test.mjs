@@ -152,7 +152,6 @@ Deno.test('buildSuiteInvocation passes FOUNT_TEST_TRIGGERED_FILES as temp path',
 		'/tmp/failures.json',
 		'/tmp/timings.json',
 		triggeredPath,
-		undefined,
 	)
 	assertEquals(env.FOUNT_TEST_TRIGGERED_FILES, triggeredPath)
 })

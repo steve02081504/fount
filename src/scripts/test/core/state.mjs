@@ -55,6 +55,7 @@ import { filterTriggerRelevantFiles, matchGlob } from './trigger_filter.mjs'
  * @property {number | null} [baselineDurationMs] 全量运行墙钟基线（EMA）；仅全量子测试跑完时更新
  * @property {number | null} [baselineOverheadMs] 固定开销基线（EMA）：wall − Σ 子测试耗时
  * @property {number | null} [baselineMemMb] 采样峰值内存基线（MB，EMA）
+ * @property {number | null} [baselineUnitMemMb] 单文件峰值内存基线（MB，EMA）
  * @property {number | null} [baselineCpuPct] 运行期间平均全机 CPU %（EMA）
  * @property {string[]} failedFiles
  * @property {string[]} noiseHits
@@ -121,14 +122,14 @@ export function migrateLegacyStateSuites(suites) {
 export async function readState(repoRoot) {
 	try {
 		const raw = await readFile(stateFilePath(repoRoot), 'utf8')
+		if (!raw.trim()) return { suites: {} }
 		const data = JSON.parse(raw)
 		const before = data.suites ?? {}
 		const suites = migrateLegacyStateSuites(before)
-		const state = { suites }
 		// 一次性落盘，避免外部工具仍读到旧 `manifest/suite` 键
 		if (Object.keys(before).some(key => migrateLegacySuiteKey(key) !== key))
-			await writeState(repoRoot, state)
-		return state
+			await writeState(repoRoot, { suites })
+		return { suites }
 	}
 	catch (error) {
 		if (error?.code === 'ENOENT') return { suites: {} }
@@ -654,6 +655,7 @@ export async function upsertSuiteRun({
 			baselineDurationMs: prev?.baselineDurationMs ?? null,
 			baselineOverheadMs: prev?.baselineOverheadMs ?? null,
 			baselineMemMb: prev?.baselineMemMb ?? null,
+			baselineUnitMemMb: prev?.baselineUnitMemMb ?? null,
 			baselineCpuPct: prev?.baselineCpuPct ?? null,
 			failedFiles: result?.failedFiles ?? [],
 			noiseHits: detectNoiseHits(result?.output ?? ''),
@@ -718,6 +720,10 @@ export async function upsertSuiteRun({
 		? nextBaselineMemMb(prev?.baselineMemMb, result.peakMemMb)
 		: prev?.baselineMemMb ?? null
 
+	const baselineUnitMemMb = recordTiming
+		? nextBaselineMemMb(prev?.baselineUnitMemMb, result.peakUnitMemMb)
+		: prev?.baselineUnitMemMb ?? null
+
 	const baselineCpuPct = recordTiming
 		? nextBaselineCpuPct(prev?.baselineCpuPct, result.avgCpuPct)
 		: prev?.baselineCpuPct ?? null
@@ -740,6 +746,7 @@ export async function upsertSuiteRun({
 		baselineDurationMs,
 		baselineOverheadMs,
 		baselineMemMb,
+		baselineUnitMemMb,
 		baselineCpuPct,
 		failedFiles: result.failedFiles ?? [],
 		noiseHits,

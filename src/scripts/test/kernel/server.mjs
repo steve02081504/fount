@@ -1,6 +1,7 @@
 /**
  * 测试内核 HTTP + viewer WS：吞掉 hub，加上任务 / 模组检查 / 调度。
  */
+import { randomUUID } from 'node:crypto'
 import process from 'node:process'
 
 import express from 'npm:express'
@@ -106,11 +107,72 @@ export async function startTestKernel({
 		const ticket = String(request.body?.ticket || '')
 		response.json({ missed: kernel.moduleCheck.consumeMissedReady(ticket) })
 	})
+
+	/** @type {Map<string, { suiteKey: string, release: () => void }>} 未释放的单元租约：lease id → 释放函数。 */
+	const unitLeases = new Map()
+	// suite 结算时，其单元租约预算已由资源闸门回收；此处仅摘除残留的 lease id，
+	// 使崩溃 worker 的迟到 /unit/release 落空，不无限堆积映射。
+	/**
+	 * suite 结算：摘除其残留租约 id（预算已由闸门回收）。
+	 * @param {string} suiteKey suite 键
+	 * @returns {void}
+	 */
+	kernel.onSuiteFinished = suiteKey => {
+		for (const [lease, entry] of unitLeases)
+			if (entry.suiteKey === suiteKey) unitLeases.delete(lease)
+	}
+	app.post('/unit/acquire', async (request, response) => {
+		const suiteKey = String(request.body?.suiteKey || '')
+		const suite = kernel.catalog?.byKey.get(suiteKey)
+		if (!suite) return void response.status(400).json({ error: 'unknown suite' })
+		const abort = new AbortController()
+		/** 客户端断开且尚未写出响应时取消等待。 */
+		const onDisconnect = () => {
+			if (!response.writableEnded) abort.abort()
+		}
+		response.on('close', onDisconnect)
+		/** @type {(() => void) | null} */
+		let release = null
+		try {
+			release = await kernel.gate.acquireUnit(suite, abort.signal)
+			if (!response.writable || response.destroyed || response.writableEnded) {
+				release()
+				return
+			}
+			const lease = randomUUID()
+			unitLeases.set(lease, { suiteKey, release })
+			response.json({ lease })
+		}
+		catch (error) {
+			if (release) release()
+			if (abort.signal.aborted || error?.name === 'AbortError') {
+				if (!response.headersSent) response.status(499).end()
+				return
+			}
+			throw error
+		}
+		finally {
+			response.off('close', onDisconnect)
+		}
+	})
+	app.post('/unit/release', (request, response) => {
+		const lease = String(request.body?.lease || '')
+		const entry = unitLeases.get(lease)
+		if (!entry) return void response.json({ ok: false })
+		unitLeases.delete(lease)
+		entry.release()
+		response.json({ ok: true })
+	})
 	app.post('/shutdown', (request, response) => {
 		if (request.headers.origin) return void response.sendStatus(403)
 		response.json({ ok: true })
 		/** 响应发出后再关，避免和当前请求互相等待。 */
-		const go = () => { void kernel.close() }
+		const go = () => {
+			// 先清空未释放租约，唤醒仍在等单元的子进程，再关内核。
+			for (const entry of unitLeases.values()) entry.release()
+			unitLeases.clear()
+			void kernel.close()
+		}
 		if (response.writableEnded) queueMicrotask(go)
 		else response.once('finish', go)
 	})

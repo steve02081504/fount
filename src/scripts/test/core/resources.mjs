@@ -1,13 +1,26 @@
 /**
  * Suite 资源画像：manifest 声明 + 运行时采样基线 + 命名推断（二维：mem × CPU%）。
  */
+import { cpus } from 'node:os'
+
 import { MiB } from './concurrency.mjs'
+
+/** serial 编排器的固定基础内存预算（MB）：真正的占用由全局单元池下放。 */
+export const SERIAL_BASE_MEM_MB = 200
+
+/** serial 编排器的固定基础 CPU 份额（%）。 */
+export const SERIAL_BASE_CPU_PCT = 5
+
+/** 单文件单元内存缺省需求（MB）：无采样与声明时回退。 */
+export const DEFAULT_UNIT_MEM_MB = 400
 
 /**
  * suite 资源画像（内存 × CPU%）。
  * @typedef {object} SuiteResources
  * @property {number} memMb  suite 子进程树峰值内存（MB，含 live 多 fount 进程总量）
  * @property {number} cpuPct 调度预算：预期占全机 CPU 的份额（0–100）
+ * @property {number} [unitMemMb] 单文件单元内存需求（MB），仅 serial suite 有效
+ * @property {number} [unitCpuPct] 单文件单元 CPU 份额（%），仅 serial suite 有效
  */
 
 /**
@@ -25,6 +38,8 @@ export function parseManifestResources(raw) {
 	return {
 		...Number.isFinite(raw.memMb) && raw.memMb > 0 ? { memMb: Math.floor(raw.memMb) } : {},
 		...Number.isFinite(raw.cpuPct) && raw.cpuPct >= 0 ? { cpuPct: Math.min(100, raw.cpuPct) } : {},
+		...Number.isFinite(raw.unitMemMb) && raw.unitMemMb > 0 ? { unitMemMb: Math.floor(raw.unitMemMb) } : {},
+		...Number.isFinite(raw.unitCpuPct) && raw.unitCpuPct >= 0 ? { unitCpuPct: Math.min(100, raw.unitCpuPct) } : {},
 	}
 }
 
@@ -54,14 +69,15 @@ export function inferDefaultResources(suite) {
 }
 
 /**
- * 合并 manifest 声明、命名默认值与 state 采样基线。
+ * 合并 manifest 声明、命名默认值与 state 采样基线（全量 footprint）。
  * 有可信采样时用采样（可被 manifest 声明抬高）；无采样才回退命名默认。
- * CPU 基线 < 1% 视为噪声（pidusage 空闲采样），忽略。
+ * CPU 基线 < 1% 视为噪声（空闲采样），忽略。
+ * serial suite 亦按真实实测占用估算——ETA/时间表需要它。
  * @param {SuiteDef} suite suite
  * @param {SuiteStateEntry | undefined} entry 现状条目
- * @returns {SuiteResources} 调度用资源
+ * @returns {SuiteResources} 估算资源
  */
-export function resolveSuiteResources(suite, entry) {
+export function resolveSuiteEstimateResources(suite, entry) {
 	const declared = parseManifestResources(suite.resources)
 	const defaults = inferDefaultResources(suite)
 	const baselineMem = entry?.baselineMemMb > 0 ? entry.baselineMemMb : null
@@ -70,6 +86,39 @@ export function resolveSuiteResources(suite, entry) {
 		memMb: Math.max(declared.memMb ?? 0, baselineMem ?? defaults.memMb),
 		cpuPct: Math.max(declared.cpuPct ?? 0, baselineCpu ?? defaults.cpuPct),
 	}
+}
+
+/**
+ * 调度用 suite 资源：serial suite 在资源闸门只占编排器基础位，真实内存/CPU 由
+ * 全局单元池按文件下放，避免并发 suite 重复预订整机。
+ * @param {SuiteDef} suite suite
+ * @param {SuiteStateEntry | undefined} entry 现状条目
+ * @returns {SuiteResources} 闸门占用资源
+ */
+export function resolveSuiteResources(suite, entry) {
+	const declared = parseManifestResources(suite.resources)
+	if (suiteUsesSerialRunner(suite))
+		return {
+			memMb: Math.max(declared.memMb ?? 0, SERIAL_BASE_MEM_MB),
+			cpuPct: Math.max(declared.cpuPct ?? 0, SERIAL_BASE_CPU_PCT),
+		}
+	return resolveSuiteEstimateResources(suite, entry)
+}
+
+/**
+ * 单个 serial 文件 worker 的单元资源需求：实测单文件峰值 > manifest 声明 > 缺省。
+ * CPU 默认为整机均分份额，至少 0.1%。
+ * @param {SuiteDef} suite suite
+ * @param {SuiteStateEntry | undefined} entry 现状条目
+ * @returns {SuiteResources} 单元资源
+ */
+export function resolveSerialUnitResources(suite, entry) {
+	const declared = parseManifestResources(suite.resources)
+	const memMb = entry?.baselineUnitMemMb > 0
+		? entry.baselineUnitMemMb
+		: declared.unitMemMb > 0 ? declared.unitMemMb : DEFAULT_UNIT_MEM_MB
+	const cpuPct = Math.max(0.1, declared.unitCpuPct ?? 100 / cpus().length)
+	return { memMb, cpuPct }
 }
 
 /**

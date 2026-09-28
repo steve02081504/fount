@@ -3,13 +3,21 @@
 Suite parallelism is governed by `ResourceRunGate` (`runner/scheduler.mjs`):
 
 - **No idle work** — if any suite is waiting and the machine is empty, admit at least one immediately. Budget never blocks starting work; it only limits packing more alongside running suites. Same invariant in `simulateParallelMakespanMs` (otherwise ETA→0 and the gate deadlocks).
-- **`heavy: true`** — machine-exclusive (today: `p2p/sim` only).
-- **All other suites** — 2D bin packing on free memory (`freemem × 0.7`) and CPU budget (85% cap). Ready suites acquire in BFD order; waiters wake by fill score `min(memUtil, cpuUtil)`.
+- **`heavy: true`** — machine-exclusive escape hatch: the suite gets the whole machine and no other suite packs alongside. No manifest in the repo currently sets `heavy` (historically `p2p/sim`).
+- **All other suites** — 2D bin packing on the shared global memory budget (below) and CPU budget (85% cap). Ready suites acquire in BFD order; waiters wake by fill score `min(memUtil, cpuUtil)`.
 - **Module-check mutex** — at most one Deno process may be in the spawn→JS-ready window against the shared `node_modules` ([denoland/deno#35804](https://github.com/denoland/deno/issues/35804)). Parent `acquire`s before spawn; child `env.mjs` or `--preload module_check_ready.mjs` POSTs ready (so `deno test` files that do not import `env.mjs` still signal). Exit without ready is a framework error (`ModuleCheckMissedReadyError`), not a silent release. Spawn failure only abandons the ticket. After ready, wall-clock overlap is allowed. Playwright `node` is not gated. `launchNode` `{ ready, baseUrl }` is too late to use as the signal.
   - Hold without ready longer than the spawn→ready cap (`3m`, override `FOUNT_TEST_MODULE_CHECK_HOLD_MS`) → release the mutex so later Deno suites can acquire; missed-ready stays on the ticket until the suite exits (or a late ready arrives). Kicking a suite (viewer gone / preempted) releases its ticket **immediately**, without waiting for a possibly-hung child to exit.
   - HTTP `acquire` waiters are cancelled if the client disconnects (aborted fetch / killed `serial.mjs`); a ticket assigned to a dead response is abandoned immediately.
 
-No CLI concurrency knob: suite packing and `serial.mjs` inner file parallelism both use `computeGlobalBudget()`. `serial.mjs` still forces `DENO_JOBS=1` so one file cannot stack parallel `launchNode`s.
+No CLI concurrency knob: suite packing and `serial.mjs` inner file parallelism both use the same shared global budget (below). `serial.mjs` still forces `DENO_JOBS=1` so one file cannot stack parallel `launchNode`s.
+
+## Global resource budget
+
+The gate, the scheduler, and the serial runner share one memory budget, refreshed every 5s: `(freemem() + currently-tracked running-suite memory) × 0.7`. Adding the memory already held by tracked running suites back before applying the 0.7 headroom keeps the budget stable as suites start — otherwise each admission would shrink `freemem()` and the gate would progressively starve. The CPU side stays the core-count cap (85%). Because a single gate serves every suite, concurrent jobs cannot double-book the machine.
+
+## Unit leases
+
+A suite whose `run` uses `serial.mjs` reserves only a small orchestrator base in the gate — the orchestrator process itself is cheap. The memory and CPU its file workers actually consume come from a global per-file "unit lease": each worker calls `POST /unit/acquire` before spawning and `/unit/release` when done (client `hub/clients/unit_lease.mjs`, helper `withUnitLease`). The lease server is global, so leases requested by concurrent suites draw down the same budget and cannot be double-booked. Lease size uses the per-file peak (`baselineUnitMemMb`). Deadlock invariant: a unit is admitted even if it is oversize, provided no unit is currently running — one worker must always be allowed to make progress. Outstanding leases are reclaimed when the suite's gate slot is released (the suite-owning `ResourceRunGate` registers each granted lease under its suite), so a worker killed before `/unit/release` — or a leaked id mapping after a crash — cannot permanently shrink the budget; the reap is idempotent against a late release.
 
 ## `dependsOn` optimistic overlap
 
@@ -35,7 +43,7 @@ Displayed "remaining"/ETA is not monotonic: it is recomputed from an ideal timel
 
 Effective demand = max(manifest `resources`, measured baseline if present else naming heuristic). CPU baselines `< 1%` are treated as sampling noise and ignored.
 
-`run_command.mjs` samples the subprocess tree every 30s via `proc_sample.mjs` (RSS peak → `baselineMemMb`; avg CPU → `baselineCpuPct`). Baselines update on pass or non-watchdog failure.
+`core/proc_sample.mjs` takes ONE shared process-table snapshot every 2s covering all running suites (no per-suite sampling). For each suite tree, CPU is consumed CPU time / wall time / core count, so short-lived children that exit between snapshots are still counted rather than missed; memory is the peak RSS of the suite tree (`baselineMemMb`). A serial suite's file workers additionally report a per-file peak (`baselineUnitMemMb`) used to size the unit leases above. Baselines update on pass or non-watchdog failure.
 
 **Idle / duration / sleep watchdog** (`run_command.mjs`):
 
@@ -45,6 +53,6 @@ Effective demand = max(manifest `resources`, measured baseline if present else n
 
 **Keep-awake** (proactive, complements sleep retry): kernel holds while a suite is running (`kernel/keep_awake.mjs`). `fount test --watch` idle does not hold. Path wrapper still wraps one-shot CLI as a second belt. Details: [host-keep-awake.md](host-keep-awake.md). Opt out: `FOUNT_TEST_ALLOW_SLEEP=1`.
 
-When `run` includes `serial.mjs`, `suite_run.mjs` injects `FOUNT_TEST_BUDGET_CORES` / `FOUNT_TEST_BUDGET_MEM`. Silent passes emit `[serial] ok …` for idle watchdog liveness.
+When `run` includes `serial.mjs`, its file workers draw their share from the global unit leases (above); the suite itself holds only the orchestrator base in the gate. Silent passes emit `[serial] ok …` for idle watchdog liveness.
 
 Selftests: `fount test testkit` (`selftest/resources_scheduler.test.mjs`, `selftest/proc_sample.test.mjs`).

@@ -4,7 +4,6 @@ import { basename, join } from 'node:path'
 import process from 'node:process'
 
 import { console } from '../../i18n/bare.mjs'
-import { applyBudgetToEnv } from '../core/concurrency.mjs'
 import { filterTestOutput } from '../core/output_filter.mjs'
 import {
 	readFailuresOutFile,
@@ -14,6 +13,7 @@ import {
 } from '../core/protocol.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 import { suiteUsesSerialRunner } from '../core/resources.mjs'
+import { suiteKey } from '../core/state.mjs'
 import { markTempDirOrigin } from '../core/temp_origin.mjs'
 import { withNoDomShimPreload } from '../deno/no_dom_shim.mjs'
 import { moduleCheckTicketEnv, withDenoModuleCheckPreload } from '../hub/clients/module_check.mjs'
@@ -54,10 +54,9 @@ export function applyTestHeapCapToDenoRun(command) {
  * @param {string} failuresOut 失败输出临时文件
  * @param {string} timingsOut 耗时输出临时文件
  * @param {string} triggeredFilesPath trigger 列表临时文件；无列表时传空串
- * @param {import('../core/concurrency.mjs').GlobalBudget | undefined} globalBudget 全局预算
  * @returns {{ command: string[], env: Record<string, string> }} 命令与环境
  */
-export function buildSuiteInvocation(suite, options, failuresOut, timingsOut, triggeredFilesPath, globalBudget) {
+export function buildSuiteInvocation(suite, options, failuresOut, timingsOut, triggeredFilesPath) {
 	const { firstFiles, subtests, onlyFiles, moduleCheckTicket } = options ?? {}
 	const env = {
 		FOUNT_TEST: '1',
@@ -65,6 +64,7 @@ export function buildSuiteInvocation(suite, options, failuresOut, timingsOut, tr
 		FOUNT_TEST_FAILURES_OUT: failuresOut,
 		FOUNT_TEST_TIMINGS_OUT: timingsOut,
 		FOUNT_TEST_SCOPE: suite.manifestId,
+		FOUNT_TEST_SUITE_KEY: suiteKey(suite.manifestId, suite.name),
 		FOUNT_TEST_ONLY: onlyFiles?.length ? onlyFiles.join('\n') : '',
 		FOUNT_TEST_FIRST: firstFiles?.length ? firstFiles.join('\n') : '',
 		FOUNT_TEST_SUBTESTS: subtests?.length ? subtests.join('\n') : '',
@@ -72,8 +72,6 @@ export function buildSuiteInvocation(suite, options, failuresOut, timingsOut, tr
 		RUST_BACKTRACE: 'full',
 		...moduleCheckTicketEnv(moduleCheckTicket),
 	}
-	if (suiteUsesSerialRunner(suite) && globalBudget)
-		applyBudgetToEnv(env, globalBudget)
 	return {
 		command: withDenoModuleCheckPreload(withNoDomShimPreload(applyTestHeapCapToDenoRun([...suite.run])), moduleCheckTicket),
 		env,
@@ -121,6 +119,7 @@ export function mapTimingsToSubtests(suite, timings, ranSubtests) {
  * @property {number} durationMs 墙钟耗时
  * @property {Record<string, number>} [subtestDurations] 子测试名 → 毫秒
  * @property {number} [peakMemMb] 峰值内存（MB）
+ * @property {number} [peakUnitMemMb] 单文件子树峰值内存（MB）
  * @property {number} [avgCpuPct] 平均 CPU（%）
  * @property {boolean} [terminated] 是否被 watchdog 终止
  * @property {string} [terminateReason] 终止原因
@@ -130,12 +129,11 @@ export function mapTimingsToSubtests(suite, timings, ranSubtests) {
  * 单次执行 suite（不含休眠重试）。
  * @param {import('../core/manifest.mjs').SuiteDef} suite suite
  * @param {SuiteInvocationOptions | undefined} options 调用选项
- * @param {import('../core/concurrency.mjs').GlobalBudget | undefined} globalBudget 全局预算
  * @param {boolean} stream 是否实时转发 stdout/stderr
  * @param {object} watchdog watchdog 选项
  * @returns {Promise<SuiteRunResult & { sleepInterrupted?: boolean }>} 运行结果
  */
-async function runSuiteOnce(suite, options, globalBudget, stream, watchdog) {
+async function runSuiteOnce(suite, options, stream, watchdog) {
 	// suite 结束时 finally 清理；进程被杀时泄漏由 cleanup_check 的 fount[-_]* 全局扫描兜底抓取。
 	const tempDir = await mkdtemp(join(tmpdir(), 'fount-test-'))
 	await markTempDirOrigin(tempDir, `suite ${suite.manifestId}:${suite.name} (runSuiteOnce)`)
@@ -149,10 +147,10 @@ async function runSuiteOnce(suite, options, globalBudget, stream, watchdog) {
 		if (triggeredEnvPath)
 			await writeTestTriggeredFiles(triggeredFilesPath, triggered)
 		const { command, env } = buildSuiteInvocation(
-			suite, options ?? {}, failuresOut, timingsOut, triggeredEnvPath, globalBudget,
+			suite, options ?? {}, failuresOut, timingsOut, triggeredEnvPath,
 		)
 		const {
-			code, output, terminated, sleepInterrupted, terminateReason, peakMemMb, avgCpuPct,
+			code, output, terminated, sleepInterrupted, terminateReason, peakMemMb, peakUnitMemMb, avgCpuPct,
 		} = await runCommand(command, env, {
 			stream,
 			cwd: REPO_ROOT,
@@ -161,6 +159,7 @@ async function runSuiteOnce(suite, options, globalBudget, stream, watchdog) {
 			signal: watchdog.signal,
 			onStdout: watchdog.onStdout,
 			onStderr: watchdog.onStderr,
+			trackUnits: suiteUsesSerialRunner(suite),
 		})
 		const timings = await readTimingsOutFile(timingsOut)
 		return {
@@ -171,6 +170,7 @@ async function runSuiteOnce(suite, options, globalBudget, stream, watchdog) {
 			durationMs: Date.now() - started,
 			subtestDurations: mapTimingsToSubtests(suite, timings, options?.subtests),
 			peakMemMb,
+			peakUnitMemMb,
 			avgCpuPct,
 			terminated,
 			sleepInterrupted,
@@ -191,7 +191,6 @@ export const MAX_SLEEP_INTERRUPT_ATTEMPTS = 5
  * 运行 suite：含 sleep 中断重跑（有界）。
  * @param {import('../core/manifest.mjs').SuiteDef} suite suite
  * @param {SuiteInvocationOptions | undefined} options 调用选项
- * @param {import('../core/concurrency.mjs').GlobalBudget | undefined} globalBudget 全局预算
  * @param {boolean} [stream] 是否实时转发 stdout/stderr
  * @param {object} [watchdog] watchdog 选项
  * @param {string} [watchdog.label] suite 标签
@@ -201,7 +200,7 @@ export const MAX_SLEEP_INTERRUPT_ATTEMPTS = 5
  * @param {(chunk: string) => void} [watchdog.onStderr] stderr 回调
  * @returns {Promise<SuiteRunResult>} 运行结果
  */
-export async function runSuite(suite, options, globalBudget, stream = false, watchdog = {}) {
+export async function runSuite(suite, options, stream = false, watchdog = {}) {
 	const label = watchdog.label || `${suite.manifestId}:${suite.name}`
 	let attempt = 0
 	while (true) {
@@ -228,7 +227,7 @@ export async function runSuite(suite, options, globalBudget, stream = false, wat
 				terminateReason: `sleep_retry_exhausted:${MAX_SLEEP_INTERRUPT_ATTEMPTS}`,
 			}
 
-		const result = await runSuiteOnce(suite, options, globalBudget, stream, watchdog)
+		const result = await runSuiteOnce(suite, options, stream, watchdog)
 		if (!result.sleepInterrupted) {
 			const { sleepInterrupted: _, ...rest } = result
 			return rest

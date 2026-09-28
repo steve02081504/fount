@@ -1,4 +1,8 @@
 /* global Deno */
+import { mkdtemp, rm } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+
 import { assertEquals } from 'jsr:@std/assert'
 
 import {
@@ -11,7 +15,11 @@ import {
 import { listManifestIds, loadAllSuites } from '../core/manifest.mjs'
 import { buildPlan } from '../core/plan.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
-import { refreshEntryFingerprint, suiteKey } from '../core/state.mjs'
+import {
+	refreshEntryFingerprint,
+	suiteKey,
+	upsertSuiteRun,
+} from '../core/state.mjs'
 import {
 	buildVerdicts,
 	isContentFresh,
@@ -22,6 +30,14 @@ import {
 } from '../core/verdict.mjs'
 
 import { makeStateEntry, makeSuite } from './fixtures.mjs'
+
+/**
+ * 建临时 repo 根（含 data/test 树）。
+ * @returns {Promise<string>} repoRoot
+ */
+async function makeRepoRoot() {
+	return await mkdtemp(join(tmpdir(), 'fount_dependencies_state_'))
+}
 
 Deno.test('resolveSuiteDependencies expands manifest selector', () => {
 	const all = [
@@ -316,4 +332,25 @@ Deno.test('fresh green stays reusable with old commitHash without pre-align', ()
 	assertEquals(verdict.fresh, true)
 	assertEquals(verdictReusable(verdict, false), true)
 	assertEquals(entry.commitHash, 'old')
+})
+
+Deno.test('upsertSuiteRun persists baselineUnitMemMb from result.peakUnitMemMb', async () => {
+	const repoRoot = await makeRepoRoot()
+	try {
+		const suite = makeSuite('shells/chat', 'pure')
+		const key = suiteKey(suite.manifestId, suite.name)
+		const state = { suites: {} }
+		await upsertSuiteRun({
+			repoRoot,
+			state,
+			suite,
+			result: { passed: true, failedFiles: [], output: '', durationMs: 5, peakUnitMemMb: 88 },
+			commitHash: 'head',
+			uncommittedHash: null,
+		})
+		assertEquals(state.suites[key].baselineUnitMemMb, 88)
+	}
+	finally {
+		await rm(repoRoot, { recursive: true, force: true })
+	}
 })

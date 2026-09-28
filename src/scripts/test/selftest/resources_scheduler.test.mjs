@@ -1,5 +1,7 @@
 /* global Deno */
-import { assertEquals, assert } from 'jsr:@std/assert'
+import { cpus } from 'node:os'
+
+import { assertEquals, assert, assertRejects } from 'jsr:@std/assert'
 
 import {
 	BASELINE_EMA_CPU,
@@ -12,8 +14,13 @@ import {
 } from '../core/baseline.mjs'
 import { MiB } from '../core/concurrency.mjs'
 import {
+	DEFAULT_UNIT_MEM_MB,
+	SERIAL_BASE_CPU_PCT,
+	SERIAL_BASE_MEM_MB,
 	inferDefaultResources,
 	parseManifestResources,
+	resolveSerialUnitResources,
+	resolveSuiteEstimateResources,
 	resolveSuiteResources,
 	resourcesMemBytes,
 	suiteSchedulePriority,
@@ -526,4 +533,116 @@ Deno.test('ResourceRunGate tryAcquire returns null when over budget', () => {
 	const releaseExtra = gate.tryAcquire(extra)
 	assert(releaseExtra)
 	releaseExtra()
+})
+
+/** serial.mjs 运行命令夹具。 */
+const SERIAL_RUN = ['deno', 'run', '--allow-all', './src/scripts/test/deno/serial.mjs', 'x']
+
+/**
+ * 构造 serial suite 夹具（默认带单元资源声明）。
+ * @param {object} [resources] manifest resources 块
+ * @returns {import('../core/manifest.mjs').SuiteDef} suite
+ */
+function makeSerialSuite(resources = { unitMemMb: 400, unitCpuPct: 10 }) {
+	return makeSuite('shells/chat', 'integration', { run: SERIAL_RUN, resources })
+}
+
+Deno.test('serial suite gates on base footprint while estimate keeps full measured', () => {
+	const suite = makeSerialSuite({})
+	const entry = { baselineMemMb: 1800, baselineCpuPct: 25 }
+	assertEquals(
+		resolveSuiteResources(suite, entry),
+		{ memMb: SERIAL_BASE_MEM_MB, cpuPct: SERIAL_BASE_CPU_PCT },
+	)
+	assertEquals(resolveSuiteEstimateResources(suite, entry), { memMb: 1800, cpuPct: 25 })
+})
+
+Deno.test('resolveSerialUnitResources precedence: baseline > manifest > default', () => {
+	const suite = makeSerialSuite({ unitMemMb: 512, unitCpuPct: 12.5 })
+	const defaultCpu = Math.max(0.1, 100 / cpus().length)
+	assertEquals(resolveSerialUnitResources(suite, undefined), { memMb: 512, cpuPct: 12.5 })
+	assertEquals(
+		resolveSerialUnitResources(suite, { baselineUnitMemMb: 900 }),
+		{ memMb: 900, cpuPct: 12.5 },
+	)
+	assertEquals(
+		resolveSerialUnitResources(makeSerialSuite({}), undefined),
+		{ memMb: DEFAULT_UNIT_MEM_MB, cpuPct: defaultCpu },
+	)
+})
+
+Deno.test('ResourceRunGate admits two unit leases, third waits, release admits it', async () => {
+	const gate = new ResourceRunGate(1000 * MiB)
+	const releaseA = await gate.acquireUnit(makeSerialSuite())
+	const releaseB = await gate.acquireUnit(makeSerialSuite())
+	assertEquals(gate.usedUnitMemBytes, 800 * MiB)
+	assertEquals(gate.usedUnitCpuPct, 20)
+
+	const waitC = gate.acquireUnit(makeSerialSuite())
+	let cReady = false
+	waitC.then(() => { cReady = true })
+	await Promise.resolve()
+	assertEquals(gate.unitWaiterCount, 1)
+	assertEquals(cReady, false)
+
+	releaseA()
+	const releaseC = await waitC
+	assertEquals(gate.unitWaiterCount, 0)
+	assertEquals(gate.usedUnitMemBytes, 800 * MiB)
+	releaseB()
+	releaseC()
+	assertEquals(gate.usedUnitMemBytes, 0)
+})
+
+Deno.test('ResourceRunGate never idles a unit that exceeds budget', async () => {
+	// 不变量：有单元等待且机器全空时，超预算也要放行一个。
+	const gate = new ResourceRunGate(500 * MiB)
+	const huge = makeSerialSuite({ unitMemMb: 1800, unitCpuPct: 25 })
+	const release = await Promise.race([
+		gate.acquireUnit(huge),
+		new Promise((_, reject) => setTimeout(() => reject(new Error('gate left units idle')), 200)),
+	])
+	assertEquals(gate.usedUnitMemBytes, 1800 * MiB)
+	release()
+})
+
+Deno.test('ResourceRunGate acquireUnit with aborted signal rejects without leaking waiter', async () => {
+	const gate = new ResourceRunGate(1000 * MiB)
+	const controller = new AbortController()
+	controller.abort()
+	await assertRejects(() => gate.acquireUnit(makeSerialSuite(), controller.signal))
+	assertEquals(gate.unitWaiterCount, 0)
+})
+
+Deno.test('ResourceRunGate frees a suite\'s unit leases when its slot is released', async () => {
+	// worker 崩溃不调 /unit/release：suite 结束释放槽位时必须连带回收其全部单元租约。
+	const gate = new ResourceRunGate(1000 * MiB)
+	const suite = makeSerialSuite()
+	const releaseSuite = await gate.acquire(suite)
+	const releaseUnit = await gate.acquireUnit(suite)
+	assertEquals(gate.usedUnitMemBytes, 400 * MiB)
+
+	releaseSuite()
+	assertEquals(gate.usedUnitMemBytes, 0)
+
+	// 幂等：崩溃 worker 之后迟到的 release 不得二次扣减。
+	releaseUnit()
+	assertEquals(gate.usedUnitMemBytes, 0)
+})
+
+Deno.test('ResourceRunGate unit and suite share one budget', async () => {
+	const gate = new ResourceRunGate(1000 * MiB)
+	const suite = makeSuite('shells/chat', 'pure', { resources: { memMb: 800, cpuPct: 10 } })
+	const releaseSuite = await gate.acquire(suite)
+	assertEquals(gate.usedMemBytes, 800 * MiB)
+
+	const waitUnit = gate.acquireUnit(makeSerialSuite())
+	await Promise.resolve()
+	assertEquals(gate.unitWaiterCount, 1)
+
+	releaseSuite()
+	const releaseUnit = await waitUnit
+	assertEquals(gate.usedUnitMemBytes, 400 * MiB)
+	releaseUnit()
+	assertEquals(gate.usedUnitMemBytes, 0)
 })

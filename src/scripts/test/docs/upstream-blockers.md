@@ -6,7 +6,7 @@ Day-to-day: [AGENTS.md](../AGENTS.md). Do not work around these in fount or in t
 
 Parallel `deno test` / `deno run` children against `"nodeModulesDir": "auto"` + `"lock": false` can leave Windows `node_modules/.deno` incomplete ([denoland/deno#35804](https://github.com/denoland/deno/issues/35804)). Symptoms: `Cannot find module` / `NotFound: The system cannot find the path specified` for already-declared npm deps (`etag`, `safer-buffer`, `@opentelemetry/core`, …).
 
-Module-check mutex only serializes spawn→JS-ready ([resource-scheduling.md](resource-scheduling.md)); it does not fix post-ready races. Do not force `--no-parallel` as a product default. After a Deno fix: drop any leftover Windows `--no-parallel` guidance that exists solely for this class of flake.
+Module-check mutex only serializes spawn→JS-ready ([resource-scheduling.md](resource-scheduling.md)); it does not fix post-ready races. A dependency loaded lazily **after** the module-check `ready` signal — e.g. `growly`, pulled in by `node-notifier` only when something first posts a notification — can still hit this concurrent-`node_modules` race despite the mutex. When it does, the test file registers 0 tests and exits 0, so a green-looking [serial] line hides a file that never ran. `serial.mjs` now treats `running 0 tests` (with no `filtered out` / `ignored` tests) as a failure (`fountConsole.test.serialZeroTests`) so the hole is at least loud. Do not force `--no-parallel` as a product default. After a Deno fix: drop any leftover Windows `--no-parallel` guidance that exists solely for this class of flake.
 
 ## Optional native for another OS fails `deno install` (`denoland/deno#36597`)
 

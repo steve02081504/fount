@@ -9,14 +9,13 @@
 import 'fount/scripts/test/env.mjs'
 
 import { readdirSync, readFileSync, rmSync, statSync } from 'node:fs'
-import { tmpdir } from 'node:os'
+import { cpus, tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import process from 'node:process'
 
 import { execFile } from 'npm:@steve02081504/exec'
 
 import { console } from '../../i18n/bare.mjs'
-import { computeConcurrency, readBudgetFromEnv, UNIT_MEM, concurrencyFromBudget } from '../core/concurrency.mjs'
 import { isDenoTeardownCrashAfterGreenTests } from '../core/deno_panic.mjs'
 import { outputHasNoise } from '../core/output_filter.mjs'
 import {
@@ -28,8 +27,10 @@ import {
 	writeFailuresOutFile,
 } from '../core/protocol.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
+import { detectsZeroTests } from '../core/zero_tests.mjs'
 import { childEnv } from '../env.mjs'
 import { ModuleCheckMissedReadyError, moduleCheckTicketEnv, withDenoModuleCheckPreload, withModuleCheckTicket } from '../hub/clients/module_check.mjs'
+import { withUnitLease } from '../hub/clients/unit_lease.mjs'
 
 import { withNoDomShimPreload } from './no_dom_shim.mjs'
 
@@ -113,10 +114,12 @@ if (filterList.length)
 	testFiles = testFiles.filter(file => isIncludedInTestOnly(REPO_ROOT, toRepoRelative(REPO_ROOT, file), filterList))
 
 const denoBase = ['test', '--no-check', '--allow-scripts', '--allow-all', '-c', './deno.json']
-const budget = readBudgetFromEnv()
-const concurrency = budget
-	? concurrencyFromBudget(UNIT_MEM, budget.cores, budget.memBytes)
-	: computeConcurrency(UNIT_MEM, Number(process.env.FOUNT_TEST_UNIT_CONCURRENCY))
+// 池宽只是 worker 数上限；真正的并发限制是每文件在全局单元池申请的租约。
+const concurrencyOverride = Number(process.env.FOUNT_TEST_UNIT_CONCURRENCY)
+const concurrency = concurrencyOverride >= 1
+	? Math.floor(concurrencyOverride)
+	: Math.max(1, Math.min(cpus().length, testFiles.length || 1))
+const suiteKey = process.env.FOUNT_TEST_SUITE_KEY || ''
 const failed = []
 let silentPassed = 0
 let stopped = false
@@ -147,6 +150,12 @@ function recordResult(file, code, output, signal = null) {
 	else if (code !== 0 && teardownCrash) {
 		process.stdout.write(`[serial] ok ${rel} (deno teardown crash after pass)\n`)
 		silentPassed++
+	}
+	else if (detectsZeroTests(output)) {
+		// 静态 import 失败等导致 0 测试注册、退出 0：看似绿实则整文件没跑。
+		console.errorI18n('fountConsole.test.serialZeroTests', { path: rel })
+		failed.push(rel)
+		return true
 	}
 	else if (noisy) {
 		// 已通过但含噪声：输出已在 runCaptured 中实时转发
@@ -222,12 +231,13 @@ async function runPool(files, { stopOnFailure }) {
 			let code, output, signal
 			const dataDirsOut = allocDataDirsOutPath()
 			try {
-				({ code, output, signal } = await withModuleCheckTicket(ticket =>
-					runCaptured(withDenoModuleCheckPreload(withNoDomShimPreload(['deno', ...denoBase, file]), ticket), {
-						DENO_JOBS: '1',
-						FOUNT_TEST_DATA_DIRS_OUT: dataDirsOut,
-						...moduleCheckTicketEnv(ticket),
-					})))
+				({ code, output, signal } = await withUnitLease(suiteKey, async () =>
+					withModuleCheckTicket(ticket =>
+						runCaptured(withDenoModuleCheckPreload(withNoDomShimPreload(['deno', ...denoBase, file]), ticket), {
+							DENO_JOBS: '1',
+							FOUNT_TEST_DATA_DIRS_OUT: dataDirsOut,
+							...moduleCheckTicketEnv(ticket),
+						}))))
 			}
 			catch (error) {
 				if (!(error instanceof ModuleCheckMissedReadyError)) throw error

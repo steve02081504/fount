@@ -565,7 +565,7 @@
 		},
 		{
 			"name": "launch_node",
-			"expected": "10m39s",
+			"expected": "6m8s",
 			"run": [
 				"deno",
 				"run",
@@ -719,10 +719,12 @@
 				"./src/scripts/test/selftest/deno_update.test.mjs",
 				"./src/scripts/test/selftest/jobs.test.mjs",
 				"./src/scripts/test/selftest/viewers.test.mjs",
-				"./src/scripts/test/selftest/cleanup_check.test.mjs"
+				"./src/scripts/test/selftest/cleanup_check.test.mjs",
+				"./src/scripts/test/selftest/serial_zero_tests.test.mjs",
+				"./src/scripts/test/selftest/schedule.test.mjs"
 			],
 			"triggers": [
-				"src/scripts/test/selftest/{skip_because.test.mjs,queues.test.mjs,module_check.test.mjs,nested_git.test.mjs,issue_cache.test.mjs,kernel_lifecycle.test.mjs,kernel_fixtures.mjs,display.test.mjs,output_mode.test.mjs,deno_update.test.mjs,jobs.test.mjs,viewers.test.mjs,cleanup_check.test.mjs,fixtures.mjs}",
+				"src/scripts/test/selftest/{skip_because.test.mjs,queues.test.mjs,module_check.test.mjs,nested_git.test.mjs,issue_cache.test.mjs,kernel_lifecycle.test.mjs,kernel_fixtures.mjs,display.test.mjs,output_mode.test.mjs,deno_update.test.mjs,jobs.test.mjs,viewers.test.mjs,cleanup_check.test.mjs,serial_zero_tests.test.mjs,schedule.test.mjs,fixtures.mjs}",
 				"src/scripts/test/core/skip_because.mjs",
 				"src/scripts/test/module_check_ready.mjs",
 				"src/scripts/test/env.mjs",
@@ -739,6 +741,7 @@
 				"src/scripts/test/core/plan.mjs",
 				"src/scripts/test/core/manifest.mjs",
 				"src/scripts/test/core/concurrency.mjs",
+				"src/scripts/test/core/zero_tests.mjs",
 				"src/scripts/test/core/serial_files.mjs",
 				"src/scripts/test/core/github_issue.mjs",
 				"src/scripts/test/core/changed.mjs",

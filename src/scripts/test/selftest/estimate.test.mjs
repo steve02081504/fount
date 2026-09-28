@@ -13,6 +13,7 @@ import {
 	summarizeEstimate,
 } from '../core/estimate.mjs'
 import { buildPlan } from '../core/plan.mjs'
+import { resolveSuiteResources } from '../core/resources.mjs'
 import { suiteKey } from '../core/state.mjs'
 import { buildVerdicts } from '../core/verdict.mjs'
 
@@ -75,6 +76,18 @@ Deno.test('buildEstimateTask uses baseline and marks reused as zero', () => {
 	assertEquals(fresh.durationMs, 18_000)
 	const reused = buildEstimateTask(suite, stateEntry, { reused: true })
 	assertEquals(reused.durationMs, 0)
+})
+
+Deno.test('buildEstimateTask keeps full measured footprint for serial suite while gate uses base', () => {
+	const suite = makeSuite('shells/chat', 'integration', {
+		run: ['deno', 'run', '-A', 'src/scripts/test/runner/serial.mjs'],
+	})
+	const stateEntry = makeStateEntry({ baselineMemMb: 1800, baselineCpuPct: 25 })
+	const task = buildEstimateTask(suite, stateEntry)
+	// ETA 不模拟单元租约 → 对 serial suite 保留完整实测占用
+	assertEquals([task.memMb, task.cpuPct], [1800, 25])
+	// 资源闸门只占编排器基础位
+	assertEquals(resolveSuiteResources(suite, stateEntry), { memMb: 200, cpuPct: 5 })
 })
 
 Deno.test('expectedRunDurationMs without subtests uses suite baseline', () => {
