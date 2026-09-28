@@ -42,7 +42,8 @@
 			"src/public/parts/shells/chat/test/pure/**"
 		],
 		"shellIntegrationTests": [
-			"src/public/parts/shells/chat/test/integration/**"
+			"src/public/parts/shells/chat/test/integration/**",
+			"src/public/parts/shells/chat/test/fixtures/chars/set_workdir_agent/**"
 		],
 		"shellLiveInfra": [
 			"src/public/parts/shells/chat/test/live/run.mjs"
