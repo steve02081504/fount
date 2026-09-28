@@ -172,7 +172,7 @@
 			"moduleCheck": {
 				"missedReady": "Modulprüfung: Prozess beendet ohne Ready-Signal: ${label}"
 			},
-			"serialZeroTests": null,
+			"serialZeroTests": "[serial] ${path} hat 0 Tests registriert",
 			"frontend": {
 				"isolatedRequired": "Der ${shellLabel}-Front-End-Test muss über test/frontend/run.mjs gestartet werden (das startet selbstständig einen isolierten Knoten). Nicht gegen lokale Entwicklungsinstanzen oder echte Benutzerdaten ausführen.",
 				"isolatedUser": "Tests müssen unter dem isolierten Benutzer „${expectedUsername}“ laufen; aktuell läuft die Sitzung als „${username}“. Bitte über run.mjs starten und nicht auf einen Produktions- oder Entwicklungs-fount zeigen."

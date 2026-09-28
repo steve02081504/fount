@@ -172,7 +172,7 @@
 			"moduleCheck": {
 				"missedReady": "모듈 검사: ready 신호 없이 프로세스 종료: ${label}"
 			},
-			"serialZeroTests": null,
+			"serialZeroTests": "[serial] ${path}에 등록된 테스트가 0개입니다",
 			"frontend": {
 				"isolatedRequired": "${shellLabel} 프런트엔드 테스트는 test/frontend/run.mjs를 통해 시작해야 합니다(격리 노드를 자동으로 띄웁니다). 로컬 개발 인스턴스나 실제 사용자 데이터에서는 실행하지 마세요.",
 				"isolatedUser": "테스트는 격리 사용자 \"${expectedUsername}\"로 실행해야 하며, 현재 세션은 \"${username}\"로 실행 중입니다. run.mjs를 통해 시작하고 프로덕션·개발용 fount를 가리키지 마세요."

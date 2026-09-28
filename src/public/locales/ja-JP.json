@@ -172,7 +172,7 @@
 			"moduleCheck": {
 				"missedReady": "モジュールチェック: ready シグナルなしでプロセス終了: ${label}"
 			},
-			"serialZeroTests": null,
+			"serialZeroTests": "[serial] ${path} 登録されたテストは 0 件です",
 			"frontend": {
 				"isolatedRequired": "${shellLabel} フロントエンドテストは test/frontend/run.mjs を介して起動してください（run.mjs が分離ノードを自動起動します）。ローカルの開発インスタンスや実ユーザーのデータでは実行しないでください。",
 				"isolatedUser": "テストは分離ユーザー「${expectedUsername}」で実行する必要があります（現在のセッションは「${username}」）。run.mjs 経由で起動し、本番・開発用の fount を指さないでください。"
