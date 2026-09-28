@@ -11,6 +11,10 @@ cmd_keepalive() {
 	init_attempted=0
 	restart_timestamps=()
 
+	if [ -d "${TMPDIR:-/tmp}" ]; then
+		find "${TMPDIR:-/tmp}" -mindepth 1 -maxdepth 1 ! -name fount -exec rm -rf -- {} + 2>/dev/null &
+	fi
+
 	run_server "$@"
 	server_status=$?
 	while [ "$server_status" -ne 0 ]; do
