@@ -45,7 +45,7 @@ export function createWebBrowseReplyHandler({ fetchMarkdown = MarkdownWebFetch, 
 		 * @param {object} _reply - 当前回复。
 		 * @param {object} args - 回复请求上下文。
 		 * @param {object} call - 已解析的工具调用。
-		 * @returns {Promise<{regen: boolean}>} 要求模型根据网页内容继续生成。
+		 * @returns {Promise<{regen: boolean, failed?: boolean}>} 要求模型根据网页内容继续生成；缺少 URL 或抓取失败时标记失败。
 		 */
 		handle: async (_reply, args, call) => {
 			/**
@@ -65,7 +65,7 @@ export function createWebBrowseReplyHandler({ fetchMarkdown = MarkdownWebFetch, 
 			const { url, question } = parseWebBrowseCall(String(call?.inner ?? ''))
 			if (!url) {
 				addToolLog('网页浏览指令 <web-browse> 内未找到 <url> 标签。')
-				return { regen: true }
+				return { regen: true, failed: true }
 			}
 
 			console.info('AI 浏览网页：', url)
@@ -80,6 +80,7 @@ export function createWebBrowseReplyHandler({ fetchMarkdown = MarkdownWebFetch, 
 				console.error('web browse failed:', error)
 				const message = error?.stack || error?.message || String(error)
 				addToolLog(`浏览网页“${url}”时出现错误：\n${message}`)
+				return { regen: true, failed: true }
 			}
 			return { regen: true }
 		},

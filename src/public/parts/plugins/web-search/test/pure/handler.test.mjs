@@ -1,6 +1,8 @@
 /* global Deno */
 import { assertEquals, assertStringIncludes } from 'jsr:@std/assert'
 
+import { allowNoise } from 'fount/scripts/test/core/allowNoise.mjs'
+
 import { createWebSearchReplyHandler, formatSearchResults } from '../../handler.mjs'
 
 /**
@@ -114,10 +116,11 @@ Deno.test('web search splits queries, searches each with a five-result limit, an
 Deno.test('web search reports a missing source and retries failed searches', async () => {
 	const missingSourceLogs = []
 	const missingSourceHandler = createWebSearchReplyHandler({ getSearchSource: sourceGetter(undefined) })
-	await missingSourceHandler.handle({}, {
+	const missingSourceResult = await missingSourceHandler.handle({}, {
 		AddLongTimeLog: collectLog(missingSourceLogs),
 	}, { inner: 'query' })
 	assertStringIncludes(missingSourceLogs[0].content, '未找到可用的搜索源')
+	assertEquals(missingSourceResult, { regen: true, failed: true })
 
 	const calls = []
 	const logs = []
@@ -130,6 +133,27 @@ Deno.test('web search reports a missing source and retries failed searches', asy
 	}, { inner: 'query' })
 	assertEquals(calls.length, 3)
 	assertStringIncludes(logs[0].content, '未找到相关搜索结果')
+})
+
+Deno.test('web search marks failed on empty queries and exhausted retries', async () => {
+	const emptyLogs = []
+	const emptyHandler = createWebSearchReplyHandler({ getSearchSource: sourceGetter(fakeSearchSource([], {})) })
+	const emptyResult = await emptyHandler.handle({}, { AddLongTimeLog: collectLog(emptyLogs) }, { inner: '   ' })
+	assertStringIncludes(emptyLogs[0].content, '未找到有效的搜索关键词')
+	assertEquals(emptyResult, { regen: true, failed: true })
+
+	const failingLogs = []
+	const failingHandler = createWebSearchReplyHandler({
+		getSearchSource: sourceGetter({
+			/** 总是抛出错误的搜索源。 @returns {Promise<never>} 抛错。 */
+			Search: async () => { throw new Error('down') },
+		}),
+		retry: noRetry,
+	})
+	const failingResult = await allowNoise('web search failed:', () =>
+		failingHandler.handle({}, { AddLongTimeLog: collectLog(failingLogs) }, { inner: 'query' }))
+	assertStringIncludes(failingLogs[0].content, '时出现错误')
+	assertEquals(failingResult, { regen: true, failed: true })
 })
 
 Deno.test('web search guards oversized provider descriptions', async () => {

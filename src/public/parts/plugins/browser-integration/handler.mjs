@@ -131,7 +131,7 @@ export function createBrowserIntegrationReplyHandler({ getApi = defaultGetApi } 
 			 * @param {object} _reply - 回复对象。
 			 * @param {object} args - 请求上下文。
 			 * @param {object} call - 已解析的调用。
-			 * @returns {Promise<{regen: boolean}>} 要求模型继续生成。
+			 * @returns {Promise<{regen: boolean, failed?: boolean}>} 要求模型继续生成；操作出错时标记失败。
 			 */
 			handle: async (_reply, args, call) => {
 				try {
@@ -141,6 +141,7 @@ export function createBrowserIntegrationReplyHandler({ getApi = defaultGetApi } 
 				catch (error) {
 					console.error(`Error executing browser integration command "${command}":`, error)
 					await logBrowserTool(args, name, `执行 ${command} 时出错：\n${error?.stack || error?.message || error}`)
+					return { regen: true, failed: true }
 				}
 				return { regen: true }
 			},
@@ -193,7 +194,7 @@ export function createBrowserIntegrationReplyHandler({ getApi = defaultGetApi } 
 		 * @param {object} _reply - 回复对象。
 		 * @param {object} args - 请求上下文。
 		 * @param {object} call - 已解析的调用。
-		 * @returns {Promise<{regen: boolean}>} 要求模型继续生成。
+		 * @returns {Promise<{regen: boolean, failed?: boolean}>} 要求模型继续生成；获取页面 HTML 出错时标记失败。
 		 */
 		handle: async (_reply, args, call) => {
 			try {
@@ -208,6 +209,7 @@ export function createBrowserIntegrationReplyHandler({ getApi = defaultGetApi } 
 			catch (error) {
 				console.error('Error executing browser integration command "get-page-html":', error)
 				await logBrowserTool(args, 'browser-integration.get-page-html', `执行 get-page-html 时出错：\n${error?.stack || error?.message || error}`)
+				return { regen: true, failed: true }
 			}
 			return { regen: true }
 		},

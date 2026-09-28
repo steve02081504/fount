@@ -113,17 +113,18 @@ Deno.test('web browse dumps oversized content to a temp file via the default gua
 
 Deno.test('web browse reports a missing url and a fetch failure without leaking raw html', async () => {
 	const missingLogs = []
-	await createWebBrowseReplyHandler({ fetchMarkdown: fetchReturning('') }).handle({}, {
+	const missingResult = await createWebBrowseReplyHandler({ fetchMarkdown: fetchReturning('') }).handle({}, {
 		AddLongTimeLog: collectLog(missingLogs),
 	}, { inner: '<question>no url</question>' })
 	assertStringIncludes(missingLogs[0].content, '未找到 <url> 标签')
+	assertEquals(missingResult, { regen: true, failed: true })
 
 	const errorLogs = []
-	await allowNoise('web browse failed:', async () => {
-		await createWebBrowseReplyHandler({
+	const errorResult = await allowNoise('web browse failed:', () =>
+		createWebBrowseReplyHandler({
 			fetchMarkdown: fetchThrowing(new Error('<img onerror=alert(1)>')),
-		}).handle({}, { AddLongTimeLog: collectLog(errorLogs) }, { inner: '<url>https://example.com</url>' })
-	})
+		}).handle({}, { AddLongTimeLog: collectLog(errorLogs) }, { inner: '<url>https://example.com</url>' }))
 	assertStringIncludes(errorLogs[0].content, '浏览网页“https://example.com”时出现错误')
 	assertStringIncludes(errorLogs[0].content_for_show, '```')
+	assertEquals(errorResult, { regen: true, failed: true })
 })

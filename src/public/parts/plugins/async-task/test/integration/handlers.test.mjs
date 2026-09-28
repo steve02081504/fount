@@ -101,8 +101,9 @@ Deno.test('await-async retrieves a task completed before the parent generation e
 Deno.test('await-async errors without ids', async () => {
 	resetAsyncTaskState()
 	const args = createArgs()
-	await awaitAsyncHandler.handle(null, args, { params: {} })
+	const result = await awaitAsyncHandler.handle(null, args, { params: {} })
 	assertEquals(args.logs.at(-1).extension?.error, true)
+	assertEquals(result, { regen: true, failed: true })
 })
 
 Deno.test('inspect-async returns a running task preview without consuming it', async () => {
@@ -154,14 +155,16 @@ Deno.test('inspect-async surfaces structured sub-agent entries', async () => {
 Deno.test('inspect-async reports failures for missing ids', async () => {
 	resetAsyncTaskState()
 	const args = createArgs()
-	await inspectAsyncHandler.handle(null, args, { params: {} })
+	const missingIdResult = await inspectAsyncHandler.handle(null, args, { params: {} })
 	assertEquals(args.logs.at(-1).name, 'async-task.inspect')
 	assertEquals(args.logs.at(-1).extension?.error, true)
+	assertEquals(missingIdResult, { regen: true, failed: true })
 
 	args.logs.length = 0
-	await inspectAsyncHandler.handle(null, args, { params: { id: 'nope' } })
+	const notFoundResult = await inspectAsyncHandler.handle(null, args, { params: { id: 'nope' } })
 	assertEquals(args.logs.at(-1).extension?.error, true)
 	assert(args.logs.at(-1).content.includes('未找到'))
+	assertEquals(notFoundResult, { regen: true, failed: true })
 })
 
 Deno.test('await-async spills oversized results to a temp file instead of truncating', async () => {
