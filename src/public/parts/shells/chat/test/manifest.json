@@ -30,6 +30,7 @@
 		"shellIntegrationExtra": [
 			"deno.json",
 			"src/scripts/search/**",
+			"src/server/server.mjs",
 			"src/server/p2p_server/**",
 			"src/server/{registries.mjs,parts_loader.mjs}",
 			"src/server/web_server/notify/**",
@@ -43,7 +44,8 @@
 		],
 		"shellIntegrationTests": [
 			"src/public/parts/shells/chat/test/integration/**",
-			"src/public/parts/shells/chat/test/fixtures/chars/set_workdir_agent/**"
+			"src/public/parts/shells/chat/test/fixtures/chars/set_workdir_agent/**",
+			"src/public/parts/shells/chat/test/fixtures/chars/gentian_shell_contract/**"
 		],
 		"shellLiveInfra": [
 			"src/public/parts/shells/chat/test/live/run.mjs"

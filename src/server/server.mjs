@@ -162,6 +162,13 @@ export async function init(start_config) {
 	}
 
 	config = get_config()
+	// 本地实体身份（entity identity）只依赖本地存储目录，与是否启动 P2P 无关：
+	// 即使 `P2P: false`（如 charCI / 离线部署），char Load 也必须能创建/读取本地身份。
+	// 仅配置目录位置，不初始化节点运行时、不联网。
+	{
+		const { configureNodeStorage } = await import('npm:@steve02081504/fount-p2p/node/instance')
+		configureNodeStorage({ nodeDir: path.join(data_path, 'p2p', 'node') })
+	}
 	let authPromise
 	if (starts.Base) authPromise = initAuth()
 	SetTaskbarProgress(65)

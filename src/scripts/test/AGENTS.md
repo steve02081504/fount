@@ -83,6 +83,7 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 - Every `deno run`/`test`/`install` carries `--allow-scripts --allow-all` (in that order). Sole exception: `deno cache` takes `--allow-scripts` alone.
 - **Manual single-file runs**: `deno test --allow-scripts --allow-all --no-check -c ./deno.json <path/to/file.test.mjs>` from the repo root. A bare `deno test` (no `-c`) fails type-check on `src/public/decl/*.ts` (needs the import map). **Do not trust `RUST_BACKTRACE`**: when it is set (`1`), deno appends a backtrace to every reported error whose tail can bottom out in `aws_lc_*_jent_entropy_switch_notime_impl` — that is diagnostic noise, not a native crash. Unset it (or `Remove-Item Env:RUST_BACKTRACE`) before diagnosing an "aws_lc crash".
 - Single-node: `{ p2p: false, minP2pNode: true }`. Domain traps: [domain-harness.md](docs/domain-harness.md).
+- **P2P-disabled behavior** must use `minP2pNode: false` (e.g. `entity_identity_offline.test.mjs`): `init()` still calls `configureNodeStorage`, so local entity identity must succeed with no node runtime; `minP2pNode: true` would mask a regression by pre-initializing one.
 - **Teardown crashes after green**: Windows napi / Linux fatal signals with `N passed | 0 failed` → `[serial] ok … (deno teardown crash after pass)`, not suite red.
 
 ## Operator tools
