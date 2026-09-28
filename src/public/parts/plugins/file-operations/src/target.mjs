@@ -65,6 +65,7 @@ function withWriteLock(key, fn) {
  * @property {(p: string) => Promise<string>} resolvePath - 将路径解析为目标机器上的绝对路径（相对路径基于工作目录，支持 `~`）。
  * @property {(p: string) => Promise<string>} realpath - 解析路径的真实位置（realpath；跨符号链接与大小写差异，大小写敏感系统上同名不同文件仍可区分）。
  * @property {(p: string) => Promise<string>} readTextFile - 读文本文件。
+ * @property {(p: string) => Promise<{text: string, mtimeMs: number}>} readTextFileWithMtime - 读文本文件并附带最后修改时间（毫秒）。
  * @property {(p: string) => Promise<Buffer>} readFileBuffer - 读二进制文件。
  * @property {(p: string, content: string) => Promise<void>} writeTextFile - 写文本文件。
  * @property {(p: string) => Promise<dirEntry_t[]>} listDir - 列目录。
@@ -283,6 +284,16 @@ function createLocalExecutor(target) {
 		 */
 		readTextFile: async p => await fs.promises.readFile(abs(p), 'utf-8'),
 		/**
+		 * 读文本文件并附带最后修改时间（毫秒）。
+		 * @param {string} p - 路径。
+		 * @returns {Promise<{text: string, mtimeMs: number}>} 文本与 mtime。
+		 */
+		readTextFileWithMtime: async p => {
+			const absPath = abs(p)
+			const [text, stat] = await Promise.all([fs.promises.readFile(absPath, 'utf-8'), fs.promises.stat(absPath)])
+			return { text, mtimeMs: stat.mtimeMs }
+		},
+		/**
 		 * 读二进制文件。
 		 * @param {string} p - 路径。
 		 * @returns {Promise<Buffer>} 文件内容。
@@ -481,6 +492,12 @@ function createRemoteExecutor(username, target) {
 		 * @returns {Promise<string>} 文件内容。
 		 */
 		readTextFile: async p => await withPath(absExpr => `return await fs.readFile(${absExpr}, 'utf8')`, p),
+		/**
+		 * 读文本文件并附带最后修改时间（毫秒）。
+		 * @param {string} p - 路径。
+		 * @returns {Promise<{text: string, mtimeMs: number}>} 文本与 mtime。
+		 */
+		readTextFileWithMtime: async p => await withPath(absExpr => `const st = await fs.stat(${absExpr}); return { text: await fs.readFile(${absExpr}, 'utf8'), mtimeMs: st.mtimeMs }`, p),
 		/**
 		 * 读二进制文件（base64 传输后还原 Buffer）。
 		 * @param {string} p - 路径。

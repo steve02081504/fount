@@ -40,10 +40,20 @@ function sessionsDir(workdir) {
 }
 
 /**
- * 列出工作区内的会话（按 updated 降序）。
+ * 获取会话文件路径。
+ * @param {{path?: string}} workdir - 目标工作区。
+ * @param {string} id - 会话 id。
+ * @returns {string} 会话文件路径。
+ */
+function sessionPath(workdir, id) {
+	return sessionsDir(workdir) + '/' + id + '.json'
+}
+
+/**
+ * 列出工作区内的会话（按 updated 降序）；摘要附文件最后修改时间 `mtimeMs`（最后活动时间，供保留期清理）。
  * @param {string} username - 用户名。
  * @param {{machine?: string, path?: string}} workdir - 目标工作区。
- * @returns {Promise<Array<Pick<codeSession_t, 'id'|'title'|'charname'|'profile'|'ai_source'|'created'|'updated'>>>} 会话摘要列表。
+ * @returns {Promise<Array<Pick<codeSession_t, 'id'|'title'|'charname'|'profile'|'ai_source'|'created'|'updated'> & {mtimeMs: number}>>>} 会话摘要列表。
  */
 export async function listSessions(username, workdir) {
 	if (!workdir?.path) return []
@@ -51,16 +61,23 @@ export async function listSessions(username, workdir) {
 	const entries = await executor.listDir(sessionsDir(workdir)).catch(() => [])
 	const sessions = []
 	for (const entry of entries.filter(e => e.isFile && e.name.endsWith('.json'))) {
-		const session = await loadSession(username, workdir, entry.name.replace(/\.json$/, '')).catch(() => null)
-		if (session) sessions.push({
-			id: session.id,
-			title: session.title,
-			charname: session.charname,
-			profile: session.profile,
-			ai_source: session.ai_source,
-			created: session.created,
-			updated: session.updated,
-		})
+		const id = entry.name.slice(0, -'.json'.length)
+		if (!isValidSessionId(id)) continue
+		try {
+			const { text, mtimeMs } = await executor.readTextFileWithMtime(sessionPath(workdir, id))
+			const session = JSON.parse(text)
+			sessions.push({
+				id: session.id || id,
+				title: session.title,
+				charname: session.charname,
+				profile: session.profile,
+				ai_source: session.ai_source,
+				created: session.created,
+				updated: session.updated,
+				mtimeMs,
+			})
+		}
+		catch { continue }
 	}
 	return sessions.sort((a, b) => String(b.updated).localeCompare(String(a.updated)))
 }
@@ -75,7 +92,7 @@ export async function listSessions(username, workdir) {
 export async function loadSession(username, workdir, id) {
 	if (!isValidSessionId(id) || !workdir?.path) return null
 	const executor = createTargetExecutor(username, { machine: workdir.machine ?? '0', workdir: workdir.path })
-	const text = await executor.readTextFile(sessionsDir(workdir) + '/' + id + '.json').catch(() => null)
+	const text = await executor.readTextFile(sessionPath(workdir, id)).catch(() => null)
 	if (text == null) return null
 	return JSON.parse(text)
 }
@@ -93,7 +110,7 @@ export async function saveSession(username, workdir, session) {
 	const executor = createTargetExecutor(username, { machine: workdir.machine ?? '0', workdir: workdir.path })
 	// `coderunner_workspace` 是 `<run-js>` 的运行期 scratch：内存里跨调用保留，但不落盘（刷新/恢复后即为空）。
 	const text = JSON.stringify(session, (key, value) => key === 'coderunner_workspace' ? undefined : value, '\t')
-	await executor.writeTextFile(sessionsDir(workdir) + '/' + session.id + '.json', text)
+	await executor.writeTextFile(sessionPath(workdir, session.id), text)
 }
 
 /**
@@ -112,5 +129,23 @@ export async function deleteSession(username, workdir, id) {
 		const path = await import('node:path')
 		const p = path.resolve(root, `.fount/code/sessions/${sessionId}.json`)
 		await fs.rm(p, { force: true })
+	}, workdir.path, id)
+}
+
+/**
+ * 触达会话文件：仅更新文件最后修改时间、不改内容（视为一次「打开」，用于保留期重算）。
+ * @param {string} username - 用户名。
+ * @param {{machine?: string, path?: string}} workdir - 目标工作区。
+ * @param {string} id - 会话 id。
+ * @returns {Promise<void>}
+ */
+export async function touchSession(username, workdir, id) {
+	if (!isValidSessionId(id) || !workdir?.path) return
+	const executor = createTargetExecutor(username, { machine: workdir.machine ?? '0', workdir: workdir.path })
+	await executor.execJs(async (root, sessionId) => {
+		const fs = await import('node:fs/promises')
+		const path = await import('node:path')
+		const now = new Date()
+		await fs.utimes(path.resolve(root, `.fount/code/sessions/${sessionId}.json`), now, now)
 	}, workdir.path, id)
 }

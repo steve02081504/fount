@@ -42,9 +42,10 @@ import {
 	schedulePowerAction,
 } from './lifecycle.mjs'
 import { triggerCodeReply } from './request.mjs'
+import { getRetentionDays, pruneInactiveSessions, setRetentionDays } from './retention.mjs'
 import { runShellCommand } from './runner.mjs'
 import { activeCodeRuns, codeRunKey, codeWakes, requestCodeRunStart, setCodeRunStarter } from './runs.mjs'
-import { deleteSession, listSessions, loadSession, saveSession } from './sessions.mjs'
+import { deleteSession, listSessions, loadSession, saveSession, touchSession } from './sessions.mjs'
 import { registerCodeShutdown } from './shutdown.mjs'
 import { readWorkspaceConfig } from './workspace_config.mjs'
 
@@ -68,6 +69,42 @@ function getWorkspaces(username) {
 	const data = loadShellData(username, 'code', 'workspaces') ?? {}
 	data.list ??= []
 	return data
+}
+
+/** 惰性会话清理的最小间隔（毫秒）；同一用户在同一工作区最多在该间隔内后台清理一次。 */
+const SESSION_CLEANUP_INTERVAL_MS = ms('6h')
+
+/** @type {Map<string, number>} `用户名\0工作区id` → 上次后台清理时间。 */
+const sessionCleanupAt = new Map()
+
+/**
+ * 构造「会话是否正在生成」判定函数：进行中的运行或退出前的恢复任务都算生成中（供清理跳过）。
+ * @param {string} username - 用户名。
+ * @param {object} user - 用户对象（用于读取 jobs）。
+ * @returns {(sessionId: string) => boolean} 判定函数。
+ */
+function makeSessionGeneratingCheck(username, user) {
+	return sessionId => activeCodeRuns.has(codeRunKey(username, sessionId)) || Boolean(user?.jobs?.['shells/code']?.[sessionId])
+}
+
+/**
+ * 选择一个工作区时后台惰性清理其陈旧会话（按用户+工作区节流；不阻塞请求，失败静默）。
+ * @param {string} username - 用户名。
+ * @param {object} user - 用户对象。
+ * @param {{id: string, machine: string, path: string}} workspace - 选中的工作区。
+ * @returns {void}
+ */
+function scheduleWorkspaceCleanup(username, user, workspace) {
+	if (!workspace?.path) return
+	const key = `${username}\0${workspace.id}`
+	const now = Date.now()
+	if (now - (sessionCleanupAt.get(key) || 0) < SESSION_CLEANUP_INTERVAL_MS) return
+	sessionCleanupAt.set(key, now)
+	void pruneInactiveSessions(username, {
+		workspaces: [workspace],
+		tabs: getTabs(username).tabs,
+		isGenerating: makeSessionGeneratingCheck(username, user),
+	}).catch(() => { })
 }
 
 /** 已补过 `.gitignore` 的工作区键（`machine\0path`），避免每次生成重复读写。 @type {Set<string>} */
@@ -573,7 +610,7 @@ export function setEndpoints(router) {
 		res.json(data)
 	})
 
-	// 标记工作区被使用（最近使用时间），供前端下拉按常用程度排序
+	// 标记工作区被使用（最近使用时间），供前端下拉按常用程度排序；同时惰性清理该工作区的陈旧会话
 	router.put('/api/parts/shells\\:code/workspaces/:id/use', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		const data = getWorkspaces(username)
@@ -581,6 +618,7 @@ export function setEndpoints(router) {
 		if (!workspace) throw httpError(404, 'workspace not found.')
 		workspace.lastUsedAt = new Date().toISOString()
 		saveShellData(username, 'code', 'workspaces', data)
+		scheduleWorkspaceCleanup(username, req.user, workspace)
 		res.json(data)
 	})
 
@@ -823,6 +861,8 @@ export function setEndpoints(router) {
 		const { machine, path } = parseWorkdir(req.query)
 		const session = await loadSession(username, { machine, path }, req.params.id)
 		if (!session) throw httpError(404, 'session not found.')
+		// 视为一次打开：仅触达文件 mtime（不改内容），重算其保留时间
+		await touchSession(username, { machine, path }, req.params.id).catch(() => { })
 		res.json(session)
 	})
 
@@ -843,6 +883,31 @@ export function setEndpoints(router) {
 			throw httpError(409, 'session is generating.')
 		await deleteSession(username, { machine, path }, req.params.id)
 		res.json({})
+	})
+
+	// 会话保留策略：默认保留 30 天，按最后活动时间清理；0 表示禁用
+	router.get('/api/parts/shells\\:code/retention', authenticate, (req, res) => {
+		const { username } = getUserByReq(req)
+		res.json({ days: getRetentionDays(username) })
+	})
+
+	router.put('/api/parts/shells\\:code/retention', authenticate, (req, res) => {
+		const { username } = getUserByReq(req)
+		const days = Number(req.body?.days)
+		if (!Number.isFinite(days) || days < 0) throw httpError(400, 'days must be a non-negative number.')
+		res.json({ days: setRetentionDays(username, days) })
+	})
+
+	// 手动触发清理（返回删除的会话；自动清理同样走这条逻辑）
+	router.post('/api/parts/shells\\:code/sessions/cleanup', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const workspaces = getWorkspaces(username).list || []
+		const tabs = getTabs(username).tabs
+		res.json(await pruneInactiveSessions(username, {
+			workspaces,
+			tabs,
+			isGenerating: makeSessionGeneratingCheck(username, req.user),
+		}))
 	})
 
 	// AI 会话 WS：send（追加用户消息）/ regen（重新生成最后一条角色回复）/ trigger（按当前会话原样生成）

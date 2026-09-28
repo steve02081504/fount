@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url'
 
 import { assert, assertEquals } from 'jsr:@std/assert'
 
+import { waitUntil } from 'fount/scripts/test/core/wait.mjs'
 import { launchNode, stopNode } from 'fount/scripts/test/node/launch.mjs'
 import { defaultTestStarts } from 'fount/scripts/test/node/starts.mjs'
 
@@ -379,6 +380,83 @@ Deno.test({
 		assertEquals((await codeFetch(node, 'DELETE', `/sessions/sess01AB?machine=0&workdir=${encodeURIComponent(root)}`)).status, 200)
 		const gone = await codeFetch(node, 'GET', `/sessions/sess01AB?machine=0&workdir=${encodeURIComponent(root)}`)
 		assertEquals(gone.status, 404)
+	}
+	finally {
+		await fs.rm(root, { recursive: true, force: true })
+		await stopNode(node)
+	}
+})
+
+Deno.test({
+	name: 'session retention prunes inactive sessions, keeps drafts and recently opened',
+	sanitizeOps: false,
+	sanitizeResources: false,
+}, async () => {
+	const node = await launchCodeNode()
+	const root = await makeWorkspace(node)
+	try {
+		assertEquals((await (await codeFetch(node, 'GET', '/retention')).json()).days, 30, '默认保留 30 天')
+		const workspaceId = (await (await codeFetch(node, 'GET', '/workspaces')).json()).list.find(w => w.path === root).id
+		const oldMs = Date.now() - 40 * 86400_000
+		/**
+		 * 构造一条最小会话（最后活动时间取文件 mtime，故 updated 不参与判定）。
+		 * @param {string} id 会话 id
+		 * @returns {object} 会话对象
+		 */
+		const makeSession = id => ({ id, title: id, charname: 'c', profile: 'build', created: new Date().toISOString(), updated: new Date().toISOString(), memory: {}, entries: [] })
+		/**
+		 * 设置会话文件 mtime（模拟最后活动时间）。
+		 * @param {string} id 会话 id
+		 * @param {number} ms 时间戳（毫秒）
+		 * @returns {Promise<void>}
+		 */
+		const setMtime = (id, ms) => fs.utimes(path.join(root, '.fount/code/sessions', `${id}.json`), new Date(ms), new Date(ms))
+		for (const id of ['oldSess01', 'newSess01', 'draftSess01', 'openedSess01'])
+			assertEquals((await codeFetch(node, 'POST', '/sessions', { machine: '0', workdir: root, session: makeSession(id) })).status, 200)
+		// old/draft/opened 回拨 40 天；new 回拨 2 天（近期，但改小保留期后应被清理）
+		await Promise.all([
+			setMtime('oldSess01', oldMs),
+			setMtime('newSess01', Date.now() - 2 * 86400_000),
+			setMtime('draftSess01', oldMs),
+			setMtime('openedSess01', oldMs),
+		])
+		// 打开会触达 mtime，重算时间
+		assertEquals((await codeFetch(node, 'GET', `/sessions/openedSess01?machine=0&workdir=${encodeURIComponent(root)}`)).status, 200)
+		// 挂未发送草稿
+		await codeFetch(node, 'PUT', '/tabs', { tabs: [{ type: 'session', id: 'draftSess01', workspaceId, draft: '未发送' }], activeTab: '' })
+		const query = 'machine=0&workdir=' + encodeURIComponent(root)
+		/**
+		 * 通过列表端点读取当前会话 id（GET /sessions 不触达 mtime，不影响保留时间）。
+		 * @returns {Promise<string[]>} 会话 id 列表
+		 */
+		const listSessionIds = async () => (await (await codeFetch(node, 'GET', `/sessions?${query}`)).json()).sessions.map(session => session.id)
+		const result = await (await codeFetch(node, 'POST', '/sessions/cleanup')).json()
+		const removed = result.removed.map(item => item.id)
+		assert(removed.includes('oldSess01'), '超期未活动会话被清理')
+		assert(!removed.includes('newSess01'), '近期活动保留')
+		assert(!removed.includes('draftSess01'), '有未发送草稿保留')
+		assert(!removed.includes('openedSess01'), '刚打开过保留')
+		assert(!(await listSessionIds()).includes('oldSess01'), '超期会话文件已删')
+		assert((await listSessionIds()).includes('draftSess01'), '有草稿的会话仍在')
+		// 清空草稿后再清理：draftSess01 被删（用列表核对，避免 GET 打开它重算 mtime）
+		await codeFetch(node, 'PUT', '/tabs', { tabs: [], activeTab: '' })
+		const second = (await (await codeFetch(node, 'POST', '/sessions/cleanup')).json()).removed.map(item => item.id)
+		assert(second.includes('draftSess01'), '草稿清空后超期会话被清理')
+		assert(!(await listSessionIds()).includes('draftSess01'))
+		// 保留天数可配置：改为 1 天后 40 天前的会话被清理，刚打开的仍保留
+		assertEquals((await (await codeFetch(node, 'PUT', '/retention', { days: 1 })).json()).days, 1)
+		const third = (await (await codeFetch(node, 'POST', '/sessions/cleanup')).json()).removed.map(item => item.id)
+		assert(third.includes('newSess01'), '新阈值下超期会话被清理')
+		assert(!third.includes('openedSess01'), '刚打开的重算后仍保留')
+		// 选择工作区时惰性触发该工作区清理（首次调用生效）
+		assertEquals((await codeFetch(node, 'POST', '/sessions', { machine: '0', workdir: root, session: makeSession('autoSess01') })).status, 200)
+		await setMtime('autoSess01', oldMs)
+		await codeFetch(node, 'PUT', `/workspaces/${workspaceId}/use`)
+		await waitUntil(async () => !(await listSessionIds()).includes('autoSess01'), 5000)
+		// days=0 禁用清理；非法天数 400
+		assertEquals((await (await codeFetch(node, 'PUT', '/retention', { days: 0 })).json()).days, 0)
+		assertEquals((await (await codeFetch(node, 'POST', '/sessions/cleanup')).json()).removed, [])
+		assertEquals((await codeFetch(node, 'PUT', '/retention', { days: -1 })).status, 400)
 	}
 	finally {
 		await fs.rm(root, { recursive: true, force: true })
