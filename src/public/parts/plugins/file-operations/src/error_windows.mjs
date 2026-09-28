@@ -3,8 +3,8 @@
  * 命中时只预读文件出错行及前后若干行，避免整份大文件灌入上下文。
  */
 
-/** eslint stylish 格式的独立文件头行（整行只有一条路径）。 */
-const ESLINT_FILE_HEADER = /^\s*(?<path>(?:[A-Za-z]:[\\/]|\/|\.{1,2}[\\/]|[^\s:]+[\\/])[^\n]*?\.\w+)\s*$/
+/** eslint stylish 格式的独立文件头行（整行只有一条路径；可为绝对/带盘符路径或相对的 `dir/foo.ext`/`foo.ext`）。 */
+const ESLINT_FILE_HEADER = /^\s*(?<path>(?:[A-Za-z]:[\\/]|\/)[^\n]*?\.\w+|[^\s:]+\.\w+)\s*$/
 /** eslint stylish 格式的条目行（缩进的 `行:列 级别 信息 规则`）。 */
 const ESLINT_ITEM = /^\s*(?<line>\d+):(?<col>\d+)\s+(?:fatal\s+)?(?:error|warning|info)\b/i
 
@@ -56,7 +56,8 @@ export function parseErrorLocations(text) {
 	}
 
 	let currentFile = null
-	for (const rawLine of String(text ?? '').split(/\r?\n/)) {
+	const cleanText = String(text ?? '').replace(/\x1b\[[0-9;]*m/g, '') // 去掉 ANSI 颜色码（eslint stylish 默认着色）
+	for (const rawLine of cleanText.split(/\r?\n/)) {
 		if (!rawLine.trim()) continue
 		let matched = false
 		for (const format of INLINE_ERROR_FORMATS) {

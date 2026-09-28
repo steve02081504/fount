@@ -140,7 +140,7 @@ function formatWithBudget(candidate, resolved, formatted, remaining) {
  * 报错文件优先（只读出错行窗口）；整份读取遇超大文本只取首尾各若干行；渲染后统一收进字符预算。
  * @param {import('./target.mjs').targetExecutor_t} executor - 目标执行器。
  * @param {string} text - 聊天文本。
- * @param {{maxFiles?: number, maxChars?: number, maxLineChars?: number, knownFiles?: Set<string>}} [options] - 上限（maxFiles 同时限制目录数）与已读文件的 realpath 集合（按路径身份去重，与内容无关）。
+ * @param {{maxFiles?: number, maxChars?: number, maxLineChars?: number, knownFiles?: Set<string>, extractPaths?: boolean}} [options] - 上限（maxFiles 同时限制目录数）、已读文件的 realpath 集合（按路径身份去重，与内容无关），以及是否提取普通路径候选（`false` 时只认报错定位，供工具输出使用）。
  * @returns {Promise<mentionedFiles_t>} 预读结果。
  */
 export async function collectMentionedFiles(executor, text, options = {}) {
@@ -149,6 +149,7 @@ export async function collectMentionedFiles(executor, text, options = {}) {
 		maxChars = DEFAULT_READ_MAX_CHARS,
 		maxLineChars = DEFAULT_READ_MAX_LINE_CHARS,
 		knownFiles = new Set(),
+		extractPaths = true,
 	} = options
 	const textFiles = []
 	const binaryFiles = []
@@ -202,7 +203,7 @@ export async function collectMentionedFiles(executor, text, options = {}) {
 	}
 
 	// 报错文件优先，避免被前面的普通候选挤掉额度。
-	const candidates = [...new Set([...errorLocations.map(location => location.path), ...extractPathCandidates(text)])]
+	const candidates = [...new Set([...errorLocations.map(location => location.path), ...extractPaths ? extractPathCandidates(text) : []])]
 
 	for (const candidate of candidates) {
 		if (textFiles.length + binaryFiles.length >= maxFiles) break
@@ -211,12 +212,12 @@ export async function collectMentionedFiles(executor, text, options = {}) {
 		const canonical = await canonicalPath(candidate)
 		if (seen.has(canonical)) continue
 		seen.add(canonical)
+		if (knownFiles.has(canonical)) continue
 
 		if (stat.isDirectory) {
 			if (dirs.length >= maxFiles) continue
 			const entries = await executor.listDir(candidate).catch(() => [])
 			const names = entries.map(e => e.name + (e.isDirectory ? '/' : '')).slice(0, MAX_DIR_ENTRIES)
-			if (knownFiles.has(canonical)) continue
 			dirs.push({ path: candidate, resolved: canonical, entries: names })
 			continue
 		}
@@ -225,7 +226,6 @@ export async function collectMentionedFiles(executor, text, options = {}) {
 		const buffer = await executor.readFileBuffer(candidate).catch(() => null)
 		if (!buffer) continue
 		if (!isProbablyTextBuffer(buffer)) {
-			if (knownFiles.has(canonical)) continue
 			binaryFiles.push({
 				path: candidate,
 				resolved: canonical,
@@ -253,7 +253,6 @@ export async function collectMentionedFiles(executor, text, options = {}) {
 				totalLines: rawText.split(/\r?\n/).length,
 				...notice ? { notice } : {},
 			}
-			if (knownFiles.has(canonical)) continue
 			usedChars += windows.reduce((sum, window) => sum + window.text.length, 0) + (notice ? notice.length : 0)
 			textFiles.push(file)
 			if (maxChars > 0 && usedChars >= maxChars) break
@@ -262,7 +261,6 @@ export async function collectMentionedFiles(executor, text, options = {}) {
 
 		const formatted = formatLargeTextForContext(rawText)
 		const { file, renderedChars } = formatWithBudget(candidate, canonical, formatted, remaining)
-		if (knownFiles.has(canonical)) continue
 		usedChars += renderedChars
 		textFiles.push(file)
 		if (maxChars > 0 && usedChars >= maxChars) break

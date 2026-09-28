@@ -30,7 +30,8 @@ export default {
 		chat: {
 			GetPrompt: getFileOperationsPrompt,
 			/**
-			 * 每次生成（`buildPromptStruct` 之后、首次 AI 调用之前）预读最新用户消息提及的文件。
+			 * 每次生成（`buildPromptStruct` 之后、首次 AI 调用之前）预读最新用户消息提及的文件，
+			 * 以及末尾工具输出中报错的文件（只认报错定位，普通路径不触发）。
 			 * 预读以工具日志写入本轮结果，当前轮即可见并随会话落盘；远端离线等失败不影响生成。
 			 * @param {import('../../../../../src/decl/pluginAPI.ts').chatReplyRequest_t} args - 聊天回复请求（含 `AddLongTimeLog`）。
 			 * @returns {Promise<void>}
