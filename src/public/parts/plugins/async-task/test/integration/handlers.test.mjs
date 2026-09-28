@@ -88,6 +88,15 @@ Deno.test('await-async waits and returns the settled result', async () => {
 	assert(last.extension.asyncAwait.settled[0].result.includes('RESULT-TEXT'))
 })
 
+Deno.test('await-async exposes each settled task execution target', async () => {
+	resetAsyncTaskState()
+	const args = createArgs()
+	const executionTarget = { machine: '1', workdir: '/w' }
+	const task = registerTask({ kind: 'pwsh', owner: ownerFromArgs(args), run: resolveWith('ok'), meta: { executionTarget } })
+	await awaitAsyncHandler.handle(null, args, { params: { ids: task.id } })
+	assertEquals(args.logs.at(-1).extension.asyncAwait.settled[0].target, executionTarget)
+})
+
 Deno.test('await-async retrieves a task completed before the parent generation ends', async () => {
 	resetAsyncTaskState()
 	const args = createArgs({ extension: { generationId: 'parent-generation' } })

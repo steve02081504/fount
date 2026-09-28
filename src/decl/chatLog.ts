@@ -28,6 +28,11 @@ export class chatReply_t {
 	logContextBefore?: chatLogEntry_t[]
 	logContextAfter?: chatLogEntry_t[]
 	charVisibility?: string[]
+	/**
+	 * 条目扩展。
+	 * 工具结果可携带 `executionTarget`（`{machine: string, workdir: string | null}`）——该次执行**当时**的机器与工作目录快照，
+	 * 供后续按产出目标（而非请求当前目录）读取其诊断输出，见 `plugins/file-operations/src/preload.mjs`。
+	 */
 	extension?: Record<string, unknown>
 }
 

@@ -27,6 +27,8 @@ export function fileIdentityKey(machine, resolved) {
 
 const PATH_LIKE_REGEX = /(`|[A-Za-z]:\\|(\.|\.\.|~)[/\\]|[/\\])[^\n`:]+/gu
 const ABSOLUTE_OR_RELATIVE_REGEX = /^([A-Za-z]:\\|(\.|\.\.|~)[/\\]|[/\\])[^\n:`]+/u
+/** 绝对路径候选（盘符 / 根 / UNC），供「目标无工作目录时只认绝对路径」筛选。 */
+const ABSOLUTE_PATH_REGEX = /^(?:[A-Za-z]:[\\/]|[\\/])/u
 
 /**
  * 从文本中提取疑似路径的候选串（去重、模糊）。
@@ -152,8 +154,8 @@ function formatWithBudget(candidate, resolved, formatted, remaining) {
  * 报错文件优先（只读出错行窗口）；整份读取遇超大文本只取首尾各若干行；渲染后统一收进字符预算。
  * @param {import('./target.mjs').targetExecutor_t} executor - 目标执行器。
  * @param {string} text - 聊天文本。
- * @param {{maxFiles?: number, maxChars?: number, maxLineChars?: number, knownFiles?: Set<string>, machine?: string, extractPaths?: boolean}} [options] - 上限（maxFiles 同时限制目录数）、已读文件的身份键集合（`fileIdentityKey`，按路径身份去重，与内容无关）、目标机器标识，以及是否提取普通路径候选（`false` 时只认报错定位，供工具输出使用）。
- * @returns {Promise<mentionedFiles_t>} 预读结果。
+ * @param {{maxFiles?: number, maxChars?: number, maxLineChars?: number, knownFiles?: Set<string>, machine?: string, extractPaths?: boolean, absoluteOnly?: boolean}} [options] - 上限（maxFiles 同时限制目录数）、已读文件的身份键集合（`fileIdentityKey`，按路径身份去重，与内容无关）、目标机器标识、是否提取普通路径候选（`false` 时只认报错定位，供工具输出使用），以及是否只接受绝对路径候选（目标工作目录未知时避免按错误目录解析相对路径）。
+ * @returns {Promise<mentionedFiles_t & {usedChars: number}>} 预读结果与占用字符数。
  */
 export async function collectMentionedFiles(executor, text, options = {}) {
 	const {
@@ -163,6 +165,7 @@ export async function collectMentionedFiles(executor, text, options = {}) {
 		knownFiles = new Set(),
 		machine = '0',
 		extractPaths = true,
+		absoluteOnly = false,
 	} = options
 	const textFiles = []
 	const binaryFiles = []
@@ -217,6 +220,7 @@ export async function collectMentionedFiles(executor, text, options = {}) {
 
 	// 报错文件优先，避免被前面的普通候选挤掉额度。
 	const candidates = [...new Set([...errorLocations.map(location => location.path), ...extractPaths ? extractPathCandidates(text) : []])]
+		.filter(candidate => !absoluteOnly || ABSOLUTE_PATH_REGEX.test(candidate))
 
 	for (const candidate of candidates) {
 		if (textFiles.length + binaryFiles.length >= maxFiles) break
@@ -278,5 +282,5 @@ export async function collectMentionedFiles(executor, text, options = {}) {
 		textFiles.push(file)
 		if (maxChars > 0 && usedChars >= maxChars) break
 	}
-	return { textFiles, binaryFiles, dirs }
+	return { textFiles, binaryFiles, dirs, usedChars }
 }

@@ -120,6 +120,17 @@ export function resolveTarget(args, explicit = {}) {
 }
 
 /**
+ * 把解析后的目标快照为工具日志的 `extension.executionTarget`。
+ * 记录工具**执行当时**的机器与工作目录，供后续预读按产出目标读取其诊断，而非事后从请求推断。
+ * `workdir` 缺失时写 `null`（表示目标机器已知但工作目录未知），与请求当前目录区分。
+ * @param {target_t} target - `resolveTarget` 结果。
+ * @returns {{machine: string, workdir: string|null}} 可序列化的执行目标。
+ */
+export function executionTargetOf(target) {
+	return { machine: String(target.machine), workdir: target.workdir ?? null }
+}
+
+/**
  * 查询目标机器的默认 shell（与该机器不带 shell 执行时的回退逻辑一致）。
  * @param {string} username - 用户名。
  * @param {string} machine - 目标机器标识（string）。

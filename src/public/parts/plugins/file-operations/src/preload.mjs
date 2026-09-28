@@ -14,7 +14,8 @@ import { inferCodeLanguageFromPath, renderMarkdownCodeBlock } from '../../../she
 import { hashContent, mergePluginData, PLUGIN_DATA_KEY, resolveEffectiveLog } from './context_files.mjs'
 import { parseErrorLocations } from './error_windows.mjs'
 import { collectMentionedFiles, fileIdentityKey } from './mentioned_files.mjs'
-import { createArgsExecutorResolver, resolveTarget } from './target.mjs'
+import { DEFAULT_READ_MAX_CHARS } from './read_window.mjs'
+import { createTargetExecutor, resolveTarget } from './target.mjs'
 
 /** 单次预读的文件数上限。 */
 const PRELOAD_MAX_FILES = 5
@@ -87,41 +88,61 @@ function renderTextFile(file) {
 const PLUGIN_LOG_NAME_PREFIX = 'file-operations.'
 
 /**
- * 取合并日志末尾连续的 `role:'tool'` 条目，即最近一次生成产出的工具输出。
+ * 取最近一批输出条目：末尾连续的 `role:'tool'`，以及夹在其中的、带执行目标的异步完成通知（`role:'system'`）。
  * @param {chatLogEntry_t[]} log - 合并日志。
- * @returns {chatLogEntry_t[]} 末尾工具条目（保持原顺序）。
+ * @returns {chatLogEntry_t[]} 输出条目（保持原顺序）。
  */
-export function trailingToolEntries(log) {
+function recentOutputEntries(log) {
 	const entries = []
 	for (let index = (log || []).length - 1; index >= 0; index--) {
 		const entry = log[index]
-		if (entry?.role !== 'tool') break
-		entries.unshift(entry)
+		if (entry?.role === 'tool') { entries.unshift(entry); continue }
+		if (entry?.role === 'system' && entry?.extension?.executionTarget) { entries.unshift(entry); continue }
+		break
 	}
 	return entries
 }
 
 /**
- * 汇总末尾工具输出中命中报错定位的文本（跳过本插件自身的日志），供「仅报错检测」预读。
+ * 汇总末尾工具输出中命中报错定位的来源（跳过本插件自身的日志），供「仅报错检测」预读。
+ * 每条正文与其**产出时的执行目标**成对返回——同一轮可能跨机器/目录执行，合并正文会让诊断串味。
+ * `await-async` 聚合条目按各结算任务分别取文本与目标。
  * @param {chatLogEntry_t[]} log - 合并日志。
- * @returns {string} 命中文本（无命中时为空串）。
+ * @returns {{text: string, target: {machine: string, workdir: string|null}|null}[]} 输出来源。
  */
-export function collectToolErrorText(log) {
-	const blocks = []
-	for (const entry of trailingToolEntries(log)) {
+function collectToolErrorSources(log) {
+	const sources = []
+	for (const entry of recentOutputEntries(log)) {
 		if (String(entry.name ?? '').startsWith(PLUGIN_LOG_NAME_PREFIX)) continue
+		const settled = entry.extension?.asyncAwait?.settled
+		if (settled?.length) {
+			for (const item of settled) {
+				const text = [item.result, item.error].filter(value => value?.trim()).join('\n')
+				if (text.trim() && parseErrorLocations(text).length) sources.push({ text, target: item.target ?? null })
+			}
+			continue
+		}
 		const content = String(entry.content ?? '')
-		if (!content.trim() || !parseErrorLocations(content).length) continue
-		blocks.push(content)
+		if (content.trim() && parseErrorLocations(content).length)
+			sources.push({ text: content, target: entry.extension?.executionTarget ?? null })
 	}
-	return blocks.join('\n')
+	return sources
+}
+
+/**
+ * 把执行目标渲染成预读正文的一行说明，使同名相对路径来自不同机器/目录时对角色可辨。
+ * @param {{machine: string, workdir: string|null}|null} target - 执行目标。
+ * @returns {string} 说明文本（无目标时为空串）。
+ */
+function targetLabel(target) {
+	return target ? `（机器 ${target.machine}${target.workdir ? `，工作目录 ${target.workdir}` : ''}）` : ''
 }
 
 /**
  * 把预读结果以工具日志写入本轮结果（空结果不写）。
  * @param {chatReplyRequest_t & {AddLongTimeLog: (entry: chatLogEntry_t) => void}} args - 请求上下文。
  * @param {{textFiles: object[], binaryFiles: object[], dirs: object[]}} result - 预读结果。
- * @param {{machine: string, marker?: object, intro?: string}} [meta] - `machine` 为目标机器标识（跨轮去重的机器维度）；`marker` 写入 `preload` 的额外元数据；`intro` 为文本文件块引导语。
+ * @param {{machine: string, marker?: object, intro?: string, targetLabel?: string}} [meta] - `machine` 为目标机器标识（跨轮去重的机器维度）；`marker` 写入 `preload` 的额外元数据；`intro` 为文本文件块引导语；`targetLabel` 追加到引导语末尾的目标说明。
  * @returns {void}
  */
 function emitPreload(args, result, meta = {}) {
@@ -139,7 +160,7 @@ function emitPreload(args, result, meta = {}) {
 		return { name: 'file-operations.preload', role: 'tool', charVisibility: [args.char_id], ...entry, extension }
 	}
 	if (textFiles.length) {
-		let content = `${meta.intro ?? '以下对话中提及的文件已按当前工作目录自动预读：'}\n`
+		let content = `${meta.intro ?? '以下对话中提及的文件已按当前工作目录自动预读：'}${meta.targetLabel ? ' ' + meta.targetLabel : ''}\n`
 		for (const file of textFiles)
 			content += `文件：${inlineCode(file.path)}\n${renderTextFile(file)}\n`
 		args.AddLongTimeLog(withPreload({ content, files: [] }))
@@ -158,37 +179,69 @@ function emitPreload(args, result, meta = {}) {
 
 /**
  * 对最新用户消息提及的文件（报错窗口 + 通用路径）与末尾工具输出中报错的文件（仅报错窗口）做持久化预读。
- * 用户消息按 id 幂等；工具输出按 realpath 去重，已读文件不再重复读取；远端离线等失败由调用方吞掉，不影响生成。
+ * 用户消息按请求当前目标解析、按 id 幂等；工具输出**逐条按其执行目标**（`extension.executionTarget`）解析，
+ * 不具备目标元数据的旧日志回退请求目标；工具输出按 realpath 去重；远端离线等失败由调用方吞掉，不影响生成。
  * @param {chatReplyRequest_t & {AddLongTimeLog: (entry: chatLogEntry_t) => void}} args - 请求上下文（含 `prompt_struct` 时优先）。
  * @returns {Promise<void>}
  */
 export async function preloadMentionedFiles(args) {
-	const target = resolveTarget(args)
-	if (!target.workdir) return
+	const requestTarget = resolveTarget(args)
 	const log = resolveEffectiveLog(args)
 	const knownFiles = collectKnownFiles(log)
-	const executor = createArgsExecutorResolver(args)()
-	const machine = target.machine
 
-	// 用户消息：报错窗口 + 通用路径候选。同一用户消息已预读过（本轮后续轮次 / 重生成 / 异步触发）则跳过。
+	// 用户消息：报错窗口 + 通用路径候选。无请求工作目录时相对提及不可解析，跳过；同一用户消息已预读过则跳过。
 	const latest = findLatestUserEntry(log)
 	const userText = String(latest?.content ?? '')
-	if (latest && userText.trim()) {
+	if (latest && userText.trim() && requestTarget.workdir) {
 		const userKey = String(latest.id ?? hashContent(userText))
 		const already = log.some(entry => entry?.extension?.pluginData?.[PLUGIN_DATA_KEY]?.preload?.forUser === userKey)
 		if (!already) {
-			const result = await collectMentionedFiles(executor, userText, { maxFiles: PRELOAD_MAX_FILES, knownFiles, machine })
+			const result = await collectMentionedFiles(createTargetExecutor(args.username, requestTarget), userText, {
+				maxFiles: PRELOAD_MAX_FILES, knownFiles, machine: requestTarget.machine,
+			})
 			// 并入已知集合：本次工具输出预读不再重复读取同一文件。
 			for (const item of [...result.textFiles, ...result.binaryFiles, ...result.dirs])
-				if (item.resolved) knownFiles.add(fileIdentityKey(machine, item.resolved))
-			emitPreload(args, result, { machine, marker: { forUser: userKey } })
+				if (item.resolved) knownFiles.add(fileIdentityKey(requestTarget.machine, item.resolved))
+			emitPreload(args, result, { machine: requestTarget.machine, marker: { forUser: userKey }, targetLabel: targetLabel(requestTarget) })
 		}
 	}
 
 	// 工具输出：只认报错定位，不做通用路径提取——命令/构建输出里的普通路径不应触发默认预读。
-	const toolText = collectToolErrorText(log)
-	if (toolText.trim()) {
-		const result = await collectMentionedFiles(executor, toolText, { maxFiles: PRELOAD_MAX_FILES, knownFiles, machine, extractPaths: false })
-		emitPreload(args, result, { machine, marker: {}, intro: '以下为工具输出中报错的文件，已预读其出错位置附近内容：' })
+	// 逐条按其执行目标解析，多目标共享文件/字符预算。
+	const sources = collectToolErrorSources(log)
+	if (!sources.length) return
+	/** @type {Map<string, import('./target.mjs').targetExecutor_t>} */
+	const executors = new Map()
+	/**
+	 * 按目标取（复用）执行器。
+	 * @param {{machine: string, workdir: string|null}} target - 执行目标。
+	 * @returns {import('./target.mjs').targetExecutor_t} 执行器。
+	 */
+	const executorFor = target => {
+		const key = `${target.machine}|${target.workdir ?? ''}`
+		if (!executors.has(key))
+			executors.set(key, createTargetExecutor(args.username, target))
+		return executors.get(key)
+	}
+	let remainingChars = DEFAULT_READ_MAX_CHARS
+	let remainingFiles = PRELOAD_MAX_FILES
+	for (const source of sources) {
+		if (remainingFiles <= 0 || remainingChars <= 0) break
+		// 无目标元数据（旧日志）回退请求目标；有机器但无目录时只认绝对路径，绝不按请求目录猜测。
+		const target = source.target ?? { machine: requestTarget.machine, workdir: requestTarget.workdir ?? null }
+		const absoluteOnly = !target.workdir
+		const result = await collectMentionedFiles(executorFor(target), source.text, {
+			maxFiles: remainingFiles, maxChars: remainingChars, knownFiles,
+			machine: target.machine, extractPaths: false, absoluteOnly,
+		})
+		remainingChars -= result.usedChars ?? 0
+		remainingFiles -= result.textFiles.length + result.binaryFiles.length + result.dirs.length
+		for (const item of [...result.textFiles, ...result.binaryFiles, ...result.dirs])
+			if (item.resolved) knownFiles.add(fileIdentityKey(target.machine, item.resolved))
+		emitPreload(args, result, {
+			machine: target.machine, marker: {},
+			intro: '以下为工具输出中报错的文件，已预读其出错位置附近内容：',
+			targetLabel: targetLabel(target),
+		})
 	}
 }

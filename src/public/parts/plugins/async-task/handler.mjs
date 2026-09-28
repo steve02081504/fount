@@ -171,6 +171,8 @@ export const awaitAsyncHandler = defineReplyHandler({
 							id: task.id,
 							kind: task.kind,
 							state: task.state,
+							// 各任务可能在不同机器/目录执行；携带其执行目标，供预读按产出目标读取诊断。
+							target: task.meta?.executionTarget ?? null,
 							result: task.state === 'failed' ? '' : ansiBlock(resultTexts.get(task.id)),
 							error: task.state === 'failed' ? ansiBlock(task.error?.message ?? '未知错误') : '',
 						})),

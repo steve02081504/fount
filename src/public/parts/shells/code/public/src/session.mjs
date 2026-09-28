@@ -1397,6 +1397,8 @@ export async function execShellMode(command) {
 	}
 	store.session.entries.push(userEntry)
 	appendEntryBubble(userEntry)
+	// 执行目标在发起时快照（用户可能在命令结束前切换页面目标），供后续按产出目录预读其诊断。
+	const execTarget = target()
 	// 立即建工具条目并流式回显；结束后转正式 markdown（含耗时）再落盘
 	const toolEntry = {
 		id: crypto.randomUUID().slice(0, 8),
@@ -1405,7 +1407,10 @@ export async function execShellMode(command) {
 		name: 'shell',
 		content: '',
 		time: new Date().toISOString(),
-		extension: { shellStream: { command, shell: store.shell || '', output: '' } },
+		extension: {
+			shellStream: { command, shell: store.shell || '', output: '' },
+			executionTarget: { machine: execTarget.machine, workdir: execTarget.workdir || null },
+		},
 	}
 	store.session.entries.push(toolEntry)
 	appendEntryBubble(toolEntry)
@@ -1421,7 +1426,7 @@ export async function execShellMode(command) {
 	}
 	const codeBlock = '```' + (store.shell || '') + '\n' + command + '\n```\n```\n'
 	try {
-		const result = await api.streamExec({ ...target(), shell: store.shell || undefined, command }, {
+		const result = await api.streamExec({ ...execTarget, shell: store.shell || undefined, command }, {
 			/**
 			 * 累积流式输出。
 			 * @param {'stdout'|'stderr'} stream - 输出通道（当前统一按文本累积）。
@@ -1433,6 +1438,9 @@ export async function execShellMode(command) {
 				scheduleUpdate()
 			},
 		})
+		// 未指定工作区时服务端回退到目标机器家目录：用实际目录补全执行目标快照。
+		if (result?.resolvedWorkdir && !toolEntry.extension.executionTarget.workdir)
+			toolEntry.extension.executionTarget.workdir = String(result.resolvedWorkdir)
 		toolEntry.content = codeBlock + (result.stdall ?? [result.stdout, result.stderr].filter(Boolean).join('\n'))
 			+ '\n```' + (Number(result.elapsedMs) > 0 ? `（耗时 ${(result.elapsedMs / 1000).toFixed(2)}s）` : '')
 	}
