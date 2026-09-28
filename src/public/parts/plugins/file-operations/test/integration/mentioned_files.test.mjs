@@ -253,6 +253,97 @@ C:\\proj\\src\\messages.mjs
 	assertEquals(parseErrorLocations('  File "src/a.py", line 12, in foo').map(x => [x.path, x.lines]), [['src/a.py', [12]]])
 })
 
+Deno.test('parseErrorLocations handles eslint stylish headers without a directory and ansi colors', () => {
+	assertEquals(parseErrorLocations('foo.mjs\n  1:1  error  bad  rule').map(x => [x.path, x.lines]), [['foo.mjs', [1]]])
+
+	const ansi = '\u001b[0m\u001b[4mC:\\proj\\a.mjs\u001b[0m\n  \u001b[2m3:1\u001b[22m  \u001b[31merror\u001b[39m  bad  rule'
+	assertEquals(parseErrorLocations(ansi).map(x => [x.path, x.lines]), [['C:\\proj\\a.mjs', [3]]])
+
+	const mixed = 'C:\\proj\\a.mjs\n  1:1  error  bad  rule\n\nb.mjs\n  9:1  error  bad  rule'
+	assertEquals(parseErrorLocations(mixed).map(x => [x.path, x.lines]), [['C:\\proj\\a.mjs', [1]], ['b.mjs', [9]]])
+})
+
+Deno.test('collectMentionedFiles with extractPaths false only resolves error locations', async () => {
+	const root = await tempDir()
+	try {
+		await fs.writeFile(path.join(root, 'note.txt'), 'note-content', 'utf8')
+		const file = path.join(root, 'src', 'a.c')
+		await fs.mkdir(path.dirname(file), { recursive: true })
+		await fs.writeFile(file, Array.from({ length: 40 }, (_, i) => `line-${i + 1}`).join('\n'), 'utf8')
+		const executor = createTargetExecutor('u', { machine: '0', workdir: root })
+		const text = `看 \`note.txt\`\n${file}:12:5: error: boom`
+
+		const withPaths = await collectMentionedFiles(executor, text, { maxFiles: 5 })
+		assertEquals(withPaths.textFiles.map(x => x.path).sort(), [file, 'note.txt'].sort())
+
+		const errorsOnly = await collectMentionedFiles(executor, text, { maxFiles: 5, extractPaths: false })
+		assertEquals(errorsOnly.textFiles.length, 1, '关闭普通路径提取后只应命中报错文件')
+		assertEquals(errorsOnly.textFiles[0].path, file)
+		assertEquals(errorsOnly.textFiles[0].mode, 'errors')
+	}
+	finally { await fs.rm(root, { recursive: true, force: true }) }
+})
+
+Deno.test('preloadMentionedFiles preloads error windows from trailing tool output but ignores its plain paths', async () => {
+	const root = await tempDir()
+	try {
+		await fs.writeFile(path.join(root, 'note.txt'), 'note-content', 'utf8')
+		const file = path.join(root, 'src', 'a.c')
+		await fs.mkdir(path.dirname(file), { recursive: true })
+		await fs.writeFile(file, Array.from({ length: 40 }, (_, i) => `line-${i + 1}`).join('\n'), 'utf8')
+		const run = makeArgs(root, [
+			{ id: 'u1', role: 'user', content: '修复构建错误' },
+			{ role: 'char', content: '执行检查' },
+			{ role: 'tool', name: 'code-execution.run-pwsh', content: `顺便记下 \`note.txt\`\n${file}:12:5: error: boom` },
+		])
+		await preloadMentionedFiles(run.args)
+
+		assertEquals(run.logs.length, 1, '只应从工具输出预读报错文件')
+		const preload = run.logs[0]
+		assertEquals(preload.name, 'file-operations.preload')
+		assert(preload.content.includes('line-10') && preload.content.includes('line-14'))
+		assert(!preload.content.includes('line-20'), '报错窗口之外的内容不应预读')
+		assert(!preload.content.includes('note-content'), '工具输出中的普通路径不应触发默认预读')
+		assert(!pluginData(preload).preload.forUser, '工具输出预读不绑定用户消息 id')
+	}
+	finally { await fs.rm(root, { recursive: true, force: true }) }
+})
+
+Deno.test('preloadMentionedFiles ignores trailing tool output without error locations', async () => {
+	const root = await tempDir()
+	try {
+		await fs.writeFile(path.join(root, 'note.txt'), 'note-content', 'utf8')
+		const run = makeArgs(root, [
+			{ id: 'u1', role: 'user', content: '继续' },
+			{ role: 'char', content: '继续' },
+			{ role: 'tool', name: 'code-execution.run-pwsh', content: '列出了 `note.txt`，无报错' },
+		])
+		await preloadMentionedFiles(run.args)
+		assertEquals(run.logs, [], '无报错定位的工具输出不应触发预读')
+	}
+	finally { await fs.rm(root, { recursive: true, force: true }) }
+})
+
+Deno.test('preloadMentionedFiles does not rescan tool output already known as a preload file', async () => {
+	const root = await tempDir()
+	try {
+		const file = path.join(root, 'src', 'a.c')
+		await fs.mkdir(path.dirname(file), { recursive: true })
+		await fs.writeFile(file, Array.from({ length: 40 }, (_, i) => `line-${i + 1}`).join('\n'), 'utf8')
+		const tool = { role: 'tool', name: 'code-execution.run-pwsh', content: `${file}:12:5: error: boom` }
+
+		const first = makeArgs(root, [{ id: 'u1', role: 'user', content: '继续' }, { role: 'char', content: '跑一下' }, tool])
+		await preloadMentionedFiles(first.args)
+		assertEquals(first.logs.length, 1)
+
+		// 下一轮同一条错误输出仍在末尾：该文件已随预读条目记录，按 realpath 跳过
+		const second = makeArgs(root, [{ id: 'u1', role: 'user', content: '继续' }, { role: 'char', content: '跑一下' }, tool, ...first.logs])
+		await preloadMentionedFiles(second.args)
+		assertEquals(second.logs, [], '已预读过的报错文件不应从工具输出重复预读')
+	}
+	finally { await fs.rm(root, { recursive: true, force: true }) }
+})
+
 Deno.test('mergeLineWindows expands and merges neighbouring error lines', () => {
 	assertEquals(mergeLineWindows([735, 736, 751], 2), [{ start: 733, end: 738 }, { start: 749, end: 753 }])
 	assertEquals(mergeLineWindows([5, 6], 2), [{ start: 3, end: 8 }])
