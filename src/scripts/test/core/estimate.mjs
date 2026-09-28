@@ -3,7 +3,7 @@
  */
 import { MiB } from './concurrency.mjs'
 import { declaredOverheadMs } from './expected.mjs'
-import { resolveSuiteResources } from './resources.mjs'
+import { resolveSuiteEstimateResources } from './resources.mjs'
 import {
 	getSuiteBaselineDurationMs,
 	suiteKey,
@@ -170,7 +170,8 @@ export function buildEstimateTask(suite, entry, {
 	source,
 } = {}) {
 	const key = suiteKey(suite.manifestId, suite.name)
-	const resources = resolveSuiteResources(suite, entry)
+	// serial suite 用完整实测 footprint：ETA 刻意不模拟单元租约，因而对 serial suite 一律过度预留。
+	const resources = resolveSuiteEstimateResources(suite, entry)
 	return {
 		id: id ?? key,
 		key,
@@ -200,7 +201,8 @@ export function buildEstimateTask(suite, entry, {
 export function buildEstimateTasksFromPlan(slots, state) {
 	return slots.map(slot => {
 		const entry = state.suites[slot.key]
-		const resources = resolveSuiteResources(slot.suite, entry)
+		// serial suite 用完整实测 footprint：ETA 刻意不模拟单元租约，因而对 serial suite 一律过度预留。
+		const resources = resolveSuiteEstimateResources(slot.suite, entry)
 		return {
 			id: slot.key,
 			key: slot.key,

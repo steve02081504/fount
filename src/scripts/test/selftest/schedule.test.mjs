@@ -175,6 +175,18 @@ Deno.test('queued task startAt reflects module-check spawn delay, not admission 
 	assertEquals(b.endAt, 1400)
 })
 
+Deno.test('serial suite task memMb is taken as given (no unit simulation)', () => {
+	// 时间表不对 serial suite 模拟单元租约：直接按其 memMb 装箱。
+	const { slots, makespanMs } = buildTimeline([
+		task({ key: 'serial_a', durationMs: 1000, memMb: 1800, cpuPct: 25 }),
+		task({ key: 'serial_b', durationMs: 1000, memMb: 1800, cpuPct: 25 }),
+	], { memBudgetBytes: 3000 * MiB, cpuBudgetPct: 100 })
+	// 2 × 1800 > 3000 → 无法并行，串行为 2000
+	assertEquals(makespanMs, 2000)
+	assertEquals(slots.find(s => s.key === 'serial_a').endAt, 1000)
+	assertEquals(slots.find(s => s.key === 'serial_b').startAt, 1000)
+})
+
 Deno.test('shouldDisplayScheduleChange only above 5%', () => {
 	assertEquals(shouldDisplayScheduleChange(null, 100_000), true)
 	assertEquals(shouldDisplayScheduleChange(100_000, null), true)

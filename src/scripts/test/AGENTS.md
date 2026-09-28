@@ -11,7 +11,7 @@ alwaysApply: false
 | Domain harness / federation / `launchNode` | [docs/domain-harness.md](docs/domain-harness.md) |
 | Plan / verdict / continue reasons / CI cache | [docs/continue-report.md](docs/continue-report.md) |
 | Kernel / display / `--watch` | [docs/kernel.md](docs/kernel.md) |
-| Suite packing / optimistic overlap / module-check mutex | [docs/resource-scheduling.md](docs/resource-scheduling.md) |
+| Suite packing / optimistic overlap / module-check mutex / per-file unit leases / `core/proc_sample.mjs` 2s shared snapshot | [docs/resource-scheduling.md](docs/resource-scheduling.md) |
 | Host keep-awake / sleep interrupts | [docs/host-keep-awake.md](docs/host-keep-awake.md) |
 | Playwright fixtures / CDN / diagnostics | [docs/playwright.md](docs/playwright.md) |
 | Fixture mocks (ImportHandlers / AI prompt cache) | [docs/fixtures-mocks.md](docs/fixtures-mocks.md) |

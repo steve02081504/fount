@@ -13,6 +13,7 @@ import { computeGlobalBudget } from '../core/concurrency.mjs'
 import { buildEstimateTask, expectedRunDurationMs } from '../core/estimate.mjs'
 import { parseExpectedMs } from '../core/expected.mjs'
 import { parseGithubIssueUrl } from '../core/github_issue.mjs'
+import { SharedProcessSampler } from '../core/proc_sample.mjs'
 import { resolveSerialOnlyFiles, serialRunnerRoots } from '../core/serial_files.mjs'
 import {
 	formatSkipBecauseUrls,
@@ -179,6 +180,8 @@ export class TestKernel {
 		this.onClose = () => { }
 		/** Deno 升级成功后请求重启内核（由 index 接 spawn 新内核 + 退出）。 */
 		this.onRestartRequested = () => { }
+		/** suite 结算时回调（由 server 清理该 suite 的单元租约 id 映射）。 */
+		this.onSuiteFinished = () => { }
 	}
 
 	#wake
@@ -692,7 +695,7 @@ export class TestKernel {
 	 * @returns {void}
 	 */
 	#refreshBudget() {
-		const next = computeGlobalBudget()
+		const next = computeGlobalBudget(SharedProcessSampler.instance.getTotalMemBytes())
 		const prev = this.globalBudget
 		const delta = Math.abs(next.memBytes - prev.memBytes) / Math.max(1, prev.memBytes)
 		if (delta < BUDGET_CHANGE_THRESHOLD && next.cores === prev.cores) return
@@ -1134,7 +1137,6 @@ export class TestKernel {
 					moduleCheckTicket: ticket,
 					triggeredFiles: suiteTriggeredFiles(suite, changedFilesForRun(fingerprints, key)),
 				},
-				this.globalBudget,
 				false,
 				{
 					label: key,
@@ -1222,6 +1224,7 @@ export class TestKernel {
 			this.running.delete(key)
 			this.#syncKeepAwake()
 			release()
+			this.onSuiteFinished(key)
 			if (item.source === 'cli') {
 				const removedFs = this.queues.completeCli(key)
 				for (const fsItem of removedFs)

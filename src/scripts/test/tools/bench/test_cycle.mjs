@@ -38,7 +38,7 @@ async function cycleOnce(suite) {
 	const failuresOut = join(tempDir, 'failures.json')
 	const timingsOut = join(tempDir, 'timings.json')
 	const buildStart = performance.now()
-	const { command, env } = buildSuiteInvocation(suite, {}, failuresOut, timingsOut, '', undefined)
+	const { command, env } = buildSuiteInvocation(suite, {}, failuresOut, timingsOut, '')
 	const buildMs = performance.now() - buildStart
 
 	let result

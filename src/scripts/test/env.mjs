@@ -17,11 +17,10 @@ process.env.LANG = 'zh-CN'
 /** deno panic 时输出完整 Rust 栈帧；子进程 spawn 须经 childEnv() 显式传递。 */
 process.env.RUST_BACKTRACE = 'full'
 
-// TODO(pidusage): remove when https://github.com/soyuka/pidusage/issues/191 is fixed — orchestrator ProcessUsageTracker → pidusage gwmi on Windows.
 if (process.platform === 'win32') {
 	const { emitWarning } = process
 	/**
-	 * 过滤 Windows 上 pidusage 触发的 DEP0190 弃用警告。
+	 * 过滤 Windows 上子进程 spawn 触发的 DEP0190 弃用警告。
 	 * @param {string | Error} warning 警告
 	 * @param {...*} args `emitWarning` 余参
 	 * @returns {void}

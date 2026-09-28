@@ -6,7 +6,7 @@ import { execFile } from 'npm:@steve02081504/exec'
 import { console, geti18n } from '../../i18n/bare.mjs'
 import { ms } from '../../ms.mjs'
 import { formatDuration } from '../core/format_duration.mjs'
-import { ProcessUsageTracker } from '../core/proc_sample.mjs'
+import { ProcessUsageTracker, SharedProcessSampler } from '../core/proc_sample.mjs'
 
 import { SPECULATIVE_ABORT_REASON } from './dependency_scheduler.mjs'
 
@@ -53,6 +53,7 @@ export const OUTPUT_TAIL_BYTES = 2 * 1024 * 1024
  * @property {string} [label] suite 标签（用于终止日志）
  * @property {number} [baselineDurationMs] 最近一次可用基线耗时（毫秒）
  * @property {AbortSignal} [signal] 外部取消（投机依赖失败早停）
+ * @property {boolean} [trackUnits=false] 是否采样单文件单元峰值（serial suite）
  */
 
 /**
@@ -64,6 +65,7 @@ export const OUTPUT_TAIL_BYTES = 2 * 1024 * 1024
  * @property {boolean} [sleepInterrupted] 是否因系统休眠中止（应重跑，不算失败）
  * @property {string} [terminateReason] 终止原因
  * @property {number} [peakMemMb] 子进程树峰值内存（MB）
+ * @property {number} [peakUnitMemMb] 单文件子树峰值内存（MB）
  * @property {number} [avgCpuPct] 子进程树平均 CPU（0–100，归一化后）
  */
 
@@ -195,15 +197,15 @@ export function buildTerminateReason(trigger, { label, startedAt, lastActivityAt
  * @returns {Promise<RunCommandResult>} 子进程结果
  */
 export async function runCommand(command, extraEnv = {}, options) {
-	const { stream = false, label = '', baselineDurationMs, cwd, signal: externalSignal, onStdout, onStderr } = options
+	const { stream = false, label = '', baselineDurationMs, cwd, signal: externalSignal, onStdout, onStderr, trackUnits = false } = options
 	const [executable, ...args] = command
 	const abortController = new AbortController()
 	const startedAt = Date.now()
 	let lastActivityAt = startedAt
 	let lastTickAt = startedAt
 	let outputTail = ''
-	const usageTracker = new ProcessUsageTracker()
-	let usageSampling = false
+	const usageTracker = new ProcessUsageTracker(trackUnits)
+	SharedProcessSampler.instance.subscribe(usageTracker)
 	/** @type {string | null} */
 	let terminateReason = null
 	let terminated = false
@@ -233,13 +235,7 @@ export async function runCommand(command, extraEnv = {}, options) {
 		outputTail = appendBoundedTail(outputTail, text)
 	}
 
-	const resourceSampler = setInterval(() => {
-		if (usageSampling) return
-		usageSampling = true
-		usageTracker.sample().finally(() => { usageSampling = false })
-	}, WATCH_INTERVAL_MS)
-
-	/** @returns {{ peakMemMb?: number, avgCpuPct?: number }} 采样汇总 */
+	/** @returns {{ peakMemMb?: number, peakUnitMemMb?: number, avgCpuPct?: number }} 采样汇总 */
 	const usageResult = () => usageTracker.finish()
 
 	const watchdog = setInterval(() => {
@@ -312,23 +308,24 @@ export async function runCommand(command, extraEnv = {}, options) {
 	try {
 		const result = await execFile(executable, args, execOptions)
 		clearInterval(watchdog)
-		clearInterval(resourceSampler)
-		const { peakMemMb, avgCpuPct } = usageResult()
+		SharedProcessSampler.instance.unsubscribe(usageTracker)
+		const { peakMemMb, peakUnitMemMb, avgCpuPct } = usageResult()
 		return {
 			code: result.code ?? 1,
 			output: outputTail,
 			peakMemMb,
+			peakUnitMemMb,
 			avgCpuPct,
 		}
 	}
 	catch (error) {
 		clearInterval(watchdog)
-		clearInterval(resourceSampler)
+		SharedProcessSampler.instance.unsubscribe(usageTracker)
+		const { peakMemMb, peakUnitMemMb, avgCpuPct } = usageResult()
 		if (sleepInterrupted || terminated || error?.name === 'AbortError') {
 			const reason = terminateReason ?? geti18n('fountConsole.test.terminate.unknown', { label })
 			const marker = geti18n('fountConsole.test.terminate.marker', { reason })
 			const output = `${outputTail}${outputTail.endsWith('\n') ? '' : '\n'}${marker}\n`
-			const { peakMemMb, avgCpuPct } = usageResult()
 			return {
 				code: 1,
 				output,
@@ -336,6 +333,7 @@ export async function runCommand(command, extraEnv = {}, options) {
 				sleepInterrupted,
 				terminateReason: reason,
 				peakMemMb,
+				peakUnitMemMb,
 				avgCpuPct,
 			}
 		}
