@@ -3599,6 +3599,7 @@
 					"success": "分享成功！連結已複製到剪貼簿。<br>此功能由 ${provider} 提供支援。<br>[贊助他們。](${sponsorLink})"
 				},
 				"commonToolCalling": "正在呼叫工具",
+				"commonToolSkipped": "已跳過（前序操作失敗）",
 				"reasoningDetailsTitle": "推理過程",
 				"logprobsNotApplicable": "不適用",
 				"logprobsTopLogprobsMeta": "top_logprobs（已選：${token}）",

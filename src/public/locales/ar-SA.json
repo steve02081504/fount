@@ -3600,6 +3600,7 @@
 					"success": "تمت المشاركة بنجاح! تم نسخ الرابط إلى الحافظة. <br>هذه الميزة مدعومة من ${provider}. <br>[رعايتهم.](${sponsorLink})"
 				},
 				"commonToolCalling": "جارٍ استدعاء الأداة",
+				"commonToolSkipped": "تم التخطي (فشلت العملية السابقة)",
 				"reasoningDetailsTitle": "عملية التفكير",
 				"logprobsNotApplicable": "لا ينطبق",
 				"logprobsTopLogprobsMeta": "top_logprobs (محدد: ${token})",

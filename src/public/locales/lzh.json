@@ -3600,6 +3600,7 @@
 					"success": "分享已成！鏈結已入剪貼板。<br>此功由 ${provider} 所助。<br>[資助之。](${sponsorLink})"
 				},
 				"commonToolCalling": "方驅機巧",
+				"commonToolSkipped": "前事既敗，故捨",
 				"reasoningDetailsTitle": "推演本末",
 				"logprobsNotApplicable": "無涉",
 				"logprobsTopLogprobsMeta": "top_logprobs（所揀：${token}）",

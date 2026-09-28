@@ -3600,6 +3600,7 @@
 					"success": "Посилання успішно створено! Скопійовано в буфер обміну. <br>Ця функція підтримується ${provider}. <br>[Спонсоруйте їх.](${sponsorLink})"
 				},
 				"commonToolCalling": "Виклик інструменту",
+				"commonToolSkipped": "Пропущено (попередня операція не вдалася)",
 				"reasoningDetailsTitle": "Процес міркування",
 				"logprobsNotApplicable": "н/д",
 				"logprobsTopLogprobsMeta": "top_logprobs (вибрано: ${token})",

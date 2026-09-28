@@ -3600,6 +3600,7 @@
 					"success": "Link created successfully! Copied to clipboard. <br>This feature is supported by ${provider}. <br>[Sponsor them.](${sponsorLink})"
 				},
 				"commonToolCalling": "Calling tool",
+				"commonToolSkipped": "Skipped (previous operation failed)",
 				"reasoningDetailsTitle": "Reasoning",
 				"logprobsNotApplicable": "N/A",
 				"logprobsTopLogprobsMeta": "top_logprobs (selected: ${token})",

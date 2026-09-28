@@ -3600,6 +3600,7 @@
 					"success": "✅🔗📋❗ <br>✨ ${provider} <br>[💖](${sponsorLink})"
 				},
 				"commonToolCalling": "🛠️🔄",
+				"commonToolSkipped": "🛠️⏭️",
 				"reasoningDetailsTitle": "🧠📜",
 				"logprobsNotApplicable": "N/A",
 				"logprobsTopLogprobsMeta": "📊 top_logprobs 👉 ${token}",
