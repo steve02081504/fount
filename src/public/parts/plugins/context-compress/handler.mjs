@@ -43,7 +43,9 @@ function writeToolLog(args, content) {
 /**
  * `<compress-context/>`：手动触发一次上下文压缩。
  *
- * 成功生成摘要条目时返回 `{ regen: true }`（下一轮会携带摘要重新生成）；否则写一条工具日志且不返回结果。
+ * 成功生成摘要条目时返回 `{ regen: true }`（下一轮会携带摘要重新生成）；
+ * 缺少 AI 源或 prompt_struct 时写一条工具日志并返回 `{ failed: true }`（依赖缺失，跳过后续调用）；
+ * 没有可压缩内容时只写工具日志且不返回失败。
  * @type {ReplyHandler_t}
  */
 export const compressContextReplyHandler = defineReplyHandler({
@@ -53,17 +55,17 @@ export const compressContextReplyHandler = defineReplyHandler({
 	 * 处理一次 `<compress-context/>` 调用。
 	 * @param {object} reply 本轮回复对象（`logContextBefore` 为压缩结果的落点）
 	 * @param {chatReplyRequest_t & { prompt_struct?: object, AddLongTimeLog?: Function }} args 请求上下文
-	 * @returns {Promise<{ regen?: boolean } | void>} 成功时 `{ regen: true }`，否则无返回值
+	 * @returns {Promise<{ regen?: boolean, failed?: boolean } | void>} 成功时 `{ regen: true }`，依赖缺失时 `{ failed: true }`，否则无返回值
 	 */
 	handle: async (reply, args) => {
 		const aiSource = args?.ai_source
 		if (!aiSource?.Call) {
 			writeToolLog(args, MESSAGES.noSource)
-			return
+			return { failed: true }
 		}
 		if (!args?.prompt_struct) {
 			writeToolLog(args, MESSAGES.noPromptStruct)
-			return
+			return { failed: true }
 		}
 
 		const entry = await compressContext({

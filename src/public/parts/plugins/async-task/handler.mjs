@@ -153,7 +153,7 @@ export const awaitAsyncHandler = defineReplyHandler({
 		const ids = String(call.params.ids ?? '').split(',').map(id => id.trim()).filter(Boolean)
 		if (!ids.length) {
 			writeToolLog(args, 'async-task.await', 'await-async 需要 ids（逗号分隔的任务 id）。', true)
-			return { regen: true }
+			return { regen: true, failed: true }
 		}
 		const mode = String(call.params.mode ?? '').trim().toLowerCase() === 'any' ? 'any' : 'all'
 		const timeoutMs = parseDurationMs(call.params['time-limit']) ?? DEFAULT_AWAIT_TIMEOUT_MS
@@ -183,6 +183,7 @@ export const awaitAsyncHandler = defineReplyHandler({
 		catch (error) {
 			console.error('async-task: await-async 失败', error)
 			writeToolLog(args, 'async-task.await', `等待异步任务失败：${error?.message ?? error}`, true)
+			return { regen: true, failed: true }
 		}
 		return { regen: true }
 	},
@@ -237,12 +238,12 @@ export const inspectAsyncHandler = defineReplyHandler({
 		const id = String(call.params.id ?? '').trim()
 		if (!id) {
 			writeToolLog(args, 'async-task.inspect', 'inspect-async 需要 id。', true)
-			return { regen: true }
+			return { regen: true, failed: true }
 		}
 		const result = inspectTask(id, ownerFromArgs(args))
 		if (!result.ok) {
 			writeToolLog(args, 'async-task.inspect', inspectFailureText(result.reason, id), true)
-			return { regen: true }
+			return { regen: true, failed: true }
 		}
 		const { task, preview } = result
 		const head = `异步任务 ${task.id}（类型：${task.kind}，状态：${task.state}）${task.label ? `\n任务：${task.label}` : ''}`

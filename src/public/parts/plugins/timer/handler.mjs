@@ -164,6 +164,7 @@ export const setTimerReplyHandler = defineReplyHandler({
 
 		const chatLogSnip = flattenChatLog(chat_log.slice(-5))
 		let successCount = 0
+		let anyFailure = false
 		for (const item of itemsToSet)
 			try {
 				const currentTimers = getTimers(username, PLUGIN_PATH)
@@ -186,13 +187,14 @@ export const setTimerReplyHandler = defineReplyHandler({
 				successCount++
 			}
 			catch (e) {
+				anyFailure = true
 				systemLog += `设置"${item.reason}"失败：${e.message}\n`
 				console.error('timer: 设置定时器失败', e)
 			}
 
 		systemLog += `已设置 ${successCount} 个定时器。\n届时将触发新回复，现在你可以继续当前对话。\n`
 		AddLongTimeLog({ name: 'timer', role: 'tool', content: systemLog, content_for_show: showFence(systemLog), files: [] })
-		return { regen: true }
+		return { regen: true, ...anyFailure ? { failed: true } : {} }
 	},
 })
 
@@ -238,6 +240,7 @@ export const removeTimerReplyHandler = defineReplyHandler({
 	handle: async (reply, args, call) => {
 		const { AddLongTimeLog, username, char_id } = args
 		let systemLog = ''
+		let anyFailure = false
 		for (const reason of call.body) {
 			const currentTimers = getTimers(username, PLUGIN_PATH)
 			const uid = Object.keys(currentTimers).find(k =>
@@ -251,6 +254,7 @@ export const removeTimerReplyHandler = defineReplyHandler({
 					console.info('timer: 已删除定时器', reason)
 				}
 				catch (e) {
+					anyFailure = true
 					systemLog += `删除"${reason}"失败：${e.message}\n`
 					console.error('timer: 删除定时器失败', e)
 				}
@@ -258,6 +262,6 @@ export const removeTimerReplyHandler = defineReplyHandler({
 				systemLog += `未找到定时器"${reason}"。\n`
 		}
 		AddLongTimeLog({ name: 'timer', role: 'tool', content: systemLog, content_for_show: showFence(systemLog), files: [] })
-		return { regen: true }
+		return { regen: true, ...anyFailure ? { failed: true } : {} }
 	},
 })

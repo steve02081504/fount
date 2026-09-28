@@ -177,14 +177,14 @@ Deno.test('run-js-on-page reports a missing script tag', async () => {
 		getApi: apiGetter(makeFakeApi([]))
 	})
 	const runJs = findHandler(handler, 'browser-integration.run-js-on-page')
-	await allowNoise('Error executing browser integration command', async () => {
-		await runJs.handle({}, {
+	const result = await allowNoise('Error executing browser integration command', () =>
+		runJs.handle({}, {
 			username: 'u',
 			char_id: 'c',
 			AddLongTimeLog: collectLog(logs),
-		}, { inner: '<pageId>1</pageId>' })
-	})
+		}, { inner: '<pageId>1</pageId>' }))
 	assertStringIncludes(logs[0].content, '缺少 <script> 标签')
+	assertEquals(result, { regen: true, failed: true })
 })
 
 Deno.test('browser JS callback is injected into the registered channel and wakes it', async () => {

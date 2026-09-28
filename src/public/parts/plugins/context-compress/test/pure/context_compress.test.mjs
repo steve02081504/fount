@@ -125,7 +125,7 @@ Deno.test('compress handler logs when no AI source', async () => {
 	const reply = { content: '<compress-context/>', logContextBefore: [] }
 
 	const outcome = await compressContextReplyHandler.handle(reply, args, null)
-	assertEquals(outcome, undefined)
+	assertEquals(outcome, { failed: true })
 	assertEquals(logs.length, 1)
 	assertEquals(logs[0].role, 'tool')
 	assertStringIncludes(logs[0].content, '没有可用的 AI 源')

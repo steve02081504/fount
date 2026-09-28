@@ -147,6 +147,7 @@ export const runSubAgentHandler = defineReplyHandler({
 				console.error('sub-agent: run-subagent 失败', error)
 				writeToolLog(args, 'sub-agent.run', `子代理运行失败：${error?.message ?? error}`, true)
 			}
+			return { regen: true, failed: true }
 		}
 		return { regen: true }
 	},
@@ -183,6 +184,7 @@ export const listAiSourcesHandler = defineReplyHandler({
 		catch (error) {
 			console.error('sub-agent: list-ai-sources 失败', error)
 			writeToolLog(args, 'sub-agent.list-ai-sources', `枚举 AI 源失败：${error?.message ?? error}`, true)
+			return { regen: true, failed: true }
 		}
 		return { regen: true }
 	},
@@ -204,10 +206,11 @@ export const terminateSubAgentHandler = defineReplyHandler({
 	 */
 	handle: async (reply, args, call) => {
 		const outcome = terminateSubAgentRun(call.params.id)
-		if (!outcome.ok)
+		if (!outcome.ok) {
 			writeToolLog(args, 'sub-agent.terminate', `未找到子代理运行 "${call.params.id}"。`, true)
-		else
-			writeToolLog(args, 'sub-agent.terminate', `已请求终止子代理 ${outcome.run.runId}（软取消：在当前工具调用结束后、下一轮开始前生效并进入摘要；若它正卡在不可中断的进程内任务中，可能仍需等其自然结束，超时后也会强制收尾）。`)
+			return { regen: true, failed: true }
+		}
+		writeToolLog(args, 'sub-agent.terminate', `已请求终止子代理 ${outcome.run.runId}（软取消：在当前工具调用结束后、下一轮开始前生效并进入摘要；若它正卡在不可中断的进程内任务中，可能仍需等其自然结束，超时后也会强制收尾）。`)
 		return { regen: true }
 	},
 })

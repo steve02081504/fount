@@ -61,7 +61,7 @@ export function createWebSearchReplyHandler({ getSearchSource, retry = retrySear
 		 * @param {object} _reply - 当前回复。
 		 * @param {object} args - 回复请求上下文。
 		 * @param {object} call - 已解析的工具调用。
-		 * @returns {Promise<{regen: boolean}>} 要求模型根据搜索结果继续生成。
+		 * @returns {Promise<{regen: boolean, failed?: boolean}>} 要求模型根据搜索结果继续生成；搜索不可用或出错时标记失败。
 		 */
 		handle: async (_reply, args, call) => {
 			const queries = String(call?.inner ?? '').split('\n').map(query => query.trim()).filter(Boolean)
@@ -81,13 +81,13 @@ export function createWebSearchReplyHandler({ getSearchSource, retry = retrySear
 
 			if (!queries.length) {
 				addToolLog('搜索指令 <web-search> 内未找到有效的搜索关键词。')
-				return { regen: true }
+				return { regen: true, failed: true }
 			}
 
 			const searchSource = getSearchSource()
 			if (!searchSource?.Search) {
 				addToolLog('搜索功能当前不可用：未找到可用的搜索源。请先配置默认搜索服务源。')
-				return { regen: true }
+				return { regen: true, failed: true }
 			}
 
 			console.info('AI 搜索关键词：', queries)
@@ -104,7 +104,7 @@ export function createWebSearchReplyHandler({ getSearchSource, retry = retrySear
 				console.error('web search failed:', error)
 				const message = error?.stack || error?.message || String(error)
 				addToolLog(`搜索“${query}”时出现错误：\n${message}`)
-				break
+				return { regen: true, failed: true }
 			}
 
 			return { regen: true }

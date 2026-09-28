@@ -113,7 +113,7 @@ function rejectAsyncWithoutTooling(args) {
 		files: [],
 		extension: { error: true },
 	})
-	return { regen: true }
+	return { regen: true, failed: true }
 }
 
 /**
