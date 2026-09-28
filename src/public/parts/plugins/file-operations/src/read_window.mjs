@@ -1,7 +1,7 @@
 /**
  * 读文件窗口与截断护栏（纯函数，无 I/O）。
  * 四维上限：起始行 / 读取行数 / 单行字符上限 / 总体字符上限。
- * 另有「连续完全相同整行」压缩，见 {@link dedupeConsecutiveLines}。
+ * 另有「连续相同行 / 同型递增行」压缩，见 {@link dedupeConsecutiveLines}。
  */
 import { dedupeConsecutiveLines } from '../../../../../scripts/shell_guard.mjs'
 
@@ -74,7 +74,7 @@ export function formatLargeTextForContext(text, options = {}) {
  * @property {boolean} truncatedByLines - 因行数上限截断。
  * @property {boolean} truncatedByChars - 因总体字符上限截断。
  * @property {number} truncatedLineCount - 被单行上限截断的行数。
- * @property {number} omittedLines - 连续重复行压缩省略的行数。
+ * @property {number} omittedLines - 连续相同 / 同型递增行压缩省略的行数。
  */
 
 /**
@@ -104,7 +104,7 @@ export function parseReadWindow(attrs = {}) {
 
 /**
  * 按读取窗口截取文本（按 `\n` 计行，兼容 CRLF）。
- * 字符上限统计在压缩前的行上进行，压缩不改变「已读多少」的判定；返回文本已做连续重复行压缩。
+ * 字符上限统计在压缩前的行上进行，压缩不改变「已读多少」的判定；返回文本已做连续相同 / 同型递增行压缩。
  * @param {string} text - 原始文本。
  * @param {readWindow_t} [options] - 读取窗口。
  * @returns {readWindowResult_t} 截取结果。
@@ -173,7 +173,7 @@ export function formatReadWindowNotice(result) {
 	if (result.truncatedLineCount)
 		notices.push(`${result.truncatedLineCount} 行因超过单行字符上限被截断`)
 	if (result.omittedLines)
-		notices.push(`${result.omittedLines} 行连续重复内容已压缩`)
+		notices.push(`${result.omittedLines} 行重复 / 同型内容已压缩`)
 	if (result.truncatedByChars)
 		notices.push('已达总体字符上限，后续内容省略')
 	if (!notices.length) return ''

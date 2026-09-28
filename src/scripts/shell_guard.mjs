@@ -39,9 +39,104 @@ let lastTempCleanup = 0
 export const OUTPUT_DEDUPE_EDGE_LINES = 3
 
 /**
- * 创建流式行压缩器：逐行喂入，连续完全相同的整行在保持开头 `edge` 行后即被折叠为省略标记，
- * 段结束时补回结尾 `edge` 行。内部对一段连续重复只保存一份正文与一个计数，因此任意多行的同一重复
- * 都只占常数内存——这正是它相对「先收集再压缩」的价值（一个印 `while(true)` 的进程不会撑爆内存）。
+ * 数字形态表：每项声明一种可用于「同型递增」识别的数字形态。
+ * 目前只含无符号十进制整数；后续要支持十六进制 / 小数等，只需往表里追加一项，检测与压缩逻辑无需改动。
+ * - `token`：带 `g` 标志的正则，从一行中提取候选数字段。
+ * - `whole`：判断整段文本是否恰为一个该形态数字。
+ * - `parse`：把数字段解析为可比较的整数（用 BigInt 避免精度问题）。
+ * - `format`：把整数还原为展示文本，`padWidth` 为原数字段宽度（用于保留前导零）。
+ */
+const NUMERIC_KINDS = [
+	{
+		name: 'decimal',
+		token: /\d+/g,
+		whole: /^\d+$/,
+		/**
+		 * 解析无符号十进制整数。
+		 * @param {string} text - 数字段文本。
+		 * @returns {bigint} 数值。
+		 */
+		parse: text => BigInt(text),
+		/**
+		 * 把数值格式化为十进制文本。
+		 * @param {bigint} value - 数值。
+		 * @param {number} padWidth - 前导零补齐宽度；`<=1` 表示不补。
+		 * @returns {string} 文本。
+		 */
+		format: (value, padWidth) => padWidth > 1 ? value.toString().padStart(padWidth, '0') : value.toString(),
+	},
+]
+
+/**
+ * 把单行内的控制字符转义为可见形式，避免省略标记被 CR/LF 撑断。
+ * @param {string} text - 行文本。
+ * @returns {string} 转义后的单行文本。
+ */
+function escapeInline(text) {
+	const table = { '\r': 'r', '\n': 'n', '\t': 't', '\v': 'v', '\f': 'f' }
+	return text.replace(/[\r\n\t\v\f]/g, ch => `\\${table[ch]}`)
+}
+
+/**
+ * 计算数字段的补零宽度：首字符为 `0` 且长度大于 1 时视为补零。
+ * @param {string} text - 数字段文本。
+ * @returns {number} 补零宽度；不补零时为 0。
+ */
+function padWidthOf(text) {
+	return text.length > 1 && text.startsWith('0') ? text.length : 0
+}
+
+/**
+ * 从相邻两行识别等差序号模板。
+ * 枚举 lineA 中属于某数字形态的每个数字段作为可变字段：要求 lineB 以相同 `prefix` 开头、相同 `suffix` 结尾，
+ * 且中间夹的也是同类数字段、数值与 lineA 同字段不同（步长非零）。
+ * 由于 `prefix` / `suffix` 会跨过行内其它内容，两行若只有一个数字段变化则至多一个候选能匹配，无需处理歧义。
+ * @param {string} lineA - 首行。
+ * @param {string} lineB - 次行。
+ * @returns {{kind: object, prefix: string, suffix: string, step: bigint, firstValue: bigint, lastValue: bigint, padWidth: number}|null} 模板；无法识别时为 null。
+ */
+function detectArithmeticTemplate(lineA, lineB) {
+	for (const kind of NUMERIC_KINDS) {
+		kind.token.lastIndex = 0
+		let match
+		while (match = kind.token.exec(lineA)) {
+			const prefix = lineA.slice(0, match.index)
+			const suffix = lineA.slice(match.index + match[0].length)
+			if (!lineB.startsWith(prefix) || !lineB.endsWith(suffix)) continue
+			const middle = lineB.slice(prefix.length, lineB.length - suffix.length)
+			if (!kind.whole.test(middle)) continue
+			const firstValue = kind.parse(match[0])
+			const lastValue = kind.parse(middle)
+			const step = lastValue - firstValue
+			if (step === 0n) continue
+			return { kind, prefix, suffix, step, firstValue, lastValue, padWidth: padWidthOf(match[0]) }
+		}
+	}
+	return null
+}
+
+/**
+ * 判断一行是否延续某等差模板，是则返回其序号值。
+ * @param {object} template - {@link detectArithmeticTemplate} 返回的模板。
+ * @param {bigint} prevValue - 上一行的序号值。
+ * @param {string} line - 待判定行。
+ * @returns {bigint|null} 续上的序号值；不延续时为 null。
+ */
+function matchSequenceLine(template, prevValue, line) {
+	if (!line.startsWith(template.prefix) || !line.endsWith(template.suffix)) return null
+	const middle = line.slice(template.prefix.length, line.length - template.suffix.length)
+	if (!template.kind.whole.test(middle)) return null
+	const value = template.kind.parse(middle)
+	return value === prevValue + template.step ? value : null
+}
+
+/**
+ * 创建流式行压缩器：逐行喂入，对连续行做两类折叠，段结束时统一提交：
+ * - 「相同行」：连续完全相同的整行，保留开头 `edge` 行后折叠为省略标记，段末补回结尾 `edge` 行；
+ * - 「同型递增」：连续若干行除一个数字段外完全相同、且该数字段按固定步长递增 / 递减时，同样保留首尾各 `edge` 行，
+ *   中间以「模板 + 序号范围」标记替代（如 `line-（4~18）-x`）；步长为 ±1 时方向已由范围体现，标记省略步长。
+ * 每段只保存常数份行文本（相同行仅一份；序列行最多 `2*edge+1` 份，超过即降为 `head` + `tail` 环形缓冲），
+ * 因此像 `while(true)` 打印递增日志的进程也不会撑爆内存——这正是它相对「先收集再压缩」的价值。
  * 末尾需调用一次 `finish()` 提交残余。
  * @param {{edge?: number}} [options] - `edge` 为压缩块两端保留的行数（默认 {@link OUTPUT_DEDUPE_EDGE_LINES}）。
  * @returns {{push: (chunk: unknown) => void, finish: () => {text: string, omittedLines: number}}} 流式压缩器。
@@ -50,29 +145,44 @@ export function createLineDedupe(options = {}) {
 	const { edge = OUTPUT_DEDUPE_EDGE_LINES } = options
 	/** @type {string[]} 已提交的完整行。 */
 	const committed = []
-	/** 当前连续相同行的正文（仅存一份）与计数。 */
-	let runLine = ''
-	let runCount = 0
+	/** 当前段；`null` 表示无。`kind` 为 `pending`（只占一行、待判型）/ `exact` / `seq`。 */
+	let run = null
 	/** 跨 chunk 尚未成行的残余片段。 */
 	let carry = null
 	let omittedLines = 0
 	let finalized = null
 
 	/**
-	 * 结算当前连续行：超过阈值时提交「首 edge 行 / 省略标记 / 尾 edge 行」，否则原样提交。
-	 * 尾 edge 行在此一并提交——它们随段结束即确定，无需再驻留内存等待后续输入。
+	 * 结算当前段并写入已提交行。
+	 * 相同行段与序列段均在该处确定首尾保留行，无需再驻留内存等待后续输入。
 	 * @returns {void}
 	 */
 	const settleRun = () => {
-		if (!runCount) return
-		if (runCount > edge * 2 + 1) {
-			for (let k = 0; k < edge; k++) committed.push(runLine)
-			committed.push(`…[已省略 ${runCount - edge * 2} 行相同内容]…`)
-			omittedLines += runCount - edge * 2
-			for (let k = 0; k < edge; k++) committed.push(runLine)
+		if (!run) return
+		if (run.kind === 'pending') committed.push(run.line)
+		else if (run.kind === 'exact')
+			if (run.count > edge * 2 + 1) {
+				for (let k = 0; k < edge; k++) committed.push(run.line)
+				committed.push(`…[已省略 ${run.count - edge * 2} 行相同内容]…`)
+				omittedLines += run.count - edge * 2
+				for (let k = 0; k < edge; k++) committed.push(run.line)
+			}
+			else for (let k = 0; k < run.count; k++) committed.push(run.line)
+		else if (run.compressed) {
+			const { kind, prefix, suffix, step, firstValue, padWidth } = run.template
+			const omitted = run.count - edge * 2
+			const firstOmitted = firstValue + step * BigInt(edge)
+			const lastOmitted = run.lastValue - step * BigInt(edge)
+			const rendered = `${escapeInline(prefix)}（${kind.format(firstOmitted, padWidth)}~${kind.format(lastOmitted, padWidth)}）${escapeInline(suffix)}`
+			const stepNote = step === 1n || step === -1n ? '' : `（步长 ${step}）`
+			for (const line of run.head) committed.push(line)
+			committed.push(`…[已省略中间 ${omitted} 行同型递增${stepNote}：${rendered}]…`)
+			omittedLines += omitted
+			// tail 环形缓冲多留 1 行：tail[0] 恰为「末个被省略行」，不计入输出
+			for (const line of run.tail.slice(1)) committed.push(line)
 		}
-		else for (let k = 0; k < runCount; k++) committed.push(runLine)
-		runCount = 0
+		else for (const line of run.lines) committed.push(line)
+		run = null
 	}
 
 	/**
@@ -81,11 +191,46 @@ export function createLineDedupe(options = {}) {
 	 * @returns {void}
 	 */
 	const absorb = line => {
-		if (!runCount) { runLine = line; runCount = 1; return }
-		if (line === runLine) { runCount++; return }
-		settleRun()
-		runLine = line
-		runCount = 1
+		if (!run) { run = { kind: 'pending', line }; return }
+		if (run.kind === 'pending') {
+			if (line === run.line) { run = { kind: 'exact', line: run.line, count: 2 }; return }
+			const template = detectArithmeticTemplate(run.line, line)
+			if (template) {
+				run = {
+					kind: 'seq', template, count: 2, lastValue: template.lastValue,
+					compressed: false, lines: [run.line, line], head: null, tail: null,
+				}
+				return
+			}
+			// 既不重复也不同型：提交首行，当前行另起一段重新判型
+			settleRun()
+			run = { kind: 'pending', line }
+			return
+		}
+		if (run.kind === 'exact') {
+			if (line === run.line) { run.count++; return }
+			settleRun()
+			run = { kind: 'pending', line }
+			return
+		}
+		const value = matchSequenceLine(run.template, run.lastValue, line)
+		if (value === null) { settleRun(); run = { kind: 'pending', line }; return }
+		run.count++
+		run.lastValue = value
+		if (!run.compressed) {
+			run.lines.push(line)
+			// 行数超过阈值即必定压缩：转为 head + tail 环形缓冲，丢弃中间
+			if (run.count === edge * 2 + 2) {
+				run.compressed = true
+				run.head = run.lines.slice(0, edge)
+				run.tail = run.lines.slice(-(edge + 1))
+				run.lines = null
+			}
+		}
+		else {
+			run.tail.push(line)
+			if (run.tail.length > edge + 1) run.tail.shift()
+		}
 	}
 
 	return {
@@ -105,7 +250,7 @@ export function createLineDedupe(options = {}) {
 		},
 		/**
 		 * 结束输入：提交残余行，返回完整压缩文本。幂等，可重复调用。
-		 * @returns {{text: string, omittedLines: number}} 压缩后的文本与被省略的重复行总数。
+		 * @returns {{text: string, omittedLines: number}} 压缩后的文本与被省略的重复 / 同型行总数。
 		 */
 		finish() {
 			if (finalized) return finalized
@@ -119,11 +264,12 @@ export function createLineDedupe(options = {}) {
 }
 
 /**
- * 压缩「连续完全相同的整行」：开头保留 `edge` 行、结尾保留 `edge` 行，中间以一行省略标记替代。
+ * 压缩连续行：折叠「连续完全相同的整行」与「同型递增行（如 `line-1` / `line-2`）」，开头保留 `edge` 行、
+ * 结尾保留 `edge` 行，中间以一行省略标记替代。
  * 非流式整段处理（流式场景请用 {@link createLineDedupe}，避免为中间部分额外占用内存）。
  * @param {string} text - 原始文本。
  * @param {{edge?: number}} [options] - `edge` 为压缩块两端保留的行数（默认 {@link OUTPUT_DEDUPE_EDGE_LINES}）。
- * @returns {{text: string, omittedLines: number}} 压缩后的文本与被省略的重复行总数。
+ * @returns {{text: string, omittedLines: number}} 压缩后的文本与被省略的重复 / 同型行总数。
  */
 export function dedupeConsecutiveLines(text, options = {}) {
 	const deduper = createLineDedupe(options)
@@ -190,7 +336,7 @@ export function formatElapsed(ms) {
 
 /**
  * 对文本做头尾截断（纯函数，不落盘）。
- * 先压缩连续完全相同的整行（见 {@link dedupeConsecutiveLines}），再做头尾截断。
+ * 先压缩连续行（相同行与同型递增行，见 {@link dedupeConsecutiveLines}），再做头尾截断。
  * @param {string} text - 原始文本。
  * @param {{limit?: number, head?: number, tail?: number}} [options] - 截断参数。
  * @returns {{text: string, truncated: boolean, omitted: number}} 截断后的文本已含尾部片段；`omitted` 为截断省略字符数。
@@ -242,8 +388,8 @@ export async function writeTempOutput(name, text) {
 }
 
 /**
- * 输出护栏：先压缩连续完全相同的整行，再在超限时保留头尾、完整内容落盘并在中间插入路径提示。
- * 落盘的是压缩后的文本（重复行已折叠）——压缩只丢重复，不丢有效信息，却能让落盘文件小得多。
+ * 输出护栏：先压缩连续行（相同行与同型递增行），再在超限时保留头尾、完整内容落盘并在中间插入路径提示。
+ * 落盘的是压缩后的文本（重复 / 同型行已折叠）——折叠掉的是可还原的重复或等差序号，却能让落盘文件小得多。
  * @param {string} text - 完整输出文本。
  * @param {{name?: string, label?: string, writeTemp?: (name: string, text: string) => Promise<string>}} [options] - 选项。
  * @returns {Promise<{text: string, truncated: boolean, omitted: number, savedPath: string|null}>} 护栏结果。
@@ -347,7 +493,7 @@ export async function execShellWithTimeout(shell, code, options = {}, timeoutMs 
 /**
  * 创建收集型虚拟控制台：记录输出供超时后回读，转发真实 console，并可逐条回调实现流式回显。
  * 直接返回 `VirtualConsole` 实例，`async_eval` 会原样复用（不走二次包裹）。
- * 读出文本时对连续完全相同的整行做流式压缩（见 {@link createLineDedupe}），回读结果与一次性压缩一致。
+ * 读出文本时对连续行（相同行与同型递增行）做流式压缩（见 {@link createLineDedupe}），回读结果与一次性压缩一致。
  * @param {(channel: 'stdout'|'stderr', text: string) => void} [onOutput] - 每条输出后回调。
  * @returns {{console: import('npm:@steve02081504/virtual-console').VirtualConsole, text: () => string}} 虚拟控制台与其文本读取函数。
  */

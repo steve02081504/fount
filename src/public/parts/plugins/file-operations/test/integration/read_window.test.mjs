@@ -95,7 +95,16 @@ Deno.test('windowText compresses long identical-line runs and reports omittedLin
 	assert(result.text.includes('已省略'), '应插入省略标记')
 	assert(!result.text.includes('repeat\nrepeat\nrepeat\nrepeat'), '连续重复行应被压缩')
 	const notice = formatReadWindowNotice(result)
-	assert(notice.includes('连续重复内容已压缩'), '提示应说明重复行被压缩')
+	assert(notice.includes('重复 / 同型内容已压缩'), '提示应说明重复行被压缩')
+})
+
+Deno.test('windowText compresses long arithmetic-line runs and reports omittedLines', () => {
+	const text = ['top', ...Array.from({ length: 40 }, (_, i) => `line-${i + 1}-payload`), 'bottom'].join('\n')
+	const result = windowText(text)
+	assert(result.omittedLines > 0, '应报告压缩掉的同型行')
+	assert(result.text.includes('已省略中间'), '应插入序列省略标记')
+	assert(result.text.includes('（4~37）'), '标记应回显省略范围')
+	assert(!result.text.includes('line-20-payload\nline-21-payload\nline-22-payload'), '不应保留全部同型行')
 })
 
 Deno.test('windowText leaves short repeats intact', () => {

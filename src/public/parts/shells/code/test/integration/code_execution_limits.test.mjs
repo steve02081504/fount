@@ -45,15 +45,15 @@ async function pickShell() {
 /**
  * 生成指定用途的 shell 命令。
  * @param {string} shell - shell 名。
- * @param {'large'|'sleep'} [kind='large'] - 用途；`large` 为各行互不相同的大输出（不会被重复行压缩），`sleep` 为长睡眠。
+ * @param {'large'|'sleep'} [kind='large'] - 用途；`large` 为各行互不相同的大输出（两处序号同变，既不会被重复行压缩、也不会被同型递增压缩），`sleep` 为长睡眠。
  * @returns {string} 命令。
  */
 function commandFor(shell, kind = 'large') {
 	const posix = shell === 'bash' || shell === 'sh'
 	if (kind === 'sleep') return posix ? 'sleep 5' : 'Start-Sleep -Seconds 5'
 	return posix
-		? 'i=0; while [ $i -lt 2000 ]; do printf \'line-%s-xxxxxxxxxxxxxx\\n\' "$i"; i=$((i+1)); done'
-		: 'for ($i = 0; $i -lt 2000; $i++) { "line-$i-xxxxxxxxxxxxxx" }'
+		? 'i=0; while [ $i -lt 2000 ]; do printf \'line-%s-xxxxxxxxxxxxxx-%s\\n\' "$i" "$i"; i=$((i+1)); done'
+		: 'for ($i = 0; $i -lt 2000; $i++) { "line-$i-xxxxxxxxxxxxxx-$i" }'
 }
 
 /**
@@ -551,6 +551,71 @@ Deno.test('createLineDedupe streams to the same result regardless of chunk bound
 	assertEquals(idempotent.finish(), first)
 })
 
+Deno.test('dedupeConsecutiveLines folds long arithmetic-line runs into a template marker', () => {
+	// 你给的例子：line-1 … line-21，除序号外完全同型
+	const lines = Array.from({ length: 21 }, (_, i) => `    "line-${i + 1}-xxxxxxxxxxxxxx\\r\\n" +`)
+	const { text: compressed, omittedLines } = dedupeConsecutiveLines(lines.join('\n'))
+	assertEquals(omittedLines, 21 - OUTPUT_DEDUPE_EDGE_LINES * 2)
+	const out = compressed.split('\n')
+	assertEquals(out.slice(0, OUTPUT_DEDUPE_EDGE_LINES), lines.slice(0, OUTPUT_DEDUPE_EDGE_LINES), '应保留开头 edge 行')
+	assertEquals(out.slice(-OUTPUT_DEDUPE_EDGE_LINES), lines.slice(-OUTPUT_DEDUPE_EDGE_LINES), '应保留结尾 edge 行')
+	assertEquals(out.length, OUTPUT_DEDUPE_EDGE_LINES * 2 + 1, '中间应只留一行标记')
+	const marker = out[OUTPUT_DEDUPE_EDGE_LINES]
+	assertStringIncludes(marker, '已省略中间')
+	assertStringIncludes(marker, '（4~18）')
+	assertStringIncludes(marker, '"line-（4~18）-xxxxxxxxxxxxxx\\r\\n" +')
+	assert(!marker.includes('步长'), '步长 ±1 时标记应省略步长')
+})
+
+Deno.test('dedupeConsecutiveLines notes non-unit steps and handles descending runs', () => {
+	const ascending = Array.from({ length: 20 }, (_, i) => `id-${100 + i * 5}`)
+	const asc = dedupeConsecutiveLines(ascending.join('\n'))
+	assertStringIncludes(asc.text, '步长 5')
+	assertStringIncludes(asc.text, '（115~180）')
+
+	const descending = Array.from({ length: 20 }, (_, i) => `item-${100 - i}`)
+	const desc = dedupeConsecutiveLines(descending.join('\n'))
+	assertStringIncludes(desc.text, '（97~84）')
+	assert(!desc.text.includes('步长'), '步长 -1 时应省略步长')
+})
+
+Deno.test('dedupeConsecutiveLines preserves zero-padding in the range marker', () => {
+	const lines = Array.from({ length: 20 }, (_, i) => `2024-01-${String(i + 1).padStart(2, '0')} log`)
+	const { text: out, omittedLines } = dedupeConsecutiveLines(lines.join('\n'))
+	assert(omittedLines > 0, '应压缩')
+	assertStringIncludes(out, '（04~17）')
+})
+
+Deno.test('dedupeConsecutiveLines leaves non-arithmetic varying lines intact', () => {
+	// 步长非恒定（mod 周期变换）→ 不压缩
+	const shuffled = Array.from({ length: 30 }, (_, i) => `row-${i * 7919 % 50}`)
+	assertEquals(dedupeConsecutiveLines(shuffled.join('\n')).omittedLines, 0)
+	assertEquals(dedupeConsecutiveLines(shuffled.join('\n')).text, shuffled.join('\n'))
+	// 后缀随行变化（多字段同变）→ 不压缩
+	const suffixed = Array.from({ length: 30 }, (_, i) => `row-${i}-${i}`)
+	assertEquals(dedupeConsecutiveLines(suffixed.join('\n')).omittedLines, 0)
+})
+
+Deno.test('createLineDedupe streams sequence runs identically across chunk boundaries', () => {
+	const text = ['head', ...Array.from({ length: 50 }, (_, i) => `row-${i}`), 'tail'].join('\n')
+	const reference = dedupeConsecutiveLines(text)
+	for (const chunkSize of [1, 3, 7, 9999]) {
+		const deduper = createLineDedupe()
+		for (let i = 0; i < text.length; i += chunkSize) deduper.push(text.slice(i, i + chunkSize))
+		const got = deduper.finish()
+		assertEquals(got.text, reference.text, `chunkSize=${chunkSize} 文本应一致`)
+		assertEquals(got.omittedLines, reference.omittedLines, `chunkSize=${chunkSize} 省略数应一致`)
+	}
+})
+
+Deno.test('guardOutput folds arithmetic-line runs before deciding to spill', async () => {
+	const lines = Array.from({ length: 3000 }, (_, i) => `progress-${i}-${'x'.repeat(30)}`)
+	const result = await guardOutput(lines.join('\n'), { name: 'seq-unit' })
+	assert(!result.truncated, '序列压缩后应小到不必落盘')
+	assertStringIncludes(result.text, '已省略中间')
+	assert(!result.savedPath)
+})
+
 Deno.test('createCollectingConsole compresses repeated console lines', () => {
 	const { console: vc, text } = createCollectingConsole()
 	for (let i = 0; i < 20; i++) vc.log('repeated')
@@ -560,8 +625,8 @@ Deno.test('createCollectingConsole compresses repeated console lines', () => {
 })
 
 Deno.test('guardOutput dedupes repeated lines before deciding to spill', async () => {
-	// 前段各不相同（保证未压缩时超限），后段大量连续重复（应被压缩，压缩后小到不必落盘）
-	const varied = Array.from({ length: 300 }, (_, i) => `unique-prefix-${i}-xxxxxxxxxxxxxxxx`).join('\n')
+	// 前段各不相同（且非等差序列，保证不被压缩、未压缩时超限），后段大量连续重复（应被压缩，压缩后小到不必落盘）
+	const varied = Array.from({ length: 300 }, (_, i) => `unique-prefix-${i}-${String.fromCharCode(97 + i % 26)}-xxxxxxxxxxxxxxxx`).join('\n')
 	const repeated = Array.from({ length: 3000 }, () => 'duplicated-line').join('\n')
 	const result = await guardOutput(`${varied}\n${repeated}`, { name: 'dedupe-unit' })
 	assert(!result.truncated, '压缩后未超限，不应再落盘（避免无谓的写盘 + 后续读取）')
@@ -571,8 +636,8 @@ Deno.test('guardOutput dedupes repeated lines before deciding to spill', async (
 })
 
 Deno.test('guardOutput spills the already-deduped text when it still exceeds the limit', async () => {
-	// 大量各不相同的行（压缩后仍超限）+ 一段重复行（应被压缩进落盘内容）
-	const varied = Array.from({ length: 4000 }, (_, i) => `unique-${i}-${'x'.repeat(20)}`).join('\n')
+	// 大量各不相同且非等差序列的行（压缩后仍超限）+ 一段重复行（应被压缩进落盘内容）
+	const varied = Array.from({ length: 4000 }, (_, i) => `unique-${i}-${String.fromCharCode(97 + i % 26)}-${'x'.repeat(20)}`).join('\n')
 	const repeated = Array.from({ length: 2000 }, () => 'duplicated-line').join('\n')
 	const result = await guardOutput(`${varied}\n${repeated}`, { name: 'dedupe-spill' })
 	assert(result.truncated, '压缩后仍超限，应落盘')
