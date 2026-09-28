@@ -622,7 +622,7 @@ function createInlineHandle(lang) {
 				content: `内联${lang}代码执行失败：\n` + (call.error.stack || String(call.error)),
 				files: []
 			})
-			return { regen: true }
+			return { regen: true, failed: true }
 		}
 		const { text, truncated, omitted } = truncateOutput(String(call.value ?? ''), { limit: 4000, head: 2000, tail: 2000 })
 		args.AddLongTimeLog({
@@ -702,7 +702,8 @@ async function executeRunJs({ runtime, args, call, limits, remote, stream }) {
 		contentParts.push(notice.trim())
 		showParts.push(notice.trim())
 	}
-	return { content: contentParts.join('\n\n'), showParts, evalResult }
+	const failed = Boolean(timedOut || evalResult?.error)
+	return { content: contentParts.join('\n\n'), showParts, evalResult, failed }
 }
 
 /**
@@ -771,7 +772,7 @@ export const runJsReplyHandler = defineReplyHandler({
 
 		await logCode(`${args.Charname} running JS code:`, call.inner, 'js')
 		emit?.({ callId, phase: 'start', name, lang: 'js', code: call.inner })
-		const { content, showParts } = await executeRunJs({ runtime, args, call, limits, remote, stream })
+		const { content, showParts, failed } = await executeRunJs({ runtime, args, call, limits, remote, stream })
 		emit?.({ callId, phase: 'end', name })
 		AddLongTimeLog({
 			name: 'code-execution.run-js',
@@ -780,7 +781,7 @@ export const runJsReplyHandler = defineReplyHandler({
 			content_for_show: buildResultShow({ lang: 'js', code: call.inner, body: showParts.join('\n\n') }),
 			files: [],
 		})
-		return { regen: true }
+		return { regen: true, ...failed ? { failed: true } : {} }
 	},
 })
 
@@ -837,6 +838,7 @@ async function executeRunShell({ runtime, args, call, limits, shellName, stream 
 	})
 	let fullOutput
 	let showBody
+	const failed = Boolean(shell_result instanceof Error || timedOut || shell_result?.code)
 	if (shell_result instanceof Error) {
 		fullOutput = '执行出错：\n' + (shell_result.stack || String(shell_result)) + notice
 		showBody = fullOutput
@@ -850,7 +852,7 @@ async function executeRunShell({ runtime, args, call, limits, shellName, stream 
 		// 展示层保留原始 ANSI：用 ansi 代码块呈色
 		showBody = header + '\n\n' + renderMarkdownCodeBlock(rawOutput || output, { lang: 'ansi' }) + (notice ? '\n' + notice.trim() : '')
 	}
-	return { fullOutput, rawOutput, showBody }
+	return { fullOutput, rawOutput, showBody, failed }
 }
 
 /**
@@ -920,7 +922,7 @@ function createRunShellReplyHandler(shell_name) {
 
 			await logCode(`${args.Charname} running ${shell_name} code:`, call.inner, shell_name)
 			emit?.({ callId, phase: 'start', name, lang: shell_name, code: call.inner })
-			const { fullOutput, showBody } = await executeRunShell({ runtime, args, call, limits, shellName: shell_name, stream })
+			const { fullOutput, showBody, failed } = await executeRunShell({ runtime, args, call, limits, shellName: shell_name, stream })
 			emit?.({ callId, phase: 'end', name })
 			console.info(`${args.Charname} ${shell_name} result:`, runtime.execedCodes[call.inner])
 			const guarded = await guardOutput(fullOutput, { name: `shell-${shell_name}`, label: 'shell 输出' })
@@ -931,7 +933,7 @@ function createRunShellReplyHandler(shell_name) {
 				content_for_show: buildResultShow({ lang: shell_name, code: call.inner, body: guarded.truncated ? renderAnsiBlock(guarded.text) : showBody }),
 				files: [],
 			})
-			return { regen: true }
+			return { regen: true, ...failed ? { failed: true } : {} }
 		},
 	})
 }

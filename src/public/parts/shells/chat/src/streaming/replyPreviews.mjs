@@ -2,14 +2,15 @@
  * 【文件】src/streaming/replyPreviews.mjs
  * 【职责】ReplyHandler 的流式预览 SSOT：解析各 handler 的标签调用，将未完成调用渲染为占位、已求值调用渲染为结果，并驱动提前求值缓存。
  * 【原理】与回复管线共用同一批 handler 与 `display`/`evaluate`：从原始 `content` 派生 show，整段替换每个已完成调用；
- *   尾部的未闭合标签按 `state.open` 渲染占位。evaluate 在此启动、缓存于 `args.extension.evaluatedToolCalls`，后续 chunk 与管线复用。
+ *   尾部的未闭合标签按 `state.open` 渲染占位。预览只读 `args.extension.evaluatedToolCalls` 中的求值缓存渲染 pending/结果，
+ *   求值的启动由回复管线在调用真正执行时进行，避免前序失败时后续调用抢先执行。
  * 【数据结构】handler.pattern = { tag, params, body }；state = { stage:'streaming', open, value?, error? }。
  * 【关联】被 char 插件与其它 shell 直接 import；替代旧 defineToolUseBlocks / defineInlineToolUses；渲染见 reply/display.mjs。
  */
 import { buildHandlerCall, collectHandlerCalls } from '../reply/collectCalls.mjs'
 import { flattenReplyHandlers } from '../reply/defineReplyHandler.mjs'
 import { padBlockRendered, renderCallDisplay, renderToolCallingPlaceholder } from '../reply/display.mjs'
-import { getEvaluationCache, readEvaluatedCall, syncEvaluationCache } from '../reply/evaluationCache.mjs'
+import { getEvaluationCache, readEvaluatedCall } from '../reply/evaluationCache.mjs'
 import { findOpenTag } from '../tags/index.mjs'
 
 /**
@@ -75,8 +76,9 @@ export function defineReplyPreviews(handlers) {
 			const pattern = handler.pattern
 			if (!pattern || pattern instanceof RegExp || typeof pattern === 'function' || !pattern.tag) continue
 			const calls = collectHandlerCalls(content, handler, args)
+			// 只读求值缓存渲染 pending / 已结算结果；启动求值交给回复管线在调用真正执行时进行，
+			// 避免后续调用在前序失败尚未确定前抢先执行。
 			const cache = handler.evaluate ? getEvaluationCache(args, handler.name) : null
-			if (cache) syncEvaluationCache(cache, calls, handler.evaluate, args)
 			for (const call of calls) {
 				const entry = cache ? readEvaluatedCall(cache, call.occurrence) : null
 				const displayText = renderCallDisplay(handler, call, {

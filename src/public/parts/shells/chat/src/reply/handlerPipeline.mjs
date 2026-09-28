@@ -4,7 +4,8 @@
  * 【原理】level 越小越先；同一 level 内先跑无 tag 的内容型 handler，再对带 tag/pattern 者取「最靠前的未消耗调用」整段执行——容器标签整段消耗，天然防止内层标签被单独触发，跨插件也保持文本顺序。无 fixpoint。
  *   声明了 `parallel` 的 handler 之间可并发：`parallel: true` 与所有启用并行者兼容，`parallel: string[]` 只与列出的 handler 名兼容（需双向）；同组内文本相邻的兼容调用并发执行，未声明者视为屏障串行。并行批次的工具日志按文本顺序回放，保证确定性。
  *   提前求值（evaluate）结果按 name 缓存在 `args.extension.evaluatedToolCalls`，签名变化（重生成）即重置；展示层由 `display` 纯派生，handler 不得直接改写整条 content_for_show。
- * 【数据结构】call = { name, tag, params, body, raw, start, end, occurrence, value?, error? }；handler 返回 { regen?, content?, stop? }。
+ *   handler 返回 `failed: true` 表示操作失败：当前并行批次仍结算，但跳过后续所有调用并追加「后续调用已跳过」工具日志、强制下一轮生成。
+ * 【数据结构】call = { name, tag, params, body, raw, start, end, occurrence, value?, error? }；handler 返回 { regen?, content?, stop?, failed? }。
  * 【关联】被 ZL-31 / GentianAphrodite / ImportHandlers / easynew 模板与各插件 handler 使用；类型见 decl/pluginAPI.ts。
  */
 /** @typedef {import('../../../../../../decl/chatLog.ts').chatReply_t} chatReply_t */
@@ -17,7 +18,7 @@ import { truncateOutput } from '../../../../../../scripts/shell_guard.mjs'
 
 import { collectHandlerCalls } from './collectCalls.mjs'
 import { flattenReplyHandlers } from './defineReplyHandler.mjs'
-import { padBlockRendered, renderCallDisplay } from './display.mjs'
+import { padBlockRendered, renderCallDisplay, renderToolSkippedPlaceholder } from './display.mjs'
 import { getEvaluationCache, syncEvaluationCache } from './evaluationCache.mjs'
 
 /** 单轮生成内最多处理的调用数，防御 handler 不断产生新匹配导致的死循环。 */
@@ -150,6 +151,28 @@ function findEarliestCall(content, handlers, cursor, args) {
 }
 
 /**
+ * 从某组起，按生成文本顺序收集失败后仍未执行的调用（容器标签整段消耗，与正常执行一致）。
+ * @param {string} content 失败时用于解析的文本
+ * @param {object[]} groups 按 level 分组的 handler 组（含 `handlers`）
+ * @param {number} fromGroupIndex 起始组下标（含）
+ * @param {number} cursor 起始偏移（当前组内已消耗到的位置）
+ * @param {object} args 请求上下文
+ * @returns {Array<{ handler: object, call: object }>} 未执行的调用（文本顺序）
+ */
+function collectSkippedCalls(content, groups, fromGroupIndex, cursor, args) {
+	const handlers = groups.slice(fromGroupIndex).flatMap(group => group.handlers)
+	const skipped = []
+	let scanCursor = cursor
+	for (;;) {
+		const head = findEarliestCall(content, handlers, scanCursor, args)
+		if (!head) break
+		skipped.push(head)
+		scanCursor = head.call.end
+	}
+	return skipped
+}
+
+/**
  * 同步提前求值缓存并返回该调用的缓存条目。
  * @param {string} content 当前解析文本
  * @param {object} handler handler
@@ -162,7 +185,7 @@ function prepareCallEvaluation(content, handler, call, args, handlerArgs) {
 	if (!handler.evaluate) return null
 	const calls = collectHandlerCalls(content, handler, handlerArgs)
 	const cache = getEvaluationCache(args, handler.name)
-	syncEvaluationCache(cache, calls, handler.evaluate, handlerArgs)
+	syncEvaluationCache(cache, calls, handler.evaluate, handlerArgs, call.occurrence)
 	return cache.entries[call.occurrence]
 }
 
@@ -172,7 +195,8 @@ function prepareCallEvaluation(content, handler, call, args, handlerArgs) {
  * - 按 `level` 升序分组（同值一组）；组内先跑内容型 handler（声明序），再对标签调用按生成文本顺序整段执行；
  * - 声明 `parallel` 的 handler 之间可并发（`true`=与所有启用并行者兼容；字符串数组=只与列出的 handler 名双向兼容）；未声明者串行；
  * - 内容型 handler 无 `pattern`，`handle(reply, args, null)` 作用于整条 `reply.content`；
- * - handler 返回 `{ regen?, content?, stop? }`：`regen` 建议下一轮生成，`content` 整条替换 `reply.content`，`stop` 立即终止本轮；
+ * - handler 返回 `{ regen?, content?, stop?, failed? }`：`regen` 建议下一轮生成，`content` 整条替换 `reply.content`，`stop` 立即终止本轮；
+ * - `failed: true` 表示本次操作失败：当前并行批次仍会全部结算，但不再启动后续任何调用（含后续批次与 level），管线追加一条「后续调用已跳过」工具日志并必然建议下一轮生成；
  * - `evaluate` 的提前求值结果经 `args.extension.evaluatedToolCalls` 缓存并在 `call.value` 复用；
  * - 展示层由 `display` 纯派生：把已处理调用段替换为其最终展示文本，handler 不直接改写整条 `content_for_show`；
  * - 声明 `evaluate` 的 handler 视为 inline 类：管线把每个 inline 结果分别截断，追加一条工具日志告知角色其消息经处理后的样子；
@@ -206,13 +230,17 @@ export async function runReplyHandlers(result, args, handlers) {
 
 	let wantRegen = false
 	let stopped = false
+	let failed = false
 	let handledCount = 0
 	const originalContent = result.content
 	/** @type {Array<{ raw: string, start: number, source: string, displayText: string, inline: boolean }>} 已处理调用段的展示替换。 */
 	const handledSpans = []
+	/** 失败后未执行、需在展示层标记为跳过的调用。 */
+	let skippedCalls = []
 
-	for (const group of groups) {
-		if (stopped) break
+	for (let groupIndex = 0; groupIndex < groups.length; groupIndex++) {
+		const group = groups[groupIndex]
+		if (stopped || failed) break
 
 		// 1) 内容型 handler：整条 content，先于同组标签调用
 		for (const handler of group.handlers) {
@@ -221,8 +249,13 @@ export async function runReplyHandlers(result, args, handlers) {
 			if (outcome.content !== undefined) result.content = outcome.content
 			if (outcome.regen) wantRegen = true
 			if (outcome.stop) { stopped = true; break }
+			if (outcome.failed) {
+				failed = true
+				skippedCalls = collectSkippedCalls(result.content ?? '', groups, groupIndex, 0, handlerArgs)
+				break
+			}
 		}
-		if (stopped) break
+		if (stopped || failed) break
 
 		// 2) 标签/模式 handler：按当前 content 中最早的未消耗调用逐个/并发执行
 		let content = result.content ?? ''
@@ -261,6 +294,7 @@ export async function runReplyHandlers(result, args, handlers) {
 					}, item.call)).then(outcome => outcome ?? {})
 				))
 				let batchStop = false
+				let batchFailed = false
 				for (let index = 0; index < batch.length; index++) {
 					for (const entry of bufferedLogs[index]) AddLongTimeLog(entry)
 					const outcome = outcomes[index]
@@ -273,10 +307,17 @@ export async function runReplyHandlers(result, args, handlers) {
 					handledSpans.push({ raw: call.raw, start: call.start, source: content, displayText, inline: Boolean(handler.evaluate) && Boolean(displayText), inlineResultLogged: call.inlineResultLogged })
 					handledCount++
 					if (outcome.stop) batchStop = true
+					if (outcome.failed) batchFailed = true
 				}
 				cursor = batch.at(-1).call.end
 				if (result.content !== content) { content = result.content ?? ''; cursor = 0 }
 				if (batchStop) { stopped = true; break }
+				if (batchFailed) {
+					// 批次内已启动的调用全部结算，但该步骤整体算失败：不再启动后续批次/调用
+					failed = true
+					skippedCalls = collectSkippedCalls(content, groups, groupIndex, cursor, handlerArgs)
+					break
+				}
 				continue
 			}
 
@@ -299,10 +340,35 @@ export async function runReplyHandlers(result, args, handlers) {
 			handledSpans.push({ raw: call.raw, start: call.start, source: content, displayText, inline: Boolean(handler.evaluate) && Boolean(displayText), inlineResultLogged: call.inlineResultLogged })
 
 			if (outcome.stop) { stopped = true; break }
+			if (outcome.failed) {
+				failed = true
+				const skipCursor = result.content !== beforeContent ? 0 : call.end
+				skippedCalls = collectSkippedCalls(result.content ?? '', groups, groupIndex, skipCursor, handlerArgs)
+				break
+			}
 			if (result.content !== beforeContent) { content = result.content ?? ''; cursor = 0 }
 			else cursor = call.end
 		}
-		if (stopped) break
+		if (stopped || failed) break
+	}
+
+	if (failed && !stopped) {
+		// 失败操作本身已由 handler 写入结果日志；这里追加「后续调用已跳过」提示，并强制下一轮生成让角色先看到失败。
+		wantRegen = true
+		if (skippedCalls.length) {
+			const sourceContent = result.content ?? ''
+			for (const { handler, call } of skippedCalls) {
+				const displayText = renderCallDisplay(handler, call, { stage: 'final', open: false, skipped: true }, handlerArgs)
+				handledSpans.push({ raw: call.raw, start: call.start, source: sourceContent, displayText, inline: false })
+			}
+			AddLongTimeLog({
+				name: 'chat.skipped-calls',
+				role: 'tool',
+				content: `前序工具调用失败，以下后续调用已跳过、未执行：\n\n${skippedCalls.map(({ call }) => call.raw).join('\n\n')}\n\n请先根据上面的失败结果修正问题，再重新发起这些调用。`,
+				content_for_show: renderToolSkippedPlaceholder(handlerArgs),
+				files: [],
+			})
+		}
 	}
 
 	if (handledCount >= MAX_HANDLED_CALLS)

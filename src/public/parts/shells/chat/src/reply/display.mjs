@@ -9,28 +9,47 @@
 import { getChatI18n } from '../streaming/markdown.mjs'
 
 /**
- * 渲染「正在调用工具」的本地化占位。
+ * 渲染一个本地化工具状态提示（HTML 卡片 / Markdown / 纯文本）。
  * @param {object} args 请求上下文
- * @returns {string} 占位文本（HTML / Markdown / 纯文本）
+ * @param {string} key 本地化键
+ * @returns {string} 提示文本
  */
-export function renderToolCallingPlaceholder(args) {
+function renderToolNotice(args, key) {
 	/**
-	 * 获取本地化「正在调用工具」文案。
+	 * 取本地化提示文案。
 	 * @returns {string} 本地化文案
 	 */
-	const toolCallingText = () => getChatI18n(args, 'chat.message.view.commonToolCalling')
+	const text = () => getChatI18n(args, key)
 	if (args.supported_functions?.html)
 		return `\
 <div class="tool-call-placeholder card my-2 bg-base-100 text-sm shadow-xl">
 	<div class="card-body">
 	${args.supported_functions.fount_i18nkeys
-		? '<span class="tool-call-placeholder-text" data-i18n="chat.message.view.commonToolCalling"></span>'
-		: `<span class="tool-call-placeholder-text">${toolCallingText()}</span>`}
+		? `<span class="tool-call-placeholder-text" data-i18n="${key}"></span>`
+		: `<span class="tool-call-placeholder-text">${text()}</span>`}
 	</div>
 </div>
 `
-	if (args.supported_functions?.markdown) return `*[[${toolCallingText()}]]*`
-	return `(${toolCallingText()})`
+	if (args.supported_functions?.markdown) return `*[[${text()}]]*`
+	return `(${text()})`
+}
+
+/**
+ * 渲染「正在调用工具」的本地化占位。
+ * @param {object} args 请求上下文
+ * @returns {string} 占位文本（HTML / Markdown / 纯文本）
+ */
+export function renderToolCallingPlaceholder(args) {
+	return renderToolNotice(args, 'chat.message.view.commonToolCalling')
+}
+
+/**
+ * 渲染「因前序失败而跳过」的本地化标记（用于展示层替换未执行的调用段）。
+ * @param {object} args 请求上下文
+ * @returns {string} 标记文本（HTML / Markdown / 纯文本）
+ */
+export function renderToolSkippedPlaceholder(args) {
+	return renderToolNotice(args, 'chat.message.view.commonToolSkipped')
 }
 
 /**
@@ -42,6 +61,7 @@ export function renderToolCallingPlaceholder(args) {
  */
 export function defaultDisplay(call, state, args) {
 	if (state.error) return `[Error: ${state.error.message ?? state.error}]`
+	if (state.skipped) return renderToolSkippedPlaceholder(args)
 	if (state.value !== undefined && state.value !== null) return String(state.value)
 	return state.stage === 'streaming' ? renderToolCallingPlaceholder(args) : ''
 }

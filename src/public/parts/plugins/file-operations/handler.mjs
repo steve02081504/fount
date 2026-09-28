@@ -277,7 +277,14 @@ export const listMachinesReplyHandler = defineReplyHandler({
 	 * @returns {Promise<object>} 结果
 	 */
 	handle: async (reply, args, call) => {
-		const machines = await listMachines(args.username)
+		let machines
+		try {
+			machines = await listMachines(args.username)
+		}
+		catch (err) {
+			addFileToolLog(args, call.raw, `列出机器失败：\n${renderMarkdownCodeBlock(err.stack || String(err))}\n`, { name: 'file-operations.list-machines' })
+			return { regen: true, failed: true }
+		}
 		const content = '可用机器列表：\n' + renderMarkdownCodeBlock(JSON.stringify(machines, null, 2), { lang: 'json' })
 		addFileToolLog(args, call.raw, content, { name: 'file-operations.list-machines' })
 		return { regen: true }
@@ -312,6 +319,7 @@ export const viewFileReplyHandler = defineReplyHandler({
 		const loadedContextHashes = []
 		const viewedFiles = []
 		const knownContextHashes = resolveKnownContextHashes(args)
+		let readFailed = false
 		for (const filepath of paths)
 			try {
 				if (filepath.startsWith('http://') || filepath.startsWith('https://')) {
@@ -351,11 +359,12 @@ export const viewFileReplyHandler = defineReplyHandler({
 				}
 			}
 			catch (err) {
+				readFailed = true
 				file_content += `读取文件失败：${inlineCode(filepath)}\n${renderMarkdownCodeBlock(err.stack || String(err))}\n`
 			}
 
 		addFileToolLog(args, call.raw, file_content, { name: 'file-operations.view-file', files, loadedContextHashes, viewedFiles })
-		return { regen: true }
+		return { regen: true, ...readFailed ? { failed: true } : {} }
 	},
 })
 
@@ -379,12 +388,15 @@ export const globReplyHandler = defineReplyHandler({
 		const patterns = (call.inner || call.params.pattern || '').split('\n').map(p => p.trim()).filter(Boolean)
 		const location = call.params.path || '.'
 		let system_content = ''
+		let searchFailed = false
 		try {
 			const executor = executorFor(call.params)
 			const root = await executor.resolvePath(call.params.path || '')
 			const result = await executor.execJs(runRipgrep, { mode: 'glob', root, patterns, limit: SEARCH_FILE_LIMIT })
-			if (!result.ok)
+			if (!result.ok) {
+				searchFailed = true
 				system_content = `文件搜索失败：${inlineCode(result.error)}\n`
+			}
 			else {
 				system_content = `在 ${inlineCode(location)} 下搜索文件，命中 ${result.total} 个${result.truncated ? `（仅显示前 ${SEARCH_FILE_LIMIT} 个）` : ''}：\n`
 				system_content += result.files.length
@@ -398,10 +410,11 @@ export const globReplyHandler = defineReplyHandler({
 			}
 		}
 		catch (err) {
+			searchFailed = true
 			system_content = `文件搜索失败：\n${renderMarkdownCodeBlock(err.stack || String(err))}\n`
 		}
 		addFileToolLog(args, call.raw, system_content, { name: 'file-operations.glob' })
-		return { regen: true }
+		return { regen: true, ...searchFailed ? { failed: true } : {} }
 	},
 })
 
@@ -427,13 +440,16 @@ export const grepReplyHandler = defineReplyHandler({
 		const filesOnly = call.params.mode === 'files'
 		const location = call.params.path || '.'
 		let system_content = ''
+		let searchFailed = false
 		try {
 			if (!pattern) throw new Error('未提供搜索模式：请把正则表达式写在 <grep> 标签内部。')
 			const executor = executorFor(call.params)
 			const root = await executor.resolvePath(call.params.path || '')
 			const result = await executor.execJs(runRipgrep, { mode: 'grep', root, pattern, includes, filesOnly, limit: SEARCH_MATCH_LIMIT })
-			if (!result.ok)
+			if (!result.ok) {
+				searchFailed = true
 				system_content = `内容搜索失败：${inlineCode(result.error)}\n`
+			}
 			else if (filesOnly) {
 				system_content = `在 ${inlineCode(location)} 下搜索 ${inlineCode(pattern)}，命中 ${result.total} 个文件${result.truncated ? `（仅显示前 ${SEARCH_MATCH_LIMIT} 个）` : ''}：\n`
 				system_content += result.files.length
@@ -458,10 +474,11 @@ export const grepReplyHandler = defineReplyHandler({
 			}
 		}
 		catch (err) {
+			searchFailed = true
 			system_content = `内容搜索失败：\n${renderMarkdownCodeBlock(err.stack || String(err))}\n`
 		}
 		addFileToolLog(args, call.raw, system_content, { name: 'file-operations.grep' })
-		return { regen: true }
+		return { regen: true, ...searchFailed ? { failed: true } : {} }
 	},
 })
 
@@ -522,11 +539,12 @@ export const replaceFileReplyHandler = defineReplyHandler({
 		catch (err) {
 			console.error('Error parsing replace-file content with regex:', err)
 			addFileToolLog(args, logContent, `解析replace-file失败：\n${renderMarkdownCodeBlock(err.stack || String(err))}\n原始数据:\n${renderMarkdownCodeBlock('<replace-file>' + replace_file_content + '</replace-file>')}`, { name: 'file-operations.replace-file' })
-			return { regen: true }
+			return { regen: true, failed: true }
 		}
 
 		console.info('AI替换的文件：', replace_files_data)
 		const executor = executorFor(call.params)
+		let anyFailure = false
 
 		for (const replace_file of replace_files_data) {
 			const { path: filepath, replacements } = replace_file
@@ -538,6 +556,7 @@ export const replaceFileReplyHandler = defineReplyHandler({
 				originalContent = await executor.readTextFile(filepath)
 			}
 			catch (err) {
+				anyFailure = true
 				addFileToolLog(args, logContent, `读取文件失败：${inlineCode(filepath)}\n${renderMarkdownCodeBlock(err.stack || String(err))}\n`, { name: 'file-operations.replace-file' })
 				continue
 			}
@@ -584,6 +603,7 @@ export const replaceFileReplyHandler = defineReplyHandler({
 			else system_content = `文件 ${inlineCode(filepath)} 内容未发生变化（尝试了 ${replacements.length} 项替换规则）。\n`
 
 			if (failed_replaces.length) {
+				anyFailure = true
 				system_content += `以下 ${failed_replaces.length} 处替换操作失败：\n`
 				system_content += renderMarkdownCodeBlock(JSON.stringify(failed_replaces, null, '\t'), { lang: 'json' }) + '\n'
 			}
@@ -595,6 +615,7 @@ export const replaceFileReplyHandler = defineReplyHandler({
 					await executor.writeTextFile(filepath, finalContent)
 				}
 				catch (err) {
+					anyFailure = true
 					system_content = `写入文件失败：${inlineCode(filepath)}\n${renderMarkdownCodeBlock(err.stack || String(err))}\n`
 				}
 			}
@@ -602,7 +623,7 @@ export const replaceFileReplyHandler = defineReplyHandler({
 
 			addFileToolLog(args, logContent, system_content, { name: 'file-operations.replace-file' })
 		}
-		return { regen: true }
+		return { regen: true, ...anyFailure ? { failed: true } : {} }
 	},
 })
 
@@ -638,7 +659,7 @@ export const overrideFileReplyHandler = defineReplyHandler({
 				const isEmpty = !newText.trim()
 				if (!force && (isEmpty || similarity < 0.3)) {
 					addFileToolLog(args, logContent, `覆写 ${inlineCode(filepath)} 被拒绝：新内容与原文相似度仅 ${(similarity * 100).toFixed(1)}%${isEmpty ? '，且新内容为空' : ''}。\n如确认要整体重写，请为 <override-file> 添加 force="true"；否则请改用 <replace-file> 做局部修改。`, { name: 'file-operations.override-file' })
-					return { regen: true }
+					return { regen: true, failed: true }
 				}
 				await executor.writeTextFile(filepath, restoreBom(applyEol(toLf(newText), style.eol), style.bom))
 			}
@@ -647,6 +668,7 @@ export const overrideFileReplyHandler = defineReplyHandler({
 		}
 		catch (err) {
 			addFileToolLog(args, logContent, `写入文件失败：${inlineCode(filepath)}\n${renderMarkdownCodeBlock(err.stack || String(err))}\n`, { name: 'file-operations.override-file' })
+			return { regen: true, failed: true }
 		}
 		return { regen: true }
 	},

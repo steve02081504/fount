@@ -2,9 +2,10 @@
  * 【文件】src/reply/evaluationCache.mjs
  * 【职责】ReplyHandler 提前求值（evaluate）的跨阶段缓存：流式预览启动求值，回复管线复用同一结果。
  * 【原理】按 handler name 在 `args.extension.evaluatedToolCalls` 下缓存；签名 = 本轮全部匹配原文拼接，签名变化（重生成/重排）即整体重置；
- *   条目为 `{ settled, value, error, promise }`，promise 永不 reject（错误记入 error），供预览渲染 pending 与管线取 value。
+ *   条目为 `{ settled, value, error, promise }`，promise 永不 reject（错误记入 error）。预览只读缓存渲染 pending，启动求值由回复管线在
+ *   调用真正执行时按出现序号进行（`syncEvaluationCache` 的 `onlyOccurrence`），确保前序失败时后续调用不会抢先求值。
  * 【数据结构】cache = { signature, entries }。
- * 【关联】被 streaming/replyPreviews.mjs 与 reply/handlerPipeline.mjs 共用。
+ * 【关联】被 streaming/replyPreviews.mjs（只读）与 reply/handlerPipeline.mjs（启动）共用。
  */
 
 /**
@@ -21,19 +22,24 @@ export function getEvaluationCache(args, name) {
 
 /**
  * 按当前调用集合同步缓存：签名变化则重置，未启动的调用启动求值。
+ *
+ * `onlyOccurrence` 指定时只启动该出现序号的求值（其余保持未启动）——供回复管线在
+ * 单个调用真正开始执行时才启动，避免后续调用在前序失败尚未确定前抢先执行。
  * @param {{ signature: string, entries: object[] }} cache 缓存
  * @param {object[]} calls 当前调用集合
  * @param {(call: object, args: object) => Promise<unknown>} evaluate 求值函数
  * @param {object} args 请求上下文
+ * @param {number} [onlyOccurrence] 仅启动该出现序号（缺省启动全部未启动项）
  * @returns {void}
  */
-export function syncEvaluationCache(cache, calls, evaluate, args) {
+export function syncEvaluationCache(cache, calls, evaluate, args, onlyOccurrence) {
 	const signature = calls.map(call => call.raw).join('\u0000')
 	if (cache.signature !== signature) {
 		cache.signature = signature
 		cache.entries = []
 	}
-	for (let index = 0; index < calls.length; index++)
+	for (let index = 0; index < calls.length; index++) {
+		if (onlyOccurrence !== undefined && index !== onlyOccurrence) continue
 		if (!cache.entries[index]) {
 			const entry = cache.entries[index] = { settled: false }
 			entry.promise = Promise.resolve().then(() => evaluate(calls[index], args)).then(
@@ -41,6 +47,7 @@ export function syncEvaluationCache(cache, calls, evaluate, args) {
 				error => Object.assign(entry, { error, settled: true }),
 			)
 		}
+	}
 }
 
 /**

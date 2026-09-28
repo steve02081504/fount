@@ -66,8 +66,9 @@ return Array.from({ length: 201 }, (_, i) => toEnglishWord(i)).join(', ')
 - 超时：默认 ${Math.round(SHELL_DEFAULT_TIMEOUT_MS / 60000)} 分钟；expect="时长" + tolerance="时长" 生效（只给 tolerance 时基于默认值累加）；wait="forever" 干等不超时。时长支持 30s / 5m / 1h 或纯秒数，如 <run-${defaultShell} expect="5m" tolerance="1m">。超时会尽力终止（shell 杀进程树；js 在进程内无法强杀，会如实告知你“实际仍在运行”）。
 - 目标：machine="机器id"、workdir="目录" 单次覆盖，未指定时用当前目标。
 - 返回：<run-js> 给 \`output\`（console 文本）+ \`result\`（返回值），出错时为 \`output\` + \`error\`；正常结束会标注耗时。
-- 大输出：连续完全相同的行会折叠；压缩后仍超限时只保留头尾，完整内容写入临时文件并给出路径，可用 <view-file> 分页 / <grep> 搜索。
+- 大输出：连续完全相同的行、以及形如 \`line-1\`、\`line-2\` 的同型递增行都会折叠；压缩后仍超限时只保留头尾，完整内容写入临时文件并给出路径，可用 <view-file> 分页 / <grep> 搜索。
 使用约定：
+- 一次回复里的多个工具调用按顺序执行；若其中某个调用失败，后续调用会被自动跳过。请先阅读失败回执、修正问题，再重新发起被跳过的调用（例如编辑成功后再运行校验命令）。
 - 简单问题用 <inline-js> 并优先用大数类型；复杂数学用 <run-js>；操作电脑/查看文件/更改设置/播放音乐用 <run-${defaultShell}>。
 ${getConnectedSubfounts(args.username).length === 1 ? `\
 - 用户对接其他 subfount 后，你也可以在其他机器上运行代码。

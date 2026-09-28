@@ -6,7 +6,7 @@ import fs from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
 
-import { assert, assertEquals } from 'jsr:@std/assert'
+import { assert, assertEquals, assertRejects } from 'jsr:@std/assert'
 
 import { runReplyHandlers } from '../../../../shells/chat/src/reply/handlerPipeline.mjs'
 import { fileOperationsReplyHandlers } from '../../handler.mjs'
@@ -163,6 +163,39 @@ Deno.test('handler rejects empty and multi-match replacements without writing', 
 		assertEquals(await fs.readFile(path.join(root, 'f.txt'), 'utf8'), 'dup\ndup\n', 'multi/empty must not modify file')
 		const text = logText(run.logs)
 		assert(text.includes('命中 2 处'), `log should mention multi-match: ${text}`)
+	}
+	finally {
+		await fs.rm(root, { recursive: true, force: true })
+	}
+})
+
+Deno.test('handler replace parse failure marks failed and skips the next same-round call', async () => {
+	const root = await tempDir()
+	try {
+		await fs.writeFile(path.join(root, 'f.txt'), 'a\n', 'utf8')
+		const run = createHandlerArgs(root)
+		const content = '<replace-file><file path="f.txt"></file></replace-file>\n'
+			+ '<override-file path="new.txt">hello</override-file>'
+		await runFileOps(content, run.args)
+		await assertRejects(() => fs.access(path.join(root, 'new.txt')))
+		assert(logText(run.logs).includes('解析replace-file失败'), '失败回执应存在')
+		assert(run.logs.some(entry => entry.name === 'chat.skipped-calls'), '应追加跳过提示')
+	}
+	finally {
+		await fs.rm(root, { recursive: true, force: true })
+	}
+})
+
+Deno.test('handler replace no-match marks failed and skips the next same-round call', async () => {
+	const root = await tempDir()
+	try {
+		await fs.writeFile(path.join(root, 'f.txt'), 'alpha\n', 'utf8')
+		const run = createHandlerArgs(root)
+		const content = '<replace-file><file path="f.txt"><replacement><search>absent</search><replace>x</replace></replacement></file></replace-file>\n'
+			+ '<override-file path="new.txt">hello</override-file>'
+		await runFileOps(content, run.args)
+		await assertRejects(() => fs.access(path.join(root, 'new.txt')))
+		assert(run.logs.some(entry => entry.name === 'chat.skipped-calls'), '应追加跳过提示')
 	}
 	finally {
 		await fs.rm(root, { recursive: true, force: true })

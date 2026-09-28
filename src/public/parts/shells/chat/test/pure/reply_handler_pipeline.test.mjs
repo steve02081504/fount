@@ -241,6 +241,55 @@ Deno.test('管线：互相声明兼容的不同工具可并发执行', async () 
 	assertEquals(probe.max, 2, '互相兼容的不同工具应并发')
 })
 
+/**
+ * 记录并标记失败的处理器。
+ * @param {string} label 记录标签
+ * @param {string[]} order 顺序数组
+ * @returns {Function} handle
+ */
+function failingHandle(label, order) {
+	return async (reply, handlerArgs, call) => { order.push(call ? `${label}:${call.body}` : label); return { regen: true, failed: true } }
+}
+
+/**
+ * 记录调用体的非失败处理器。
+ * @param {string} label 记录标签
+ * @param {string[]} order 顺序数组
+ * @returns {Function} handle
+ */
+function recordingOnlyHandle(label, order) {
+	return async (reply, handlerArgs, call) => { order.push(`${label}:${call.body}`); return {} }
+}
+
+Deno.test('管线：串行调用失败后跳过后续调用并追加跳过提示', async () => {
+	const result = makeResult('<fail>bad</fail><next>ok</next>')
+	const order = []
+	const args = makeArgs()
+	const wantRegen = await runReplyHandlers(result, args, [
+		defineReplyHandler({ tag: 'fail', display: emptyDisplay, handle: failingHandle('fail', order) }),
+		defineReplyHandler({ tag: 'next', display: emptyDisplay, handle: recordingHandle('next', order) }),
+	])
+	assertEquals(order, ['fail:bad'], '失败后后续调用不应执行')
+	assertEquals(wantRegen, true, '失败应强制建议下一轮生成')
+	const skipped = args.prompt_struct.chat_log.find(entry => entry.name === 'chat.skipped-calls')
+	assert(skipped, '应追加跳过提示工具日志')
+	assertStringIncludes(skipped.content, '<next>ok</next>')
+	assertEquals(result.content_for_show.includes('<next>'), false, '跳过调用不应以原始标签泄漏到展示层')
+})
+
+Deno.test('管线：并行批次内任一失败仍结算整批并阻断后续', async () => {
+	const result = makeResult('<a>1</a><b>2</b><c>3</c>')
+	const order = []
+	const args = makeArgs()
+	await runReplyHandlers(result, args, [
+		defineReplyHandler({ tag: 'a', parallel: true, display: emptyDisplay, handle: failingHandle('a', order) }),
+		defineReplyHandler({ tag: 'b', parallel: true, display: emptyDisplay, handle: recordingOnlyHandle('b', order) }),
+		defineReplyHandler({ tag: 'c', display: emptyDisplay, handle: recordingOnlyHandle('c', order) }),
+	])
+	assertEquals(order.sort(), ['a:1', 'b:2'], '并行批次应全部结算，后续非并行调用不应执行')
+	assert(args.prompt_struct.chat_log.some(entry => entry.name === 'chat.skipped-calls'), '应追加跳过提示')
+})
+
 Deno.test('管线：三段相邻并行调用只替换正文中的原文，不误替推理前缀', async () => {
 	const calls = [
 		'<glob path="docs/design">**/*.md</glob>',
@@ -410,14 +459,16 @@ Deno.test('管线：无 evaluate 的块级调用在终态折叠，且不 regen �
 	assertEquals(result.logContextBefore.length, 0)
 })
 
-Deno.test('预览：未闭合标签显示占位，evaluate 结算后就地显示结果', async () => {
+Deno.test('预览：只显示占位，求值由管线启动后就地显示结果', async () => {
 	const args = makeArgs()
+	let evalCount = 0
 	/**
 	 * 求值调用体。
 	 * @param {object} call 调用
 	 * @returns {Promise<string>} 结果
 	 */
 	async function evaluateInline(call) {
+		evalCount++
 		return `R:${call.body}`
 	}
 	/**
@@ -435,8 +486,12 @@ Deno.test('预览：未闭合标签显示占位，evaluate 结算后就地显示
 	const streaming = { content: '<inline-x>hi</inline-x>尾<inline-x>yo', extension: {} }
 	updater(args, streaming)
 	assertStringIncludes(streaming.content_for_show, '[[pending]]')
-
 	await new Promise(resolve => setTimeout(resolve, 0))
+	assertEquals(evalCount, 0, '预览不应启动求值（避免前序失败时后续调用抢先执行）')
+
+	await runReplyHandlers({ content: '<inline-x>hi</inline-x>尾<inline-x>yo', extension: {} }, args, [handler])
+	assertEquals(evalCount, 1, '求值应由管线在调用执行时启动')
+
 	const settled = { content: '<inline-x>hi</inline-x>尾<inline-x>yo', extension: args.extension }
 	updater(args, settled)
 	assertStringIncludes(settled.content_for_show, 'R:hi')

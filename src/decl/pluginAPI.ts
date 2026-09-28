@@ -12,7 +12,7 @@ import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from './prompt_
  * - `evaluate` 在流式期提前求值并缓存于 `args.extension.evaluatedToolCalls`，`handle` 经 `call.value` 复用；
  * - `display(call, state, args)` 决定该调用段在人类展示层的呈现（`state = { stage, open, value?, error? }`）；
  * - `parallel` 声明与其他 handler 的并行兼容性：`true` = 与任何启用并行者兼容，`string[]` = 只与列出的 handler 名双向兼容；未声明即屏障（串行）；
- * - `handle` 返回 `{ regen?, content?, stop? }`：`regen` 建议下一轮生成、`content` 整条替换 `reply.content`、`stop` 立即终止本轮。
+ * - `handle` 返回 `{ regen?, content?, stop?, failed? }`：`regen` 建议下一轮生成、`content` 整条替换 `reply.content`、`stop` 立即终止本轮、`failed` 表示本次操作失败。
  *
  * 整个管线在**生成之后**运行：`defineReplyHandler` 的 `phase`（`before`/`action`/`after`）只是 `level` 的语法糖（-100/0/+100），
  * `before` 并不代表生成前；任何必须在首次生成前可见并持久化的写入请用 `interfaces.chat.BeforeReply`。
@@ -34,12 +34,18 @@ export type ReplyHandlerLeaf_t = {
 	display?: (call: any, state: any, args: any) => string
 	/** 并行兼容性：`true`=与任何启用并行者兼容；`string[]`=只与列出的 handler 名双向兼容；未声明即屏障（串行）。 */
 	parallel?: boolean | string[]
-	/** 处理器。返回 `{ regen?, content?, stop? }`。 */
+	/**
+	 * 处理器。返回 `{ regen?, content?, stop?, failed? }`。
+	 *
+	 * `failed: true` 表示本次操作失败：管线会跑完当前并行批次，然后**跳过后续所有调用**（含后续批次与 level），
+	 * 并追加一条「后续调用已跳过」的工具提示，且必然建议下一轮生成，让角色先看到失败结果再修正。
+	 * 成功但与预期不符（如仅无变化）不应标记失败；`failed` 与 `regen` 互不替代。
+	 */
 	handle: (
 		reply: chatReply_t,
 		args: chatReplyRequest_t & { prompt_struct: prompt_struct_t, AddLongTimeLog?: (entry: chatLogEntry_t) => void },
 		call: any | null,
-	) => Promise<{ regen?: boolean, content?: string, stop?: boolean } | void>
+	) => Promise<{ regen?: boolean, content?: string, stop?: boolean, failed?: boolean } | void>
 }
 
 /**

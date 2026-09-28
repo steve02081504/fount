@@ -3562,6 +3562,7 @@ export type LocaleData = {
 					success: string
 				}
 				commonToolCalling: string
+				commonToolSkipped: string
 				reasoningDetailsTitle: string
 				logprobsNotApplicable: string
 				logprobsTopLogprobsMeta: string

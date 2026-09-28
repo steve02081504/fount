@@ -6,6 +6,7 @@
  *   多个 handler 经 `defineReplyHandlers` 封装为单个组合节点 `{ handlers }`，管线/预览用 `flattenReplyHandlers` 展开。
  *   `parallel` 声明与其他 handler 的并行兼容性（`true`=与所有启用并行者兼容；字符串数组=只与列出的 handler 名兼容）。
  *   声明 `evaluate` 者视为 inline 类（会产生可展示值）；管线据此自动追加处理后回执，无需额外开关字段。
+ *   `handle` 返回 `{ regen?, content?, stop?, failed? }`；`failed: true` 表示本次操作失败，管线会跑完当前并行批次后跳过后续所有调用。
  * 【数据结构】叶子 handler = { name, pattern?, level, evaluate?, display?, parallel?, handle }；组合节点 = { handlers: ReplyHandler_t[] }。
  * 【关联】被各插件/角色与 reply/handlerPipeline.mjs、streaming/replyPreviews.mjs 使用；标签解析见 tags/index.mjs。
  */
@@ -28,7 +29,7 @@ const PHASE_LEVEL = { before: -100, action: 0, after: 100 }
  * @param {(call: object, args: object) => Promise<unknown>} [declaration.evaluate] 提前求值（流式期缓存）
  * @param {(call: object, state: object, args: object) => string} [declaration.display] 展示层渲染
  * @param {boolean | string[]} [declaration.parallel] 并行兼容性（true=与所有启用并行者兼容；字符串数组=只与列出的 handler 名兼容）
- * @param {(reply: object, args: object, call: object | null) => Promise<object>} declaration.handle 处理器
+ * @param {(reply: object, args: object, call: object | null) => Promise<{ regen?: boolean, content?: string, stop?: boolean, failed?: boolean } | void>} declaration.handle 处理器（`failed: true` 表示操作失败，管线将跳过后续调用）
  * @returns {object} 规范化的 ReplyHandler
  */
 export function defineReplyHandler(declaration) {
