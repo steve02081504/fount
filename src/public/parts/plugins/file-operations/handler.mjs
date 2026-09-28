@@ -212,7 +212,7 @@ function pendingDisplay(render) {
  * @param {object} args - 请求上下文。
  * @param {string} call - 工具调用文本。
  * @param {string} resultText - agent 层执行结果。
- * @param {{name?: string, files?: object[], loadedContextHashes?: string[], viewedFiles?: {resolved: string}[]}} [options] - 工具名（供人类侧区分读写/搜索）、结果附件、本次注入的上下文哈希与被查看文件的 realpath。
+ * @param {{name?: string, files?: object[], loadedContextHashes?: string[], viewedFiles?: {resolved: string, machine: string}[]}} [options] - 工具名（供人类侧区分读写/搜索）、结果附件、本次注入的上下文哈希与被查看文件的 realpath（附目标机器标识，供跨机去重）。
  * @returns {void}
  */
 function addFileToolLog(args, call, resultText, { name = 'file-operations', files = [], loadedContextHashes, viewedFiles } = {}) {
@@ -337,7 +337,7 @@ export const viewFileReplyHandler = defineReplyHandler({
 				if (isProbablyTextBuffer(buffer)) {
 					const text = buffer.toString('utf-8')
 					file_content += renderReadResult(filepath, text, readWindow)
-					viewedFiles.push({ resolved })
+					viewedFiles.push({ resolved, machine: target.machine })
 					const shown = windowText(text, readWindow)
 					if (shown.startLine === 1 && shown.endLine === shown.totalLines && !shown.truncatedLineCount)
 						knownContextHashes.add(hashContent(text))
@@ -354,7 +354,7 @@ export const viewFileReplyHandler = defineReplyHandler({
 				}
 				else {
 					files.push({ name: filepath.split(/[\\/]/).pop() || 'file', buffer, mime_type: 'application/octet-stream' })
-					viewedFiles.push({ resolved })
+					viewedFiles.push({ resolved, machine: target.machine })
 					file_content += `文件：${inlineCode(filepath)}读取成功，放置于附件。\n`
 				}
 			}

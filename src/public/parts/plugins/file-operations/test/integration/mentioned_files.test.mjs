@@ -11,7 +11,7 @@ import { assert, assertEquals } from 'jsr:@std/assert'
 
 import { getFileOperationsPrompt } from '../../prompt.mjs'
 import { mergeLineWindows, parseErrorLocations } from '../../src/error_windows.mjs'
-import { collectMentionedFiles, extractPathCandidates } from '../../src/mentioned_files.mjs'
+import { collectMentionedFiles, extractPathCandidates, fileIdentityKey } from '../../src/mentioned_files.mjs'
 import { preloadMentionedFiles } from '../../src/preload.mjs'
 import { formatLargeTextForContext } from '../../src/read_window.mjs'
 import { createTargetExecutor } from '../../src/target.mjs'
@@ -397,8 +397,31 @@ Deno.test('collectMentionedFiles truncates over-large files and skips known path
 		assertEquals(result.textFiles[0].omitted, 100)
 
 		const { resolved } = result.textFiles[0]
-		const skipped = await collectMentionedFiles(executor, '再看 `big.txt`', { maxFiles: 5, knownFiles: new Set([resolved]) })
+		const skipped = await collectMentionedFiles(executor, '再看 `big.txt`', { maxFiles: 5, knownFiles: new Set([fileIdentityKey('0', resolved)]) })
 		assertEquals(skipped.textFiles.length, 0)
+	}
+	finally { await fs.rm(root, { recursive: true, force: true }) }
+})
+
+Deno.test('preloadMentionedFiles dedups per machine: same absolute path on another machine is not treated as known', async () => {
+	const root = await tempDir()
+	try {
+		await fs.writeFile(path.join(root, 'note.txt'), 'note-content', 'utf8')
+		const probe = makeArgs(root, [{ id: 'u1', role: 'user', content: '看 `note.txt`' }])
+		await preloadMentionedFiles(probe.args)
+		assertEquals(probe.logs.length, 1)
+		const recorded = pluginData(probe.logs[0]).preload.files[0]
+		assertEquals(recorded.machine, '0', '预读日志应记录目标机器')
+		const { resolved } = recorded
+
+		// 已有记录来自另一台机器（machine=1）：同一绝对路径在机器 0 上是另一个文件，不应被跳过。
+		const run = makeArgs(root, [
+			{ role: 'tool', extension: { pluginData: { 'file-operations': { preload: { files: [{ path: 'note.txt', resolved, machine: '1' }] } } } } },
+			{ id: 'u2', role: 'user', content: '再看 `note.txt`' },
+		])
+		await preloadMentionedFiles(run.args)
+		assertEquals(run.logs.length, 1, '不同机器上的同名路径应重新预读')
+		assertEquals(pluginData(run.logs[0]).preload.files[0].machine, '0')
 	}
 	finally { await fs.rm(root, { recursive: true, force: true }) }
 })

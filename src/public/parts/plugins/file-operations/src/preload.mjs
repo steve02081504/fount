@@ -13,7 +13,7 @@ import { inferCodeLanguageFromPath, renderMarkdownCodeBlock } from '../../../she
 
 import { hashContent, mergePluginData, PLUGIN_DATA_KEY, resolveEffectiveLog } from './context_files.mjs'
 import { parseErrorLocations } from './error_windows.mjs'
-import { collectMentionedFiles } from './mentioned_files.mjs'
+import { collectMentionedFiles, fileIdentityKey } from './mentioned_files.mjs'
 import { createArgsExecutorResolver, resolveTarget } from './target.mjs'
 
 /** 单次预读的文件数上限。 */
@@ -43,9 +43,9 @@ export function findLatestUserEntry(log) {
 }
 
 /**
- * 收集合并日志中已预读 / 已查看文件的 realpath（供跨轮去重：同一路径身份即视为已读，与内容无关——避免 agent 改过的文件被再次塞进上下文）。
+ * 收集合并日志中已预读 / 已查看文件的身份键（供跨轮去重：同一机器上的同一路径身份即视为已读，与内容无关——避免 agent 改过的文件被再次塞进上下文）。
  * @param {chatLogEntry_t[]} log - 合并日志。
- * @returns {Set<string>} 已知文件的 realpath 集合。
+ * @returns {Set<string>} 已知文件的 `fileIdentityKey` 集合。
  */
 export function collectKnownFiles(log) {
 	const known = new Set()
@@ -53,7 +53,7 @@ export function collectKnownFiles(log) {
 		const data = entry?.extension?.pluginData?.[PLUGIN_DATA_KEY]
 		for (const group of [data?.preload?.files, data?.view?.files])
 			for (const item of group || [])
-				if (typeof item?.resolved === 'string' && item.resolved) known.add(item.resolved)
+				if (item?.resolved) known.add(fileIdentityKey(item.machine, item.resolved))
 	}
 	return known
 }
@@ -121,13 +121,13 @@ export function collectToolErrorText(log) {
  * 把预读结果以工具日志写入本轮结果（空结果不写）。
  * @param {chatReplyRequest_t & {AddLongTimeLog: (entry: chatLogEntry_t) => void}} args - 请求上下文。
  * @param {{textFiles: object[], binaryFiles: object[], dirs: object[]}} result - 预读结果。
- * @param {{marker?: object, intro?: string}} [meta] - `marker` 写入 `preload` 的额外元数据；`intro` 为文本文件块引导语。
+ * @param {{machine: string, marker?: object, intro?: string}} [meta] - `machine` 为目标机器标识（跨轮去重的机器维度）；`marker` 写入 `preload` 的额外元数据；`intro` 为文本文件块引导语。
  * @returns {void}
  */
 function emitPreload(args, result, meta = {}) {
 	const { textFiles, binaryFiles, dirs } = result
 	if (!textFiles.length && !binaryFiles.length && !dirs.length) return
-	const preloadFiles = [...textFiles, ...binaryFiles, ...dirs].map(item => ({ path: item.path, resolved: item.resolved }))
+	const preloadFiles = [...textFiles, ...binaryFiles, ...dirs].map(item => ({ path: item.path, resolved: item.resolved, machine: meta.machine }))
 	/**
 	 * 构造带插件私有预读元数据的工具日志条目。
 	 * @param {object} entry 日志主体。
@@ -168,6 +168,7 @@ export async function preloadMentionedFiles(args) {
 	const log = resolveEffectiveLog(args)
 	const knownFiles = collectKnownFiles(log)
 	const executor = createArgsExecutorResolver(args)()
+	const machine = target.machine
 
 	// 用户消息：报错窗口 + 通用路径候选。同一用户消息已预读过（本轮后续轮次 / 重生成 / 异步触发）则跳过。
 	const latest = findLatestUserEntry(log)
@@ -176,18 +177,18 @@ export async function preloadMentionedFiles(args) {
 		const userKey = String(latest.id ?? hashContent(userText))
 		const already = log.some(entry => entry?.extension?.pluginData?.[PLUGIN_DATA_KEY]?.preload?.forUser === userKey)
 		if (!already) {
-			const result = await collectMentionedFiles(executor, userText, { maxFiles: PRELOAD_MAX_FILES, knownFiles })
+			const result = await collectMentionedFiles(executor, userText, { maxFiles: PRELOAD_MAX_FILES, knownFiles, machine })
 			// 并入已知集合：本次工具输出预读不再重复读取同一文件。
 			for (const item of [...result.textFiles, ...result.binaryFiles, ...result.dirs])
-				if (item.resolved) knownFiles.add(item.resolved)
-			emitPreload(args, result, { marker: { forUser: userKey } })
+				if (item.resolved) knownFiles.add(fileIdentityKey(machine, item.resolved))
+			emitPreload(args, result, { machine, marker: { forUser: userKey } })
 		}
 	}
 
 	// 工具输出：只认报错定位，不做通用路径提取——命令/构建输出里的普通路径不应触发默认预读。
 	const toolText = collectToolErrorText(log)
 	if (toolText.trim()) {
-		const result = await collectMentionedFiles(executor, toolText, { maxFiles: PRELOAD_MAX_FILES, knownFiles, extractPaths: false })
-		emitPreload(args, result, { marker: {}, intro: '以下为工具输出中报错的文件，已预读其出错位置附近内容：' })
+		const result = await collectMentionedFiles(executor, toolText, { maxFiles: PRELOAD_MAX_FILES, knownFiles, machine, extractPaths: false })
+		emitPreload(args, result, { machine, marker: {}, intro: '以下为工具输出中报错的文件，已预读其出错位置附近内容：' })
 	}
 }
