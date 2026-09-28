@@ -30,14 +30,24 @@ export function isIgnoredBrowserNetworkError(errorText) {
 }
 
 /**
+ * URL 是否指向本机（localhost / 127.0.0.1）。
+ * @param {string | null | undefined} url 请求 URL
+ * @returns {boolean} 是否本机
+ */
+function isLocalUrl(url) {
+	if (!url) return false
+	const { hostname } = new URL(url)
+	return hostname === 'localhost' || hostname === '127.0.0.1'
+}
+
+/**
  * Pages 安装器探针 URL：同机无 fount 时 `/api/ping` 与本机 `:8930` 存活探针 / `/eula` 失败是预期。
  * @param {string | null | undefined} url 请求 URL
  * @returns {boolean} 应忽略则为 true
  */
 export function isIgnoredPagesProbeUrl(url) {
-	if (!url) return false
+	if (!isLocalUrl(url)) return false
 	const parsed = new URL(url)
-	if (parsed.hostname !== 'localhost' && parsed.hostname !== '127.0.0.1') return false
 	if (parsed.pathname === '/api/ping') return true
 	if (parsed.port !== '8930') return false
 	return ['/', '/eula'].includes(parsed.pathname.replace(/\/+$/, '') || '/')

@@ -20,10 +20,12 @@ import { openModulePage } from './module_page.mjs'
  * @param {string} options.isolated.shellLabel 错误提示用 shell 名
  * @param {number|string} [options.isolated.timeout] 隔离 auto fixture 内 setTimeout
  * @param {(args: { page: import('npm:@playwright/test').Page, baseUrl: string, apiKey: string }) => Promise<void>} [options.isolated.beforeEach] 额外初始化（在隔离 auto fixture 内、隔离断言前运行）
+ * @param {(entry: { kind: string, status?: number|null, url?: string, error?: string|null }) => boolean} [options.shouldIgnoreNetwork] 额外网络豁免谓词（套件声明自身预期内的 HTTP ≥400 / requestfailed）
  * @returns {{ test: typeof base, expect: typeof expect }} 扩展后的 test 与 expect
  */
 export function createFountFixtures(options = {}) {
 	const locale = options.locale ?? 'zh-CN'
+	const shouldIgnoreNetwork = options.shouldIgnoreNetwork
 
 	const test = base.extend({
 		/**
@@ -99,7 +101,7 @@ export function createFountFixtures(options = {}) {
 				expect(diagnostics.pageWatchErrors, 'unexpected page watch console output').toEqual([])
 				expect(diagnostics.i18nMissingErrors, 'unexpected missing i18n keys').toEqual([])
 				expect(diagnostics.i18nClobberErrors, 'unexpected i18n child clobber (data-i18n replacing non-text subtree)').toEqual([])
-			})
+			}, { shouldIgnoreNetwork })
 		},
 		/**
 		 * 模块逻辑页 fixture：首页就绪后直接在页面里跑浏览器模块逻辑（见 module_page.mjs）。

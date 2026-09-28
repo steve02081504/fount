@@ -226,7 +226,9 @@ test.describe('markdown secure render', () => {
 		expect(html).not.toMatch(/javascript:/i)
 	})
 
-	test('secure render ignores Mermaid click + HTML label from diagram source', async ({ modulePage }) => {
+	test('secure render ignores Mermaid click + HTML label from diagram source', async ({ modulePage, page }) => {
+		// 图源里的 `<img src=x>` 是相对资源，浏览器会真的拉取；本地中止该探测请求，避免测试自身的 404 噪声。
+		await page.route('**/x', route => route.abort('aborted'))
 		const html = await renderMarkdown(modulePage, '```mermaid\nflowchart TD\n  A["<img src=x onerror=alert(1)>"]\n  click A href "javascript:alert(1)"\n```')
 		// 真实 mermaid（strict）可能保留惰性 <img>（纯资源加载、事件处理器被净化）与无 href 的节点链接；
 		// 安全不变量是：事件处理器 / javascript: 跳转 / 内联脚本一律不得出现（脚本激活面为零）。
