@@ -403,6 +403,147 @@ Deno.test('collectMentionedFiles truncates over-large files and skips known path
 	finally { await fs.rm(root, { recursive: true, force: true }) }
 })
 
+Deno.test('preloadMentionedFiles reads tool diagnostics against each log execution target, not the request workdir', async () => {
+	const requestRoot = await tempDir()
+	const otherRoot = await tempDir()
+	try {
+		const rel = path.join('src', 'a.c')
+		await fs.mkdir(path.join(requestRoot, 'src'), { recursive: true })
+		await fs.mkdir(path.join(otherRoot, 'src'), { recursive: true })
+		await fs.writeFile(path.join(requestRoot, rel), Array.from({ length: 40 }, (_, i) => `request-line-${i + 1}`).join('\n'), 'utf8')
+		await fs.writeFile(path.join(otherRoot, rel), Array.from({ length: 40 }, (_, i) => `other-line-${i + 1}`).join('\n'), 'utf8')
+		const tool = {
+			role: 'tool', name: 'code-execution.run-pwsh', content: 'src/a.c:12:5: error: boom',
+			extension: { executionTarget: { machine: '0', workdir: otherRoot } },
+		}
+		const run = makeArgs(requestRoot, [{ id: 'u1', role: 'user', content: '修复构建' }, { role: 'char', content: '跑一下' }, tool])
+		await preloadMentionedFiles(run.args)
+
+		assertEquals(run.logs.length, 1, '应从工具输出预读报错文件')
+		assert(run.logs[0].content.includes('other-line-12'), '应按工具执行目录读取')
+		assert(!run.logs[0].content.includes('request-line-12'), '不应按请求目录读取')
+		assert(run.logs[0].content.includes(otherRoot), '预读正文应标出执行目录')
+		assertEquals(pluginData(run.logs[0]).preload.files[0].machine, '0')
+	}
+	finally {
+		await fs.rm(requestRoot, { recursive: true, force: true })
+		await fs.rm(otherRoot, { recursive: true, force: true })
+	}
+})
+
+Deno.test('preloadMentionedFiles falls back to the request target for legacy tool logs without executionTarget', async () => {
+	const root = await tempDir()
+	try {
+		const file = path.join(root, 'src', 'a.c')
+		await fs.mkdir(path.dirname(file), { recursive: true })
+		await fs.writeFile(file, Array.from({ length: 40 }, (_, i) => `line-${i + 1}`).join('\n'), 'utf8')
+		const legacy = { role: 'tool', name: 'code-execution.run-pwsh', content: `${file}:12:5: error: boom` }
+		const run = makeArgs(root, [{ id: 'u1', role: 'user', content: '修复' }, { role: 'char', content: '跑' }, legacy])
+		await preloadMentionedFiles(run.args)
+		assertEquals(run.logs.length, 1, '无目标元数据的旧日志回退请求目标')
+		assert(run.logs[0].content.includes('line-10') && run.logs[0].content.includes('line-14'))
+	}
+	finally { await fs.rm(root, { recursive: true, force: true }) }
+})
+
+Deno.test('preloadMentionedFiles does not resolve relative diagnostics when the target workdir is unknown', async () => {
+	const root = await tempDir()
+	try {
+		const file = path.join(root, 'src', 'a.c')
+		await fs.mkdir(path.dirname(file), { recursive: true })
+		await fs.writeFile(file, Array.from({ length: 40 }, (_, i) => `line-${i + 1}`).join('\n'), 'utf8')
+		// 机器已知但目录未知：相对路径不得按请求目录猜测。
+		const relative = {
+			role: 'tool', name: 'code-execution.run-pwsh', content: 'src/a.c:12:5: error: boom',
+			extension: { executionTarget: { machine: '0', workdir: null } },
+		}
+		const skipped = makeArgs(root, [{ id: 'u1', role: 'user', content: '修复' }, { role: 'char', content: '跑' }, relative])
+		await preloadMentionedFiles(skipped.args)
+		assertEquals(skipped.logs, [], '目标目录未知时不应按请求目录读取相对路径')
+
+		// 绝对路径诊断仍可按机器读取。
+		const absolute = {
+			role: 'tool', name: 'code-execution.run-pwsh', content: `${file}:12:5: error: boom`,
+			extension: { executionTarget: { machine: '0', workdir: null } },
+		}
+		const read = makeArgs(root, [{ id: 'u2', role: 'user', content: '修复' }, { role: 'char', content: '跑' }, absolute])
+		await preloadMentionedFiles(read.args)
+		assertEquals(read.logs.length, 1, '绝对路径诊断仍应预读')
+		assert(read.logs[0].content.includes('line-12'))
+	}
+	finally { await fs.rm(root, { recursive: true, force: true }) }
+})
+
+Deno.test('preloadMentionedFiles preloads each tool output against its own target in one batch', async () => {
+	const requestRoot = await tempDir()
+	const firstRoot = await tempDir()
+	const secondRoot = await tempDir()
+	try {
+		const rel = path.join('src', 'a.c')
+		for (const [dir, tag] of [[requestRoot, 'request'], [firstRoot, 'first'], [secondRoot, 'second']]) {
+			await fs.mkdir(path.join(dir, 'src'), { recursive: true })
+			await fs.writeFile(path.join(dir, rel), Array.from({ length: 40 }, (_, i) => `${tag}-line-${i + 1}`).join('\n'), 'utf8')
+		}
+		/**
+		 * 构造一条带执行目标的工具输出。
+		 * @param {string} root 工具执行目录。
+		 * @param {string} tag 工具名后缀。
+		 * @returns {object} 工具日志条目。
+		 */
+		const makeTool = (root, tag) => ({
+			role: 'tool', name: `code-execution.${tag}`, content: 'src/a.c:12:5: error: boom',
+			extension: { executionTarget: { machine: '0', workdir: root } },
+		})
+		const run = makeArgs(requestRoot, [
+			{ id: 'u1', role: 'user', content: '修复' }, { role: 'char', content: '跑两个' },
+			makeTool(firstRoot, 'first'), makeTool(secondRoot, 'second'),
+		])
+		await preloadMentionedFiles(run.args)
+		const combined = run.logs.map(entry => entry.content).join('\n')
+		assert(combined.includes('first-line-12'), '第一条输出应按其目标读取')
+		assert(combined.includes('second-line-12'), '第二条输出应按其目标读取')
+		assert(!combined.includes('request-line-12'), '不应回退请求目录')
+	}
+	finally {
+		await fs.rm(requestRoot, { recursive: true, force: true })
+		await fs.rm(firstRoot, { recursive: true, force: true })
+		await fs.rm(secondRoot, { recursive: true, force: true })
+	}
+})
+
+Deno.test('preloadMentionedFiles reads each await-async settled result against its own target', async () => {
+	const root = await tempDir()
+	const otherRoot = await tempDir()
+	try {
+		const rel = path.join('src', 'a.c')
+		await fs.mkdir(path.join(root, 'src'), { recursive: true })
+		await fs.mkdir(path.join(otherRoot, 'src'), { recursive: true })
+		await fs.writeFile(path.join(root, rel), Array.from({ length: 40 }, (_, i) => `request-line-${i + 1}`).join('\n'), 'utf8')
+		await fs.writeFile(path.join(otherRoot, rel), Array.from({ length: 40 }, (_, i) => `async-line-${i + 1}`).join('\n'), 'utf8')
+		const awaitEntry = {
+			role: 'tool', name: 'async-task.await', content: '等待结果（mode=all）：已完成（1）',
+			extension: {
+				asyncAwait: {
+					mode: 'all', timedOut: false, pending: [], unknown: [],
+					settled: [{
+						id: 't1', kind: 'pwsh', state: 'failed', target: { machine: '0', workdir: otherRoot },
+						result: '', error: '```ansi\nsrc/a.c:12:5: error: boom\n```',
+					}],
+				},
+			},
+		}
+		const run = makeArgs(root, [{ id: 'u1', role: 'user', content: '修复' }, { role: 'char', content: '跑' }, awaitEntry])
+		await preloadMentionedFiles(run.args)
+		assertEquals(run.logs.length, 1)
+		assert(run.logs[0].content.includes('async-line-12'), 'await 结果应按各结算任务的目标读取')
+		assert(!run.logs[0].content.includes('request-line-12'))
+	}
+	finally {
+		await fs.rm(root, { recursive: true, force: true })
+		await fs.rm(otherRoot, { recursive: true, force: true })
+	}
+})
+
 Deno.test('preloadMentionedFiles dedups per machine: same absolute path on another machine is not treated as known', async () => {
 	const root = await tempDir()
 	try {

@@ -270,6 +270,8 @@ function makeNotificationEntry(task) {
 		text = defaultNotificationText(task)
 	}
 	const charId = task.owner?.charId
+	// 生产者可在 meta 快照执行目标（如 code-execution 的 `{machine, workdir}`）；透传给预读，使其按产出目标读取诊断。
+	const executionTarget = task.meta?.executionTarget
 	return {
 		id: crypto.randomUUID(),
 		name: 'async-task',
@@ -280,6 +282,7 @@ function makeNotificationEntry(task) {
 		files: [],
 		time_stamp: new Date(),
 		...charId ? { charVisibility: [charId] } : {},
+		...executionTarget ? { extension: { executionTarget } } : {},
 	}
 }
 

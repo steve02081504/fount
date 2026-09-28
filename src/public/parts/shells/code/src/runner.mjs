@@ -27,7 +27,7 @@ import { createTargetExecutor } from '../../../plugins/file-operations/src/targe
  * @param {Record<string, string>} [options.env] - 追加环境变量（仅本机与 `process.env` 合并）。
  * @param {number|null} [options.timeoutMs] - 超时毫秒（缺省 null = 不限时）。
  * @param {(stream: 'stdout'|'stderr', data: string) => void} [options.onOutput] - 逐块输出回调（本机直连；远程经回调通道，需 `shells/code` 实现 `RemoteCallBack`）。
- * @returns {Promise<shellResult_t>} 执行结果（错误时捕获为 { code: -1, stdall }）。
+ * @returns {Promise<shellResult_t>} 执行结果（错误时捕获为 { code: -1, stdall }），附实际工作目录 `resolvedWorkdir`。
  */
 export async function runShellCommand({ username, machine = '0', workdir, shell, command, env, timeoutMs = null, onOutput }) {
 	const probeExecutor = createTargetExecutor(username, { machine })
@@ -43,10 +43,10 @@ export async function runShellCommand({ username, machine = '0', workdir, shell,
 			callbackPartpath: typeof onOutput === 'function' ? 'shells/code' : undefined,
 		})
 		if (result instanceof Error)
-			return { code: -1, stdall: String(result.stack || result.message || result), elapsedMs: Date.now() - start }
-		return { ...result, elapsedMs: result?.elapsedMs ?? Date.now() - start }
+			return { code: -1, stdall: String(result.stack || result.message || result), elapsedMs: Date.now() - start, resolvedWorkdir }
+		return { ...result, elapsedMs: result?.elapsedMs ?? Date.now() - start, resolvedWorkdir }
 	}
 	catch (err) {
-		return { code: -1, stdall: String(err?.stack || err), elapsedMs: Date.now() - start }
+		return { code: -1, stdall: String(err?.stack || err), elapsedMs: Date.now() - start, resolvedWorkdir }
 	}
 }

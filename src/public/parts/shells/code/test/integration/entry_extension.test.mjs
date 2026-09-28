@@ -15,6 +15,7 @@ Deno.test('pickEntryExtension keeps frontend-rendering fields and drops the rest
 		asyncAwait: { settled: [] },
 		asyncInspect: { id: 't', kind: 'js' },
 		error: true,
+		executionTarget: { machine: '0', workdir: '/w' },
 		pluginData,
 		preloadFiles: [{ path: 'a.mjs', resolved: '/w/a.mjs' }],
 		preloadForUser: 'u1',
@@ -28,6 +29,7 @@ Deno.test('pickEntryExtension keeps frontend-rendering fields and drops the rest
 		asyncAwait: { settled: [] },
 		asyncInspect: { id: 't', kind: 'js' },
 		error: true,
+		executionTarget: { machine: '0', workdir: '/w' },
 		pluginData,
 	})
 	// 深拷贝：落盘内容与源对象解耦，保证可 JSON 序列化

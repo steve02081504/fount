@@ -442,6 +442,28 @@ Deno.test('deliverNotification wraps untrusted result / label in an ansi code bl
 	assert(content.includes(payload), '原始文本应保留在代码块内')
 })
 
+Deno.test('deliverNotification carries the task execution target for preload', async () => {
+	resetAsyncTaskState()
+	const fake = deliveryChannel()
+	registerChannel('u', 'c', fake.channel)
+	const target = owner()
+	const executionTarget = { machine: '1', workdir: '/w' }
+	const task = registerTask({ kind: 'pwsh', owner: target, run: resolveWith('done'), meta: { executionTarget } })
+	await task.done
+	await flushAsync()
+	assertEquals(fake.appended[0].extension?.executionTarget, executionTarget, '完成通知应透传任务执行目标')
+})
+
+Deno.test('deliverNotification omits executionTarget for tasks without one', async () => {
+	resetAsyncTaskState()
+	const fake = deliveryChannel()
+	registerChannel('u', 'c', fake.channel)
+	const task = registerTask({ kind: 'subagent', owner: owner(), run: resolveWith('done') })
+	await task.done
+	await flushAsync()
+	assertEquals(fake.appended[0].extension, undefined, '无执行目标的任务不应带 extension.executionTarget')
+})
+
 Deno.test('deliverNotification matches the channel by channel-scoped id', async () => {
 	resetAsyncTaskState()
 	const wrong = deliveryChannel({ chatName: 'chat-1', channelId: 'other' })

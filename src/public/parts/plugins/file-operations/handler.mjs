@@ -10,7 +10,7 @@ import { collectLoadedHashes, collectUpwardContext, formatUpwardContext, hashCon
 import { applyEol, applyReplacement, detectTextStyle, normalizeTagBody, renderLineDiff, restoreBom, similarityRatio, stripBom, toLf } from './src/edit_safety.mjs'
 import { formatReadWindowNotice, isProbablyTextBuffer, parseReadWindow, windowText } from './src/read_window.mjs'
 import { runRipgrep } from './src/search.mjs'
-import { createArgsExecutorResolver, listMachines, resolveLocalPath, resolveTarget } from './src/target.mjs'
+import { createArgsExecutorResolver, executionTargetOf, listMachines, resolveLocalPath, resolveTarget } from './src/target.mjs'
 
 /** glob 搜索返回的文件数上限。 */
 const SEARCH_FILE_LIMIT = 100
@@ -212,12 +212,13 @@ function pendingDisplay(render) {
  * @param {object} args - 请求上下文。
  * @param {string} call - 工具调用文本。
  * @param {string} resultText - agent 层执行结果。
- * @param {{name?: string, files?: object[], loadedContextHashes?: string[], viewedFiles?: {resolved: string, machine: string}[]}} [options] - 工具名（供人类侧区分读写/搜索）、结果附件、本次注入的上下文哈希与被查看文件的 realpath（附目标机器标识，供跨机去重）。
+ * @param {{name?: string, files?: object[], loadedContextHashes?: string[], viewedFiles?: {resolved: string, machine: string}[], executionTarget?: {machine: string, workdir: string|null}}} [options] - 工具名（供人类侧区分读写/搜索）、结果附件、本次注入的上下文哈希与被查看文件的 realpath（附目标机器标识，供跨机去重）、该次执行的机器与工作目录快照（供后续按产出目标预读诊断）。
  * @returns {void}
  */
-function addFileToolLog(args, call, resultText, { name = 'file-operations', files = [], loadedContextHashes, viewedFiles } = {}) {
+function addFileToolLog(args, call, resultText, { name = 'file-operations', files = [], loadedContextHashes, viewedFiles, executionTarget } = {}) {
 	/** @type {object} */
 	const extension = {}
+	if (executionTarget) extension.executionTarget = executionTarget
 	if (Array.isArray(loadedContextHashes) && loadedContextHashes.length)
 		mergePluginData(extension, PLUGIN_DATA_KEY, { contextHashes: loadedContextHashes })
 	if (Array.isArray(viewedFiles) && viewedFiles.length)
@@ -363,7 +364,7 @@ export const viewFileReplyHandler = defineReplyHandler({
 				file_content += `读取文件失败：${inlineCode(filepath)}\n${renderMarkdownCodeBlock(err.stack || String(err))}\n`
 			}
 
-		addFileToolLog(args, call.raw, file_content, { name: 'file-operations.view-file', files, loadedContextHashes, viewedFiles })
+		addFileToolLog(args, call.raw, file_content, { name: 'file-operations.view-file', files, loadedContextHashes, viewedFiles, executionTarget: executionTargetOf(target) })
 		return { regen: true, ...readFailed ? { failed: true } : {} }
 	},
 })
@@ -387,6 +388,7 @@ export const globReplyHandler = defineReplyHandler({
 		const executorFor = createArgsExecutorResolver(args)
 		const patterns = (call.inner || call.params.pattern || '').split('\n').map(p => p.trim()).filter(Boolean)
 		const location = call.params.path || '.'
+		const target = resolveTarget(args, call.params)
 		let system_content = ''
 		let searchFailed = false
 		try {
@@ -413,7 +415,7 @@ export const globReplyHandler = defineReplyHandler({
 			searchFailed = true
 			system_content = `文件搜索失败：\n${renderMarkdownCodeBlock(err.stack || String(err))}\n`
 		}
-		addFileToolLog(args, call.raw, system_content, { name: 'file-operations.glob' })
+		addFileToolLog(args, call.raw, system_content, { name: 'file-operations.glob', executionTarget: executionTargetOf(target) })
 		return { regen: true, ...searchFailed ? { failed: true } : {} }
 	},
 })
@@ -439,6 +441,7 @@ export const grepReplyHandler = defineReplyHandler({
 		const includes = (call.params.include || '').split(/\s+/).filter(Boolean)
 		const filesOnly = call.params.mode === 'files'
 		const location = call.params.path || '.'
+		const target = resolveTarget(args, call.params)
 		let system_content = ''
 		let searchFailed = false
 		try {
@@ -477,7 +480,7 @@ export const grepReplyHandler = defineReplyHandler({
 			searchFailed = true
 			system_content = `内容搜索失败：\n${renderMarkdownCodeBlock(err.stack || String(err))}\n`
 		}
-		addFileToolLog(args, call.raw, system_content, { name: 'file-operations.grep' })
+		addFileToolLog(args, call.raw, system_content, { name: 'file-operations.grep', executionTarget: executionTargetOf(target) })
 		return { regen: true, ...searchFailed ? { failed: true } : {} }
 	},
 })
@@ -500,6 +503,7 @@ export const replaceFileReplyHandler = defineReplyHandler({
 		const executorFor = createArgsExecutorResolver(args)
 		const replace_file_content = call.inner
 		const logContent = '<replace-file>' + replace_file_content + '</replace-file>\n'
+		const target = resolveTarget(args, call.params)
 		const replace_files_data = []
 
 		try {
@@ -538,7 +542,7 @@ export const replaceFileReplyHandler = defineReplyHandler({
 		}
 		catch (err) {
 			console.error('Error parsing replace-file content with regex:', err)
-			addFileToolLog(args, logContent, `解析replace-file失败：\n${renderMarkdownCodeBlock(err.stack || String(err))}\n原始数据:\n${renderMarkdownCodeBlock('<replace-file>' + replace_file_content + '</replace-file>')}`, { name: 'file-operations.replace-file' })
+			addFileToolLog(args, logContent, `解析replace-file失败：\n${renderMarkdownCodeBlock(err.stack || String(err))}\n原始数据:\n${renderMarkdownCodeBlock('<replace-file>' + replace_file_content + '</replace-file>')}`, { name: 'file-operations.replace-file', executionTarget: executionTargetOf(target) })
 			return { regen: true, failed: true }
 		}
 
@@ -557,7 +561,7 @@ export const replaceFileReplyHandler = defineReplyHandler({
 			}
 			catch (err) {
 				anyFailure = true
-				addFileToolLog(args, logContent, `读取文件失败：${inlineCode(filepath)}\n${renderMarkdownCodeBlock(err.stack || String(err))}\n`, { name: 'file-operations.replace-file' })
+				addFileToolLog(args, logContent, `读取文件失败：${inlineCode(filepath)}\n${renderMarkdownCodeBlock(err.stack || String(err))}\n`, { name: 'file-operations.replace-file', executionTarget: executionTargetOf(target) })
 				continue
 			}
 
@@ -621,7 +625,7 @@ export const replaceFileReplyHandler = defineReplyHandler({
 			}
 			else if (!failed_replaces.length) system_content += '所有替换规则均未匹配到内容或未导致文件变化。'
 
-			addFileToolLog(args, logContent, system_content, { name: 'file-operations.replace-file' })
+			addFileToolLog(args, logContent, system_content, { name: 'file-operations.replace-file', executionTarget: executionTargetOf(target) })
 		}
 		return { regen: true, ...anyFailure ? { failed: true } : {} }
 	},
@@ -647,6 +651,7 @@ export const overrideFileReplyHandler = defineReplyHandler({
 		const filepath = call.params.path
 		const force = call.params.force === true
 		const logContent = `<override-file path="${filepath}">` + call.inner + '</override-file>\n'
+		const target = resolveTarget(args, call.params)
 		console.info('AI写入的文件：', filepath, call.inner)
 		try {
 			const executor = executorFor(call.params)
@@ -658,16 +663,16 @@ export const overrideFileReplyHandler = defineReplyHandler({
 				const similarity = similarityRatio(toLf(stripBom(existing)), toLf(newText))
 				const isEmpty = !newText.trim()
 				if (!force && (isEmpty || similarity < 0.3)) {
-					addFileToolLog(args, logContent, `覆写 ${inlineCode(filepath)} 被拒绝：新内容与原文相似度仅 ${(similarity * 100).toFixed(1)}%${isEmpty ? '，且新内容为空' : ''}。\n如确认要整体重写，请为 <override-file> 添加 force="true"；否则请改用 <replace-file> 做局部修改。`, { name: 'file-operations.override-file' })
+					addFileToolLog(args, logContent, `覆写 ${inlineCode(filepath)} 被拒绝：新内容与原文相似度仅 ${(similarity * 100).toFixed(1)}%${isEmpty ? '，且新内容为空' : ''}。\n如确认要整体重写，请为 <override-file> 添加 force="true"；否则请改用 <replace-file> 做局部修改。`, { name: 'file-operations.override-file', executionTarget: executionTargetOf(target) })
 					return { regen: true, failed: true }
 				}
 				await executor.writeTextFile(filepath, restoreBom(applyEol(toLf(newText), style.eol), style.bom))
 			}
 			else await executor.writeTextFile(filepath, newText)
-			addFileToolLog(args, logContent, `文件 ${inlineCode(filepath)} 已写入`, { name: 'file-operations.override-file' })
+			addFileToolLog(args, logContent, `文件 ${inlineCode(filepath)} 已写入`, { name: 'file-operations.override-file', executionTarget: executionTargetOf(target) })
 		}
 		catch (err) {
-			addFileToolLog(args, logContent, `写入文件失败：${inlineCode(filepath)}\n${renderMarkdownCodeBlock(err.stack || String(err))}\n`, { name: 'file-operations.override-file' })
+			addFileToolLog(args, logContent, `写入文件失败：${inlineCode(filepath)}\n${renderMarkdownCodeBlock(err.stack || String(err))}\n`, { name: 'file-operations.override-file', executionTarget: executionTargetOf(target) })
 			return { regen: true, failed: true }
 		}
 		return { regen: true }

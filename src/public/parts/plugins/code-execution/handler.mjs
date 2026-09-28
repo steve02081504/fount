@@ -27,7 +27,7 @@ import { defineReplyHandler } from '../../shells/chat/src/reply/defineReplyHandl
 import { defaultDisplay } from '../../shells/chat/src/reply/display.mjs'
 import { getChatI18n, renderMarkdownCodeBlock, renderMarkdownInlineCode } from '../../shells/chat/src/streaming/index.mjs'
 import { isAsyncToolingEnabled, ownerFromArgs, registerTask } from '../async-task/registry.mjs'
-import { createArgsExecutorResolver, resolveLocalPath, resolveTarget } from '../file-operations/src/target.mjs'
+import { createArgsExecutorResolver, executionTargetOf, resolveLocalPath, resolveTarget } from '../file-operations/src/target.mjs'
 
 /**
  * 按预览参数缓存执行器解析器（远程内联执行用）。
@@ -59,6 +59,28 @@ function toolOutputEmitter(args) {
  */
 function remoteToolCallbackPartpath(args) {
 	return args?.generation_options?.remoteToolCallbackPartpath || ''
+}
+
+/**
+ * JS 的执行目标快照：本地 JS 在 fount 进程内求值，相对 `fs` 路径基于进程 cwd；远端执行器不按 `workdir` 切换 JS cwd。
+ * 因此本机记 `0` + 进程 cwd（诊断相对路径可据此读取），远端只确定机器、不假定目录（仅绝对路径诊断可读）。
+ * @param {object} args - 请求上下文。
+ * @param {object} attrs - 标签属性。
+ * @returns {{machine: string, workdir: string|null}} 执行目标。
+ */
+function jsExecutionTarget(args, attrs) {
+	const target = resolveTarget(args, attrs)
+	if (target.remote) return { machine: target.machine, workdir: null }
+	return { machine: '0', workdir: process.cwd() }
+}
+
+/**
+ * 生成工具日志的执行目标 `extension` 片段（无目标时不加字段）。
+ * @param {{machine: string, workdir: string|null}|null|undefined} executionTarget - 执行目标。
+ * @returns {object} 可展开的扩展片段。
+ */
+function targetExtension(executionTarget) {
+	return executionTarget ? { extension: { executionTarget } } : {}
 }
 
 /**
@@ -529,6 +551,7 @@ function inlineDisplay(lang) {
 async function evaluateInlineJs(call, args) {
 	const attrs = call.params
 	const target = resolveTarget(args, attrs)
+	call.executionTarget = jsExecutionTarget(args, attrs)
 	const limits = parseRunLimits(attrs, JS_DEFAULT_TIMEOUT_MS)
 	const remote = Boolean(target.remote)
 	const emit = toolOutputEmitter(args)
@@ -571,6 +594,7 @@ async function evaluateInlineJs(call, args) {
 function createInlineShellEvaluate(shell_name) {
 	return async (call, args) => {
 		const attrs = call.params
+		call.executionTarget = executionTargetOf(resolveTarget(args, attrs))
 		const limits = parseRunLimits(attrs, SHELL_DEFAULT_TIMEOUT_MS)
 		const resolver = previewExecutorResolvers.get(args) ?? previewExecutorResolvers.set(args, createArgsExecutorResolver(args)).get(args)
 		const emit = toolOutputEmitter(args)
@@ -620,7 +644,8 @@ function createInlineHandle(lang) {
 				name: `code-execution.inline-${lang}`,
 				role: 'tool',
 				content: `内联${lang}代码执行失败：\n` + (call.error.stack || String(call.error)),
-				files: []
+				files: [],
+				...targetExtension(call.executionTarget),
 			})
 			return { regen: true, failed: true }
 		}
@@ -632,6 +657,7 @@ function createInlineHandle(lang) {
 			content_for_show: buildInlineToolCard([{ code: call.inner, result: call.value }], lang),
 			files: [],
 			charVisibility: [args.char_id],
+			...targetExtension(call.executionTarget),
 		})
 		call.inlineResultLogged = true
 		return {}
@@ -725,6 +751,7 @@ export const runJsReplyHandler = defineReplyHandler({
 		const runtime = getRuntime(reply, args)
 		const attrs = call.params
 		const remote = Boolean(resolveTarget(args, attrs).remote)
+		const executionTarget = jsExecutionTarget(args, attrs)
 		const emit = toolOutputEmitter(args)
 		const callId = randomUUID()
 		const name = 'code-execution.run-js'
@@ -764,7 +791,7 @@ export const runJsReplyHandler = defineReplyHandler({
 				 * @returns {string} 末尾控制台输出。
 				 */
 				inspect: () => inspectBuffer.read().trim() || '（暂无控制台输出）',
-				meta: { code: call.inner, remote },
+				meta: { code: call.inner, remote, executionTarget },
 			})
 			writeAsyncDispatchLog(args, task, 'JS')
 			return { regen: true }
@@ -780,6 +807,7 @@ export const runJsReplyHandler = defineReplyHandler({
 			content,
 			content_for_show: buildResultShow({ lang: 'js', code: call.inner, body: showParts.join('\n\n') }),
 			files: [],
+			...targetExtension(executionTarget),
 		})
 		return { regen: true, ...failed ? { failed: true } : {} }
 	},
@@ -875,6 +903,7 @@ function createRunShellReplyHandler(shell_name) {
 			const { AddLongTimeLog } = args
 			const runtime = getRuntime(reply, args)
 			const attrs = call.params
+			const executionTarget = executionTargetOf(resolveTarget(args, attrs))
 			const emit = toolOutputEmitter(args)
 			const callId = randomUUID()
 			const name = `code-execution.run-${shell_name}`
@@ -914,7 +943,7 @@ function createRunShellReplyHandler(shell_name) {
 					 * @returns {string} 末尾输出。
 					 */
 					inspect: () => removeTerminalSequences(inspectBuffer.read()).trim() || '（暂无输出）',
-					meta: { code: call.inner },
+					meta: { code: call.inner, executionTarget },
 				})
 				writeAsyncDispatchLog(args, task, shell_name)
 				return { regen: true }
@@ -932,6 +961,7 @@ function createRunShellReplyHandler(shell_name) {
 				content: guarded.text,
 				content_for_show: buildResultShow({ lang: shell_name, code: call.inner, body: guarded.truncated ? renderAnsiBlock(guarded.text) : showBody }),
 				files: [],
+				...targetExtension(executionTarget),
 			})
 			return { regen: true, ...failed ? { failed: true } : {} }
 		},
