@@ -3600,6 +3600,7 @@
 					"success": "共有に成功しました！リンクがクリップボードにコピーしました。<br>この機能は ${provider} によって提供されています。<br>[支援する](${sponsorLink})"
 				},
 				"commonToolCalling": "ツールを呼び出し中",
+				"commonToolSkipped": null,
 				"reasoningDetailsTitle": "推論プロセス",
 				"logprobsNotApplicable": "適用できない",
 				"logprobsTopLogprobsMeta": "top_logprobs (選択済み: ${token})",

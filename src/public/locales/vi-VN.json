@@ -3600,6 +3600,7 @@
 					"success": "Chia sẻ thành công! Đã sao chép liên kết vào bảng nhớ tạm. <br>Tính năng này được hỗ trợ bởi ${provider}. <br>[Donate cho họ.](${sponsorLink})"
 				},
 				"commonToolCalling": "Đang gọi công cụ",
+				"commonToolSkipped": null,
 				"reasoningDetailsTitle": "Quá trình suy luận",
 				"logprobsNotApplicable": "không áp dụng",
 				"logprobsTopLogprobsMeta": "top_logprobs (đã chọn: ${token})",

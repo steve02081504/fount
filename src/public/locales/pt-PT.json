@@ -3606,6 +3606,7 @@
 					"success": "Partilhado com sucesso! Ligação copiada para a área de transferência. <br>Esta funcionalidade é suportada por ${provider}. <br>[Patrocine-os.](${sponsorLink})"
 				},
 				"commonToolCalling": "A chamar ferramenta",
+				"commonToolSkipped": null,
 				"reasoningDetailsTitle": "Processo de raciocínio",
 				"logprobsNotApplicable": "não aplicável",
 				"logprobsTopLogprobsMeta": "top_logprobs (selecionado: ${token})",
