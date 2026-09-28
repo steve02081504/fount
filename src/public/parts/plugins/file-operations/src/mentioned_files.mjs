@@ -13,6 +13,18 @@ const MAX_DIR_ENTRIES = 64
 /** 报错窗口每侧扩展行数。 */
 export const ERROR_WINDOW_RADIUS = 2
 
+/**
+ * 跨轮去重的文件身份键：目标机器 + 目标机器上的规范绝对路径。
+ * realpath 只在目标机器内唯一，不同机器上相同的绝对路径是各自独立的文件——必须带机器维度，
+ * 否则在 A 机读过的 `/root/x` 会让 B 机的同名路径被误判为已读而跳过。
+ * @param {string} machine - 目标机器标识。
+ * @param {string} resolved - 目标机器上的规范绝对路径。
+ * @returns {string} 去重键。
+ */
+export function fileIdentityKey(machine, resolved) {
+	return `${machine}\u0000${resolved}`
+}
+
 const PATH_LIKE_REGEX = /(`|[A-Za-z]:\\|(\.|\.\.|~)[/\\]|[/\\])[^\n`:]+/gu
 const ABSOLUTE_OR_RELATIVE_REGEX = /^([A-Za-z]:\\|(\.|\.\.|~)[/\\]|[/\\])[^\n:`]+/u
 
@@ -140,7 +152,7 @@ function formatWithBudget(candidate, resolved, formatted, remaining) {
  * 报错文件优先（只读出错行窗口）；整份读取遇超大文本只取首尾各若干行；渲染后统一收进字符预算。
  * @param {import('./target.mjs').targetExecutor_t} executor - 目标执行器。
  * @param {string} text - 聊天文本。
- * @param {{maxFiles?: number, maxChars?: number, maxLineChars?: number, knownFiles?: Set<string>, extractPaths?: boolean}} [options] - 上限（maxFiles 同时限制目录数）、已读文件的 realpath 集合（按路径身份去重，与内容无关），以及是否提取普通路径候选（`false` 时只认报错定位，供工具输出使用）。
+ * @param {{maxFiles?: number, maxChars?: number, maxLineChars?: number, knownFiles?: Set<string>, machine?: string, extractPaths?: boolean}} [options] - 上限（maxFiles 同时限制目录数）、已读文件的身份键集合（`fileIdentityKey`，按路径身份去重，与内容无关）、目标机器标识，以及是否提取普通路径候选（`false` 时只认报错定位，供工具输出使用）。
  * @returns {Promise<mentionedFiles_t>} 预读结果。
  */
 export async function collectMentionedFiles(executor, text, options = {}) {
@@ -149,6 +161,7 @@ export async function collectMentionedFiles(executor, text, options = {}) {
 		maxChars = DEFAULT_READ_MAX_CHARS,
 		maxLineChars = DEFAULT_READ_MAX_LINE_CHARS,
 		knownFiles = new Set(),
+		machine = '0',
 		extractPaths = true,
 	} = options
 	const textFiles = []
@@ -212,7 +225,7 @@ export async function collectMentionedFiles(executor, text, options = {}) {
 		const canonical = await canonicalPath(candidate)
 		if (seen.has(canonical)) continue
 		seen.add(canonical)
-		if (knownFiles.has(canonical)) continue
+		if (knownFiles.has(fileIdentityKey(machine, canonical))) continue
 
 		if (stat.isDirectory) {
 			if (dirs.length >= maxFiles) continue
