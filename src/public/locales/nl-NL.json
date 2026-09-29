@@ -6652,6 +6652,7 @@
 			"viewFiles": "Bestanden bekijken",
 			"addFiles": "Bestanden verzenden",
 			"callback": "Tool-callback",
+			"inlineRendered": "Inline results",
 			"runShell": "${lang} uitvoeren",
 			"subAgent": {
 				"createBatch": "Subagent-batch aanmaken",

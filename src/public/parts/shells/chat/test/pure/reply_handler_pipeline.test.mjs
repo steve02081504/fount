@@ -261,6 +261,16 @@ function recordingOnlyHandle(label, order) {
 	return async (reply, handlerArgs, call) => { order.push(`${label}:${call.body}`); return {} }
 }
 
+/**
+ * 记录调用体并直接停止（不替换 content）的处理器。
+ * @param {string} label 记录标签
+ * @param {string[]} order 顺序数组
+ * @returns {Function} handle
+ */
+function stoppingHandle(label, order) {
+	return async (reply, handlerArgs, call) => { order.push(`${label}:${call.body}`); return { stop: true } }
+}
+
 Deno.test('管线：串行调用失败后跳过后续调用并追加跳过提示', async () => {
 	const result = makeResult('<fail>bad</fail><next>ok</next>')
 	const order = []
@@ -422,6 +432,23 @@ Deno.test('管线：声明 evaluate 的 inline 结果自动回执给角色', asy
 	assert(report, '应追加 inline-rendered 回执')
 	assertStringIncludes(report.content, '<p>hi</p>')
 	assertStringIncludes(report.content, 'RENDERED')
+	assert(report.content_for_show, '回执应提供人类展示层')
+	assert(report.content_for_show.startsWith('```'), '展示层应围栏化，避免原始标签被当作 HTML 信任渲染')
+	assertStringIncludes(report.content_for_show, '<p>hi</p>')
+})
+
+Deno.test('管线：stop 且未替换 content 时后续原始标签不泄漏到展示层', async () => {
+	const result = makeResult('<stop>first</stop>中<tail>leak</tail>')
+	const order = []
+	const args = makeArgs()
+	const wantRegen = await runReplyHandlers(result, args, [
+		defineReplyHandler({ tag: 'stop', handle: stoppingHandle('stop', order) }),
+		defineReplyHandler({ tag: 'tail', handle: recordingOnlyHandle('tail', order) }),
+	])
+	assertEquals(order, ['stop:first'], 'stop 后后续调用不应执行')
+	assertEquals(wantRegen, false)
+	assertEquals(result.content_for_show.includes('<stop'), false, '已处理调用不应以原始标签泄漏')
+	assertEquals(result.content_for_show.includes('<tail'), false, '停止后未执行的原始标签不应泄漏到展示层')
 })
 
 Deno.test('管线：inline 回执每个结果分别按上限截断', async () => {

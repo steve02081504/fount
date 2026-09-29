@@ -6646,6 +6646,7 @@
 			"viewFiles": "觀檔",
 			"addFiles": "呈檔",
 			"callback": "工具回覆",
+			"inlineRendered": "Inline results",
 			"runShell": "行 ${lang}",
 			"subAgent": {
 				"createBatch": "立子代理之批",

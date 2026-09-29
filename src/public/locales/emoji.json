@@ -6646,6 +6646,7 @@
 			"viewFiles": "👁️📄",
 			"addFiles": "📤📄",
 			"callback": "↩️",
+			"inlineRendered": "Inline results",
 			"runShell": "▶️ ${lang}",
 			"subAgent": {
 				"createBatch": "🤖➕",

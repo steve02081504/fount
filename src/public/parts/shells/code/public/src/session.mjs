@@ -15,7 +15,7 @@ import { svgInliner } from '/scripts/lib/svgInliner.mjs'
 import { appendLocalHistory, removeGhost, renderAttachmentPreview } from './composer.mjs'
 import * as api from './endpoints.mjs'
 import { iconElement, icons } from './icons.mjs'
-import { appendEntryBubble, backToBottom, isEntryVisible, renderEntryBubble, renderMessages, updateBackToBottom, updateEntryBubble, updateRegenButtons, updateShellStreamBubble, updateEmptyMode } from './messages.mjs'
+import { appendEntryBubble, backToBottom, isEntryVisible, messageMarkdown, renderEntryBubble, renderMessages, updateBackToBottom, updateEntryBubble, updateRegenButtons, updateShellStreamBubble, updateEmptyMode } from './messages.mjs'
 import { refreshShutdownState, renderAiSourcePillLabel, renderModePillLabel, selectWorkspace, updateCharMenu } from './pills.mjs'
 import { refreshRunCards, updateRunCards } from './runCards.mjs'
 import { elements, richInput, store, TAB_SAVE_DEBOUNCE, target } from './store.mjs'
@@ -1131,7 +1131,18 @@ export function startGeneratingBubble() {
 	elements.messages.insertBefore(bubble, backToBottom)
 	updateEmptyMode()
 	// 可信档：本地 code 会话（与会话落盘后的正文渲染一致），让推理 details 在流式期可见
-	generatingBubble = { bubble, renderer: new StreamRenderer(body, { allowDangerousHtml: true }) }
+	generatingBubble = {
+		bubble,
+		renderer: new StreamRenderer(body, {
+			allowDangerousHtml: true,
+			/**
+			 * 流式展示文本渲染前的变换（token 重写 + 孤立围栏修复）。
+			 * @param {string} text - 当前展示文本。
+			 * @returns {string} 供 Markdown 渲染的文本。
+			 */
+			transform: text => messageMarkdown(text, 'char'),
+		}),
+	}
 }
 
 /** 移除生成中的气泡。 */

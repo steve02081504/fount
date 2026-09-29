@@ -6646,6 +6646,7 @@
 			"viewFiles": "Skoða skrár",
 			"addFiles": "Senda skrár",
 			"callback": "Endurkall verkfæris",
+			"inlineRendered": "Inline results",
 			"runShell": "Keyra ${lang}",
 			"subAgent": {
 				"createBatch": "Búa til hóp undiragenta",

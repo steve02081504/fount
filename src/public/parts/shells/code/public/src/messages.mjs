@@ -48,6 +48,7 @@ const TOOL_NAME_I18N = {
 	'async-task.await': 'code.tool.async.await',
 	'async-task.inspect': 'code.tool.async.inspect',
 	'async-task': 'code.tool.async.notice',
+	'inline-rendered': 'code.tool.inlineRendered',
 }
 
 /** 子代理内部对话的角色标签 i18n 键（未知角色回落原始名）。 */
@@ -117,9 +118,7 @@ function renderTranscriptEntry(item) {
 	const body = document.createElement('div')
 	body.className = 'code-transcript-body markdown-body'
 	body.setAttribute('prompt-content', '')
-	renderMarkdownAsString(messageMarkdown(item.content ?? ''), store.markdownCache).then(html => {
-		body.innerHTML = html
-	})
+	void renderMarkdownInto(body, messageMarkdown(item.content ?? ''))
 	row.append(head, body)
 	return row
 }
@@ -158,9 +157,7 @@ function renderAsyncTaskRow(task) {
 		const body = document.createElement('div')
 		body.className = 'code-async-task-result markdown-body'
 		body.setAttribute('prompt-content', '')
-		renderMarkdownAsString(messageMarkdown(String(bodyText)), store.markdownCache).then(html => {
-			body.innerHTML = html
-		})
+		void renderMarkdownInto(body, messageMarkdown(String(bodyText)))
 		row.appendChild(body)
 	}
 	return row
@@ -229,9 +226,7 @@ function renderAsyncInspect(entry) {
 	const body = document.createElement('div')
 	body.className = 'code-async-inspect-preview markdown-body'
 	body.setAttribute('prompt-content', '')
-	renderMarkdownAsString(messageMarkdown(String(meta.preview ?? '')), store.markdownCache).then(html => {
-		body.innerHTML = html
-	})
+	void renderMarkdownInto(body, messageMarkdown(String(meta.preview ?? '')))
 	wrap.appendChild(body)
 	return wrap
 }
@@ -263,10 +258,25 @@ export function isEntryVisible(entry) {
  * @param {string} role - 条目角色（仅修复角色回复中的孤立围栏）。
  * @returns {string} 处理后的 markdown。
  */
-function messageMarkdown(content, role = '') {
+export function messageMarkdown(content, role = '') {
 	return (role === 'char' ? repairOrphanedReplyFence(content) : content)
 		.replace(/@\[file:([^\n\]]+)]/g, (_m, path) => '`' + path + '`')
 		.replace(/@\[gist:([^\n\]]+)]/g, (_m, id) => '`' + (store.gistTitles.get(id) || id) + '`')
+}
+
+/**
+ * 渲染 Markdown 到元素；失败时回退为纯文本，避免留下空气泡。
+ * @param {HTMLElement} element - 目标元素。
+ * @param {string} markdown - 已处理的 Markdown 文本。
+ * @returns {Promise<void>} 渲染完成。
+ */
+function renderMarkdownInto(element, markdown) {
+	return renderMarkdownAsString(markdown, store.markdownCache).then(html => {
+		element.innerHTML = html
+	}).catch(error => {
+		console.error('code shell: markdown render failed', error)
+		element.textContent = markdown
+	})
 }
 
 /**
@@ -578,17 +588,13 @@ export function renderEntryBubble(entry, { isLast = false } = {}) {
 		else if (entry.extension?.asyncInspect)
 			content.appendChild(renderAsyncInspect(entry))
 		else
-			renderMarkdownAsString(messageMarkdown(entryShowText(entry), entry.role), store.markdownCache).then(html => {
-				content.innerHTML = html
-			})
+			void renderMarkdownInto(content, messageMarkdown(entryShowText(entry), entry.role))
 	}
 	else {
 		const content = document.createElement('div')
 		content.className = 'markdown-body'
 		body.appendChild(content)
-		renderMarkdownAsString(messageMarkdown(entryShowText(entry), entry.role), store.markdownCache).then(html => {
-			content.innerHTML = html
-		})
+		void renderMarkdownInto(content, messageMarkdown(entryShowText(entry), entry.role))
 	}
 
 	for (const file of entry.files || []) {

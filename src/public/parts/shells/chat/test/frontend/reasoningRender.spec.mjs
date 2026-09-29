@@ -77,7 +77,7 @@ test.describe('reasoning render', () => {
 	})
 
 	test('unknown tool tags in reasoning render as literal text, not swallowed (trusted)', async ({ modulePage }) => {
-		const reasoning = '先跑 <list-ai-sources/> 和几个测试。\n\n<run-subagent plugins="code-execution" round-limit="6">\n子代理任务正文\n</run-subagent>'
+		const reasoning = '先跑 <list-ai-sources/> 和几个测试。\n\n<run-subagent plugins="code-execution" round-limit="6">\n# 子代理标题\n子代理任务正文\n</run-subagent>'
 		const html = await renderMarkdown(modulePage, reasoningWithInner(reasoning), TRUSTED)
 		expect(html).toContain('list-ai-sources')
 		expect(html).toContain('先跑')
@@ -85,6 +85,8 @@ test.describe('reasoning render', () => {
 		expect(html).not.toContain('<list-ai-sources')
 		expect(html).toContain('run-subagent')
 		expect(html).not.toContain('<run-subagent')
+		expect(html).toContain('<h1')
+		expect(html).toContain('子代理标题')
 		expect(html).toContain('子代理任务正文')
 	})
 

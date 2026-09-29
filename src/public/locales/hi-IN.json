@@ -6646,6 +6646,7 @@
 			"viewFiles": "फ़ाइलें देखें",
 			"addFiles": "फ़ाइलें भेजें",
 			"callback": "टूल कॉलबैक",
+			"inlineRendered": "Inline results",
 			"runShell": "${lang} चलाएँ",
 			"subAgent": {
 				"createBatch": "उप-एजेंट बैच बनाएँ",

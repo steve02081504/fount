@@ -10,6 +10,9 @@ import { expect, test } from './fixtures.mjs'
 const SECURE = { allowDangerousHtml: false }
 const TRUSTED = { allowDangerousHtml: true }
 
+// 未知标签行紧跟标题：CommonMark 会把后续行吞进同一 raw HTML 块，标题须仍能解析
+const REFERENCE_BLOCK = '<run-subagent plugins="code-execution,file-operations" round-limit="20" time-limit="15m" ai-source="deepseek">\n# 任务：优化文件夹预读机制，排除已处理文件\n\n## 背景\n说明'
+
 /**
  * 在模块逻辑页里渲染 markdown（复用浏览器自带的 getConvertor 缓存）。
  * @param {import('fount/scripts/test/playwright/module_page.mjs').ModulePage} modulePage 模块逻辑页
@@ -288,6 +291,58 @@ test.describe('markdown secure render', () => {
 		expect(html).toContain('run-subagent')
 		expect(html).toContain('任务正文')
 		expect(html).not.toContain('<run-subagent')
+	})
+
+	test('unknown tag block + following heading re-parses as Markdown (trusted)', async ({ modulePage }) => {
+		const html = await renderMarkdown(modulePage, REFERENCE_BLOCK, TRUSTED)
+		expect(html).toContain('<h1')
+		expect(html).toContain('任务')
+		expect(html).toContain('<h2')
+		expect(html).toContain('背景')
+		expect(html).toContain('run-subagent')
+		expect(html).not.toContain('<run-subagent')
+		expect(html).not.toMatch(/run-subagent[^\n<]*任务/)
+	})
+
+	test('unknown tag block + following heading re-parses as Markdown (untrusted)', async ({ modulePage }) => {
+		const html = await renderMarkdown(modulePage, REFERENCE_BLOCK)
+		expect(html).toContain('<h1')
+		expect(html).toContain('任务')
+		expect(html).toContain('<h2')
+		expect(html).toContain('背景')
+		expect(html).toContain('run-subagent')
+		expect(html).not.toContain('<run-subagent')
+		expect(html).not.toMatch(/run-subagent[^\n<]*任务/)
+	})
+
+	test('unknown tag line followed by consecutive plain lines keeps line breaks', async ({ modulePage }) => {
+		const html = await renderMarkdown(modulePage, '<run-js>\n第一行\n第二行\n第三行', TRUSTED)
+		expect(html).toContain('run-js')
+		expect(html).not.toContain('<run-js')
+		expect(html).toContain('第一行')
+		expect(html).toContain('第三行')
+		expect(html).toContain('<br>')
+	})
+
+	test('unknown tag inside blockquote renders literal and keeps content', async ({ modulePage }) => {
+		const html = await renderMarkdown(modulePage, '> <run-js>\n> x', TRUSTED)
+		expect(html).toContain('<blockquote')
+		expect(html).toContain('run-js')
+		expect(html).toContain('x')
+		expect(html).not.toContain('<run-js')
+	})
+
+	test('unknown tag inside details keeps details element and literal tag', async ({ modulePage }) => {
+		const html = await renderMarkdown(modulePage, '<details>\n<run-js>\n</details>', TRUSTED)
+		expect(html).toContain('<details')
+		expect(html).toContain('run-js')
+		expect(html).not.toContain('<run-js')
+	})
+
+	test('script block content is not escaped', async ({ modulePage }) => {
+		const html = await renderMarkdown(modulePage, '<script>\nconst a = "<run-js>"\n</script>', TRUSTED)
+		expect(html).toContain('<script')
+		expect(html).toContain('<run-js>')
 	})
 
 	test('known HTML tags are not literalized', async ({ modulePage }) => {

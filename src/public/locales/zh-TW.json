@@ -6645,6 +6645,7 @@
 			"viewFiles": "檢視檔案",
 			"addFiles": "傳送檔案",
 			"callback": "工具回呼",
+			"inlineRendered": "Inline results",
 			"runShell": "執行 ${lang}",
 			"subAgent": {
 				"createBatch": "建立子代理批次",

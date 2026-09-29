@@ -6646,6 +6646,7 @@
 			"viewFiles": "Перегляд файлів",
 			"addFiles": "Надсилання файлів",
 			"callback": "Зворотний виклик інструмента",
+			"inlineRendered": "Inline results",
 			"runShell": "Запуск ${lang}",
 			"subAgent": {
 				"createBatch": "Створити партію субагентів",

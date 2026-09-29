@@ -6646,6 +6646,7 @@
 			"viewFiles": "Xem tệp",
 			"addFiles": "Gửi tệp",
 			"callback": "Gọi lại công cụ",
+			"inlineRendered": "Inline results",
 			"runShell": "Chạy ${lang}",
 			"subAgent": {
 				"createBatch": "Tạo đợt sub-agent",

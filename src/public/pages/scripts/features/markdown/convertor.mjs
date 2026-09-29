@@ -23,6 +23,7 @@ import { geti18n } from '../../i18n/index.mjs'
 import { onThemeChange } from '../../theme/index.mjs'
 
 import { ensureMarkdownExtensionAssets } from './extensions.mjs'
+import { remarkLiteralizeUnknownHtmlTags } from './literalizeUnknownTags.mjs'
 import { rehypeSanitizeUntrustedContent } from './sanitize.mjs'
 
 // --- 辅助函数 ---
@@ -55,39 +56,6 @@ function remarkDisable(options = {}) {
 	const data = this.data()
 	const list = data.micromarkExtensions || (data.micromarkExtensions = [])
 	list.push({ disable: { null: options.disable || [] } })
-}
-
-/**
- * 判定标签名是否为「未知 HTML 标签」。
- * 本应用不注册任何自定义元素，故带连字符的自定义元素与 `HTMLUnknownElement`（如工具标签
- * `<run-subagent>` / `<list-ai-sources/>`）均无实际渲染行为。
- * @param {string} tagName 小写标签名
- * @returns {boolean} 是否未知
- */
-function isUnknownHtmlTag(tagName) {
-	const element = document.createElement(tagName)
-	if (globalThis.HTMLUnknownElement && Object(element) instanceof globalThis.HTMLUnknownElement) return true
-	return tagName.includes('-') && element.constructor === globalThis.HTMLElement
-}
-
-/**
- * 把正文里的未知 HTML 标签从 raw HTML 降级为字面文本（remark 阶段）。
- * 未处理时它们会被下游当 HTML 吞掉、在浏览器里渲染为空，导致推理正文等出现空洞；
- * 字面化后由 Markdown 正常转义显示。已知标签与代码节点（行内/围栏代码是 code 节点）不受影响。
- * @returns {(tree: object) => void} remark 插件
- */
-function remarkLiteralizeUnknownHtmlTags() {
-	return tree => {
-		visit(tree, 'html', (node, index, parent) => {
-			if (!parent) return
-			const value = String(node.value || '')
-			const hasUnknown = [...value.matchAll(/<\/?([a-zA-Z][\w-]*)/g)]
-				.some(match => isUnknownHtmlTag(match[1].toLowerCase()))
-			if (!hasUnknown) return
-			const text = { type: 'text', value }
-			parent.children.splice(index, 1, parent.type === 'root' ? { type: 'paragraph', children: [text] } : text)
-		})
-	}
 }
 
 /**

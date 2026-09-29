@@ -32,7 +32,7 @@ Do not use Shiki `transformers.root` wrapping — it breaks inline `{:lang}` (ex
 
 ## Unknown HTML tags
 
-`remarkLiteralizeUnknownHtmlTags` (a remark plugin, before `remarkRehype`) downgrades unknown HTML tags in the body (`HTMLUnknownElement`, or custom elements not registered — this project registers none) from raw HTML to literal text. Otherwise they are swallowed as HTML: the trusted tier renders them as nothing (a `<run-subagent>` / `<list-ai-sources/>` in reasoning text leaves a hole), and the untrusted tier drops them outright in `remarkRehype`. Known tags (`details` / `summary` / `b` / `img` / `script` …) and code nodes (inline/fenced code are `code` nodes, not `html` nodes) are unaffected, so `` `Array<T>` `` is not double-escaped.
+`remarkLiteralizeUnknownHtmlTags` (a remark plugin, before `remarkRehype`, after `remarkParse`) escapes the `<` of unknown HTML tags to `&lt;` at **parse time** (re-parsing until stable), so lines swallowed into a raw-HTML block re-parse as normal Markdown. Unknown tags are `HTMLUnknownElement`, or custom elements not registered — this project registers none. Without it they are swallowed as HTML: the trusted tier renders them as nothing (a `<run-subagent>` / `<list-ai-sources/>` in reasoning text leaves a hole), and a heading on the line right after an open tag gets merged into the same raw node and loses its markup. `script` / `style` block contents are excluded (entities are not decoded there). Known tags (`details` / `summary` / `b` / `img` / `script` …) and code nodes (inline/fenced code are `code` nodes, not `html` nodes) are unaffected, so `` `Array<T>` `` is not double-escaped.
 
 ## URL safety
 

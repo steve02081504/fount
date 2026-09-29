@@ -6654,6 +6654,7 @@
 			"viewFiles": "Просмотр файлов",
 			"addFiles": "Отправка файлов",
 			"callback": "Обратный вызов инструмента",
+			"inlineRendered": "Inline results",
 			"runShell": "Запуск ${lang}",
 			"subAgent": {
 				"createBatch": "Создать партию субагентов",

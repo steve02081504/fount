@@ -22,6 +22,63 @@ test('orphan-fence repair leaves intentional and closed code fences intact', asy
 	])
 })
 
+const SUBAGENT_HEADING_TEXT = '<run-subagent plugins="code-execution,file-operations" round-limit="20" time-limit="15m" ai-source="deepseek">\n# 任务：优化文件夹预读机制，排除已处理文件\n\n## 背景\n\n正文\n</run-subagent>'
+
+test('messageMarkdown literalizes unknown subagent tags so headings still render', async ({ modulePage }) => {
+	const result = await modulePage.run(async markdown => {
+		// messages.mjs 经 session.mjs 拉起 composer.mjs，其模块顶层即需 #messages / #composer-input
+		const flow = document.createElement('div')
+		flow.id = 'messages'
+		const composer = document.createElement('textarea')
+		composer.id = 'composer-input'
+		document.body.append(flow, composer)
+		const { messageMarkdown } = await import('/parts/shells:code/src/messages.mjs')
+		const { renderMarkdownAsString } = await import('/scripts/features/markdown/index.mjs')
+		const html = await renderMarkdownAsString(messageMarkdown(markdown, 'char'), {})
+		const host = document.createElement('div')
+		host.innerHTML = html
+		return { html, h1: host.querySelector('h1')?.textContent || '', h2: host.querySelector('h2')?.textContent || '' }
+	}, SUBAGENT_HEADING_TEXT)
+	expect(result.h1).toContain('任务')
+	expect(result.h2).toContain('背景')
+	expect(result.html).toContain('run-subagent')
+	expect(result.html).not.toContain('<run-subagent')
+})
+
+test('streaming renderer applies the transform and keeps headings literal', async ({ modulePage }) => {
+	const result = await modulePage.run(async markdown => {
+		// messages.mjs 经 session.mjs 拉起 composer.mjs，其模块顶层即需 #messages / #composer-input
+		const flow = document.createElement('div')
+		flow.id = 'messages'
+		const composer = document.createElement('textarea')
+		composer.id = 'composer-input'
+		document.body.append(flow, composer)
+		const { StreamRenderer } = await import('/parts/shells:chat/src/ui/StreamRenderer.mjs')
+		const { messageMarkdown } = await import('/parts/shells:code/src/messages.mjs')
+		const body = document.createElement('div')
+		body.className = 'code-message-body markdown-body'
+		document.body.appendChild(body)
+		const renderer = new StreamRenderer(body, {
+			allowDangerousHtml: true,
+			/**
+			 * 流式展示文本渲染前的变换。
+			 * @param {string} text - 当前展示文本。
+			 * @returns {string} 供 Markdown 渲染的文本。
+			 */
+			transform: text => messageMarkdown(text, 'char'),
+		})
+		renderer.setTarget(markdown)
+		await renderer.finish()
+		const html = body.innerHTML
+		const h1 = body.querySelector('h1')?.textContent || ''
+		body.remove()
+		return { html, h1 }
+	}, SUBAGENT_HEADING_TEXT)
+	expect(result.h1).toContain('任务')
+	expect(result.html).toContain('run-subagent')
+	expect(result.html).not.toContain('<run-subagent')
+})
+
 test('actual multi-round stream appends a repaired report before the final answer', async ({ page, baseUrl }) => {
 	const dir = makeWorkspace('fe-report-stream', { 'note.txt': 'note content' })
 	leftoverWorkspaceDirs.add(dir)
@@ -134,6 +191,40 @@ test('persisted multi-round transcript renders the report outside its orphan fen
 		await page.waitForFunction(() => document.activeElement?.id === 'composer-input')
 		await expect(first.locator('strong')).toContainText(['实测通过的', '发现的欠缺 / 可改进'])
 		await expect(page.locator('.code-message.role-char:not(.generating)')).toHaveCount(2)
+	}
+	finally {
+		await removeAllWorkspacesViaApi(page, baseUrl)
+	}
+})
+
+test('persisted subagent-tag reply renders the report headings on load and reload', async ({ page, baseUrl }) => {
+	const dir = makeWorkspace('fe-subagent-tag-roundtrip')
+	leftoverWorkspaceDirs.add(dir)
+	const report = SUBAGENT_HEADING_TEXT
+	try {
+		const data = await (await page.request.post(`${baseUrl}${API_BASE}/workspaces`, { data: { name: 'subagent-tag', machine: '0', path: dir } })).json()
+		const workspaceId = data.list.find(workspace => workspace.path === dir).id
+		const now = new Date().toISOString()
+		const session = {
+			id: 'subagent-tag-regression', title: '子代理标签', charname: 'streamAgent', profile: 'build',
+			created: now, updated: now, memory: {},
+			entries: [
+				{ id: 'user', role: 'user', uid: 'user', name: 'user', content: '看看子代理标签', time: now },
+				{ id: 'report', role: 'char', uid: 'char', name: 'ZL-31', content: report, content_for_show: report, time: now },
+			],
+		}
+		expect((await page.request.post(`${baseUrl}${API_BASE}/sessions`, { data: { machine: '0', workdir: dir, session } })).ok()).toBeTruthy()
+		await page.goto(`${baseUrl}${BASE}?workspace=${workspaceId}&session=${session.id}`, { waitUntil: 'domcontentloaded' })
+		await page.waitForFunction(() => document.activeElement?.id === 'composer-input')
+		const bubble = page.locator('.code-message[data-entry-id="report"]')
+		await expect(bubble.locator('h1')).toContainText('任务')
+		await expect(bubble).toContainText('run-subagent')
+		expect(await bubble.evaluate(node => node.innerHTML.includes('<run-subagent'))).toBe(false)
+		await page.reload({ waitUntil: 'domcontentloaded' })
+		await page.waitForFunction(() => document.activeElement?.id === 'composer-input')
+		await expect(bubble.locator('h1')).toContainText('任务')
+		await expect(bubble).toContainText('run-subagent')
+		expect(await bubble.evaluate(node => node.innerHTML.includes('<run-subagent'))).toBe(false)
 	}
 	finally {
 		await removeAllWorkspacesViaApi(page, baseUrl)

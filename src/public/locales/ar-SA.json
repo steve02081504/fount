@@ -6656,6 +6656,7 @@
 			"viewFiles": "عرض الملفات",
 			"addFiles": "إرسال ملفات",
 			"callback": "استجابة الأداة",
+			"inlineRendered": "Inline results",
 			"runShell": "تشغيل ${lang}",
 			"subAgent": {
 				"createBatch": "إنشاء دفعة وكلاء فرعيين",

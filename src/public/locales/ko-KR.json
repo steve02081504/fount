@@ -6646,6 +6646,7 @@
 			"viewFiles": "파일 보기",
 			"addFiles": "파일 보내기",
 			"callback": "도구 콜백",
+			"inlineRendered": "Inline results",
 			"runShell": "${lang} 실행",
 			"subAgent": {
 				"createBatch": "하위 에이전트 배치 만들기",

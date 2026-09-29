@@ -15,6 +15,7 @@
 /** @typedef {import('../../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
 import { truncateOutput } from '../../../../../../scripts/shell_guard.mjs'
+import { renderMarkdownCodeBlock } from '../streaming/markdown.mjs'
 
 import { collectHandlerCalls } from './collectCalls.mjs'
 import { flattenReplyHandlers } from './defineReplyHandler.mjs'
@@ -231,6 +232,8 @@ export async function runReplyHandlers(result, args, handlers) {
 	let wantRegen = false
 	let stopped = false
 	let failed = false
+	let stopGroupIndex = -1
+	let stopCursor = 0
 	let handledCount = 0
 	const originalContent = result.content
 	/** @type {Array<{ raw: string, start: number, source: string, displayText: string, inline: boolean }>} 已处理调用段的展示替换。 */
@@ -248,7 +251,7 @@ export async function runReplyHandlers(result, args, handlers) {
 			const outcome = await handler.handle(result, handlerArgs, null) ?? {}
 			if (outcome.content !== undefined) result.content = outcome.content
 			if (outcome.regen) wantRegen = true
-			if (outcome.stop) { stopped = true; break }
+			if (outcome.stop) { stopped = true; stopGroupIndex = groupIndex; stopCursor = 0; break }
 			if (outcome.failed) {
 				failed = true
 				skippedCalls = collectSkippedCalls(result.content ?? '', groups, groupIndex, 0, handlerArgs)
@@ -311,7 +314,7 @@ export async function runReplyHandlers(result, args, handlers) {
 				}
 				cursor = batch.at(-1).call.end
 				if (result.content !== content) { content = result.content ?? ''; cursor = 0 }
-				if (batchStop) { stopped = true; break }
+				if (batchStop) { stopped = true; stopGroupIndex = groupIndex; stopCursor = cursor; break }
 				if (batchFailed) {
 					// 批次内已启动的调用全部结算，但该步骤整体算失败：不再启动后续批次/调用
 					failed = true
@@ -339,7 +342,7 @@ export async function runReplyHandlers(result, args, handlers) {
 			}, handlerArgs)
 			handledSpans.push({ raw: call.raw, start: call.start, source: content, displayText, inline: Boolean(handler.evaluate) && Boolean(displayText), inlineResultLogged: call.inlineResultLogged })
 
-			if (outcome.stop) { stopped = true; break }
+			if (outcome.stop) { stopped = true; stopGroupIndex = groupIndex; stopCursor = call.end; break }
 			if (outcome.failed) {
 				failed = true
 				const skipCursor = result.content !== beforeContent ? 0 : call.end
@@ -350,6 +353,18 @@ export async function runReplyHandlers(result, args, handlers) {
 			else cursor = call.end
 		}
 		if (stopped || failed) break
+	}
+
+	// 本轮的 content 是否被 handler 整条替换（如 rolesettingfilter 封禁）；替换后 show 必须从新 content 重新派生。
+	const contentReplaced = result.content !== originalContent
+
+	if (stopped && !contentReplaced && stopGroupIndex >= 0) {
+		// stop 是有意短路：未执行的后续调用折进展示替换，避免原始标签泄漏到 show；不加跳过提示日志。
+		const sourceContent = result.content ?? ''
+		for (const { handler, call } of collectSkippedCalls(sourceContent, groups, stopGroupIndex, stopCursor, handlerArgs)) {
+			const displayText = renderCallDisplay(handler, call, { stage: 'final', open: false, skipped: true }, handlerArgs)
+			handledSpans.push({ raw: call.raw, start: call.start, source: sourceContent, displayText, inline: false })
+		}
 	}
 
 	if (failed && !stopped) {
@@ -376,7 +391,6 @@ export async function runReplyHandlers(result, args, handlers) {
 
 	// 展示层纯派生：在现有 show（含角色自定义变换）上把已处理调用段替换为其展示文本；
 	// 若本轮 handler 整条替换了 content（如 rolesettingfilter 封禁），则 show 必须从新 content 重新派生，避免泄漏旧内容。
-	const contentReplaced = result.content !== originalContent
 	if (handledSpans.length || contentReplaced) {
 		let show = contentReplaced ? result.content ?? '' : result.content_for_show ?? result.content ?? ''
 		// 完整正文仍在 show 中时，按解析得到的原文偏移从右往左替换；
@@ -407,10 +421,12 @@ export async function runReplyHandlers(result, args, handlers) {
 			})
 			return `${span.raw}\n→ ${text}${truncated ? `\n（中间省略 ${omitted} 字符）` : ''}`
 		})
+		const reportText = `你的消息中以下 inline 调用已被处理并替换为对应结果：\n\n${lines.join('\n\n')}`
 		AddLongTimeLog({
 			name: 'inline-rendered',
 			role: 'tool',
-			content: `你的消息中以下 inline 调用已被处理并替换为对应结果：\n\n${lines.join('\n\n')}`,
+			content: reportText,
+			content_for_show: renderMarkdownCodeBlock(reportText),
 			files: [],
 		})
 	}

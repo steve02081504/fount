@@ -6646,6 +6646,7 @@
 			"viewFiles": "ファイル表示",
 			"addFiles": "ファイル送信",
 			"callback": "ツールコールバック",
+			"inlineRendered": "インライン結果",
 			"runShell": "${lang} を実行",
 			"subAgent": {
 				"createBatch": "サブエージェントのバッチを作成",

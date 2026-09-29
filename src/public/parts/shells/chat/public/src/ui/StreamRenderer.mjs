@@ -21,17 +21,19 @@ export class StreamRenderer {
 	#lastRendered = null
 	#animationFrameId = null
 	#allowDangerousHtml = false
+	#transform = null
 
 	/**
 	 * @param {HTMLElement} bodyElement 流式正文容器
-	 * @param {{ allowDangerousHtml?: boolean }} [options] 是否保留 Markdown 内联 HTML 结构
+	 * @param {{ allowDangerousHtml?: boolean, transform?: ((text: string) => string)|null }} [options] 是否保留 Markdown 内联 HTML 结构；transform 为渲染前的原文变换
 	 */
-	constructor(bodyElement, { allowDangerousHtml = false } = {}) {
+	constructor(bodyElement, { allowDangerousHtml = false, transform = null } = {}) {
 		if (!(bodyElement instanceof HTMLElement))
 			throw new TypeError('StreamRenderer requires an HTMLElement')
 		this.#bodyElement = bodyElement
 		this.attachedTo = bodyElement
 		this.#allowDangerousHtml = !!allowDangerousHtml
+		this.#transform = typeof transform === 'function' ? transform : null
 	}
 
 	/**
@@ -105,10 +107,11 @@ export class StreamRenderer {
 	 * @returns {Promise<void>}
 	 */
 	async #renderFrame() {
-		if (this.#displayedText === this.#lastRendered) return
 		const text = this.#displayedText
+		if (text === this.#lastRendered) return
 		this.#lastRendered = text
-		const html = await renderMarkdownAsString(ensureClosedTrailingCodeFence(text), this.#markdownCache, {
+		const prepared = this.#transform ? String(this.#transform(text)) : text
+		const html = await renderMarkdownAsString(ensureClosedTrailingCodeFence(prepared), this.#markdownCache, {
 			allowDangerousHtml: this.#allowDangerousHtml,
 		})
 		this.#bodyElement.replaceChildren(scrubHtmlActivePayload(html))

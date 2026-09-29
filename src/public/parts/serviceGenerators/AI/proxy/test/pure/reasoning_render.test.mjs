@@ -21,3 +21,17 @@ Deno.test('buildReasoningDetailsMarkdown output ends with blank line (two newlin
 Deno.test('buildReasoningDetailsMarkdown empty reasoning yields empty string', () => {
 	assertEquals(buildReasoningDetailsMarkdown({ content: 'x', extension: {} }), '')
 })
+
+Deno.test('buildReasoningDetailsMarkdown emits no indented raw-HTML lines (renderer-agnostic)', () => {
+	for (const open of [false, true]) {
+		const reasoningHtml = buildReasoningDetailsMarkdown({
+			content: 'x',
+			extension: { reasoning_content: 'think step', reasoning_summary: ['summary line'] },
+		}, { open })
+		assertEquals(reasoningHtml.includes('\t'), false)
+		for (const line of reasoningHtml.split('\n'))
+			assertEquals(/^ {4,}/.test(line), false, `line starts with 4+ spaces: ${JSON.stringify(line)}`)
+		assertStringIncludes(reasoningHtml, '</details>\n\n')
+		assertEquals(reasoningHtml.endsWith('</details>\n\n'), true)
+	}
+})

@@ -6652,6 +6652,7 @@
 			"viewFiles": "Visualizza file",
 			"addFiles": "Invia file",
 			"callback": "Callback dello strumento",
+			"inlineRendered": "Inline results",
 			"runShell": "Esegui ${lang}",
 			"subAgent": {
 				"createBatch": "Crea batch di sotto-agenti",
