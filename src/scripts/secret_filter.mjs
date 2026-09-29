@@ -42,7 +42,7 @@ function collectApiKeyValues(node, found) {
 function collectPartSecretValues(data) {
 	const values = []
 	collectApiKeyValues(data, values)
-	return values.filter(value => typeof value === 'string' && value.trim().length >= MIN_SECRET_LENGTH)
+	return values.filter(value => value.trim().length >= MIN_SECRET_LENGTH)
 }
 
 /**

@@ -356,7 +356,7 @@ async function callback_handler(args, reason, code, result) {
 		role: 'tool',
 		name: 'code-execution.callback',
 		uid: 'system',
-		content: `\
+		content: redactSecrets(`\
 你的js代码中的callback函数被调用了
 原因是：${reason}
 你此前执行的代码是：
@@ -366,10 +366,9 @@ ${code}
 结果是：
 ${renderAnsiBlock(renderAnsiText(result))}
 请根据callback函数的内容进行回复。
-`,
+`),
 		charVisibility: [args.char_id],
 	}
-	feedback.content = redactSecrets(feedback.content)
 	try {
 		// 只负责写入，由 shell 决定是否/何时安排生成；无 RequestCharReply 的 shell 即为 append-only
 		await appendAndWake(args, feedback)
