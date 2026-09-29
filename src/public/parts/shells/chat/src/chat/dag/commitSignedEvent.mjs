@@ -4,13 +4,15 @@
 import { appendJsonlSynced, readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 
+import { debugLog } from 'fount/scripts/debug_log.mjs'
+
 import { recordEventReceivedAt } from '../events/meta.mjs'
 import { publishSignedEventToFederation } from '../federation/index.mjs'
 import { recordMessageRate } from '../governance/rateLimitState.mjs'
 import { eventsPath } from '../lib/paths.mjs'
 
 import { broadcastAndPersist } from './eventPersist.mjs'
-import { withGroupWriteLock } from './groupLock.mjs'
+import { isGroupWriteLockLeaked, withGroupWriteLock } from './groupLock.mjs'
 
 /**
  * @param {string} username replica
@@ -42,6 +44,14 @@ async function publishSignedEvent(username, groupId, wirePayload, options, publi
  * @returns {Promise<'ok' | 'dup'>} `dup` 表示同 eventId 已落盘（锁内原子判定）
  */
 export async function commitSignedChatEvent(username, groupId, wirePayload, options = {}) {
+	// 廉价开发断言：fire-and-forget 任务继承父上下文的锁标记却在锁外写盘时会在此暴露。
+	// 不抛错（避免生产环境因断言中断合法写入），经 debugLog 通道转储便于排查。
+	if (isGroupWriteLockLeaked(username, groupId))
+		void debugLog('dag_group_write_lock_leak', {
+			username,
+			groupId,
+			type: wirePayload instanceof Function ? 'deferred' : wirePayload?.type ?? null,
+		}).catch(() => { })
 	const persistOpts = {
 		checkpointOwnerSecretKey: options.checkpointOwnerSecretKey,
 		skipCheckpointRebuild: options.skipCheckpointRebuild,

@@ -11,7 +11,7 @@ import { mkdir, stat } from 'node:fs/promises'
 import { EPOCH_CHAIN_MAX } from 'npm:@steve02081504/fount-p2p/core/constants'
 import { pubKeyHash, publicKeyFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
 import { signCheckpoint } from 'npm:@steve02081504/fount-p2p/crypto/checkpoint_sign'
-import { computeLocalTipsHash } from 'npm:@steve02081504/fount-p2p/dag/index'
+import { computeLocalTipsHash, sortedPrevEventIds } from 'npm:@steve02081504/fount-p2p/dag/index'
 import { readJsonl, writeJsonAtomicSynced } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 import {
@@ -28,6 +28,7 @@ import {
 import {
 	authzFoldOrderIds,
 	computeDagTipIdsFromEvents,
+	descendantClosureFromTip,
 	hasDanglingParents,
 	hasGovernanceFork,
 	selectAuthzBranchTip,
@@ -99,6 +100,59 @@ function coveredIdsFromAnchor(byId, anchorId) {
 }
 
 /**
+ * 计算锚点的「严格后代」闭包；锚点不在本地事件集时也按其作为父的边计算。
+ * 用于锚点缺失时判定哪些本地事件是 checkpoint 之后的新增量。
+ * @param {Map<string, object>} byId 事件 id -> 事件映射
+ * @param {string} anchorId checkpoint 锚点事件 id
+ * @returns {Set<string>} 严格后代（不含锚点自身）id 集
+ */
+function anchorDescendantClosure(byId, anchorId) {
+	const start = String(anchorId || '').trim()
+	if (!start) return new Set()
+	if (byId.has(start)) {
+		const closure = descendantClosureFromTip(start, byId)
+		closure.delete(start)
+		return closure
+	}
+	// 锚点缺失：自行建图，锚点作为虚拟根，仅保留指向锚点或图内事件的边。
+	const children = new Map()
+	for (const event of byId.values())
+		for (const parentId of sortedPrevEventIds(event.prev_event_ids)) {
+			const pid = String(parentId || '').trim()
+			if (!pid || (pid !== start && !byId.has(pid))) continue
+			const list = children.get(pid)
+			if (list) list.push(event.id)
+			else children.set(pid, [event.id])
+		}
+	const out = new Set()
+	const stack = [...children.get(start) || []]
+	while (stack.length) {
+		const id = stack.pop()
+		if (!id || out.has(id)) continue
+		out.add(id)
+		for (const childId of children.get(id) || []) stack.push(childId)
+	}
+	return out
+}
+
+/**
+ * 计算 checkpoint 锚点缺失时的「已覆盖」集：锚点的严格后代视作待应用增量，
+ * 其余（锚点祖先、无关事件、断链）均视作基态已覆盖。
+ * 替代简单重放 `eventIdsInEpoch` 的做法，避免重放旧事件或误留旧分支。
+ * @param {Map<string, object>} byId 事件 id -> 事件映射
+ * @param {string} anchorId checkpoint 锚点事件 id
+ * @param {string[]} candidateIds 候选事件 id（拓扑折叠序）
+ * @returns {Set<string>} 已覆盖事件 id 集
+ */
+function coveredIdsOutsideAnchorDescendants(byId, anchorId, candidateIds) {
+	const descendants = anchorDescendantClosure(byId, anchorId)
+	const covered = new Set()
+	for (const id of candidateIds)
+		if (!descendants.has(id)) covered.add(id)
+	return covered
+}
+
+/**
  * 载入 DAG 事件并按规范拓扑序物化，汇总状态与 checkpoint。
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
@@ -147,7 +201,17 @@ export async function getState(username, groupId, options = {}) {
 		await writeOrderCache(orderCachePath, buildOrderCachePayload(order, federatableEvents))
 	const byId = new Map(federatableEvents.map(event => [event.id, event]))
 
-	const dagTips = computeDagTipIdsFromEvents(federatableEvents)
+	const rawDagTips = computeDagTipIdsFromEvents(federatableEvents)
+	// 锚点缺失（被折叠/尚未拉回）时，checkpoint.eventIdsInEpoch 中的 id 属已折叠进基态的历史事件；
+	// 它们可能经 gossip 重新出现并被误判为叶，视作已引用以消除假分叉。
+	const checkpointAnchorId = String(checkpoint?.checkpoint_event_id || '').trim()
+	const anchorMissing = !!checkpointAnchorId && !byId.has(checkpointAnchorId)
+	const foldedBaseIds = anchorMissing && Array.isArray(checkpoint?.eventIdsInEpoch)
+		? new Set(checkpoint.eventIdsInEpoch.map(String))
+		: null
+	const dagTips = foldedBaseIds
+		? rawDagTips.filter(id => !foldedBaseIds.has(String(id)))
+		: rawDagTips
 	const [reputationFile, preferredBranchTip] = await Promise.all([
 		loadReputation(),
 		loadGovernanceBranchTip(username, groupId),
@@ -178,10 +242,11 @@ export async function getState(username, groupId, options = {}) {
 		state = materializeFromCheckpoint(checkpoint)
 	else if (baseAuthoritative) {
 		state = materializeFromCheckpoint(checkpoint)
-		// 锚点已在本地事件集：按锚点因果祖先闭包判定“已覆盖”；锚点缺失时回退 eventIdsInEpoch。
+		// 锚点已在本地事件集：按锚点因果祖先闭包判定“已覆盖”；
+		// 锚点缺失时以「锚点严格后代」为待应用增量，其余视作基态已覆盖。
 		const covered = coveredByAnchor.size > 0
 			? coveredByAnchor
-			: new Set(Array.isArray(checkpoint.eventIdsInEpoch) ? checkpoint.eventIdsInEpoch : [])
+			: coveredIdsOutsideAnchorDescendants(byId, tipId, foldOrder)
 		for (const eventId of foldOrder) {
 			if (covered.has(eventId)) continue
 			const event = byId.get(eventId)

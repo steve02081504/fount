@@ -32,6 +32,7 @@ import { tryImportFileKeyGrantFromPeerInvite } from '../file_keys/peerInviteImpo
 import { applyFileMasterKeyRotationFromEvent } from '../file_keys/store.mjs'
 import { releaseFileChunksAfterDelete } from '../files/deleteGc.mjs'
 import { joinPowBonusFromMemberJoin } from '../governance/joinPolicy.mjs'
+import { resolveGroupChannelId } from '../lib/channelId.mjs'
 import { safeReadJson } from '../lib/fsSafe.mjs'
 import { eventsPath, messagesPath, snapshotPath } from '../lib/paths.mjs'
 import { nextChannelMessageSeq } from '../lib/readMarkers.mjs'
@@ -176,7 +177,11 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 
 
 	const roomKey = groupWsRoomKeyForReplica(groupId)
-	broadcastEvent(roomKey, { type: 'dag_event', event: signPayload })
+	const isMessageType = PERSIST_MESSAGE_TYPES.has(signPayload.type)
+	// 消息类事件仍需尽早把 dag_event 推给对端/Hub；非消息类的 dag_event 改到 checkpoint
+	// 重建之后再播，避免 Hub 在旧 events + 新 snapshot 的中间态重取 /state 而瞬时回退。
+	if (isMessageType)
+		broadcastEvent(roomKey, { type: 'dag_event', event: signPayload })
 	if (!persistOpts.skipGenesisSideEffects) {
 		await applyReputationHooks(username, groupId, signPayload, materializedState)
 		await applyFileMasterKeyRotationFromEvent(username, groupId, signPayload)
@@ -192,7 +197,7 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 		for (const rot of signPayload.content?.rotations || [])
 			await applyChannelKeyRotateEvent(username, groupId, { content: rot }, sender)
 	}
-	if (!PERSIST_MESSAGE_TYPES.has(signPayload.type)) {
+	if (!isMessageType) {
 		const existingCheckpoint = await safeReadJson(snapshotPath(username, groupId))
 		const deferCheckpointForBootstrapJoin = signPayload.type === 'member_join'
 			&& !isSignedBaseCheckpoint(existingCheckpoint)
@@ -218,9 +223,22 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 			const creds = roomCredentialsFromGroupSettings({ ...state.groupSettings, ...signPayload.content })
 			if (creds) await onRoomCredentialsSyncedFromDag(username, groupId, creds)
 		}
+		// checkpoint 已重建（或按调用方要求跳过），快照与 events 一致后再通知 Hub/对端。
+		broadcastEvent(roomKey, { type: 'dag_event', event: signPayload })
 		return
 	}
-	const channelId = signPayload.channelId || 'default'
+	let channelId = String(signPayload.channelId || '').trim()
+	if (!channelId) {
+		// 不得伪造 'default' 频道（见 chat AGENTS）：缺失时经共享解析器取真实的可打开频道；
+		// 仍解析不到才跳过频道消息落盘/广播，仅重建 checkpoint 让事件进入物化状态。
+		channelId = String(await resolveGroupChannelId(username, groupId, null) || '').trim()
+		console.error(`broadcastAndPersist: ${signPayload.type} event ${signPayload.id} missing channelId; resolved channel ${channelId || '(none)'}`)
+		if (!channelId) {
+			if (!persistOpts.skipCheckpointRebuild)
+				await rebuildAndSaveCheckpoint(username, groupId, { ...persistOpts, skipChannelGc: true })
+			return
+		}
+	}
 	const storedContent = signPayload.content
 	let displayContent = storedContent
 	let sidecarContent = storedContent
@@ -264,12 +282,20 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 	}
 	if (isNewLine)
 		await appendJsonlSynced(channelMessagesPath, messageLine)
-	if (PERSIST_MESSAGE_TYPES.has(signPayload.type))
-		void import('../search/index.mjs').then(({ indexChannelMessageLine }) =>
-			indexChannelMessageLine(username, groupId, channelId, messageLine),
-		).catch(error => {
-			console.error('search index update failed:', error)
-		})
+	void import('../search/index.mjs').then(({ indexChannelMessageLine }) =>
+		indexChannelMessageLine(username, groupId, channelId, messageLine),
+	).catch(error => {
+		console.error('search index update failed:', error)
+	})
+	// 先把消息推给 Hub（fanout 会 await 每个 char 的 OnMessage，冷启动可能耗时数秒），
+	// 再跑 fanout/mentions；mentions 非空时补发一帧带 @ 信息的更新。
+	const channelFrame = {
+		type: 'channel_message',
+		channelId,
+		message: { ...messageLine, content: displayContent },
+		mentions: { entityHashes: [], roleIds: [], everyone: false },
+	}
+	broadcastEvent(roomKey, channelFrame)
 	let fanoutMentions = { entityHashes: [], roleIds: [], everyone: false }
 	if (signPayload.type === 'message' || signPayload.type === 'message_edit') {
 		const ingress = persistOpts.ingress === 'backfill' ? 'backfill' : 'live'
@@ -280,12 +306,8 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 			})
 		fanoutMentions = fanout.mentions
 	}
-	broadcastEvent(roomKey, {
-		type: 'channel_message',
-		channelId,
-		message: { ...messageLine, content: displayContent },
-		mentions: fanoutMentions,
-	})
+	if (fanoutMentions.entityHashes.length || fanoutMentions.roleIds.length || fanoutMentions.everyone)
+		broadcastEvent(roomKey, { ...channelFrame, mentions: fanoutMentions })
 	await rebuildAndSaveCheckpoint(username, groupId, { ...persistOpts, skipChannelGc: true })
 	// message 落盘即触发；message_edit 仅终稿（newContent 非流式占位）触发
 	const afterHookContent = signPayload.type === 'message'

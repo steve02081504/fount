@@ -1,5 +1,6 @@
 import { debugLog } from '../../../../../../../scripts/debug_log.mjs'
 import { memberEntityHash } from '../../entity/member.mjs'
+import { runOutsideGroupLocks } from '../dag/groupLock.mjs'
 import { getState } from '../dag/materialize.mjs'
 import { messageMentionsEntity } from '../lib/mentionFacts.mjs'
 import { groupKindFromState } from '../lib/notificationPreferences.mjs'
@@ -141,13 +142,17 @@ export async function runTriggerPipeline(username, groupId, channelId, messageLi
 		else willing.push({ charname, frequency: 1 })
 	}
 
+	// 本管线常由锁内的事件落盘副作用启动；回复生成是 fire-and-forget，必须在锁外启动，
+	// 否则其占位/流式/终稿写入会继承可重入标记而绕过群写锁，与并发本机写入竞争。
 	for (const charname of mentionedChars) {
 		if (isCharReplyInFlight(groupId, channelId, charname)) continue
-		void triggerCharReply(groupId, channelId, charname).catch(logTriggerCharReplyFailure)
+		void runOutsideGroupLocks(() => triggerCharReply(groupId, channelId, charname)).catch(logTriggerCharReplyFailure)
 	}
 
 	if (!willing.length) return
 	const next = pickNextCharForReply(willing)
 	if (!next || isCharReplyInFlight(groupId, channelId, next)) return
-	void triggerCharReply(groupId, channelId, next).catch(logTriggerCharReplyFailure)
+	void runOutsideGroupLocks(() => triggerCharReply(groupId, channelId, next)).catch(logTriggerCharReplyFailure)
 }
+
+

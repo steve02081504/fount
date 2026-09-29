@@ -1,5 +1,6 @@
 import { appendEvent } from '../dag/append.mjs'
 import { checkEventPermission } from '../dag/authorizeEvent.mjs'
+import { runOutsideGroupLocks } from '../dag/groupLock.mjs'
 import { materializeFromCheckpoint } from '../dag/groupMaterializedState.mjs'
 import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
 import { getState } from '../dag/materialize.mjs'
@@ -56,7 +57,7 @@ export async function ensureChannelKey(username, groupId, channelId) {
 	const applied = await applyChannelKeyRotateEvent(username, groupId, { content }, sender)
 	if (!applied)
 		throw new Error(`channel key wrap import failed for ${id}`)
-	void appendEvent(username, groupId, {
+	void runOutsideGroupLocks(() => appendEvent(username, groupId, {
 		type: 'channel_key_rotate',
 		channelId: id,
 		timestamp: Date.now(),
@@ -66,7 +67,7 @@ export async function ensureChannelKey(username, groupId, channelId) {
 		skipCheckpointRebuild: true,
 		skipReleaseQuarantined: true,
 		publishFederation: false,
-	}).catch(console.error)
+	})).catch(console.error)
 }
 
 /**
