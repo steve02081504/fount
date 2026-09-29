@@ -46,3 +46,20 @@ Deno.test('row not present in view is skipped', () => {
 	assertEquals(replaceRows.length, 0)
 	assertEquals(appendRows.length, 0)
 })
+
+Deno.test('row only in the virtual list queue is treated as known (replace, not append)', () => {
+	const source = []
+	const view = [row('a', 1)]
+	const { replaceRows, appendRows } = classifyIncomingBatch([row('a')], source, view, ['a'])
+	assertEquals(replaceRows.length, 1)
+	assertEquals(replaceRows[0].index, 0)
+	assertEquals(appendRows.length, 0)
+})
+
+Deno.test('row absent from both source and queue is appended', () => {
+	const source = []
+	const view = [row('a', 1)]
+	const { replaceRows, appendRows } = classifyIncomingBatch([row('a')], source, view, [])
+	assertEquals(replaceRows.length, 0)
+	assertEquals(appendRows.length, 1)
+})

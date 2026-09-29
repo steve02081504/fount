@@ -1,7 +1,9 @@
+import { isDagEventId } from '../../src/lib/eventId.mjs'
 import { store } from '../core/state.mjs'
 import { activePrivateCharPartName } from '../friendBindings.mjs'
 
 import {
+	batchEchoesPendingClientId,
 	mergeIncrementalSourceBatch,
 	refreshChannelMessagesView,
 } from './channelMessageStore.mjs'
@@ -34,10 +36,19 @@ export function clearHubEmptyPlaceholder(container) {
 	if (container?.querySelector('.empty')) container.innerHTML = ''
 }
 
-/** @returns {void} */
+/**
+ * 记录最后一条真实 DAG 消息 id（跳过到达序在尾部的乐观 pending 行，避免把 `pending:` 当增量游标）。
+ * @returns {void}
+ */
 export function updateLastMessageId() {
-	const last = store.messages.channelMessagesSource.at(-1)
-	store.messages.lastMessageId = last?.eventId || null
+	let lastId = null
+	for (let index = store.messages.channelMessagesSource.length - 1; index >= 0; index--) {
+		const eventId = store.messages.channelMessagesSource[index]?.eventId
+		if (!isDagEventId(eventId)) continue
+		lastId = eventId
+		break
+	}
+	store.messages.lastMessageId = lastId
 }
 
 /**
@@ -48,7 +59,7 @@ export function updateLastMessageId() {
 export function mergeIncrementalChannelBatch(source, batch) {
 	const pendingId = store.messages.composerPendingId
 	const merged = mergeIncrementalSourceBatch(source, batch, pendingId)
-	if (pendingId && batch.some(row => String(row.eventId) !== pendingId))
+	if (batchEchoesPendingClientId(batch, pendingId))
 		store.messages.composerPendingId = null
 	return merged
 }

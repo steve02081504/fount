@@ -7,10 +7,14 @@
  * @param {object[]} batch 入站批次
  * @param {object[]} source 当前 channelMessagesSource（合并前）
  * @param {object[]} view 当前展示列表 channelMessages（合并后）
+ * @param {Iterable<string>} [queuedEventIds] 虚拟列表当前队列中的 eventId；命中视为已在列表中，避免重复 append
  * @returns {{ replaceRows: Array<{ index: number, row: object }>, appendRows: object[] }} 分类结果
  */
-export function classifyIncomingBatch(batch, source, view) {
+export function classifyIncomingBatch(batch, source, view, queuedEventIds = null) {
 	const oldIds = new Set((source || []).map(row => String(row.eventId || '')).filter(Boolean))
+	// 已到达 source 或已进入虚拟列表队列的行都算「已知」，只需 replace，不得再 append。
+	for (const eventId of queuedEventIds || [])
+		if (eventId) oldIds.add(String(eventId))
 	const replaceRows = []
 	const appendRows = []
 	const appended = new Set()

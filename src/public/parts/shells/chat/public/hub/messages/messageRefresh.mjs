@@ -44,6 +44,7 @@ import {
 	refreshChannelView,
 	updateLastMessageId,
 } from './messageShared.mjs'
+import { mountMessagesPlaceholder } from './messagesPlaceholder.mjs'
 import {
 	decorateRenderedMessages,
 	destroyChannelVirtualList,
@@ -130,6 +131,19 @@ async function patchReactionRows(container, reactions) {
 }
 
 /**
+ * 判断某展示索引上的行是否真的在虚拟列表队列里（可安全 replaceItem）。
+ * @param {object} pipeline 消息管道
+ * @param {number} index 展示索引
+ * @param {object} row 期望行
+ * @returns {boolean} 队列中存在且 eventId 一致
+ */
+function isRowRenderedInQueue(pipeline, index, row) {
+	if (!pipeline || index < 0 || !row) return false
+	const queued = pipeline.virtualList?.getItem?.(index)
+	return !!queued && eventIdsEqual(queued.eventId, row.eventId)
+}
+
+/**
  * @param {object[]} batch 入站消息批次
  * @param {{ scroll?: boolean }} [options] 滚动选项
  * @returns {Promise<void>}
@@ -172,16 +186,38 @@ async function applyIncomingMessageBatch(batch, { scroll = false } = {}) {
 		return
 	}
 
-	const { replaceRows, appendRows } = classifyIncomingBatch(batch, oldSource, store.messages.channelMessages)
+	const pipeline = store.messages.channelMessagePipeline
+	const view = store.messages.channelMessages
+	const queue = pipeline.virtualList?.getQueue?.() ?? []
+	const { replaceRows, appendRows } = classifyIncomingBatch(
+		batch,
+		oldSource,
+		view,
+		queue.map(row => String(row?.eventId ?? '')),
+	)
 
-	for (const { index, row } of replaceRows) {
+	// 目标行没真正在渲染队列里时 replaceItem 会静默 no-op / 覆盖错行，改用全量 refresh。
+	const replaceNeedsRefresh = replaceRows.some(({ index, row }) => !isRowRenderedInQueue(pipeline, index, row))
+	// 只有「追加行恰为展示列表尾部且队列尾正好是其前一行」时，末尾 append 才保序；否则 refresh。
+	const tailStart = view.length - appendRows.length
+	const appendIsTail = appendRows.length > 0
+		&& appendRows.every((row, index) => String(row.eventId) === String(view[tailStart + index]?.eventId))
+	const queueEndsAtTail = appendIsTail && !replaceNeedsRefresh
+		&& queue.length > 0
+		&& String(queue.at(-1)?.eventId) === String(view[tailStart - 1]?.eventId)
+
+	if (replaceNeedsRefresh || (appendRows.length > 0 && !queueEndsAtTail) || (!replaceRows.length && !appendRows.length)) {
 		if (!isChannelViewScopeCurrent(scope)) return
-		await store.messages.channelMessagePipeline.replaceItem(index, row)
+		await pipeline.refresh()
 	}
-	if (appendRows.length && isChannelViewScopeCurrent(scope))
-		await store.messages.channelMessagePipeline.appendItemsBatch(appendRows, scroll)
-	if (!replaceRows.length && !appendRows.length && isChannelViewScopeCurrent(scope))
-		await store.messages.channelMessagePipeline.refresh()
+	else {
+		for (const { index, row } of replaceRows) {
+			if (!isChannelViewScopeCurrent(scope)) return
+			await pipeline.replaceItem(index, row)
+		}
+		if (appendRows.length && isChannelViewScopeCurrent(scope))
+			await pipeline.appendItemsBatch(appendRows, scroll)
+	}
 
 	if (!isChannelViewScopeCurrent(scope)) return
 	syncChannelActionsContext()
@@ -225,7 +261,8 @@ async function replaceChannelMessageRow(eventId, row) {
 	)
 	const viewRow = viewIdx >= 0 ? store.messages.channelMessages[viewIdx] : null
 	if (!isChannelViewScopeCurrent(scope)) return
-	if (viewRow && store.messages.channelMessagePipeline)
+	// 行不在渲染队列时 replaceItem 会静默 no-op（或覆盖错行），必须全量 refresh 才能落地。
+	if (viewRow && isRowRenderedInQueue(store.messages.channelMessagePipeline, viewIdx, viewRow))
 		await store.messages.channelMessagePipeline.replaceItem(viewIdx, viewRow)
 	else if (store.messages.channelMessagePipeline)
 		await store.messages.channelMessagePipeline.refresh()
@@ -277,6 +314,11 @@ export async function loadMessages(isCurrent) {
 	const pipelineKey = `${groupId}:${channelId}`
 	const softReload = store.messages.channelMessagePipeline
 		&& store.messages.channelPipelineKey === pipelineKey
+	// 同频道（含首次载入）才允许把在途乐观行带过本次载入；换频道时必须丢弃，避免串频道。
+	const previousPipelineKey = store.messages.channelMessagePipeline
+		? store.messages.channelPipelineKey
+		: null
+	const sameChannel = !previousPipelineKey || previousPipelineKey === pipelineKey
 	if (!softReload) {
 		destroyChannelVirtualList()
 		const hadStale = restoreChannelViewCache(groupId, channelId)
@@ -291,7 +333,6 @@ export async function loadMessages(isCurrent) {
 	if (await loadNonTextChannel(container, channel)) return
 	if (isCurrent && !isCurrent()) return
 	try {
-		store.messages.composerPendingId = null
 		store.messages.channelOlderExhausted = false
 		const { messages, reactions, readMarker } = await getChannelViewLog(
 			groupId,
@@ -299,15 +340,24 @@ export async function loadMessages(isCurrent) {
 			{ limit: 50 },
 		)
 		if (isCurrent && !isCurrent()) return
+		// 载入期间发出的乐观行不能被服务端快照覆盖丢掉（否则 confirmPendingRow 无行可确认）。
+		const pendingId = store.messages.composerPendingId
+		const pendingRow = pendingId && sameChannel
+			? store.messages.channelMessagesSource.find(row => String(row.eventId) === pendingId)
+			: null
+		if (pendingId && !sameChannel)
+			store.messages.composerPendingId = null
 		store.messages.channelReactions = reactions || {}
 		store.messages.reactionsEtag = reactionsSignature(reactions)
-		store.messages.channelMessagesSource = messages
+		store.messages.channelMessagesSource = pendingRow
+			? mergeIncrementalChannelBatch(messages, [pendingRow])
+			: messages
 		store.messages.readMarker = readMarker || null
 		store.messages.firstUnreadEventId = firstUnreadEventId(readMarker, messages)
 		refreshChannelView()
 		await refreshReactionPerms()
 		syncChannelActionsContext()
-		if (!messages.length) {
+		if (!store.messages.channelMessagesSource.length) {
 			destroyChannelVirtualList()
 			store.messages.channelPipelineKey = null
 			channelViewCache.delete(channelCacheKey(groupId, channelId) || '')
@@ -343,7 +393,8 @@ export async function loadMessages(isCurrent) {
 	}
 	catch (err) {
 		const error = handleError('chat.hub.load.messagesFailed')(err)
-		await mountTemplate(container, 'hub/empty/error', {
+		// 管道可能仍在（宽带载入失败），必须经唯一入口销毁后再替换 #messages 子树。
+		await mountMessagesPlaceholder(container, 'hub/empty/error', {
 			i18nKey: 'chat.hub.load.messagesFailed',
 			errorMessage: error.message,
 		})

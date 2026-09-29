@@ -79,6 +79,16 @@ export function buildMessagesByEventId(allMessages) {
  */
 function buildDisplayChain(mergedMessages, activeBranches) {
 	const chainable = mergedMessages.filter(message => isHex64(message?.eventId))
+	// 非 hex64 行（乐观 pending:* / 发送失败行）不参与 DAG 链接，恒排在链尾。
+	const nonChainable = mergedMessages
+		.filter(message => !isHex64(message?.eventId))
+		.sort(compareSiblingOrder)
+	/**
+	 * 把非 DAG 行（pending / 失败行）追加到链尾。
+	 * @param {object[]} rows 已完成 DAG 折叠的 hex64 行
+	 * @returns {object[]} 追加链尾后的展示序
+	 */
+	const withPendingTail = rows => nonChainable.length ? [...rows, ...nonChainable] : rows
 	if (!chainable.length)
 		return { messages: mergedMessages, branchInfo: new Map() }
 	if (!chainable.some(message => parentEventIds(message).length > 0))
@@ -90,7 +100,7 @@ function buildDisplayChain(mergedMessages, activeBranches) {
 		&& !parentEventIds(message).some(parentId => messagesByEventId.has(parentId)),
 	)
 	if (hasExternalParent)
-		return { messages: [...chainable].sort(compareSiblingOrder), branchInfo: new Map() }
+		return { messages: withPendingTail([...chainable].sort(compareSiblingOrder)), branchInfo: new Map() }
 
 	const childCountByParent = new Map()
 	for (const message of chainable) {
@@ -100,7 +110,7 @@ function buildDisplayChain(mergedMessages, activeBranches) {
 	}
 	const hasBranch = [...childCountByParent.values()].some(count => count > 1)
 	if (!hasBranch)
-		return { messages: [...chainable].sort(compareSiblingOrder), branchInfo: new Map() }
+		return { messages: withPendingTail([...chainable].sort(compareSiblingOrder)), branchInfo: new Map() }
 
 	const childrenByParent = new Map()
 	for (const message of chainable) {
@@ -146,7 +156,7 @@ function buildDisplayChain(mergedMessages, activeBranches) {
 	const seen = new Set(displayOrder.map(message => message.eventId))
 	const tail = chainable.filter(message => !seen.has(message.eventId)).sort(compareSiblingOrder)
 	if (tail.length) displayOrder.push(...tail)
-	return { messages: displayOrder, branchInfo }
+	return { messages: withPendingTail(displayOrder), branchInfo }
 }
 
 /**

@@ -10,6 +10,7 @@ import { clearReplyTarget, getReplyTarget } from '../composerReply.mjs'
 import { store } from '../core/state.mjs'
 import { waitForGroupWebSocketOpen } from '../stream/index.mjs'
 
+import { enqueueChannelMutation } from './channelMutationQueue.mjs'
 import { syncChannelActionsContext } from './messageContext.mjs'
 import { getMessagesContainer } from './messageScroll.mjs'
 import { clearHubEmptyPlaceholder, mergeIncrementalChannelBatch, refreshChannelView, updateLastMessageId } from './messageShared.mjs'
@@ -77,7 +78,17 @@ function pendingRowFromComposer(contentObj, tempId, files = []) {
  * @param {object[]} [files] 本地附件
  * @returns {Promise<void>}
  */
-async function insertPendingRow(contentObj, tempId, files = []) {
+function insertPendingRow(contentObj, tempId, files = []) {
+	return enqueueChannelMutation(() => doInsertPendingRow(contentObj, tempId, files))
+}
+
+/**
+ * @param {object} contentObj 富内容对象
+ * @param {string} tempId 临时 pending eventId
+ * @param {object[]} [files] 本地附件
+ * @returns {Promise<void>}
+ */
+async function doInsertPendingRow(contentObj, tempId, files = []) {
 	store.messages.composerPendingId = tempId
 	const row = pendingRowFromComposer(contentObj, tempId, files)
 	const container = getMessagesContainer()
@@ -103,7 +114,16 @@ async function insertPendingRow(contentObj, tempId, files = []) {
  * @param {object} event 服务端确认事件
  * @returns {Promise<void>}
  */
-async function confirmPendingRow(tempId, event) {
+function confirmPendingRow(tempId, event) {
+	return enqueueChannelMutation(() => doConfirmPendingRow(tempId, event))
+}
+
+/**
+ * @param {string} tempId 临时 pending eventId
+ * @param {object} event 服务端确认事件
+ * @returns {Promise<void>}
+ */
+async function doConfirmPendingRow(tempId, event) {
 	store.messages.composerPendingId = null
 	const pendingRow = store.messages.channelMessagesSource.find(row => String(row.eventId) === tempId)
 	const realRow = retainLocalAttachmentBuffers(
@@ -116,6 +136,9 @@ async function confirmPendingRow(tempId, event) {
 		[realRow],
 	)
 	refreshChannelView()
+	// 载入/清空可能已销毁管道；确认时按需重建，否则终稿无处可画。
+	if (!store.messages.channelMessagePipeline && container)
+		initChannelVirtualList(container)
 	if (store.messages.channelMessagePipeline)
 		await store.messages.channelMessagePipeline.refresh()
 	syncChannelActionsContext()
@@ -125,11 +148,21 @@ async function confirmPendingRow(tempId, event) {
 
 /**
  * @param {string} tempId 临时 pending eventId
- * @param {string} content 文本内容
+ * @param {object} content 富内容对象（重试时原样回传）
  * @param {File[]} [files] 附件列表
  * @returns {Promise<void>}
  */
-async function failPendingRow(tempId, content, files = []) {
+function failPendingRow(tempId, content, files = []) {
+	return enqueueChannelMutation(() => doFailPendingRow(tempId, content, files))
+}
+
+/**
+ * @param {string} tempId 临时 pending eventId
+ * @param {object} content 富内容对象
+ * @param {File[]} [files] 附件列表
+ * @returns {Promise<void>}
+ */
+async function doFailPendingRow(tempId, content, files = []) {
 	const idx = store.messages.channelMessagesSource.findIndex(m => String(m.eventId) === tempId)
 	if (idx >= 0)
 		store.messages.channelMessagesSource[idx] = {
@@ -211,7 +244,8 @@ export async function sendMessagePayload(contentObj, files = [], { clearComposer
 	const sendChannelId = store.context.currentChannelId
 	if (!sendGroupId || !sendChannelId)
 		throw new Error('no channel selected')
-	await waitForGroupWebSocketOpen(sendGroupId, sendChannelId)
+	// WS 可用性不阻塞发送：后台连接即可，POST 走 HTTP。
+	void waitForGroupWebSocketOpen(sendGroupId, sendChannelId)
 	const tempId = `pending:${crypto.randomUUID()}`
 	// 发送幂等：clientMessageId 随 payload 落盘，重试/离线队列重发同 id 时服务端返回既有事件
 	ensureChatExtension(contentObj).clientMessageId = tempId.slice('pending:'.length)

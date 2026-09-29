@@ -148,7 +148,26 @@ export async function ensureMessageLoaded(eventId) {
 }
 
 /**
+ * 批次是否包含服务端回显的乐观行（按 `extension.chat.clientMessageId` 匹配，排除 pending 行自身）。
+ * @param {object[]} batch 新行
+ * @param {string | null} composerPendingId 乐观 pending id（`pending:<clientMessageId>`）
+ * @returns {boolean} 是否应丢弃 pending 行
+ */
+export function batchEchoesPendingClientId(batch, composerPendingId) {
+	if (!composerPendingId) return false
+	const clientMessageId = String(composerPendingId).startsWith('pending:')
+		? String(composerPendingId).slice('pending:'.length)
+		: String(composerPendingId)
+	if (!clientMessageId) return false
+	return (batch || []).some(row =>
+		String(row?.eventId) !== composerPendingId
+		&& String(row?.content?.extension?.chat?.clientMessageId ?? '') === clientMessageId,
+	)
+}
+
+/**
  * 合并增量 batch 进 source（保留 pending 行与本地附件 buffer）。
+ * pending 行只在批次真正带回其 clientMessageId（服务端回显）时才丢弃。
  * @param {object[]} source 当前 source
  * @param {object[]} batch 新行
  * @param {string | null} composerPendingId 乐观 pending id
@@ -170,8 +189,8 @@ export function mergeIncrementalSourceBatch(source, batch, composerPendingId) {
 		if (!eventId) continue
 		const previous = byId.get(eventId)
 		byId.set(eventId, retainLocalAttachmentBuffers(previous, row))
-		if (composerPendingId && eventId !== composerPendingId)
-			byId.delete(composerPendingId)
 	}
+	if (batchEchoesPendingClientId(batch, composerPendingId))
+		byId.delete(composerPendingId)
 	return sortChannelRows([...byId.values()])
 }

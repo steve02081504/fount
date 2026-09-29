@@ -360,4 +360,85 @@ test.describe('Chat message actions', () => {
 			return { opacity: s.opacity, pointerEvents: s.pointerEvents }
 		})).toEqual({ opacity: '0', pointerEvents: 'none' })
 	})
+
+	test('optimistic pending row renders immediately while POST is in flight', async ({ page, groupChannel }) => {
+		const { groupId, channelId } = groupChannel
+		// 先造出历史，使展示链走「有父节点」的分支（该分支历史上会把 pending 行整个丢掉）
+		await sendMessageViaComposer(page, groupId, channelId, `pending-history-a ${Date.now()}`)
+		await sendMessageViaComposer(page, groupId, channelId, `pending-history-b ${Date.now()}`)
+
+		const text = `pending-optimistic ${Date.now()}`
+		let releasePost
+		const postGate = new Promise(resolve => { releasePost = resolve })
+		const messagesPath = `/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}`
+			+ `/channels/${encodeURIComponent(channelId)}/messages`
+		/**
+		 * 匹配频道发消息端点。
+		 * @param {URL} url 请求 URL
+		 * @returns {boolean} 是否为发消息端点
+		 */
+		const matchesMessages = url => url.pathname === messagesPath
+		/**
+		 * 延迟发消息 POST，让乐观行在响应前有一段可见窗口。
+		 * @param {import('npm:@playwright/test').Route} route 路由
+		 * @returns {Promise<void>} 无返回值
+		 */
+		const handler = async route => {
+			if (route.request().method() === 'POST') {
+				await postGate
+				await route.continue()
+				return
+			}
+			await route.continue()
+		}
+		await page.route(matchesMessages, handler)
+		try {
+			await page.locator('#message-input').fill(text)
+			await page.locator('#send-button').click()
+			const pendingRow = page.locator('#messages .message[data-pending="1"]').filter({ hasText: text })
+			await expect(pendingRow.first()).toBeVisible({ timeout: 20_000 })
+		}
+		finally {
+			// 放行 POST，否则 route 会一直挂起；unroute 必须在 handler 的 continue 完成后再做。
+			releasePost()
+		}
+
+		await expect(page.locator('#messages .message:not([data-pending="1"])').filter({ hasText: text }))
+			.toBeVisible({ timeout: 60_000 })
+		await page.unroute(matchesMessages, handler)
+	})
+
+	test('edit of a row missing from the virtual list still renders without corrupting neighbours', async ({
+		page,
+		groupChannel,
+	}) => {
+		const { groupId, channelId } = groupChannel
+		const first = `vlist-a ${Date.now()}`
+		const middle = `vlist-b ${Date.now()}`
+		const last = `vlist-c ${Date.now()}`
+		await sendMessageViaComposer(page, groupId, channelId, first)
+		const middlePost = await sendMessageViaComposer(page, groupId, channelId, middle)
+		await sendMessageViaComposer(page, groupId, channelId, last)
+		await expectMessageInChat(page, first)
+		await expectMessageInChat(page, last)
+
+		const middleId = middlePost?.event?.id
+		expect(middleId).toMatch(/^[\da-f]{64}$/i)
+		const edited = `vlist-b-edited ${Date.now()}`
+		// 从虚拟列表队列中移除目标行（模拟「已进 store 但未渲染」），再触发编辑。
+		const index = await page.evaluate(async ({ eventId, text }) => {
+			const { store } = await import('/parts/shells:chat/hub/core/state.mjs')
+			const { applyChannelMessageEdit } = await import('/parts/shells:chat/hub/messages/messageRefresh.mjs')
+			const targetIndex = store.messages.channelMessages.findIndex(row => String(row.eventId) === eventId)
+			await store.messages.channelMessagePipeline.virtualList.deleteItem(targetIndex)
+			await applyChannelMessageEdit(eventId, { newContent: { content: text } })
+			return targetIndex
+		}, { eventId: middleId, text: edited })
+
+		expect(index).toBeGreaterThanOrEqual(0)
+		await expect(page.locator('#messages .message').filter({ hasText: edited })).toBeVisible({ timeout: 30_000 })
+		// 相邻消息不得被错位替换（修复前 replaceItem 会覆盖后一条的 DOM）
+		await expect(page.locator('#messages .message').filter({ hasText: last })).toBeVisible({ timeout: 30_000 })
+		await expect(page.locator('#messages .message').filter({ hasText: first })).toBeVisible({ timeout: 30_000 })
+	})
 })
