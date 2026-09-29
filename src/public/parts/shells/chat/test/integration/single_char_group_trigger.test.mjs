@@ -3,43 +3,17 @@
  * （需要 @ 或显式 autoReplyFrequency）；「单角色 + 单真人」私聊保持自动回复。
  */
 /* global Deno */
-import { mkdir } from 'node:fs/promises'
-import { join } from 'node:path'
-
 import { assert, assertEquals } from 'jsr:@std/assert'
 
 import { debugLog } from 'fount/scripts/debug_log.mjs'
 import { allowNoise } from 'fount/scripts/test/core/allowNoise.mjs'
+import { registerTestUser } from 'fount/scripts/test/node/boot.mjs'
 
 import { seedCharFixture, waitUntil } from '../harness.mjs'
 import { createChatFederationSim } from '../simulation/federation.mjs'
 
 const CHAR = 'plain_reply_b'
 const REPLY_MARKER = 'plain_reply_b reply'
-
-/**
- * headless sim 未注册 user，而 buildCharReplyPlaceholder 经 getPartDetails 依赖 user.locales；
- * 按 createTestServerBoot 的注册形状补齐运行中 server 的用户表。
- * @param {string} dataRoot sim 数据根
- * @param {string} username 用户名
- * @returns {Promise<void>}
- */
-async function registerSimUser(dataRoot, username) {
-	const { config, save_config } = await import('fount/server/server.mjs')
-	if (!config.data.users[username]) {
-		config.data.users[username] = {
-			username,
-			auth: { userId: 'test', password: 'test', loginAttempts: 0, lockedUntil: null, refreshTokens: [] },
-			jobs: {},
-			locales: ['zh-CN'],
-			defaultParts: {},
-			timers: {},
-		}
-		save_config()
-	}
-	await mkdir(join(dataRoot, 'users', username, 'settings'), { recursive: true })
-	await mkdir(join(dataRoot, 'users', username, 'entities'), { recursive: true })
-}
 
 /**
  * 建一个绑定 plain_reply_b 的群，返回 sim 句柄与常用工具。
@@ -51,8 +25,8 @@ async function setupSingleCharGroup() {
 	const NODE_A = nodeName('A')
 	const NODE_B = nodeName('B')
 
-	await registerSimUser(sim.dataRoot, NODE_A)
-	await registerSimUser(sim.dataRoot, NODE_B)
+	await registerTestUser(NODE_A, { locales: ['zh-CN'] })
+	await registerTestUser(NODE_B, { locales: ['zh-CN'] })
 	await seedCharFixture(sim.dataRoot, NODE_A, CHAR)
 
 	const ownerSigner = await modules.localSigner.getLocalSignerForNewGroup(NODE_A, groupId)

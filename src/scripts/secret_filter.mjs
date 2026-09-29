@@ -14,6 +14,12 @@ const APIKEY_FIELD = /^api_?key$/i
 const ENV_SECRET_NAME = /(APIKEY|KEY)$/i
 /** 短于该长度的值不参与替换，避免把常见短串（单字符 env 等）误当机密全局抹除。 */
 const MIN_SECRET_LENGTH = 4
+/**
+ * 值是否达到参与过滤的最小长度。
+ * @param {string} value - 候选密钥值。
+ * @returns {boolean} 是否达到最小长度。
+ */
+const isSecretLongEnough = value => value.trim().length >= MIN_SECRET_LENGTH
 /** agent 层看到机密时替换成的提示文本。 */
 export const SECRET_REDACTION_PLACEHOLDER = '[这不是agent该看的内容，已被fount层过滤，如有文件编辑需要可以直接replace-file来避免阅读此内容]'
 
@@ -42,7 +48,7 @@ function collectApiKeyValues(node, found) {
 function collectPartSecretValues(data) {
 	const values = []
 	collectApiKeyValues(data, values)
-	return values.filter(value => value.trim().length >= MIN_SECRET_LENGTH)
+	return values.filter(isSecretLongEnough)
 }
 
 /**
@@ -53,7 +59,7 @@ function collectPartSecretValues(data) {
 export function collectEnvSecretValues(env = process.env) {
 	const values = new Set()
 	for (const [name, value] of Object.entries(env))
-		if (typeof value === 'string' && ENV_SECRET_NAME.test(name) && value.trim().length >= MIN_SECRET_LENGTH)
+		if (typeof value === 'string' && ENV_SECRET_NAME.test(name) && isSecretLongEnough(value))
 			values.add(value)
 	return [...values]
 }
@@ -102,7 +108,7 @@ catch { /* server 未初始化（纯测试）：只用 env 词典 */ }
  * @returns {string} 过滤后的文本；无机密命中时原样返回。
  */
 export function redactSecretValues(text, secrets) {
-	if (typeof text !== 'string' || !text || !secrets) return text
+	if (!text || !secrets) return text
 	let result = text
 	for (const secret of [...secrets].sort((a, b) => b.length - a.length))
 		if (result.includes(secret))
@@ -116,6 +122,5 @@ export function redactSecretValues(text, secrets) {
  * @returns {string} 过滤后的文本；无机密命中时原样返回。
  */
 export function redactSecrets(text) {
-	if (typeof text !== 'string' || !text || !dictionary.size) return text
 	return redactSecretValues(text, dictionary)
 }

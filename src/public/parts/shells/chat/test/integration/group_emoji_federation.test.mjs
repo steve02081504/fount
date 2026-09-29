@@ -4,7 +4,6 @@
 /* global Deno */
 import { Buffer } from 'node:buffer'
 import { mkdir, rm } from 'node:fs/promises'
-import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
 import { assert, assertEquals } from 'jsr:@std/assert'
@@ -24,13 +23,12 @@ import {
 } from '../../src/group/groupEmojis.mjs'
 
 /**
- * 在临时 headless 数据根上运行单测。
+ * 在共享 headless 数据根上运行单测，仅清理本次测试自身的用户子树。
  * @param {(context: { username: string, groupId: string }) => Promise<void>} run 测试体
  * @returns {Promise<void>}
  */
 async function withEmojiFedContext(run) {
-	const dataPath = join(tmpdir(), `fount_emoji_fed_${crypto.randomUUID()}`)
-	await bootHeadlessDataRoot(dataPath)
+	const { dataPath } = await bootHeadlessDataRoot()
 	const username = `u_${crypto.randomUUID().replaceAll('-', '').slice(0, 12)}`
 	const groupId = `g_${crypto.randomUUID().replaceAll('-', '').slice(0, 12)}`
 	await mkdir(groupDir(username, groupId), { recursive: true })
@@ -38,7 +36,7 @@ async function withEmojiFedContext(run) {
 		await run({ username, groupId })
 	}
 	finally {
-		await rm(dataPath, { recursive: true, force: true })
+		await rm(join(dataPath, 'users', username), { recursive: true, force: true })
 	}
 }
 

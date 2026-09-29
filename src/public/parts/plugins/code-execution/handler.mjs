@@ -615,8 +615,7 @@ async function evaluateInlineJs(call, args) {
 	if (outcome.timedOut) throw new Error('内联 JS 执行超时；JS 无法强制终止，代码可能仍在运行。')
 	const coderesult = outcome.evalResult
 	if (coderesult?.error) throw coderesult.error
-	if (remote) return redactSecrets(String(coderesult ?? ''))
-	return redactSecrets(coderesult.result + '')
+	return redactSecrets(remote ? String(coderesult ?? '') : coderesult.result + '')
 }
 
 /**

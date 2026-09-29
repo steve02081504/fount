@@ -5,7 +5,6 @@
 /* global Deno */
 import { Buffer } from 'node:buffer'
 import { mkdir, rm, writeFile } from 'node:fs/promises'
-import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
 import { assertEquals } from 'jsr:@std/assert'
@@ -37,8 +36,7 @@ Deno.test({
 	sanitizeOps: false,
 	sanitizeResources: false,
 }, async () => {
-	const dataPath = join(tmpdir(), `fount_cabinet_pull_${crypto.randomUUID()}`)
-	await bootHeadlessDataRoot(dataPath)
+	const { dataPath } = await bootHeadlessDataRoot()
 	const username = `u_${crypto.randomUUID().replaceAll('-', '').slice(0, 12)}`
 	try {
 		const { secretKey, publicKey } = await randomKeyPair()
@@ -81,6 +79,6 @@ Deno.test({
 		assertEquals(await exportMissingSharedOperations(username, traversal, []), [])
 	}
 	finally {
-		await rm(dataPath, { recursive: true, force: true })
+		await rm(join(dataPath, 'users', username), { recursive: true, force: true })
 	}
 })

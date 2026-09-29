@@ -49,7 +49,7 @@ Never point `dataDir`/`dataPath` at the repo `data/` root. `assertDisposableData
 
 ## In-process server
 
-`createTestServerBoot` / `startTestServer`: one `init()` per Deno child. First call boots under `ensureSharedTestDataDir()`; later calls register new usernames into the live config (dirs / `loadParts` / `afterInit`) — isolation is by **random username**, not fresh `dataDir`. Prefer `const { dataDir } = await boot()` for `seedStubCharPart` / filesystem writes — a caller-supplied `mkdtemp` may be ignored after the first init. Import `node/boot.mjs` before registering `Deno.test` (`sanitizeOps`/`sanitizeResources` default false).
+`createTestServerBoot` / `startTestServer`: one `init()` per Deno child. First call boots under `ensureSharedTestDataDir()`; later calls register new usernames into the live config (dirs / `loadParts` / `afterInit`) — isolation is by **random username**, not fresh `dataDir`. Prefer `const { dataDir } = await boot()` for `seedStubCharPart` / filesystem writes — a caller-supplied `mkdtemp` may be ignored after the first init. Import `node/boot.mjs` before registering `Deno.test` (`sanitizeOps`/`sanitizeResources` default false). `bootHeadlessDataRoot(preferred?)` / `createChatFederationSim` share this same process-wide boot: the first caller decides kind and later callers reuse the live instance/root, registering users incrementally via `registerTestUser(username, { locales })`; `initFountNode` refuses to re-init a different `dataPath` in one process. A shared headless root must not be deleted by a suite's `finally` — suites delete only their own `users/<username>` subtree, and the parent serial process reclaims the root via `FOUNT_TEST_DATA_DIRS_OUT`.
 
 ## Fixture probes
 

@@ -2,8 +2,6 @@
  * Chat 多节点联邦仿真：单进程、多 fount 用户、无 Nostr relay。
  */
 import { copyFile, mkdir } from 'node:fs/promises'
-import { tmpdir } from 'node:os'
-import { join } from 'node:path'
 
 import { bootHeadlessDataRoot } from 'fount/scripts/test/node/boot.mjs'
 
@@ -16,16 +14,15 @@ registerChatEventTypeDefs()
 
 /**
  * 初始化 headless 联邦仿真上下文。
+ * 仿真运行在进程共享的 headless 数据根下，隔离由 runTag 保证（用户/群组均以其命名空间隔离）。
  * @param {object} [options] 仿真选项
  * @param {string} [options.runTag] 运行标签
- * @param {string} [options.dataPath] 数据根目录
  * @param {boolean} [options.withGovernance] 是否加载治理模块
  * @returns {Promise<object>} 仿真上下文
  */
 export async function createChatFederationSim(options = {}) {
-	const runTag = options.runTag ?? `fed_${Date.now().toString(36)}`
-	const dataRoot = options.dataPath ?? join(tmpdir(), `fount_${runTag}`)
-	await bootHeadlessDataRoot(dataRoot)
+	const runTag = options.runTag ?? `fed_${Date.now().toString(36)}_${crypto.randomUUID().slice(0, 8)}`
+	const { dataPath: dataRoot } = await bootHeadlessDataRoot()
 	await import('../../src/chat/dag/index.mjs')
 
 	const modules = {

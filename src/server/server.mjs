@@ -138,7 +138,7 @@ export function handleError(err) {
 /**
  * 初始化并启动应用程序服务器及其组件。
  * @param {object} start_config - 用于启动应用程序的配置对象。
- * @returns {Promise<'started' | 'already_running'>} 在已启动时返回'already_running'，否则返回'started'表示启动成功或false表示启动失败。
+ * @returns {Promise<'started' | 'already_running'>} 已在运行（IPC 端口占用）时返回 'already_running'，否则返回 'started' 表示启动成功。
  */
 export async function init(start_config) {
 	// 启动进度：0–25 shell，25–55 deno 预热，55–100 server 阶段

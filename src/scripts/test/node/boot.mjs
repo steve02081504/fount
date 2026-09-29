@@ -127,16 +127,20 @@ export function writeNodeConfig(dataPath, options) {
 }
 
 /**
- * 启动 fount server（须先 writeNodeConfig）。
+ * 启动 fount server（须先 writeNodeConfig）。同进程只允许一个 dataPath：
+ * 对 `init()` 做进程级防重入，避免换盘后 server 全局状态（config/auth/data_path）与 p2p nodeDir 撕裂。
  * @param {object} options 选项
  * @param {string} options.dataPath data 根目录
  * @param {() => never} [options.restarter] 重启回调
  * @param {TestStarts} [options.starts] server starts；省略则使用测试默认预设
  * @param {boolean} [options.needsOutput] 是否启用带输出的 server init 行为
  * @param {{ signaling?: import('npm:@steve02081504/fount-p2p/node/signaling_config').SignalingRuntimeConfig }} [options.P2P] initP2PServer 配置
- * @returns {Promise<boolean>} init 是否成功
+ * @returns {Promise<'started' | 'already_running'>} init 结果
  */
 export async function initFountNode({ dataPath, restarter, starts, needsOutput, P2P }) {
+	if (initializedDataPath !== null && initializedDataPath !== dataPath)
+		throw new Error(`fount test: init() already ran in this process for ${initializedDataPath}; refusing to re-init on ${dataPath} (use the shared boot: startTestServer / bootHeadlessDataRoot)`)
+	initializedDataPath = dataPath
 	process.env.FOUNT_DENO_START_TIME ??= new Date().toISOString()
 	// 默认关闭 Sentry；FOUNT_TEST_SENTRY=1 时打开，用于覆盖 Sentry 代码路径（如 sentrytunnel 的 DSN 校验）。
 	set_sentry_enabled(process.env.FOUNT_TEST_SENTRY === '1')
@@ -205,8 +209,6 @@ export async function bootInProcess(options) {
 	})
 	if (initResult === 'already_running')
 		throw new Error(`server init failed: IPC port ${ipcPort ?? '(default)'} already in use`)
-	if (!initResult)
-		throw new Error('server init failed')
 
 	if (options.minP2pNode)
 		await ensureMinP2pNode(options.dataPath)
@@ -254,6 +256,12 @@ export async function bootInProcess(options) {
 let sharedTestDataDir = null
 /** @type {Promise<{ dataDir: string }> | null} */
 let sharedTestBootPromise = null
+/** 共享 boot 由哪条路径启动：'user'（startTestServer）或 'headless'（bootHeadlessDataRoot）。 */
+let sharedTestBootKind = null
+/** 共享 boot 是否启用 P2P（同进程不可重配置）。 */
+let sharedTestP2p = false
+/** 本进程已 init 的 dataPath（防重入；只由 boot.mjs 调用 initFountNode） */
+let initializedDataPath = null
 
 /**
  * 把本模块管理的数据目录登记到父进程回收清单（serial.mjs 读后删除）。
@@ -289,14 +297,13 @@ export function ensureSharedTestDataDir(preferred) {
 }
 
 /**
- * 向已运行的同进程 server 增量注册测试用户。
- * @param {string} dataDir 共享 data 根
- * @param {StartTestServerOpts} options 启动选项
+ * 向运行中实例的 config/文件系统注册一个测试用户（仅建用户与目录，不含 P2P/loadParts/afterInit）。
+ * @param {string} username 用户名
+ * @param {{ locales?: string[] }} [options] 选项
  * @returns {Promise<void>} 无
  */
-async function registerTestUserOnRunningServer(dataDir, options) {
+export async function registerTestUser(username, { locales } = {}) {
 	const { config, save_config } = await import('fount/server/server.mjs')
-	const { username } = options
 	if (!config.data.users[username]) {
 		config.data.users[username] = {
 			username,
@@ -308,14 +315,25 @@ async function registerTestUserOnRunningServer(dataDir, options) {
 				refreshTokens: [],
 			},
 			jobs: {},
-			locales: [...DEFAULT_TEST_USER_LOCALES],
+			locales: locales ?? [...DEFAULT_TEST_USER_LOCALES],
 			defaultParts: {},
 			timers: {},
 		}
 		save_config()
 	}
-	fs.mkdirSync(join(dataDir, 'users', username, 'settings'), { recursive: true })
-	fs.mkdirSync(join(dataDir, 'users', username, 'entities'), { recursive: true })
+	fs.mkdirSync(join(sharedTestDataDir, 'users', username, 'settings'), { recursive: true })
+	fs.mkdirSync(join(sharedTestDataDir, 'users', username, 'entities'), { recursive: true })
+}
+
+/**
+ * 向已运行的同进程 server 增量注册测试用户（含 minP2pNode/loadParts/afterInit）。
+ * @param {string} dataDir 共享 data 根
+ * @param {StartTestServerOpts} options 启动选项
+ * @returns {Promise<void>} 无
+ */
+async function registerTestUserOnRunningServer(dataDir, options) {
+	const { username } = options
+	await registerTestUser(username)
 
 	if (options.minP2pNode)
 		await ensureMinP2pNode(dataDir)
@@ -336,19 +354,23 @@ async function registerTestUserOnRunningServer(dataDir, options) {
 
 /**
  * 写入 config 并同进程启动 fount（集成测试）。
- * 同进程只 `init()` 一次；后续调用向运行中实例增量注册用户，避免换 dataDir/config 撕裂残留异步链。
+ * 同进程只 `init()` 一次，并与 bootHeadlessDataRoot 共享该 boot；后续调用向运行中实例增量注册用户，
+ * 避免换 dataDir/config 撕裂残留异步链。若共享 boot 由 headless 启动则直接增量注册用户，不重写 config。
  * @param {StartTestServerOpts} options 启动选项
  * @returns {Promise<{ dataDir: string, username: string }>} 数据目录与用户名
  */
 export async function startTestServer(options) {
 	const dataDir = ensureSharedTestDataDir(options.dataDir)
+	const p2p = options.p2p ?? false
 	if (!sharedTestBootPromise) {
+		sharedTestBootKind = 'user'
+		sharedTestP2p = p2p
 		sharedTestBootPromise = bootInProcess({
 			dataPath: dataDir,
 			port: options.port ?? HEADLESS_CONFIG_PORT,
 			username: options.username,
 			web: false,
-			p2p: options.p2p ?? false,
+			p2p,
 			minP2pNode: options.minP2pNode ?? false,
 			loadParts: options.loadParts,
 			afterInit: options.afterInit,
@@ -359,6 +381,8 @@ export async function startTestServer(options) {
 	}
 
 	await sharedTestBootPromise
+	if (sharedTestBootKind !== 'headless' && p2p !== sharedTestP2p)
+		throw new Error(`fount test: shared boot started with P2P=${sharedTestP2p}; cannot reconfigure to P2P=${p2p} in the same process`)
 	await registerTestUserOnRunningServer(dataDir, options)
 	return { dataDir, username: options.username }
 }
@@ -406,20 +430,24 @@ export function createTestServerBoot(options) {
 
 /**
  * 无 Web 的 headless fount 数据根（联邦仿真等）。
- * @param {string} dataPath 数据根目录
- * @returns {Promise<void>} 无
+ * 与 startTestServer 共享进程内唯一 boot：首次调用启动 init()，后续调用复用共享 dataDir 与已运行实例
+ * （不再重写 config/换盘，否则会抹掉 startTestServer 已注册的用户）。
+ * @param {string} [preferred] 首次调用时的首选数据根目录
+ * @returns {Promise<{ dataPath: string }>} 共享数据根
  */
-export async function bootHeadlessDataRoot(dataPath) {
-	fs.mkdirSync(dataPath, { recursive: true })
-	// headless server 进程存活期间锁住数据根文件，测试内 finally rm 在 Windows 上会失败留下残留。
-	// 登记到父进程回收清单，待子进程退出、文件解锁后由 serial.mjs 清理。
-	registerSelfCreatedTestDataDir(dataPath)
-	writeNodeConfig(dataPath, { port: HEADLESS_CONFIG_PORT, username: 'headless-root', emptyUsers: true })
-	if (!await initFountNode({
-		dataPath,
-	}))
-		throw new Error('server init failed')
-	await ensureMinP2pNode(dataPath)
+export async function bootHeadlessDataRoot(preferred) {
+	const dataDir = ensureSharedTestDataDir(preferred)
+	if (!sharedTestBootPromise) {
+		sharedTestBootKind = 'headless'
+		// headless server 进程存活期间锁住数据根文件，测试内 finally rm 在 Windows 上会失败留下残留。
+		// ensureSharedTestDataDir 已登记到父进程回收清单，待子进程退出、文件解锁后由 serial.mjs 清理。
+		writeNodeConfig(dataDir, { port: HEADLESS_CONFIG_PORT, username: 'headless-root', emptyUsers: true })
+		// headless 用 IPC:false 的默认 starts，init 不可能返回 'already_running'。
+		sharedTestBootPromise = initFountNode({ dataPath: dataDir }).then(() => ({ dataDir }))
+	}
+	await sharedTestBootPromise
+	await ensureMinP2pNode(dataDir)
+	return { dataPath: dataDir }
 }
 
 /**
