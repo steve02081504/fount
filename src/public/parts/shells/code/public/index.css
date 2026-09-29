@@ -623,14 +623,6 @@ pre.code-shell-stream-output {
 	font-size: 0.875rem;
 }
 
-/* 影子补全（bash 式 ghost） */
-.code-composer-ghost {
-	opacity: 0.45;
-	pointer-events: none;
-	user-select: none;
-	white-space: pre-wrap;
-}
-
 .code-composer-controls {
 	display: flex;
 	align-items: center;

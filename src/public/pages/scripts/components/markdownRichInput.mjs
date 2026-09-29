@@ -156,6 +156,14 @@ export function createMarkdownRichInput(element, options = {}) {
 	let rawText = ''
 	let composing = false
 	let disabled = element.hasAttribute('disabled')
+	/**
+	 * 行尾提示（幽灵补全）：`forRaw === rawText` 时在尾随 `<br>` 前渲染 `text`。
+	 * 内容一旦变化（forRaw 失去匹配）自动失效，不需外部清理。
+	 * @type {{ text: string, forRaw: string }}
+	 */
+	let suffixHint = { text: '', forRaw: '' }
+	/** 当前 DOM 中是否已渲染提示节点（供 `setSuffixHint` 判断清除时是否需要重建）。 */
+	let hintRendered = false
 	/** 空态占位符的 i18n 键；非空时占位 span 由 `data-i18n` 驱动（随语种自动重译，不受 `placeholder` 属性影响）。 */
 	let placeholderI18nKey = placeholderI18n
 	/** 空态光标锚点（可编辑零宽文本），让光标停在可编辑位置而非占位符边界。 */
@@ -326,6 +334,7 @@ export function createMarkdownRichInput(element, options = {}) {
 	 */
 	function rebuildDom() {
 		segments = []
+		hintRendered = false
 		element.replaceChildren()
 		if (!rawText) {
 			// 空态结构：可编辑零宽锚点 + 不可编辑占位符 + `<br>`。
@@ -363,6 +372,17 @@ export function createMarkdownRichInput(element, options = {}) {
 			cursor = end
 		}
 		if (cursor < rawText.length) appendTextRun(rawText.slice(cursor), cursor)
+		// 行尾提示紧随已输入文本（内容未变且 hint 有效时），插在尾随 `<br>` 之前，避免显示到下一行。
+		// 标记 emptySlot，不参与序列化与偏移映射，也不进 segments。
+		if (suffixHint.text && suffixHint.forRaw === rawText) {
+			const hint = document.createElement('span')
+			hint.className = 'fount-markdown-rich-input-suffix-hint'
+			hint.setAttribute('contenteditable', 'false')
+			hint.dataset.emptySlot = '1'
+			hint.textContent = suffixHint.text
+			element.appendChild(hint)
+			hintRendered = true
+		}
 		// contenteditable 块末尾的 `<br>` 不渲染空行：rawText 末尾的 `\n` 需再跟一个尾随 br 才能撑出光标可停的空行，
 		// 否则按一次回车视觉上不换行（必须按两次）。尾随 br 标记 emptySlot，不参与序列化与偏移映射。
 		const padding = document.createElement('br')
@@ -522,6 +542,24 @@ export function createMarkdownRichInput(element, options = {}) {
 		historyIndex = 0
 		render()
 		setSelection(rawText.length, rawText.length)
+	}
+
+	/**
+	 * 设置行尾提示（幽灵补全的剩余文本），渲染在已输入文本之后、尾随 `<br>` 之前。
+	 * 内容改变后自动失效；传空串清除。
+	 * @param {string|null} text 提示文本
+	 * @returns {void}
+	 */
+	function setSuffixHint(text) {
+		const next = text == null ? '' : String(text)
+		if (suffixHint.text === next && suffixHint.forRaw === rawText) return
+		const shouldRender = next ? true : hintRendered
+		suffixHint = { text: next, forRaw: rawText }
+		if (disabled || !shouldRender) return
+		const offsets = getOffsets()
+		rebuildDom()
+		// 仅在焦点位于输入框内时恢复选区：清除提示常由 selectionchange/失焦触发，此时抢走文档选区会打断别处的输入
+		if (document.activeElement === element) setSelection(offsets.start, offsets.end)
 	}
 
 	// ---- 撤销 / 重做 ----
@@ -1150,6 +1188,32 @@ export function createMarkdownRichInput(element, options = {}) {
 		 */
 		set value(v) { setRawText(v) },
 		/**
+		 * 获取选区起点（原始文本偏移）。
+		 * @returns {number} 起点偏移
+		 */
+		get selectionStart() { return getOffsets().start },
+		/**
+		 * 获取选区终点（原始文本偏移）。
+		 * @returns {number} 终点偏移
+		 */
+		get selectionEnd() { return getOffsets().end },
+		/**
+		 * 设置行尾提示（幽灵补全）。
+		 * @param {string|null} text 提示文本
+		 * @returns {void}
+		 */
+		setSuffixHint,
+		/**
+		 * 当前有效的行尾提示文本。
+		 * @returns {string} 提示文本
+		 */
+		get suffixHint() { return suffixHint.forRaw === rawText ? suffixHint.text : '' },
+		/**
+		 * 提交一次内容变更（写撤销历史并派发 input 事件），供外部程序化改写后复用。
+		 * @returns {void}
+		 */
+		commit: commitChange,
+		/**
 		 * 获取 IME 组合状态。
 		 * @returns {boolean} 是否正在组合
 		 */
@@ -1239,6 +1303,12 @@ document.head.prepend(Object.assign(document.createElement('style'), {
 }
 .fount-markdown-rich-input-placeholder {
 	opacity: .55;
+	white-space: pre-wrap;
+	user-select: none;
+	pointer-events: none;
+}
+.fount-markdown-rich-input-suffix-hint {
+	opacity: .45;
 	white-space: pre-wrap;
 	user-select: none;
 	pointer-events: none;

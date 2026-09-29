@@ -160,24 +160,20 @@ function ownHistoryNewest() {
 	return [...store.historyState.own].reverse()
 }
 
-/** 移除影子补全 span。 */
+/** 清除影子补全。 */
 export function removeGhost() {
-	elements.composerInput.querySelector('.code-composer-ghost')?.remove()
+	richInput?.setSuffixHint('')
 }
 
 /** 渲染影子补全（光标在末尾且历史存在前缀匹配时）。 */
 function updateGhost() {
-	removeGhost()
-	const { value } = richInput
-	if (!value || elements.composerInput.selectionStart !== value.length) return
+	const value = richInput?.value
+	if (!value || richInput.composing || document.activeElement !== elements.composerInput || richInput.selectionStart !== value.length) {
+		removeGhost()
+		return
+	}
 	const ghostText = historySuggestions().find(entry => entry.length > value.length && entry.startsWith(value)) || ''
-	if (!ghostText) return
-	const ghost = document.createElement('span')
-	ghost.className = 'code-composer-ghost'
-	ghost.setAttribute('contenteditable', 'false')
-	ghost.dataset.emptySlot = '1'
-	ghost.textContent = ghostText.slice(value.length)
-	elements.composerInput.appendChild(ghost)
+	richInput.setSuffixHint(ghostText.slice(value.length))
 }
 
 /**
@@ -185,13 +181,15 @@ function updateGhost() {
  * @returns {boolean} 是否已接受。
  */
 function acceptGhost() {
-	const ghost = elements.composerInput.querySelector('.code-composer-ghost')
-	if (!ghost?.textContent) return false
-	const remainder = ghost.textContent
-	removeGhost()
-	const caret = elements.composerInput.selectionStart
+	const remainder = richInput.suffixHint
+	if (!remainder) return false
+	const caret = richInput.selectionStart
+	if (caret !== richInput.value.length) {
+		removeGhost()
+		return false
+	}
 	richInput.setRangeText(remainder, caret, caret, 'end')
-	elements.composerInput.dispatchEvent(new Event('input', { bubbles: true }))
+	richInput.commit()
 	return true
 }
 
@@ -200,7 +198,7 @@ function acceptGhost() {
  * @returns {boolean} 是否首行。
  */
 function isAtFirstLine() {
-	return !richInput.value.slice(0, elements.composerInput.selectionStart).includes('\n')
+	return !richInput.value.slice(0, richInput.selectionStart).includes('\n')
 }
 
 /**
@@ -208,7 +206,7 @@ function isAtFirstLine() {
  * @returns {boolean} 是否末行。
  */
 function isAtLastLine() {
-	return !richInput.value.slice(elements.composerInput.selectionStart).includes('\n')
+	return !richInput.value.slice(richInput.selectionStart).includes('\n')
 }
 
 /** 历史导航派发的 input 事件标志（避免重置导航游标）。 */
@@ -501,7 +499,13 @@ export function wireComposerEvents() {
 		void addComposerFiles([...event.dataTransfer?.files || []])
 	})
 
-	elements.composerInput.addEventListener('input', () => {
+	// 光标移出末尾（←/Home/点击）时收起影子补全，避免 Tab 把补全插到文本中间
+	document.addEventListener('selectionchange', updateGhost)
+
+	elements.composerInput.addEventListener('input', event => {
+		// markdownRichInput 会为每次内容变更同步重派发一个 input；浏览器原生事件（trusted）先于该重派发事件到达，
+		// 只处理重派发事件即可，避免每次输入把草稿同步 / slash 面板 / 影子补全跑两遍。
+		if (event.isTrusted || richInput.composing) return
 		if (!fromNav) store.historyNav.pos = null
 		const { value } = richInput
 		syncActiveTabDraft()
@@ -521,7 +525,7 @@ export function wireComposerEvents() {
 		if (store.shellMode) hideSlashPanel()
 		else {
 			// / 命令面板
-			const caret = elements.composerInput.selectionStart
+			const caret = richInput.selectionStart
 			const before = value.slice(0, caret)
 			const slashMatch = before.match(/(?:^|\s)\/([^\s/]*)$/)
 			if (slashMatch) {
@@ -564,7 +568,7 @@ export function wireComposerEvents() {
 			return
 		}
 		// Tab / →（光标在末尾）接受影子补全
-		if (event.key === 'Tab' || (event.key === 'ArrowRight' && elements.composerInput.selectionStart === richInput.value.length))
+		if (event.key === 'Tab' || (event.key === 'ArrowRight' && richInput.selectionStart === richInput.value.length))
 			if (acceptGhost()) {
 				event.preventDefault()
 				return

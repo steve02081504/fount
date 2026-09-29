@@ -123,6 +123,45 @@ test.describe('Markdown rich input', () => {
 		expect(result).toEqual({ mentionChipCount: 0, roundTrip: true })
 	})
 
+	test('setSuffixHint renders after text before the trailing <br> and clears on change', async ({ page, baseUrl }) => {
+		await page.goto(`${baseUrl}/parts/shells:chat/hub/`, { waitUntil: 'domcontentloaded' })
+		const result = await page.evaluate(async () => {
+			const { createMarkdownRichInput } = await import('/scripts/components/markdownRichInput.mjs')
+			const el = document.createElement('div')
+			document.body.appendChild(el)
+			const handle = createMarkdownRichInput(el, { useRegisteredInlineTokens: false })
+			handle.value = 'echo h'
+			handle.setSuffixHint('ello-world')
+			const hint = el.querySelector('.fount-markdown-rich-input-suffix-hint')
+			const renderedText = hint?.textContent
+			const afterTextNode = hint?.previousSibling?.nodeType === Node.TEXT_NODE
+			const beforeTrailingBr = hint?.nextSibling?.tagName === 'BR'
+			const valueExcludesHint = handle.value === 'echo h'
+			// 内容改变后提示自动失效
+			handle.value = 'echo hi'
+			const staleGone = el.querySelector('.fount-markdown-rich-input-suffix-hint') === null
+			// 末尾换行时提示落到新起的空行
+			handle.value = 'echo\n'
+			handle.setSuffixHint('next')
+			const trailingHint = el.querySelector('.fount-markdown-rich-input-suffix-hint')?.textContent
+			handle.setSuffixHint('')
+			const cleared = el.querySelector('.fount-markdown-rich-input-suffix-hint') === null
+			const suffixHint = handle.suffixHint
+			el.remove()
+			return { renderedText, afterTextNode, beforeTrailingBr, valueExcludesHint, staleGone, trailingHint, cleared, suffixHint }
+		})
+		expect(result).toEqual({
+			renderedText: 'ello-world',
+			afterTextNode: true,
+			beforeTrailingBr: true,
+			valueExcludesHint: true,
+			staleGone: true,
+			trailingHint: 'next',
+			cleared: true,
+			suffixHint: '',
+		})
+	})
+
 	test('toolbar link action wraps selection and fires input event', async ({ page, groupChannel: _ }) => {
 		const input = page.locator('#message-input')
 		await input.click()

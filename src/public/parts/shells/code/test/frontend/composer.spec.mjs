@@ -99,14 +99,41 @@ test.describe('code shell composer & placeholders', () => {
 		await expect(placeholder).toHaveAttribute('data-i18n', 'code.composer.placeholderShell')
 		// 影子补全 + Tab 接受
 		await page.keyboard.type('echo h')
-		await expect(page.locator('.code-composer-ghost')).toContainText('ello-code-shell')
+		const hint = page.locator('.fount-markdown-rich-input-suffix-hint')
+		await expect(hint).toHaveText('ello-code-shell')
+		// 补全提示接在已输入文本之后、尾随撑行 <br> 之前，不能掉到下一行
+		const onSameLine = await composer.evaluate(el => {
+			const node = el.querySelector('.fount-markdown-rich-input-suffix-hint')
+			return node?.previousSibling?.nodeType === Node.TEXT_NODE
+		})
+		expect(onSameLine).toBe(true)
 		await page.keyboard.press('Tab')
-		await expect(composer).toContainText('echo hello-code-shell')
+		await expect(composer).toHaveJSProperty('value', 'echo hello-code-shell')
 		// 清空后 Backspace 退出 shell 模式
 		await page.keyboard.press('Control+A')
 		await page.keyboard.press('Backspace')
 		await page.keyboard.press('Backspace')
 		await expect(page.locator('#shell-pill-wrap')).toBeHidden()
+	})
+
+	test('ghost clears when caret leaves the end and Tab does not insert mid-text', async ({ page, baseUrl }) => {
+		await openCode(page, baseUrl)
+		const composer = page.locator('#composer-input')
+		await composer.click()
+		await page.keyboard.type('！')
+		await page.keyboard.type('echo hello-code-shell')
+		await page.locator('#send-button').click()
+		await expect(page.locator('.code-message.role-tool')).toContainText('hello-code-shell')
+		await composer.click()
+		await page.keyboard.type('echo h')
+		const hint = page.locator('.fount-markdown-rich-input-suffix-hint')
+		await expect(hint).toHaveText('ello-code-shell')
+		// 光标左移出末尾：提示收起
+		await page.keyboard.press('ArrowLeft')
+		await expect(hint).toHaveCount(0)
+		// 此时 Tab 不应把补全插到光标处
+		await page.keyboard.press('Tab')
+		await expect(composer).toHaveJSProperty('value', 'echo h')
 	})
 
 	test('Ctrl+Enter sends a message and renders the char reply', async ({ page, baseUrl }) => {
