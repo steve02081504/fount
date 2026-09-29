@@ -159,7 +159,7 @@ export function aggregateReactionsForMessages(state, channelId, messageEventIds)
 	const reactions = state?.messageOverlay?.reactions
 	if (!(reactions instanceof Map) || !reactions.size || !messageEventIds?.length) return {}
 	const senderIndex = state.messageSenderIndex || {}
-	const targetSet = new Set(messageEventIds.map(id => id).filter(Boolean))
+	const targetSet = new Set(messageEventIds.filter(Boolean))
 	/** @type {Record<string, Record<string, { voters: string[] }>>} */
 	const out = {}
 	for (const [key, voters] of reactions) {
@@ -168,7 +168,7 @@ export function aggregateReactionsForMessages(state, channelId, messageEventIds)
 		const targetId = key.slice(0, sepIdx)
 		const emoji = key.slice(sepIdx + 1)
 		if (!emoji || !voters?.size || !targetSet.has(targetId)) continue
-		const indexed = senderIndex[targetId] || senderIndex[targetId]
+		const indexed = senderIndex[targetId]
 		// 无真实频道的消息不得匹配任何频道（不伪造 'default'）。
 		if (!indexed?.channelId || indexed.channelId !== channelId) continue
 		if (!out[targetId]) out[targetId] = {}

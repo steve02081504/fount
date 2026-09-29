@@ -142,6 +142,7 @@ Deno.test('ECDH DM group projects kind=dm and boundPeerEntityHash in OnMessage',
 	const { randomKeyPair } = await import('npm:@steve02081504/fount-p2p/crypto')
 	const { createEcdhDmGroup } = await import('../../src/chat/dm/index.mjs')
 	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
+	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 	const { postChannelMessage } = await import('../../src/chat/channel/postMessage.mjs')
 
 	const myPub = await ensureOperatorPubKey(username)
@@ -151,7 +152,8 @@ Deno.test('ECDH DM group projects kind=dm and boundPeerEntityHash in OnMessage',
 	await addchar(dm.groupId, CHAR_YES, username)
 	probe.returnValue = false
 
-	await postChannelMessage(username, dm.groupId, dm.defaultChannelId, { text: 'dm ping' })
+	const dmChannelId = await getDefaultChannelId(username, dm.groupId)
+	await postChannelMessage(username, dm.groupId, dmChannelId, { text: 'dm ping' })
 	await waitUntil(async () => probe.events.length > 0, 10000, 80)
 
 	const event = probe.events.at(-1)

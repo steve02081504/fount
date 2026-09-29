@@ -146,12 +146,13 @@ async function autoNameChannelAsync(username, groupId, channelId) {
 
 	// AI 调用是异步的，期间频道可能已被删除：重读最新状态并确认频道仍在，避免写回悬空频道/分类链接。
 	const { state: latest } = await getState(username, groupId)
-	if (!latest.channels?.[channelId]) return false
+	const targetChannel = latest.channels?.[channelId]
+	if (!targetChannel) return false
 	const categoryExists = !!categoryId && !!latest.channels?.[categoryId]
 
 	// 单事件提交子频道侧更新（名称 + 权限块），父频道 links 另成一条，避免多次可部分成功的操作。
 	const updates = {}
-	if (latest.channels[channelId].name !== name) updates.name = name
+	if (targetChannel.name !== name) updates.name = name
 	if (categoryExists) updates.permissionBlockId = categoryId
 	if (Object.keys(updates).length)
 		await updateChannel(username, groupId, channelId, updates)

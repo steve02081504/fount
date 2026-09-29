@@ -11,6 +11,7 @@ import { join } from 'node:path'
 import { assert, assertEquals } from 'jsr:@std/assert'
 import WebSocket from 'npm:ws'
 
+import { allowNoise } from '../../../scripts/test/core/allowNoise.mjs'
 import { wsBaseUrl } from '../../../scripts/test/core/url.mjs'
 import { bootInProcess } from '../../../scripts/test/node/boot.mjs'
 import { launchNode, stopNode } from '../../../scripts/test/node/launch.mjs'
@@ -209,11 +210,12 @@ Deno.test({
 
 		const bigBody = JSON.stringify({ blob: 'x'.repeat(6 * 1024 * 1024) })
 
-		const anonymous = await fetch(`${baseUrl}/api/authenticate`, {
+		// 匿名超大 JSON 会触发 body-parser 的 PayloadTooLargeError（服务端预期日志）：窗口内豁免。
+		const anonymous = await allowNoise('PayloadTooLargeError', () => fetch(`${baseUrl}/api/authenticate`, {
 			method: 'POST',
 			headers: { 'content-type': 'application/json', Accept: 'application/json' },
 			body: bigBody,
-		})
+		}))
 		assert(anonymous.status !== 200, `unauthenticated oversized JSON must be rejected (got ${anonymous.status})`)
 
 		const authenticated = await fetch(`${baseUrl}/api/authenticate`, {

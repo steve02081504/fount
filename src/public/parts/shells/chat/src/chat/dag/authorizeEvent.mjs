@@ -73,7 +73,7 @@ export function eventChannelId(event) {
  * @returns {string | null} 权限求值频道 ID
  */
 function resolvePermissionChannelId(state, event) {
-	const explicit = event.channelId || event.content?.channelId
+	const explicit = eventChannelId(event)
 	if (explicit && state.channels?.[explicit]) return explicit
 	return governanceChannelId(state)
 }
