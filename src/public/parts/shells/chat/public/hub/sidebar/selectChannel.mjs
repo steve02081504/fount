@@ -140,11 +140,12 @@ export async function selectChannel(channelId) {
 		getCurrentState: () => store.context.currentState,
 	})
 	if (!isChannelCurrent()) return
+	// WS 先于消息加载连上：任一频道类型都保持连接，list/idle 表面也照常收 `dag_event`。
+	if (store.context.currentGroupId)
+		connectGroupWebSocket(store.context.currentGroupId, channelId)
 	await loadDraft(store.context.currentGroupId, channelId, isChannelCurrent)
 	await loadMessages(isChannelCurrent)
 	if (!isChannelCurrent()) return
-	if (store.context.currentGroupId && store.context.currentChannelId && channelType === 'text')
-		connectGroupWebSocket(store.context.currentGroupId, store.context.currentChannelId)
 	updateStatusBanners()
 	refreshPinsBookmarks().catch(handleError('chat.hub.operationFailed'))
 	refreshCallButtonActiveForCurrentChannel()

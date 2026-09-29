@@ -302,4 +302,55 @@ test.describe('Chat hub navigation', () => {
 		await expect(page.locator('.discovery-page')).toBeVisible({ timeout: 30_000 })
 		await expect(page.locator('#messages .message')).toHaveCount(0)
 	})
+
+	test('selecting a group connects the group WS before messages load', async ({ page, baseUrl, apiKey }) => {
+		const { groupId } = await openFreshGroupChannel(page, baseUrl, apiKey)
+		// 回到好友视图（整页重载），再从侧栏选中群，复现 selectGroup→selectChannel 的建连路径。
+		await waitForHub(page, baseUrl)
+
+		// 卡住 view-log：消息加载无法完成，只有 WS 先建连才能收到 `subscribed`。
+		let releaseViewLog
+		const viewLogGate = new Promise(resolve => { releaseViewLog = resolve })
+		await page.route(url => new URL(url).pathname.endsWith('/view-log'), async route => {
+			await viewLogGate
+			await route.continue()
+		})
+
+		const subscribed = new Promise(resolve => {
+			page.on('websocket', socket => {
+				if (!socket.url().includes('/ws/parts/shells:chat/groups/')) return
+				socket.on('framereceived', frame => {
+					try {
+						if (JSON.parse(frame.payload).type === 'subscribed') resolve(true)
+					}
+					catch { /* 非 JSON 帧忽略 */ }
+				})
+			})
+		})
+
+		const groupItem = page.locator(`#server-list .server-item[data-group-id="${groupId}"]`)
+		await expect(groupItem).toBeVisible({ timeout: 60_000 })
+		await groupItem.click()
+		await expect.poll(() => subscribed, { timeout: 30_000 }).toBe(true)
+		releaseViewLog()
+	})
+
+	test('dag_event channel create refreshes the sidebar without a full reload', async ({
+		page,
+		baseUrl,
+		apiKey,
+		groupChannel,
+	}) => {
+		const { groupId } = groupChannel
+		await expect(page.locator('#channel-list')).toBeVisible({ timeout: 30_000 })
+		let loadCount = 0
+		page.on('load', () => { loadCount++ })
+		const { channelId, name } = await createTestChannel(baseUrl, apiKey, groupId)
+		const newItem = page.locator(`#channel-list .channel-item[data-channel-id="${channelId}"]`)
+		await expect(newItem).toBeVisible({ timeout: 30_000 })
+		await expect(newItem).toContainText(name)
+		// 状态经 setState 写回：body 的 data-channels 上下文随 dag_event 更新（direct 赋值不会触发该 watcher）。
+		await expect.poll(() => page.locator('body').getAttribute('data-channels')).toContain(channelId)
+		expect(loadCount).toBe(0)
+	})
 })

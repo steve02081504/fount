@@ -25,13 +25,14 @@ let lastTypingReportAt = 0
  * @returns {void}
  */
 export function reportTyping(channelId) {
+	if (!channelId) return
 	const now = Date.now()
 	if (now - lastTypingReportAt < 3000) return
 	if (conn.groupWebSocket?.readyState !== WebSocket.OPEN) return
 	lastTypingReportAt = now
 	conn.groupWebSocket.send(JSON.stringify({
 		type: 'typing',
-		payload: { channelId: channelId || 'default' },
+		payload: { channelId },
 	}))
 }
 

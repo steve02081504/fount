@@ -40,8 +40,9 @@ function wireComposerControls() {
 	messageInput.addEventListener('input', () => {
 		resizeMessageInput(messageInput)
 		syncComposerAlignment()
-		if (messageInput.value.trim())
-			reportTyping(store.context?.currentChannelId || 'default')
+		const channelId = store.context?.currentChannelId
+		if (messageInput.value.trim() && channelId)
+			reportTyping(channelId)
 	})
 	document.getElementById('send-button')?.addEventListener('click', () => {
 		void submitComposerLazy()

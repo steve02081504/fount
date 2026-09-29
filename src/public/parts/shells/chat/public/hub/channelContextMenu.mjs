@@ -16,7 +16,6 @@ import {
 	setDefaultChannel,
 	updateChannel,
 } from '../src/endpoints/groupChannel.mjs'
-import { getGroupState } from '../src/endpoints/groupCore.mjs'
 import { renderTemplate } from '../src/templates.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 
@@ -25,7 +24,8 @@ import { positionContextMenu } from '/scripts/components/positionContextMenu.mjs
 import { store } from './core/state.mjs'
 import { openChannelNotifyPrefsDialog } from './notifyPrefsDialog.mjs'
 import { firstOpenableChannelId } from './sidebar/firstOpenableChannel.mjs'
-import { renderHubChannelSidebar, selectChannel } from './sidebar/index.mjs'
+import { selectChannel } from './sidebar/index.mjs'
+import { refreshGroupState } from './stream/stateRefresh.mjs'
 
 /** @type {HTMLElement | null} */
 let openMenuElement = null
@@ -44,8 +44,7 @@ function dismissChannelContextMenu() {
 async function refreshChannelsAfterManage(channelId) {
 	const groupId = store.context.currentGroupId
 	if (!groupId) return
-	store.context.currentState = await getGroupState(groupId)
-	await renderHubChannelSidebar(store.context.currentState)
+	await refreshGroupState(groupId, { renderSidebar: true })
 	const stillExists = store.context.currentState?.channels?.[channelId]
 	if (store.context.currentChannelId === channelId && !stillExists) {
 		// 删除当前频道：优先显式默认，其次最上侧第一个可打开频道；都没有则 selectChannel(null) 落空态。

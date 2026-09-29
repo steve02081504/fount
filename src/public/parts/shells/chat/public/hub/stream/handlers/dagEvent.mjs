@@ -2,7 +2,6 @@
  * 【文件】public/hub/stream/handlers/dagEvent.mjs
  * 【职责】WS `dag_event`（频道结构 / 成员 / 治理 / 编辑删除 / overlay）。
  */
-import { getGroupState } from '../../../src/endpoints/groupCore.mjs'
 import { store } from '../../core/state.mjs'
 import {
 	dispatchChannelMessageDelete,
@@ -10,6 +9,7 @@ import {
 	dispatchChannelOverlayRefresh,
 	hubChannelMatch,
 } from '../channelRefresh.mjs'
+import { refreshGroupState } from '../stateRefresh.mjs'
 import {
 	finishVolatileStreamPreview,
 	hasVolatileStream,
@@ -29,36 +29,47 @@ const CHANNEL_STRUCTURE_DAG_TYPES = new Set([
 const STATE_REFRESH_DAG_TYPES = new Set([
 	'member_join', 'member_leave', 'member_kick', 'member_ban', 'member_unban',
 	'role_create', 'role_update', 'role_delete', 'role_assign', 'role_revoke',
-	'group_settings_update', 'channel_permissions_update',
+	'group_meta_update', 'group_settings_update',
+	'channel_permissions_update', 'group_permissions_update',
 	'file_upload', 'file_delete', 'dag_tip_merge',
+])
+
+/** 需要额外重建频道侧栏 / 刷新 `channelCaps` 的权限与设置类事件。 */
+const SIDEBAR_REFRESH_DAG_TYPES = new Set([
+	'role_create', 'role_update', 'role_delete', 'role_assign', 'role_revoke',
+	'group_meta_update', 'group_settings_update',
+	'channel_permissions_update', 'group_permissions_update',
 ])
 
 const STATE_REFRESH_DEBOUNCE_MS = 400
 
-/** @type {Map<string, ReturnType<typeof setTimeout>>} 按群去重的 /state 重取定时器 */
+/** @type {Map<string, { timer: ReturnType<typeof setTimeout>, renderSidebar: boolean }>} 按群去重的 /state 重取定时器 */
 const stateRefreshTimers = new Map()
 
 /**
- * 防抖重取 `/state` 并刷新成员列表与状态横幅（隔离/同步横幅随之更新）。
+ * 防抖重取 `/state` 并刷新成员列表与状态横幅（隔离/同步横幅随之更新）；权限/设置类事件额外重建频道侧栏。
  * @param {string} groupId 群 ID
+ * @param {{ renderSidebar?: boolean }} [options] 刷新选项
  * @returns {void}
  */
-function scheduleStateRefresh(groupId) {
+function scheduleStateRefresh(groupId, { renderSidebar = false } = {}) {
 	const existing = stateRefreshTimers.get(groupId)
-	if (existing) clearTimeout(existing)
-	stateRefreshTimers.set(groupId, setTimeout(() => {
+	if (existing) {
+		clearTimeout(existing.timer)
+		renderSidebar = renderSidebar || existing.renderSidebar
+	}
+	const timer = setTimeout(() => {
 		stateRefreshTimers.delete(groupId)
 		void (async () => {
-			try {
-				store.context.currentState = await getGroupState(groupId)
-				const { renderMemberList } = await import('../../sidebar/members.mjs')
-				await renderMemberList(store.context.currentState)
-				const { updateStatusBanners } = await import('../../banners.mjs')
-				updateStatusBanners()
-			}
-			catch { /* empty */ }
+			const state = await refreshGroupState(groupId, { renderSidebar })
+			if (!state) return
+			const { renderMemberList } = await import('../../sidebar/members.mjs')
+			await renderMemberList(state)
+			const { updateStatusBanners } = await import('../../banners.mjs')
+			updateStatusBanners()
 		})()
-	}, STATE_REFRESH_DEBOUNCE_MS))
+	}, STATE_REFRESH_DEBOUNCE_MS)
+	stateRefreshTimers.set(groupId, { timer, renderSidebar })
 }
 
 /**
@@ -71,24 +82,20 @@ export function handleDagEventWire(wireMessage, channelId) {
 
 	const dagEvent = wireMessage.event
 	const eventChannelId = dagEvent?.channelId
-	const { main, thread } = hubChannelMatch(eventChannelId, channelId)
-	if (eventChannelId && !main && !thread) return true
 
+	// 频道结构 / 状态类事件与频道无关（事件可能带其它频道 id）：先于频道过滤处理。
 	if (CHANNEL_STRUCTURE_DAG_TYPES.has(dagEvent?.type) && store.context.currentGroupId) {
-		void (async () => {
-			try {
-				store.context.currentState = await getGroupState(store.context.currentGroupId)
-				const { renderHubChannelSidebar } = await import('../../sidebar/index.mjs')
-				await renderHubChannelSidebar(store.context.currentState)
-			}
-			catch { /* empty */ }
-		})()
+		scheduleStateRefresh(store.context.currentGroupId, { renderSidebar: true })
 		return true
 	}
 	if (STATE_REFRESH_DAG_TYPES.has(dagEvent?.type) && store.context.currentGroupId) {
-		scheduleStateRefresh(store.context.currentGroupId)
+		scheduleStateRefresh(store.context.currentGroupId, { renderSidebar: SIDEBAR_REFRESH_DAG_TYPES.has(dagEvent?.type) })
 		return true
 	}
+
+	const { main, thread } = hubChannelMatch(eventChannelId, channelId)
+	if (eventChannelId && !main && !thread) return true
+
 	if (dagEvent?.type === 'message_edit') {
 		const targetId = String(dagEvent.content?.targetId || '')
 		if (targetId) {
