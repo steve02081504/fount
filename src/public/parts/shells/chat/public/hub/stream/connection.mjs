@@ -143,21 +143,16 @@ function catchUpAfterSubscribe(groupId) {
 }
 
 /**
- * 显示/隐藏「连接丢失」指示（复用现有 `chat.hub.status.offline` 文案）。
- * @param {boolean} visible 是否显示
+ * 显示「连接丢失」指示（`chat.hub.stream.connectionLost` 文案）。
  * @returns {void}
  */
-function showConnectionLostIndicator(visible) {
-	if (!visible) {
-		hideConnectionLostIndicator()
-		return
-	}
+function showConnectionLostIndicator() {
 	if (typeof document === 'undefined' || connectionLostBadge) return
 	const badge = document.createElement('div')
 	badge.dataset.hubConnectionLost = ''
 	badge.setAttribute('role', 'status')
 	badge.style.cssText = 'position:fixed;z-index:60;bottom:calc(env(safe-area-inset-bottom, 0px) + 12px);inset-inline-end:12px;padding:6px 12px;border-radius:9999px;background:var(--color-warning, #d97706);color:#fff;font-size:12px;box-shadow:var(--shadow-md, 0 1px 3px rgba(0,0,0,.3));pointer-events:none'
-	setElementI18n(badge, 'chat.hub.status.offline')
+	setElementI18n(badge, 'chat.hub.stream.connectionLost')
 	document.body.appendChild(badge)
 	connectionLostBadge = badge
 }
@@ -175,7 +170,7 @@ function hideConnectionLostIndicator() {
  */
 function scheduleReconnect(groupId, channelId) {
 	clearReconnectTimer()
-	showConnectionLostIndicator(true)
+	showConnectionLostIndicator()
 	const delay = Math.min(RECONNECT_BASE_MS * 2 ** reconnectAttempt, RECONNECT_MAX_MS)
 	reconnectAttempt++
 	reconnectTimer = setTimeout(() => {
@@ -211,13 +206,14 @@ function bindReconnectTriggers() {
  */
 export function connectGroupWebSocket(groupId, channelId) {
 	if (!groupId) return
-	desiredGroupId = groupId
-	desiredChannelId = channelId
 	if (conn.groupWebSocket && conn.connectedGroupId === groupId) {
 		conn.setActiveChannelId(channelId)
 		const readyState = conn.groupWebSocket.readyState
-		if (readyState === WebSocket.OPEN || readyState === WebSocket.CONNECTING)
+		if (readyState === WebSocket.OPEN || readyState === WebSocket.CONNECTING) {
+			desiredGroupId = groupId
+			desiredChannelId = channelId
 			return
+		}
 	}
 	reconnectAttempt = 0
 	clearReconnectTimer()

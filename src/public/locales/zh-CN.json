@@ -2652,6 +2652,7 @@
 					"videoOn": "开启摄像头",
 					"you": "你"
 				},
+				"connectionLost": "连接已断开，正在重连…",
 				"defaultName": "流媒体",
 				"embedHttpsRequired": "流媒体地址须为可嵌入的 https:// 页面，或先配置群设置并刷新以获取观看令牌。",
 				"refreshToken": "刷新观看令牌",

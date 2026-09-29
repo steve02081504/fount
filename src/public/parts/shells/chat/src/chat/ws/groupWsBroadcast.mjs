@@ -86,13 +86,24 @@ export function countGroupSockets(groupId) {
 }
 
 /**
+ * 从 WS 房间键（`ownerNodeHash:groupId`，无 nodeHash 时为裸 groupId）还原裸 groupId。
+ * 联邦 owner 注册表按裸 groupId 索引，广播入参却是房间键，故中继前须还原。
+ * @param {string} roomKey WS 房间键
+ * @returns {string} 裸 groupId
+ */
+export function groupIdFromRoomKey(roomKey) {
+	const separator = roomKey.indexOf(':')
+	return separator === -1 ? roomKey : roomKey.slice(separator + 1)
+}
+
+/**
  * 向某群组下所有已连接 WS 广播 JSON 消息（带时间戳字段 `t`）；拥塞时丢弃低优先级（VOLATILE）。
- * @param {string} groupId 群组 id
+ * @param {string} roomKey WS 房间键
  * @param {object} payload 业务负载
  * @returns {void}
  */
-function broadcastEventNow(groupId, payload) {
-	const sockets = groupSockets.get(groupId)
+function broadcastEventNow(roomKey, payload) {
+	const sockets = groupSockets.get(roomKey)
 	if (!sockets) return
 	const priority = inferBroadcastPriority(payload)
 	const wirePayload = { ...payload }
@@ -101,7 +112,7 @@ function broadcastEventNow(groupId, payload) {
 	if (!payload?.fedInbound)
 		void import('../federation/index.mjs').then(m => {
 			if (m.isFederableVolatilePayload?.(payload))
-				return m.publishVolatileToFederation(groupId, payload)
+				return m.publishVolatileToFederation(groupIdFromRoomKey(roomKey), payload)
 		}).catch(error => console.error('federation: volatile relay failed', error))
 
 	for (const ws of sockets) {
@@ -131,17 +142,17 @@ function broadcastEventNow(groupId, payload) {
 /**
  * 向某群组下所有已连接 WS 广播 JSON 消息。
  * `stream_chunk` 在出站前于本机验签（§6.4）；Hub 仅消费已验签的 WS。
- * @param {string} groupId 群组 id
+ * @param {string} roomKey WS 房间键（`groupWsRoomKeyForReplica` / `resolveGroupWsRoomKey` 的产物）
  * @param {object} payload 业务负载
  * @returns {void}
  */
-export function broadcastEvent(groupId, payload) {
+export function broadcastEvent(roomKey, payload) {
 	if (payload?.type === 'stream_chunk') {
 		void import('./signing.mjs').then(async (signing) => {
 			if (!await signing.verifyStreamChunkVolatile(payload)) return
-			broadcastEventNow(groupId, payload)
+			broadcastEventNow(roomKey, payload)
 		}).catch(error => console.error('broadcast stream_chunk verify failed', error))
 		return
 	}
-	broadcastEventNow(groupId, payload)
+	broadcastEventNow(roomKey, payload)
 }

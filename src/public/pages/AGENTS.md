@@ -24,6 +24,7 @@ Visual language & component standards — read before writing UI: [docs/design-s
 - **`endpoints/registries.mjs`**: `GET /api/registries/:name` + dynamic `import()`. GitHub Pages overrides this file under `.github/pages/scripts/` (`cp -n`).
 - **`endpoints/p2p/evfsMedia.mjs`**: EVFS GET/PUT (`fetchEvfsFile`, `fetchMediaRef`, `uploadEvfsFile`, `uploadEvfsAttachment`). Pure URL helpers stay Deno-pure in chat `shared/evfsMedia.mjs` (`entityFileUrl`, `mediaRefUrl`).
 - **`debug_log.mjs`**: `debugLog(name, data)` → `debug_logs/`.
+- **Service worker** (`service_worker.mjs` + pure `service_worker_policy.mjs`): never caches `/api/`, `/ws/`, `/virtual_files/` (network-first; `shouldCacheResponse` refuses them) — those responses are per-user authenticated and must not linger in Cache Storage or be shared across users. Cold-boot mode flips only from a same-origin **navigation** request (`/`, `/index.html`, or `?cold_bootting=true`) — never from a sub-resource / `fetch` or a cross-origin request — so authenticated data is never served from Cache Storage.
 - **HTML templates**: import bound helpers from the shell’s `templates.mjs` (or `templatesFor(root)` / `dialogsFor(root)`) — never `fetch(…html)`.
 
 ## UI & Theming

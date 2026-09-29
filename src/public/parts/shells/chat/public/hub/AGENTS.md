@@ -26,6 +26,13 @@ Deeper UI (profile card, unread/inbox/aliases, cabinet bind perms): [docs/ui-det
 - Group call: `hub/call.mjs` → `/ws/.../call/:groupId/:channelId`; card wire `type: 'call'`. Shift+click = audio-only.
 - Session lifecycle traps + shared client: [docs/ui-details.md](docs/ui-details.md#streaming-av-lifecycle).
 
+## Group socket & live updates
+
+- **Subscribe-ack handshake**: the server registers the UI socket and only then sends `{ type: 'subscribed' }` (inbound frames are buffered and replayed first). `stream/connection.mjs` treats that frame — not the browser `open` — as the ready signal (`waitForGroupWebSocketOpen` resolves on it).
+- **Reconnect / catch-up**: on `close` while the group stays selected, reconnect with exponential backoff (also on `visibilitychange` / `online`) and show the `chat.hub.stream.connectionLost` indicator; after every `subscribed`, run an incremental view-log refresh **and** re-fetch `/state`.
+- **`/state` refetch is sequence-guarded**: route it through `stream/stateRefresh.mjs` (`refreshGroupState`), which drops stale responses — never `setState('context.currentState', …)` from an unsequenced fetch.
+- **`#messages` is virtual-list owned**: content may only be replaced via `mountMessagesPlaceholder` (`messages/messagesPlaceholder.mjs`) — never a direct template mount or `innerHTML` while a virtual list may exist.
+
 ## UI conventions
 
 - CSS: page-local, no `hub-` prefix. Ready-gate: `HUB_GATE` / `fount:hub-*`. Layout: `body[data-layout-pane]` / `body[data-surface]`. Mobile (`≤768px`): `body[data-layout-pane=nav|main]` via `hubPane.mjs`. Idle surfaces hide `.input-area`; `selectChannel` must `enableComposer`/`disableComposer` **before** `showHubMainPane`. Do not assign `dataset.surface` ad hoc — only `refreshHubHeaderButtons`.
