@@ -1,18 +1,25 @@
-import process from 'node:process'
-
-import { available } from 'npm:@steve02081504/exec'
-
 import { SHELL_DEFAULT_TIMEOUT_MS } from '../../../../scripts/shell_guard.mjs'
 import { getConnectedSubfounts } from '../../shells/subfounts/src/api.mjs'
+import { isAsyncToolingEnabled } from '../async-task/registry.mjs'
+
+import { isShellUsable, pickDefaultShell, registeredShellNames, resolveAvailableShells, resolveDefaultShell } from './availability.mjs'
 
 /**
  * 代码执行插件的 GetPrompt：向角色提示中注入代码执行能力说明。
+ *
+ * 与 `getCodeExecutionReplyHandlers` 共用同一套目标机器可用性判断，保证提示词里出现的
+ * 每个 shell 标签都确实有处理器认领，避免标签原样穿透到消息里。
  * @param {import('../../../../../src/decl/pluginAPI.ts').chatReplyRequest_t} args - 聊天回复请求参数。
+ * @param {object} [options] - 选项。
+ * @param {(args: object) => Promise<string[]>} [options.resolveShells] - 覆盖可用 shell 解析函数（测试注入）。
+ * @param {(args: object) => Promise<string>} [options.resolveDefault] - 覆盖默认 shell 解析函数。
  * @returns {Promise<import('../../../../../src/decl/prompt_struct.ts').single_part_prompt_t>} 单段 prompt。
  */
-export async function getCodeExecutionPrompt(args) {
-	const availableShells = Object.keys(available).filter(x => available[x])
-	const defaultShell = process.platform === 'win32' ? available.pwsh ? 'pwsh' : 'powershell' : available.bash ? 'bash' : 'sh'
+export async function getCodeExecutionPrompt(args, { resolveShells = resolveAvailableShells, resolveDefault = resolveDefaultShell } = {}) {
+	const shells = await resolveShells(args)
+	const availableShells = registeredShellNames().filter(name => isShellUsable(name, shells))
+	const defaultShell = pickDefaultShell(availableShells, await resolveDefault(args))
+	const hasPowerShellFamily = availableShells.some(name => name === 'pwsh' || name === 'powershell')
 
 	// 从其他插件获取 JS 代码提示（排除自己以避免无限递归）
 	const codePluginPrompts = (
@@ -28,8 +35,8 @@ export async function getCodeExecutionPrompt(args) {
 <run-js>code</run-js>
 或
 <run-${defaultShell}>code</run-${defaultShell}>
-${available.powershell && available.pwsh ? `**注意：<run-powershell> 调用 Windows PowerShell，<run-pwsh> 调用已安装的 PowerShell Core，二者不同。**
-` : available.powershell ? `**注意：<run-powershell> 调用 Windows PowerShell，<run-pwsh> 是其别名。**
+${shells.includes('pwsh') && shells.includes('powershell') ? `**注意：<run-powershell> 调用 Windows PowerShell，<run-pwsh> 调用已安装的 PowerShell Core，二者不同。**
+` : shells.includes('powershell') ? `**注意：<run-powershell> 调用 Windows PowerShell，<run-pwsh> 在未安装 PowerShell Core 时回退到它。**
 ` : ''}如：
 <run-js>(await import('npm:robotjs')).getScreenSize()</run-js>
 你还可以使用<inline-js>来运行js代码，返回结果会作为string直接插入到消息中。
@@ -39,13 +46,13 @@ ${args.UserCharname}: 一字不差地输出10^308的数值。
 ${args.Charname}: 1<inline-js>'0'.repeat(308)</inline-js>
 ${args.UserCharname}: 反向输出\`never gonna give you up\`。
 ${args.Charname}: 好哒，<inline-js>'never gonna give you up'.split('').reverse().join('')</inline-js>！
-${available.powershell || available.pwsh ? `\
+${hasPowerShellFamily ? `\
 ${args.UserCharname}: 我系统盘是哪个？
-${args.Charname}: 是<inline-pwsh>$env:SystemDrive</inline-pwsh>。
-` : available.bash ? `\
+${args.Charname}: 是<inline-${defaultShell}>$env:SystemDrive</inline-${defaultShell}>。
+` : availableShells.includes('bash') ? `\
 ${args.UserCharname}: 我家目录在哪？
 ${args.Charname}: 在<inline-bash>echo $HOME</inline-bash>。
-` : available.sh ? `\
+` : availableShells.includes('sh') ? `\
 ${args.UserCharname}: 我家目录在哪？
 ${args.Charname}: 在<inline-sh>echo $HOME</inline-sh>。
 ` : ''}\
@@ -80,10 +87,12 @@ ${getConnectedSubfounts(args.username).length === 1 ? `\
   * 尤其软件文件夹很可能有用户数据在其中，删除前至少通过命令检查下文件夹架构。
 - 覆写数据时也一样，在用程序删除部分数据或覆写可能的重要文件时考虑进行原文件的备份，以防误操作。
 
+${isAsyncToolingEnabled() ? `\
 异步执行（需加载 async-task 插件）：
 - 给 <run-js> / <run-${defaultShell}> 等加 async="true" 可后台运行；任务列表与等待（<list-async/>、<await-async>）见 async-task 插件说明。
 - 注意：JS 在进程内无法强制终止，异步执行也不会改变这一点。
 
+` : ''}\
 js代码相关：
 - 复杂情况下，考虑有什么npm包可以满足你的需求，参照例子使用<run-js>+import。
   * 导入包需要符合deno的包名规范（追加\`npm|node|jsr:\`前缀），如\`npm:mathjs\`或\`node:fs\`。
@@ -119,7 +128,7 @@ ${codePluginPrompts}
 系统输出不会显示在回复中，需要你总结。
 鼓励在回答输出较多时用<inline-js>以避免大段复述。
 **只是解释说明或举例时使用普通代码块（如\`\`\`js）而不是执行代码。**
-需要注意的是run-js执行的是后端代码而不是前端代码，若需要执行前端代码请使用浏览器相关插件${args.supported_functions.unsafe_html ? '或直接输出script标签' : ''}。
+需要注意的是run-js执行的是后端代码而不是前端代码，若需要执行前端代码请使用浏览器相关插件${args.supported_functions?.unsafe_html ? '或直接输出script标签' : ''}。
 `
 
 	return {

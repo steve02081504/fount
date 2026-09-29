@@ -1,0 +1,35 @@
+{
+	"id": "plugins/code-execution",
+	"triggerSets": {
+		"testFramework": [
+			"src/scripts/test/{deno/serial.mjs,node/boot.mjs}"
+		],
+		"pluginCore": [
+			"src/public/parts/plugins/code-execution/**",
+			"src/public/parts/plugins/async-task/registry.mjs",
+			"src/public/parts/plugins/file-operations/src/target.mjs",
+			"src/public/parts/shells/chat/src/{reply,streaming,tags}/**",
+			"src/scripts/shell_guard.mjs"
+		]
+	},
+	"suites": [
+		{
+			"name": "integration",
+			"expected": "30s",
+			"trigger": [
+				"pluginCore",
+				"testFramework"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/deno/serial.mjs",
+				"./src/public/parts/plugins/code-execution/test/integration/"
+			]
+		}
+	]
+}

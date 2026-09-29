@@ -51,6 +51,24 @@ let AIsource = null
  */
 let plugins = {}
 
+/**
+ * 未配置插件列表时使用的默认插件集。
+ * 放在这里而非写入传入的配置对象，避免把默认值固化进用户配置、导致以后新增的默认插件不生效。
+ * @type {string[]}
+ */
+const DEFAULT_PLUGIN_NAMES = [
+	'code-execution',
+	'file-operations',
+	'web-search',
+	'web-browse',
+	'browser-integration',
+	'timer',
+	'fount-api',
+	'sub-agent',
+	'context-compress',
+	'async-task',
+]
+
 // 用户名，用于加载AI源
 let username = ''
 
@@ -739,18 +757,17 @@ export default {
 				// 如果传入了AI源的配置
 				if (data.AIsource) AIsource = await loadPart(username, 'serviceSources/AI/' + data.AIsource) // 加载AI源
 				else AIsource = await loadAnyPreferredDefaultPart(username, 'serviceSources/AI') // 或加载默认AI源（若未设置默认AI源则为undefined）
-				data.plugins ??= [
-					'code-execution',
-					'file-operations',
-					'web-search',
-					'web-browse',
-					'browser-integration',
-					'timer',
-					'fount-api',
-					'sub-agent',
-					'context-compress',
-				]
-				plugins = Object.fromEntries(await Promise.all(data.plugins.map(async x => [x, await loadPart(username, 'plugins/' + x)])))
+				// 单个插件加载失败不应拖垮其余插件（曾表现为「AI 正常但所有插件都失效」）：
+				// 用 allSettled 保留成功项，逐个报错失败的插件名。
+				const pluginNames = data.plugins ?? DEFAULT_PLUGIN_NAMES
+				const settled = await Promise.allSettled(
+					pluginNames.map(async name => [name, await loadPart(username, 'plugins/' + name)])
+				)
+				plugins = Object.fromEntries(settled.flatMap((result, index) => {
+					if (result.status === 'fulfilled') return [result.value]
+					console.error(`加载角色 ZL-31 的插件「${pluginNames[index]}」失败：`, result.reason)
+					return []
+				}))
 			}
 		},
 		// 角色的聊天接口

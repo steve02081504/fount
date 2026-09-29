@@ -6,7 +6,7 @@ import process from 'node:process'
 import util from 'node:util'
 
 import { async_eval } from 'npm:@steve02081504/async-eval'
-import { available, removeTerminalSequences, shell_exec_map } from 'npm:@steve02081504/exec'
+import { removeTerminalSequences } from 'npm:@steve02081504/exec'
 
 import {
 	createCollectingConsole,
@@ -28,6 +28,8 @@ import { defaultDisplay } from '../../shells/chat/src/reply/display.mjs'
 import { getChatI18n, renderMarkdownCodeBlock, renderMarkdownInlineCode } from '../../shells/chat/src/streaming/index.mjs'
 import { isAsyncToolingEnabled, ownerFromArgs, registerTask } from '../async-task/registry.mjs'
 import { createArgsExecutorResolver, executionTargetOf, resolveLocalPath, resolveTarget } from '../file-operations/src/target.mjs'
+
+import { isShellUsable, registeredShellNames, resolveAvailableShells } from './availability.mjs'
 
 /**
  * 按预览参数缓存执行器解析器（远程内联执行用）。
@@ -132,6 +134,36 @@ function rejectAsyncWithoutTooling(args) {
 		role: 'tool',
 		content: 'async="true" 需要加载 async-task 插件才能管理异步任务；当前未启用，请改用同步执行。',
 		content_for_show: '异步执行不可用（缺少 async-task 插件）。',
+		files: [],
+		extension: { error: true },
+	})
+	return { regen: true, failed: true }
+}
+
+/**
+ * 生成「目标机器缺少该 shell」的统一提示文本。
+ * @param {string} shellName - 请求的 shell 名。
+ * @param {string[]} shells - 目标机器可用的 shell 名列表。
+ * @returns {string} 提示文本。
+ */
+function shellUnavailableMessage(shellName, shells) {
+	return `目标机器上没有可用的 shell「${shellName}」（可用：${shells?.length ? shells.join('、') : '无'}）。`
+}
+
+/**
+ * 写一条目标机器缺少该 shell 的失败回执，并列出可用 shell 引导模型改用。
+ * @param {object} args - 请求上下文。
+ * @param {string} shellName - 请求的 shell 名。
+ * @param {string[]} shells - 目标机器可用的 shell 名列表。
+ * @returns {object} handler 返回值。
+ */
+function rejectUnavailableShell(args, shellName, shells) {
+	const message = shellUnavailableMessage(shellName, shells)
+	args.AddLongTimeLog?.({
+		name: `code-execution.run-${shellName}`,
+		role: 'tool',
+		content: `${message}无法执行，请改用可用的 shell 后重试。`,
+		content_for_show: `无法执行：${message}`,
 		files: [],
 		extension: { error: true },
 	})
@@ -589,11 +621,15 @@ async function evaluateInlineJs(call, args) {
 /**
  * 生成 inline-<shell> 的求值。
  * @param {string} shell_name - shell 名。
+ * @param {(args: object, attrs: object) => Promise<string[]>} resolveShells - 解析目标机器可用 shell 的函数。
  * @returns {(call: object, args: object) => Promise<string>} 求值函数
  */
-function createInlineShellEvaluate(shell_name) {
+function createInlineShellEvaluate(shell_name, resolveShells) {
 	return async (call, args) => {
 		const attrs = call.params
+		const shells = await resolveShells(args, attrs)
+		if (!isShellUsable(shell_name, shells))
+			throw new Error(shellUnavailableMessage(shell_name, shells))
 		call.executionTarget = executionTargetOf(resolveTarget(args, attrs))
 		const limits = parseRunLimits(attrs, SHELL_DEFAULT_TIMEOUT_MS)
 		const resolver = previewExecutorResolvers.get(args) ?? previewExecutorResolvers.set(args, createArgsExecutorResolver(args)).get(args)
@@ -886,9 +922,10 @@ async function executeRunShell({ runtime, args, call, limits, shellName, stream 
 /**
  * 生成 `<run-<shell>>` 处理器（`async="true"` 时后台运行并登记统一异步任务）。
  * @param {string} shell_name - shell 名。
+ * @param {(args: object, attrs: object) => Promise<string[]>} resolveShells - 解析目标机器可用 shell 的函数。
  * @returns {ReplyHandler_t} ReplyHandler
  */
-function createRunShellReplyHandler(shell_name) {
+function createRunShellReplyHandler(shell_name, resolveShells) {
 	return defineReplyHandler({
 		tag: `run-${shell_name}`,
 		display: streamingOnly(renderRunningCodeBlock(shell_name)),
@@ -901,6 +938,8 @@ function createRunShellReplyHandler(shell_name) {
 		 */
 		handle: async (reply, args, call) => {
 			const { AddLongTimeLog } = args
+			const shells = await resolveShells(args, call.params)
+			if (!isShellUsable(shell_name, shells)) return rejectUnavailableShell(args, shell_name, shells)
 			const runtime = getRuntime(reply, args)
 			const attrs = call.params
 			const executionTarget = executionTargetOf(resolveTarget(args, attrs))
@@ -971,26 +1010,34 @@ function createRunShellReplyHandler(shell_name) {
 /**
  * 生成 `<inline-<shell>>` 处理器。
  * @param {string} shell_name - shell 名。
+ * @param {(args: object, attrs: object) => Promise<string[]>} resolveShells - 解析目标机器可用 shell 的函数。
  * @returns {ReplyHandler_t} ReplyHandler
  */
-function createInlineShellReplyHandler(shell_name) {
+function createInlineShellReplyHandler(shell_name, resolveShells) {
 	return defineReplyHandler({
 		tag: `inline-${shell_name}`,
-		evaluate: createInlineShellEvaluate(shell_name),
+		evaluate: createInlineShellEvaluate(shell_name, resolveShells),
 		display: inlineDisplay(shell_name),
 		handle: createInlineHandle(shell_name),
 	})
 }
 
 /**
- * 按当前可用 shell 生成代码执行插件的全部 ReplyHandler。
+ * 生成代码执行插件的全部 ReplyHandler。
+ *
+ * 为所有已注册执行器的 shell 都注册处理器（不在注册时按可用性过滤）：
+ * 目标机器可能在运行时变化，启动早期 `available` 也尚未决议；可用性改在每次执行的 handle 内解析，
+ * 不可用时回写失败日志引导模型改用其他 shell，而非让标签原样穿透到消息里。
+ * @param {object} [options] - 选项。
+ * @param {(args: object, attrs: object) => Promise<string[]>} [options.resolveShells] - 覆盖可用 shell 解析函数（测试注入）。
  * @returns {ReplyHandler_t[]} ReplyHandler 列表
  */
-export function getCodeExecutionReplyHandlers() {
+export function getCodeExecutionReplyHandlers({ resolveShells = resolveAvailableShells } = {}) {
 	const handlers = [runJsReplyHandler, inlineJsReplyHandler]
-	for (const shell_name in shell_exec_map) {
-		if (!available[shell_name]) continue
-		handlers.push(createRunShellReplyHandler(shell_name), createInlineShellReplyHandler(shell_name))
-	}
+	for (const shell_name of registeredShellNames())
+		handlers.push(
+			createRunShellReplyHandler(shell_name, resolveShells),
+			createInlineShellReplyHandler(shell_name, resolveShells),
+		)
 	return handlers
 }
