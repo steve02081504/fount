@@ -61,16 +61,16 @@ export function buildMentionsFromMessageLine(channelId, messageLine, state, opti
  * @param {string} channelId 频道 ID
  * @param {object} messageLine 频道消息行
  * @param {{ ingress?: 'live' | 'backfill' }} [options] 入账语义
- * @returns {Promise<{ mentions: object }>} 解析后的 mentions 结构（供 WS 广播）
+ * @returns {Promise<{ mentions: object, onMessageFrequencies: Map<string, number> | null }>} 解析后的 mentions 结构（供 WS 广播）与逐角色 OnMessage 预计算权重
  */
 export async function dispatchMessageFanout(username, groupId, channelId, messageLine, options = {}) {
-	if (!['message', 'message_edit'].includes(messageLine?.type)) return { mentions: { entityHashes: [], roleIds: [], everyone: false } }
+	if (!['message', 'message_edit'].includes(messageLine?.type)) return { mentions: { entityHashes: [], roleIds: [], everyone: false }, onMessageFrequencies: null }
 	const payload = messageLine.type === 'message_edit'
 		? messageLine.content?.newContent ?? messageLine.content
 		: messageLine.content
-	if (payload?.is_generating) return { mentions: { entityHashes: [], roleIds: [], everyone: false } }
+	if (payload?.is_generating) return { mentions: { entityHashes: [], roleIds: [], everyone: false }, onMessageFrequencies: null }
 	// 通话卡片生命周期（create/roster/end）会多次 message_edit；不当作收件箱/推送/触发管线信号
-	if (payload?.type === 'call') return { mentions: { entityHashes: [], roleIds: [], everyone: false } }
+	if (payload?.type === 'call') return { mentions: { entityHashes: [], roleIds: [], everyone: false }, onMessageFrequencies: null }
 
 	const { state } = await getState(username, groupId)
 	const mentions = buildMentionsFromMessageLine(channelId, messageLine, state, options)
@@ -125,10 +125,12 @@ export async function dispatchMessageFanout(username, groupId, channelId, messag
 		}
 	}
 
+	let onMessageFrequencies = null
 	if (options.ingress !== 'backfill' && messageLine.type === 'message')
-		await runTriggerPipeline(username, groupId, channelId, messageLine, { mentions }).catch(error => {
+		onMessageFrequencies = await runTriggerPipeline(username, groupId, channelId, messageLine, { mentions }).catch(error => {
 			console.error('runTriggerPipeline failed:', error)
+			return null
 		})
 
-	return { mentions }
+	return { mentions, onMessageFrequencies }
 }

@@ -58,9 +58,10 @@ const PERSIST_MESSAGE_TYPES = new Set([
  * @param {string} channelId 频道 ID
  * @param {object} signPayload 已签名事件
  * @param {unknown} displayContent 解密后展示 content（message）或 message_edit 的 newContent
+ * @param {Map<string, number> | null} [onMessageFrequencies] 触发管线预计算的逐角色 OnMessage 权重（可空，空时回退重新调用）
  * @returns {Promise<void>}
  */
-async function invokeAfterAddChatLogEntry(username, groupId, channelId, signPayload, displayContent) {
+async function invokeAfterAddChatLogEntry(username, groupId, channelId, signPayload, displayContent, onMessageFrequencies = null) {
 	if (displayContent?.is_generating) return
 	const { resolveWorld } = await import('../session/resolvePart.mjs')
 	const world = await resolveWorld(groupId, channelId, username)
@@ -72,7 +73,7 @@ async function invokeAfterAddChatLogEntry(username, groupId, channelId, signPayl
 	const { getChatRequest } = await import('../session/chatRequest.mjs')
 	const { getCharReplyFrequency } = await import('../session/triggerReply.mjs')
 	const request = await getChatRequest(groupId, charname || undefined, channelId, { replicaUsername: username })
-	const replyFrequency = await getCharReplyFrequency(groupId)
+	const replyFrequency = await getCharReplyFrequency(groupId, onMessageFrequencies)
 	await afterHook(request, replyFrequency)
 }
 /**
@@ -297,14 +298,16 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 	}
 	broadcastEvent(roomKey, channelFrame)
 	let fanoutMentions = { entityHashes: [], roleIds: [], everyone: false }
+	let onMessageFrequencies = null
 	if (signPayload.type === 'message' || signPayload.type === 'message_edit') {
 		const ingress = persistOpts.ingress === 'backfill' ? 'backfill' : 'live'
 		const fanout = await dispatchMessageFanout(username, groupId, channelId, messageLine, { ingress })
 			.catch(error => {
 				console.error('message fanout failed:', error)
-				return { mentions: fanoutMentions }
+				return { mentions: fanoutMentions, onMessageFrequencies: null }
 			})
 		fanoutMentions = fanout.mentions
+		onMessageFrequencies = fanout.onMessageFrequencies ?? null
 	}
 	if (fanoutMentions.entityHashes.length || fanoutMentions.roleIds.length || fanoutMentions.everyone)
 		broadcastEvent(roomKey, { ...channelFrame, mentions: fanoutMentions })
@@ -315,7 +318,7 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 		: displayContent?.newContent ?? displayContent
 	if (signPayload.type === 'message' || signPayload.type === 'message_edit' && afterHookContent && !afterHookContent.is_generating)
 		try {
-			await invokeAfterAddChatLogEntry(username, groupId, channelId, signPayload, afterHookContent)
+			await invokeAfterAddChatLogEntry(username, groupId, channelId, signPayload, afterHookContent, onMessageFrequencies)
 		}
 		catch (error) {
 			console.error('AfterAddChatLogEntry failed:', error)

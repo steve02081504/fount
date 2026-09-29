@@ -44,11 +44,11 @@ function charAgentEntityHash(members, charname) {
  * @param {boolean} isDm 是否 DM 群
  * @param {number} charCount 群内 char 数
  * @param {number} userCount 群内活跃真人（非 agent 成员）数
- * @returns {Promise<boolean>} 发言意愿
+ * @returns {Promise<{ wantsReply: boolean, frequency: number | null }>} 发言意愿；`frequency` 为已调用 OnMessage 时的预计算权重（未调用为 null）
  */
 async function resolveCharReplyWill(username, groupId, channelId, charname, event, mentioned, settings, isDm, charCount, userCount) {
 	const char = await resolveChar(groupId, charname, username)
-	if (!char) return false
+	if (!char) return { wantsReply: false, frequency: null }
 	const bucketKey = autoReplyBucketKey(groupId, channelId, charname)
 
 	if (char.interfaces?.chat?.OnMessage) {
@@ -65,21 +65,21 @@ async function resolveCharReplyWill(username, groupId, channelId, charname, even
 				charname,
 				event,
 			})
-			return false
+			return { wantsReply: false, frequency: 0 }
 		}
-		if (!spoke) return false
+		if (!spoke) return { wantsReply: false, frequency: 0 }
 		if (settings.enabled && !mentioned) {
 			const { allowed } = consumeAutoReplyToken(bucketKey, settings)
-			if (!allowed) return false
+			if (!allowed) return { wantsReply: false, frequency: 0 }
 		}
-		return true
+		return { wantsReply: true, frequency: 1e6 }
 	}
 
 	// fallback（无 OnMessage）：仅 @ / DM / 单角色且单真人的私聊群自动回复；多真人群需 @ 或显式频率
-	if (mentioned || (charCount === 1 && userCount === 1) || isDm) return true
+	if (mentioned || (charCount === 1 && userCount === 1) || isDm) return { wantsReply: true, frequency: null }
 	if (settings.frequency > 0 && !mentioned)
-		return tickAutoReplyFrequency(groupId, channelId, settings.frequency)
-	return false
+		return { wantsReply: tickAutoReplyFrequency(groupId, channelId, settings.frequency), frequency: null }
+	return { wantsReply: false, frequency: null }
 }
 
 /**
@@ -104,15 +104,15 @@ function logTriggerCharReplyFailure(error) {
  * @param {string} channelId 频道 ID
  * @param {object} messageLine 频道消息行
  * @param {{ mentions: object }} options mentions 结构
- * @returns {Promise<void>}
+ * @returns {Promise<Map<string, number> | null>} 逐角色的 OnMessage 预计算权重（供 `getCharReplyFrequency` 复用，避免重复调用）；未运行管线时为 null
  */
 export async function runTriggerPipeline(username, groupId, channelId, messageLine, options) {
 	const content = messageLine?.content
 	const chat = content?.extension?.chat
-	if (chat?.isAutoTrigger || messageLine?.charId || content?.role === 'char') return
+	if (chat?.isAutoTrigger || messageLine?.charId || content?.role === 'char') return null
 
 	const chars = await getCharListOfGroup(groupId, username)
-	if (!chars.length) return
+	if (!chars.length) return null
 
 	const mentions = options.mentions || { entityHashes: [], roleIds: [], everyone: false }
 	const settings = await loadAutoReplySettings(username, groupId)
@@ -125,6 +125,8 @@ export async function runTriggerPipeline(username, groupId, channelId, messageLi
 	const mentionedChars = []
 	/** @type {Array<{ charname: string, frequency: number }>} */
 	const willing = []
+	/** @type {Map<string, number>} 已调用 OnMessage 的角色权重（0 表拒绝，1e6 表愿意） */
+	const onMessageFrequencies = new Map()
 
 	for (const charname of chars) {
 		// 非本机 char 的触发由归属节点处理；本节点跳过，避免为异地 part 强行创建本地实体身份
@@ -133,10 +135,11 @@ export async function runTriggerPipeline(username, groupId, channelId, messageLi
 		const agentHash = charAgentEntityHash(state.members, charname)
 		const event = await buildOnMessageEvent(username, groupId, channelId, charname, { messageLine, mentions })
 		const mentioned = agentHash ? await messageMentionsEntity(event, agentHash) : false
-		const wantsReply = await resolveCharReplyWill(
+		const { wantsReply, frequency } = await resolveCharReplyWill(
 			username, groupId, channelId, charname, event,
 			mentioned, settings, isDm, chars.length, userCount,
 		)
+		if (frequency !== null) onMessageFrequencies.set(charname, frequency)
 		if (!wantsReply) continue
 		if (mentioned) mentionedChars.push(charname)
 		else willing.push({ charname, frequency: 1 })
@@ -149,8 +152,9 @@ export async function runTriggerPipeline(username, groupId, channelId, messageLi
 		void runOutsideGroupLocks(() => triggerCharReply(groupId, channelId, charname)).catch(logTriggerCharReplyFailure)
 	}
 
-	if (!willing.length) return
+	if (!willing.length) return onMessageFrequencies
 	const next = pickNextCharForReply(willing)
-	if (!next || isCharReplyInFlight(groupId, channelId, next)) return
+	if (!next || isCharReplyInFlight(groupId, channelId, next)) return onMessageFrequencies
 	void runOutsideGroupLocks(() => triggerCharReply(groupId, channelId, next)).catch(logTriggerCharReplyFailure)
+	return onMessageFrequencies
 }

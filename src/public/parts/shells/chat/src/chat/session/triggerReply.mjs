@@ -354,9 +354,10 @@ export async function executeGeneration(groupId, request, stream, placeholderEnt
 /**
  * 构建各角色回复权重（含 `OnMessage` 发言意愿）。
  * @param {string} groupId 群 ID
+ * @param {Map<string, number> | null} [onMessageFrequencies] 触发管线预计算的逐角色 OnMessage 权重；命中时复用，避免重复调用 OnMessage
  * @returns {Promise<Array<{ charname: string | null, frequency: number }>>} 各角色权重列表
  */
-export async function getCharReplyFrequency(groupId) {
+export async function getCharReplyFrequency(groupId, onMessageFrequencies = null) {
 	const chatMetadata = await getActiveGroupRuntime(groupId)
 	if (!chatMetadata) throw new Error('Group not found')
 	const result = [{ charname: null, frequency: 1 }]
@@ -369,7 +370,9 @@ export async function getCharReplyFrequency(groupId) {
 			|| await resolveChar(groupId, charname, chatMetadata.username)
 		if (!char) continue
 		let frequency = session.charFrequencies?.[charname] ?? 1
-		if (char.interfaces?.chat?.OnMessage && defaultChannelId) {
+		if (onMessageFrequencies?.has(charname))
+			frequency = onMessageFrequencies.get(charname)
+		else if (char.interfaces?.chat?.OnMessage && defaultChannelId) {
 			const bucketKey = autoReplyBucketKey(groupId, defaultChannelId, charname)
 			const event = await buildOnMessageEvent(chatMetadata.username, groupId, defaultChannelId, charname)
 			let spoke = false
