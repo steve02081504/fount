@@ -8,6 +8,7 @@ import util from 'node:util'
 import { async_eval } from 'npm:@steve02081504/async-eval'
 import { removeTerminalSequences } from 'npm:@steve02081504/exec'
 
+import { redactSecrets } from '../../../../scripts/secret_filter.mjs'
 import {
 	createCollectingConsole,
 	createLineDedupe,
@@ -368,6 +369,7 @@ ${renderAnsiBlock(renderAnsiText(result))}
 `,
 		charVisibility: [args.char_id],
 	}
+	feedback.content = redactSecrets(feedback.content)
 	try {
 		// 只负责写入，由 shell 决定是否/何时安排生成；无 RequestCharReply 的 shell 即为 append-only
 		await appendAndWake(args, feedback)
@@ -614,8 +616,8 @@ async function evaluateInlineJs(call, args) {
 	if (outcome.timedOut) throw new Error('内联 JS 执行超时；JS 无法强制终止，代码可能仍在运行。')
 	const coderesult = outcome.evalResult
 	if (coderesult?.error) throw coderesult.error
-	if (remote) return String(coderesult ?? '')
-	return coderesult.result + ''
+	if (remote) return redactSecrets(String(coderesult ?? ''))
+	return redactSecrets(coderesult.result + '')
 }
 
 /**
@@ -663,7 +665,7 @@ function createInlineShellEvaluate(shell_name, resolveShells) {
 		const stdout = String(shell_result.stdout ?? '')
 		if (stdout.length > OUTPUT_GUARD_LIMIT)
 			throw new Error(`内联 ${shell_name} 输出过大（${stdout.length} 字符）；内联结果会直接插入消息，请改用 <run-${shell_name}>，其大输出会自动落盘。`)
-		return stdout.trim()
+		return redactSecrets(stdout.trim())
 	}
 }
 
@@ -765,7 +767,7 @@ async function executeRunJs({ runtime, args, call, limits, remote, stream }) {
 		showParts.push(notice.trim())
 	}
 	const failed = Boolean(timedOut || evalResult?.error)
-	return { content: contentParts.join('\n\n'), showParts, evalResult, failed }
+	return { content: redactSecrets(contentParts.join('\n\n')), showParts, evalResult, failed }
 }
 
 /**
@@ -826,7 +828,7 @@ export const runJsReplyHandler = defineReplyHandler({
 				 * 运行中检视：返回控制台输出的最后一段。
 				 * @returns {string} 末尾控制台输出。
 				 */
-				inspect: () => inspectBuffer.read().trim() || '（暂无控制台输出）',
+				inspect: () => redactSecrets(inspectBuffer.read().trim()) || '（暂无控制台输出）',
 				meta: { code: call.inner, remote, executionTarget },
 			})
 			writeAsyncDispatchLog(args, task, 'JS')
@@ -916,7 +918,7 @@ async function executeRunShell({ runtime, args, call, limits, shellName, stream 
 		// 展示层保留原始 ANSI：用 ansi 代码块呈色
 		showBody = header + '\n\n' + renderMarkdownCodeBlock(rawOutput || output, { lang: 'ansi' }) + (notice ? '\n' + notice.trim() : '')
 	}
-	return { fullOutput, rawOutput, showBody, failed }
+	return { fullOutput: redactSecrets(fullOutput), rawOutput, showBody, failed }
 }
 
 /**
@@ -981,7 +983,7 @@ function createRunShellReplyHandler(shell_name, resolveShells) {
 					 * 运行中检视：返回 stdall 的最后一段（去终端控制序列）。
 					 * @returns {string} 末尾输出。
 					 */
-					inspect: () => removeTerminalSequences(inspectBuffer.read()).trim() || '（暂无输出）',
+					inspect: () => redactSecrets(removeTerminalSequences(inspectBuffer.read()).trim()) || '（暂无输出）',
 					meta: { code: call.inner, executionTarget },
 				})
 				writeAsyncDispatchLog(args, task, shell_name)

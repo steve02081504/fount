@@ -1,6 +1,7 @@
 import { Buffer } from 'node:buffer'
 import util from 'node:util'
 
+import { redactSecrets } from '../../../../scripts/secret_filter.mjs'
 import { guardOutput } from '../../../../scripts/shell_guard.mjs'
 import { appendAndWake } from '../../shells/chat/src/lib/charWake.mjs'
 import { defineReplyHandler, defineReplyHandlers } from '../../shells/chat/src/reply/defineReplyHandler.mjs'
@@ -46,7 +47,7 @@ async function logBrowserTool(args, name, content, files = []) {
 	args.AddLongTimeLog?.({
 		name,
 		role: 'tool',
-		content: text,
+		content: redactSecrets(text),
 		content_for_show: renderMarkdownCodeBlock(text, { lang: 'text' }),
 		files,
 	})
@@ -353,7 +354,7 @@ ${util.inspect(data, { depth: null })}
 		name: 'system',
 		uid: 'system',
 		role: 'system',
-		content: text,
+		content: redactSecrets(text),
 		content_for_show: renderMarkdownCodeBlock(text, { lang: 'text' }),
 		files: [],
 	}

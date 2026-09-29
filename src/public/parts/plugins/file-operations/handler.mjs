@@ -2,6 +2,7 @@ import { Buffer } from 'node:buffer'
 import fs from 'node:fs'
 import path from 'node:path'
 
+import { redactSecrets } from '../../../../scripts/secret_filter.mjs'
 import { defineReplyHandler } from '../../shells/chat/src/reply/defineReplyHandler.mjs'
 import { defaultDisplay } from '../../shells/chat/src/reply/display.mjs'
 import { getChatI18n, inferCodeLanguageFromPath, renderMarkdownCodeBlock } from '../../shells/chat/src/streaming/index.mjs'
@@ -226,7 +227,7 @@ function addFileToolLog(args, call, resultText, { name = 'file-operations', file
 	args.AddLongTimeLog({
 		name,
 		role: 'tool',
-		content: resultText,
+		content: redactSecrets(resultText),
 		content_for_show: renderMarkdownCodeBlock(call.trim()) + '\n\n' + resultText,
 		files,
 		...Object.keys(extension).length ? { extension } : {},

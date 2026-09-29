@@ -1,3 +1,4 @@
+import { redactSecrets } from '../../../../scripts/secret_filter.mjs'
 import { guardOutput as defaultGuardOutput } from '../../../../scripts/shell_guard.mjs'
 import { defineReplyHandler } from '../../shells/chat/src/reply/defineReplyHandler.mjs'
 import { renderMarkdownCodeBlock } from '../../shells/chat/src/streaming/index.mjs'
@@ -52,19 +53,19 @@ export function createWebBrowseReplyHandler({ fetchMarkdown = MarkdownWebFetch, 
 			 * 追加一条人类展示层安全的工具日志。
 			 * @param {string} content - 提供给角色的日志正文。
 			 * @param {string} [contentForShow=content] - 人类展示层正文。
-			 * @returns {void}
+			 * @returns {Promise<void>}
 			 */
-			const addToolLog = (content, contentForShow = content) => args.AddLongTimeLog?.({
+			const addToolLog = async (content, contentForShow = content) => args.AddLongTimeLog?.({
 				name: 'web-browse.browse',
 				role: 'tool',
-				content,
+				content: redactSecrets(content),
 				content_for_show: renderMarkdownCodeBlock(contentForShow),
 				files: [],
 			})
 
 			const { url, question } = parseWebBrowseCall(String(call?.inner ?? ''))
 			if (!url) {
-				addToolLog('网页浏览指令 <web-browse> 内未找到 <url> 标签。')
+				await addToolLog('网页浏览指令 <web-browse> 内未找到 <url> 标签。')
 				return { regen: true, failed: true }
 			}
 
@@ -74,12 +75,12 @@ export function createWebBrowseReplyHandler({ fetchMarkdown = MarkdownWebFetch, 
 				// 先按整体大小护栏（超限时完整原文落盘、正文只留头尾），再按单行字符上限截断过长行：
 				// 网页常含 minify 后的超长单行，落盘保证完整内容可回查，单行截断保证正文仍可读。
 				const guarded = await guardOutput(formatWebBrowseResult(url, markdown, question), { name: 'web-browse', label: '网页内容' })
-				addToolLog(truncateLongLines(guarded.text, DEFAULT_READ_MAX_LINE_CHARS))
+				await addToolLog(truncateLongLines(guarded.text, DEFAULT_READ_MAX_LINE_CHARS))
 			}
 			catch (error) {
 				console.error('web browse failed:', error)
 				const message = error?.stack || error?.message || String(error)
-				addToolLog(`浏览网页“${url}”时出现错误：\n${message}`)
+				await addToolLog(`浏览网页“${url}”时出现错误：\n${message}`)
 				return { regen: true, failed: true }
 			}
 			return { regen: true }

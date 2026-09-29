@@ -1,3 +1,4 @@
+import { events } from '../../../../../server/events.mjs'
 import { loadPart } from '../../../../../server/parts_loader.mjs'
 import { skip_report } from '../../../../../server/server.mjs'
 import { loadData, saveData } from '../../../../../server/setting_loader.mjs'
@@ -36,6 +37,7 @@ export async function setPartData(username, partpath, data) {
 		await part.interfaces.config.SetData(data)
 		parts_config[normalized] = data
 		saveData(username, 'parts_config')
+		await events.emit('part-config-changed', { username, partpath: normalized, data })
 	}
 	catch (error) {
 		throw skip_report(new Error(`Failed to set data for part ${partpath}: ${error.message}\n${error.stack}`))

@@ -5,6 +5,7 @@ import sanitize from 'npm:sanitize-filename'
 
 import { saveJsonFile } from '../../../../../scripts/json_loader.mjs'
 import { getUserDictionary } from '../../../../../server/auth/index.mjs'
+import { events } from '../../../../../server/events.mjs'
 import { loadPart } from '../../../../../server/parts_loader.mjs'
 import { loadData, saveData } from '../../../../../server/setting_loader.mjs'
 
@@ -219,6 +220,7 @@ export async function saveServiceSourceFile(username, fileName, data, serviceSou
 	const parts_config = loadData(username, 'parts_config')
 	parts_config[partpath] = { ...dataToSave }
 	saveData(username, 'parts_config')
+	await events.emit('part-config-changed', { username, partpath, data: dataToSave })
 }
 
 /**
@@ -247,6 +249,7 @@ export async function addServiceSourceFile(username, fileName, serviceSourcePath
 	const parts_config = loadData(username, 'parts_config')
 	parts_config[partpath] = { ...initialData }
 	saveData(username, 'parts_config')
+	await events.emit('part-config-changed', { username, partpath, data: initialData })
 }
 
 /**

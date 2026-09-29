@@ -8,6 +8,7 @@
 			"src/public/parts/plugins/browser-integration/**",
 			"src/public/parts/plugins/file-operations/src/read_window.mjs",
 			"src/public/parts/shells/chat/src/{reply,streaming}/**",
+			"src/scripts/secret_filter.mjs",
 			"src/scripts/shell_guard.mjs"
 		]
 	},

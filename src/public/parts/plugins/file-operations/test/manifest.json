@@ -6,7 +6,8 @@
 		],
 		"pluginCore": [
 			"src/public/parts/plugins/file-operations/**",
-			"src/public/parts/shells/chat/src/{prompt_struct,reply}/**"
+			"src/public/parts/shells/chat/src/{prompt_struct,reply}/**",
+			"src/scripts/secret_filter.mjs"
 		]
 	},
 	"suites": [
