@@ -13,7 +13,7 @@ import { prefixedRandomId } from 'npm:@steve02081504/fount-p2p/core/random_id'
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { loadAnyPreferredDefaultPart } from '../../../../../../../server/parts_loader.mjs'
 import { messageLineShowText } from '../../../public/shared/channelContent.mjs'
-import { appendChannelLink, createChannel, updateChannel } from '../../chat/dag/channelOperations.mjs'
+import { appendChannelLink, createChannel, removeChannelLink, updateChannel } from '../../chat/dag/channelOperations.mjs'
 import { getState } from '../../chat/dag/materialize.mjs'
 import { groupKindFromState } from '../../chat/lib/notificationPreferences.mjs'
 import { withLock } from '../lib/locks.mjs'
@@ -144,14 +144,26 @@ async function autoNameChannelAsync(username, groupId, channelId) {
 		})
 	}
 
+	// AI 调用是异步的，期间频道可能已被删除：重读最新状态并确认频道仍在，避免写回悬空频道/分类链接。
+	const { state: latest } = await getState(username, groupId)
+	if (!latest.channels?.[channelId]) return false
+	const categoryExists = !!categoryId && !!latest.channels?.[categoryId]
+
 	// 单事件提交子频道侧更新（名称 + 权限块），父频道 links 另成一条，避免多次可部分成功的操作。
 	const updates = {}
-	if (channel.name !== name) updates.name = name
-	if (categoryId) updates.permissionBlockId = categoryId
+	if (latest.channels[channelId].name !== name) updates.name = name
+	if (categoryExists) updates.permissionBlockId = categoryId
 	if (Object.keys(updates).length)
 		await updateChannel(username, groupId, channelId, updates)
-	if (categoryId)
+	if (categoryExists) {
+		// 移动而非复制：先从所有现有父频道的 links 移除该子频道，再挂到分类下，避免频道重复出现。
+		for (const [parentChannelId, parent] of Object.entries(latest.channels)) {
+			if (parentChannelId === categoryId) continue
+			if (parent?.links?.includes(channelId))
+				await removeChannelLink(username, groupId, parentChannelId, channelId)
+		}
 		await appendChannelLink(username, groupId, categoryId, channelId)
+	}
 	return true
 }
 

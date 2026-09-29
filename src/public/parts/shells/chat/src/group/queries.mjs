@@ -81,6 +81,21 @@ function enrichChannelMessagesForViewer(lines, viewerPubKeyHash) {
 }
 
 /**
+ * 消息最近一次活动时间：取自身 `timestamp` 与 `hlc.wall` 的较大者。
+ * 流式占位在生成期间持续推送更新，故以最近活动（而非流开始时刻）判活。
+ * @param {object} line 消息行
+ * @returns {number} 毫秒时间戳；无可用时间时为 0
+ */
+function messageLastActivityMs(line) {
+	let latest = 0
+	for (const raw of [line?.timestamp, line?.hlc?.wall]) {
+		const ms = Number(raw)
+		if (Number.isFinite(ms) && ms > latest) latest = ms
+	}
+	return latest
+}
+
+/**
  * 占位 `message` 超时未收到 `message_edit` 终稿时标记失败（§6.4）。
  * @param {object[]} lines 消息行（时间顺序）
  * @param {number} [idleMs] `streamGeneratingIdleMs` 阈值
@@ -92,7 +107,8 @@ function markStaleGeneratingMessages(lines, idleMs = DEFAULT_STREAM_GENERATING_I
 	const thresholdMs = idleMs > 0 ? idleMs : DEFAULT_STREAM_GENERATING_IDLE_MS
 	return lines.map(line => {
 		if (line.type !== 'message' || !line.content?.is_generating) return line
-		if (line.timestamp && now - line.timestamp > thresholdMs)
+		const lastActivityMs = messageLastActivityMs(line)
+		if (lastActivityMs && now - lastActivityMs > thresholdMs)
 			return { ...line, content: { ...line.content, is_generating: false, streamGenerationFailed: true } }
 		return line
 	})
@@ -153,7 +169,8 @@ export function aggregateReactionsForMessages(state, channelId, messageEventIds)
 		const emoji = key.slice(sepIdx + 1)
 		if (!emoji || !voters?.size || !targetSet.has(targetId)) continue
 		const indexed = senderIndex[targetId] || senderIndex[targetId]
-		if ((indexed?.channelId || 'default') !== channelId) continue
+		// 无真实频道的消息不得匹配任何频道（不伪造 'default'）。
+		if (!indexed?.channelId || indexed.channelId !== channelId) continue
 		if (!out[targetId]) out[targetId] = {}
 		out[targetId][emoji] = { voters: [...voters] }
 	}

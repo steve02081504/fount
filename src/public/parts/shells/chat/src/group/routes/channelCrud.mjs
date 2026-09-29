@@ -7,7 +7,7 @@ import { prefixedRandomId } from 'npm:@steve02081504/fount-p2p/core/random_id'
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
-import { prependChannelLink } from '../../chat/dag/channelOperations.mjs'
+import { deleteChannel, prependChannelLink } from '../../chat/dag/channelOperations.mjs'
 import { chatClientFromReq } from '../../endpoints/shared.mjs'
 import { materializeFriendBinding } from '../lib/friendBinding.mjs'
 
@@ -225,19 +225,9 @@ export function registerChannelCrudRoutes(router, authenticate) {
 		if (state.groupSettings.rootChannelId === channelId)
 			throw httpError(400, 'Cannot delete root channel')
 
-		// 群允许无默认频道：删除当前默认频道前先清空标记（reducer 亦有兜底）。
-		if (state.groupSettings.defaultChannelId === channelId)
-			await appendSignedLocalEvent(username, groupId, {
-				type: 'group_settings_update',
-				timestamp: Date.now(),
-				content: { defaultChannelId: null },
-			})
-
-		await appendSignedLocalEvent(username, groupId, {
-			type: 'channel_delete',
-			timestamp: Date.now(),
-			content: { channelId },
-		})
+		// channel_delete reducer 会一并清空悬空的 defaultChannelId；不再另发 group_settings_update——
+		// 既避免删除失败时默认频道被无谓清空，也避免加宽折叠窗口。deleteChannel 同时清理 scoped state。
+		await deleteChannel(username, groupId, channelId)
 		// 频道被删除 → 立即清理该频道草稿及其附件内容
 		const { client } = await chatClientFromReq(req)
 		const { removedFileIds } = await client.drafts.remove(`${groupId}:${channelId}`)

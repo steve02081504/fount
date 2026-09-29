@@ -88,6 +88,14 @@ Deno.test('aggregate only includes requested message eventIds', () => {
 	assertEquals(Object.keys(aggregateReactionsForMessages(state, CHANNEL, [messageEventId])), [messageEventId])
 })
 
+Deno.test('aggregate does not match a phantom default channel for channel-less messages', () => {
+	const state = freshState()
+	state.messageSenderIndex[messageEventId] = { sender: VOTER_A }
+	state.messageOverlay.reactions.set(`${messageEventId}:👍`, new Set([VOTER_A]))
+	// 消息没有真实频道时，不应因伪造 'default' 而匹配名为 default 的频道查询。
+	assertEquals(aggregateReactionsForMessages(state, 'default', [messageEventId]), {})
+})
+
 Deno.test('aggregate handles multi-codepoint emoji containing colons', () => {
 	const state = freshState()
 	messageReducers.reaction_add(state, {

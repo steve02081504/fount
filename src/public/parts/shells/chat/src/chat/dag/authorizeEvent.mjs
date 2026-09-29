@@ -11,6 +11,7 @@ import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { CHANNEL_PERMISSIONS, GROUP_PERMISSIONS, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
+import { governanceChannelId } from '../../group/access.mjs'
 import { isVoteBallotClosed } from '../lib/voteBallots.mjs'
 
 import { verifyEntityActivePubKeyBelongs, verifyMemberJoinBinding } from './entityBinding.mjs'
@@ -57,11 +58,24 @@ function isMessageDeleted(state, targetId) {
 }
 
 /**
- * @param {{ channelId?: string }} event DAG 事件
- * @returns {string} 权限求值用的频道 ID
+ * @param {{ channelId?: string, content?: { channelId?: string } }} event DAG 事件
+ * @returns {string} 事件显式指定的频道 ID（顶层优先，其次内容目标频道）；缺失时为空串
  */
 export function eventChannelId(event) {
-	return event.channelId || 'default'
+	return event.channelId || event.content?.channelId || ''
+}
+
+/**
+ * 权限求值频道：优先事件显式目标频道（如 channel_delete/channel_update 的 content.channelId），
+ * 目标频道不存在时回退治理/根容器频道——绝不伪造 'default'。
+ * @param {object} state 物化群状态
+ * @param {object} event DAG 事件
+ * @returns {string | null} 权限求值频道 ID
+ */
+function resolvePermissionChannelId(state, event) {
+	const explicit = event.channelId || event.content?.channelId
+	if (explicit && state.channels?.[explicit]) return explicit
+	return governanceChannelId(state)
 }
 
 /**
@@ -178,7 +192,7 @@ export async function checkEventPermission(state, event, senderHash, options = {
 	if (type === 'member_leave')
 		return { ok: true }
 
-	const channelId = eventChannelId(event)
+	const channelId = resolvePermissionChannelId(state, event)
 	const channelPerms = memberChannelPermissions(state, sender, channelId)
 	const govPerms = memberGroupPermissions(state, sender)
 

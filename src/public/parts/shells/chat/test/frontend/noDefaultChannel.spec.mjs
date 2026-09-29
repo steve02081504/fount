@@ -30,6 +30,23 @@ async function deleteChannelViaApi(baseUrl, apiKey, groupId, channelId) {
 	})
 }
 
+/**
+ * 通过 API 读取群 `/state`（meta.channels / meta.groupSettings）。
+ * @param {string} baseUrl 测试根 URL
+ * @param {string} apiKey API 密钥
+ * @param {string} groupId 群 ID
+ * @returns {Promise<object>} `/state` JSON
+ */
+async function fetchGroupState(baseUrl, apiKey, groupId) {
+	return withApiRequest(async req => {
+		const res = await req.get(
+			`${baseUrl}/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/state?fount-apikey=${encodeURIComponent(apiKey)}`,
+		)
+		if (!res.ok()) throw new Error(`state failed: ${res.status()} ${await res.text()}`)
+		return res.json()
+	})
+}
+
 test.describe('Group with no default channel', () => {
 	test.describe.configure({ timeout: TEST_TIMEOUT })
 
@@ -53,6 +70,24 @@ test.describe('Group with no default channel', () => {
 		const after = parseGroupHashFromUrl(page.url())
 		expect(after?.groupId).toBe(groupId)
 		expect(after?.channelId).toBeTruthy()
+	})
+
+	test('deleting the current default channel once removes it from the sidebar and /state', async ({ page, baseUrl, apiKey }) => {
+		const { groupId, channelId: defaultChannelId } = await createChatTestGroup(baseUrl, apiKey)
+		const { channelId: otherChannelId } = await createTestChannel(baseUrl, apiKey, groupId, { name: 'keep-me' })
+
+		// 一次 DELETE 删除当前默认频道；结束后端状态应立即移除该频道并清空默认标记。
+		await deleteChannelViaApi(baseUrl, apiKey, groupId, defaultChannelId)
+		const state = await fetchGroupState(baseUrl, apiKey, groupId)
+		expect(state.meta?.channels?.[defaultChannelId]).toBeFalsy()
+		expect(state.meta?.groupSettings?.defaultChannelId ?? null).toBeNull()
+		expect(state.meta?.channels?.[otherChannelId]).toBeTruthy()
+
+		await waitForHub(page, baseUrl, { friendsMode: false })
+		await page.evaluate(gid => { location.hash = `group:${encodeURIComponent(gid)}` }, groupId)
+
+		await expect(page.locator(`.channel-item[data-channel-id="${defaultChannelId}"]`)).toHaveCount(0, { timeout: 60_000 })
+		await expect(page.locator(`.channel-item[data-channel-id="${otherChannelId}"]`)).toBeVisible({ timeout: 60_000 })
 	})
 
 	test('right-click default channel shows unset-default and clears it', async ({ page, baseUrl, apiKey }) => {
