@@ -1,3 +1,5 @@
+import { isCacheFirstExemptUrl, isColdBootMarkedRequest, isColdBootNavigationRequest, shouldCacheResponse } from './service_worker_policy.mjs'
+
 // --- 全局常量与配置 ---
 
 /**
@@ -334,6 +336,29 @@ async function cleanupExpiredCache() {
 }
 
 /**
+ * 清除历史版本遗留的鉴权数据缓存（/api/、/ws/、/virtual_files/）。
+ * 这些响应按用户鉴权，不应留在 Cache Storage 中跨用户共享；新版本已不再写入，
+ * 此处主动清掉旧版本可能留下的条目，并同步删除其 IndexedDB 时间戳。
+ * @returns {Promise<void>}
+ */
+async function purgeExemptCache() {
+	try {
+		const cache = await caches.open(CACHE_NAME)
+		const requests = await cache.keys()
+		const exemptRequests = requests.filter(request => isCacheFirstExemptUrl(new URL(request.url)))
+		await Promise.allSettled(exemptRequests.map(async request => {
+			await cache.delete(request)
+			await performTransaction('readwrite', store => {
+				store.delete(request.url)
+			})
+		}))
+	}
+	catch (error) {
+		console.error('[SW Cleanup] Failed to purge exempt cache entries:', error)
+	}
+}
+
+/**
  * 清理响应对象，使其符合傻逼Chrome的脑残规范。
  * @param {Response} response - 响应对象。
  * @returns {Promise<Response>} 返回一个符合规范的响应对象。
@@ -361,10 +386,14 @@ async function fetchAndCache(request) {
 		if (networkResponse?.type === 'opaque' || !networkResponse?.ok) {
 			const cachedResponse = await cache.match(request)
 			const can_cors = cachedResponse ? cachedResponse.headers.get('Access-Control-Allow-Origin') : new URL(request.url).origin !== self.location.origin && await fetch(request.url, { method: 'HEAD' }).then(response => response.headers.get('Access-Control-Allow-Origin')).catch(_ => null)
-			const newNetworkResponse = await fetch(request.url, { ...request, mode: can_cors ? 'cors' : request.mode === 'no-cors' ? 'no-cors' : undefined, url: undefined }).catch(_ => { error = _ })
+			// 用 new Request(request, ...) 重建请求：展开 Request 不会复制任何字段，会丢失 headers / mode。
+			const retryRequest = new Request(request, { mode: can_cors ? 'cors' : request.mode })
+			const newNetworkResponse = await fetch(retryRequest).catch(_ => { error = _ })
 			if (newNetworkResponse?.ok) networkResponse = newNetworkResponse
 			else if (error) throw error
 		}
+
+		const cacheable = shouldCacheResponse({ request, url: new URL(request.url) })
 
 		if (networkResponse.type == 'opaque');
 		else if (networkResponse && networkResponse.ok) {
@@ -372,7 +401,8 @@ async function fetchAndCache(request) {
 			const responseToCache = networkResponse.clone()
 			const now = Date.now()
 
-			if (networkResponse.redirected) {
+			if (!cacheable);
+			else if (networkResponse.redirected) {
 				await cache.put(networkResponse.url, await cleanResponse(responseToCache))
 				await updateTimestamp(networkResponse.url, now)
 
@@ -543,17 +573,35 @@ const routes = [
 		 */
 		handler: () => null,
 	},
+	// 鉴权数据（/api/、/ws/、/virtual_files/）：始终网络优先，绝不缓存。
+	{
+		/**
+		 * 检查 URL 是否豁免缓存优先。
+		 * @param {object} context - 上下文对象。
+		 * @param {URL} context.url - URL 对象。
+		 * @returns {boolean} 是否豁免缓存优先。
+		 */
+		condition: ({ url }) => isCacheFirstExemptUrl(url),
+		/**
+		 * 处理鉴权数据请求。
+		 * @param {object} context - 上下文对象。
+		 * @param {FetchEvent} context.event - Fetch 事件。
+		 * @returns {Promise<Response>} 返回一个解析为 Response 对象的 Promise。
+		 */
+		handler: ({ event }) => handleNetworkFirst(event.request),
+	},
 	// 冷启动模式：优先使用缓存
 	{
 		/**
-		 * 检查是否处于冷启动模式。
+		 * 检查是否处于冷启动模式；仅同源导航请求可以开启冷启动。
 		 * @param {object} root0 - 上下文对象。
+		 * @param {Request} root0.request - 请求对象。
 		 * @param {URL} root0.url - URL 对象。
 		 * @returns {boolean} 如果处于冷启动模式，则返回 true。
 		 */
-		condition: ({ url }) => {
-			if (url.pathname === '/' || url.pathname === '/index.html') coldBootMode = true
-			else if (url.searchParams.get('cold_bootting') === 'true') coldBootMode = true
+		condition: ({ request, url }) => {
+			if (!coldBootMode && isColdBootNavigationRequest({ request, url, origin: self.location.origin }))
+				coldBootMode = true
 			return coldBootMode
 		},
 		/**
@@ -564,7 +612,7 @@ const routes = [
 		 * @returns {Promise<Response>} 返回一个解析为 Response 对象的 Promise。
 		 */
 		handler: ({ event, url }) => {
-			if (url.searchParams.has('cold_bootting')) {
+			if (isColdBootMarkedRequest(url)) {
 				const cleanUrl = new URL(url)
 				cleanUrl.searchParams.delete('cold_bootting')
 				const { mode, ...rest } = event.request
@@ -827,6 +875,8 @@ self.addEventListener('activate', event => {
 
 			// 确保新的 Service Worker 立即控制所有当前打开的客户端（页面）。
 			await self.clients.claim()
+			// 清除旧版本遗留的鉴权数据缓存。
+			await purgeExemptCache()
 			// 在激活时立即执行一次清理，以处理可能在 SW 非活动期间过期的项目。
 			await cleanupExpiredCache()
 		})()

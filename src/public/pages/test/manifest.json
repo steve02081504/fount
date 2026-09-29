@@ -2,6 +2,24 @@
 	"id": "server_pages",
 	"suites": [
 		{
+			"name": "pure",
+			"expected": "10s",
+			"triggers": [
+				"src/public/pages/{service_worker,service_worker_policy}.mjs",
+				"src/public/pages/test/pure/**"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/deno/serial.mjs",
+				"./src/public/pages/test/pure/"
+			]
+		},
+		{
 			"name": "frontend",
 			"expected": "4m50s",
 			"dependsOn": [

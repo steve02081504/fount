@@ -169,27 +169,43 @@ async function waitServiceWorkerController() {
 }
 
 /**
+ * 通知 Service Worker 退出冷启动模式。
+ * 仅在服务器可达时调用；controller 可能尚未接管当前页面，需判空。
+ * @returns {void}
+ */
+function exitColdBoot() {
+	const controller = navigator.serviceWorker?.controller
+	if (controller) controller.postMessage({ type: 'EXIT_COLD_BOOT' })
+}
+
+/**
  * 向 Service Worker 查询服务器是否适合启动。
  * @returns {Promise<boolean>} 是否适合启动服务器。
  */
 export async function queryWakeServer() {
 	const controller = await waitServiceWorkerController()
-	if (controller) return new Promise(resolve => {
-		const channel = new MessageChannel()
-		/**
-		 * 处理 Service Worker 返回的在线状态消息。
-		 * @param {MessageEvent} event - 消息事件。
-		 * @returns {void}
-		 */
-		channel.port1.onmessage = event => resolve(!!event.data?.approved)
-		controller.postMessage({ type: 'WAKE_SERVER_REQUEST' }, [channel.port2])
-	})
+	if (controller) {
+		const approved = await new Promise(resolve => {
+			const channel = new MessageChannel()
+			/**
+			 * 处理 Service Worker 返回的在线状态消息。
+			 * @param {MessageEvent} event - 消息事件。
+			 * @returns {void}
+			 */
+			channel.port1.onmessage = event => resolve(!!event.data?.approved)
+			controller.postMessage({ type: 'WAKE_SERVER_REQUEST' }, [channel.port2])
+		})
+		// 服务器可达且非预渲染页面：中心化退出冷启动，使 chat/tutorial 等页面一并生效。
+		if (approved && !document.prerendering) exitColdBoot()
+		return approved
+	}
 	try {
 		await fetch('/api/ping', { method: 'GET', mode: 'cors', credentials: 'omit', cache: 'no-store', signal: AbortSignal.timeout(500) })
 	}
 	catch {
 		return false
 	}
+	if (!document.prerendering) exitColdBoot()
 	return true
 }
 
@@ -224,7 +240,10 @@ if (!is_hidden_page) if (HTMLScriptElement.supports?.('speculationrules')) {
 	specScript.textContent = JSON.stringify({
 		prerender: [{
 			where: {
-				href_matches: '/*'
+				and: [
+					{ href_matches: '/*' },
+					{ not: { href_matches: '/parts/shells:chat*' } },
+				],
 			},
 			eagerness: 'moderate'
 		}]
