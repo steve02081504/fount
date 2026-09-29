@@ -25,15 +25,6 @@ export function hashContent(text) {
 }
 
 /**
- * 计算二进制内容的内容哈希（sha256 hex）。
- * @param {Buffer|Uint8Array} buffer - 二进制内容。
- * @returns {string} sha256 十六进制摘要。
- */
-export function hashBuffer(buffer) {
-	return createHash('sha256').update(buffer).digest('hex')
-}
-
-/**
  * 把插件私有数据合并进条目的 `extension.pluginData[pluginName]`（浅合并，保留既有键）。
  * @param {object} extension - 条目扩展对象（就地 mutate）。
  * @param {string} pluginName - 插件名。
