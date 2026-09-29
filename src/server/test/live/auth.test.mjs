@@ -28,7 +28,12 @@ function cookiePairFromSetCookie(headers, name) {
 	}
 }
 
-Deno.test('verifyApiKey accepts valid key and rejects invalid or revoked', async () => {
+// 两个场景共享同一次 in-process boot：init() 每个 Deno 子进程只能跑一次（见 boot.mjs 的防重入）。
+Deno.test({
+	name: 'apiKey verification and account deletion prune the global index',
+	sanitizeOps: false,
+	sanitizeResources: false,
+}, async t => {
 	const dataPath = mkdtempSync(join(tmpdir(), 'fount_auth_unit_'))
 	const username = 'auth-unit-user'
 	const apiKey = 'fount-auth-unit-key-valid'
@@ -40,51 +45,36 @@ Deno.test('verifyApiKey accepts valid key and rejects invalid or revoked', async
 			web: false,
 			resetData: true,
 		})
-		const { verifyApiKey, revokeApiKey } = await import('../../auth/index.mjs')
-		assert(await verifyApiKey(apiKey))
-		assertEquals((await verifyApiKey(apiKey))?.username, username)
-		assertEquals(await verifyApiKey('totally-invalid-key'), null)
-		revokeApiKey(apiKey)
-		assertEquals(await verifyApiKey(apiKey), null)
-	}
-	finally {
-		rmSync(dataPath, { recursive: true, force: true })
-	}
-})
 
-Deno.test({
-	name: 'deleteUserAccount removes its apiKeys from the global index',
-	sanitizeOps: false,
-	sanitizeResources: false,
-}, async () => {
-	const dataPath = mkdtempSync(join(tmpdir(), 'fount_auth_deluser_'))
-	const username = 'auth-deluser'
-	try {
-		await bootInProcess({
-			dataPath,
-			username,
-			apiKey: 'fount-auth-deluser-key',
-			web: false,
-			resetData: true,
+		await t.step('verifyApiKey accepts valid key and rejects invalid or revoked', async () => {
+			const { verifyApiKey, revokeApiKey } = await import('../../auth/index.mjs')
+			assert(await verifyApiKey(apiKey))
+			assertEquals((await verifyApiKey(apiKey))?.username, username)
+			assertEquals(await verifyApiKey('totally-invalid-key'), null)
+			revokeApiKey(apiKey)
+			assertEquals(await verifyApiKey(apiKey), null)
 		})
-		const { config } = await import('../../server.mjs')
-		const { register, generateApiKey, deleteUserAccount, verifyApiKey } = await import('../../auth/index.mjs')
 
-		const targetUser = 'auth-deluser-target'
-		await register(targetUser, 'pw')
-		const { apiKey, jti } = await generateApiKey(targetUser, 'del test')
-		assert(
-			Object.values(config.data.apiKeys).some(k => k.jti === jti),
-			'apiKey record missing before account delete',
-		)
+		await t.step('deleteUserAccount removes its apiKeys from the global index', async () => {
+			const { config } = await import('../../server.mjs')
+			const { register, generateApiKey, deleteUserAccount, verifyApiKey } = await import('../../auth/index.mjs')
 
-		await deleteUserAccount(targetUser, 'pw')
+			const targetUser = 'auth-deluser-target'
+			await register(targetUser, 'pw')
+			const { apiKey, jti } = await generateApiKey(targetUser, 'del test')
+			assert(
+				Object.values(config.data.apiKeys).some(k => k.jti === jti),
+				'apiKey record missing before account delete',
+			)
 
-		assert(
-			!Object.values(config.data.apiKeys).some(k => k.jti === jti),
-			'orphan apiKey record left in config.data.apiKeys after account delete',
-		)
-		assertEquals(await verifyApiKey(apiKey), null)
+			await deleteUserAccount(targetUser, 'pw')
+
+			assert(
+				!Object.values(config.data.apiKeys).some(k => k.jti === jti),
+				'orphan apiKey record left in config.data.apiKeys after account delete',
+			)
+			assertEquals(await verifyApiKey(apiKey), null)
+		})
 	}
 	finally {
 		rmSync(dataPath, { recursive: true, force: true })
