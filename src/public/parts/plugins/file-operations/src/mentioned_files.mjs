@@ -204,22 +204,17 @@ export async function collectMentionedFiles(executor, text, options = {}) {
 	const errorLocations = parseErrorLocations(text)
 	/** @type {Map<string, Set<number>>} */
 	const errorFilesByResolved = new Map()
-	/** @type {Map<string, Set<number>>} */
-	const errorFilesByRaw = new Map()
 	for (const location of errorLocations) {
 		const stat = await statEntry(location.path)
 		if (!stat?.isFile) continue
 		const resolved = await canonicalPath(location.path)
-		if (!errorFilesByResolved.has(resolved)) errorFilesByResolved.set(resolved, new Set())
-		if (!errorFilesByRaw.has(location.path)) errorFilesByRaw.set(location.path, new Set())
-		for (const line of location.lines) {
-			errorFilesByResolved.get(resolved).add(line)
-			errorFilesByRaw.get(location.path).add(line)
-		}
+		const lines = errorFilesByResolved.get(resolved) ?? new Set()
+		errorFilesByResolved.set(resolved, lines)
+		for (const line of location.lines) lines.add(line)
 	}
 
 	// 报错文件优先，避免被前面的普通候选挤掉额度。
-	const candidates = [...new Set([...errorLocations.map(location => location.path), ...extractPaths ? extractPathCandidates(text) : []])]
+	const candidates = [...new Set([...errorLocations.map(location => location.path), ...(extractPaths ? extractPathCandidates(text) : [])])]
 		.filter(candidate => !absoluteOnly || ABSOLUTE_PATH_REGEX.test(candidate))
 
 	for (const candidate of candidates) {
@@ -256,7 +251,7 @@ export async function collectMentionedFiles(executor, text, options = {}) {
 
 		const remaining = maxChars > 0 ? maxChars - usedChars : Number.POSITIVE_INFINITY
 		const rawText = truncateLongLines(buffer.toString('utf-8'), maxLineChars)
-		const errorLines = errorFilesByResolved.get(canonical) ?? errorFilesByRaw.get(candidate)
+		const errorLines = errorFilesByResolved.get(canonical)
 		if (errorLines?.size) {
 			const allWindows = readErrorWindows(rawText, errorLines, ERROR_WINDOW_RADIUS)
 			const { windows, notice } = clampWindows(allWindows, remaining)

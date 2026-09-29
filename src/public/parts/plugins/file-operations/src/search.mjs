@@ -78,7 +78,6 @@ export async function runRipgrep(params) {
 			.filter(file => !filePatterns.length || fileMatches.some(match => match(file)))
 		if (dirPatterns.length) {
 			const { default: fs } = await import('node:fs/promises')
-			const matches = dirMatches
 			const maxDepth = dirPatterns.some(glob => glob.includes('**'))
 				? Infinity
 				: Math.max(...dirPatterns.map(glob => glob.slice(0, -1).split('/').length))
@@ -121,7 +120,7 @@ export async function runRipgrep(params) {
 						if ((!rule.base || rel.startsWith(`${rule.base}/`)) && rule.matches(rule.base ? rel.slice(rule.base.length + 1) : rel))
 							ignored = !rule.negated
 					if (ignored) continue
-					if (matches.some(match => match(rel))) files.push(`${rel}/`)
+					if (dirMatches.some(match => match(rel))) files.push(`${rel}/`)
 					if (rel.split('/').length < maxDepth) await visit(path.join(dir, entry.name), rel, rules)
 				}
 			}
