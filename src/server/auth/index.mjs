@@ -509,7 +509,8 @@ export async function try_auth_request(req, res) {
 		const user = await verifyApiKey(apiKey)
 		if (user) { req.user = user; return }
 		// 无效 API Key：帮忙清除，并继续尝试会话认证，避免其永久阻塞登录
-		res.clearCookie('fount-apikey', { path: '/' })
+		// WebSocket 升级的模拟响应无法写 Cookie，跳过清除以免抛错。
+		if (!req.ws) res.clearCookie('fount-apikey', { path: '/' })
 	}
 
 	// 2. Cookie 令牌认证
@@ -522,8 +523,26 @@ export async function try_auth_request(req, res) {
 
 	// 3. 尝试刷新令牌
 	if (!refreshToken) {
-		clearAuthCookies(res, getSecureCookieOptions(req))
+		// 仅在确实收到过（已失效的）访问令牌时清除，避免匿名请求（登录页 / 登出后）被反复下发无意义的清除头。
+		if (!req.ws && accessToken) clearAuthCookies(res, getSecureCookieOptions(req))
 		return Unauthorized('Session expired, please login again.')
+	}
+
+	// 4. WebSocket 升级响应（模拟 res）无法下发新 Cookie：只校验刷新令牌以认证本次连接，
+	// 不轮换/消费刷新令牌——否则旧 refreshToken 被撤销、新值却到不了浏览器，宽限期后客户端会被登出。
+	if (req.ws) {
+		const decodedRefresh = await verifyToken(refreshToken)
+		const refreshUser = decodedRefresh && config.data.users[decodedRefresh.username]
+		const refreshEntry = refreshUser?.auth?.refreshTokens?.find(t => t.jti === decodedRefresh.jti)
+		if (!refreshEntry || refreshEntry.deviceId !== decodedRefresh.deviceId)
+			return Unauthorized('Session expired, please login again.')
+
+		refreshEntry.lastSeen = Date.now()
+		if (req.ip) refreshEntry.ipAddress = req.ip
+		if (req.headers?.['user-agent']) refreshEntry.userAgent = req.headers['user-agent']
+		save_config()
+		req.user = refreshUser
+		return
 	}
 
 	const refreshResult = await refresh(refreshToken, req)
@@ -532,7 +551,7 @@ export async function try_auth_request(req, res) {
 		return Unauthorized(refreshResult.message || 'Session expired, please login again.')
 	}
 
-	// 4. 刷新成功，设置 Cookies 并验证新令牌
+	// 5. 刷新成功，设置 Cookies 并验证新令牌
 	const cookieOptions = getSecureCookieOptions(req)
 	res.cookie('accessToken', refreshResult.accessToken, { ...cookieOptions, maxAge: ACCESS_TOKEN_EXPIRY_DURATION })
 	res.cookie('refreshToken', refreshResult.refreshToken, { ...cookieOptions, maxAge: REFRESH_TOKEN_EXPIRY_DURATION })

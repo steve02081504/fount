@@ -52,6 +52,10 @@ export function registerMiddleware(router) {
 		return next()
 	})
 
+	// 必须在任何 diff_if_auth / try_auth_request 之前解析 Cookie，
+	// 否则 req.cookies 为 undefined，浏览器会话会被误判为未认证。
+	router.use(cookieParser())
+
 	router.use(skipWhen(isNoCorsPath, diff_if_auth(
 		express.json({ limit: Infinity }),
 		express.json({ limit: 5 * 1024 * 1024 })
@@ -71,6 +75,4 @@ export function registerMiddleware(router) {
 		fileUpload({ limits: { fileSize: Infinity } }),
 		fileUpload({ limits: { fileSize: 5 * 1024 * 1024 } })
 	)))
-
-	router.use(cookieParser())
 }
