@@ -16,7 +16,7 @@ export const messageReducers = {
 	message(state, event) {
 		withGroupId(state, event)
 		const eventId = event.id
-		const channelId = event.channelId || 'default'
+		const channelId = event.channelId || null
 		if (state.channels[channelId]) {
 			state.channels[channelId].messageSeq = (Number(state.channels[channelId].messageSeq) || 0) + 1
 			state.channels[channelId].lastEventId = eventId

@@ -362,7 +362,7 @@ async function maybeDispatchMailboxForOfflinePeer(username, groupId, signedEvent
 	const { dispatchMailboxMessage } = await import('../mailbox/ingest.mjs')
 	await dispatchMailboxMessage(username, signedEvent, peerPub, {
 		groupId,
-		channelId: signedEvent.channelId || 'default',
+		channelId: signedEvent.channelId,
 		dmSessionTag: meta.dmSessionTag,
 	})
 }

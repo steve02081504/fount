@@ -11,6 +11,7 @@ import { CHANNEL_KEY_ENCRYPT_EVENT_TYPES, encryptEventContent, isChannelKeyEncry
 import { ensureFederationRoom, invalidateFederationRoomCache } from '../federation/room.mjs'
 import { shouldRebindFederationRoomForEvent } from '../federation/rosterChange.mjs'
 import { checkMessageRateLimit } from '../governance/messageRateLimit.mjs'
+import { isChannelIdValid } from '../lib/channelId.mjs'
 import { groupDir, eventsPath } from '../lib/paths.mjs'
 
 import { commitSignedChatEvent } from './commitSignedEvent.mjs'
@@ -148,7 +149,9 @@ export async function appendSignedLocalEvent(username, groupId, event, appendOpt
 	const state = restOpts.state ?? (await getState(username, groupId)).state
 	await validateIngestAuthz(username, groupId, { ...eventBody, sender }, { source: 'local', state })
 	if (CHANNEL_KEY_ENCRYPT_EVENT_TYPES.has(eventBody.type) && eventBody.content && !isChannelKeyEncryptedContent(eventBody.content)) {
-		const channelId = eventBody.channelId || 'default'
+		const channelId = eventBody.channelId
+		if (!isChannelIdValid(channelId))
+			throw new Error(`${eventBody.type} requires a valid channelId for channel-key encryption`)
 		const { ensureChannelKey } = await import('../channel_keys/schedule.mjs')
 		await ensureChannelKey(username, groupId, channelId)
 		eventBody = {

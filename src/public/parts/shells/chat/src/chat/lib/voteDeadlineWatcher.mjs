@@ -6,6 +6,7 @@ import { notifyUserI18n } from 'fount/server/web_server/notify/notify.mjs'
 import { readChannelMessagesForUser } from '../../group/queries.mjs'
 import { getState } from '../dag/materialize.mjs'
 import { broadcastEvent } from '../ws/groupWsBroadcast.mjs'
+import { groupWsRoomKeyForReplica } from '../ws/groupWsRooms.mjs'
 
 import { createDeadlineScheduler } from './deadlineScheduler.mjs'
 import {
@@ -72,7 +73,7 @@ export async function fireVoteClosed(username, groupId, channelId, ballotId) {
 				tag: `vote-closed:${ballotId}`,
 			})
 	}
-	broadcastEvent(groupId, { type: 'vote_closed', channelId, ballotId, tally })
+	broadcastEvent(groupWsRoomKeyForReplica(groupId), { type: 'vote_closed', channelId, ballotId, tally })
 }
 
 /**
@@ -83,10 +84,10 @@ export async function fireVoteClosed(username, groupId, channelId, ballotId) {
 export async function scheduleVoteDeadlines(username, groupId) {
 	const { state } = await getState(username, groupId)
 	for (const [ballotId, ballot] of Object.entries(state.voteBallots || {})) {
-		if (!ballot?.deadline) continue
+		if (!ballot?.deadline || !ballot.channelId) continue
 		const parsed = Date.parse(ballot.deadline)
 		if (!Number.isFinite(parsed)) continue
 		await deadlines.schedule(scheduleKey(ballotId, groupId), parsed, () =>
-			fireVoteClosed(username, groupId, ballot.channelId || 'default', ballotId))
+			fireVoteClosed(username, groupId, ballot.channelId, ballotId))
 	}
 }

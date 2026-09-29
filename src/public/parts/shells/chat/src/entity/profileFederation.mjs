@@ -47,11 +47,12 @@ async function broadcastProfileUpdateToMemberGroups(username, entityHash) {
 	const { listUserGroups } = await import('../chat/lib/userGroups.mjs')
 	const { getState } = await import('../chat/dag/materialize.mjs')
 	const { broadcastEvent } = await import('../chat/ws/groupWsBroadcast.mjs')
+	const { groupWsRoomKeyForReplica } = await import('../chat/ws/groupWsRooms.mjs')
 	for (const groupId of await listUserGroups(username)) try {
 		const { state } = await getState(username, groupId, { skipLeftPurge: true })
 		const inGroup = Object.values(state?.members || {})
 			.some(member => String(member?.entityHash || '') === entityHash)
-		if (inGroup) broadcastEvent(groupId, { type: 'profile_update', entityHash })
+		if (inGroup) broadcastEvent(groupWsRoomKeyForReplica(groupId), { type: 'profile_update', entityHash })
 	}
 	catch { /* 非成员 / 物化失败跳过 */ }
 }
