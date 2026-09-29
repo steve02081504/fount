@@ -16,6 +16,7 @@ import { bumpViewEpoch, currentViewEpoch } from './core/viewEpoch.mjs'
 import { markInboxSeen } from './inboxClient.mjs'
 import { cancelScheduledChannelRefresh } from './messages/channelRefreshScheduler.mjs'
 import { scrollToMessageEventId } from './messages/messages.mjs'
+import { mountMessagesPlaceholder } from './messages/messagesPlaceholder.mjs'
 import { clearPrivateGroupState } from './privateGroup.mjs'
 import { closeGroupWebSocket } from './stream/index.mjs'
 
@@ -259,7 +260,7 @@ export async function activateInboxView() {
 	document.getElementById('group-name-display').dataset.i18n = 'chat.hub.inbox.title'
 
 	const messagesHost = document.getElementById('messages')
-	await mountTemplate(messagesHost, 'hub/inbox/panel')
+	await mountMessagesPlaceholder(messagesHost, 'hub/inbox/panel')
 	document.getElementById('channel-name-display').dataset.i18n = 'chat.hub.inbox.title'
 	const { disableComposer, refreshHubHeaderButtons } = await import('./messages/composerController.mjs')
 	disableComposer()

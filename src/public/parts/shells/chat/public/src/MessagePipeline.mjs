@@ -38,7 +38,8 @@ export function createMessagePipeline({
 	let lastScrollTop = container.scrollTop
 	let prefetchInFlight = false
 
-	container.addEventListener('scroll', () => {
+	/** @returns {void} 容器滚动处理：更新自动滚底判定并按需向上预取。 */
+	function handleScroll() {
 		if (Date.now() < programmaticScrollUntil) return
 		const { scrollTop } = container
 		const scrollingUp = scrollTop < lastScrollTop
@@ -56,7 +57,9 @@ export function createMessagePipeline({
 				prefetchInFlight = false
 			})
 		}
-	}, { passive: true })
+	}
+
+	container.addEventListener('scroll', handleScroll, { passive: true })
 
 	/** @param {boolean} [force] 是否强制滚到底 */
 	function markProgrammaticScroll(force = true) {
@@ -158,6 +161,7 @@ export function createMessagePipeline({
 
 		/** @returns {void} */
 		destroy() {
+			container.removeEventListener('scroll', handleScroll)
 			virtualList?.destroy()
 			virtualList = null
 		},

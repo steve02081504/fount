@@ -3,12 +3,12 @@
  * 【职责】私聊侧栏壳：判定活跃私聊、返回好友列表、频道列表挂载容器。
  */
 import { hubEmptyFriendsIcon } from '../../src/lib/emojiSvg.mjs'
-import { mountTemplate } from '../../src/templates.mjs'
 import { updateStatusBanners } from '../banners.mjs'
 import { store, setState } from '../core/state.mjs'
 import { updateFriendsHash } from '../core/urlHash.mjs'
 import { bumpViewEpoch } from '../core/viewEpoch.mjs'
 import { cancelScheduledChannelRefresh } from '../messages/channelRefreshScheduler.mjs'
+import { mountMessagesPlaceholder } from '../messages/messagesPlaceholder.mjs'
 import { clearPrivateGroupState } from '../privateGroup.mjs'
 import { closeGroupWebSocket } from '../stream/index.mjs'
 
@@ -46,7 +46,7 @@ export async function backToFriendsList() {
 	setState('context.currentState', null)
 	updateFriendsHash()
 	disableComposer()
-	await mountTemplate(document.getElementById('messages'), 'hub/empty/idle', {
+	await mountMessagesPlaceholder(document.getElementById('messages'), 'hub/empty/idle', {
 		iconHtml: hubEmptyFriendsIcon,
 	})
 	document.getElementById('channel-name-display').dataset.i18n = 'chat.hub.friends.header'

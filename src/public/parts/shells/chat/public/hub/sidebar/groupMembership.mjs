@@ -101,11 +101,11 @@ function canAutoJoinGroup(state, pendingJoin, inviteCode) {
  */
 async function showGroupJoinRequiredState() {
 	const { disableComposer } = await import('../messages/composerController.mjs')
-	const { mountTemplate } = await import('../../src/templates.mjs')
+	const { mountMessagesPlaceholder } = await import('../messages/messagesPlaceholder.mjs')
 	setState('context.currentChannelId', null)
 	updateHash(store.context.currentGroupId, null)
 	disableComposer()
-	await mountTemplate(document.getElementById('messages'), 'hub/empty/error', {
+	await mountMessagesPlaceholder(document.getElementById('messages'), 'hub/empty/error', {
 		i18nKey: 'chat.hub.group.joinRequired',
 		errorMessage: '',
 	})

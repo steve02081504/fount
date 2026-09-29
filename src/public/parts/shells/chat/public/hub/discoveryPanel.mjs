@@ -9,6 +9,7 @@ import { setState, store } from './core/state.mjs'
 import { updateDiscoveryHash } from './core/urlHash.mjs'
 import { bumpViewEpoch, currentViewEpoch } from './core/viewEpoch.mjs'
 import { cancelScheduledChannelRefresh } from './messages/channelRefreshScheduler.mjs'
+import { mountMessagesPlaceholder } from './messages/messagesPlaceholder.mjs'
 import { clearPrivateGroupState } from './privateGroup.mjs'
 import { selectGroup } from './sidebar/index.mjs'
 import { closeGroupWebSocket } from './stream/index.mjs'
@@ -97,7 +98,7 @@ export async function activateDiscoveryView() {
 	document.getElementById('channel-name-display').dataset.i18n = 'chat.hub.discovery.title'
 
 	const messagesHost = document.getElementById('messages')
-	await mountTemplate(messagesHost, 'hub/discovery/panel')
+	await mountMessagesPlaceholder(messagesHost, 'hub/discovery/panel')
 	const root = messagesHost.querySelector('.discovery-page')
 	if (!(root instanceof HTMLElement)) return
 	root.querySelector('[data-discovery-refresh]')?.addEventListener('click', () => {

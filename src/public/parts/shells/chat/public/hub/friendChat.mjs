@@ -15,7 +15,6 @@ import { getFederationSettings } from '../src/endpoints/federationSettings.mjs'
 import { addGroupChar, createFriendGroup, getGroupState, listGroupChars } from '../src/endpoints/groupCore.mjs'
 import { createDirectMessageByPubKeys } from '../src/endpoints/groupDm.mjs'
 import { setGroupFriendBinding } from '../src/endpoints/groupFriendBinding.mjs'
-import { mountTemplate } from '../src/templates.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { getCharDetails, renderCharInfoCardActive } from './charCard.mjs'
@@ -24,6 +23,7 @@ import { parseHash, updateFriendsHash } from './core/urlHash.mjs'
 import { bumpViewEpoch } from './core/viewEpoch.mjs'
 import { friendBindingForGroup } from './friendBindings.mjs'
 import { cancelScheduledChannelRefresh } from './messages/channelRefreshScheduler.mjs'
+import { mountMessagesPlaceholder } from './messages/messagesPlaceholder.mjs'
 import { setActiveModeTab, setMode } from './mode.mjs'
 import { loadGroups } from './serverBar.mjs'
 import { firstOpenableChannelId } from './sidebar/firstOpenableChannel.mjs'
@@ -280,7 +280,7 @@ export async function enterFriendChat(options = {}) {
 		const { setActiveModeTab } = await import('./mode.mjs')
 		clearPrivateGroupState()
 		setActiveModeTab('friends')
-		await mountTemplate(document.getElementById('messages'), 'hub/empty/loading', {})
+		await mountMessagesPlaceholder(document.getElementById('messages'), 'hub/empty/loading', {})
 
 		throwIfAborted(signal)
 		const resolved = await enqueueResolveFriendGroup(
@@ -295,7 +295,7 @@ export async function enterFriendChat(options = {}) {
 	catch (error) {
 		if (signal.aborted) return
 		const err = handleError('chat.hub.createChatFailed')(error)
-		await mountTemplate(document.getElementById('messages'), 'hub/empty/error', {
+		await mountMessagesPlaceholder(document.getElementById('messages'), 'hub/empty/error', {
 			i18nKey: 'chat.hub.createChatFailed',
 			errorMessage: err.message,
 		})

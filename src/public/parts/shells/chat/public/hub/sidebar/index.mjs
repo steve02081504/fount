@@ -15,6 +15,7 @@ import { parseHash, updateHash } from '../core/urlHash.mjs'
 import { bumpViewEpoch, currentViewEpoch } from '../core/viewEpoch.mjs'
 import { resetFilesDrawerWire } from '../files.mjs'
 import { cancelScheduledChannelRefresh } from '../messages/channelRefreshScheduler.mjs'
+import { mountMessagesPlaceholder } from '../messages/messagesPlaceholder.mjs'
 import { clearPinPreviewCache } from '../messages/pinPreview.mjs'
 import { refreshPinsBookmarks } from '../pinsBookmarks.mjs'
 import { clearPrivateGroupState } from '../privateGroup.mjs'
@@ -167,7 +168,7 @@ export async function selectGroup(groupId, presetChannelId = null) {
 		setPinsBookmarksWrapVisible(false)
 		updateStatusBanners()
 		const err = handleError('chat.hub.load.groupFailed')(error)
-		await mountTemplate(document.getElementById('messages'), 'hub/empty/error', {
+		await mountMessagesPlaceholder(document.getElementById('messages'), 'hub/empty/error', {
 			i18nKey: 'chat.hub.load.groupFailed',
 			errorMessage: err.message,
 		})

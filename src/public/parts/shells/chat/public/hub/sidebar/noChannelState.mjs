@@ -4,8 +4,8 @@
  * 【原理】showNoChannelMainPane 挂载 hub/empty/no_channel；CTA 按私聊/普通群分别快速新建或弹对话框。
  * 【关联】templates.mjs、categoryContextMenu.canEditChannelList、createChannel.mjs。
  */
-import { mountTemplate } from '../../src/templates.mjs'
 import { store } from '../core/state.mjs'
+import { mountMessagesPlaceholder } from '../messages/messagesPlaceholder.mjs'
 
 /**
  * 在 #messages 挂载「无频道」空态。
@@ -17,7 +17,7 @@ export async function showNoChannelMainPane(state = store.context.currentState) 
 	if (!container) return
 	const { canEditChannelList } = await import('../categoryContextMenu.mjs')
 	const canCreate = !!store.context.currentGroupId && canEditChannelList(state)
-	await mountTemplate(container, 'hub/empty/no_channel', { canCreate })
+	await mountMessagesPlaceholder(container, 'hub/empty/no_channel', { canCreate })
 	container.querySelector('#empty-create-channel')?.addEventListener('click', () => void createFirstChannel())
 }
 

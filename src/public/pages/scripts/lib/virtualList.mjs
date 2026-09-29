@@ -71,15 +71,36 @@ export function createVirtualList({
 		maxQueueSize: 0, // 最大队列大小，动态计算
 		avgItemHeight: 0, // 平均项高度，用于动态缓冲
 		resizeObserver: null, // ResizeObserver 用于容器大小变化
+		waiters: [], // 等待加载锁的 resolve 队列（先到先得，无忙等）
+		destroyed: false, // 是否已销毁；销毁后在途操作不得再触碰 DOM/状态
+		removeListenerCleanup: null, // onElementRemoved 返回的清理函数
 	}
 
 	/**
 	 * 获取加载锁，确保只有一个请求在进行中。
+	 * 锁空闲时立即获得；否则排队等待，锁释放时按序唤醒（不轮询）。
 	 * @returns {Promise<void>} - 加载锁的 Promise。
 	 */
 	async function getMutex() {
-		while (state.isLoading) await new Promise((resolve) => setTimeout(resolve, 100))
-		return state.isLoading = true
+		if (state.destroyed) return
+		if (state.isLoading)
+			await new Promise((resolve) => state.waiters.push(resolve))
+		else
+			state.isLoading = true
+	}
+
+	/**
+	 * 释放加载锁；有等待者时把锁直接移交给队首，否则置空。
+	 * @returns {void}
+	 */
+	function releaseMutex() {
+		if (state.destroyed) {
+			state.isLoading = false
+			return
+		}
+		const next = state.waiters.shift()
+		if (next) next()
+		else state.isLoading = false
 	}
 
 	/**
@@ -129,6 +150,7 @@ export function createVirtualList({
 			}))
 		})
 		const results = await Promise.all(renderJobs)
+		if (state.destroyed) return
 
 		let insertBefore = state.sentinelTop.nextSibling
 		for (const result of results) {
@@ -181,6 +203,7 @@ export function createVirtualList({
 			return Promise.resolve(renderItem(item, itemIndex))
 		})
 		const elements = await Promise.all(renderPromises)
+		if (state.destroyed) return
 		elements.forEach((element, i) => {
 			if (element) {
 				const itemIndex = state.startIndex + i
@@ -277,6 +300,7 @@ export function createVirtualList({
 		const newElements = await Promise.all(
 			newItems.map((item, i) => Promise.resolve(renderItem(item, itemIndexFor(i))))
 		)
+		if (state.destroyed) return false
 		if (!container.contains(state.sentinelTop)) return false
 		if (reindexShift) {
 			const nextRendered = new Map()
@@ -308,10 +332,13 @@ export function createVirtualList({
 		if (state.startIndex <= 0 && !loadMoreTop) return
 		await getMutex()
 		try {
+			if (state.destroyed) return
 			if (state.startIndex <= 0) {
 				const added = await loadMoreTop()
+				if (state.destroyed) return
 				if (!added) return
 				const { total, items: newItems } = await fetchData(0, added)
+				if (state.destroyed) return
 				state.totalCount = total
 				if (!newItems.length) return
 				state.startIndex = 0
@@ -322,13 +349,14 @@ export function createVirtualList({
 			const itemsToFetch = Math.min(state.bufferSize, state.startIndex)
 			const newStartIndex = state.startIndex - itemsToFetch
 			const { items: newItems } = await fetchData(newStartIndex, itemsToFetch)
+			if (state.destroyed) return
 			if (!newItems.length) return
 			state.startIndex = state.startIndex - newItems.length
 			state.queue.unshift(...newItems)
 			await insertPrependedItems(newItems, (i) => state.startIndex + i)
 		} finally {
-			state.isLoading = false
-			observeSentinels()
+			releaseMutex()
+			if (!state.destroyed) observeSentinels()
 		}
 	}
 
@@ -340,8 +368,10 @@ export function createVirtualList({
 		if (currentCount >= state.totalCount) return
 		await getMutex()
 		try {
+			if (state.destroyed) return
 			const itemsToFetch = Math.min(state.bufferSize, state.totalCount - currentCount)
 			const { items: newItems } = await fetchData(currentCount, itemsToFetch)
+			if (state.destroyed) return
 			if (!newItems.length) return
 
 			const oldQueueLength = state.queue.length
@@ -352,6 +382,7 @@ export function createVirtualList({
 				return Promise.resolve(renderItem(item, itemIndex))
 			})
 			const newElements = await Promise.all(renderPromises)
+			if (state.destroyed) return
 			if (!container.contains(state.sentinelBottom)) return
 			newElements.forEach((element, i) => {
 				if (element) {
@@ -368,8 +399,8 @@ export function createVirtualList({
 			updateDynamicBufferSize()
 			onRenderComplete()
 		} finally {
-			state.isLoading = false
-			observeSentinels()
+			releaseMutex()
+			if (!state.destroyed) observeSentinels()
 		}
 	}
 
@@ -378,6 +409,7 @@ export function createVirtualList({
 	 * @param {IntersectionObserverEntry[]} entries - 交叉观察器条目数组。
 	 */
 	function handleIntersection(entries) {
+		if (state.destroyed) return
 		entries.forEach((entry) => {
 			if (entry.isIntersecting && !state.isLoading) {
 				state.observer.disconnect()
@@ -393,6 +425,7 @@ export function createVirtualList({
 	 * 初始化并启动对哨兵的观察。
 	 */
 	function observeSentinels() {
+		if (state.destroyed) return
 		if (!state.observer)
 			state.observer = new IntersectionObserver(handleIntersection, {
 				root: container,
@@ -409,64 +442,85 @@ export function createVirtualList({
 	}
 
 	/**
-	 * 强制刷新整个列表。
+	 * 强制刷新整个列表（先获取加载锁）。
+	 * @returns {Promise<void>}
 	 */
 	async function refresh() {
 		await getMutex()
 		try {
-			const { total } = await fetchData(0, 0)
-			state.totalCount = total
-			if (!state.totalCount) {
-				state.queue = []
-				state.startIndex = 0
-				await renderQueue()
-				state.hasRenderedOnce = true
-				return
-			}
-			const keepScroll = getItemKey && state.hasRenderedOnce
-			const savedScrollTop = keepScroll ? container.scrollTop : 0
-			const targetIndex = Math.max(0, Math.min(initialIndex, state.totalCount - 1))
-			let fetchStartIndex = keepScroll && state.queue.length
-				? state.startIndex
-				: Math.max(0, targetIndex - state.bufferSize)
-			if (fetchStartIndex >= state.totalCount)
-				fetchStartIndex = Math.max(0, state.totalCount - (state.queue.length || state.bufferSize * 3))
-			const itemsToFetch = Math.min(
-				keepScroll && state.queue.length
-					? Math.max(state.queue.length, state.bufferSize * 3)
-					: state.bufferSize * 3,
-				state.totalCount - fetchStartIndex,
-			)
-			const { items } = await fetchData(fetchStartIndex, itemsToFetch)
-			state.queue = items
-			state.startIndex = fetchStartIndex
-			await renderQueue()
-			state.hasRenderedOnce = true
-			if (keepScroll) {
-				container.scrollTop = savedScrollTop
-				return
-			}
-			if (!setInitialScroll) return
-			const targetElement = state.renderedElements.get(targetIndex)
-			if (targetElement)
-				targetElement.scrollIntoView({
-					block: targetIndex ? 'nearest' : 'start',
-					behavior: 'instant',
-				})
-			else
-				container.scrollTop = container.scrollHeight
+			await refreshUnlocked()
 		} finally {
-			state.isLoading = false
-			observeSentinels()
+			releaseMutex()
+			if (!state.destroyed) observeSentinels()
 		}
 	}
 
 	/**
-	 * 销毁列表实例，清理 DOM 和事件监听器。
+	 * 全量刷新的实际逻辑；调用方必须已持有加载锁，本函数不负责释放或重挂哨兵。
+	 * @returns {Promise<void>}
+	 */
+	async function refreshUnlocked() {
+		const { total } = await fetchData(0, 0)
+		if (state.destroyed) return
+		state.totalCount = total
+		if (!state.totalCount) {
+			state.queue = []
+			state.startIndex = 0
+			await renderQueue()
+			state.hasRenderedOnce = true
+			return
+		}
+		const keepScroll = getItemKey && state.hasRenderedOnce
+		const savedScrollTop = keepScroll ? container.scrollTop : 0
+		const targetIndex = Math.max(0, Math.min(initialIndex, state.totalCount - 1))
+		let fetchStartIndex = keepScroll && state.queue.length
+			? state.startIndex
+			: Math.max(0, targetIndex - state.bufferSize)
+		if (fetchStartIndex >= state.totalCount)
+			fetchStartIndex = Math.max(0, state.totalCount - (state.queue.length || state.bufferSize * 3))
+		const itemsToFetch = Math.min(
+			keepScroll && state.queue.length
+				? Math.max(state.queue.length, state.bufferSize * 3)
+				: state.bufferSize * 3,
+			state.totalCount - fetchStartIndex,
+		)
+		const { items } = await fetchData(fetchStartIndex, itemsToFetch)
+		if (state.destroyed) return
+		state.queue = items
+		state.startIndex = fetchStartIndex
+		await renderQueue()
+		if (state.destroyed) return
+		state.hasRenderedOnce = true
+		if (keepScroll) {
+			container.scrollTop = savedScrollTop
+			return
+		}
+		if (!setInitialScroll) return
+		const targetElement = state.renderedElements.get(targetIndex)
+		if (targetElement)
+			targetElement.scrollIntoView({
+				block: targetIndex ? 'nearest' : 'start',
+				behavior: 'instant',
+			})
+		else
+			container.scrollTop = container.scrollHeight
+	}
+
+	/**
+	 * 销毁列表实例，清理 DOM、观察器、定时器与在途等待者。
+	 * @returns {void}
 	 */
 	function destroy() {
+		if (state.destroyed) return
+		state.destroyed = true
 		if (state.observer) state.observer.disconnect()
 		if (state.resizeObserver) state.resizeObserver.disconnect()
+		// 唤醒排队中的操作，让它们看到 destroyed 后自行退出（不再触碰 DOM/状态）。
+		for (const resolve of state.waiters) resolve()
+		state.waiters = []
+		state.isLoading = false
+		state.removeListenerCleanup?.()
+		state.removeListenerCleanup = null
 		container.innerHTML = ''
 		state.queue = []
 		state.renderedElements.clear()
@@ -482,13 +536,18 @@ export function createVirtualList({
 	async function appendItem(item, scrollTo = true) {
 		await getMutex()
 		try {
+			if (state.destroyed) return
 			state.totalCount++
 			const itemIndex = state.startIndex + state.queue.length
 			state.queue.push(item)
 			const newElement = await Promise.resolve(renderItem(item, itemIndex))
-			// 哨兵缺失时 DOM 与 state 脱节（如 prune 竞态），全量 refresh 自愈
+			if (state.destroyed) return
+			// 哨兵缺失时 DOM 与 state 脱节（如 prune 竞态）：回滚本次改动后全量刷新自愈。
+			// 注意此处已持有锁，必须走 refreshUnlocked，否则 refresh 会等待同一把锁而死锁。
 			if (!container.contains(state.sentinelBottom)) {
-				await refresh()
+				state.totalCount = Math.max(0, state.totalCount - 1)
+				state.queue.pop()
+				await refreshUnlocked()
 				return
 			}
 			if (newElement) {
@@ -503,8 +562,8 @@ export function createVirtualList({
 				container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' })
 			onRenderComplete()
 		} finally {
-			state.isLoading = false
-			observeSentinels()
+			releaseMutex()
+			if (!state.destroyed) observeSentinels()
 		}
 	}
 
@@ -514,6 +573,7 @@ export function createVirtualList({
 	 * 注意：如果项目不在当前队列中，仅减少 totalCount；否则，还会移除 DOM 并调整后续元素的索引映射。
 	 */
 	async function deleteItem(index) {
+		if (state.destroyed) return
 		if (index < 0 || index >= state.totalCount) return
 		const queueIndex = index - state.startIndex
 		if (!state.queue[queueIndex]) {
@@ -522,6 +582,7 @@ export function createVirtualList({
 		}
 		await getMutex()
 		try {
+			if (state.destroyed) return
 			const element = state.renderedElements.get(index)
 			if (element && getItemKey)
 				for (const [key, cached] of state.keyedCache)
@@ -544,8 +605,8 @@ export function createVirtualList({
 			}
 			updateDynamicBufferSize()
 		} finally {
-			state.isLoading = false
-			observeSentinels()
+			releaseMutex()
+			if (!state.destroyed) observeSentinels()
 		}
 	}
 
@@ -560,6 +621,7 @@ export function createVirtualList({
 		if (index < 0 || index >= state.totalCount) return
 		await getMutex()
 		try {
+			if (state.destroyed) return
 			const queueIndex = index - state.startIndex
 			const oldItem = state.queue[queueIndex]
 			const oldElement = state.renderedElements.get(index)
@@ -568,6 +630,7 @@ export function createVirtualList({
 				return
 			}
 			const newElement = await Promise.resolve(renderItem(item, index))
+			if (state.destroyed) return
 			await Promise.resolve(replaceItemRenderer(oldElement, newElement, item))
 			state.queue[queueIndex] = item
 			state.renderedElements.set(index, newElement)
@@ -579,13 +642,14 @@ export function createVirtualList({
 			}
 			updateDynamicBufferSize()
 		} finally {
-			state.isLoading = false
-			observeSentinels()
+			releaseMutex()
+			if (!state.destroyed) observeSentinels()
 		}
 	}
 
 	// 初始化 ResizeObserver 以处理容器大小变化
 	state.resizeObserver = new ResizeObserver(() => {
+		if (state.destroyed) return
 		updateDynamicBufferSize()
 		observeSentinels()
 	})
@@ -593,7 +657,7 @@ export function createVirtualList({
 
 	// 初始刷新
 	refresh()
-	onElementRemoved(container, destroy)
+	state.removeListenerCleanup = onElementRemoved(container, destroy)
 
 	return {
 		destroy,

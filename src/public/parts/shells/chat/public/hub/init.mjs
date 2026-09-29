@@ -18,7 +18,6 @@ import { applyProfileAvatarToHost } from './core/avatarCover.mjs'
 import { wireHubBannerBindings } from './core/bindings.mjs'
 import { store } from './core/state.mjs'
 import { wireHubGroupEmojiStickerGestures } from './gestures/emojiPickerGestures.mjs'
-import { cancelScheduledChannelRefresh } from './messages/channelRefreshScheduler.mjs'
 import { setupMisc } from './misc.mjs'
 import { fetchUserProfile } from './presence.mjs'
 import {
@@ -134,7 +133,6 @@ async function wireHubHeavyFeatures() {
 	bindMessageDragExport(messagesRoot)
 	await wireHubPickers()
 	void syncTrustedAuthorsFromShell()
-	cancelScheduledChannelRefresh()
 }
 
 /**
