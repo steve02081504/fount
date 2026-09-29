@@ -94,20 +94,15 @@ export async function setMode(mode) {
 
 	const { refreshHubHeaderButtons } = await import('./messages/composerController.mjs')
 	refreshHubHeaderButtons()
-	if (mode === 'friends') 
-		if (!keepPrivateGroupSession) {
-			// 先挂侧栏（含 #friends-search-input），再挂空态 CTA——否则 label[for] / focus 会打到尚未存在的 input。
-			if (isPrivateChatActive() && store.context.currentState)
-				await renderHubChannelSidebar(store.context.currentState)
-			else
-				await renderFriendsColumn(await loadFriendsList())
-			await mountMessagesPlaceholder(document.getElementById('messages'), 'hub/empty/friends')
-		}
-		else if (isPrivateChatActive() && store.context.currentState)
+	if (mode === 'friends') {
+		// 先挂侧栏（含 #friends-search-input），再挂空态 CTA——否则 label[for] / focus 会打到尚未存在的 input。
+		if (isPrivateChatActive() && store.context.currentState)
 			await renderHubChannelSidebar(store.context.currentState)
 		else
 			await renderFriendsColumn(await loadFriendsList())
-	
+		if (!keepPrivateGroupSession)
+			await mountMessagesPlaceholder(document.getElementById('messages'), 'hub/empty/friends')
+	}
 	else if (mode === 'groups')
 		if (!store.context.currentGroupId || !store.context.currentState) {
 			setPinsBookmarksWrapVisible(false)

@@ -154,5 +154,3 @@ export async function runTriggerPipeline(username, groupId, channelId, messageLi
 	if (!next || isCharReplyInFlight(groupId, channelId, next)) return
 	void runOutsideGroupLocks(() => triggerCharReply(groupId, channelId, next)).catch(logTriggerCharReplyFailure)
 }
-
-

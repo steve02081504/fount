@@ -5,6 +5,7 @@
 import { assertEquals } from 'jsr:@std/assert'
 
 import {
+	constructibleRequestMode,
 	isCacheFirstExemptUrl,
 	isColdBootMarkedRequest,
 	isColdBootNavigationRequest,
@@ -89,4 +90,16 @@ Deno.test('isColdBootMarkedRequest reads the cold_bootting marker', () => {
 	assertEquals(isColdBootMarkedRequest(new URL('/?cold_bootting=true', ORIGIN)), true)
 	assertEquals(isColdBootMarkedRequest(new URL('/?cold_bootting=false', ORIGIN)), true)
 	assertEquals(isColdBootMarkedRequest(new URL('/', ORIGIN)), false)
+})
+
+Deno.test('constructibleRequestMode downgrades navigate and preserves other modes', () => {
+	assertEquals(constructibleRequestMode('navigate'), 'same-origin')
+	assertEquals(constructibleRequestMode('cors'), 'cors')
+	assertEquals(constructibleRequestMode('no-cors'), 'no-cors')
+	assertEquals(constructibleRequestMode('same-origin'), 'same-origin')
+})
+
+Deno.test('constructibleRequestMode yields a mode the Request constructor accepts', () => {
+	const navigateMode = constructibleRequestMode('navigate')
+	assertEquals(new Request('https://fount.local/', { mode: navigateMode }).mode, 'same-origin')
 })

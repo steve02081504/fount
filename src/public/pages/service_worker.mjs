@@ -1,4 +1,4 @@
-import { isCacheFirstExemptUrl, isColdBootMarkedRequest, isColdBootNavigationRequest, shouldCacheResponse } from './service_worker_policy.mjs'
+import { constructibleRequestMode, isCacheFirstExemptUrl, isColdBootMarkedRequest, isColdBootNavigationRequest, shouldCacheResponse } from './service_worker_policy.mjs'
 
 // --- 全局常量与配置 ---
 
@@ -387,7 +387,7 @@ async function fetchAndCache(request) {
 			const cachedResponse = await cache.match(request)
 			const can_cors = cachedResponse ? cachedResponse.headers.get('Access-Control-Allow-Origin') : new URL(request.url).origin !== self.location.origin && await fetch(request.url, { method: 'HEAD' }).then(response => response.headers.get('Access-Control-Allow-Origin')).catch(_ => null)
 			// 用 new Request(request, ...) 重建请求：展开 Request 不会复制任何字段，会丢失 headers / mode。
-			const retryRequest = new Request(request, { mode: can_cors ? 'cors' : request.mode })
+			const retryRequest = new Request(request, { mode: can_cors ? 'cors' : constructibleRequestMode(request.mode) })
 			const newNetworkResponse = await fetch(retryRequest).catch(_ => { error = _ })
 			if (newNetworkResponse?.ok) networkResponse = newNetworkResponse
 			else if (error) throw error
@@ -615,12 +615,9 @@ const routes = [
 			if (isColdBootMarkedRequest(url)) {
 				const cleanUrl = new URL(url)
 				cleanUrl.searchParams.delete('cold_bootting')
-				const { mode, ...rest } = event.request
-				const cleanRequest = new Request(cleanUrl, {
-					...rest,
-					mode: mode === 'navigate' ? 'same-origin' : mode,
-				})
-				return handleCacheFirst(cleanRequest)
+				// 展开 Request 不复制任何字段，须以原请求为 input 再套用清理后的 URL。
+				const baseRequest = new Request(event.request, { mode: constructibleRequestMode(event.request.mode) })
+				return handleCacheFirst(new Request(cleanUrl, baseRequest))
 			}
 			return handleCacheFirst(event.request)
 		},

@@ -35,6 +35,16 @@ export function isCacheFirstExemptUrl(url) {
 }
 
 /**
+ * 把请求 mode 规范化为 `new Request(input, init)` 可接受的值。
+ * `navigate` 只由浏览器为导航请求生成，Request 构造器会拒绝该 mode；重建/重试请求时降级为 `same-origin`。
+ * @param {string} mode - 原始请求 mode。
+ * @returns {string} 可用于构造 Request 的 mode。
+ */
+export function constructibleRequestMode(mode) {
+	return mode === 'navigate' ? 'same-origin' : mode
+}
+
+/**
  * 判断是否为携带冷启动标记的导航请求（此时响应已带 `cold_bootting` 标记）。
  * @param {URL} url - 请求 URL。
  * @returns {boolean} 是否携带冷启动标记。
