@@ -69,7 +69,7 @@ function withWriteLock(key, fn) {
  * @property {(p: string) => Promise<Buffer>} readFileBuffer - 读二进制文件。
  * @property {(p: string, content: string) => Promise<void>} writeTextFile - 写文本文件。
  * @property {(p: string) => Promise<dirEntry_t[]>} listDir - 列目录。
- * @property {(p: string) => Promise<{isDirectory: boolean, isFile: boolean} | null>} statEntry - 查看条目。
+ * @property {(p: string) => Promise<{isDirectory: boolean, isFile: boolean, size: number} | null>} statEntry - 查看条目。
  * @property {(p: string) => Promise<boolean>} pathExists - 路径是否存在。
  * @property {() => Promise<string[]>} listRoots - 列根（Windows 盘符 / unix `/`）。
  */
@@ -101,7 +101,10 @@ export function joinWorkdir(base, rel) {
 	if (path.isAbsolute(rel) || rel.startsWith('~') || /^[A-Za-z]:[\\/]/.test(rel))
 		return rel
 	if (!base) return rel
-	return base.replace(/[\\/]+$/, '') + (base.endsWith('/') ? '' : '/') + rel.replace(/^[\\/]+/, '')
+	const trimmed = base.replace(/[\\/]+$/, '')
+	// 沿用 base 的分隔符风格（尾分隔符优先，其次整体风格），避免 Windows 路径被拼成 `C:\x/y` 混合写法。
+	const separator = base.endsWith('\\') || (base.includes('\\') && !base.includes('/')) ? '\\' : '/'
+	return trimmed + separator + rel.replace(/^[\\/]+/, '')
 }
 
 /**
@@ -354,12 +357,12 @@ function createLocalExecutor(target) {
 		/**
 		 * 查看条目。
 		 * @param {string} p - 路径。
-		 * @returns {Promise<{isDirectory: boolean, isFile: boolean}|null>} 类型信息（不存在时 null）。
+		 * @returns {Promise<{isDirectory: boolean, isFile: boolean, size: number}|null>} 类型信息（不存在时 null）。
 		 */
 		statEntry: async p => {
 			try {
 				const st = await fs.promises.stat(abs(p))
-				return { isDirectory: st.isDirectory(), isFile: st.isFile() }
+				return { isDirectory: st.isDirectory(), isFile: st.isFile(), size: st.size }
 			}
 			catch {
 				return null
@@ -539,9 +542,9 @@ function createRemoteExecutor(username, target) {
 		/**
 		 * 查看条目。
 		 * @param {string} p - 路径。
-		 * @returns {Promise<{isDirectory: boolean, isFile: boolean}|null>} 类型信息（不存在时 null）。
+		 * @returns {Promise<{isDirectory: boolean, isFile: boolean, size: number}|null>} 类型信息（不存在时 null）。
 		 */
-		statEntry: async p => await withPath(absExpr => `try { const st = await fs.stat(${absExpr}); return { isDirectory: st.isDirectory(), isFile: st.isFile() } } catch { return null }`, p),
+		statEntry: async p => await withPath(absExpr => `try { const st = await fs.stat(${absExpr}); return { isDirectory: st.isDirectory(), isFile: st.isFile(), size: st.size } } catch { return null }`, p),
 		/**
 		 * 判断路径是否存在。
 		 * @param {string} p - 路径。

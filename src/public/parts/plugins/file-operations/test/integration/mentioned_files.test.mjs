@@ -3,6 +3,7 @@
  * 聊天提及文件预读取 · 单元测试。
  * 预读经 `BeforeReply` 调用的 `preloadMentionedFiles(args)` 驱动，工具日志写入由假 `AddLongTimeLog` 收集。
  */
+import { Buffer } from 'node:buffer'
 import fs from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
@@ -11,7 +12,7 @@ import { assert, assertEquals } from 'jsr:@std/assert'
 
 import { getFileOperationsPrompt } from '../../prompt.mjs'
 import { mergeLineWindows, parseErrorLocations } from '../../src/error_windows.mjs'
-import { collectMentionedFiles, extractPathCandidates, fileIdentityKey } from '../../src/mentioned_files.mjs'
+import { collectMentionedFiles, extractPathCandidates, fileIdentityKey, MAX_DIR_ENTRIES, PRELOAD_MAX_FILE_BYTES } from '../../src/mentioned_files.mjs'
 import { preloadMentionedFiles } from '../../src/preload.mjs'
 import { formatLargeTextForContext } from '../../src/read_window.mjs'
 import { createTargetExecutor } from '../../src/target.mjs'
@@ -58,10 +59,124 @@ async function tempDir() {
 	return await fs.mkdtemp(path.join(os.tmpdir(), 'fount_code_mention_'))
 }
 
-Deno.test('extractPathCandidates finds backticked and absolute paths', () => {
-	const candidates = extractPathCandidates('看看 `src/a.txt` 与 C:\\proj\\b.md，还有 https://example.com/x')
-	assert(candidates.includes('src/a.txt'), '应提取反引号相对路径')
-	assert(candidates.includes('C:\\proj\\b.md'), '应提取 Windows 绝对路径')
+Deno.test('extractPathCandidates finds backticked and absolute paths with spans', () => {
+	const text = '看看 `src/a.txt` 与 C:\\proj\\b.md，还有 https://example.com/x'
+	const candidates = extractPathCandidates(text)
+	const paths = candidates.map(candidate => candidate.path)
+	assert(paths.includes('src/a.txt'), '应提取反引号相对路径')
+	assert(paths.includes('C:\\proj\\b.md'), '应提取 Windows 绝对路径')
+	for (const candidate of candidates)
+		assertEquals(text.slice(candidate.start, candidate.end), candidate.path, '区间应指向原文中的候选串')
+})
+
+Deno.test('collectMentionedFiles does not list ancestor dirs or fragments of a mentioned file', async () => {
+	const root = await tempDir()
+	try {
+		const dir = path.join(root, '文档')
+		await fs.mkdir(dir)
+		const file = path.join(dir, 'detection_coordinates(2).txt')
+		await fs.writeFile(file, 'coordinates', 'utf8')
+		const executor = createTargetExecutor('u', { machine: '0', workdir: root })
+
+		const text = `"${file}"咱们软件是不支持这个格式吗`
+		const result = await collectMentionedFiles(executor, text, { maxFiles: 5 })
+		assertEquals(result.textFiles.length, 1)
+		assertEquals(result.textFiles[0].path, file)
+		assertEquals(result.dirs.length, 0, '已命中文件的祖先目录不应被列出')
+	}
+	finally { await fs.rm(root, { recursive: true, force: true }) }
+})
+
+Deno.test('collectMentionedFiles does not list an ancestor dir of an already-known file', async () => {
+	const root = await tempDir()
+	try {
+		const dir = path.join(root, '文档')
+		await fs.mkdir(dir)
+		const file = path.join(dir, 'detection_coordinates(2).txt')
+		await fs.writeFile(file, 'coordinates', 'utf8')
+		const executor = createTargetExecutor('u', { machine: '0', workdir: root })
+		const text = `"${file}"看看`
+
+		const first = await collectMentionedFiles(executor, text, { maxFiles: 5 })
+		assertEquals(first.textFiles.length, 1)
+		const knownFiles = new Set(first.textFiles.map(item => fileIdentityKey('0', item.resolved)))
+
+		const second = await collectMentionedFiles(executor, text, { maxFiles: 5, knownFiles })
+		assertEquals(second.textFiles.length, 0)
+		assertEquals(second.dirs.length, 0, '已读文件的祖先目录不应因文件被跳过而冒出')
+	}
+	finally { await fs.rm(root, { recursive: true, force: true }) }
+})
+
+Deno.test('collectMentionedFiles probes far fewer paths than candidates for a nested mention', async () => {
+	const root = await tempDir()
+	try {
+		await fs.mkdir(path.join(root, 'a', 'b'), { recursive: true })
+		const file = path.join(root, 'a', 'b', 'c(1).txt')
+		await fs.writeFile(file, 'content', 'utf8')
+		const executor = createTargetExecutor('u', { machine: '0', workdir: root })
+		let statCalls = 0
+		const counting = {
+			...executor,
+			/**
+			 * 记录并转发 statEntry 调用。
+			 * @param {string} pathValue - 待查询路径。
+			 * @returns {Promise<object|null>} 统计结果。
+			 */
+			statEntry: pathValue => { statCalls++; return executor.statEntry(pathValue) },
+		}
+		const text = `"${file}"看看`
+		const candidateCount = extractPathCandidates(text).length
+		const result = await collectMentionedFiles(counting, text, { maxFiles: 5 })
+		assertEquals(result.textFiles.length, 1)
+		assert(
+			statCalls < candidateCount / 2,
+			`stat 次数 ${statCalls} 应远小于候选数 ${candidateCount}`,
+		)
+	}
+	finally { await fs.rm(root, { recursive: true, force: true }) }
+})
+
+Deno.test('collectMentionedFiles skips oversized files and reports them', async () => {
+	const root = await tempDir()
+	try {
+		await fs.writeFile(path.join(root, 'huge.bin'), Buffer.alloc(PRELOAD_MAX_FILE_BYTES + 1))
+		const executor = createTargetExecutor('u', { machine: '0', workdir: root })
+		const result = await collectMentionedFiles(executor, '看 `huge.bin`', { maxFiles: 5 })
+		assertEquals(result.textFiles.length, 0)
+		assertEquals(result.binaryFiles.length, 0)
+		assertEquals(result.oversized.length, 1)
+		assertEquals(result.oversized[0].path, 'huge.bin')
+	}
+	finally { await fs.rm(root, { recursive: true, force: true }) }
+})
+
+Deno.test('collectMentionedFiles labels a binary attachment with its mime type', async () => {
+	const root = await tempDir()
+	try {
+		await fs.writeFile(path.join(root, 'pic.png'), Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x00, 0x01]))
+		const executor = createTargetExecutor('u', { machine: '0', workdir: root })
+		const result = await collectMentionedFiles(executor, '看 `pic.png`', { maxFiles: 5 })
+		assertEquals(result.binaryFiles.length, 1)
+		assertEquals(result.binaryFiles[0].mime_type, 'image/png')
+	}
+	finally { await fs.rm(root, { recursive: true, force: true }) }
+})
+
+Deno.test('collectMentionedFiles reports directory total when entries exceed the listing cap', async () => {
+	const root = await tempDir()
+	try {
+		const dir = path.join(root, 'many')
+		await fs.mkdir(dir)
+		for (let i = 0; i < MAX_DIR_ENTRIES + 5; i++)
+			await fs.writeFile(path.join(dir, `f${i}.txt`), 'x', 'utf8')
+		const executor = createTargetExecutor('u', { machine: '0', workdir: root })
+		const result = await collectMentionedFiles(executor, '列一下 `many`', { maxFiles: 5 })
+		assertEquals(result.dirs.length, 1)
+		assertEquals(result.dirs[0].entries.length, MAX_DIR_ENTRIES)
+		assertEquals(result.dirs[0].total, MAX_DIR_ENTRIES + 5)
+	}
+	finally { await fs.rm(root, { recursive: true, force: true }) }
 })
 
 Deno.test('collectMentionedFiles preloads existing relative files under workdir', async () => {

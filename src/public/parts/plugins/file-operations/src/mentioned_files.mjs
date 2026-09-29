@@ -3,13 +3,17 @@
  * 路径提取思路源自龙胆 `prompt/functions/file-change.mjs`，改为异步执行器以兼容远程机器。
  * 报错命中时只读取出错行及前后 2 行；整份读取遇超大文本（默认 >600 行）只取首尾各 300 行。
  */
+import { mimetypeFromBufferAndName } from '../../../../../scripts/mimetype.mjs'
+
 import { mergeLineWindows, parseErrorLocations } from './error_windows.mjs'
 import { DEFAULT_READ_MAX_CHARS, DEFAULT_READ_MAX_LINE_CHARS, formatLargeTextForContext, isProbablyTextBuffer, truncateLongLines } from './read_window.mjs'
 
 /** 单个候选块允许切分的最大片段数（防 O(n²) 爆炸）。 */
 const MAX_SPLIT_PARTS = 40
 /** 目录预读最多列出的条目数。 */
-const MAX_DIR_ENTRIES = 64
+export const MAX_DIR_ENTRIES = 64
+/** 单个预读文件的大小上限（字节）；超过则不读取，只记一条提示。 */
+export const PRELOAD_MAX_FILE_BYTES = 8 * 1024 * 1024
 /** 报错窗口每侧扩展行数。 */
 export const ERROR_WINDOW_RADIUS = 2
 
@@ -25,38 +29,51 @@ export function fileIdentityKey(machine, resolved) {
 	return `${machine}\u0000${resolved}`
 }
 
-const PATH_LIKE_REGEX = /(`|[A-Za-z]:\\|(\.|\.\.|~)[/\\]|[/\\])[^\n`:]+/gu
+// 路径尾部止于换行/冒号/反引号/双引号：引用里的路径（`"…\a.txt"`）不会把后续散文吞进候选，避免生成一串无效的带后缀候选。
+const PATH_LIKE_REGEX = /(`|[A-Za-z]:\\|(\.|\.\.|~)[/\\]|[/\\])[^\n"`:]+/gu
 const ABSOLUTE_OR_RELATIVE_REGEX = /^([A-Za-z]:\\|(\.|\.\.|~)[/\\]|[/\\])[^\n:`]+/u
 /** 绝对路径候选（盘符 / 根 / UNC），供「目标无工作目录时只认绝对路径」筛选。 */
 const ABSOLUTE_PATH_REGEX = /^(?:[A-Za-z]:[\\/]|[\\/])/u
 
 /**
- * 从文本中提取疑似路径的候选串（去重、模糊）。
+ * 从文本中提取疑似路径的候选串及其在原文中的区间（去重、模糊）。
+ * 区间供 `collectMentionedFiles` 做覆盖剪枝：同一路径的较短前缀（祖先目录）与内部片段落在已命中候选的区间内时不再探测，
+ * 既避免把 `…\Downloads\` 这类前缀目录当成提及项列出，也避免每字符触发一次 stat。
  * @param {string} text - 聊天文本。
- * @returns {string[]} 候选路径。
+ * @returns {{path: string, start: number, end: number}[]} 候选路径与 `[start, end)` 原文区间。
  */
 export function extractPathCandidates(text) {
+	const source = String(text ?? '')
+	/** @type {{raw: string, start: number}[]} */
 	const blocks = []
-	let rest = String(text ?? '')
 	let match
 	PATH_LIKE_REGEX.lastIndex = 0
-	while ((match = PATH_LIKE_REGEX.exec(rest)) !== null) {
-		blocks.push(match[0])
-		rest = rest.slice(match.index + 1)
-		PATH_LIKE_REGEX.lastIndex = 0
+	while ((match = PATH_LIKE_REGEX.exec(source)) !== null) {
+		blocks.push({ raw: match[0], start: match.index })
+		PATH_LIKE_REGEX.lastIndex = match.index + 1
 	}
-	const candidates = new Set()
-	for (const raw of blocks) {
-		const block = raw.replace(/^`|`$/g, '').trim()
+	/** @type {{path: string, start: number, end: number}[]} */
+	const candidates = []
+	const seen = new Set()
+	for (const { raw, start } of blocks) {
+		const block = raw.replace(/^`/, '').trim()
+		const blockStart = start + raw.indexOf(block)
 		const splits = block.split(/(?=[^\w/\\-])/).slice(0, MAX_SPLIT_PARTS)
-		for (let i = 0; i < splits.length; i++)
+		let offset = 0
+		for (let i = 0; i < splits.length; i++) {
 			for (let j = i + 1; j <= splits.length; j++) {
 				const candidate = splits.slice(i, j).join('')
-				if (candidate === block || ABSOLUTE_OR_RELATIVE_REGEX.test(candidate))
-					candidates.add(candidate)
+				if (candidate !== block && !ABSOLUTE_OR_RELATIVE_REGEX.test(candidate)) continue
+				const candidateStart = blockStart + offset
+				const key = `${candidate}\u0000${candidateStart}`
+				if (seen.has(key)) continue
+				seen.add(key)
+				candidates.push({ path: candidate, start: candidateStart, end: candidateStart + candidate.length })
 			}
+			offset += splits[i].length
+		}
 	}
-	return [...candidates]
+	return candidates
 }
 
 /**
@@ -69,7 +86,8 @@ export function extractPathCandidates(text) {
  * @typedef {object} mentionedFiles_t
  * @property {{path: string, resolved: string, mode: textFileMode_t, content?: string, head?: string, tail?: string, edge?: number, omitted?: number, windows?: {start: number, end: number, text: string}[], errorLines?: number[], totalLines?: number, notice?: string}[]} textFiles - 文本文件。
  * @property {{path: string, resolved: string, name: string, buffer: Buffer, mime_type: string}[]} binaryFiles - 二进制文件（附件）。
- * @property {{path: string, resolved: string, entries: string[]}[]} dirs - 目录及其条目。
+ * @property {{path: string, resolved: string, entries: string[], total: number}[]} dirs - 目录及其条目（`entries` 为截断后的列表，`total` 为实际条目数）。
+ * @property {{path: string, resolved: string, size: number}[]} oversized - 超过大小上限、未读取的文件。
  */
 
 /**
@@ -120,14 +138,14 @@ function clampWindows(windows, remaining) {
 
 /**
  * 把整份/首尾截断的文本收进剩余字符预算。
- * @param {string} candidate - 候选路径（原样）。
+ * @param {string} path - 候选路径（原样）。
  * @param {string} resolved - 解析后的绝对路径。
  * @param {{mode: 'full', content: string, totalLines: number} | {mode: 'truncated', head: string, tail: string, edge: number, omitted: number, totalLines: number}} formatted - `formatLargeTextForContext` 结果。
  * @param {number} remaining - 剩余字符预算（`Infinity` 表示不限）。
  * @returns {{file: object, renderedChars: number}} 收窄后的文本文件与占用字符数。
  */
-function formatWithBudget(candidate, resolved, formatted, remaining) {
-	const base = { path: candidate, resolved, totalLines: formatted.totalLines }
+function formatWithBudget(path, resolved, formatted, remaining) {
+	const base = { path, resolved, totalLines: formatted.totalLines }
 	if (formatted.mode === 'full') {
 		if (!Number.isFinite(remaining) || formatted.content.length <= remaining) return { file: { ...base, mode: 'full', content: formatted.content }, renderedChars: formatted.content.length }
 		const content = formatted.content.slice(0, Math.max(0, Math.floor(remaining)))
@@ -167,11 +185,16 @@ export async function collectMentionedFiles(executor, text, options = {}) {
 		extractPaths = true,
 		absoluteOnly = false,
 	} = options
+	const sourceText = String(text ?? '')
 	const textFiles = []
 	const binaryFiles = []
 	const dirs = []
+	const oversized = []
 	// within-call 去重：不同候选串可能解析到同一路径。
 	const seen = new Set()
+	// 已命中候选覆盖的原文区间；落于其中的候选（前缀/片段）直接跳过，不再探测。
+	/** @type {{start: number, end: number}[]} */
+	const coveredSpans = []
 	let usedChars = 0
 
 	// 每个候选只查一次 stat / realpath：报错定位与主循环共用缓存。
@@ -201,7 +224,9 @@ export async function collectMentionedFiles(executor, text, options = {}) {
 	}
 
 	// 报错定位：解析出走错文件与行号，按 realpath 归并；命中时按窗口读取，而非整份读取。
-	const errorLocations = parseErrorLocations(text)
+	// 目标工作目录未知（absoluteOnly）时，相对诊断路径无法可靠解析，直接丢弃，避免按进程 cwd 误读。
+	const errorLocations = parseErrorLocations(sourceText)
+		.filter(location => !absoluteOnly || ABSOLUTE_PATH_REGEX.test(location.path))
 	/** @type {Map<string, Set<number>>} */
 	const errorFilesByResolved = new Map()
 	for (const location of errorLocations) {
@@ -213,37 +238,54 @@ export async function collectMentionedFiles(executor, text, options = {}) {
 		for (const line of location.lines) lines.add(line)
 	}
 
-	// 报错文件优先，避免被前面的普通候选挤掉额度。
-	const candidates = [...new Set([...errorLocations.map(location => location.path), ...(extractPaths ? extractPathCandidates(text) : [])])]
-		.filter(candidate => !absoluteOnly || ABSOLUTE_PATH_REGEX.test(candidate))
+	// 报错文件优先，避免被前面的普通候选挤掉额度；文本候选按区间起点升序、同起点长者优先，
+	// 保证完整路径先于其前缀（祖先目录）被探测并覆盖。
+	const errorCandidates = errorLocations.map(location => {
+		const at = sourceText.indexOf(location.path)
+		return { path: location.path, start: at < 0 ? null : at, end: at < 0 ? null : at + location.path.length }
+	})
+	const textCandidates = (extractPaths ? extractPathCandidates(sourceText) : [])
+		.sort((a, b) => a.start - b.start || (b.end - b.start) - (a.end - a.start))
+	const candidates = [...errorCandidates, ...textCandidates]
+		.filter(candidate => !absoluteOnly || ABSOLUTE_PATH_REGEX.test(candidate.path))
 
 	for (const candidate of candidates) {
 		if (textFiles.length + binaryFiles.length >= maxFiles) break
-		const stat = await statEntry(candidate)
+		// 候选区间起点落在已命中候选的区间内（前缀/内部片段）则跳过，不再探测。
+		if (candidate.start != null && coveredSpans.some(span => candidate.start >= span.start && candidate.start < span.end)) continue
+		const stat = await statEntry(candidate.path)
 		if (!stat) continue
-		const canonical = await canonicalPath(candidate)
+		// 命中即在 `seen` / `knownFiles` 之前登记覆盖：已读文件的祖先目录也不应因该文件被跳过而冒出来。
+		if (candidate.start != null) coveredSpans.push({ start: candidate.start, end: candidate.end })
+		const canonical = await canonicalPath(candidate.path)
 		if (seen.has(canonical)) continue
 		seen.add(canonical)
 		if (knownFiles.has(fileIdentityKey(machine, canonical))) continue
 
 		if (stat.isDirectory) {
 			if (dirs.length >= maxFiles) continue
-			const entries = await executor.listDir(candidate).catch(() => [])
-			const names = entries.map(e => e.name + (e.isDirectory ? '/' : '')).slice(0, MAX_DIR_ENTRIES)
-			dirs.push({ path: candidate, resolved: canonical, entries: names })
+			const entries = await executor.listDir(candidate.path).catch(() => [])
+			const all = entries.map(e => e.name + (e.isDirectory ? '/' : ''))
+			dirs.push({ path: candidate.path, resolved: canonical, entries: all.slice(0, MAX_DIR_ENTRIES), total: all.length })
 			continue
 		}
 		if (!stat.isFile) continue
 
-		const buffer = await executor.readFileBuffer(candidate).catch(() => null)
+		if (stat.size > PRELOAD_MAX_FILE_BYTES) {
+			oversized.push({ path: candidate.path, resolved: canonical, size: stat.size })
+			continue
+		}
+
+		const buffer = await executor.readFileBuffer(candidate.path).catch(() => null)
 		if (!buffer) continue
 		if (!isProbablyTextBuffer(buffer)) {
+			const name = candidate.path.split(/[\\/]/).pop() || 'file'
 			binaryFiles.push({
-				path: candidate,
+				path: candidate.path,
 				resolved: canonical,
-				name: candidate.split(/[\\/]/).pop() || 'file',
+				name,
 				buffer,
-				mime_type: 'application/octet-stream',
+				mime_type: await mimetypeFromBufferAndName(buffer, name),
 			})
 			continue
 		}
@@ -257,7 +299,7 @@ export async function collectMentionedFiles(executor, text, options = {}) {
 			const { windows, notice } = clampWindows(allWindows, remaining)
 			if (!windows.length) continue
 			const file = {
-				path: candidate,
+				path: candidate.path,
 				resolved: canonical,
 				mode: /** @type {textFileMode_t} */ 'errors',
 				windows,
@@ -272,10 +314,10 @@ export async function collectMentionedFiles(executor, text, options = {}) {
 		}
 
 		const formatted = formatLargeTextForContext(rawText)
-		const { file, renderedChars } = formatWithBudget(candidate, canonical, formatted, remaining)
+		const { file, renderedChars } = formatWithBudget(candidate.path, canonical, formatted, remaining)
 		usedChars += renderedChars
 		textFiles.push(file)
 		if (maxChars > 0 && usedChars >= maxChars) break
 	}
-	return { textFiles, binaryFiles, dirs, usedChars }
+	return { textFiles, binaryFiles, dirs, oversized, usedChars }
 }

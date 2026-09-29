@@ -22,6 +22,11 @@ Deno.test('joinWorkdir keeps separators and passes absolute paths through', () =
 	assertEquals(joinWorkdir('/base', 'a/b'), '/base/a/b')
 	assertEquals(joinWorkdir('C:\\base', 'C:\\other'), 'C:\\other')
 	assertEquals(joinWorkdir(undefined, 'x'), 'x')
+	assertEquals(joinWorkdir('/base/', 'a'), '/base/a', '尾斜杠不应吞掉分隔符')
+	assertEquals(joinWorkdir('/base', 'a'), '/base/a', '无尾斜杠时补一个分隔符')
+	assertEquals(joinWorkdir('C:\\base\\', 'a'), 'C:\\base\\a', 'Windows 尾反斜杠应沿用反斜杠')
+	assertEquals(joinWorkdir('C:\\base', 'a'), 'C:\\base\\a', 'Windows 路径不应拼成混合分隔符')
+	assertEquals(joinWorkdir('/base', 'a\\b'), '/base/a\\b', 'unix base 两侧混合时沿用 base 风格')
 })
 
 Deno.test('local executor read/write/list against temp workspace', async () => {

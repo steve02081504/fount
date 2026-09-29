@@ -141,14 +141,14 @@ function targetLabel(target) {
 /**
  * 把预读结果以工具日志写入本轮结果（空结果不写）。
  * @param {chatReplyRequest_t & {AddLongTimeLog: (entry: chatLogEntry_t) => void}} args - 请求上下文。
- * @param {{textFiles: object[], binaryFiles: object[], dirs: object[]}} result - 预读结果。
+ * @param {{textFiles: object[], binaryFiles: object[], dirs: object[], oversized: object[]}} result - 预读结果。
  * @param {{machine: string, marker?: object, intro?: string, targetLabel?: string}} [meta] - `machine` 为目标机器标识（跨轮去重的机器维度）；`marker` 写入 `preload` 的额外元数据；`intro` 为文本文件块引导语；`targetLabel` 追加到引导语末尾的目标说明。
  * @returns {void}
  */
 function emitPreload(args, result, meta = {}) {
-	const { textFiles, binaryFiles, dirs } = result
-	if (!textFiles.length && !binaryFiles.length && !dirs.length) return
-	const preloadFiles = [...textFiles, ...binaryFiles, ...dirs].map(item => ({ path: item.path, resolved: item.resolved, machine: meta.machine }))
+	const { textFiles, binaryFiles, dirs, oversized } = result
+	if (!textFiles.length && !binaryFiles.length && !dirs.length && !oversized.length) return
+	const preloadFiles = [...textFiles, ...binaryFiles, ...dirs, ...oversized].map(item => ({ path: item.path, resolved: item.resolved, machine: meta.machine }))
 	/**
 	 * 构造带插件私有预读元数据的工具日志条目。
 	 * @param {object} entry 日志主体。
@@ -160,7 +160,7 @@ function emitPreload(args, result, meta = {}) {
 		return { name: 'file-operations.preload', role: 'tool', charVisibility: [args.char_id], ...entry, extension }
 	}
 	if (textFiles.length) {
-		let content = `${meta.intro ?? '以下对话中提及的文件已按当前工作目录自动预读：'}${meta.targetLabel ? ' ' + meta.targetLabel : ''}\n`
+		let content = `${meta.intro ?? '以下对话中提及的文件已自动预读：'}${meta.targetLabel ? ' ' + meta.targetLabel : ''}\n`
 		for (const file of textFiles)
 			content += `文件：${inlineCode(file.path)}\n${renderTextFile(file)}\n`
 		args.AddLongTimeLog(withPreload({ content, files: [] }))
@@ -170,9 +170,16 @@ function emitPreload(args, result, meta = {}) {
 			content: `以下对话中提及的二进制文件已作为附件预读：\n${binaryFiles.map(file => `- ${inlineCode(file.name)}`).join('\n')}\n`,
 			files: binaryFiles.map(file => ({ name: file.name, mime_type: file.mime_type, buffer: file.buffer, description: '' })),
 		}))
-	for (const dir of dirs)
+	for (const dir of dirs) {
+		const truncated = dir.total > dir.entries.length ? `（仅列出前 ${dir.entries.length} 项，共 ${dir.total} 项）` : ''
 		args.AddLongTimeLog(withPreload({
-			content: `以下对话中提及的目录内容：\n目录：${inlineCode(dir.path)}\n${dir.entries.map(name => `- ${inlineCode(name)}`).join('\n')}\n`,
+			content: `以下对话中提及的目录内容：\n目录：${inlineCode(dir.path)}${truncated}\n${dir.entries.map(name => `- ${inlineCode(name)}`).join('\n')}\n`,
+			files: [],
+		}))
+	}
+	if (oversized.length)
+		args.AddLongTimeLog(withPreload({
+			content: `以下对话中提及的文件过大，未读取：\n${oversized.map(file => `- ${inlineCode(file.path)}（${file.size} 字节）`).join('\n')}\n`,
 			files: [],
 		}))
 }
@@ -188,6 +195,16 @@ export async function preloadMentionedFiles(args) {
 	const requestTarget = resolveTarget(args)
 	const log = resolveEffectiveLog(args)
 	const knownFiles = collectKnownFiles(log)
+	/**
+	 * 把预读结果中已解析的条目并入已知集合，供同一调用内的后续预读去重。
+	 * @param {object} result - 预读结果。
+	 * @param {string} machine - 目标机器标识。
+	 * @returns {void}
+	 */
+	const markResultKnown = (result, machine) => {
+		for (const item of [...result.textFiles, ...result.binaryFiles, ...result.dirs, ...result.oversized])
+			if (item.resolved) knownFiles.add(fileIdentityKey(machine, item.resolved))
+	}
 
 	// 用户消息：报错窗口 + 通用路径候选。无请求工作目录时相对提及不可解析，跳过；同一用户消息已预读过则跳过。
 	const latest = findLatestUserEntry(log)
@@ -200,8 +217,7 @@ export async function preloadMentionedFiles(args) {
 				maxFiles: PRELOAD_MAX_FILES, knownFiles, machine: requestTarget.machine,
 			})
 			// 并入已知集合：本次工具输出预读不再重复读取同一文件。
-			for (const item of [...result.textFiles, ...result.binaryFiles, ...result.dirs])
-				if (item.resolved) knownFiles.add(fileIdentityKey(requestTarget.machine, item.resolved))
+			markResultKnown(result, requestTarget.machine)
 			emitPreload(args, result, { machine: requestTarget.machine, marker: { forUser: userKey }, targetLabel: targetLabel(requestTarget) })
 		}
 	}
@@ -236,8 +252,7 @@ export async function preloadMentionedFiles(args) {
 		})
 		remainingChars -= result.usedChars ?? 0
 		remainingFiles -= result.textFiles.length + result.binaryFiles.length + result.dirs.length
-		for (const item of [...result.textFiles, ...result.binaryFiles, ...result.dirs])
-			if (item.resolved) knownFiles.add(fileIdentityKey(target.machine, item.resolved))
+		markResultKnown(result, target.machine)
 		emitPreload(args, result, {
 			machine: target.machine, marker: {},
 			intro: '以下为工具输出中报错的文件，已预读其出错位置附近内容：',
