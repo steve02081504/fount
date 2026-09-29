@@ -151,7 +151,7 @@ function showConnectionLostIndicator() {
 	const badge = document.createElement('div')
 	badge.dataset.hubConnectionLost = ''
 	badge.setAttribute('role', 'status')
-	badge.style.cssText = 'position:fixed;z-index:60;bottom:calc(env(safe-area-inset-bottom, 0px) + 12px);inset-inline-end:12px;padding:6px 12px;border-radius:9999px;background:var(--color-warning, #d97706);color:#fff;font-size:12px;box-shadow:var(--shadow-md, 0 1px 3px rgba(0,0,0,.3));pointer-events:none'
+	badge.style.cssText = 'position:fixed;z-index:60;bottom:calc(env(safe-area-inset-bottom, 0px) + 12px);inset-inline-end:12px;padding:6px 12px;	border-radius:var(--radius-selector);background:var(--color-warning, #d97706);color:#fff;font-size:12px;box-shadow:var(--shadow-md);pointer-events:none'
 	setElementI18n(badge, 'chat.hub.stream.connectionLost')
 	document.body.appendChild(badge)
 	connectionLostBadge = badge

@@ -110,19 +110,23 @@ Deno.test({
 		}
 		const wsRes = {
 			/**
-			 *
+			 * 模拟 Express 设置响应头（WS 升级无实际响应）。
+			 * @returns {void}
 			 */
 			setHeader() { },
 			/**
-			 *
+			 * 模拟 Express 读取响应头。
+			 * @returns {void}
 			 */
 			getHeader() { },
 			/**
-			 *
+			 * 模拟 Express 移除响应头。
+			 * @returns {void}
 			 */
 			removeHeader() { },
 			/**
-			 *
+			 * 模拟结束响应。
+			 * @returns {void}
 			 */
 			end() { },
 		}
@@ -149,27 +153,33 @@ Deno.test({
 			 */
 			cookie(name, value) { delivered[name] = value },
 			/**
-			 *
+			 * 模拟 Express 清除 Cookie。
+			 * @returns {void}
 			 */
 			clearCookie() { },
 			/**
-			 *
+			 * 模拟 Express 设置响应头。
+			 * @returns {void}
 			 */
 			setHeader() { },
 			/**
-			 *
+			 * 模拟 Express 读取响应头。
+			 * @returns {void}
 			 */
 			getHeader() { },
 			/**
-			 *
+			 * 模拟 Express 移除响应头。
+			 * @returns {void}
 			 */
 			removeHeader() { },
 			/**
-			 *
+			 * 模拟 Express 设置状态码。
+			 * @returns {void}
 			 */
 			status() { },
 			/**
-			 *
+			 * 模拟 Express 发送 JSON 响应。
+			 * @returns {void}
 			 */
 			json() { },
 		}
