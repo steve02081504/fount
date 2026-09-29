@@ -114,5 +114,4 @@ export async function setMode(mode) {
 			await renderMemberList(store.context.currentState)
 			await renderGroupInfoCard(store.context.currentState)
 		}
-
 }

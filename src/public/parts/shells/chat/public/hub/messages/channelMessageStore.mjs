@@ -155,13 +155,10 @@ export async function ensureMessageLoaded(eventId) {
  */
 export function batchEchoesPendingClientId(batch, composerPendingId) {
 	if (!composerPendingId) return false
-	const clientMessageId = String(composerPendingId).startsWith('pending:')
-		? String(composerPendingId).slice('pending:'.length)
-		: String(composerPendingId)
-	if (!clientMessageId) return false
-	return (batch || []).some(row =>
+	const clientMessageId = String(composerPendingId).replace(/^pending:/, '')
+	return batch.some(row =>
 		String(row?.eventId) !== composerPendingId
-		&& String(row?.content?.extension?.chat?.clientMessageId ?? '') === clientMessageId,
+		&& String(row?.content?.extension?.chat?.clientMessageId) === clientMessageId,
 	)
 }
 

@@ -206,7 +206,8 @@ async function applyIncomingMessageBatch(batch, { scroll = false } = {}) {
 		&& queue.length > 0
 		&& String(queue.at(-1)?.eventId) === String(view[tailStart - 1]?.eventId)
 
-	if (replaceNeedsRefresh || (appendRows.length > 0 && !queueEndsAtTail) || (!replaceRows.length && !appendRows.length)) {
+	const noRowsChanged = !replaceRows.length && !appendRows.length
+	if (replaceNeedsRefresh || noRowsChanged || (appendRows.length > 0 && !queueEndsAtTail)) {
 		if (!isChannelViewScopeCurrent(scope)) return
 		await pipeline.refresh()
 	}

@@ -41,14 +41,8 @@ export function clearHubEmptyPlaceholder(container) {
  * @returns {void}
  */
 export function updateLastMessageId() {
-	let lastId = null
-	for (let index = store.messages.channelMessagesSource.length - 1; index >= 0; index--) {
-		const eventId = store.messages.channelMessagesSource[index]?.eventId
-		if (!isDagEventId(eventId)) continue
-		lastId = eventId
-		break
-	}
-	store.messages.lastMessageId = lastId
+	const lastDagRow = store.messages.channelMessagesSource.findLast(row => isDagEventId(row?.eventId))
+	store.messages.lastMessageId = lastDagRow?.eventId ?? null
 }
 
 /**

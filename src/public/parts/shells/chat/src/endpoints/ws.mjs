@@ -92,8 +92,7 @@ export function registerWsRoutes(router) {
 		const { ownerNodeHash, groupId } = req.params
 		if (!ownerNodeHash || !groupId) return closeWebSocket(ws, 4400, 'missing node or group')
 
-		/** 鉴权/成员校验完成前缓冲的入站帧；订阅后原序回放。 */
-		/** @type {unknown[]} */
+		/** 鉴权/成员校验完成前缓冲的入站帧；订阅后原序回放。 @type {unknown[]} */
 		const pendingFrames = []
 		let releasing = false
 		/** @type {{ username: string, roomKey: string } | null} */
