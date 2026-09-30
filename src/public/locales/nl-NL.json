@@ -6556,8 +6556,14 @@
 		},
 		"message": {
 			"actions": {
-				"copy": "Kopiëren",
-				"edit": "Bewerken",
+				"copy": {
+					"aria-label": "Kopiëren",
+					"title": "Kopiëren"
+				},
+				"edit": {
+					"aria-label": "Bewerken",
+					"title": "Bewerken"
+				},
 				"saveHtml": "Opslaan als HTML"
 			},
 			"copied": "Gekopieerd naar het klembord",
@@ -6569,8 +6575,14 @@
 				}
 			},
 			"feedback": {
-				"up": "Vind ik leuk",
-				"down": "Vind ik niet leuk",
+				"up": {
+					"aria-label": "Vind ik leuk",
+					"title": "Vind ik leuk"
+				},
+				"down": {
+					"aria-label": "Vind ik niet leuk",
+					"title": "Vind ik niet leuk"
+				},
 				"reasonPlaceholder": {
 					"placeholder": "Reden (optioneel)"
 				},
@@ -6579,8 +6591,14 @@
 					"aria-label": "Reden van vind ik niet leuk"
 				}
 			},
-			"regen": "Opnieuw genereren",
-			"retry": "Opnieuw proberen"
+			"regen": {
+				"aria-label": "Opnieuw genereren",
+				"title": "Opnieuw genereren"
+			},
+			"retry": {
+				"aria-label": "Opnieuw proberen",
+				"title": "Opnieuw proberen"
+			}
 		},
 		"attach": {
 			"add": {

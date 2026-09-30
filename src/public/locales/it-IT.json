@@ -6556,8 +6556,14 @@
 		},
 		"message": {
 			"actions": {
-				"copy": "Copia",
-				"edit": "Modifica",
+				"copy": {
+					"aria-label": "Copia",
+					"title": "Copia"
+				},
+				"edit": {
+					"aria-label": "Modifica",
+					"title": "Modifica"
+				},
 				"saveHtml": "Salva come HTML"
 			},
 			"copied": "Copiato negli appunti",
@@ -6569,8 +6575,14 @@
 				}
 			},
 			"feedback": {
-				"up": "Mi piace",
-				"down": "Non mi piace",
+				"up": {
+					"aria-label": "Mi piace",
+					"title": "Mi piace"
+				},
+				"down": {
+					"aria-label": "Non mi piace",
+					"title": "Non mi piace"
+				},
 				"reasonPlaceholder": {
 					"placeholder": "Motivo (facoltativo)"
 				},
@@ -6579,8 +6591,14 @@
 					"aria-label": "Motivo del non mi piace"
 				}
 			},
-			"regen": "Rigenera",
-			"retry": "Riprova"
+			"regen": {
+				"aria-label": "Rigenera",
+				"title": "Rigenera"
+			},
+			"retry": {
+				"aria-label": "Riprova",
+				"title": "Riprova"
+			}
 		},
 		"attach": {
 			"add": {

@@ -6560,8 +6560,14 @@
 		},
 		"message": {
 			"actions": {
-				"copy": "نسخ",
-				"edit": "تعديل",
+				"copy": {
+					"aria-label": "نسخ",
+					"title": "نسخ"
+				},
+				"edit": {
+					"aria-label": "تعديل",
+					"title": "تعديل"
+				},
 				"saveHtml": "حفظ بصيغة HTML"
 			},
 			"copied": "تم النسخ إلى الحافظة",
@@ -6573,8 +6579,14 @@
 				}
 			},
 			"feedback": {
-				"up": "أعجبني",
-				"down": "لم يعجبني",
+				"up": {
+					"aria-label": "أعجبني",
+					"title": "أعجبني"
+				},
+				"down": {
+					"aria-label": "لم يعجبني",
+					"title": "لم يعجبني"
+				},
 				"reasonPlaceholder": {
 					"placeholder": "السبب (اختياري)"
 				},
@@ -6583,8 +6595,14 @@
 					"aria-label": "سبب عدم الإعجاب"
 				}
 			},
-			"regen": "إعادة التوليد",
-			"retry": "إعادة المحاولة"
+			"regen": {
+				"aria-label": "إعادة التوليد",
+				"title": "إعادة التوليد"
+			},
+			"retry": {
+				"aria-label": "إعادة المحاولة",
+				"title": "إعادة المحاولة"
+			}
 		},
 		"attach": {
 			"add": {

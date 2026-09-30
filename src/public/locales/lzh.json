@@ -6550,8 +6550,14 @@
 		},
 		"message": {
 			"actions": {
-				"copy": "複製",
-				"edit": "編輯",
+				"copy": {
+					"aria-label": "複製",
+					"title": "複製"
+				},
+				"edit": {
+					"aria-label": "編輯",
+					"title": "編輯"
+				},
 				"saveHtml": "存為 HTML"
 			},
 			"copied": "已鈔至剪貼板",
@@ -6563,8 +6569,14 @@
 				}
 			},
 			"feedback": {
-				"up": "稱善",
-				"down": "貶之",
+				"up": {
+					"aria-label": "稱善",
+					"title": "稱善"
+				},
+				"down": {
+					"aria-label": "貶之",
+					"title": "貶之"
+				},
 				"reasonPlaceholder": {
 					"placeholder": "貶之故（可略）"
 				},
@@ -6573,8 +6585,14 @@
 					"aria-label": "貶之故"
 				}
 			},
-			"regen": "更生",
-			"retry": "復試"
+			"regen": {
+				"aria-label": "更生",
+				"title": "更生"
+			},
+			"retry": {
+				"aria-label": "復試",
+				"title": "復試"
+			}
 		},
 		"attach": {
 			"add": {

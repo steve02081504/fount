@@ -6550,8 +6550,14 @@
 		},
 		"message": {
 			"actions": {
-				"copy": "Sao chép",
-				"edit": "Chỉnh sửa",
+				"copy": {
+					"aria-label": "Sao chép",
+					"title": "Sao chép"
+				},
+				"edit": {
+					"aria-label": "Chỉnh sửa",
+					"title": "Chỉnh sửa"
+				},
 				"saveHtml": "Lưu dưới dạng HTML"
 			},
 			"copied": "Đã sao chép vào bộ nhớ tạm",
@@ -6563,8 +6569,14 @@
 				}
 			},
 			"feedback": {
-				"up": "Thích",
-				"down": "Không thích",
+				"up": {
+					"aria-label": "Thích",
+					"title": "Thích"
+				},
+				"down": {
+					"aria-label": "Không thích",
+					"title": "Không thích"
+				},
 				"reasonPlaceholder": {
 					"placeholder": "Lý do (tùy chọn)"
 				},
@@ -6573,8 +6585,14 @@
 					"aria-label": "Lý do không thích"
 				}
 			},
-			"regen": "Tạo lại",
-			"retry": "Thử lại"
+			"regen": {
+				"aria-label": "Tạo lại",
+				"title": "Tạo lại"
+			},
+			"retry": {
+				"aria-label": "Thử lại",
+				"title": "Thử lại"
+			}
 		},
 		"attach": {
 			"add": {

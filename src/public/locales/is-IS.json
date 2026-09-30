@@ -6550,8 +6550,14 @@
 		},
 		"message": {
 			"actions": {
-				"copy": "Afrita",
-				"edit": "Breyta",
+				"copy": {
+					"aria-label": "Afrita",
+					"title": "Afrita"
+				},
+				"edit": {
+					"aria-label": "Breyta",
+					"title": "Breyta"
+				},
 				"saveHtml": "Vista sem HTML"
 			},
 			"copied": "Afritað í klippispjald",
@@ -6563,8 +6569,14 @@
 				}
 			},
 			"feedback": {
-				"up": "Líkar",
-				"down": "Líkar ekki",
+				"up": {
+					"aria-label": "Líkar",
+					"title": "Líkar"
+				},
+				"down": {
+					"aria-label": "Líkar ekki",
+					"title": "Líkar ekki"
+				},
 				"reasonPlaceholder": {
 					"placeholder": "Ástæða (valfrjálst)"
 				},
@@ -6573,8 +6585,14 @@
 					"aria-label": "Ástæða þess að líkar ekki"
 				}
 			},
-			"regen": "Mynda aftur",
-			"retry": "Reyna aftur"
+			"regen": {
+				"aria-label": "Mynda aftur",
+				"title": "Mynda aftur"
+			},
+			"retry": {
+				"aria-label": "Reyna aftur",
+				"title": "Reyna aftur"
+			}
 		},
 		"attach": {
 			"add": {

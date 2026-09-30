@@ -6549,8 +6549,14 @@
 		},
 		"message": {
 			"actions": {
-				"copy": "複製",
-				"edit": "編輯",
+				"copy": {
+					"aria-label": "複製",
+					"title": "複製"
+				},
+				"edit": {
+					"aria-label": "編輯",
+					"title": "編輯"
+				},
 				"saveHtml": "另存為 HTML"
 			},
 			"copied": "已複製到剪貼簿",
@@ -6562,8 +6568,14 @@
 				}
 			},
 			"feedback": {
-				"up": "喜歡",
-				"down": "不喜歡",
+				"up": {
+					"aria-label": "喜歡",
+					"title": "喜歡"
+				},
+				"down": {
+					"aria-label": "不喜歡",
+					"title": "不喜歡"
+				},
 				"reasonPlaceholder": {
 					"placeholder": "原因（選填）"
 				},
@@ -6572,8 +6584,14 @@
 					"aria-label": "不喜歡的原因"
 				}
 			},
-			"regen": "重新產生",
-			"retry": "重試"
+			"regen": {
+				"aria-label": "重新產生",
+				"title": "重新產生"
+			},
+			"retry": {
+				"aria-label": "重試",
+				"title": "重試"
+			}
 		},
 		"attach": {
 			"add": {

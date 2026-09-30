@@ -6550,8 +6550,14 @@
 		},
 		"message": {
 			"actions": {
-				"copy": "📋",
-				"edit": "✏️",
+				"copy": {
+					"aria-label": "📋",
+					"title": "📋"
+				},
+				"edit": {
+					"aria-label": "✏️",
+					"title": "✏️"
+				},
 				"saveHtml": "💾"
 			},
 			"copied": "📋✅",
@@ -6563,8 +6569,14 @@
 				}
 			},
 			"feedback": {
-				"up": "👍",
-				"down": "👎",
+				"up": {
+					"aria-label": "👍",
+					"title": "👍"
+				},
+				"down": {
+					"aria-label": "👎",
+					"title": "👎"
+				},
 				"reasonPlaceholder": {
 					"placeholder": "💬 (✳️)"
 				},
@@ -6573,8 +6585,14 @@
 					"aria-label": "👎💬"
 				}
 			},
-			"regen": "🔁",
-			"retry": "🔄"
+			"regen": {
+				"aria-label": "🔁",
+				"title": "🔁"
+			},
+			"retry": {
+				"aria-label": "🔄",
+				"title": "🔄"
+			}
 		},
 		"attach": {
 			"add": {

@@ -6556,8 +6556,14 @@
 		},
 		"message": {
 			"actions": {
-				"copy": "Copier",
-				"edit": "Modifier",
+				"copy": {
+					"aria-label": "Copier",
+					"title": "Copier"
+				},
+				"edit": {
+					"aria-label": "Modifier",
+					"title": "Modifier"
+				},
 				"saveHtml": "Enregistrer en HTML"
 			},
 			"copied": "Copié dans le presse-papiers",
@@ -6569,8 +6575,14 @@
 				}
 			},
 			"feedback": {
-				"up": "J'aime",
-				"down": "Je n'aime pas",
+				"up": {
+					"aria-label": "J'aime",
+					"title": "J'aime"
+				},
+				"down": {
+					"aria-label": "Je n'aime pas",
+					"title": "Je n'aime pas"
+				},
 				"reasonPlaceholder": {
 					"placeholder": "Raison (facultatif)"
 				},
@@ -6579,8 +6591,14 @@
 					"aria-label": "Raison du désaccord"
 				}
 			},
-			"regen": "Régénérer",
-			"retry": "Réessayer"
+			"regen": {
+				"aria-label": "Régénérer",
+				"title": "Régénérer"
+			},
+			"retry": {
+				"aria-label": "Réessayer",
+				"title": "Réessayer"
+			}
 		},
 		"attach": {
 			"add": {

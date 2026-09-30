@@ -6550,8 +6550,14 @@
 		},
 		"message": {
 			"actions": {
-				"copy": "복사",
-				"edit": "편집",
+				"copy": {
+					"aria-label": "복사",
+					"title": "복사"
+				},
+				"edit": {
+					"aria-label": "편집",
+					"title": "편집"
+				},
 				"saveHtml": "HTML로 저장"
 			},
 			"copied": "클립보드에 복사됨",
@@ -6563,8 +6569,14 @@
 				}
 			},
 			"feedback": {
-				"up": "좋아요",
-				"down": "싫어요",
+				"up": {
+					"aria-label": "좋아요",
+					"title": "좋아요"
+				},
+				"down": {
+					"aria-label": "싫어요",
+					"title": "싫어요"
+				},
 				"reasonPlaceholder": {
 					"placeholder": "이유(선택 사항)"
 				},
@@ -6573,8 +6585,14 @@
 					"aria-label": "싫어요 이유"
 				}
 			},
-			"regen": "다시 생성",
-			"retry": "다시 시도"
+			"regen": {
+				"aria-label": "다시 생성",
+				"title": "다시 생성"
+			},
+			"retry": {
+				"aria-label": "다시 시도",
+				"title": "다시 시도"
+			}
 		},
 		"attach": {
 			"add": {
