@@ -91,6 +91,8 @@ Deno.test('ZL-31 GetReply continues after a tool round without a shell finishRou
 	const reply = await char.interfaces.chat.GetReply({
 		char_id: 'ZL-31',
 		Charname: 'ZL-31',
+		username,
+		chat_id: `zl31-tool-round-${username}`,
 		UserCharname: 'Tester',
 		UserUid: 'user',
 		CharUid: 'char',
