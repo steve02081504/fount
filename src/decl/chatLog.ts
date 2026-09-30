@@ -98,6 +98,11 @@ export type GenerationOptions_t = {
 	onToolOutput?: (event: ToolOutputEvent_t) => void
 	/** 远程流式回显时，主机侧实现 `interfaces.subfount.RemoteCallBack` 的 partpath（仅在同时设置 `onToolOutput` 时使用）。 */
 	remoteToolCallbackPartpath?: string
+	/**
+	 * 一轮工具处理结束时的轮次边界回调：由 shell 选择性提供。
+	 * 缺省 / 返回 undefined = 继续下一轮；只有明确返回 false 才停止（如 code shell 的进程退出收尾）。
+	 */
+	finishRound?: () => Promise<boolean>
 	signal?: AbortSignal
 	supported_functions?: {
 		markdown?: boolean

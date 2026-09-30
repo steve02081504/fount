@@ -8,6 +8,8 @@
  *   二级 prompt 构建（如 deep-research thinking）传 false，避免误消费主槽位的待触发唤醒。
  * 【数据结构】WeakMap<args, Set<string>> 记录本代已注入 id（即使 summarize 替换了 chat_log 仍能正确去重）。
  * 【关联】prompt_struct/index.mjs 的 mergeStructPromptChatLog；decl/chatLog.ts 的 Update；各 char 模板 regen 循环调用。
+ *   `finishToolRound` 是每轮工具处理后的统一收尾：先刷新轮次上下文，再按 shell 的 `generation_options.finishRound` 契约决定是否继续下一轮——
+ *   缺省或返回非 false = 继续，仅明确返回 false 才停止（如 code shell 的进程退出收尾）。
  */
 /** @typedef {import('../../../../../../decl/chatLog.ts').chatLogEntry_t} chatLogEntry_t */
 
@@ -74,4 +76,15 @@ export async function injectRoundEntries(args, prompt_struct, options = {}) {
 		if (key) seen.add(key)
 		prompt_struct.chat_log.push(entry)
 	}
+}
+
+/**
+ * 一轮工具处理后的统一收尾：刷新轮次上下文，并按 shell 的 `finishRound` 契约决定是否继续下一轮。
+ * @param {object} args 请求上下文（需含 `generation_options`）
+ * @param {object} prompt_struct 提示结构
+ * @returns {Promise<boolean>} 是否继续下一轮：`finishRound` 缺省或返回非 false 为 true，仅明确返回 false 时 false
+ */
+export async function finishToolRound(args, prompt_struct) {
+	await injectRoundEntries(args, prompt_struct)
+	return await args.generation_options.finishRound?.() !== false
 }
