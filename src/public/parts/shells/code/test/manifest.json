@@ -55,7 +55,7 @@
 		},
 		{
 			"name": "integration",
-			"expected": "7m29s",
+			"expected": "15m38s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -225,6 +225,23 @@
 					"expected": "30s",
 					"triggers": [
 						"src/public/parts/shells/code/test/frontend/tool_cards.spec.mjs",
+						"src/public/parts/shells/code/public/**"
+					]
+				},
+				{
+					"name": "session_runtime",
+					"expected": "2m",
+					"triggers": [
+						"src/public/parts/shells/code/test/frontend/session_runtime.spec.mjs",
+						"src/public/parts/shells/code/test/frontend/fixtures/chars/streamAgent/**",
+						"src/public/parts/shells/code/public/**"
+					]
+				},
+				{
+					"name": "attachments",
+					"expected": "1m44s",
+					"triggers": [
+						"src/public/parts/shells/code/test/frontend/attachments.spec.mjs",
 						"src/public/parts/shells/code/public/**"
 					]
 				}

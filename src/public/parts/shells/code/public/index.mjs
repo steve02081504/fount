@@ -5,7 +5,7 @@ import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { applyTheme } from '/scripts/theme/index.mjs'
 
 import { boot } from './src/boot.mjs'
-import { bumpCodeSessionNotification } from './src/session.mjs'
+import { bumpCodeSessionNotification } from './src/completion.mjs'
 
 applyTheme()
 

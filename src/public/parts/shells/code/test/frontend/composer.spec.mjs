@@ -60,6 +60,8 @@ test.describe('code shell composer & placeholders', () => {
 		expect(userBox.x + userBox.width).toBeGreaterThan(messagesBox.x + messagesBox.width * 0.75)
 		// 发送后保持 shell 模式，可直接连续执行命令
 		await expect(page.locator('#shell-pill-wrap')).toBeVisible()
+		// 运行状态按标签页串行：等首条命令执行完成（流式输出节点被正式工具日志替换）再发第二条
+		await expect(page.locator('.code-message.role-tool .code-shell-stream-output')).toHaveCount(0, { timeout: 60_000 })
 		await composer.click()
 		await page.keyboard.type('echo again-code-shell')
 		await page.locator('#send-button').click()

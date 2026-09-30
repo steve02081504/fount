@@ -28,9 +28,13 @@
 			"triggers": [
 				"src/public/pages/test/frontend/**",
 				"src/public/pages/login/**",
+				"src/public/pages/base.mjs",
 				"src/public/pages/scripts/endpoints/base.mjs",
 				"src/public/pages/scripts/components/passwordStrength.mjs",
+				"src/public/pages/scripts/components/imageEditor.mjs",
+				"src/public/pages/scripts/components/mediaViewer.mjs",
 				"src/public/pages/scripts/features/toast.mjs",
+				"src/public/pages/scripts/features/notificationSound.mjs",
 				"src/public/pages/scripts/test/watch/layout.mjs"
 			],
 			"subtests": [
@@ -81,6 +85,16 @@
 						"src/public/pages/test/frontend/scrollProgress.spec.mjs",
 						"src/public/pages/test/frontend/fixtures.mjs",
 						"src/public/pages/scripts/features/scrollProgress.mjs"
+					]
+				},
+				{
+					"name": "imageEditor",
+					"expected": "30s",
+					"triggers": [
+						"src/public/pages/test/frontend/imageEditor.spec.mjs",
+						"src/public/pages/test/frontend/fixtures.mjs",
+						"src/public/pages/scripts/components/imageEditor.mjs",
+						"src/public/pages/scripts/features/toast.mjs"
 					]
 				}
 			],

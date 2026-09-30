@@ -6179,8 +6179,13 @@
 				"aria-label": "ブラシの太さ"
 			},
 			"crop": "トリミング",
+			"exportFailed": "画像の書き出しに失敗しました",
 			"image": "編集",
-			"mosaic": "モザイク"
+			"loadFailed": "画像の読み込みに失敗しました",
+			"mosaic": "モザイク",
+			"redo": "やり直す",
+			"reset": "リセット",
+			"undo": "元に戻す"
 		},
 		"common": {
 			"cancel": "キャンセル",
@@ -6498,6 +6503,12 @@
 				"left": "左側のタブを閉じる",
 				"right": "右側のタブを閉じる",
 				"all": "すべてのタブを閉じる"
+			},
+			"generating": {
+				"aria-label": "「${title}」を生成中"
+			},
+			"unread": {
+				"aria-label": "「${title}」に未読メッセージがあります"
 			}
 		},
 		"newTab": {
@@ -6550,9 +6561,22 @@
 		},
 		"message": {
 			"actions": {
-				"copy": "コピー",
-				"edit": "編集",
-				"saveHtml": "HTMLとして保存"
+				"copy": {
+					"aria-label": "コピー",
+					"title": "コピー"
+				},
+				"edit": {
+					"aria-label": "編集",
+					"title": "編集"
+				},
+				"saveGist": {
+					"aria-label": "gist に保存",
+					"title": "gist に保存"
+				},
+				"downloadHtml": {
+					"aria-label": "HTML をダウンロード",
+					"title": "HTML をダウンロード"
+				}
 			},
 			"copied": "クリップボードにコピーしました",
 			"edit": {
@@ -6563,8 +6587,14 @@
 				}
 			},
 			"feedback": {
-				"up": "高評価",
-				"down": "低評価",
+				"up": {
+					"aria-label": "高評価",
+					"title": "高評価"
+				},
+				"down": {
+					"aria-label": "低評価",
+					"title": "低評価"
+				},
 				"reasonPlaceholder": {
 					"placeholder": "低評価の理由（任意）"
 				},
@@ -6573,8 +6603,14 @@
 					"aria-label": "低評価の理由"
 				}
 			},
-			"regen": "再生成",
-			"retry": "再試行"
+			"regen": {
+				"aria-label": "再生成",
+				"title": "再生成"
+			},
+			"retry": {
+				"aria-label": "再試行",
+				"title": "再試行"
+			}
 		},
 		"attach": {
 			"add": {
@@ -6582,10 +6618,30 @@
 				"title": "添付ファイルを追加"
 			},
 			"remove": {
-				"aria-label": "添付ファイルを削除"
+				"aria-label": "添付ファイルを削除",
+				"title": "添付ファイルを削除"
 			},
 			"drop": "ドロップして添付",
-			"tooLarge": "添付 ${name} は10MBの上限を超えています"
+			"tooLarge": "添付 ${name} は10MBの上限を超えています",
+			"edit": {
+				"aria-label": "画像を編集",
+				"title": "画像を編集"
+			},
+			"preview": {
+				"aria-label": "添付ファイルをプレビュー",
+				"title": "添付ファイルをプレビュー"
+			},
+			"download": {
+				"aria-label": "添付ファイルをダウンロード",
+				"title": "添付ファイルをダウンロード"
+			},
+			"description": {
+				"aria-label": "添付ファイルの説明",
+				"placeholder": "説明を追加…"
+			},
+			"tooLargeTotal": "添付ファイルの合計サイズが ${limit} の上限を超えています",
+			"reading": "読み込み中…",
+			"failed": "添付ファイル ${name} の読み込みに失敗しました"
 		},
 		"error": {
 			"generic": "エラーが発生しました：${error}",
@@ -6696,6 +6752,11 @@
 				"failed": "失敗",
 				"unknown": "見つかりません",
 				"idle": "バックグラウンドタスク"
+			}
+		},
+		"generation": {
+			"reconnect": {
+				"aria-label": "再接続"
 			}
 		}
 	},

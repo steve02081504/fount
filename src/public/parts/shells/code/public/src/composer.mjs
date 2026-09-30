@@ -3,16 +3,17 @@
  */
 import { listGists } from '/parts/shells:gist/src/endpoints.mjs'
 import { attachMentionAutocomplete } from '/scripts/components/mentionAutocomplete.mjs'
-import { blobToBase64 } from '/scripts/lib/base64.mjs'
 import { memoizePromise } from '/scripts/lib/memo.mjs'
-import { svgInliner } from '/scripts/lib/svgInliner.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
 
+import { addFilesToRuntime } from './attachments.mjs'
 import * as api from './endpoints.mjs'
-import { iconElement, icons } from './icons.mjs'
+import { notifyTyping } from './generation.mjs'
+import { ensureHistory, historySuggestions, ownHistoryNewest } from './history.mjs'
 import { cycleMode } from './pills.mjs'
-import { notifyTyping, sendMessage, syncActiveTabDraft } from './session.mjs'
-import { ATTACHMENT_MAX_BYTES, elements, getPref, richInput, setPref, store, target } from './store.mjs'
+import { syncActiveTabDraft } from './session.mjs'
+import { elements, richInput, store, target } from './store.mjs'
+import { submitMessage } from './submission.mjs'
 import { openDialogFromTemplate } from './templates.mjs'
 
 /** 更新 composer placeholder（normal / shell 模式；占位 span 走 `data-i18n`，随语种自动重译）。 */
@@ -47,7 +48,7 @@ const loadGistSummaries = memoizePromise(() => 'all', () => listGists(), { ttlMs
 
 /**
  * `@` gist 补全 provider：按标题/摘要子串匹配用户 gist。
- * 选中插入 `@[gist:id]`，发送时（session.mjs）再展开为附件正文。
+ * 选中插入 `@[gist:id]`，发送时（submission.mjs）再展开为附件正文。
  * @param {object} _ctx - 补全上下文（未使用）。
  * @param {string} query - 查询子串。
  * @param {number} limit - 结果上限。
@@ -85,80 +86,7 @@ const mentionProvider = async (ctx, query, limit) => {
 	return [...gists, ...files].slice(0, limit)
 }
 
-/* ---------------- 输入历史 / 影子补全 ---------------- */
-
-/**
- * 合并历史条目（保持去重；已存在的本地追加优先，避免加载覆盖加载期间的本地新条目）。
- * @param {string[]} loaded - 后端读取的历史（追加序）。
- * @param {string[]} existing - 本地已有历史（追加序）。
- * @returns {string[]} 合并结果。
- */
-function mergeHistoryEntries(loaded, existing) {
-	const seen = new Set()
-	const out = []
-	for (const entry of [...loaded, ...existing]) {
-		if (!entry || seen.has(entry)) continue
-		seen.add(entry)
-		out.push(entry)
-	}
-	return out
-}
-
-/**
- * 加载当前模式历史。
- * @param {'shell'|'message'} mode - 历史模式。
- * @returns {Promise<void>}
- */
-async function loadHistory(mode) {
-	if (mode === 'shell') {
-		const data = await api.getHistory(target(), 'shell', store.shell).catch(() => ({ own: [], native: [] }))
-		store.historyState.own = mergeHistoryEntries(data.own || [], store.historyState.own)
-		store.historyState.native = data.native || []
-	}
-	else if (store.workspace) {
-		const data = await api.getHistory(target(), 'message').catch(() => ({ own: [] }))
-		store.historyState.own = mergeHistoryEntries(data.own || [], store.historyState.own)
-		store.historyState.native = []
-	}
-	else {
-		store.historyState.own = mergeHistoryEntries(JSON.parse(getPref('messageHistory') || '[]'), store.historyState.own)
-		store.historyState.native = []
-	}
-	store.historyState.mode = mode
-}
-
-/**
- * 确保当前模式历史已加载。
- * @param {'shell'|'message'} mode - 历史模式。
- * @returns {Promise<void>}
- */
-export async function ensureHistory(mode) {
-	if (store.historyState.mode === mode) return
-	await loadHistory(mode)
-}
-
-/**
- * 合并后的补全候选（自有优先、newest-first、去重）。
- * @returns {string[]} 候选列表。
- */
-function historySuggestions() {
-	const seen = new Set()
-	const merged = []
-	for (const entry of [...store.historyState.own].reverse().concat(store.historyState.native)) {
-		if (!entry || seen.has(entry)) continue
-		seen.add(entry)
-		merged.push(entry)
-	}
-	return merged
-}
-
-/**
- * 自有历史（newest-first，↑/↓ 遍历用）。
- * @returns {string[]} 历史列表。
- */
-function ownHistoryNewest() {
-	return [...store.historyState.own].reverse()
-}
+/* ---------------- 影子补全 ---------------- */
 
 /** 清除影子补全。 */
 export function removeGhost() {
@@ -231,23 +159,6 @@ function navHistory(direction) {
 	fromNav = true
 	elements.composerInput.dispatchEvent(new Event('input', { bubbles: true }))
 	fromNav = false
-}
-
-/**
- * 追加一条自有历史并持久化（本地状态立即更新；无工作区时消息历史回退 localStorage）。
- * @param {'shell'|'message'} kind - 历史类型。
- * @param {string} command - 条目内容。
- * @returns {void}
- */
-export function appendLocalHistory(kind, command) {
-	if (!command?.trim()) return
-	store.historyState.own = [...store.historyState.own.filter(entry => entry !== command), command]
-	if (store.workspace)
-		void api.appendHistory(target(), kind, command).catch(() => { })
-	else {
-		const list = JSON.parse(getPref('messageHistory') || '[]')
-		setPref('messageHistory', JSON.stringify([...list.filter(entry => entry !== command), command].slice(-500)))
-	}
 }
 
 /* ---------------- `/` 命令面板 ---------------- */
@@ -331,7 +242,7 @@ async function applySlashCommand(command) {
 			richInput.setRangeText('', slashRange.start, slashRange.end, 'end')
 			slashRange = null
 		}
-		await sendMessage(content)
+		await submitMessage({ content })
 	}
 	catch (error) {
 		showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
@@ -399,49 +310,6 @@ async function openCommandParams(command) {
 	})
 }
 
-/* ---------------- 附件 ---------------- */
-
-/** 渲染待发送附件预览条（名称 chip + 移除按钮）。 */
-export function renderAttachmentPreview() {
-	const strip = elements.attachmentPreview
-	strip.replaceChildren(...store.pendingFiles.map((file, index) => {
-		const chip = document.createElement('span')
-		chip.className = 'code-attachment-chip'
-		const name = document.createElement('span')
-		name.className = 'code-attachment-chip-name'
-		name.textContent = file.name
-		const remove = document.createElement('button')
-		remove.type = 'button'
-		remove.className = 'code-attachment-chip-remove'
-		remove.dataset.i18n = 'code.attach.remove'
-		remove.appendChild(iconElement(icons.close, { size: 10 }))
-		remove.addEventListener('click', () => {
-			store.pendingFiles.splice(index, 1)
-			renderAttachmentPreview()
-		})
-		chip.append(name, remove)
-		return chip
-	}))
-	void svgInliner(strip)
-	strip.hidden = !store.pendingFiles.length
-}
-
-/**
- * 追加待发送附件（过大文件拒绝并提示）。
- * @param {File[]} files - 文件列表。
- * @returns {Promise<void>}
- */
-async function addComposerFiles(files) {
-	for (const file of files) {
-		if (file.size > ATTACHMENT_MAX_BYTES) {
-			showToastI18n('error', 'code.attach.tooLarge', { name: file.name })
-			continue
-		}
-		store.pendingFiles.push({ name: file.name, mime_type: file.type || 'application/octet-stream', buffer: await blobToBase64(file), description: '' })
-	}
-	renderAttachmentPreview()
-}
-
 /* ---------------- shell 模式 ---------------- */
 
 /** 退出 shell 模式（回到普通消息模式）。 */
@@ -462,7 +330,7 @@ function exitShellMode() {
 export function wireComposerEvents() {
 	elements.attachButton.addEventListener('click', () => elements.attachInput.click())
 	elements.attachInput.addEventListener('change', () => {
-		void addComposerFiles([...elements.attachInput.files])
+		void addFilesToRuntime(store.activeTabKey, [...elements.attachInput.files])
 		elements.attachInput.value = ''
 	})
 
@@ -471,7 +339,7 @@ export function wireComposerEvents() {
 		const files = [...event.clipboardData?.files || []]
 		if (!files.length) return
 		event.preventDefault()
-		void addComposerFiles(files)
+		void addFilesToRuntime(store.activeTabKey, files)
 	})
 
 	// 拖文件到 composer 卡片（enter/leave 计数防子元素抖动）
@@ -496,7 +364,7 @@ export function wireComposerEvents() {
 		dragDepth = 0
 		elements.composerShell.classList.remove('drag-over')
 		elements.dropOverlay.hidden = true
-		void addComposerFiles([...event.dataTransfer?.files || []])
+		void addFilesToRuntime(store.activeTabKey, [...event.dataTransfer?.files || []])
 	})
 
 	// 光标移出末尾（←/Home/点击）时收起影子补全，避免 Tab 把补全插到文本中间

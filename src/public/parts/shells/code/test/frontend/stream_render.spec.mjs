@@ -118,15 +118,19 @@ test('background completion notices appear before the ongoing reply', async ({ p
 	await openCode(page, baseUrl)
 	await holdLocale(page)
 	const result = await page.evaluate(async () => {
-		const { store } = await import('/parts/shells:code/src/store.mjs')
-		const { handleSessionEntryEvent, newSessionObject, startGeneratingBubble } = await import('/parts/shells:code/src/session.mjs')
+		const { store, getRuntime } = await import('/parts/shells:code/src/store.mjs')
+		const { handleSessionEntryEvent } = await import('/parts/shells:code/src/generation.mjs')
+		const { newSessionObject } = await import('/parts/shells:code/src/session.mjs')
+		const { startGeneratingBubble } = await import('/parts/shells:code/src/streamView.mjs')
 		const { renderMessages } = await import('/parts/shells:code/src/messages.mjs')
 		const session = store.session = newSessionObject('async-notice-test')
 		session.entries = [{ id: 'prompt', role: 'user', uid: 'user', content: '启动后台任务', time: new Date().toISOString() }]
+		store.activeTabKey = 'async-notice-test-tab'
+		const runtime = getRuntime(store.activeTabKey, { create: true })
+		runtime.session = session
+		runtime.status = 'generating'
 		renderMessages()
-		store.generating = true
-		store.generatingSession = session
-		startGeneratingBubble()
+		startGeneratingBubble(runtime)
 		for (const id of ['notice-a', 'notice-b', 'notice-c'])
 			handleSessionEntryEvent({
 				chatName: `code-${session.id}`, entry: {

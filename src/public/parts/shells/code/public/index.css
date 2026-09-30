@@ -157,6 +157,20 @@ body {
 	background: var(--color-error);
 }
 
+.code-tab-generating {
+	flex-shrink: 0;
+	width: 0.5rem;
+	height: 0.5rem;
+	border-radius: var(--radius-selector);
+	background: var(--color-primary);
+	animation: code-tab-generating-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes code-tab-generating-pulse {
+	0%, 100% { opacity: 0.35; }
+	50% { opacity: 1; }
+}
+
 /* pill 选择器 */
 .code-pill {
 	display: inline-flex;

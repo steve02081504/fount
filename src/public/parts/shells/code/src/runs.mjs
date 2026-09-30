@@ -1,8 +1,9 @@
 /**
  * code shell 生成运行共享叶子：运行表 / 唤醒调度 / 跨模块请求启动生成。
  * endpoints.mjs 与 request.mjs 都依赖本模块，使过期的请求对象无需反向 import endpoints.mjs 即可请求一次唤醒。
- * 运行对象字段：`runId` / `controller` / `socket` / `finished` / `completed` / `markInterrupted`
- * / `wakeHeld`（本运行是否持有一份唤醒调度槽）/ `superseded`（是否已被更新的运行取代）/ `requestSession` / `allNewEntries`。
+ * 运行对象字段：`runId` / `controller` / `sockets`（观察本运行的全部连接，Set<WebSocket>）/ `broadcast`（向这些连接广播一帧）
+ * / `finished` / `completed` / `markInterrupted` / `wakeHeld`（本运行是否持有一份唤醒调度槽）
+ * / `superseded`（是否已被更新的运行取代）/ `requestSession` / `allNewEntries`。
  * @typedef {object} codeRun_t
  */
 import { createWakeScheduler } from '../../chat/src/reply/wakeScheduler.mjs'

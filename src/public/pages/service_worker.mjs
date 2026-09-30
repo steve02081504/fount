@@ -712,8 +712,9 @@ function isClientActive(client) {
 
 /**
  * 路由通知：
- * - 所有同一 shell 页面（pathname 一致）的 client 都收到 `notification` 消息以更新页内角标（通知驱动，始终更新）。
- * - 若其中有活跃 client（有焦点且 4s 内交互过）则该 client 负责页内提示并抑制系统通知；否则弹系统通知。
+ * - 所有同一 shell 页面（pathname 一致）的 client 都收到 `notification` 消息以更新页内角标（通知驱动，始终更新），
+ *   与系统通知权限无关。
+ * - 若其中有活跃 client（有焦点且 4s 内交互过）则该 client 负责页内提示并抑制系统通知；否则在已授权时弹系统通知。
  * 不比较 search/hash：同一 shell 内不同会话/群组由页面侧角标定位。
  * @param {object} data 通知载荷（title, options, targetUrl）
  * @returns {Promise<void>}
@@ -721,7 +722,6 @@ function isClientActive(client) {
 async function routeNotification(data) {
 	const { title, options, targetUrl } = data
 	if (!title) return
-	if (Notification.permission !== 'granted') return
 
 	const notificationTargetUrl = targetUrl ? new URL(targetUrl, self.location.origin) : null
 	const windowClients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true })
@@ -734,7 +734,9 @@ async function routeNotification(data) {
 		if (active) suppressed = true
 		client.postMessage({ type: 'notification', data, suppressed: active })
 	}
-	if (!suppressed) await self.registration.showNotification(title, options)
+	// 系统通知权限只影响 showNotification，不影响页内消息分发。
+	if (!suppressed && Notification.permission === 'granted')
+		await self.registration.showNotification(title, options)
 }
 
 // --- Service Worker message handlers ---

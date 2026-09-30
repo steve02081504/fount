@@ -22,6 +22,21 @@ function isVideoItem(item) {
 }
 
 /**
+ * @param {MediaViewerItem} item 媒体项
+ * @returns {string} 展示名；缺省时回退到 URL 末段文件名
+ */
+function mediaItemName(item) {
+	if (item.name) return item.name
+	try {
+		const segment = new URL(item.src, location.href).pathname.split('/').filter(Boolean).pop()
+		return segment ? decodeURIComponent(segment) : ''
+	}
+	catch {
+		return ''
+	}
+}
+
+/**
  * @param {HTMLElement} root 查看器根
  * @returns {void}
  */
@@ -115,6 +130,7 @@ function bindStageTransform(stage, transform) {
 	})
 	stage.addEventListener('pointerup', () => { dragging = false })
 	stage.addEventListener('pointercancel', () => { dragging = false })
+	stage.addEventListener('lostpointercapture', () => { dragging = false })
 	stage.addEventListener('dblclick', resetTransform)
 
 	return resetTransform
@@ -178,7 +194,7 @@ export function openMediaViewer(items, startIndex = 0) {
 			transform.appendChild(img)
 		}
 		counter.textContent = list.length > 1 ? `${index + 1} / ${list.length}` : ''
-		nameEl.textContent = item.name || ''
+		nameEl.textContent = mediaItemName(item)
 		prevBtn.hidden = nextBtn.hidden = list.length < 2
 	}
 
@@ -233,7 +249,7 @@ export function openMediaViewer(items, startIndex = 0) {
 		const item = list[index]
 		const anchor = document.createElement('a')
 		anchor.href = item.src
-		anchor.download = item.name || 'media'
+		anchor.download = mediaItemName(item) || 'media'
 		anchor.rel = 'noopener'
 		anchor.click()
 	})

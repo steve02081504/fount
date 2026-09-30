@@ -1,20 +1,23 @@
 /**
  * 消息流：气泡渲染、hover 操作栏 / 反馈 / 行内编辑、贴底滚动与空态布局。
  */
+import { openMediaViewer } from '/scripts/components/mediaViewer.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
-import { geti18n } from '/scripts/i18n/index.mjs'
+import { geti18n, setElementI18n } from '/scripts/i18n/index.mjs'
 import { renderMarkdownAsString } from '/scripts/features/markdown/index.mjs'
 import { svgInliner } from '/scripts/lib/svgInliner.mjs'
-import { renderMarkdownAsStandaloneDocument } from '/parts/shells:gist/src/standaloneDocument.mjs'
+import { downloadHtmlDocument, renderMarkdownAsStandaloneDocument } from '/parts/shells:gist/src/standaloneDocument.mjs'
 import { createGist } from '/parts/shells:gist/src/endpoints.mjs'
 
 import { asyncStateLabel, asyncTaskCardElement } from './asynctasks.mjs'
+import { renderAttachmentStrip, renderMessageAttachments } from './attachments.mjs'
 import { iconElement, icons } from './icons.mjs'
 import { repairOrphanedReplyFence } from './replyMarkdown.mjs'
 import { updateRunCards } from './runCards.mjs'
-import { markSessionDirty, regenerateLastReply, retryFromError } from './session.mjs'
-import { elements, store, SCROLL_TOLERANCE } from './store.mjs'
+import { markSessionDirty } from './sessionPersistence.mjs'
+import { elements, isBusy, isGenerating, store, SCROLL_TOLERANCE } from './store.mjs'
 import { subAgentCardElement } from './subagents.mjs'
+import { regenerateLastReply, retryFromError } from './submission.mjs'
 import { renderTemplate } from './templates.mjs'
 
 /**
@@ -291,9 +294,8 @@ function messageActionButton(className, i18nKey, icon, onClick) {
 	const button = document.createElement('button')
 	button.type = 'button'
 	button.className = `code-message-actionbtn btn btn-ghost btn-square btn-xs ${className}`
-	const label = geti18n(i18nKey)
-	button.setAttribute('aria-label', label)
-	button.title = label
+	// 对象键（aria-label / title）走 data-i18n，随语种切换自动重译
+	setElementI18n(button, i18nKey)
 	button.appendChild(iconElement(icon, { size: 14 }))
 	void svgInliner(button)
 	button.addEventListener('click', event => {
@@ -304,7 +306,7 @@ function messageActionButton(className, i18nKey, icon, onClick) {
 }
 
 /**
- * 渲染 hover 操作栏（复制全部；user/char 另有编辑；char 另有保存为 HTML）。
+ * 渲染 hover 操作栏（复制全部；user/char 另有编辑；char 另有保存到 gist / 下载 HTML）。
  * @param {object} entry - 会话条目。
  * @param {HTMLElement} bubble - 所属气泡。
  * @returns {HTMLElement} 操作栏。
@@ -320,17 +322,19 @@ function renderMessageActions(entry, bubble) {
 	}))
 	if (entry.role === 'user' || entry.role === 'char')
 		bar.appendChild(messageActionButton('code-message-edit', 'code.message.actions.edit', icons.edit, () => { void startEditEntry(entry, bubble) }))
-	if (entry.role === 'char')
-		bar.appendChild(messageActionButton('code-message-save-html', 'code.message.actions.saveHtml', icons.download, () => { void saveEntryAsHtml(entry) }))
+	if (entry.role === 'char') {
+		bar.appendChild(messageActionButton('code-message-save-gist', 'code.message.actions.saveGist', icons.copy, () => { void saveEntryAsGist(entry) }))
+		bar.appendChild(messageActionButton('code-message-download-html', 'code.message.actions.downloadHtml', icons.download, () => { void downloadEntryHtml(entry) }))
+	}
 	return bar
 }
 
 /**
- * 将消息另存为 gist 并跳转查看页（gist 查看页负责下载 HTML / 分享）。
+ * 将消息另存为 gist 并跳转查看页（gist 查看页负责分享）。
  * @param {object} entry - 会话条目。
  * @returns {Promise<void>}
  */
-async function saveEntryAsHtml(entry) {
+async function saveEntryAsGist(entry) {
 	showToastI18n('info', 'code.gist_source_plugins.creating')
 	const markdown = messageMarkdown(entryShowText(entry), entry.role)
 	const title = markdown.split(/\r?\n/).find(line => line.trim())?.slice(0, 60) || 'code message'
@@ -353,13 +357,34 @@ async function saveEntryAsHtml(entry) {
 }
 
 /**
+ * 下载消息为离线 HTML（含附件 data URL）。
+ * @param {object} entry - 会话条目。
+ * @returns {Promise<void>}
+ */
+async function downloadEntryHtml(entry) {
+	const markdown = messageMarkdown(entryShowText(entry), entry.role)
+	const title = markdown.split(/\r?\n/).find(line => line.trim())?.slice(0, 60) || 'code message'
+	try {
+		const html = await renderMarkdownAsStandaloneDocument(markdown, {
+			cache: store.markdownCache,
+			files: entry.files,
+			title,
+		})
+		downloadHtmlDocument(html, `fount-code-message-${entry.id}.html`)
+	}
+	catch (error) {
+		showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
+	}
+}
+
+/**
  * 行内编辑消息文本（仅改原文，不重发）。
  * @param {object} entry - 会话条目。
  * @param {HTMLElement} bubble - 所属气泡。
  * @returns {Promise<void>}
  */
 async function startEditEntry(entry, bubble) {
-	if (store.generating) return
+	if (isGenerating(store.activeTabKey)) return
 	const body = bubble.querySelector('.code-message-body')
 	if (!body || bubble.querySelector('.code-message-editor')) return
 	bubble.classList.add('editing')
@@ -597,15 +622,10 @@ export function renderEntryBubble(entry, { isLast = false } = {}) {
 		void renderMarkdownInto(content, messageMarkdown(entryShowText(entry), entry.role))
 	}
 
-	for (const file of entry.files || []) {
-		const chip = document.createElement('div')
-		chip.className = 'code-message-file-chip flex items-center gap-1 text-xs opacity-70'
-		const name = document.createElement('span')
-		name.setAttribute('user-content', '')
-		name.textContent = file.name
-		chip.append(iconElement(icons.attach, { size: 14 }), name)
-		void svgInliner(chip)
-		body.appendChild(chip)
+	const attachments = renderMessageAttachments(entry)
+	if (attachments.childElementCount) {
+		void svgInliner(attachments)
+		body.appendChild(attachments)
 	}
 	bubble.appendChild(renderMessageActions(entry, bubble))
 	if (entry.role === 'char') bubble.appendChild(renderCharFeedback(entry, isLast, bubble))
@@ -618,13 +638,14 @@ export function renderEntryBubble(entry, { isLast = false } = {}) {
 export function updateRegenButtons() {
 	const entries = store.session?.entries || []
 	const last = entries.at(-1)
+	const generating = isGenerating(store.activeTabKey)
+	const busy = isBusy(store.activeTabKey)
 	for (const el of elements.messages.querySelectorAll('.code-message[data-entry-id]')) {
 		const regen = el.querySelector('.code-message-feedback-regen')
-		if (!regen) continue
-		regen.hidden = !(last && String(last.id) === el.dataset.entryId && last.role === 'char' && !store.generating)
+		if (regen)
+			regen.hidden = !(last && String(last.id) === el.dataset.entryId && last.role === 'char' && !generating)
 		const retry = el.querySelector('.code-message-error-retry')
-		if (!retry) continue
-		retry.disabled = store.generating || store.recovering
+		if (retry) retry.disabled = busy
 	}
 }
 
@@ -733,6 +754,20 @@ elements.messages.addEventListener('keydown', event => {
 	}
 }, { capture: true })
 
+// 点击消息正文图片 / 附件缩略图：打开查看器，并按本条消息收集全部图片供左右切换
+elements.messages.addEventListener('click', event => {
+	const target = event.target
+	if (!(target instanceof Element)) return
+	const image = target.closest('.code-message-attachment-thumb, .code-message-body img:not(.text-icon):not([aria-hidden="true"])')
+	if (!image) return
+	const message = image.closest('.code-message')
+	if (!message) return
+	const images = [...message.querySelectorAll('.code-message-body img:not(.text-icon):not([aria-hidden="true"]), .code-message-attachment-thumb')].filter(node => node.src)
+	if (!images.length) return
+	const index = Math.max(0, images.indexOf(image))
+	openMediaViewer(images.map(node => ({ src: node.src, name: node.alt || '' })), index)
+})
+
 /**
  * 贴底跟随：贴底状态下，消息流内任何内容变化（流式增量、markdown 异步落定、工具输出）
  * 或消息流自身尺寸变化（composer 伸缩挤压）都在绘制前重新对齐到底部，不会先画出错位的一帧。
@@ -746,7 +781,7 @@ function followIfPinned({ allowDuringToggle = false } = {}) {
 	if (!pinned) return
 	if (!allowDuringToggle && performance.now() - lastUserToggleAt < USER_TOGGLE_GRACE_MS) return
 	alignBottom()
-	if (store.generating) ensureFollowLoop()
+	if (isGenerating(store.activeTabKey)) ensureFollowLoop()
 	else {
 		followUntil = performance.now() + FOLLOW_SETTLE_MS
 		ensureFollowLoop()
@@ -772,7 +807,7 @@ let followFrame = 0
  */
 function followTick() {
 	followFrame = 0
-	if (pinned && (store.generating || performance.now() < followUntil)) {
+	if (pinned && (isGenerating(store.activeTabKey) || performance.now() < followUntil)) {
 		alignBottom()
 		ensureFollowLoop()
 	}
@@ -823,13 +858,14 @@ syncObservedMessageElements()
  * 生成中（entries 仍为空）不算空态——消息流必须保持可见，流式气泡才有容器。
  */
 export function updateEmptyMode() {
-	const empty = !(store.session?.entries?.length || 0)
-		&& !(store.generating && store.generatingSession === store.session)
+	// 活动标签页正在生成时即使 entries 仍为空也不算空态——消息流必须保持可见，流式气泡才有容器
+	const empty = !(store.session?.entries?.length || 0) && !isGenerating(store.activeTabKey)
 	elements.main?.classList.toggle('empty-mode', empty)
 }
 
-/** 渲染全部消息。 */
+/** 渲染全部消息（并同步活动标签页的待发送附件预览条，标签切换时一并刷新）。 */
 export function renderMessages() {
+	renderAttachmentStrip()
 	updateEmptyMode()
 	const entries = (store.session?.entries || []).filter(isEntryVisible)
 	if (!entries.length) {

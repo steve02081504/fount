@@ -144,8 +144,9 @@ test.describe('code shell message actions & layout', () => {
 		const userBubble = page.locator('.code-message.role-user')
 		await userBubble.hover()
 		await expect(userBubble.locator('.code-message-edit')).toBeVisible()
-		// 保存为 HTML 只属于角色消息
-		await expect(userBubble.locator('.code-message-save-html')).toHaveCount(0)
+		// 保存到 gist / 下载 HTML 只属于角色消息
+		await expect(userBubble.locator('.code-message-save-gist')).toHaveCount(0)
+		await expect(userBubble.locator('.code-message-download-html')).toHaveCount(0)
 		await userBubble.locator('.code-message-edit').click()
 		await page.locator('.code-message-editor textarea').fill('你好（已编辑）')
 		await page.locator('.code-message-editor .btn-primary').click()
@@ -174,9 +175,15 @@ test.describe('code shell message actions & layout', () => {
 			return dt.getData('text/plain')
 		})
 		expect(dragText).toContain('测试回复。')
-		// 保存为 HTML：建 gist 并跳转查看页（下载/分享在查看页进行）
+		// 下载 HTML：直接落盘离线文档
+		const downloadPromise = page.waitForEvent('download')
 		await charBubble.hover()
-		await charBubble.locator('.code-message-save-html').click()
+		await charBubble.locator('.code-message-download-html').click()
+		const download = await downloadPromise
+		expect(download.suggestedFilename()).toMatch(/\.html$/)
+		// 保存到 gist：建 gist 并跳转查看页（分享在查看页进行）
+		await charBubble.hover()
+		await charBubble.locator('.code-message-save-gist').click()
 		await page.waitForURL(/parts\/shells:gist\/view\/?\?id=/, { timeout: 30_000 })
 		await expect(page.locator('#view-title')).toBeVisible({ timeout: 30_000 })
 	})
@@ -416,7 +423,7 @@ test.describe('code shell message actions & layout', () => {
 			await page.locator('#attach-button').click()
 			const chooser = await chooserPromise
 			await chooser.setFiles(filePath)
-			await expect(page.locator('.code-attachment-chip')).toContainText('note.txt')
+			await expect(page.locator('.code-attachment-card')).toContainText('note.txt')
 			// 粘贴图片入列
 			await page.evaluate(() => {
 				const file = new File([new Uint8Array([137, 80, 78, 71])], 'pic.png', { type: 'image/png' })
@@ -424,18 +431,17 @@ test.describe('code shell message actions & layout', () => {
 				dt.items.add(file)
 				document.getElementById('composer-input').dispatchEvent(new ClipboardEvent('paste', { bubbles: true, cancelable: true, clipboardData: dt }))
 			})
-			await expect(page.locator('.code-attachment-chip')).toHaveCount(2)
-			// 发送 → 用户条目带 files（气泡 chip 由服务端条目渲染），发送后预览清空
+			await expect(page.locator('.code-attachment-card')).toHaveCount(2)
+			// 发送 → 用户条目带 files（附件由服务端条目渲染），发送后预览清空
 			const composer = page.locator('#composer-input')
 			await composer.click()
 			await page.keyboard.type('看附件')
 			await page.keyboard.press('Control+Enter')
 			await expect(page.locator('.code-message.role-char')).toContainText('测试回复。', { timeout: 60_000 })
 			await expect(page.locator('.code-message.role-user')).toContainText('note.txt')
-			await expect(page.locator('.code-message.role-user')).toContainText('pic.png')
-			await expect(page.locator('.code-message.role-user .code-message-file-chip')).toHaveCount(2)
-			await expect(page.locator('.code-message.role-user .code-message-file-chip .text-icon')).toHaveCount(2)
-			await expect(page.locator('.code-attachment-chip')).toHaveCount(0)
+			await expect(page.locator('.code-message.role-user .code-message-file-chip')).toHaveCount(1)
+			await expect(page.locator('.code-message.role-user .code-message-attachment-thumb')).toHaveCount(1)
+			await expect(page.locator('.code-attachment-card')).toHaveCount(0)
 		}
 		finally {
 			await rmDirRetry(dir)

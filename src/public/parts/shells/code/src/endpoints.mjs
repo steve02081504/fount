@@ -395,6 +395,32 @@ function sanitizeEntry(entry) {
 	}
 }
 
+/**
+ * 把一个 WS 接入某生成运行：加入 `run.sockets`，并登记到连接的观察运行集合（连接关闭时据此移除）。
+ * 允许多个页面同时观察同一运行（attach 只新增，不替换其他页面的连接）。
+ * @param {object} run - 运行对象（含 `sockets: Set`）。
+ * @param {object|null} socket - WebSocket 连接。
+ * @returns {void}
+ */
+function attachSocketToRun(run, socket) {
+	if (!socket || !run?.sockets) return
+	run.sockets.add(socket)
+	if (!(socket.codeRuns instanceof Set)) socket.codeRuns = new Set()
+	socket.codeRuns.add(run)
+}
+
+/**
+ * 解析运行所属工作区 id：优先按（机器, 路径）在工作区表内匹配，其次用会话自带字段，未知返回空串（不臆造）。
+ * @param {string} username - 用户名。
+ * @param {{machine: string, path: string}} workTarget - 目标工作区。
+ * @param {object} session - 会话对象。
+ * @returns {string} 工作区 id（未知为空串）。
+ */
+function resolveWorkspaceId(username, workTarget, session) {
+	const found = getWorkspaces(username).list.find(w => String(w.machine) === workTarget.machine && w.path === workTarget.path)
+	return found?.id || (session?.workspaceId ? String(session.workspaceId) : '')
+}
+
 let startCodeRun
 let shutdownRegistered = false
 
@@ -924,39 +950,36 @@ export function setEndpoints(router) {
 	startCodeRun = async (username, msg, ws) => {
 		if (isStopping()) return
 		if (msg.type === 'abort') {
-			const targetKey = msg.sessionId ? codeRunKey(username, msg.sessionId) : null
-			const run = targetKey ? activeCodeRuns.get(targetKey) : ws?.codeRun
-			run?.controller.abort()
+			const run = msg.sessionId ? activeCodeRuns.get(codeRunKey(username, msg.sessionId)) : null
+			if (!run) return
+			// 携带 runId 时校验运行身份：不匹配当前运行则忽略该请求，避免迟到的停止中止下一次运行
+			if (msg.runId && run.runId !== msg.runId) return
+			run.controller.abort()
 			return
 		}
-		// attach：页面接入一个后端已启动（无 socket）的运行，先补发运行身份与已产生的条目，再接收后续流式帧
+		// attach：页面接入一个正在进行的运行，加入观察集合后回放运行身份与已产生的条目，再接收后续流式帧
 		if (msg.type === 'attach') {
 			const run = activeCodeRuns.get(codeRunKey(username, msg.sessionId))
 			if (!run) {
 				ws?.send(JSON.stringify({ type: 'error', sessionId: msg.sessionId, error: 'no active run' }))
 				return
 			}
-			run.socket = ws
-			if (ws) ws.codeRun = run
-			/**
-			 * 向接入连接回放一帧（已附带运行身份）。
-			 * @param {object} payload - 帧负载（需含 type）。
-			 * @returns {void}
-			 */
-			const emit = payload => { try { ws?.send(JSON.stringify({ runId: run.runId, sessionId: msg.sessionId, ...payload })) } catch { /* 连接已关闭 */ } }
-			emit({ type: 'run-start' })
+			attachSocketToRun(run, ws)
 			// 回放本运行已产生的权威新条目（allNewEntries + requestSession 追加，按 id 去重）；
 			// 前端按 id 去重，故一次回放完整集合不会重复渲染。
+			run.broadcast?.({ type: 'run-start' })
 			const replayEntries = run.buildReplayEntries?.() || run.allNewEntries || []
-			if (replayEntries.length) emit({ type: 'entries-append', entries: [...replayEntries] })
+			if (replayEntries.length) run.broadcast?.({ type: 'entries-append', entries: [...replayEntries] })
 			return
 		}
 		// trigger：按当前会话原样生成（不新增用户消息），供异步通知空闲时由后端唤醒
 		if (msg.type !== 'send' && msg.type !== 'regen' && msg.type !== 'trigger') return
 
 		const { session, machine = 0, workdir, ai_source, profile, content } = msg
-		if (!session || (msg.type === 'send' && !content)) {
-			ws?.send(JSON.stringify({ type: 'error', sessionId: session?.id, runId: msg.runId, error: 'session and content are required.' }))
+		// `send` 允许仅附件：content 与 files 至少一个非空
+		const files = Array.isArray(msg.files) ? msg.files : []
+		if (!session || (msg.type === 'send' && !content && !files.length)) {
+			ws?.send(JSON.stringify({ type: 'error', sessionId: session?.id, runId: msg.runId, error: 'session and content or files are required.' }))
 			return
 		}
 		const runKey = codeRunKey(username, session.id)
@@ -976,7 +999,7 @@ export function setEndpoints(router) {
 		// 持久化的恢复参数：只留标识与生成参数；会话内容始终从工作区 `.fount/code/sessions` 读回。
 		const jobData = { sessionId: session.id, workTarget: { machine: String(machine ?? '0'), path: String(workdir || '') }, ai_source, profile, startedAt: Date.now() }
 		const run = {
-			runId, controller: thisRequestController, socket: ws, finished, completed: false,
+			runId, controller: thisRequestController, sockets: new Set(), finished, completed: false,
 			wakeHeld: true, superseded: false, requestSession: null, allNewEntries: null,
 			/**
 			 * 记录导致中断的原因和时间。
@@ -986,20 +1009,42 @@ export function setEndpoints(router) {
 			markInterrupted: reason => { if (!run.completed && jobData.workTarget.path) StartJob(username, 'shells/code', session.id, { ...jobData, interruptedAt: Date.now(), reason }) }
 		}
 		activeCodeRuns.set(runKey, run)
-		if (ws) ws.codeRun = run
+		attachSocketToRun(run, ws)
 		const workPath = String(workdir || '')
 		const workTarget = { machine: String(machine ?? '0'), path: workPath }
 		// 打开/使用工作区时确保会话目录被 git 忽略（best-effort，不阻塞生成）。
 		void ensureSessionsGitignored(username, workTarget)
 		/**
-			 * 向本连接发送一帧（自动附带 runId/sessionId；socket 已断开时静默跳过）。
-			 * @param {object} payload - 帧负载（需含 type）。
-			 * @returns {void}
-			 */
-		const send = payload => {
-			if (!run.socket) return
-			try { run.socket.send(JSON.stringify({ runId, sessionId: session.id, ...payload })) }
-			catch { /* 连接已关闭 */ }
+		 * 向所有已接入本运行的连接广播一帧（自动附带 runId/sessionId；已断开连接静默跳过）。
+		 * @param {object} payload - 帧负载（需含 type）。
+		 * @returns {void}
+		 */
+		const broadcast = payload => {
+			if (!run.sockets.size) return
+			const frame = JSON.stringify({ runId, sessionId: session.id, ...payload })
+			for (const socket of run.sockets)
+				try { socket.send(frame) }
+				catch { run.sockets.delete(socket) }
+		}
+		// 暴露给 attach：后续页面接入时也能通过同一广播函数回放
+		run.broadcast = broadcast
+		/** 本运行是否已派发终态事件（每个运行至多一次）。 */
+		let settled = false
+		/**
+		 * 运行到达终态并完成权威落盘后派发 `code-run-settled`（被新请求取代的运行不派发）。
+		 * @param {'done'|'error'|'aborted'} status - 终态。
+		 * @returns {void}
+		 */
+		const emitSettled = status => {
+			if (settled || run.superseded) return
+			settled = true
+			sendEventToUser(username, 'code-run-settled', {
+				chatName: 'code-' + session.id,
+				sessionId: session.id,
+				workspaceId: resolveWorkspaceId(username, workTarget, session),
+				runId,
+				status,
+			})
 		}
 		/** 前端送来的会话条目（含乐观用户消息）；最终以它为基础合并本轮新条目。 */
 		const baseEntries = [...session.entries || []]
@@ -1106,7 +1151,7 @@ export function setEndpoints(router) {
 				if (entry) fresh.push(entry)
 			}
 			emittedLogCount = log.length
-			if (fresh.length) send({ type: 'entries-append', entries: fresh })
+			if (fresh.length) broadcast({ type: 'entries-append', entries: fresh })
 		}
 		/** 中断只保留此前完整轮次的日志，移除本轮生成到一半的内容。 */
 		const dropIncompleteLogs = () => {
@@ -1154,7 +1199,7 @@ export function setEndpoints(router) {
 		const generationId = randomUUID()
 		if (workPath) StartJob(username, 'shells/code', session.id, jobData)
 		// 生成运行身份：带回 runId 的 run-start 帧（前端据此接纳本运行的事件）
-		send({ type: 'run-start' })
+		broadcast({ type: 'run-start' })
 		// 无 socket 的后台运行（唤醒 / 钩子重生成 / 作业恢复）：广播运行开始，已打开的页面据此 attach 接入
 		if (!ws) sendEventToUser(username, 'code-run-started', { chatName: 'code-' + session.id, runId })
 		// 新生成开始：取消上一轮待运行的 agentFinish 收尾（计数照常递减，交给本轮）
@@ -1196,7 +1241,7 @@ export function setEndpoints(router) {
 				onPreview: preview => {
 					// 先把本轮已完成的工具日志增量追加出来，再更新生成中气泡（保持文本顺序）
 					flushIncrementalEntries()
-					send({ type: 'preview', content: preview.content_for_show ?? preview.content ?? '' })
+					broadcast({ type: 'preview', content: preview.content_for_show ?? preview.content ?? '' })
 				},
 				/**
 					 * 转发工具执行实时输出到 WS。
@@ -1204,7 +1249,7 @@ export function setEndpoints(router) {
 					 * @returns {void}
 					 */
 				onToolOutput: event => {
-					send({ type: 'tool-output', ...event })
+					broadcast({ type: 'tool-output', ...event })
 				},
 				/**
 				 * 完成一轮：落盘已完成的工具结果并确认是否继续生成。
@@ -1237,16 +1282,21 @@ export function setEndpoints(router) {
 					run.completed = true
 					EndJob(username, 'shells/code', session.id)
 				}
-				send({ type: 'aborted', entries })
+				broadcast({ type: 'aborted', entries })
+				emitSettled('aborted')
 			}
 			else if (saved || !workPath) {
 				run.completed = true
 				runSuccess = true
 				if (workPath) EndJob(username, 'shells/code', session.id)
-				send({ type: 'done', entries, memory })
+				broadcast({ type: 'done', entries, memory })
+				emitSettled('done')
 				void notifyCodeCompletion(username, session)
 			}
-			else send({ type: 'error', entries, error: 'session persistence failed; generation remains resumable.' })
+			else {
+				broadcast({ type: 'error', entries, error: 'session persistence failed; generation remains resumable.' })
+				emitSettled('error')
+			}
 		}
 		catch (error) {
 			runError = formatGenerationError(error)
@@ -1263,15 +1313,22 @@ export function setEndpoints(router) {
 				run.completed = true
 				EndJob(username, 'shells/code', session.id)
 			}
-			if (thisRequestController.signal.aborted || stoppedForShutdown)
-				send({ type: 'aborted', entries })
-			else
-				send({ type: 'error', entries, error: formatGenerationError(error) })
+			if (thisRequestController.signal.aborted || stoppedForShutdown) {
+				broadcast({ type: 'aborted', entries })
+				emitSettled('aborted')
+			}
+			else {
+				broadcast({ type: 'error', entries, error: formatGenerationError(error) })
+				emitSettled('error')
+			}
 		}
 		finally {
 			stopWake()
 			const superseded = run.superseded
 			if (activeCodeRuns.get(runKey) === run) activeCodeRuns.delete(runKey)
+			// 断开所有观察连接与本运行的关联（连接仍可继续观察其它运行）
+			for (const socket of run.sockets) socket.codeRuns?.delete(run)
+			run.sockets.clear()
 			// 本运行结束：返回期间是否有未被 Update({ forRound: true }) 观察到的唤醒
 			const pending = run.wakeHeld ? codeWakes.release(runKey) : false
 			// 工作区钩子：单个 agent 完毕（含失败回灌与重生成）；先于计数递减，避免误触「全部完毕」
@@ -1297,7 +1354,11 @@ export function setEndpoints(router) {
 	}
 	router.ws('/ws/parts/shells\\:code/session', authenticate, (ws, req) => {
 		const { username } = getUserByReq(req)
-		ws.on('close', () => { if (ws.codeRun) ws.codeRun.socket = null })
+		// 连接关闭只从它观察过的每个运行移除自身，不影响其它页面已接入的连接
+		ws.on('close', () => {
+			for (const run of ws.codeRuns || []) run.sockets?.delete(ws)
+			ws.codeRuns?.clear()
+		})
 		ws.on('message', raw => {
 			let msg
 			try { msg = JSON.parse(String(raw)) } catch { return }

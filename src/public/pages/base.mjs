@@ -23,6 +23,8 @@ function initServiceWorkerIntegration() {
 		// 始终抛事件：各 shell 据此更新页内角标（通知驱动，不依赖是否活跃）
 		window.dispatchEvent(new CustomEvent('fount-notification', { detail: { ...data, suppressed: !!suppressed } }))
 		if (!suppressed) return
+		// 载荷要求跳过页内声音时（如 code shell 自行播放完成音）不重复播放
+		if (data?.options?.data?.suppressPageSound === true) return
 		// 页面活跃时播放页面内通知音；播放失败则回退到系统通知
 		import('./scripts/features/notificationSound.mjs')
 			.then(({ playNotificationSound }) => playNotificationSound())

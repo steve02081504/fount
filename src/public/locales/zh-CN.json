@@ -6180,8 +6180,13 @@
 				"aria-label": "画笔粗细"
 			},
 			"crop": "裁剪",
+			"exportFailed": "图片导出失败",
 			"image": "编辑",
-			"mosaic": "打码"
+			"loadFailed": "图片加载失败",
+			"mosaic": "打码",
+			"redo": "重做",
+			"reset": "重置",
+			"undo": "撤销"
 		},
 		"common": {
 			"cancel": "取消",
@@ -6499,6 +6504,12 @@
 				"left": "关闭左侧标签",
 				"right": "关闭右侧标签",
 				"all": "关闭全部标签"
+			},
+			"generating": {
+				"aria-label": "「${title}」正在生成"
+			},
+			"unread": {
+				"aria-label": "「${title}」有未读消息"
 			}
 		},
 		"newTab": {
@@ -6551,9 +6562,22 @@
 		},
 		"message": {
 			"actions": {
-				"copy": "复制",
-				"edit": "编辑",
-				"saveHtml": "保存为 HTML"
+				"copy": {
+					"aria-label": "复制",
+					"title": "复制"
+				},
+				"edit": {
+					"aria-label": "编辑",
+					"title": "编辑"
+				},
+				"saveGist": {
+					"aria-label": "保存到 gist",
+					"title": "保存到 gist"
+				},
+				"downloadHtml": {
+					"aria-label": "下载 HTML",
+					"title": "下载 HTML"
+				}
 			},
 			"copied": "已复制到剪贴板",
 			"edit": {
@@ -6564,8 +6588,14 @@
 				}
 			},
 			"feedback": {
-				"up": "点赞",
-				"down": "点踩",
+				"up": {
+					"aria-label": "点赞",
+					"title": "点赞"
+				},
+				"down": {
+					"aria-label": "点踩",
+					"title": "点踩"
+				},
 				"reasonPlaceholder": {
 					"placeholder": "点踩原因（可选）"
 				},
@@ -6574,8 +6604,14 @@
 					"aria-label": "点踩原因"
 				}
 			},
-			"regen": "重新生成",
-			"retry": "重试"
+			"regen": {
+				"aria-label": "重新生成",
+				"title": "重新生成"
+			},
+			"retry": {
+				"aria-label": "重试",
+				"title": "重试"
+			}
 		},
 		"attach": {
 			"add": {
@@ -6583,10 +6619,30 @@
 				"title": "添加附件"
 			},
 			"remove": {
-				"aria-label": "移除附件"
+				"aria-label": "移除附件",
+				"title": "移除附件"
 			},
 			"drop": "松开以添加附件",
-			"tooLarge": "附件 ${name} 超过 10MB 限制"
+			"tooLarge": "附件 ${name} 超过 10MB 限制",
+			"edit": {
+				"aria-label": "编辑图片",
+				"title": "编辑图片"
+			},
+			"preview": {
+				"aria-label": "预览附件",
+				"title": "预览附件"
+			},
+			"download": {
+				"aria-label": "下载附件",
+				"title": "下载附件"
+			},
+			"description": {
+				"aria-label": "附件说明",
+				"placeholder": "添加说明…"
+			},
+			"tooLargeTotal": "附件总大小超过 ${limit} 限制",
+			"reading": "正在读取…",
+			"failed": "读取附件 ${name} 失败"
 		},
 		"error": {
 			"generic": "出错了：${error}",
@@ -6697,6 +6753,11 @@
 				"failed": "已失败",
 				"unknown": "未找到",
 				"idle": "后台任务"
+			}
+		},
+		"generation": {
+			"reconnect": {
+				"aria-label": "重新连接"
 			}
 		}
 	},

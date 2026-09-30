@@ -6179,8 +6179,13 @@
 				"aria-label": "Brush size"
 			},
 			"crop": "Crop",
+			"exportFailed": "Failed to export the image",
 			"image": "edit",
-			"mosaic": "Pixelate"
+			"loadFailed": "Failed to load the image",
+			"mosaic": "Pixelate",
+			"redo": "Redo",
+			"reset": "Reset",
+			"undo": "Undo"
 		},
 		"common": {
 			"cancel": "Cancel",
@@ -6498,6 +6503,12 @@
 				"left": "Close tabs to the left",
 				"right": "Close tabs to the right",
 				"all": "Close all tabs"
+			},
+			"generating": {
+				"aria-label": "\"${title}\" is generating"
+			},
+			"unread": {
+				"aria-label": "\"${title}\" has unread messages"
 			}
 		},
 		"newTab": {
@@ -6550,9 +6561,22 @@
 		},
 		"message": {
 			"actions": {
-				"copy": "Copy",
-				"edit": "Edit",
-				"saveHtml": "Save as HTML"
+				"copy": {
+					"aria-label": "Copy",
+					"title": "Copy"
+				},
+				"edit": {
+					"aria-label": "Edit",
+					"title": "Edit"
+				},
+				"saveGist": {
+					"aria-label": "Save to gist",
+					"title": "Save to gist"
+				},
+				"downloadHtml": {
+					"aria-label": "Download HTML",
+					"title": "Download HTML"
+				}
 			},
 			"copied": "Copied to clipboard",
 			"edit": {
@@ -6563,8 +6587,14 @@
 				}
 			},
 			"feedback": {
-				"up": "Like",
-				"down": "Dislike",
+				"up": {
+					"aria-label": "Like",
+					"title": "Like"
+				},
+				"down": {
+					"aria-label": "Dislike",
+					"title": "Dislike"
+				},
 				"reasonPlaceholder": {
 					"placeholder": "Reason (optional)"
 				},
@@ -6573,8 +6603,14 @@
 					"aria-label": "Dislike reason"
 				}
 			},
-			"regen": "Regenerate",
-			"retry": "Retry"
+			"regen": {
+				"aria-label": "Regenerate",
+				"title": "Regenerate"
+			},
+			"retry": {
+				"aria-label": "Retry",
+				"title": "Retry"
+			}
 		},
 		"attach": {
 			"add": {
@@ -6582,10 +6618,30 @@
 				"title": "Add attachment"
 			},
 			"remove": {
-				"aria-label": "Remove attachment"
+				"aria-label": "Remove attachment",
+				"title": "Remove attachment"
 			},
 			"drop": "Drop to attach",
-			"tooLarge": "Attachment ${name} exceeds the 10MB limit"
+			"tooLarge": "Attachment ${name} exceeds the 10MB limit",
+			"edit": {
+				"aria-label": "Edit image",
+				"title": "Edit image"
+			},
+			"preview": {
+				"aria-label": "Preview attachment",
+				"title": "Preview attachment"
+			},
+			"download": {
+				"aria-label": "Download attachment",
+				"title": "Download attachment"
+			},
+			"description": {
+				"aria-label": "Attachment description",
+				"placeholder": "Add a description…"
+			},
+			"tooLargeTotal": "Attachments exceed the ${limit} total limit",
+			"reading": "Reading…",
+			"failed": "Failed to read attachment ${name}"
 		},
 		"error": {
 			"generic": "Something went wrong: ${error}",
@@ -6696,6 +6752,11 @@
 				"failed": "Failed",
 				"unknown": "Not found",
 				"idle": "Background task"
+			}
+		},
+		"generation": {
+			"reconnect": {
+				"aria-label": "Reconnect"
 			}
 		}
 	},

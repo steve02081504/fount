@@ -7,11 +7,13 @@ import { showToastI18n } from '/scripts/features/toast.mjs'
 import { openFolderBrowser as openFolderBrowserComponent } from '/scripts/components/folderBrowser.mjs'
 import { geti18n, setElementI18n } from '/scripts/i18n/index.mjs'
 
-import { ensureHistory, removeGhost } from './composer.mjs'
+import { removeGhost } from './composer.mjs'
 import * as api from './endpoints.mjs'
+import { ensureHistory } from './history.mjs'
 import { renderMessages } from './messages.mjs'
-import { activateDraftForWorkspace, activeTab, refreshAllSessions, renderTabs, saveTabPrefs, startNewSession, tabKeyOf } from './session.mjs'
-import { elements, setPref, store, target } from './store.mjs'
+import { activateDraftForWorkspace, refreshAllSessions } from './session.mjs'
+import { activeTab, elements, getRuntime, setPref, store, tabKeyOf, target } from './store.mjs'
+import { renderTabs, saveTabPrefs, startNewSession } from './tabs.mjs'
 import { openDialogFromTemplate, renderTemplate } from './templates.mjs'
 
 /* ---------------- pill 镀铬（模板渲染，boot 中挂载） ---------------- */
@@ -414,7 +416,10 @@ export async function selectWorkspace(id, { fromTabSwitch = false } = {}) {
 	if (!workspace) return
 	// 缓存当前会话，避免工作区切换丢失未保存内容
 	const current = activeTab()
-	if (current && store.session) store.sessionCache.set(tabKeyOf(current), store.session)
+	if (current && store.session) {
+		const runtime = getRuntime(tabKeyOf(current), { create: true })
+		runtime.session = store.session
+	}
 	store.workspace = workspace
 	// 记录使用时间（本地即时更新 + 后端持久化），供工作区下拉按常用程度排序
 	workspace.lastUsedAt = new Date().toISOString()
@@ -465,13 +470,16 @@ export async function removeWorkspaceById(id) {
 		store.workspace = null
 		setPref('workspace', '')
 	}
-	// 丢弃指向该工作区的标签；活动标签被移除时清空会话视图
-	store.tabs = store.tabs.filter(tab => tab.workspaceId !== id)
-	if (store.activeTabKey && !activeTab()) {
+	// 丢弃指向该工作区的标签，但保留正在运行的标签（避免运行中的会话被孤立/丢失）
+	store.tabs = store.tabs.filter(tab => {
+		if (tab.workspaceId !== id) return true
+		const runtime = getRuntime(tabKeyOf(tab))
+		return runtime && runtime.status !== 'idle'
+	})
+	if (!activeTab()) {
 		store.activeTabKey = ''
 		store.session = null
 	}
-	store.dirtyTabKey = ''
 	renderWorkspacePillLabel()
 	renderWorkspaceMenu()
 	await Promise.all([refreshAllSessions(), refreshProfiles()])

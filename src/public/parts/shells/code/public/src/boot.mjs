@@ -1,17 +1,19 @@
 /**
- * code shell 启动：初始化数据、挂载 pill 镀铬、绑定全局事件。
+ * code shell 启动：初始化数据、挂载 pill 镀铬、绑定全局事件、注册服务端事件与运行状态联动。
  */
 import { whoami } from '/scripts/endpoints/base.mjs'
 import { getAnyPreferredDefaultPart } from '/scripts/endpoints/parts.mjs'
 import { onServerEvent } from '/scripts/endpoints/server_events.mjs'
 import { renderMarkdownAsString } from '/scripts/features/markdown/index.mjs'
-import { showToastI18n } from '/scripts/features/toast.mjs'
 import { geti18n, initTranslations, onLanguageChange } from '/scripts/i18n/index.mjs'
 
 import { handleAsyncTaskEvent } from './asynctasks.mjs'
-import { ensureHistory, updateComposerPlaceholder, wireComposerEvents } from './composer.mjs'
+import { handleRunSettled } from './completion.mjs'
+import { updateComposerPlaceholder, wireComposerEvents } from './composer.mjs'
 import * as api from './endpoints.mjs'
 import { registerFountUserApi } from './fountUser.mjs'
+import { handleRunStartedEvent, handleSessionEntryEvent, onRuntimeStatusChange, setRunSettledHandler } from './generation.mjs'
+import { ensureHistory } from './history.mjs'
 import { openHomePicker, refreshHomePicker } from './home.mjs'
 import { backToBottom, updateEmptyMode } from './messages.mjs'
 import {
@@ -38,25 +40,11 @@ import {
 	renderWorkspacePillLabel,
 	updateCharMenu,
 } from './pills.mjs'
-import {
-	abortGeneration,
-	activateTab,
-	activeTab,
-	createDraftTab,
-	execShellMode,
-	handleRunStartedEvent,
-	handleSessionEntryEvent,
-	loadTabPrefs,
-	refreshAllSessions,
-	renderTabs,
-	sendMessage,
-	startNewSession,
-	syncActiveTabDraft,
-	tabKeyOf,
-	updateSendButton,
-} from './session.mjs'
-import { elements, getPref, initComposer, richInput, setPref, store } from './store.mjs'
+import { activateTab, refreshAllSessions } from './session.mjs'
+import { elements, getPref, initComposer, setPref, store, tabKeyOf } from './store.mjs'
 import { handleSubAgentEvent } from './subagents.mjs'
+import { onSendButtonClick, submitMessage, updateSendButton } from './submission.mjs'
+import { createDraftTab, loadTabPrefs, renderTabs, startNewSession } from './tabs.mjs'
 
 /**
  * 尽力让本页获得焦点并闪烁标题提示用户（浏览器对非用户手势的 `window.focus` 有策略限制）。
@@ -85,7 +73,7 @@ function flashWindowFocus() {
 /**
  * 处理后端 `code-open` 事件：认领后在目标工作区新开草稿标签、聚焦并发送提示词。
  * @param {{nonce?: string, workspaceId?: string, prompt?: string}} payload - 事件负载。
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 完成。
  */
 async function handleExternalOpen(payload) {
 	if (!payload?.nonce || !payload.prompt) return
@@ -99,7 +87,7 @@ async function handleExternalOpen(payload) {
 	const tab = createDraftTab(result.workspaceId || '')
 	await activateTab(tab)
 	if (store.workspace) await applyWorkspaceCharConfig()
-	await sendMessage(result.prompt)
+	await submitMessage({ content: result.prompt })
 }
 
 /** 语言切换时的动态文案重渲染。 */
@@ -127,7 +115,6 @@ function rerenderDynamicText() {
 
 /**
  * 预热 Markdown 渲染管线（注册表 + 动态扩展加载为一次性冷启动；不预热会拖过首个流式预览窗口）。
- * 气泡正文与流式预览都用可信档。
  * @returns {void}
  */
 function warmupMarkdownPipeline() {
@@ -135,8 +122,7 @@ function warmupMarkdownPipeline() {
 }
 
 /**
- * 预热工作区选择器根视图（快速访问/卷标）。后端对编辑器常用项目与盘符卷标做了 TTL 缓存，
- * 页面加载时后台拉一次，用户点开文件夹浏览器时根视图即可秒出（慢扫描不再阻塞弹框）。
+ * 预热工作区选择器根视图（快速访问/卷标）。
  * @returns {void}
  */
 function warmupWorkspaceBrowser() {
@@ -152,7 +138,11 @@ export async function boot() {
 	onServerEvent('async-task', handleAsyncTaskEvent)
 	onServerEvent('code-session-entry', handleSessionEntryEvent)
 	onServerEvent('code-run-started', handleRunStartedEvent)
+	onServerEvent('code-run-settled', handleRunSettled)
 	onServerEvent('code-open', handleExternalOpen)
+	// 运行终态统一交给 completion；状态变更刷新发送/停止按钮
+	setRunSettledHandler(payload => { void handleRunSettled(payload) })
+	onRuntimeStatusChange(() => updateSendButton())
 	// createMarkdownRichInput 初始化即聚焦 composer：待 pill 镀铬挂载后再建，避免早聚焦触发与装载的竞态
 	initComposer()
 	wireComposerEvents()
@@ -174,8 +164,6 @@ export async function boot() {
 	store.aiSource = getPref('aiSource', '')
 	await loadShellOptions(store.machine)
 	// `fount run` 打开的页面经 ?workspace= 直达目标工作区；?session= 可直达会话
-	// 先定 store.workspace 再拉 profiles/commands：refreshProfiles 依当前工作区合并命令列表，
-	// 定晚了会让 / 命令面板在启动后拿到空列表（与恢复标签同工作区时不触发 selectWorkspace，命令永不加载）
 	const urlParams = new URLSearchParams(location.search)
 	const urlWorkspace = urlParams.get('workspace')
 	const urlSession = urlParams.get('session')
@@ -185,12 +173,12 @@ export async function boot() {
 	if (store.workspace && urlWorkspace) setPref('workspace', store.workspace.id)
 	await Promise.all([refreshProfiles(), refreshAiSources(), refreshAllSessions(), refreshChars(), refreshShutdownState()])
 	warmupWorkspaceBrowser()
-	// 标签恢复：丢弃指向已消失工作区/会话的标签（草稿标签连同未发送内容保留）；?workspace= 直达时聚焦该工作区的新草稿
+	// 标签恢复：丢弃指向已消失工作区/会话的标签（草稿标签连同未发送内容保留）
 	await loadTabPrefs()
 	store.tabs = store.tabs.filter(tab =>
 		(tab.workspaceId === '' || store.workspaces.some(w => w.id === tab.workspaceId))
 		&& (tab.type === 'draft' || store.allSessions.some(s => s.id === tab.id && s.workspaceId === tab.workspaceId)))
-	let initialTab = activeTab() || store.tabs[0] || null
+	let initialTab = store.tabs.find(tab => tabKeyOf(tab) === store.activeTabKey) || store.tabs[0] || null
 	// ?session= 直达会话：命中已开标签则聚焦，否则新建会话标签（从磁盘加载）
 	if (urlSession) {
 		let sessionTab = store.tabs.find(t => t.type === 'session' && t.id === urlSession)
@@ -212,11 +200,10 @@ export async function boot() {
 	await activateTab(initialTab)
 	rerenderDynamicText()
 	void ensureHistory(store.shellMode ? 'shell' : 'message')
-	// 冷启动带 ?prompt=（`fount run code --prompt` 无页面在线时的回退）：先应用工作区角色配置再立即发送
 	if (store.workspace && urlPrompt) await applyWorkspaceCharConfig()
 	else if (store.workspace) void applyWorkspaceCharConfig()
 	elements.composerInput.focus()
-	if (urlPrompt) await sendMessage(urlPrompt)
+	if (urlPrompt) await submitMessage({ content: urlPrompt })
 }
 
 /* ---------------- 事件绑定 ---------------- */
@@ -253,18 +240,5 @@ function wireGlobalEvents() {
 	elements.charSwitchButton.addEventListener('click', () => {
 		void openCharSwitchDialog()
 	})
-	elements.sendButton.addEventListener('click', () => {
-		if (store.generating) {
-			abortGeneration()
-			return
-		}
-		const value = richInput.value.trim()
-		if (!value) return
-		richInput.value = ''
-		syncActiveTabDraft()
-		if (store.shellMode)
-			// 发送后保持 shell 模式（退出仅经空内容 Backspace），便于连续执行命令
-			void execShellMode(value).catch(error => showToastI18n('error', 'code.error.generic', { error: String(error.message || error) }))
-		else void sendMessage(value)
-	})
+	elements.sendButton.addEventListener('click', onSendButtonClick)
 }

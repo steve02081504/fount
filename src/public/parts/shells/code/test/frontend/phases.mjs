@@ -23,6 +23,8 @@ export const phases = [
 			'notifications.spec.mjs',
 			'tool_cards.spec.mjs',
 			'stream_render.spec.mjs',
+			'session_runtime.spec.mjs',
+			'attachments.spec.mjs',
 		],
 	},
 ]

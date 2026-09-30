@@ -1,13 +1,13 @@
 /**
  * code shell 的 `fount.user.send` 注册：与 chat 同语法（string | chatLogEntry），
- * 供消息内 HTML（选项按钮等）代用户向当前会话发消息；files 并入附件队列。
+ * 供消息内 HTML（选项按钮等）代用户向当前会话发消息；files 并入活动标签页的附件队列。
  */
-import { showToastI18n } from '/scripts/features/toast.mjs'
 import { normalizeUserSendPayload } from '/parts/shells:chat/shared/fountUserSend.mjs'
+import { showToastI18n } from '/scripts/features/toast.mjs'
 
-import { renderAttachmentPreview } from './composer.mjs'
-import { sendMessage } from './session.mjs'
-import { store } from './store.mjs'
+import { addFilesToRuntime } from './attachments.mjs'
+import { getActiveRuntime } from './store.mjs'
+import { submitMessage } from './submission.mjs'
 
 /**
  * 注册 `globalThis.fount.user.send`（幂等）。
@@ -31,14 +31,11 @@ export function registerFountUserApi() {
 			throw error
 		}
 		const content = String(payload.content.content ?? '').trim()
-		if (!content) return
-		const { generating } = store
-		if (payload.files.length && !generating) {
-			store.pendingFiles.push(...payload.files)
-			renderAttachmentPreview()
-		}
+		const runtime = getActiveRuntime()
+		if (payload.files.length && runtime) addFilesToRuntime(runtime.tabKey, payload.files)
+		if (!content && !payload.files.length) return
 		try {
-			await sendMessage(content)
+			await submitMessage({ content })
 		}
 		catch (error) {
 			showToastI18n('error', 'code.error.generic', { error: String(error?.message || error) })
