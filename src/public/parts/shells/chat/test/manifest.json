@@ -45,7 +45,9 @@
 		"shellIntegrationTests": [
 			"src/public/parts/shells/chat/test/integration/**",
 			"src/public/parts/shells/chat/test/fixtures/chars/set_workdir_agent/**",
-			"src/public/parts/shells/chat/test/fixtures/chars/gentian_shell_contract/**"
+			"src/public/parts/shells/chat/test/fixtures/chars/gentian_shell_contract/**",
+			"default/templates/user/chars/ZL-31/**",
+			"src/scripts/test/fixtures/serviceSources/AI/mock_tool_round/**"
 		],
 		"shellLiveInfra": [
 			"src/public/parts/shells/chat/test/live/run.mjs"

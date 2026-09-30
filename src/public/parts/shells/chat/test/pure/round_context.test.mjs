@@ -5,7 +5,7 @@
 import { assertEquals } from 'jsr:@std/assert'
 
 import { mergeStructPromptChatLog } from '../../src/prompt_struct/index.mjs'
-import { injectRoundEntries } from '../../src/reply/roundContext.mjs'
+import { finishToolRound, injectRoundEntries } from '../../src/reply/roundContext.mjs'
 
 /**
  * 构造最小 prompt_struct（含各 part 的追加日志桶）。
@@ -186,4 +186,58 @@ Deno.test('injectRoundEntries does not call ClearPendingMessages', async () => {
 	}
 	await injectRoundEntries(args, prompt)
 	assertEquals(cleared, 0, '清除待触发已改由 Update({ forRound: true }) 消费')
+})
+
+Deno.test('finishToolRound continues when generation_options has no finishRound (chat shell)', async () => {
+	const base = entry('a', 'hello')
+	const prompt = makePrompt({ chatLog: [base] })
+	const args = {
+		char_id: 'c',
+		generation_options: {},
+	}
+	assertEquals(
+		await finishToolRound(args, prompt),
+		true,
+		'chat shell 不提供 finishRound 时工具轮后应继续下一轮生成，而非首轮即停',
+	)
+})
+
+Deno.test('finishToolRound stops only when finishRound resolves to explicit false', async () => {
+	const prompt = makePrompt()
+	/** @type {Array<[boolean | undefined, boolean]>} */
+	const cases = [
+		[undefined, true],
+		[true, true],
+		[false, false],
+	]
+	for (const [finishRound, expected] of cases) {
+		const args = {
+			char_id: 'c',
+			generation_options: {
+				/**
+				 * 返回指定的收尾结果。
+				 * @returns {Promise<boolean | undefined>} 收尾结果
+				 */
+				finishRound: async () => finishRound,
+			},
+		}
+		assertEquals(await finishToolRound(args, prompt), expected, `finishRound -> ${finishRound}`)
+	}
+})
+
+Deno.test('finishToolRound refreshes round entries before returning', async () => {
+	const base = entry('a', 'hello')
+	const fresh = entry('t1', 'tool-result')
+	const prompt = makePrompt({ chatLog: [base] })
+	const args = {
+		char_id: 'c',
+		generation_options: {},
+		/**
+		 * 返回刷新后的 chat_log。
+		 * @returns {Promise<{chat_log: object[]}>} 刷新结果
+		 */
+		Update: async () => ({ chat_log: [base, fresh] }),
+	}
+	await finishToolRound(args, prompt)
+	assertEquals(prompt.chat_log.map(e => e.id), ['a', 't1'], '应委托 injectRoundEntries 追加本轮新条目')
 })
