@@ -7,7 +7,7 @@ import { visit } from 'https://esm.sh/unist-util-visit'
  * @param {string} tagName 小写标签名
  * @returns {boolean} 是否未知
  */
-export function isUnknownHtmlTag(tagName) {
+function isUnknownHtmlTag(tagName) {
 	const element = document.createElement(tagName)
 	if (globalThis.HTMLUnknownElement && Object(element) instanceof globalThis.HTMLUnknownElement) return true
 	return tagName.includes('-') && element.constructor === globalThis.HTMLElement

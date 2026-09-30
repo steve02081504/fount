@@ -110,8 +110,7 @@ export class StreamRenderer {
 		const text = this.#displayedText
 		if (text === this.#lastRendered) return
 		this.#lastRendered = text
-		const prepared = this.#transform ? String(this.#transform(text)) : text
-		const html = await renderMarkdownAsString(ensureClosedTrailingCodeFence(prepared), this.#markdownCache, {
+		const html = await renderMarkdownAsString(ensureClosedTrailingCodeFence(this.#transform?.(text) ?? text), this.#markdownCache, {
 			allowDangerousHtml: this.#allowDangerousHtml,
 		})
 		this.#bodyElement.replaceChildren(scrubHtmlActivePayload(html))

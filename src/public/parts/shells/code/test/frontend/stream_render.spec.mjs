@@ -24,7 +24,7 @@ test('orphan-fence repair leaves intentional and closed code fences intact', asy
 
 const SUBAGENT_HEADING_TEXT = '<run-subagent plugins="code-execution,file-operations" round-limit="20" time-limit="15m" ai-source="deepseek">\n# 任务：优化文件夹预读机制，排除已处理文件\n\n## 背景\n\n正文\n</run-subagent>'
 
-test('messageMarkdown literalizes unknown subagent tags so headings still render', async ({ modulePage }) => {
+test('unknown subagent tags stay literal and keep headings through messageMarkdown and the stream transform', async ({ modulePage }) => {
 	const result = await modulePage.run(async markdown => {
 		// messages.mjs 经 session.mjs 拉起 composer.mjs，其模块顶层即需 #messages / #composer-input
 		const flow = document.createElement('div')
@@ -33,28 +33,13 @@ test('messageMarkdown literalizes unknown subagent tags so headings still render
 		composer.id = 'composer-input'
 		document.body.append(flow, composer)
 		const { messageMarkdown } = await import('/parts/shells:code/src/messages.mjs')
-		const { renderMarkdownAsString } = await import('/scripts/features/markdown/index.mjs')
-		const html = await renderMarkdownAsString(messageMarkdown(markdown, 'char'), {})
-		const host = document.createElement('div')
-		host.innerHTML = html
-		return { html, h1: host.querySelector('h1')?.textContent || '', h2: host.querySelector('h2')?.textContent || '' }
-	}, SUBAGENT_HEADING_TEXT)
-	expect(result.h1).toContain('任务')
-	expect(result.h2).toContain('背景')
-	expect(result.html).toContain('run-subagent')
-	expect(result.html).not.toContain('<run-subagent')
-})
-
-test('streaming renderer applies the transform and keeps headings literal', async ({ modulePage }) => {
-	const result = await modulePage.run(async markdown => {
-		// messages.mjs 经 session.mjs 拉起 composer.mjs，其模块顶层即需 #messages / #composer-input
-		const flow = document.createElement('div')
-		flow.id = 'messages'
-		const composer = document.createElement('textarea')
-		composer.id = 'composer-input'
-		document.body.append(flow, composer)
 		const { StreamRenderer } = await import('/parts/shells:chat/src/ui/StreamRenderer.mjs')
-		const { messageMarkdown } = await import('/parts/shells:code/src/messages.mjs')
+		const { renderMarkdownAsString } = await import('/scripts/features/markdown/index.mjs')
+
+		const messageHtml = await renderMarkdownAsString(messageMarkdown(markdown, 'char'), {})
+		const messageHost = document.createElement('div')
+		messageHost.innerHTML = messageHtml
+
 		const body = document.createElement('div')
 		body.className = 'code-message-body markdown-body'
 		document.body.appendChild(body)
@@ -69,14 +54,23 @@ test('streaming renderer applies the transform and keeps headings literal', asyn
 		})
 		renderer.setTarget(markdown)
 		await renderer.finish()
-		const html = body.innerHTML
-		const h1 = body.querySelector('h1')?.textContent || ''
+		const streamHtml = body.innerHTML
+		const streamH1 = body.querySelector('h1')?.textContent || ''
+		const streamH2 = body.querySelector('h2')?.textContent || ''
 		body.remove()
-		return { html, h1 }
+
+		return {
+			message: { html: messageHtml, h1: messageHost.querySelector('h1')?.textContent || '', h2: messageHost.querySelector('h2')?.textContent || '' },
+			stream: { html: streamHtml, h1: streamH1, h2: streamH2 },
+		}
 	}, SUBAGENT_HEADING_TEXT)
-	expect(result.h1).toContain('任务')
-	expect(result.html).toContain('run-subagent')
-	expect(result.html).not.toContain('<run-subagent')
+
+	for (const { html, h1, h2 } of [result.message, result.stream]) {
+		expect(h1).toContain('任务')
+		expect(h2).toContain('背景')
+		expect(html).toContain('run-subagent')
+		expect(html).not.toContain('<run-subagent')
+	}
 })
 
 test('actual multi-round stream appends a repaired report before the final answer', async ({ page, baseUrl }) => {
