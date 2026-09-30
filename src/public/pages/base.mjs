@@ -39,6 +39,27 @@ function initServiceWorkerIntegration() {
 		syncUserActivityNow()
 	})
 }
+/**
+ * 首次用户手势时预解锁通知音音频上下文，避免首个完成通知被浏览器自动播放策略拦截。
+ * @returns {void}
+ */
+function initNotificationSoundOnGesture() {
+	/**
+	 * 动态导入并初始化通知音，随后移除其余手势监听。
+	 * @returns {void}
+	 */
+	const unlock = () => {
+		window.removeEventListener('pointerdown', unlock, true)
+		window.removeEventListener('keydown', unlock, true)
+		import('./scripts/features/notificationSound.mjs')
+			.then(({ initNotificationSound }) => initNotificationSound())
+			.catch(() => { /* 音频不可用：忽略 */ })
+	}
+	window.addEventListener('pointerdown', unlock, { once: true, capture: true })
+	window.addEventListener('keydown', unlock, { once: true, capture: true })
+}
+initNotificationSoundOnGesture()
+
 if (!globalThis.fount?.test?.enabled) try {
 	Sentry.init({
 		dsn: 'https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704',

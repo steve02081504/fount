@@ -7,7 +7,7 @@ import { sendWebPush } from './webPush.mjs'
  * 向用户发送通知：优先存活 /ws/notify，其次 Web Push，均失败时回退桌面通知（点击打开 url）。
  * Web Push 可检测投递失败，故顺序回落而非并发。
  * @param {string} username 用户
- * @param {{ title?: string, body?: string, url?: string, tag?: string, icon?: string }} payload 通知载荷
+ * @param {{ title?: string, body?: string, url?: string, tag?: string, icon?: string, data?: object }} payload 通知载荷
  * @returns {Promise<void>}
  */
 export async function notifyUser(username, payload = {}) {
@@ -18,7 +18,7 @@ export async function notifyUser(username, payload = {}) {
 		body: payload.body || '',
 		tag: payload.tag,
 		icon,
-		data: { url },
+		data: { url, ...payload.data || {} },
 	}
 	const sent = sendEventToUser(username, 'notification', { title, options, targetUrl: url })
 	if (sent) return
@@ -33,7 +33,7 @@ export async function notifyUser(username, payload = {}) {
 /**
  * 本地化通知：用 i18n 键解析标题 / 正文（缺失时回退字面值），再委托 notifyUser。
  * @param {string} username 用户
- * @param {{ titleKey?: string, titleParams?: object, title?: string, bodyKey?: string, bodyParams?: object, body?: string, url?: string, tag?: string, icon?: string }} payload 通知参数
+ * @param {{ titleKey?: string, titleParams?: object, title?: string, bodyKey?: string, bodyParams?: object, body?: string, url?: string, tag?: string, icon?: string, data?: object }} payload 通知参数
  * @returns {Promise<void>}
  */
 export async function notifyUserI18n(username, payload = {}) {
@@ -55,5 +55,5 @@ export async function notifyUserI18n(username, payload = {}) {
 	}
 	const title = await resolve(payload.titleKey, payload.titleParams, payload.title)
 	const body = await resolve(payload.bodyKey, payload.bodyParams, payload.body)
-	await notifyUser(username, { title, body, url: payload.url, tag: payload.tag, icon: payload.icon })
+	await notifyUser(username, { title, body, url: payload.url, tag: payload.tag, icon: payload.icon, data: payload.data })
 }

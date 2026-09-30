@@ -183,6 +183,7 @@ export async function notifyCodeCompletion(username, session) {
 			bodyKey: 'code.notify.done',
 			url,
 			tag: session?.id ? `code:${session.id}` : undefined,
+			data: { suppressPageSound: true },
 		})
 	}
 	catch { /* 通知失败不影响生成流程 */ }
