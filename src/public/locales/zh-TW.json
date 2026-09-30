@@ -96,7 +96,8 @@
 			"tokenVerifyError": "權杖驗證錯誤: ${error}",
 			"refreshTokenError": "更新權杖錯誤: ${error}",
 			"logoutRefreshTokenProcessError": "登出更新權杖處理錯誤: ${error}",
-			"revokeTokenNoJTI": "無法撤銷沒有 jti 的權杖"
+			"revokeTokenNoJTI": "無法撤銷沒有 jti 的權杖",
+			"tokenRevoked": null
 		},
 		"verification": {
 			"codeGeneratedLog": "驗證碼: ${code} (60秒後過期)",
@@ -502,6 +503,7 @@
 				"alreadyUpToDate": "已是最新。",
 				"localBranchAhead": "本機分支領先於遠端分支。無需更新。",
 				"branchesDiverged": "本機和遠端分支已分歧。強制更新中...",
+				"unrelatedHistories": null,
 				"notOnBranch": "不在分支上，切換到 'master'...",
 				"upstreamGoneFallbackMaster": "遠端分支「${branch}」已在遠端刪除，改為追蹤 master…",
 				"noUpstreamBranch": "警告：沒有為分支 '${branch}' 設定上游分支，使用 '${remote}'。",
@@ -6556,8 +6558,7 @@
 				"edit": {
 					"aria-label": "編輯",
 					"title": "編輯"
-				},
-				"saveHtml": "另存為 HTML"
+				}
 			},
 			"copied": "已複製到剪貼簿",
 			"edit": {

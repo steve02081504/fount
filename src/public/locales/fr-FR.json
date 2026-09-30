@@ -97,7 +97,8 @@
 			"tokenVerifyError": "Erreur de vérification du jeton : ${error}",
 			"refreshTokenError": "Erreur du jeton de rafraîchissement : ${error}",
 			"logoutRefreshTokenProcessError": "Erreur lors du traitement du jeton de rafraîchissement de déconnexion : ${error}",
-			"revokeTokenNoJTI": "Impossible de révoquer le jeton sans JTI."
+			"revokeTokenNoJTI": "Impossible de révoquer le jeton sans JTI.",
+			"tokenRevoked": null
 		},
 		"verification": {
 			"codeGeneratedLog": "Code de vérification : ${code} (expire dans 60 secondes)",
@@ -503,6 +504,7 @@
 				"alreadyUpToDate": "Déjà le dernier.",
 				"localBranchAhead": "La branche locale est en avance sur la branche distante. Aucune mise à jour requise.",
 				"branchesDiverged": "Les succursales locales et distantes ont été bifurquées. Mise à jour forcée en cours...",
+				"unrelatedHistories": null,
 				"notOnBranch": "Pas sur la branche, passez en 'master'...",
 				"upstreamGoneFallbackMaster": "La branche distante « ${branch} » a été supprimée ; suivi de master à la place…",
 				"noUpstreamBranch": "Attention : aucune branche amont pour « ${branch} », utilisez « ${remote} ».",
@@ -6563,8 +6565,7 @@
 				"edit": {
 					"aria-label": "Modifier",
 					"title": "Modifier"
-				},
-				"saveHtml": "Enregistrer en HTML"
+				}
 			},
 			"copied": "Copié dans le presse-papiers",
 			"edit": {

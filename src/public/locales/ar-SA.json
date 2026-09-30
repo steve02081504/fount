@@ -97,7 +97,8 @@
 			"tokenVerifyError": "خطأ في التحقق من الرمز: ${error}",
 			"refreshTokenError": "خطأ في تحديث الرمز: ${error}",
 			"logoutRefreshTokenProcessError": "خطأ في معالجة تحديث الرمز عند تسجيل الخروج: ${error}",
-			"revokeTokenNoJTI": "لا يمكن إبطال رمز بدون jti"
+			"revokeTokenNoJTI": "لا يمكن إبطال رمز بدون jti",
+			"tokenRevoked": null
 		},
 		"verification": {
 			"codeGeneratedLog": "رمز التحقق: ${code} (ينتهي بعد 60 ثانية)",
@@ -503,6 +504,7 @@
 				"alreadyUpToDate": "بالفعل الأحدث.",
 				"localBranchAhead": "الفرع المحلي متقدم على الفرع البعيد. لا توجد تحديثات مطلوبة.",
 				"branchesDiverged": "وقد تم تشعب الفروع المحلية والبعيدة. التحديث الإجباري قيد التقدم...",
+				"unrelatedHistories": null,
 				"notOnBranch": "ليس على الفرع، قم بالتبديل إلى \"الرئيسي\"...",
 				"upstreamGoneFallbackMaster": "تم حذف الفرع البعيد «${branch}»؛ يُتتبَّع master بدلاً منه…",
 				"noUpstreamBranch": "تحذير: لم يتم تكوين فرع رئيسي للفرع '${branch}'، استخدم '${remote}'.",
@@ -6567,8 +6569,7 @@
 				"edit": {
 					"aria-label": "تعديل",
 					"title": "تعديل"
-				},
-				"saveHtml": "حفظ بصيغة HTML"
+				}
 			},
 			"copied": "تم النسخ إلى الحافظة",
 			"edit": {

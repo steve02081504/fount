@@ -97,7 +97,8 @@
 			"tokenVerifyError": "Erro na verificação do token: ${error}",
 			"refreshTokenError": "Erro no token de atualização: ${error}",
 			"logoutRefreshTokenProcessError": "Erro ao processar o token de atualização de logout: ${error}",
-			"revokeTokenNoJTI": "Não é possível revogar um token sem JTI."
+			"revokeTokenNoJTI": "Não é possível revogar um token sem JTI.",
+			"tokenRevoked": null
 		},
 		"verification": {
 			"codeGeneratedLog": "Código de verificação: ${code} (expira em 60 segundos)",
@@ -6563,8 +6564,7 @@
 				"edit": {
 					"aria-label": "Editar",
 					"title": "Editar"
-				},
-				"saveHtml": "Guardar como HTML"
+				}
 			},
 			"copied": "Copiado para a área de transferência",
 			"edit": {

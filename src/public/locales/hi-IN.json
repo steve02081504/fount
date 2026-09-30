@@ -97,7 +97,8 @@
 			"tokenVerifyError": "टोकन सत्यापन में त्रुटि: ${error}",
 			"refreshTokenError": "रिफ्रेश टोकन में त्रुटि: ${error}",
 			"logoutRefreshTokenProcessError": "लॉगआउट रिफ्रेश टोकन प्रक्रिया में त्रुटि: ${error}",
-			"revokeTokenNoJTI": "JTI के बिना टोकन रद्द नहीं किया जा सकता।"
+			"revokeTokenNoJTI": "JTI के बिना टोकन रद्द नहीं किया जा सकता।",
+			"tokenRevoked": null
 		},
 		"verification": {
 			"codeGeneratedLog": "सत्यापन कोड: ${code} (60 सेकंड में समाप्त हो जाएगा)",
@@ -6557,8 +6558,7 @@
 				"edit": {
 					"aria-label": "संपादित करें",
 					"title": "संपादित करें"
-				},
-				"saveHtml": "HTML के रूप में सहेजें"
+				}
 			},
 			"copied": "क्लिपबोर्ड पर कॉपी किया गया",
 			"edit": {

@@ -97,7 +97,8 @@
 			"tokenVerifyError": "토큰 검증 오류: ${error}",
 			"refreshTokenError": "리프레시 토큰 오류: ${error}",
 			"logoutRefreshTokenProcessError": "로그아웃 리프레시 토큰 처리 오류: ${error}",
-			"revokeTokenNoJTI": "JTI가 없는 토큰은 해지할 수 없습니다."
+			"revokeTokenNoJTI": "JTI가 없는 토큰은 해지할 수 없습니다.",
+			"tokenRevoked": null
 		},
 		"verification": {
 			"codeGeneratedLog": "인증 코드: ${code} (60초 후에 만료됩니다)",
@@ -6557,8 +6558,7 @@
 				"edit": {
 					"aria-label": "편집",
 					"title": "편집"
-				},
-				"saveHtml": "HTML로 저장"
+				}
 			},
 			"copied": "클립보드에 복사됨",
 			"edit": {
