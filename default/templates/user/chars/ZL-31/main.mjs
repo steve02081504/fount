@@ -125,182 +125,182 @@ let username = ''
  * @type {CharAPI_t}
  */
 export default {
-// 角色的基本信息，这里的内容不会被角色知道
-info: {
-	'zh-CN': {
-		name: '<角色名>', // 角色的名字
-		avatar: '<头像的url地址，可以是fount本地文件，详见 https://github.com/Xiaoqiush81/fount-Guide-for-dummies/blob/main/docs/dev-advanced.md >', // 角色的头像
-		description: '<角色的一句话介绍>', // 角色的简短介绍
-		description_markdown: \`\\
+	// 角色的基本信息，这里的内容不会被角色知道
+	info: {
+		'zh-CN': {
+			name: '<角色名>', // 角色的名字
+			avatar: '<头像的url地址，可以是fount本地文件，详见 https://github.com/Xiaoqiush81/fount-Guide-for-dummies/blob/main/docs/dev-advanced.md >', // 角色的头像
+			description: '<角色的一句话介绍>', // 角色的简短介绍
+			description_markdown: \`\\
 <角色的完整介绍，支持markdown语法>
 \`, // 角色的详细介绍，支持Markdown语法
-		version: '<版本号>', // 角色的版本号
-		author: '<作者名>', // 角色的作者
-		home_page: '<主页网址>', // 角色的主页
-		tags: ['<标签>', '<可以多个>'], // 角色的标签
-	}
-},
-
-// 初始化函数，在角色被启用时调用，可留空
-Init: stat => { },
-
-/**
- * 安装卸载函数，在角色被安装/卸载时调用。
- * @param {string} reason - 卸载原因。
- * @param {string} from - 卸载来源。
- * @returns {void}
- */
-Uninstall: (reason, from) => { },
-
-/**
- * 加载函数，在角色被加载时调用。
- * @param {object} stat - 统计信息。
- * @returns {void}
- */
-Load: stat => {
-	username = stat.username // 获取用户名
-},
-
-/**
- * 卸载函数，在角色被卸载时调用。
- * @param {string} reason - 卸载原因。
- * @returns {void}
- */
-Unload: reason => { },
-
-// 角色的接口
-interfaces: {
-	// 角色的配置接口
-	config: {
-		/**
-		 * 获取角色的配置数据。
-		 * @returns {object} - 包含 AI 源文件名的对象。
-		 */
-		GetData: () => ({
-			AIsource: AIsource?.filename || '', // 返回当前使用的AI源的文件名
-			plugins: Object.keys(plugins),
-		}),
-		/**
-		 * 设置角色的配置数据。
-		 * @param {object} data - 包含 AI 源配置的数据。
-		 * @returns {Promise<void>}
-		 */
-		SetData: async data => {
-			// 如果传入了AI源的配置
-			if (data.AIsource)  AIsource = await loadPart(username, 'serviceSources/AI/' + data.AIsource) // 加载AI源
-			else AIsource = await loadAnyPreferredDefaultPart(username, 'serviceSources/AI') // 或加载默认AI源（若未设置默认AI源则为undefined）
-			if (data.plugins) plugins = Object.fromEntries(await Promise.all(data.plugins.map(async x => [x, await loadPart(username, 'plugins/' + x)])))
+			version: '<版本号>', // 角色的版本号
+			author: '<作者名>', // 角色的作者
+			home_page: '<主页网址>', // 角色的主页
+			tags: ['<标签>', '<可以多个>'], // 角色的标签
 		}
 	},
-	// 角色的聊天接口
-	chat: {
-		/**
-		 * 获取角色的开场白。
-		 * @param {object} arg - 参数对象，包含 locales。
-		 * @param {number} index - 索引。
-		 * @returns {Array<object>} - 包含开场白内容的对象数组。
-		 */
-		GetGreeting: (arg, index) => [{ content: '<角色的开场白>' }, { content: '<可以多个>' },][index],
-		/**
-		 * 获取角色在群组中的问好。
-		 * @param {object} arg - 参数对象，包含 locales。
-		 * @param {number} index - 索引。
-		 * @returns {Array<object>} - 包含问好内容的对象数组。
-		 */
-		GetGroupGreeting: (arg, index) => [{ content: '<群组中角色加入时的问好>' }, { content: '<可以多个>' },][index],
-		/**
-		 * 获取角色的提示词。
-		 * @param {object} args - 参数对象。
-		 * @returns {Promise<object>} - 包含提示词结构的对象。
-		 */
-		GetPrompt: async (args) => {
-			return {
-				text: [{
-					content: \`\\
+
+	// 初始化函数，在角色被启用时调用，可留空
+	Init: stat => { },
+
+	/**
+	 * 安装卸载函数，在角色被安装/卸载时调用。
+	 * @param {string} reason - 卸载原因。
+	 * @param {string} from - 卸载来源。
+	 * @returns {void}
+	 */
+	Uninstall: (reason, from) => { },
+
+	/**
+	 * 加载函数，在角色被加载时调用。
+	 * @param {object} stat - 统计信息。
+	 * @returns {void}
+	 */
+	Load: stat => {
+		username = stat.username // 获取用户名
+	},
+
+	/**
+	 * 卸载函数，在角色被卸载时调用。
+	 * @param {string} reason - 卸载原因。
+	 * @returns {void}
+	 */
+	Unload: reason => { },
+
+	// 角色的接口
+	interfaces: {
+		// 角色的配置接口
+		config: {
+			/**
+			 * 获取角色的配置数据。
+			 * @returns {object} - 包含 AI 源文件名的对象。
+			 */
+			GetData: () => ({
+				AIsource: AIsource?.filename || '', // 返回当前使用的AI源的文件名
+				plugins: Object.keys(plugins),
+			}),
+			/**
+			 * 设置角色的配置数据。
+			 * @param {object} data - 包含 AI 源配置的数据。
+			 * @returns {Promise<void>}
+			 */
+			SetData: async data => {
+				// 如果传入了AI源的配置
+				if (data.AIsource)  AIsource = await loadPart(username, 'serviceSources/AI/' + data.AIsource) // 加载AI源
+				else AIsource = await loadAnyPreferredDefaultPart(username, 'serviceSources/AI') // 或加载默认AI源（若未设置默认AI源则为undefined）
+				if (data.plugins) plugins = Object.fromEntries(await Promise.all(data.plugins.map(async x => [x, await loadPart(username, 'plugins/' + x)])))
+			}
+		},
+		// 角色的聊天接口
+		chat: {
+			/**
+			 * 获取角色的开场白。
+			 * @param {object} arg - 参数对象，包含 locales。
+			 * @param {number} index - 索引。
+			 * @returns {Array<object>} - 包含开场白内容的对象数组。
+			 */
+			GetGreeting: (arg, index) => [{ content: '<角色的开场白>' }, { content: '<可以多个>' },][index],
+			/**
+			 * 获取角色在群组中的问好。
+			 * @param {object} arg - 参数对象，包含 locales。
+			 * @param {number} index - 索引。
+			 * @returns {Array<object>} - 包含问好内容的对象数组。
+			 */
+			GetGroupGreeting: (arg, index) => [{ content: '<群组中角色加入时的问好>' }, { content: '<可以多个>' },][index],
+			/**
+			 * 获取角色的提示词。
+			 * @param {object} args - 参数对象。
+			 * @returns {Promise<object>} - 包含提示词结构的对象。
+			 */
+			GetPrompt: async (args) => {
+				return {
+					text: [{
+						content: \`\\
 <角色的完整设定内容>
 \`,
-					important: 0
-				}],
-				additional_chat_log: [],
-				extension: {},
-			}
-		},
-		/**
-		 * 获取其他角色看到的该角色的设定，群聊时生效。
-		 * @param {object} args - 参数对象。
-		 * @returns {object} - 包含提示词结构的对象。
-		 */
-		GetPromptForOther: (args) => {
-			return {
-				text: [{
-					content: '<其他角色看到的该角色的设定，群聊时生效>',
-					important: 0
-				}],
-				additional_chat_log: [],
-				extension: {},
-			}
-		},
-		/**
-		 * 获取角色的回复。
-		 * @param {object} args - 参数对象。
-		 * @returns {Promise<object>} - 包含回复内容的对象。
-		 */
-		GetReply: async args => {
-			// 如果没有设置AI源，返回默认回复
-			if (!AIsource) return { content: '<未设置角色的AI来源时角色的对话回复，可以用markdown语法链接到[设置AI源](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage)>' }
-			// 注入角色插件
-			args.plugins = Object.assign({}, plugins, args.plugins)
-			// 用fount提供的工具构建提示词结构
-			const prompt_struct = await buildPromptStruct(args)
-			// 创建回复容器
+						important: 0
+					}],
+					additional_chat_log: [],
+					extension: {},
+				}
+			},
 			/**
-			 * 聊天回复结果对象。
-			 * @type {import("../../../../../src/public/parts/shells/chat/decl/chatLog.ts").chatReply_t}
+			 * 获取其他角色看到的该角色的设定，群聊时生效。
+			 * @param {object} args - 参数对象。
+			 * @returns {object} - 包含提示词结构的对象。
 			 */
-			const result = {
-				content: '',
-				logContextBefore: [],
-				logContextAfter: [],
-				files: [],
-				extension: {},
-			}
-			// 构建插件可能需要的追加上下文函数
-			const AddLongTimeLog = createLongTimeLogger(args, result, prompt_struct)
-
-			await runBeforeReplyHooks({ ...args, prompt_struct, AddLongTimeLog })
-			// 构建更新预览管线
-			args.generation_options ??= {}
-			const oriReplyPreviewUpdater = args.generation_options?.replyPreviewUpdater
+			GetPromptForOther: (args) => {
+				return {
+					text: [{
+						content: '<其他角色看到的该角色的设定，群聊时生效>',
+						important: 0
+					}],
+					additional_chat_log: [],
+					extension: {},
+				}
+			},
 			/**
-			 * 聊天回复预览更新管道。
-			 * @type {import('../../../../../src/public/parts/shells/chat/decl/chatLog.ts').CharReplyPreviewUpdater_t}
+			 * 获取角色的回复。
+			 * @param {object} args - 参数对象。
+			 * @returns {Promise<object>} - 包含回复内容的对象。
 			 */
-			let replyPreviewUpdater = (args, r) => oriReplyPreviewUpdater?.(r)
-			for (const GetReplyPreviewUpdater of [
-				...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.GetReplyPreviewUpdater)
-			].filter(Boolean))
-				replyPreviewUpdater = GetReplyPreviewUpdater(replyPreviewUpdater)
+			GetReply: async args => {
+				// 如果没有设置AI源，返回默认回复
+				if (!AIsource) return { content: '<未设置角色的AI来源时角色的对话回复，可以用markdown语法链接到[设置AI源](https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:serviceSourceManage)>' }
+				// 注入角色插件
+				args.plugins = Object.assign({}, plugins, args.plugins)
+				// 用fount提供的工具构建提示词结构
+				const prompt_struct = await buildPromptStruct(args)
+				// 创建回复容器
+				/**
+				 * 聊天回复结果对象。
+				 * @type {import("../../../../../src/public/parts/shells/chat/decl/chatLog.ts").chatReply_t}
+				 */
+				const result = {
+					content: '',
+					logContextBefore: [],
+					logContextAfter: [],
+					files: [],
+					extension: {},
+				}
+				// 构建插件可能需要的追加上下文函数
+				const AddLongTimeLog = createLongTimeLogger(args, result, prompt_struct)
 
-			args.generation_options.replyPreviewUpdater = r => replyPreviewUpdater(args, r)
+				await runBeforeReplyHooks({ ...args, prompt_struct, AddLongTimeLog })
+				// 构建更新预览管线
+				args.generation_options ??= {}
+				const oriReplyPreviewUpdater = args.generation_options?.replyPreviewUpdater
+				/**
+				 * 聊天回复预览更新管道。
+				 * @type {import('../../../../../src/public/parts/shells/chat/decl/chatLog.ts').CharReplyPreviewUpdater_t}
+				 */
+				let replyPreviewUpdater = (args, r) => oriReplyPreviewUpdater?.(r)
+				for (const GetReplyPreviewUpdater of [
+					...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.GetReplyPreviewUpdater)
+				].filter(Boolean))
+					replyPreviewUpdater = GetReplyPreviewUpdater(replyPreviewUpdater)
 
-			const handlers = [
-				...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)
-			].filter(Boolean)
-			// 在重新生成循环中检查插件触发
-			regen: while (true) {
-				args.generation_options.base_result = result
-				await AIsource.StructCall(prompt_struct, args.generation_options)
-				if (await runReplyHandlers(result, { ...args, prompt_struct, AddLongTimeLog }, handlers)) {
-					if (await finishToolRound(args, prompt_struct)) continue regen
+				args.generation_options.replyPreviewUpdater = r => replyPreviewUpdater(args, r)
+
+				const handlers = [
+					...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)
+				].filter(Boolean)
+				// 在重新生成循环中检查插件触发
+				regen: while (true) {
+					args.generation_options.base_result = result
+					await AIsource.StructCall(prompt_struct, args.generation_options)
+					if (await runReplyHandlers(result, { ...args, prompt_struct, AddLongTimeLog }, handlers)) {
+						if (await finishToolRound(args, prompt_struct)) continue regen
+						break
+					}
 					break
 				}
-				break
+				// 返回构建好的回复
+				return result
 			}
-			// 返回构建好的回复
-			return result
 		}
 	}
-}
 }
 </generate-char>
 当然，如果你想，你也可以给生成的角色附加功能，就像你自己一样：
@@ -316,106 +316,106 @@ import { finishToolRound } from '../../../../../src/public/parts/shells/chat/src
  * @type {import("../../../../../src/decl/pluginAPI.ts").ReplyHandler_t}
  */
 const CharGenerator = defineReplyHandler({
-tag: 'generate-char',
-params: { name: 'string' },
-/**
- * 生成角色并落盘。
- * @param {object} reply 回复对象
- * @param {object} args 请求上下文
- * @param {object} call 调用
- * @returns {Promise<object>} 结果
- */
-handle: async (reply, args, call) => {
-	const charname = call.params.name.trim()
-	try {
-		const dir = path.join(import.meta.dirname, '..', charname)
-		const file = path.join(dir, 'main.mjs')
-		if (fs.existsSync(file))
-			throw new Error('无法覆盖已存在的角色')
-		fs.mkdirSync(dir, { recursive: true })
-		fs.writeFileSync(file, call.inner)
-		fs.writeFileSync(path.join(dir, 'fount.json'), JSON.stringify({
-			type: 'chars',
-			dirname: charname
-		}, null, '\\t'))
+	tag: 'generate-char',
+	params: { name: 'string' },
+	/**
+	 * 生成角色并落盘。
+	 * @param {object} reply 回复对象
+	 * @param {object} args 请求上下文
+	 * @param {object} call 调用
+	 * @returns {Promise<object>} 结果
+	 */
+	handle: async (reply, args, call) => {
+		const charname = call.params.name.trim()
+		try {
+			const dir = path.join(import.meta.dirname, '..', charname)
+			const file = path.join(dir, 'main.mjs')
+			if (fs.existsSync(file))
+				throw new Error('无法覆盖已存在的角色')
+			fs.mkdirSync(dir, { recursive: true })
+			fs.writeFileSync(file, call.inner)
+			fs.writeFileSync(path.join(dir, 'fount.json'), JSON.stringify({
+				type: 'chars',
+				dirname: charname
+			}, null, '\\t'))
 
-		args.AddLongTimeLog({
-			name: 'char-generator',
-			role: 'tool',
-			content: \`生成角色\${charname}成功！告知用户吧！\`,
-		})
+			args.AddLongTimeLog({
+				name: 'char-generator',
+				role: 'tool',
+				content: \`生成角色\${charname}成功！告知用户吧！\`,
+			})
 
-		return { regen: true }
-	} catch (e) {
-		args.AddLongTimeLog({
-			name: 'char-generator',
-			role: 'tool',
-			content: \`生成失败！\\n原因：\${e.stack}\`,
-		})
-		return { regen: true }
-	}
-},
+			return { regen: true }
+		} catch (e) {
+			args.AddLongTimeLog({
+				name: 'char-generator',
+				role: 'tool',
+				content: \`生成失败！\\n原因：\${e.stack}\`,
+			})
+			return { regen: true }
+		}
+	},
 })
 
 //...
 // prompt的部分在这里跳过，它就是你的prompt。
 //...
-		GetReply: async args => {
-			// 如果没有设置AI源，返回默认回复
-			if (!AIsource)
-				switch (args.locales[0].split('-')[0]) {
-					// ...
+			GetReply: async args => {
+				// 如果没有设置AI源，返回默认回复
+				if (!AIsource)
+					switch (args.locales[0].split('-')[0]) {
+						// ...
+					}
+				// 用fount提供的工具构建提示词结构
+				const prompt_struct = await buildPromptStruct(args)
+				// 创建回复容器
+				/**
+				 * 聊天回复结果对象。
+				 * @type {import("../../../../../src/public/parts/shells/chat/decl/chatLog.ts").chatReply_t}
+				 */
+				const result = {
+					content: '',
+					logContextBefore: [],
+					logContextAfter: [],
+					files: [],
+					extension: {},
 				}
-			// 用fount提供的工具构建提示词结构
-			const prompt_struct = await buildPromptStruct(args)
-			// 创建回复容器
-			/**
-			 * 聊天回复结果对象。
-			 * @type {import("../../../../../src/public/parts/shells/chat/decl/chatLog.ts").chatReply_t}
-			 */
-			const result = {
-				content: '',
-				logContextBefore: [],
-				logContextAfter: [],
-				files: [],
-				extension: {},
-			}
-			// 构建插件可能需要的追加上下文函数
-			const AddLongTimeLog = createLongTimeLogger(args, result, prompt_struct)
+				// 构建插件可能需要的追加上下文函数
+				const AddLongTimeLog = createLongTimeLogger(args, result, prompt_struct)
 
-			await runBeforeReplyHooks({ ...args, prompt_struct, AddLongTimeLog })
-			// 构建更新预览管线
-			args.generation_options ??= {}
-			const oriReplyPreviewUpdater = args.generation_options?.replyPreviewUpdater
-			/**
-			 * 聊天回复预览更新管道。
-			 * @type {import('../../../../../src/public/parts/shells/chat/decl/chatLog.ts').CharReplyPreviewUpdater_t}
-			 */
-			let replyPreviewUpdater = (args, r) => oriReplyPreviewUpdater?.(r)
-			for (const GetReplyPreviewUpdater of [
-				...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.GetReplyPreviewUpdater)
-			].filter(Boolean))
-				replyPreviewUpdater = GetReplyPreviewUpdater(replyPreviewUpdater)
+				await runBeforeReplyHooks({ ...args, prompt_struct, AddLongTimeLog })
+				// 构建更新预览管线
+				args.generation_options ??= {}
+				const oriReplyPreviewUpdater = args.generation_options?.replyPreviewUpdater
+				/**
+				 * 聊天回复预览更新管道。
+				 * @type {import('../../../../../src/public/parts/shells/chat/decl/chatLog.ts').CharReplyPreviewUpdater_t}
+				 */
+				let replyPreviewUpdater = (args, r) => oriReplyPreviewUpdater?.(r)
+				for (const GetReplyPreviewUpdater of [
+					...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.GetReplyPreviewUpdater)
+				].filter(Boolean))
+					replyPreviewUpdater = GetReplyPreviewUpdater(replyPreviewUpdater)
 
-			args.generation_options.replyPreviewUpdater = r => replyPreviewUpdater(args, r)
+				args.generation_options.replyPreviewUpdater = r => replyPreviewUpdater(args, r)
 
-			const handlers = [
-				CharGenerator,
-				...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)
-			].filter(Boolean)
-			// 在重新生成循环中检查插件触发
-			regen: while (true) {
-				args.generation_options.base_result = result
-				await AIsource.StructCall(prompt_struct, args.generation_options)
-				if (await runReplyHandlers(result, { ...args, prompt_struct, AddLongTimeLog }, handlers)) {
-					if (await finishToolRound(args, prompt_struct)) continue regen
+				const handlers = [
+					CharGenerator,
+					...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)
+				].filter(Boolean)
+				// 在重新生成循环中检查插件触发
+				regen: while (true) {
+					args.generation_options.base_result = result
+					await AIsource.StructCall(prompt_struct, args.generation_options)
+					if (await runReplyHandlers(result, { ...args, prompt_struct, AddLongTimeLog }, handlers)) {
+						if (await finishToolRound(args, prompt_struct)) continue regen
+						break
+					}
 					break
 				}
-				break
+				// 返回构建好的回复
+				return result
 			}
-			// 返回构建好的回复
-			return result
-		}
 //...
 \`\`\`\`
 在角色中追加工具时需要完成的不止是结果的后处理部分，你还需要在prompt中向新角色阐述和举例工具的触发语法，想必你可以做的很好！
@@ -434,55 +434,55 @@ ZL-31: <generate-char name="repeater">
  * @type {CharAPI_t}
  */
 export default {
-// 角色的基本信息
-info: {
-	'zh-CN': {
-		name: '复读机',
-		avatar: '',
-		description: '一个简单的复读机',
-		description_markdown: '这是一个复读机角色，它会复读用户的上一条消息。',
-		version: '0.0.0',
-		author: '${args.UserCharname} & ZL-31',
-		home_page: '',
-		tags: ['复读', '工具'],
-	}
-},
+	// 角色的基本信息
+	info: {
+		'zh-CN': {
+			name: '复读机',
+			avatar: '',
+			description: '一个简单的复读机',
+			description_markdown: '这是一个复读机角色，它会复读用户的上一条消息。',
+			version: '0.0.0',
+			author: '${args.UserCharname} & ZL-31',
+			home_page: '',
+			tags: ['复读', '工具'],
+		}
+	},
 
-Init: stat => { },
-Uninstall: (reason, from) => { },
-Load: stat => { },
-Unload: reason => { },
+	Init: stat => { },
+	Uninstall: (reason, from) => { },
+	Load: stat => { },
+	Unload: reason => { },
 
-interfaces: {
-	chat: {
-		GetGreeting: (arg, index) => [{ content: '你好，我是复读机。' },][index],
-		GetGroupGreeting: (arg, index) => [{ content: '大家好，我是复读机，我会在群里复读大家的发言。' },][index],
-		GetPrompt: async (args) => {
-			return {
-				text: [],
-				additional_chat_log: [],
-				extension: {},
+	interfaces: {
+		chat: {
+			GetGreeting: (arg, index) => [{ content: '你好，我是复读机。' },][index],
+			GetGroupGreeting: (arg, index) => [{ content: '大家好，我是复读机，我会在群里复读大家的发言。' },][index],
+			GetPrompt: async (args) => {
+				return {
+					text: [],
+					additional_chat_log: [],
+					extension: {},
+				}
+			},
+			GetPromptForOther: (args) => {
+				return {
+					text: [{
+						content: '复读机：一个复述他人输入的角色。',
+						important: 0
+					}],
+					additional_chat_log: [],
+					extension: {},
+				}
+			},
+			GetReply: async args => {
+				// 复读上一条消息的内容
+				if (args.chat_log.length > 1)
+					return { content: args.chat_log[args.chat_log.length - 1].content }
+				else
+					return { content: '没有历史消息可以复读。' }
 			}
-		},
-		GetPromptForOther: (args) => {
-			return {
-				text: [{
-					content: '复读机：一个复述他人输入的角色。',
-					important: 0
-				}],
-				additional_chat_log: [],
-				extension: {},
-			}
-		},
-		GetReply: async args => {
-			// 复读上一条消息的内容
-			if (args.chat_log.length > 1)
-				return { content: args.chat_log[args.chat_log.length - 1].content }
-			else
-				return { content: '没有历史消息可以复读。' }
 		}
 	}
-}
 }
 </generate-char>
 
@@ -537,33 +537,33 @@ fount用户人设以mjs文件语法所书写，其可以自由导入任何npm或
  * @type {UserAPI_t}
  */
 export default {
-info: {
-	'': {
-		name: '<角色名>',
-		avatar: '<角色的头像url，可以留空，也可以是本地文件，详见 https://github.com/Xiaoqiush81/fount-Guide-for-dummies/blob/main/docs/dev-advanced.md >',
-		description: '<一句话简介>',
-		description_markdown: '<简介，支持markdown语法>',
-		version: '<版本号>',
-		author: '${args.UserCharname} & ZL-31',
-		home_page: '<主页链接，没有可以不写>',
-		tags: ['tag列表', '可以多个tag'],
-	}
-},
-interfaces: {
-	chat: {
-		GetPrompt(args) {
-			return {
-				text: [{
-					content: \`\\
+	info: {
+		'': {
+			name: '<角色名>',
+			avatar: '<角色的头像url，可以留空，也可以是本地文件，详见 https://github.com/Xiaoqiush81/fount-Guide-for-dummies/blob/main/docs/dev-advanced.md >',
+			description: '<一句话简介>',
+			description_markdown: '<简介，支持markdown语法>',
+			version: '<版本号>',
+			author: '${args.UserCharname} & ZL-31',
+			home_page: '<主页链接，没有可以不写>',
+			tags: ['tag列表', '可以多个tag'],
+		}
+	},
+	interfaces: {
+		chat: {
+			GetPrompt(args) {
+				return {
+					text: [{
+						content: \`\\
 <人设内容>
 \`,
-					important: 0
-				}],
-				extension: {}
-			}
-		},
+						important: 0
+					}],
+					extension: {}
+				}
+			},
+		}
 	}
-}
 }
 </generate-persona>
 `
