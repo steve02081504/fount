@@ -4,6 +4,8 @@
 
 本文件是并行实现的接口契约：后端（`code/src/**`）、共享前端组件（`src/public/pages/**`）、code 前端（`code/public/**`）三方按此对齐，任何一方不得单方面改动下列形状。
 
+> 状态：本契约已实现并落地（三方均已按此对齐）。本文件保留为回归测试与后续改动的接口基线，代码为准。
+
 ## 一、状态模型
 
 ### 前端运行时（`code/public/src/store.mjs`）
@@ -119,7 +121,7 @@ SessionRuntime = {
 
 ## 七、i18n 归属
 
-- code 前端新增键：`code/locales.json`，至少补齐 `zh-CN` / `en-UK` / `ja-JP`（en-UK 必须真实拉丁文本）。
+- code 前端键位于 `src/public/locales/{zh-CN,en-UK,ja-JP}.json` 的 `code.*` 树，至少补齐三种语言（en-UK 必须真实拉丁文本）。`shells/code/locales.json` 只是部件信息注册表（`info`），**不承载** `code.*` 文案键。
 - 共享层新增键：`src/public/locales/{zh-CN,en-UK,ja-JP}.json` 的 `util.*`。
 - 后端不得新增 locale 键（沿用既有 `code.notify.*`）。
 - 用 Python 工具写 locale JSON，不用 JS `JSON.stringify`（会重排数字键）。
