@@ -3,7 +3,7 @@
 	"suites": [
 		{
 			"name": "integration",
-			"expected": "5s",
+			"expected": "1m13s",
 			"triggers": [
 				"src/public/parts/serviceGenerators/AI/local/**",
 				"src/public/parts/shells/chat/src/prompt_struct/**",

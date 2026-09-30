@@ -92,7 +92,7 @@
 	"suites": [
 		{
 			"name": "pure",
-			"expected": "2m54s",
+			"expected": "6m45s",
 			"trigger": [
 				"shellBackend",
 				"shellPureExtra",
@@ -248,7 +248,7 @@
 				},
 				{
 					"name": "postActions",
-					"expected": "4m3s",
+					"expected": "1m45s",
 					"triggers": [
 						"src/public/parts/shells/social/test/frontend/postActions.spec.mjs",
 						"src/public/parts/shells/social/public/src/actions/**",

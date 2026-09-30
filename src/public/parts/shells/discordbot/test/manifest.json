@@ -25,7 +25,7 @@
 	"suites": [
 		{
 			"name": "pure",
-			"expected": "49s",
+			"expected": "3m12s",
 			"trigger": [
 				"shellPureTests",
 				"testFramework"
@@ -43,7 +43,7 @@
 		},
 		{
 			"name": "integration",
-			"expected": "53s",
+			"expected": "2m57s",
 			"trigger": [
 				"shellIntegrationTests",
 				"testFramework"

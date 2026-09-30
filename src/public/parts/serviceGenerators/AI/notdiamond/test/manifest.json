@@ -3,7 +3,7 @@
 	"suites": [
 		{
 			"name": "integration",
-			"expected": "5s",
+			"expected": "1m5s",
 			"triggers": [
 				"src/public/parts/serviceGenerators/AI/notdiamond/**",
 				"src/public/parts/serviceGenerators/AI/proxy/src/**",

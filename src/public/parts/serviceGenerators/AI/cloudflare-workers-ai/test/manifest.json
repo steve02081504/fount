@@ -20,7 +20,7 @@
 		},
 		{
 			"name": "integration",
-			"expected": "1s",
+			"expected": "56s",
 			"triggers": [
 				"src/public/parts/serviceGenerators/AI/cloudflare-workers-ai/**",
 				"src/public/parts/serviceGenerators/AI/proxy/src/**",

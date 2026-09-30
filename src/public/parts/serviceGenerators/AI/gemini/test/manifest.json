@@ -21,7 +21,7 @@
 		},
 		{
 			"name": "integration",
-			"expected": "5s",
+			"expected": "1m29s",
 			"triggers": [
 				"src/public/parts/serviceGenerators/AI/gemini/**",
 				"src/public/parts/serviceGenerators/AI/proxy/src/**",

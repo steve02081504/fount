@@ -3,7 +3,7 @@
 	"suites": [
 		{
 			"name": "integration",
-			"expected": "1s",
+			"expected": "47s",
 			"triggers": [
 				"src/public/parts/serviceGenerators/AI/claude-oauth/**",
 				"src/public/parts/serviceGenerators/AI/claude-api/main.mjs",

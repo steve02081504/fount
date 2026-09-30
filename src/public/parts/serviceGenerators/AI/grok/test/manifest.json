@@ -3,7 +3,7 @@
 	"suites": [
 		{
 			"name": "integration",
-			"expected": "5s",
+			"expected": "53s",
 			"triggers": [
 				"src/public/parts/serviceGenerators/AI/grok/**",
 				"src/public/parts/serviceGenerators/AI/proxy/src/**",

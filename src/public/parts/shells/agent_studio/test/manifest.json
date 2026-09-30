@@ -32,7 +32,7 @@
 	"suites": [
 		{
 			"name": "pure",
-			"expected": "8s",
+			"expected": "1m19s",
 			"trigger": [
 				"pureCore",
 				"testFramework"

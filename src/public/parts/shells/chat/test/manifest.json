@@ -183,7 +183,7 @@
 	"suites": [
 		{
 			"name": "pure",
-			"expected": "5m26s",
+			"expected": "2m47s",
 			"trigger": [
 				"shellBackend",
 				"shellPureExtra",
@@ -442,7 +442,7 @@
 		},
 		{
 			"name": "fed_core",
-			"expected": "1m42s",
+			"expected": "4m3s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -530,7 +530,7 @@
 		},
 		{
 			"name": "fed_mailbox",
-			"expected": "5m33s",
+			"expected": "1m40s",
 			"dependsOn": [
 				"fed_core"
 			],
