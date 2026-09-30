@@ -14,6 +14,7 @@ import { applyAvatarsTo } from '../presence.mjs'
 import { bindChannelMessageActions } from './actions/handlers.mjs'
 import { setChannelMessageActionsContext } from './messageActionsState.mjs'
 import { bindMessageDragExport } from './messageDragExport.mjs'
+import { messageRowKey, rememberRenderedMessageRow, updateRenderedMessageRow } from './messageRowUpdate.mjs'
 import { bindMessageSelection } from './messageSelection.mjs'
 import { wireMessageReactions } from './reactionWire.mjs'
 import {
@@ -75,7 +76,7 @@ export async function renderMessageRowElement(message, index, allMessages, rende
 			next?.type === 'unread_divider' ? 0 : next?.timestamp || next?.hlc?.wall || 0,
 		)
 		const frag = await createDocumentFragmentFromHtmlStringNoScriptActivation(block.html)
-		return frag.firstElementChild
+		return rememberRenderedMessageRow(frag.firstElementChild, message)
 	}
 	catch (error) {
 		console.error('[chat] renderMessageRowElement failed', error)
@@ -177,10 +178,8 @@ export function createMessageSurfacePipeline({
 		 * @param {object} row 行
 		 * @returns {string} key
 		 */
-		getItemKey: row => {
-			if (row.eventId == null) throw new TypeError('message row missing eventId')
-			return String(row.eventId)
-		},
+		getItemKey: messageRowKey,
+		replaceItemRenderer: updateRenderedMessageRow,
 		initialIndex: initialIndex ?? Math.max(0, getMessages().length - 1),
 		onRenderComplete: onDecorate,
 	})

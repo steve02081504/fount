@@ -148,46 +148,33 @@ export async function ensureMessageLoaded(eventId) {
 }
 
 /**
- * 批次是否包含服务端回显的乐观行（按 `extension.chat.clientMessageId` 匹配，排除 pending 行自身）。
- * @param {object[]} batch 新行
- * @param {string | null} composerPendingId 乐观 pending id（`pending:<clientMessageId>`）
- * @returns {boolean} 是否应丢弃 pending 行
- */
-export function batchEchoesPendingClientId(batch, composerPendingId) {
-	if (!composerPendingId) return false
-	const clientMessageId = String(composerPendingId).replace(/^pending:/, '')
-	return batch.some(row =>
-		String(row?.eventId) !== composerPendingId
-		&& String(row?.content?.extension?.chat?.clientMessageId) === clientMessageId,
-	)
-}
-
-/**
  * 合并增量 batch 进 source（保留 pending 行与本地附件 buffer）。
- * pending 行只在批次真正带回其 clientMessageId（服务端回显）时才丢弃。
+ * 所有 pending/失败行均保留；仅同作者回显对应 clientMessageId 时确认，并迁移附件 buffer。
  * @param {object[]} source 当前 source
  * @param {object[]} batch 新行
- * @param {string | null} composerPendingId 乐观 pending id
  * @returns {object[]} 合并后 source
  */
-export function mergeIncrementalSourceBatch(source, batch, composerPendingId) {
+export function mergeIncrementalSourceBatch(source, batch) {
 	const byId = new Map()
+	const pendingByClientId = new Map()
 	for (const row of source) {
-		if (row.pending) continue
 		const eventId = String(row.eventId)
 		if (eventId) byId.set(eventId, row)
+		if (row.pending) {
+			const clientId = row.content?.extension?.chat?.clientMessageId || eventId.replace(/^pending:/, '')
+			pendingByClientId.set(`${row.sender}:${clientId}`, row)
+		}
 	}
-	const pendingRow = composerPendingId
-		? source.find(row => String(row.eventId) === composerPendingId)
-		: null
-	if (pendingRow) byId.set(composerPendingId, pendingRow)
 	for (const row of batch) {
 		const eventId = String(row.eventId)
 		if (!eventId) continue
-		const previous = byId.get(eventId)
+		const clientId = row.content?.extension?.chat?.clientMessageId
+		const pendingRow = !row.pending && row.type === 'message' && clientId
+			? pendingByClientId.get(`${row.sender}:${clientId}`)
+			: null
+		const previous = byId.get(eventId) || pendingRow
 		byId.set(eventId, retainLocalAttachmentBuffers(previous, row))
+		if (pendingRow) byId.delete(String(pendingRow.eventId))
 	}
-	if (batchEchoesPendingClientId(batch, composerPendingId))
-		byId.delete(composerPendingId)
 	return sortChannelRows([...byId.values()])
 }

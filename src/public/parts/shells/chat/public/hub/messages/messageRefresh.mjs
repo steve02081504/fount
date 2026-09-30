@@ -342,16 +342,15 @@ export async function loadMessages(isCurrent) {
 		)
 		if (isCurrent && !isCurrent()) return
 		// 载入期间发出的乐观行不能被服务端快照覆盖丢掉（否则 confirmPendingRow 无行可确认）。
-		const pendingId = store.messages.composerPendingId
-		const pendingRow = pendingId && sameChannel
-			? store.messages.channelMessagesSource.find(row => String(row.eventId) === pendingId)
-			: null
-		if (pendingId && !sameChannel)
+		const pendingRows = sameChannel
+			? store.messages.channelMessagesSource.filter(row => row.pending)
+			: []
+		if (!sameChannel)
 			store.messages.composerPendingId = null
 		store.messages.channelReactions = reactions || {}
 		store.messages.reactionsEtag = reactionsSignature(reactions)
-		store.messages.channelMessagesSource = pendingRow
-			? mergeIncrementalChannelBatch(messages, [pendingRow])
+		store.messages.channelMessagesSource = pendingRows.length
+			? mergeIncrementalChannelBatch(pendingRows, messages)
 			: messages
 		store.messages.readMarker = readMarker || null
 		store.messages.firstUnreadEventId = firstUnreadEventId(readMarker, messages)

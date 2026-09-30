@@ -20,6 +20,7 @@ import { createVirtualList } from '../../../scripts/lib/virtualList.mjs'
  * @param {Function} [options.onRenderComplete] 渲染完成回调
  * @param {Function} [options.loadMoreTop] 向上加载更多
  * @param {(item: object) => string} [options.getItemKey] 行键；提供时 refresh 键控复用 DOM
+ * @param {Function} [options.replaceItemRenderer] 原地更新时返回保留的 DOM 元素
  * @returns {object} 管道 API
  */
 export function createMessagePipeline({
@@ -30,6 +31,7 @@ export function createMessagePipeline({
 	onRenderComplete,
 	loadMoreTop = null,
 	getItemKey = null,
+	replaceItemRenderer,
 }) {
 	/** @type {ReturnType<typeof createVirtualList> | null} */
 	let virtualList = null
@@ -76,6 +78,7 @@ export function createMessagePipeline({
 		onRenderComplete: () => onRenderComplete?.(),
 		loadMoreTop,
 		getItemKey,
+		replaceItemRenderer,
 	})
 
 	return {

@@ -205,7 +205,7 @@
 		},
 		{
 			"name": "integration",
-			"expected": "16m34s",
+			"expected": "11m6s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -940,6 +940,16 @@
 						"src/public/parts/shells/chat/public/hub/messages/**",
 						"src/public/pages/scripts/components/selectionController.mjs",
 						"src/public/parts/shells/chat/public/hub/wiring/headerEvents.mjs"
+					]
+				},
+				{
+					"name": "messageStability",
+					"expected": "15s",
+					"triggers": [
+						"src/public/parts/shells/chat/test/frontend/messageStability.spec.mjs",
+						"src/public/parts/shells/chat/public/hub/messages/**",
+						"src/public/parts/shells/chat/public/src/MessagePipeline.mjs",
+						"src/public/pages/scripts/lib/virtualList.mjs"
 					]
 				},
 				{

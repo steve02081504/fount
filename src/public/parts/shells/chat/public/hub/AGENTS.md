@@ -32,6 +32,7 @@ Deeper UI (profile card, unread/inbox/aliases, cabinet bind perms): [docs/ui-det
 - **Reconnect / catch-up**: on `close` while the group stays selected, reconnect with exponential backoff (also on `visibilitychange` / `online`) and show the `chat.hub.stream.connectionLost` indicator; after every `subscribed`, run an incremental view-log refresh **and** re-fetch `/state`.
 - **`/state` refetch is sequence-guarded**: route it through `stream/stateRefresh.mjs` (`refreshGroupState`), which drops stale responses — never `setState('context.currentState', …)` from an unsequenced fetch.
 - **`#messages` is virtual-list owned**: content may only be replaced via `mountMessagesPlaceholder` (`messages/messagesPlaceholder.mjs`) — never a direct template mount or `innerHTML` while a virtual list may exist.
+- **Delivery must retain visual identity**: `messageRowUpdate.mjs` keys local sends by author + `clientMessageId`; unchanged bodies are patched in place through the virtual list's `replaceItemRenderer` (return the retained element). Compare immutable render snapshots, not mutated source objects. Incremental/full-load merges retain every pending/failed row until its same-author echo and migrate local attachment buffers. Regression: `frontend:messageStability`.
 
 ## UI conventions
 

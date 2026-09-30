@@ -28,7 +28,7 @@ function createSentinel(id) {
  * @param {function(object, number): (HTMLElement|Promise<HTMLElement>)} options.renderItem - 一个函数，用于将单个数据项渲染成 DOM 元素。它接收 `item` 和其在总数据集中的 `index`。
  * @param {number} [options.initialIndex=0] - 列表初始加载时要滚动到的项目索引。默认为 0 (列表开头)。
  * @param {function(): void} [options.onRenderComplete] - 每次队列渲染完成时调用的回调函数。
- * @param {function(HTMLElement, HTMLElement, object): (void|Promise<void>)} [options.replaceItemRenderer] - 一个可选的函数，用于自定义替换 DOM 元素的方式。接收 `oldElement`、`newElement` 和 `item`。默认为直接替换。
+ * @param {function(HTMLElement, HTMLElement, object): (HTMLElement|void|Promise<HTMLElement|void>)} [options.replaceItemRenderer] - 自定义替换 DOM；原地更新时返回保留的元素，默认直接替换。
  * @param {boolean} [options.setInitialScroll=true] - 是否在初始加载时滚动到 `initialIndex` 指定的项目。默认为 true。
  * @param {() => Promise<number>} [options.loadMoreTop] - 当 `startIndex` 为 0 时向上扩展数据源；返回新增加的条数。
  * @param {(item: object) => string} [options.getItemKey] - 可选；提供时 refresh 用键控 DOM 复用，避免全量 innerHTML 重建。
@@ -146,7 +146,7 @@ export function createVirtualList({
 			if (cached && cached.itemJson === itemJson)
 				return Promise.resolve({ itemIndex, key, itemJson, element: cached.element, reused: true })
 			return Promise.resolve(renderItem(item, itemIndex)).then(element => ({
-				itemIndex, key, itemJson, element, reused: false, oldElement: cached?.element,
+				itemIndex, key, itemJson, element, item, reused: false, oldElement: cached?.element,
 			}))
 		})
 		const results = await Promise.all(renderJobs)
@@ -155,10 +155,15 @@ export function createVirtualList({
 		let insertBefore = state.sentinelTop.nextSibling
 		for (const result of results) {
 			if (!result?.element) continue
-			const { itemIndex, key, itemJson, element, reused, oldElement } = result
-			if (!reused && oldElement && oldElement !== element && container.contains(oldElement))
-				oldElement.replaceWith(element)
-			else if (element.parentNode !== container || element.nextSibling !== insertBefore && element !== insertBefore)
+			const { itemIndex, key, itemJson, reused, oldElement, item } = result
+			let { element } = result
+			if (!reused && oldElement && oldElement !== element && container.contains(oldElement)) {
+				element = await replaceItemRenderer(oldElement, element, item) ?? element
+				if (state.destroyed) return
+				if (insertBefore === oldElement) insertBefore = element
+			}
+			// 已在正确位置的节点不得重新插入：移动也会打断文字选择/媒体状态。
+			if (element !== insertBefore)
 				container.insertBefore(element, insertBefore)
 			insertBefore = element.nextSibling
 			nextCache.set(key, { element, itemJson })
@@ -631,14 +636,15 @@ export function createVirtualList({
 			}
 			const newElement = await Promise.resolve(renderItem(item, index))
 			if (state.destroyed) return
-			await Promise.resolve(replaceItemRenderer(oldElement, newElement, item))
+			const mountedElement = await replaceItemRenderer(oldElement, newElement, item) ?? newElement
+			if (state.destroyed) return
 			state.queue[queueIndex] = item
-			state.renderedElements.set(index, newElement)
+			state.renderedElements.set(index, mountedElement)
 			if (getItemKey) {
 				const oldKey = String(getItemKey(oldItem))
 				const newKey = String(getItemKey(item))
 				if (oldKey !== newKey) state.keyedCache.delete(oldKey)
-				state.keyedCache.set(newKey, { element: newElement, itemJson: JSON.stringify(item) })
+				state.keyedCache.set(newKey, { element: mountedElement, itemJson: JSON.stringify(item) })
 			}
 			updateDynamicBufferSize()
 		} finally {

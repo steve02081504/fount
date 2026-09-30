@@ -124,8 +124,9 @@ function confirmPendingRow(tempId, event) {
  * @returns {Promise<void>}
  */
 async function doConfirmPendingRow(tempId, event) {
-	store.messages.composerPendingId = null
-	const pendingRow = store.messages.channelMessagesSource.find(row => String(row.eventId) === tempId)
+	if (store.messages.composerPendingId === tempId)
+		store.messages.composerPendingId = null
+	const pendingRow = store.messages.channelMessagesSource.find(row => String(row.eventId) === tempId || String(row.eventId) === String(event.id))
 	const realRow = retainLocalAttachmentBuffers(
 		pendingRow,
 		{ ...channelRowFromPostedEvent(event), deliveryStatus: 'sent' },

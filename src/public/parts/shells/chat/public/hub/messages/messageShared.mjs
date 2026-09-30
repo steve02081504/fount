@@ -3,7 +3,6 @@ import { store } from '../core/state.mjs'
 import { activePrivateCharPartName } from '../friendBindings.mjs'
 
 import {
-	batchEchoesPendingClientId,
 	mergeIncrementalSourceBatch,
 	refreshChannelMessagesView,
 } from './channelMessageStore.mjs'
@@ -52,8 +51,8 @@ export function updateLastMessageId() {
  */
 export function mergeIncrementalChannelBatch(source, batch) {
 	const pendingId = store.messages.composerPendingId
-	const merged = mergeIncrementalSourceBatch(source, batch, pendingId)
-	if (batchEchoesPendingClientId(batch, pendingId))
+	const merged = mergeIncrementalSourceBatch(source, batch)
+	if (pendingId && !merged.some(row => String(row.eventId) === pendingId))
 		store.messages.composerPendingId = null
 	return merged
 }
