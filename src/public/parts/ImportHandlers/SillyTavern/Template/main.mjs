@@ -10,7 +10,7 @@ import { beginPromptRequest, finishGeneration, finishPromptRequest } from 'fount
 import { needsCompression, compressContext } from 'fount/public/parts/shells/chat/src/chat/session/summarize.mjs'
 import { buildPromptStruct } from 'fount/public/parts/shells/chat/src/prompt_struct/index.mjs'
 import { createLongTimeLogger, runBeforeReplyHooks, runReplyHandlers } from 'fount/public/parts/shells/chat/src/reply/handlerPipeline.mjs'
-import { injectRoundEntries } from 'fount/public/parts/shells/chat/src/reply/roundContext.mjs'
+import { finishToolRound } from 'fount/public/parts/shells/chat/src/reply/roundContext.mjs'
 import { saveJsonFile } from 'fount/scripts/json_loader.mjs'
 import { loadAnyPreferredDefaultPart, loadPart } from 'fount/server/parts_loader.mjs'
 
@@ -268,13 +268,12 @@ export default {
 						// 达到 72.9% 上下文阈值时压缩历史后重新生成
 						if (needsCompression(args, { prompt_struct }) &&
 							await compressContext({ args, aiSource: activeSource, prompt_struct, result })) {
-							await injectRoundEntries(args, prompt_struct)
-							continue regen
+							if (await finishToolRound(args, prompt_struct)) continue regen
+							break
 						}
 						if (await runReplyHandlers(result, { ...args, prompt_struct, AddLongTimeLog }, handlers)) {
-							await injectRoundEntries(args, prompt_struct)
-							if (!await args.generation_options.finishRound?.()) break
-							continue regen
+							if (await finishToolRound(args, prompt_struct)) continue regen
+							break
 						}
 						break
 					}

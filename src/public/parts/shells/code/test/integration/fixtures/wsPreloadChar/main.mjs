@@ -2,6 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import { createLongTimeLogger, runBeforeReplyHooks, runReplyHandlers } from 'fount/public/parts/shells/chat/src/reply/handlerPipeline.mjs'
+import { finishToolRound } from 'fount/public/parts/shells/chat/src/reply/roundContext.mjs'
 
 /**
  * 角色 API 类型别名。
@@ -123,8 +124,8 @@ export default {
 						previewUpdater?.({ ...result })
 					}
 					if (await runReplyHandlers(result, { ...args, prompt_struct, AddLongTimeLog }, handlers)) {
-						if (!await args.generation_options.finishRound?.()) break regen
-						continue regen
+						if (await finishToolRound(args, prompt_struct)) continue regen
+						break regen
 					}
 					break
 				}

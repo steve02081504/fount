@@ -1,5 +1,5 @@
 import { createLongTimeLogger, runBeforeReplyHooks, runReplyHandlers } from 'fount/public/parts/shells/chat/src/reply/handlerPipeline.mjs'
-import { injectRoundEntries } from 'fount/public/parts/shells/chat/src/reply/roundContext.mjs'
+import { finishToolRound } from 'fount/public/parts/shells/chat/src/reply/roundContext.mjs'
 
 /**
  * 角色 API 类型别名。
@@ -109,9 +109,8 @@ export default {
 					delete result.content_for_show
 					previewUpdater?.({ ...result })
 					if (await runReplyHandlers(result, { ...args, prompt_struct, AddLongTimeLog }, handlers)) {
-						await injectRoundEntries(args, prompt_struct)
-						if (!await args.generation_options.finishRound?.()) break regen
-						continue regen
+						if (await finishToolRound(args, prompt_struct)) continue regen
+						break regen
 					}
 					break
 				}
