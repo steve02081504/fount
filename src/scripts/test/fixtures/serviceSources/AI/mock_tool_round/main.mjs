@@ -1,8 +1,9 @@
 /**
  * 集成测试用 mock AI serviceSource：两阶段工具轮。
- * 首轮返回 ZL-31 的 `<get-tool-info>` 工具调用；一旦本轮已有工具日志（`base_result.logContextBefore` 非空），
+ * 首轮返回一个 file-operations 的 `<view-file>` 工具调用；一旦本轮已有工具日志（`base_result.logContextBefore` 非空），
  * 次轮返回 `MOCK_ROUND_DONE`，用于验证 chat shell 缺少 `finishRound` 时 regen 循环仍会继续。
  */
+import { join } from 'node:path'
 
 /**
  * 文本聊天源使用的恒等 tokenizer。
@@ -34,8 +35,8 @@ const tokenizer = {
 	get_token_count: prompt => prompt.length,
 }
 
-/** 首轮返回的工具调用原文。 */
-const FIRST_ROUND_CONTENT = '<get-tool-info>persona-generator</get-tool-info>'
+/** 首轮返回的工具调用原文：用 file-operations 读取本 mock 源自身的 fount.json，驱动一轮工具。 */
+const FIRST_ROUND_CONTENT = `<view-file>${join(import.meta.dirname, 'fount.json')}</view-file>`
 /** 次轮返回的完成标记。 */
 const SECOND_ROUND_CONTENT = 'MOCK_ROUND_DONE|rounds=2'
 

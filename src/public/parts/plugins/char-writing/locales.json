@@ -1,0 +1,48 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Character Writing",
+			"avatar": "https://api.iconify.design/line-md/file-plus.svg",
+			"description": "Lets a character author new characters and user personas",
+			"description_markdown": "The **Character Writing** plugin lets a character author new characters and user personas. It only exposes the paths of the type declarations (decl) and a bundled samples directory; the character reads the interfaces and samples, then writes the source into the user's parts directory with a file plugin to create the character / persona.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"character",
+				"persona",
+				"authoring",
+				"plugin"
+			]
+		},
+		"zh-CN": {
+			"name": "角色写作",
+			"avatar": "https://api.iconify.design/line-md/file-plus.svg",
+			"description": "让角色能够创作新的角色与用户人设",
+			"description_markdown": "**角色写作**插件让角色具备创作新角色与用户人设的能力。它只给出类型声明（decl）与样例目录的路径，角色据此阅读接口与样例，再用文件插件把源码写入用户的部件目录，从而新建角色 / 用户人设。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"角色",
+				"人设",
+				"创作",
+				"插件"
+			]
+		},
+		"emoji": {
+			"name": "✍️🤓",
+			"avatar": "https://api.iconify.design/line-md/file-plus.svg",
+			"description": "✍️🧑🎨✨👤",
+			"description_markdown": "✍️🤓➡️🧑🎨✨👤。📁➡️📖🛠️。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"✍️",
+				"🧑🎨",
+				"🔌"
+			]
+		}
+	}
+}

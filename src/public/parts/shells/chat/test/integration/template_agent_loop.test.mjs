@@ -4,7 +4,7 @@
  * 回归背景：regen 循环曾写作 `if (!await args.generation_options.finishRound?.()) break`，
  * 而 `finishRound` 仅由 code shell 提供；chat shell 下 `undefined` 取反为 true，导致首个工具调用后即中断。
  * 现由 `finishToolRound` 统一收尾：缺省或返回非 false 继续，仅明确返回 false 才停止。
- * 本用例用两阶段 mock AI 源驱动 ZL-31 的 `get-tool-info` 工具，验证第 2 轮确实执行且工具结果已回灌。
+ * 本用例用两阶段 mock AI 源驱动 ZL-31 加载的 file-operations `view-file` 工具，验证第 2 轮确实执行且工具结果已回灌。
  */
 /* global Deno */
 import { cp, mkdir } from 'node:fs/promises'
@@ -45,7 +45,7 @@ async function loadZl31FromTemplate(username) {
 	await char.Load({ username })
 	await char.interfaces.config.SetData({
 		AIsource: AI_SOURCE_NAME,
-		plugins: [],
+		plugins: ['file-operations'],
 	})
 	return char
 }
@@ -108,7 +108,7 @@ Deno.test('ZL-31 GetReply continues after a tool round without a shell finishRou
 				name: 'Tester',
 				uid: 'user',
 				role: 'user',
-				content: '请调用工具：<get-tool-info>persona-generator</get-tool-info>',
+				content: '请读取一个文件。',
 			},
 		],
 		timelines: [],
@@ -127,7 +127,7 @@ Deno.test('ZL-31 GetReply continues after a tool round without a shell finishRou
 		'工具结果应写入 reply.logContextBefore，证明本轮工具日志已回灌给角色。',
 	)
 	assert(
-		!content.includes('<get-tool-info>'),
+		!content.includes('<view-file>'),
 		`最终 content 不应残留未处理的工具标签，实际 content=${JSON.stringify(content)}。`,
 	)
 })
