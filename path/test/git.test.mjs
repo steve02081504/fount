@@ -11,6 +11,7 @@ import { REPO_ROOT } from '../../src/scripts/test/core/repo_root.mjs'
 
 const gitShPath = join(REPO_ROOT, 'path', 'src', 'git.sh')
 const gitPs1Path = join(REPO_ROOT, 'path', 'src', 'git.ps1')
+const updateShPath = join(REPO_ROOT, 'path', 'src', 'update.sh')
 const termuxShPath = join(REPO_ROOT, 'path', 'src', 'unix', 'termux.sh')
 
 /** 应被拒绝的分支名（Git ref 规则 + apostrophe）。 */
@@ -464,6 +465,61 @@ Deno.test('git_sync_to_ref preserves pre-existing tracked files on fresh init', 
 			echo ".esh still untracked after sync" >&2
 			exit 1
 		}
+		echo ok
+	`)
+	assertEquals(result.code, 0, result.stderr || result.stdout)
+	assertEquals(result.stdout.trim(), 'ok')
+})
+
+Deno.test('fount_upgrade force-resets unrelated local history to origin', async () => {
+	const result = await bash_exec(`
+		set -euo pipefail
+		temporaryDirectory=$(mktemp -d)
+		cleanup() { rm -rf "$temporaryDirectory"; }
+		trap cleanup EXIT
+
+		# 隔离 global config，避免污染开发机的 safe.directory。
+		export GIT_CONFIG_GLOBAL="$temporaryDirectory/gitconfig"
+		export HOME="$temporaryDirectory"
+
+		git init --bare -b master "$temporaryDirectory/remote.git" >/dev/null
+		git clone "$temporaryDirectory/remote.git" "$temporaryDirectory/seed" >/dev/null 2>&1
+		cd "$temporaryDirectory/seed"
+		git config user.email t@t
+		git config user.name t
+		echo upstream > f.txt
+		git add f.txt && git commit -m upstream >/dev/null
+		git push origin master >/dev/null
+		upstream_tip=$(git rev-parse master)
+
+		mkdir -p "$temporaryDirectory/app"
+		cd "$temporaryDirectory/app"
+		git init -b master >/dev/null
+		git config user.email t@t
+		git config user.name t
+		# 独立历史：本地 root 提交与上游无共同祖先（模拟历史重写窗口内安装）。
+		echo local > f.txt
+		git add f.txt && git commit -m local >/dev/null
+		git remote add origin "$temporaryDirectory/remote.git"
+
+		FOUNT_DIR="$temporaryDirectory/app"
+		install_package() { :; }
+		get_i18n() { printf '%s' "$1"; shift; while [ $# -gt 0 ]; do printf ' %s=%s' "$1" "$2"; shift 2; done; printf '\\n'; }
+		print_i18n_green() { get_i18n "$@"; }
+		print_i18n_yellow() { get_i18n "$@" >&2; }
+		. ${JSON.stringify(gitShPath)}
+		. ${JSON.stringify(updateShPath)}
+
+		upgrade_output=$(fount_upgrade 2>&1)
+
+		[ "$(git rev-parse HEAD)" = "$upstream_tip" ] || { echo "HEAD not reset: $(git rev-parse HEAD) != $upstream_tip" >&2; exit 1; }
+		[ "$(cat f.txt)" = upstream ] || { echo "working tree not synced" >&2; exit 1; }
+		printf '%s\\n' "$upgrade_output" | grep -q 'git.unrelatedHistories' || { echo "missing unrelatedHistories notice:" >&2; printf '%s\\n' "$upgrade_output" >&2; exit 1; }
+		if printf '%s\\n' "$upgrade_output" | grep -q 'git.fetchFailedSkippingUpdate'; then
+			echo "misreported as fetch failure:" >&2
+			printf '%s\\n' "$upgrade_output" >&2
+			exit 1
+		fi
 		echo ok
 	`)
 	assertEquals(result.code, 0, result.stderr || result.stdout)

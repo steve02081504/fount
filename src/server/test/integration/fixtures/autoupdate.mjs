@@ -12,6 +12,7 @@ export const updateFixture = {
 	cacheInvalidations: 0,
 	gitCalls: [],
 	hasGitRepo: false,
+	fetchFails: false,
 }
 
 /** 脚本化的 git 子命令结果；未命中的子命令返回 null。 */
@@ -66,6 +67,18 @@ export async function git(...args) {
 	return gitScript.has(key) ? gitScript.get(key) : null
 }
 
+/**
+ * 脚本化返回完整 git 结果（含退出码）的版本；未设置的命令视为成功。
+ * @param {...string} args - git 命令参数。
+ * @returns {Promise<{code: number, stdout: string, stderr: string}>} 执行结果。
+ */
+export async function gitResult(...args) {
+	const stdout = await git(...args)
+	if (args[0] === 'fetch' && updateFixture.fetchFails)
+		return { code: 1, stdout: '', stderr: 'fatal: unable to access origin' }
+	return { code: 0, stdout: stdout ?? '', stderr: '' }
+}
+
 /** 不向外部错误跟踪服务发送标签。 */
 export function setTag() { }
 
@@ -105,6 +118,11 @@ export const console = {
 	 * @param {string} message 更新跳过原因。
 	 */
 	warn(message) { updateFixture.warnings.push(message) },
+	/**
+	 * 记录 git 拉取失败等错误提示，不污染测试输出。
+	 * @param {string} message 错误信息。
+	 */
+	error(message) { updateFixture.warnings.push(message) },
 }
 
 /** 限定自动更新模块使用的文件系统替身。 */

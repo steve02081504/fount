@@ -371,11 +371,10 @@ function script:fount_upgrade {
 		return
 	}
 
+	# 两个 ref 都已存在时 merge-base 失败，意味着本地与远程没有共同祖先（历史重写 / 独立初始化）。
+	# 这与分叉一样按强制重置处理 —— 绝不能当成 fetch 失败，否则会谎报网络/GitHub 错误并中止更新。
 	$mergeBase = invoke_repo_git merge-base $script:currentBranch $script:remoteBranch 2>$null
-	if ($LastExitCode -ne 0) {
-		Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')
-		return
-	}
+	$unrelatedHistories = ($LastExitCode -ne 0)
 	$localCommit = invoke_repo_git rev-parse $script:currentBranch 2>$null
 	if ($LastExitCode -ne 0) {
 		Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')
@@ -389,7 +388,7 @@ function script:fount_upgrade {
 	$status = invoke_repo_git status --porcelain
 
 	if ($localCommit -ne $remoteCommit) {
-		if ($mergeBase -eq $localCommit) {
+		if (-not $unrelatedHistories -and $mergeBase -eq $localCommit) {
 			Write-Host (Get-I18n -key 'git.updatingFromRemote')
 			if ($status) {
 				git_backup_uncommitted
@@ -397,12 +396,13 @@ function script:fount_upgrade {
 			}
 			invoke_repo_git reset --hard $script:remoteBranch
 		}
-		elseif ($mergeBase -eq $remoteCommit) {
+		elseif (-not $unrelatedHistories -and $mergeBase -eq $remoteCommit) {
 			Write-Host (Get-I18n -key 'git.localBranchAhead')
 			if ($status) { Write-Warning (Get-I18n -key 'git.dirtyWorkingDirectory') }
 		}
 		else {
-			Write-Host (Get-I18n -key 'git.branchesDiverged')
+			if ($unrelatedHistories) { Write-Host (Get-I18n -key 'git.unrelatedHistories') }
+			else { Write-Host (Get-I18n -key 'git.branchesDiverged') }
 			if ($status) {
 				git_backup_uncommitted
 				if ($LastExitCode -ne 0) { return }

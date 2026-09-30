@@ -4,7 +4,7 @@ import { join } from 'node:path'
 import * as Sentry from 'npm:@sentry/deno'
 import { exec, execFile, powershell_exec } from 'npm:@steve02081504/exec'
 
-import { git } from '../scripts/git.mjs'
+import { git, gitResult } from '../scripts/git.mjs'
 import { console } from '../scripts/i18n/index.mjs'
 import { isStopping } from '../scripts/stopping.mjs'
 
@@ -45,7 +45,12 @@ async function checkUpstream() {
 	if (isStopping()) return
 	if (!fs.existsSync(__dirname + '/.git')) return
 	await git('config', 'core.autocrlf', 'false')
-	await git('fetch')
+	// 用 gitResult 而非 git：后者只返回 stdout，fetch 失败时会被静默吞掉。
+	const fetch = await gitResult('fetch')
+	if (fetch.code !== 0) {
+		console.error(`Failed to fetch upstream git changes: ${fetch.stderr.trim() || `exit code ${fetch.code}`}`)
+		return
+	}
 
 	if (!await git('rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}').catch(() => null)) return
 

@@ -90,23 +90,29 @@ fount_upgrade() {
 	local git_status
 	git_status=$(invoke_repo_git status --porcelain)
 	local mergeBase localCommit remoteCommit
-	mergeBase=$(invoke_repo_git merge-base "$currentBranch" "$remoteBranch" 2>/dev/null) || return 1
+	# 两个 ref 都已存在时 merge-base 失败，意味着本地与远程没有共同祖先（历史重写 / 独立初始化）。
+	# 这与分叉一样按强制重置处理 —— 绝不能当成 fetch 失败，否则会谎报网络/GitHub 错误并中止更新。
+	mergeBase=$(invoke_repo_git merge-base "$currentBranch" "$remoteBranch" 2>/dev/null) || mergeBase=
 	localCommit=$(invoke_repo_git rev-parse "$currentBranch" 2>/dev/null) || return 1
 	remoteCommit=$(invoke_repo_git rev-parse "$remoteBranch" 2>/dev/null) || return 1
 	if [ "$localCommit" != "$remoteCommit" ]; then
-		if [ "$mergeBase" = "$localCommit" ]; then
+		if [ -n "$mergeBase" ] && [ "$mergeBase" = "$localCommit" ]; then
 			get_i18n 'git.updatingFromRemote'
 			if [ -n "$git_status" ]; then
 				git_backup_uncommitted || return 1
 			fi
 			invoke_repo_git reset --hard "$remoteBranch"
-		elif [ "$mergeBase" = "$remoteCommit" ]; then
+		elif [ -n "$mergeBase" ] && [ "$mergeBase" = "$remoteCommit" ]; then
 			get_i18n 'git.localBranchAhead'
 			if [ -n "$git_status" ]; then
 				print_i18n_yellow 'git.dirtyWorkingDirectory' >&2
 			fi
 		else
-			get_i18n 'git.branchesDiverged'
+			if [ -z "$mergeBase" ]; then
+				get_i18n 'git.unrelatedHistories'
+			else
+				get_i18n 'git.branchesDiverged'
+			fi
 			if [ -n "$git_status" ]; then
 				git_backup_uncommitted || return 1
 			fi

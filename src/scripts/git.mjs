@@ -17,12 +17,31 @@ async function basegit(targetPath, ...args) {
 }
 
 /**
+ * 在指定目录执行 git，返回完整结果（含 exit code 与 stderr）。
+ * `basegit` 只保留 stdout，命令失败时调用方无从得知；需要诊断失败原因时用这个。
+ * @param {string} targetPath - 运行 git 命令的目录。
+ * @param {...string} args - Git 命令参数。
+ * @returns {Promise<{ code: number | null, stdout: string, stderr: string }>} 执行结果。
+ */
+async function basegitResult(targetPath, ...args) {
+	return await exec(`git -C "${targetPath}" ${args.join(' ')}`)
+}
+
+/**
  * 在主应用程序目录中执行 git 命令。
  * @param {...string} args - Git 命令参数。
  * @returns {Promise<string>} - 解析为 git 命令的修剪后 stdout 的 Promise。
  */
 export async function git(...args) {
 	return basegit(__dirname, ...args)
+}
+/**
+ * 在主应用程序目录执行 git 并返回完整结果（含 exit code / stdout / stderr）。
+ * @param {...string} args - Git 命令参数。
+ * @returns {Promise<{ code: number | null, stdout: string, stderr: string }>} 执行结果。
+ */
+export async function gitResult(...args) {
+	return await basegitResult(__dirname, ...args)
 }
 /**
  * 创建一个绑定到特定目录的 git 命令函数。

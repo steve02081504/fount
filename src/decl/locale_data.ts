@@ -480,6 +480,7 @@ export type LocaleData = {
 				alreadyUpToDate: string
 				localBranchAhead: string
 				branchesDiverged: string
+				unrelatedHistories: string
 				notOnBranch: string
 				upstreamGoneFallbackMaster: string
 				noUpstreamBranch: string

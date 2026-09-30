@@ -165,3 +165,28 @@ Deno.test('non-restart upstream update invalidates part-tree caches', async () =
 		updateFixture.cacheInvalidations = 0
 	}
 })
+
+Deno.test('an upstream fetch failure is surfaced and skips the update', async () => {
+	Object.assign(updateFixture, {
+		hasGitRepo: true,
+		fetchFails: true,
+		gitCalls: [],
+		calls: [],
+		restarts: 0,
+		warnings: [],
+		nextVersion: Deno.version.deno,
+	})
+	try {
+		enableAutoUpdate()
+		for (const handler of idleHandlers) await handler()
+		assert.equal(updateFixture.restarts, 0)
+		assert.deepEqual(updateFixture.warnings, [
+			'Failed to fetch upstream git changes: fatal: unable to access origin',
+		])
+	}
+	finally {
+		disableAutoUpdate()
+		updateFixture.hasGitRepo = false
+		updateFixture.fetchFails = false
+	}
+})
