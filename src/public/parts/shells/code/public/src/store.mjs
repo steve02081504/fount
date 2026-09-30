@@ -118,6 +118,16 @@ export const store = {
 }
 
 /**
+ * 将页面 boot 完成状态通知测试桥。
+ * 仅在全部启动步骤（标签恢复、动态文案重渲染、初始化聚焦）结束后调用。
+ * @returns {void}
+ */
+export function markBootCompleted() {
+	// 测试桥（仅测试环境由 base.mjs 安装）：前端测试据此判断页面已可交互
+	globalThis.fount?.test?.pageState?.markPageReady?.()
+}
+
+/**
  * 当前目标（机器 + 工作区路径）。
  * @returns {{machine: string, workdir: string}} 目标。
  */

@@ -2431,7 +2431,7 @@
 				"emptyTitle": "아직 공개 그룹을 찾을 수 없습니다.",
 				"eyebrow": "커뮤니티 살펴보기",
 				"join": "그룹에 가입",
-				"loadFailed": "검색 목록을 불러오지 못했습니다: ${message}",
+				"loadFailed": "검색 목록을 불러오지 못했습니다: ${error}",
 				"noDescription": "그룹 주인이 아직 프로필을 작성하지 않았습니다.",
 				"open": "그룹 열기",
 				"refresh": "검색 목록 새로 고침",

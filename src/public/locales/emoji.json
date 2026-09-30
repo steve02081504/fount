@@ -2431,7 +2431,7 @@
 				"emptyTitle": "📭🔭👥",
 				"eyebrow": "🔍🏛️",
 				"join": "➕👥",
-				"loadFailed": "📥🔭❌：${message}",
+				"loadFailed": "📥🔭❌：${error}",
 				"noDescription": "👑📭📝",
 				"open": "📂👥",
 				"refresh": "🔄🔭📋",

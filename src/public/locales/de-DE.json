@@ -2431,7 +2431,7 @@
 				"emptyTitle": "Es wurden noch keine Öffentlichen Gruppen gefunden",
 				"eyebrow": "Entdecken Sie die Community",
 				"join": "Treten Sie der Gruppe bei",
-				"loadFailed": "Erkennungsliste konnte nicht geladen werden: ${message}",
+				"loadFailed": "Erkennungsliste konnte nicht geladen werden: ${error}",
 				"noDescription": "Der Gruppeneigentümer hat das Profil noch nicht ausgefüllt.",
 				"open": "Offene Gruppe",
 				"refresh": "Entdeckungsliste aktualisieren",

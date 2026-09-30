@@ -2431,7 +2431,7 @@
 				"emptyTitle": "Nessun gruppo pubblico ancora trovato",
 				"eyebrow": "Esplora la comunità",
 				"join": "Unisciti al gruppo",
-				"loadFailed": "Impossibile caricare l'elenco di rilevamento: ${message}",
+				"loadFailed": "Impossibile caricare l'elenco di rilevamento: ${error}",
 				"noDescription": "Il proprietario del gruppo non ha ancora compilato il profilo.",
 				"open": "Gruppo aperto",
 				"refresh": "Aggiorna l'elenco di rilevamento",

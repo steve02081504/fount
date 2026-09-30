@@ -7,9 +7,11 @@ import { join } from 'node:path'
 
 import { assertEquals, assert } from 'https://deno.land/std/assert/mod.ts'
 
+import { extractPlaceholders, missingPlaceholders } from '../../../public/pages/scripts/i18n/placeholders.mjs'
 import { REPO_ROOT } from '../../test/core/repo_root.mjs'
 import {
 	checkElementI18nKey,
+	checkI18nPlaceholders,
 	checkStringI18nKey,
 	extractFountConsolePathKeys,
 	extractI18nRefsFromSource,
@@ -148,6 +150,52 @@ await work().catch(handleError)
 Deno.test('I18N_REWRITE_SUFFIXES includes shell scripts', () => {
 	assert(I18N_REWRITE_SUFFIXES.includes('.sh'))
 	assert(I18N_REWRITE_SUFFIXES.includes('.ps1'))
+})
+
+Deno.test('extractPlaceholders skips literal ${...} escapes and dedupes', () => {
+	assertEquals(extractPlaceholders('${a} \\${b} ${a} ${c.d}'), ['a', 'c.d'])
+	assertEquals(extractPlaceholders('no placeholders'), [])
+})
+
+Deno.test('missingPlaceholders reports names absent from params', () => {
+	assertEquals(missingPlaceholders('${a} ${b}', { a: 1 }), ['b'])
+	assertEquals(missingPlaceholders('\\${a} ${b}', { b: 1 }), [])
+})
+
+Deno.test('extractI18nRefsFromSource captures inline params (object / shorthand / spread)', () => {
+	const source = [
+		'geti18n(\'a.b\', { path })',
+		'geti18n(\'a.b\', { path: p, "x-y": 1 })',
+		'geti18n(\'a.b\')',
+		'geti18n(\'a.b\', defaults)',
+		'geti18n(\'a.b\', { ...defaults, path })',
+		'showToastI18n(\'error\', \'a.b\', { path })',
+	].join('\n')
+	const refs = extractI18nRefsFromSource(source)
+	assertEquals(refs.map(ref => [ref.key, ref.params]), [
+		['a.b', ['path']],
+		['a.b', ['path', 'x-y']],
+		['a.b', []],
+		['a.b', null],
+		['a.b', null],
+		['a.b', ['path']],
+	])
+})
+
+Deno.test('checkI18nPlaceholders flags placeholders absent from the call-site params', () => {
+	const root = { a: { ok: '${path}', bad: '${path} ${name}' } }
+	assertEquals(checkI18nPlaceholders(root, 'a.ok', ['path']), null)
+	assertEquals(checkI18nPlaceholders(root, 'a.ok', [])?.['kind'], 'missing_placeholder')
+	assertEquals(checkI18nPlaceholders(root, 'a.bad', ['path'])?.['kind'], 'missing_placeholder')
+	assert(checkI18nPlaceholders(root, 'a.bad', ['path'])?.message.includes('name'))
+	// 实参非字面量对象（null）→ 静态不可知，跳过
+	assertEquals(checkI18nPlaceholders(root, 'a.bad', null), null)
+})
+
+Deno.test('checkI18nPlaceholders honors extraParams (handleError injects error)', () => {
+	const root = { a: { err: '失败：${error}' } }
+	assertEquals(checkI18nPlaceholders(root, 'a.err', [], ['error']), null)
+	assertEquals(checkI18nPlaceholders(root, 'a.err', [])?.['kind'], 'missing_placeholder')
 })
 
 /**

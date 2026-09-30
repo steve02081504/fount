@@ -59,6 +59,20 @@ async function boot() {
 	await kick()
 }
 
+/**
+ * 页面自定义的“可交互”就绪状态：shell 在自身 boot 完成后调用 `markPageReady()`。
+ * 前端测试用它替代“焦点落在输入框”这类不可靠信号（焦点会被后续 boot 步骤抢走）。
+ * @type {{ ready: boolean, markPageReady: () => void }}
+ */
+globalThis.fount.test.pageState ??= {
+	ready: false,
+	/**
+	 * 标记页面已可交互。
+	 * @returns {void}
+	 */
+	markPageReady() { globalThis.fount.test.pageState.ready = true },
+}
+
 globalThis.fount.test.watch = {
 	/**
 	 * 是否已开闸（locale bootstrap 完成且 loop 已 start）。

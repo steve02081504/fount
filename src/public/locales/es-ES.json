@@ -2431,7 +2431,7 @@
 				"emptyTitle": "Aún no se han encontrado grupos públicos",
 				"eyebrow": "Explora la comunidad",
 				"join": "Unirse al grupo",
-				"loadFailed": "No se pudo cargar la lista de descubrimiento: ${message}",
+				"loadFailed": "No se pudo cargar la lista de descubrimiento: ${error}",
 				"noDescription": "El propietario del grupo aún no ha completado el perfil.",
 				"open": "grupo abierto",
 				"refresh": "Actualizar lista de descubrimiento",

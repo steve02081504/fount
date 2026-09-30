@@ -2431,7 +2431,7 @@
 				"emptyTitle": "Engir opinberir hópar fundust ennþá",
 				"eyebrow": "Kanna samfélagið",
 				"join": "Ganga í hóp",
-				"loadFailed": "Mistókst að hlaða uppgötvunarlista: ${message}",
+				"loadFailed": "Mistókst að hlaða uppgötvunarlista: ${error}",
 				"noDescription": "Eigandi hópsins hefur ekki fyllt út prófílinn ennþá.",
 				"open": "Opna hóp",
 				"refresh": "Endurnýjaðu uppgötvunarlistann",

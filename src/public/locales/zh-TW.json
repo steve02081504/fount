@@ -2430,7 +2430,7 @@
 				"emptyTitle": "還沒有發現公開群組",
 				"eyebrow": "探索社群",
 				"join": "加入群組",
-				"loadFailed": "載入發現列表失敗：${message}",
+				"loadFailed": "載入發現列表失敗：${error}",
 				"noDescription": "群主還沒有填寫簡介。",
 				"open": "開啟群組",
 				"refresh": "重新整理發現列表",

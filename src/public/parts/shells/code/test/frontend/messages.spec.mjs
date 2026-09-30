@@ -62,7 +62,7 @@ test.describe('code shell message actions & layout', () => {
 			}
 			expect((await page.request.post(`${baseUrl}${API_BASE}/sessions`, { data: { machine: '0', workdir: dir, session } })).ok()).toBeTruthy()
 			await page.goto(`${baseUrl}${BASE}?workspace=${workspaceId}&session=${sessionId}`, { waitUntil: 'domcontentloaded' })
-			await page.waitForFunction(() => document.activeElement?.id === 'composer-input')
+			await page.waitForFunction(() => globalThis.fount?.test?.pageState?.ready === true)
 			const tool = page.locator('.code-message.role-tool')
 			await expect(tool).toContainText('命中 20 处')
 			// 代码块自身横向滚动（scrollWidth > clientWidth），说明超长行被收在代码块内部
@@ -114,7 +114,7 @@ test.describe('code shell message actions & layout', () => {
 			}
 			expect((await page.request.post(`${baseUrl}${API_BASE}/sessions`, { data: { machine: '0', workdir: dir, session } })).ok()).toBeTruthy()
 			await page.goto(`${baseUrl}${BASE}?workspace=${workspaceId}&session=${sessionId}`, { waitUntil: 'domcontentloaded' })
-			await page.waitForFunction(() => document.activeElement?.id === 'composer-input')
+			await page.waitForFunction(() => globalThis.fount?.test?.pageState?.ready === true)
 			await holdLocale(page)
 			await expect(page.locator('.code-message.role-char')).toHaveCount(1)
 			await expect(page.locator('.code-message.role-char')).toContainText('最终回答。')
@@ -298,7 +298,7 @@ test.describe('code shell message actions & layout', () => {
 			}
 			expect((await page.request.post(`${baseUrl}${API_BASE}/sessions`, { data: { machine: '0', workdir: dir, session } })).ok()).toBeTruthy()
 			await page.goto(`${baseUrl}${BASE}?workspace=${workspaceId}&session=${sessionId}`, { waitUntil: 'domcontentloaded' })
-			await page.waitForFunction(() => document.activeElement?.id === 'composer-input')
+			await page.waitForFunction(() => globalThis.fount?.test?.pageState?.ready === true)
 			const errorBubble = page.locator('.code-message.role-system', { hasText: '生成回复失败' })
 			await expect(errorBubble).toBeVisible()
 			// 重试按钮常显（不依赖 hover），可点击
@@ -402,7 +402,7 @@ test.describe('code shell message actions & layout', () => {
 			await expect(page.locator('.code-message.generating')).toBeVisible({ timeout: 30_000 })
 			// 生成中整页重载：前端状态清空，但后端继续生成并把权威结果落盘
 			await page.reload({ waitUntil: 'domcontentloaded' })
-			await page.waitForFunction(() => document.activeElement?.id === 'composer-input')
+			await page.waitForFunction(() => globalThis.fount?.test?.pageState?.ready === true)
 			// 恢复轮询取回磁盘上的最终回复，不再整轮丢失
 			await expect(page.locator('.code-message.role-char:not(.generating)')).toContainText('流式第一段。流式第二段。', { timeout: 90_000 })
 			await expect(page.locator('.code-message.generating')).toHaveCount(0)

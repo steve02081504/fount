@@ -97,7 +97,8 @@
 			"tokenVerifyError": "Token verification error: ${error}",
 			"refreshTokenError": "Refresh token error: ${error}",
 			"logoutRefreshTokenProcessError": "Logout refresh token process error: ${error}",
-			"revokeTokenNoJTI": "Cannot revoke token without JTI."
+			"revokeTokenNoJTI": "Cannot revoke token without JTI.",
+			"tokenRevoked": "Token has been revoked: ${jti}"
 		},
 		"verification": {
 			"codeGeneratedLog": "Verification code: ${code} (expires in 60 seconds)",
@@ -624,6 +625,9 @@
 					"protocolHandlerFailed": "Failed to remove `fount://` protocol handler: ${message}"
 				}
 			}
+		},
+		"telegrambot": {
+			"alreadyRunning": "Telegram bot ${botname} is already running"
 		}
 	},
 	"installer_wait_screen": {
@@ -2431,7 +2435,7 @@
 				"emptyTitle": "No public groups found yet",
 				"eyebrow": "Explore the community",
 				"join": "Join group",
-				"loadFailed": "Failed to load discovery list: ${message}",
+				"loadFailed": "Failed to load discovery list: ${error}",
 				"noDescription": "The group owner has not filled in the profile yet.",
 				"open": "Open group",
 				"refresh": "Refresh discovery list",

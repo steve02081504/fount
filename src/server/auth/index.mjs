@@ -492,7 +492,6 @@ export async function try_auth_request(req, res) {
 	 * @throws {Error}
 	 */
 	const Unauthorized = (message = 'Unauthorized') => {
-		console.error(message)
 		throw new Error(message)
 	}
 

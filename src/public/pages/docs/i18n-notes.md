@@ -24,6 +24,8 @@ A leaf may be a plain string **or** a switch object resolved by `geti18n` / `dat
 
 ## Placeholders
 
+`${name}` is filled from the caller's `params` (for `data-i18n` elements, from the element's `data-*`). A placeholder the caller does not provide stays literal and warns `[i18n:missing]` — Playwright fixtures hard-fail on it, and the backend suite output filter treats it as noise. Escape an intentional literal as `\${name}`.
+
 **`input`/`textarea` placeholders must use an object key** (`{ "placeholder": "…" }`); a string key writes `innerHTML` and wipes the input.
 
 Do **not** name keys `fooPlaceholder` / `fooAlt` — use `foo: { placeholder|alt: "…" }`. No `data-i18n-attr`.

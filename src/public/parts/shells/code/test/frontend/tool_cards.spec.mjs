@@ -70,7 +70,7 @@ test.describe('code shell tool cards & highlighting', () => {
 			}
 			expect((await page.request.post(`${baseUrl}${API_BASE}/sessions`, { data: { machine: '0', workdir: dir, session } })).ok()).toBeTruthy()
 			await page.goto(`${baseUrl}${BASE}?workspace=${workspaceId}&session=${sessionId}`, { waitUntil: 'domcontentloaded' })
-			await page.waitForFunction(() => document.activeElement?.id === 'composer-input')
+			await page.waitForFunction(() => globalThis.fount?.test?.pageState?.ready === true)
 
 			// 语法高亮：color-scheme 属性存在，且 shiki token 计算色与正文不同（此前属性缺失 → 全单色）
 			await expect(page.locator('.code-message.role-tool pre code span[style*="--shiki"]').first()).toBeVisible()

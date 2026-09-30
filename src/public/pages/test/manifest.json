@@ -35,6 +35,8 @@
 				"src/public/pages/scripts/components/mediaViewer.mjs",
 				"src/public/pages/scripts/features/toast.mjs",
 				"src/public/pages/scripts/features/notificationSound.mjs",
+				"src/public/pages/scripts/i18n/index.mjs",
+				"src/public/pages/scripts/i18n/placeholders.mjs",
 				"src/public/pages/scripts/test/watch/layout.mjs"
 			],
 			"subtests": [
@@ -56,6 +58,16 @@
 						"src/public/pages/test/frontend/toast.spec.mjs",
 						"src/public/pages/test/frontend/fixtures.mjs",
 						"src/public/pages/scripts/features/toast.mjs"
+					]
+				},
+				{
+					"name": "i18nPlaceholder",
+					"expected": "20s",
+					"triggers": [
+						"src/public/pages/test/frontend/i18nPlaceholder.spec.mjs",
+						"src/public/pages/test/frontend/fixtures.mjs",
+						"src/public/pages/scripts/i18n/index.mjs",
+						"src/public/pages/scripts/i18n/placeholders.mjs"
 					]
 				},
 				{

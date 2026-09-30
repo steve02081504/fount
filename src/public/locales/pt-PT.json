@@ -2431,7 +2431,7 @@
 				"emptyTitle": "Ainda sem public groups found",
 				"eyebrow": "Explorar a comunidade",
 				"join": "Junte-se ao grupo",
-				"loadFailed": "Falha ao load discovery list: ${message}",
+				"loadFailed": "Falha ao load discovery list: ${error}",
 				"noDescription": "O proprietário do grupo ainda não preencheu o perfil.",
 				"open": "Grupo aberto",
 				"refresh": "Atualizar discovery list",

@@ -13,8 +13,8 @@ Manifest: `src/scripts/checks/test/manifest.json` (`checks`). Run: `fount test c
 | `html_meta` | HTML meta / landmarks / `drawer-toggle` / aside ARIA; `og_meta_list` `under` prefix filter; pages readme/EULA redirect locales vs `docs/readme/` / `docs/EULA/` |
 | `info` | parts `locales.json` / `achievements_registry.json` info + remote icon URL |
 | `home_registry` | `home_registry.json` `info` keys resolve in every authoritative locale (`AUTHORITATIVE_LOCALES`: zh-CN, en-UK, ja-JP); display entries (`home_function_buttons` incl. `sub_items`, `home_interfaces`) carry a non-empty `title` |
-| `i18n_keys` | locale key structure + shared-path value kinds vs zh-CN + emoji.json must not carry Han/kana/Cyrillic |
-| `i18n_refs` | `data-i18n` / `setElementI18n` objects need a DOM applicator; string APIs + `path/fount.{ps1,sh}` keys must resolve to strings |
+| `i18n_keys` | locale key structure + shared-path value kinds vs zh-CN + shared-path `${placeholder}` sets vs zh-CN + emoji.json must not carry Han/kana/Cyrillic |
+| `i18n_refs` | `data-i18n` / `setElementI18n` objects need a DOM applicator; string APIs + `path/fount.{ps1,sh}` keys must resolve to strings; a string-API call's inline params must cover the key's `${placeholder}`s (`handleError` auto-provides `error`; non-literal args are skipped) |
 | `reshape_i18n_keys` | `.esh/commands/reshape_i18n_keys.py --self-test` |
 | `update_locales` | `.esh/commands/update-locales.py --self-test` (string↔single-applicator + string↔switch) |
 | `update_locale_data` | `.esh/commands/update_locale_data.py --self-test` (core `set`/`move`/`order` operations + `--help`/`-h` invalid-argument regression) |
@@ -55,7 +55,7 @@ Enforced by `agents_md_english`; writing rules: [docs/AGENTS.md](../../../docs/A
 ## JSDoc language (`jsdoc_no_english`)
 
 - Summaries must be Chinese (contain CJK). Pure-English summaries fail.
-- A multi-line JSDoc must open with `/**` alone on its first line and close with `*/` alone (indented) on its last line — content on either marker line (`/** 摘要\n * …`, `… 摘要 */`) fails. Single-line blocks are exempt.
+- A multi-line JSDoc must open with `/**` alone on its first line and close with `*/` alone (indented) on its last line — content on either marker line (`/** summary\n * …`, `… summary */`) fails. Single-line blocks are exempt.
 - Tag-only blocks (`@param` / `@typedef` / … without a prose summary) are fine; empty `/** */` stubs are not a substitute for a real one-liner on re-exports.
 - `extractJsdocBlocks` matches inline `/**` (e.g. `{ /** … */ prop`) as well as line-leading blocks; skips JSDoc-shaped text inside strings, templates, and ordinary line/block comments.
 - List leftovers: `deno run --allow-scripts --allow-all ./src/scripts/checks/tools/scan_jsdoc_no_english.mjs` (optional path arg).

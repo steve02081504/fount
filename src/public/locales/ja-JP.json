@@ -97,7 +97,8 @@
 			"tokenVerifyError": "トークン検証エラー：${error}",
 			"refreshTokenError": "リフレッシュトークンエラー：${error}",
 			"logoutRefreshTokenProcessError": "ログアウトリフレッシュトークン処理エラー：${error}",
-			"revokeTokenNoJTI": "JTIのないトークンは取り消せません。"
+			"revokeTokenNoJTI": "JTIのないトークンは取り消せません。",
+			"tokenRevoked": "トークンは既に失効しています：${jti}"
 		},
 		"verification": {
 			"codeGeneratedLog": "認証コード：${code}（60秒後に期限切れとなります）",
@@ -624,6 +625,9 @@
 					"protocolHandlerFailed": "`fount://` プロトコル ハンドラーの削除に失敗しました: ${message}"
 				}
 			}
+		},
+		"telegrambot": {
+			"alreadyRunning": "Telegram ボット ${botname} は既に実行中です"
 		}
 	},
 	"installer_wait_screen": {
@@ -2431,7 +2435,7 @@
 				"emptyTitle": "公開グループはまだ見つかりません",
 				"eyebrow": "コミュニティを探索する",
 				"join": "グループに参加する",
-				"loadFailed": "検出リストのロードに失敗しました: ${message}",
+				"loadFailed": "検出リストのロードに失敗しました: ${error}",
 				"noDescription": "グループ所有者はまだプロフィールを入力していません。",
 				"open": "オープングループ",
 				"refresh": "検出リストを更新する",

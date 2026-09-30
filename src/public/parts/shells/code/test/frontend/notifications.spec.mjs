@@ -62,7 +62,7 @@ test.describe('code shell notification suppression', () => {
 			await expect(page.locator('#tab-strip .code-tab:not(:has(.code-tab-avatar-draft))')).toHaveCount(0)
 			await page.goto(`${baseUrl}${BASE}?workspace=${workspaceId}&session=${sessionId}`, { waitUntil: 'domcontentloaded' })
 			await page.waitForFunction(() => document.querySelector('#composer-input')?.contentEditable === 'true')
-			await page.waitForFunction(() => document.activeElement?.id === 'composer-input')
+			await page.waitForFunction(() => globalThis.fount?.test?.pageState?.ready === true)
 			await expect(page.locator('#tab-strip .code-tab[data-active="true"]')).toHaveCount(1)
 			await expect(page.locator('.code-message.role-user')).toContainText('通知抑制测试')
 			await expect(page.locator('.code-tab-unread')).toHaveCount(0)

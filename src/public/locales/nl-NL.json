@@ -2431,7 +2431,7 @@
 				"emptyTitle": "Er zijn nog geen openbare groepen gevonden",
 				"eyebrow": "Verken de gemeenschap",
 				"join": "Sluit je aan bij de groep",
-				"loadFailed": "Kan ontdekkingslijst niet laden: ${message}",
+				"loadFailed": "Kan ontdekkingslijst niet laden: ${error}",
 				"noDescription": "De groepseigenaar heeft het profiel nog niet ingevuld.",
 				"open": "Open groep",
 				"refresh": "Ontdekkingslijst vernieuwen",

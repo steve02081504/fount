@@ -2,7 +2,7 @@
  * 中日英语种轮换 + 错语脚本检查（可见文案 + aria-label）。
  */
 import { isQuiet } from './activity.mjs'
-import { isLocaleHeld } from './locale_hold.mjs'
+import { beginLocaleSwitch, canSwitchLocale, isLocaleHeld } from './locale_hold.mjs'
 import {
 	SCRIPT_FORBIDDEN,
 	ariaLabelLocaleProblem,
@@ -96,13 +96,18 @@ async function run({ draining }) {
 	if (!draining && (isLocaleHeld() || !isQuiet())) return true
 	const i18n = await getI18n()
 	if (draining) {
+		// drain 是测试收尾的确定性覆盖：跳过 hold 屏障，但仍登记切换让并发 holdLocale 能等它结束。
 		const next = LOCALE_CYCLE.find(locale => !seen.has(locale))
 		if (!next) return true
-		await ignoreAsync(async () => {
-			await i18n.setLanguage([next])
-			index = LOCALE_CYCLE.indexOf(next)
-			await scriptCheck(next)
-		})
+		const endSwitch = beginLocaleSwitch()
+		try {
+			await ignoreAsync(async () => {
+				await i18n.setLanguage([next])
+				index = LOCALE_CYCLE.indexOf(next)
+				await scriptCheck(next)
+			})
+		}
+		finally { endSwitch() }
 		return false
 	}
 	const current = i18n.main_locale || i18n.loadPreferredLangs()[0] || 'zh-CN'
@@ -111,12 +116,19 @@ async function run({ draining }) {
 		await ignoreAsync(() => scriptCheck(matched))
 		return false
 	}
-	index = (index + 1) % LOCALE_CYCLE.length
-	const next = LOCALE_CYCLE[index]
-	await ignoreAsync(async () => {
-		await i18n.setLanguage([next])
-		await scriptCheck(next)
-	})
+	const nextIndex = (index + 1) % LOCALE_CYCLE.length
+	const next = LOCALE_CYCLE[nextIndex]
+	const endSwitch = beginLocaleSwitch()
+	try {
+		// setLanguage 前最终确认：hold 若在登记后接住，则放弃本轮（避免整页重建抢测试点击）
+		if (!canSwitchLocale()) return true
+		await ignoreAsync(async () => {
+			await i18n.setLanguage([next])
+			index = nextIndex
+			await scriptCheck(next)
+		})
+	}
+	finally { endSwitch() }
 	return false
 }
 

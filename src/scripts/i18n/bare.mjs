@@ -6,6 +6,7 @@ import { console as baseConsole } from 'npm:@steve02081504/virtual-console'
 import supportsAnsi from 'npm:supports-ansi'
 
 import { FALLBACK_LOCALE, getBestLocale } from '../../public/pages/scripts/i18n/locale_match.mjs'
+import { collectMissingPlaceholders } from '../../public/pages/scripts/i18n/placeholders.mjs'
 import { __dirname } from '../../server/base.mjs'
 import { loadJsonFile } from '../json_loader.mjs'
 import { ms } from '../ms.mjs'
@@ -241,6 +242,25 @@ function createI18nArrayProxy(arr, params, terminal = false) {
 	})
 }
 
+/** 已告警的未定义占位符签名，避免同一渲染反复刷屏。 @type {Set<string>} */
+const warnedPlaceholders = new Set()
+
+/**
+ * 翻译含未定义占位符时告警（复用 `[i18n:missing]` 标记，测试噪声检测会捕获）。
+ * @param {string} key i18n 键。
+ * @param {unknown} translation 原始翻译节点。
+ * @param {Record<string, any>} params 插值参数。
+ * @returns {void} 无。
+ */
+function warnMissingPlaceholders(key, translation, params) {
+	const missing = collectMissingPlaceholders(translation, params)
+	if (!missing.size) return
+	const signature = `${key}\0${[...missing].join(',')}`
+	if (warnedPlaceholders.has(signature)) return
+	warnedPlaceholders.add(signature)
+	console.warn(`[i18n:missing] Placeholder(s) ${[...missing].map(name => `"${name}"`).join(', ')} not provided for key "${key}".`)
+}
+
 /**
  * 获取区域设置数据中的翻译文本。
  * @param {LocaleData} localeData - 区域设置数据。
@@ -253,6 +273,7 @@ function baseGeti18n(localeData, key, params = {}, terminal = false) {
 	const translation = getNestedValue(localeData, key)
 	if (translation === undefined)
 		return console.warn(`[i18n:missing] Translation key "${key}" not found.`)
+	warnMissingPlaceholders(key, translation, params)
 	return applyParamsToTranslation(translation, params, terminal)
 }
 

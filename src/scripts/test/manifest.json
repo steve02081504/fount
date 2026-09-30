@@ -721,10 +721,11 @@
 				"./src/scripts/test/selftest/viewers.test.mjs",
 				"./src/scripts/test/selftest/cleanup_check.test.mjs",
 				"./src/scripts/test/selftest/serial_zero_tests.test.mjs",
-				"./src/scripts/test/selftest/schedule.test.mjs"
+				"./src/scripts/test/selftest/schedule.test.mjs",
+				"./src/scripts/test/selftest/frontend_phases.test.mjs"
 			],
 			"triggers": [
-				"src/scripts/test/selftest/{skip_because.test.mjs,queues.test.mjs,module_check.test.mjs,nested_git.test.mjs,issue_cache.test.mjs,kernel_lifecycle.test.mjs,kernel_fixtures.mjs,display.test.mjs,output_mode.test.mjs,deno_update.test.mjs,jobs.test.mjs,viewers.test.mjs,cleanup_check.test.mjs,serial_zero_tests.test.mjs,schedule.test.mjs,fixtures.mjs}",
+				"src/scripts/test/selftest/{skip_because.test.mjs,queues.test.mjs,module_check.test.mjs,nested_git.test.mjs,issue_cache.test.mjs,kernel_lifecycle.test.mjs,kernel_fixtures.mjs,display.test.mjs,output_mode.test.mjs,deno_update.test.mjs,jobs.test.mjs,viewers.test.mjs,cleanup_check.test.mjs,serial_zero_tests.test.mjs,schedule.test.mjs,frontend_phases.test.mjs,fixtures.mjs}",
 				"src/scripts/test/core/skip_because.mjs",
 				"src/scripts/test/module_check_ready.mjs",
 				"src/scripts/test/env.mjs",

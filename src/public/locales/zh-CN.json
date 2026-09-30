@@ -97,7 +97,8 @@
 			"tokenVerifyError": "令牌验证错误: ${error}",
 			"refreshTokenError": "刷新令牌错误: ${error}",
 			"logoutRefreshTokenProcessError": "登出刷新令牌处理错误: ${error}",
-			"revokeTokenNoJTI": "无法撤销没有 jti 的令牌"
+			"revokeTokenNoJTI": "无法撤销没有 jti 的令牌",
+			"tokenRevoked": "令牌已被撤销：${jti}"
 		},
 		"verification": {
 			"codeGeneratedLog": "验证码: ${code} (60秒后过期)",
@@ -625,6 +626,9 @@
 					"protocolHandlerFailed": "移除 `fount://` 协议处理器失败：${message}"
 				}
 			}
+		},
+		"telegrambot": {
+			"alreadyRunning": "Telegram Bot ${botname} 已在运行"
 		}
 	},
 	"installer_wait_screen": {
@@ -2432,7 +2436,7 @@
 				"emptyTitle": "还没有发现公开群组",
 				"eyebrow": "探索社区",
 				"join": "加入群组",
-				"loadFailed": "加载发现列表失败：${message}",
+				"loadFailed": "加载发现列表失败：${error}",
 				"noDescription": "群主还没有填写简介。",
 				"open": "打开群组",
 				"refresh": "刷新发现列表",

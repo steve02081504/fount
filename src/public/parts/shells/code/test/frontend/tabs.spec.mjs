@@ -130,7 +130,7 @@ test.describe('code shell tabs', () => {
 			}).toPass()
 			await page.reload({ waitUntil: 'domcontentloaded' })
 			await page.waitForFunction(() => document.querySelector('#composer-input')?.contentEditable === 'true')
-			await page.waitForFunction(() => document.activeElement?.id === 'composer-input')
+			await page.waitForFunction(() => globalThis.fount?.test?.pageState?.ready === true)
 			await expect(page.locator('#tab-strip .code-tab')).toHaveCount(2)
 			await expect(composer).toContainText('draft B')
 			// 切回第一个草稿标签，其未发送内容恢复为 A

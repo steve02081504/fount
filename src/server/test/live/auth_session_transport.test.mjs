@@ -90,6 +90,23 @@ Deno.test({
 		})
 		const { config } = await import('../../server.mjs')
 		const { loginWithApiKey, auth_request } = await import('../../auth/index.mjs')
+		const { console: fountConsole } = await import('../../../scripts/i18n/bare.mjs')
+
+		// Optional auth (e.g. public locale loading) treats missing credentials as anonymous; it is not a server error.
+		const authErrors = []
+		const originalConsoleError = fountConsole.error
+		/**
+		 * @param {...unknown} args 收集的日志参数
+		 * @returns {void}
+		 */
+		fountConsole.error = (...args) => { authErrors.push(args) }
+		try {
+			assertEquals(await auth_request({ cookies: {}, headers: {} }, {}), false)
+			assertEquals(authErrors, [], 'expected anonymous auth failures should not be logged as errors')
+		}
+		finally {
+			fountConsole.error = originalConsoleError
+		}
 
 		const loginResult = await loginWithApiKey(apiKey, 'ws-refresh-device', {
 			ip: '127.0.0.1',

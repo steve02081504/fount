@@ -15,18 +15,19 @@ export const API_BASE = '/api/parts/shells:code'
 export const PREF_PREFIX = 'code.shell.code-fe-user.'
 
 /**
- * 打开 code shell 页面并等待 composer 就绪与 boot 完成（boot 末步聚焦 composer）。
+ * 打开 code shell 页面并等待 composer 挂载及 boot 完成。
  * 先清空后端标签页，避免跨测试残留（标签/草稿现存储在后端 shell data）。
  * @param {import('npm:@playwright/test').Page} page - Playwright page。
  * @param {string} baseUrl - 测试节点 base URL。
  * @returns {Promise<void>}
  */
 export async function openCode(page, baseUrl) {
-	await page.request.put(`${baseUrl}${API_BASE}/tabs`, { data: { tabs: [], activeTab: '' } })
+	const tabsReset = await page.request.put(`${baseUrl}${API_BASE}/tabs`, { data: { tabs: [], activeTab: '' } })
+	if (!tabsReset.ok()) throw new Error(`failed to reset code tabs: ${tabsReset.status()} ${tabsReset.statusText()}`)
 	await page.goto(`${baseUrl}${BASE}`, { waitUntil: 'domcontentloaded' })
 	await page.waitForFunction(() => document.querySelector('#composer-input')?.contentEditable === 'true')
-	// boot 在加载完角色/工作区/会话后聚焦 composer；等焦点落定避免后续点击与 boot 竞态
-	await page.waitForFunction(() => document.activeElement?.id === 'composer-input')
+	// composer 可编辑只表示 DOM 已挂载；测试桥只在全部启动步骤完成后置位。
+	await page.waitForFunction(() => globalThis.fount?.test?.pageState?.ready === true)
 }
 
 /**
@@ -84,7 +85,9 @@ export function useLeftoverWorkspaceCleanup(test) {
  * @returns {Promise<void>}
  */
 export async function holdLocale(page) {
-	await page.evaluate(() => globalThis.fount?.test?.watch?.holdLocale?.())
+	// watch 桥由 base.mjs 动态 import 异步安装：早于它就绪时 hold 会静默失效，随后 release 计数变负
+	await page.waitForFunction(() => globalThis.fount?.test?.watch?.holdLocale)
+	await page.evaluate(() => globalThis.fount.test.watch.holdLocale())
 }
 
 /**
@@ -93,7 +96,15 @@ export async function holdLocale(page) {
  * @returns {Promise<void>}
  */
 export async function releaseLocale(page) {
-	await page.evaluate(() => globalThis.fount?.test?.watch?.releaseLocale?.())
+	// 页面/context 已关闭时（测试超时清理）不再 evaluate，避免清理错误覆盖原始失败信息
+	if (page.isClosed()) return
+	try {
+		await page.evaluate(() => globalThis.fount?.test?.watch?.releaseLocale?.())
+	}
+	catch (error) {
+		if (/closed|Target page, context or browser/i.test(String(error?.message || error))) return
+		throw error
+	}
 }
 
 /**
@@ -121,6 +132,8 @@ export async function openFolderBrowserViaMenu(page) {
 	await holdLocale(page)
 	try {
 		await page.locator('#workspace-pill').click()
+		// 先断言菜单可见再点条目：菜单未展开时立刻报出“菜单未展开”，而非让后续点击盲等超时
+		await expect(page.locator('#workspace-menu')).toBeVisible()
 		await page.locator('#workspace-menu').locator('[data-i18n="code.workspaces.browse"]').click()
 		await expect(page.locator('dialog.modal:has(#folder-entries)')).toBeVisible()
 	}

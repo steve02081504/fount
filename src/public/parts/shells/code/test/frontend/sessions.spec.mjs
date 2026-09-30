@@ -22,6 +22,41 @@ test.describe('code shell sessions & workspace', () => {
 		await expect(page.locator('#tab-strip .code-tab')).toHaveCount(3)
 	})
 
+	test('openCode waits for boot completion after composer mounts', async ({ page, baseUrl }) => {
+		// 延迟 boot 中的机器列表请求，验证 DOM 可交互后、其余初始化尚未结束时 helper 仍在等待。
+		let releaseDelay
+		const delayGate = new Promise(resolve => { releaseDelay = resolve })
+		let routeHit = false
+		await page.route('**/api/parts/shells:code/**', async route => {
+			// 只拖延 boot 的机器列表 GET；其他初始化请求可照常完成。
+			if (new URL(route.request().url()).pathname.endsWith('/machines')) {
+				routeHit = true
+				await delayGate
+			}
+			await route.continue()
+		})
+		let opened = false
+		const openPromise = openCode(page, baseUrl).then(() => { opened = true })
+		// 等到延迟路由确已命中，此时页面尚未完成 boot，openCode 不应 resolve。
+		await expect.poll(() => routeHit, { timeout: 30_000 }).toBe(true)
+		expect(opened, 'openCode must not resolve while boot is still in flight').toBe(false)
+		expect(await page.evaluate(() => globalThis.fount?.test?.pageState?.ready)).toBe(false)
+		releaseDelay()
+		await openPromise
+		expect(opened).toBe(true)
+		await page.unroute('**/api/parts/shells:code/**')
+		// boot 完成后菜单应能立即打开并保持可见。
+		await holdLocale(page)
+		try {
+			await page.locator('#workspace-pill').click()
+			await expect(page.locator('#workspace-menu')).toBeVisible()
+			await expect(page.locator('#workspace-menu').locator('[data-i18n="code.workspaces.browse"]')).toBeVisible()
+		}
+		finally {
+			await releaseLocale(page)
+		}
+	})
+
 	test('selecting a workspace via the folder browser enables the coding session flow', async ({ page, baseUrl }) => {
 		const dir = mkdtempSync(join(tmpdir(), 'fount-code-fe-'))
 		leftoverWorkspaceDirs.add(dir)

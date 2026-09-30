@@ -66,7 +66,7 @@ function formatLocalTimestampForBackup() {
 /**
  * 若工作区存在未提交更改，则写入单一 diff。
  * @param {string} repoPath - Git 仓库根目录路径。
- * @returns {Promise<{ diffPath: string } | null>} 有未提交改动时返回 diff 路径，否则返回 null。
+ * @returns {Promise<{ path: string } | null>} 有未提交改动时返回 diff 路径，否则返回 null。
  */
 export async function backupGitUncommittedChanges(repoPath) {
 	const git = run_git.withPath(repoPath)

@@ -10,6 +10,7 @@ import { escapeRegExp } from '../lib/regex.mjs'
 import { initTranslations, preferredLangsStorageKey } from './base.mjs'
 import { findDisallowedChildTags, seedAllowedTagsFromLocaleValues } from './clobber_guard.mjs'
 import { matchLocale } from './locale_match.mjs'
+import { collectMissingPlaceholders } from './placeholders.mjs'
 import { isSwitchValue, resolveSwitchCase } from './switch_value.mjs'
 
 /**
@@ -219,6 +220,26 @@ function getNestedValue(obj, key) {
 	return value
 }
 
+/** 已告警的未定义占位符签名，避免同一渲染反复刷屏。 @type {Set<string>} */
+const warnedPlaceholders = new Set()
+
+/**
+ * 直接 `geti18n` 调用含未定义占位符时告警（复用 `[i18n:missing]` 标记，Playwright / output_filter 硬失败）。
+ * 仅覆盖直接 API 调用；`data-i18n` 元素绑定的插值参数可能由 JS 稍后写入 dataset，故不在此告警。
+ * @param {string} key - i18n 键。
+ * @param {unknown} translation - 原始翻译节点。
+ * @param {Record<string, any>} params - 插值参数。
+ * @returns {void}
+ */
+function warnMissingPlaceholders(key, translation, params) {
+	const missing = collectMissingPlaceholders(translation, params)
+	if (!missing.size) return
+	const signature = `${key}\0${[...missing].join(',')}`
+	if (warnedPlaceholders.has(signature)) return
+	warnedPlaceholders.add(signature)
+	console.warn(`[i18n:missing] Placeholder(s) ${[...missing].map(name => `"${name}"`).join(', ')} not provided for key "${key}".`)
+}
+
 /**
  * 对不含字面义占位符片段的字符串做插值（链接、参数占位符、反引号）。
  * @param {string} segment - 翻译片段。
@@ -358,7 +379,10 @@ export function geti18n_nowarn(key, params = {}) {
  */
 export function geti18n(key, params = {}) {
 	const translation = geti18n_nowarn(key, params)
-	if (translation) return translation
+	if (translation) {
+		warnMissingPlaceholders(key, getNestedValue(i18n, key), params)
+		return translation
+	}
 
 	console.warn(`[i18n:missing] Translation key "${key}" not found.`)
 	Sentry.captureException(new Error(`Translation key "${key}" not found.`))

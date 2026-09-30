@@ -9,6 +9,8 @@
 
 import { assert, assertEquals } from 'jsr:@std/assert'
 
+import { allowNoise } from 'fount/scripts/test/core/allowNoise.mjs'
+
 import { flattenReplyHandlers } from '../../../../shells/chat/src/reply/defineReplyHandler.mjs'
 import { runReplyHandlers } from '../../../../shells/chat/src/reply/handlerPipeline.mjs'
 import { isShellUsable, pickDefaultShell } from '../../availability.mjs'
@@ -156,6 +158,23 @@ Deno.test('目标机器缺少该 shell 时写失败日志而非原样穿透标�
 Deno.test('inline 不可用 shell 求值失败并记入日志', async () => {
 	const { logs, result, args } = createArgs()
 	result.content = '<inline-bash>echo hi</inline-bash>'
-	await runReplyHandlers(result, args, getCodeExecutionReplyHandlers({ resolveShells: stubShells(['pwsh', 'powershell']) }))
-	assert(logs.some(item => item.name === 'code-execution.inline-bash'), '应记录 inline-bash 结果')
+	// 不可用 shell 的失败回执由 handle 内的 console.error 输出（预期噪声），用豁免窗口包住
+	await allowNoise('内联bash代码执行失败', () =>
+		runReplyHandlers(result, args, getCodeExecutionReplyHandlers({ resolveShells: stubShells(['pwsh', 'powershell']) }))
+	)
+	const entry = logs.find(item => item.name === 'code-execution.inline-bash')
+	assert(entry, '应记录 inline-bash 失败日志')
+	assert(entry.extension?.error, '失败日志应带 error 标记')
+	assert(entry.extension?.executionTarget, '失败日志应带尝试执行的机器 / 目录快照')
+	assert(!entry.content_for_show?.includes('<inline-bash>'), '展示层不应原样渲染未执行的标签')
+	assert(!entry.content?.includes('<inline-bash>'), 'agent 层错误文本不应保留原始标签')
+})
+
+Deno.test('inline-js 成功日志带执行目标快照', async () => {
+	const { logs, result, args } = createArgs()
+	result.content = '<inline-js>\'1\'</inline-js>'
+	await runReplyHandlers(result, args, getCodeExecutionReplyHandlers({ resolveShells: stubShells(['pwsh']) }))
+	const entry = logs.find(item => item.name === 'code-execution.inline-js')
+	assert(entry, '应记录 inline-js 结果')
+	assert(entry.extension?.executionTarget, '成功日志应带执行目标快照')
 })

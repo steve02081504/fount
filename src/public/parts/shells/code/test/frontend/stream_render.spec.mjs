@@ -172,7 +172,7 @@ test('persisted multi-round transcript renders the report outside its orphan fen
 		}
 		expect((await page.request.post(`${baseUrl}${API_BASE}/sessions`, { data: { machine: '0', workdir: dir, session } })).ok()).toBeTruthy()
 		await page.goto(`${baseUrl}${BASE}?workspace=${workspaceId}&session=${session.id}`, { waitUntil: 'domcontentloaded' })
-		await page.waitForFunction(() => document.activeElement?.id === 'composer-input')
+		await page.waitForFunction(() => globalThis.fount?.test?.pageState?.ready === true)
 		const first = page.locator('.code-message[data-entry-id="report"]')
 		await expect(page.locator('.code-message.role-char:not(.generating)')).toHaveCount(2)
 		await expect(page.locator('.code-message.role-tool')).toHaveCount(2)
@@ -186,7 +186,7 @@ test('persisted multi-round transcript renders the report outside its orphan fen
 		expect(saved.entries.find(entry => entry.id === 'report').content).toBe(report)
 		expect(saved.entries.find(entry => entry.id === 'report').content_for_show).toBe(report)
 		await page.reload({ waitUntil: 'domcontentloaded' })
-		await page.waitForFunction(() => document.activeElement?.id === 'composer-input')
+		await page.waitForFunction(() => globalThis.fount?.test?.pageState?.ready === true)
 		await expect(first.locator('strong')).toContainText(['实测通过的', '发现的欠缺 / 可改进'])
 		await expect(page.locator('.code-message.role-char:not(.generating)')).toHaveCount(2)
 	}
@@ -213,13 +213,13 @@ test('persisted subagent-tag reply renders the report headings on load and reloa
 		}
 		expect((await page.request.post(`${baseUrl}${API_BASE}/sessions`, { data: { machine: '0', workdir: dir, session } })).ok()).toBeTruthy()
 		await page.goto(`${baseUrl}${BASE}?workspace=${workspaceId}&session=${session.id}`, { waitUntil: 'domcontentloaded' })
-		await page.waitForFunction(() => document.activeElement?.id === 'composer-input')
+		await page.waitForFunction(() => globalThis.fount?.test?.pageState?.ready === true)
 		const bubble = page.locator('.code-message[data-entry-id="report"]')
 		await expect(bubble.locator('h1')).toContainText('任务')
 		await expect(bubble).toContainText('run-subagent')
 		expect(await bubble.evaluate(node => node.innerHTML.includes('<run-subagent'))).toBe(false)
 		await page.reload({ waitUntil: 'domcontentloaded' })
-		await page.waitForFunction(() => document.activeElement?.id === 'composer-input')
+		await page.waitForFunction(() => globalThis.fount?.test?.pageState?.ready === true)
 		await expect(bubble.locator('h1')).toContainText('任务')
 		await expect(bubble).toContainText('run-subagent')
 		expect(await bubble.evaluate(node => node.innerHTML.includes('<run-subagent'))).toBe(false)

@@ -2431,7 +2431,7 @@
 				"emptyTitle": "尚無公開群組可見",
 				"eyebrow": "探索社區",
 				"join": "載入群組",
-				"loadFailed": "載入發現名錄未遂：${message}",
+				"loadFailed": "載入發現名錄未遂：${error}",
 				"noDescription": "群主尚未述旨。",
 				"open": "啟群組",
 				"refresh": "重覽發現名錄",

@@ -2,37 +2,7 @@
  * code shell 页面冒烟：加载、pill 选择器、空态引导与 shell 模式。
  */
 import { test, expect } from './fixtures.mjs'
-
-/**
- * 打开 code shell 页面并等待 boot 完成（boot 末步聚焦 composer）。
- * 标签页从后端异步恢复，boot 完成前点击 pill 会与重渲染竞态。
- * @param {import('npm:@playwright/test').Page} page - Playwright page。
- * @param {string} baseUrl - 测试节点 base URL。
- * @returns {Promise<void>}
- */
-async function openCodeSmoke(page, baseUrl) {
-	await page.goto(`${baseUrl}/parts/shells:code/`, { waitUntil: 'domcontentloaded' })
-	await page.waitForFunction(() => document.querySelector('#composer-input')?.contentEditable === 'true')
-	await page.waitForFunction(() => document.activeElement?.id === 'composer-input')
-}
-
-/**
- * 挂起 page watch 的 locale 轮换（每秒整页重建与下拉点击竞态，flake 源）。
- * @param {import('npm:@playwright/test').Page} page - Playwright page。
- * @returns {Promise<void>}
- */
-async function holdLocale(page) {
-	await page.evaluate(() => globalThis.fount?.test?.watch?.holdLocale?.())
-}
-
-/**
- * 恢复 locale 轮换。
- * @param {import('npm:@playwright/test').Page} page - Playwright page。
- * @returns {Promise<void>}
- */
-async function releaseLocale(page) {
-	await page.evaluate(() => globalThis.fount?.test?.watch?.releaseLocale?.())
-}
+import { holdLocale, openCode as openCodeSmoke, releaseLocale } from './helpers.mjs'
 
 test.describe('code shell smoke', () => {
 	test('page boots with pills, draft tab, and centered empty-state guidance', async ({ page, baseUrl }) => {

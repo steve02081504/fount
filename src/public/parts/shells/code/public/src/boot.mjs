@@ -41,7 +41,7 @@ import {
 	updateCharMenu,
 } from './pills.mjs'
 import { activateTab, refreshAllSessions } from './session.mjs'
-import { elements, getPref, initComposer, setPref, store, tabKeyOf } from './store.mjs'
+import { elements, getPref, initComposer, markBootCompleted, setPref, store, tabKeyOf } from './store.mjs'
 import { handleSubAgentEvent } from './subagents.mjs'
 import { onSendButtonClick, submitMessage, updateSendButton } from './submission.mjs'
 import { createDraftTab, loadTabPrefs, renderTabs, startNewSession } from './tabs.mjs'
@@ -143,7 +143,7 @@ export async function boot() {
 	// 运行终态统一交给 completion；状态变更刷新发送/停止按钮
 	setRunSettledHandler(payload => { void handleRunSettled(payload) })
 	onRuntimeStatusChange(() => updateSendButton())
-	// createMarkdownRichInput 初始化即聚焦 composer：待 pill 镀铬挂载后再建，避免早聚焦触发与装载的竞态
+	// pill 镀铬挂载后再初始化 composer，避免输入组件绑定到尚未挂载的页面结构
 	initComposer()
 	wireComposerEvents()
 	wireGlobalEvents()
@@ -204,6 +204,8 @@ export async function boot() {
 	else if (store.workspace) void applyWorkspaceCharConfig()
 	elements.composerInput.focus()
 	if (urlPrompt) await submitMessage({ content: urlPrompt })
+	// 全部启动步骤（标签恢复、动态文案重渲染、初始化聚焦）结束，通知测试桥页面已就绪。
+	markBootCompleted()
 }
 
 /* ---------------- 事件绑定 ---------------- */

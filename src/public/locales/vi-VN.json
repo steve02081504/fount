@@ -2431,7 +2431,7 @@
 				"emptyTitle": "Chưa tìm thấy nhóm công khai nào",
 				"eyebrow": "Khám phá cộng đồng",
 				"join": "Tham gia nhóm",
-				"loadFailed": "Không thể tải danh sách khám phá: ${message}",
+				"loadFailed": "Không thể tải danh sách khám phá: ${error}",
 				"noDescription": "Chủ nhóm chưa điền vào hồ sơ.",
 				"open": "Mở nhóm",
 				"refresh": "Làm mới danh sách khám phá",

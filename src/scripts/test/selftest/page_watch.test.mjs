@@ -6,6 +6,8 @@ import { assertEquals } from 'jsr:@std/assert'
 
 import { parseExternalDirectives } from '../../../public/pages/scripts/test/watch/cssvar.mjs'
 import {
+	beginLocaleSwitch,
+	canSwitchLocale,
 	holdLocale,
 	releaseLocale,
 	resetLocaleHold,
@@ -307,14 +309,30 @@ Deno.test('releaseLocale wakes parked loop when hold reaches 0', async () => {
 	const parkedAt = runs
 	await new Promise(resolve => setTimeout(resolve, 40))
 	assertEquals(runs, parkedAt, 'loop must park after idle round')
-	holdLocale()
-	holdLocale()
+	await holdLocale()
+	await holdLocale()
 	releaseLocale()
 	await new Promise(resolve => setTimeout(resolve, 40))
 	assertEquals(runs, parkedAt, 'partial release must not wake')
 	releaseLocale()
 	await waitUntil(() => runs > parkedAt, 2000, 5)
 	reset()
+	resetLocaleHold()
+})
+
+Deno.test('holdLocale waits for an in-flight locale switch', async () => {
+	resetLocaleHold()
+	const endSwitch = beginLocaleSwitch()
+	let acquired = false
+	const hold = holdLocale().then(() => { acquired = true })
+	assertEquals(canSwitchLocale(), false)
+	assertEquals(acquired, false, 'hold must wait until the current locale switch ends')
+	endSwitch()
+	await hold
+	assertEquals(acquired, true)
+	assertEquals(canSwitchLocale(), false, 'the locale remains held after the barrier resolves')
+	releaseLocale()
+	assertEquals(canSwitchLocale(), true)
 	resetLocaleHold()
 })
 

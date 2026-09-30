@@ -20,6 +20,7 @@ import {
 	nestAllPrefixClustersWithMap,
 	scanEmojiLocaleForbiddenScript,
 	scanI18nKeyStructure,
+	scanLocalePlaceholders,
 	scanLocaleTreeShape,
 } from '../i18n_keys.mjs'
 
@@ -301,6 +302,45 @@ Deno.test('all locale JSON trees match zh-CN value kinds on shared paths', async
 	const failures = []
 	for (const fileName of localeFiles)
 		for (const issue of scanLocaleTreeShape(zhCn, JSON.parse(await readFile(join(localesDir, fileName), 'utf8'))))
+			failures.push(`${fileName}: [${issue.kind}] ${issue.path}: ${issue.message}`)
+
+	assertEquals(failures, [], failures.join('\n'))
+})
+
+Deno.test('scanLocalePlaceholders flags renamed / dropped placeholders', () => {
+	assertEquals(scanLocalePlaceholders({ a: '备份到：${path}' }, { a: 'Backed up to: ${path}' }), [])
+	const issues = scanLocalePlaceholders(
+		{ a: '备份到：${path}', b: '${count} 项' },
+		{ a: 'Backed up to: ${file}', b: 'items' },
+	)
+	assertEquals(issues.map(issue => issue.kind), ['placeholder_mismatch', 'placeholder_mismatch'])
+	assertEquals(issues.map(issue => issue.path), ['a', 'b'])
+	assert(issues[0]?.message.includes('缺少 path') && issues[0]?.message.includes('多出 file'))
+})
+
+Deno.test('scanLocalePlaceholders unwraps string ↔ switch and arrays', () => {
+	const switchLeaf = { switch: 'count', default: '${count} items', cases: { 1: '1 item' } }
+	assertEquals(scanLocalePlaceholders({ label: '${count} 条' }, { label: switchLeaf }), [])
+	assertEquals(scanLocalePlaceholders({ label: switchLeaf }, { label: '${count} 条' }), [])
+	// string ↔ array 属类型不匹配，由 scanLocaleTreeShape 负责，这里不重复报
+	assertEquals(scanLocalePlaceholders({ label: '${count} 条' }, { label: ['${count} 条'] }), [])
+	assertEquals(scanLocalePlaceholders({ label: ['${count} 条'] }, { label: ['${count} 条'] }), [])
+	assertEquals(
+		scanLocalePlaceholders({ label: ['${count} 条'] }, { label: ['${total} 个'] })[0]?.kind,
+		'placeholder_mismatch',
+	)
+})
+
+Deno.test('all locale JSON trees keep zh-CN placeholders on shared paths', async () => {
+	const { readdir } = await import('node:fs/promises')
+	const localesDir = join(REPO_ROOT, 'src/public/locales')
+	const zhCn = JSON.parse(await readFile(join(localesDir, 'zh-CN.json'), 'utf8'))
+	const localeFiles = (await readdir(localesDir)).filter(name => name.endsWith('.json') && name !== 'zh-CN.json')
+	assert(localeFiles.length > 0, 'expected non-zh-CN locale JSON files')
+	/** @type {string[]} */
+	const failures = []
+	for (const fileName of localeFiles)
+		for (const issue of scanLocalePlaceholders(zhCn, JSON.parse(await readFile(join(localesDir, fileName), 'utf8'))))
 			failures.push(`${fileName}: [${issue.kind}] ${issue.path}: ${issue.message}`)
 
 	assertEquals(failures, [], failures.join('\n'))

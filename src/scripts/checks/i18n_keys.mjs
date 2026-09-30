@@ -12,6 +12,7 @@
  * string → `{ aria-label }` 等单 applicator 包装见 locale-edits.md；`update-locales.py` 同步时也会规范化并在残留类型不匹配时 exit 1。
  */
 
+import { extractPlaceholders } from '../../public/pages/scripts/i18n/placeholders.mjs'
 import { areLocaleLeafKindsCompatible, isSwitchValue } from '../i18n/switch_value.mjs'
 
 /**
@@ -105,7 +106,7 @@ export function findPrefixClusters(keys, min = PREFIX_CLUSTER_MIN) {
 /**
  * i18n 键结构问题。
  * @typedef {object} I18nKeyIssue
- * @property {'affix' | 'prefix_cluster' | 'numbered' | 'type_mismatch' | 'forbidden_script'} kind
+ * @property {'affix' | 'prefix_cluster' | 'numbered' | 'type_mismatch' | 'placeholder_mismatch' | 'forbidden_script'} kind
  * @property {string} path 点分路径（含违规键或簇所在父路径）
  * @property {string} message 说明
  */
@@ -204,6 +205,69 @@ export function scanLocaleTreeShape(reference, other, path = '') {
 	}
 
 	return issues
+}
+
+/**
+ * 对照参考 locale，扫描另一语言在共有路径上的 `${placeholder}` 集合不一致（翻译增删改占位符名）。
+ * string ↔ switch 视为兼容：以 string 对照 switch 的 default；两侧 switch 再逐 case 比对。
+ * @param {unknown} reference 参考树（通常 zh-CN）
+ * @param {unknown} other 待检树
+ * @param {string} [path=''] 当前点分路径
+ * @returns {I18nKeyIssue[]} 占位符不匹配列表
+ */
+export function scanLocalePlaceholders(reference, other, path = '') {
+	if (reference === undefined || other === undefined) return []
+	const refKind = localeValueKind(reference)
+	const otherKind = localeValueKind(other)
+
+	if (refKind === 'string' && otherKind === 'string') {
+		const refNames = extractPlaceholders(reference)
+		const otherNames = extractPlaceholders(other)
+		const missing = refNames.filter(name => !otherNames.includes(name))
+		const extra = otherNames.filter(name => !refNames.includes(name))
+		if (!missing.length && !extra.length) return []
+		const detail = [
+			missing.length ? `缺少 ${missing.join(', ')}` : '',
+			extra.length ? `多出 ${extra.join(', ')}` : '',
+		].filter(Boolean).join('；')
+		return [{
+			kind: 'placeholder_mismatch',
+			path: path || '(root)',
+			message: `占位符与参考不一致（${detail}）。翻译须原样保留占位符名，勿增删改。`,
+		}]
+	}
+
+	if (refKind === 'switch' || otherKind === 'switch') {
+		const refDefault = refKind === 'switch' ? reference.default : reference
+		const otherDefault = otherKind === 'switch' ? other.default : other
+		const issues = scanLocalePlaceholders(refDefault, otherDefault, path)
+		if (refKind === 'switch' && otherKind === 'switch') {
+			const refCases = reference.cases ?? {}
+			const otherCases = other.cases ?? {}
+			for (const key of Object.keys(refCases))
+				if (Object.hasOwn(otherCases, key))
+					issues.push(...scanLocalePlaceholders(refCases[key], otherCases[key], path ? `${path}.cases.${key}` : `cases.${key}`))
+		}
+		return issues
+	}
+
+	if (refKind === 'array' && otherKind === 'array') {
+		const issues = []
+		const n = Math.min(reference.length, other.length)
+		for (let index = 0; index < n; index++)
+			issues.push(...scanLocalePlaceholders(reference[index], other[index], `${path}[${index}]`))
+		return issues
+	}
+
+	if (refKind === 'object' && otherKind === 'object') {
+		const issues = []
+		for (const key of Object.keys(reference))
+			if (Object.hasOwn(other, key))
+				issues.push(...scanLocalePlaceholders(reference[key], other[key], path ? `${path}.${key}` : key))
+		return issues
+	}
+
+	return []
 }
 
 /**

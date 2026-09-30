@@ -87,6 +87,19 @@ function targetExtension(executionTarget) {
 }
 
 /**
+ * inline 工具（`inline-js` / `inline-<shell>`）的执行目标快照。
+ * evaluate 阶段与 handle 阶段的 call 不是同一对象（回复管线只回填 value/error），故在 handle 内重算。
+ * @param {string} lang - 语言标签（`js` 或 shell 名）。
+ * @param {object} args - 请求上下文。
+ * @param {object} attrs - 标签属性。
+ * @returns {{machine: string, workdir: string|null}} 执行目标。
+ */
+function inlineExecutionTarget(lang, args, attrs) {
+	if (lang === 'js') return jsExecutionTarget(args, attrs)
+	return executionTargetOf(resolveTarget(args, attrs))
+}
+
+/**
  * 判断 `<run-*>` 是否请求异步后台执行。
  * @param {Record<string, string>} attrs - 标签属性表。
  * @returns {boolean} 是否异步。
@@ -584,7 +597,6 @@ function inlineDisplay(lang) {
 async function evaluateInlineJs(call, args) {
 	const attrs = call.params
 	const target = resolveTarget(args, attrs)
-	call.executionTarget = jsExecutionTarget(args, attrs)
 	const limits = parseRunLimits(attrs, JS_DEFAULT_TIMEOUT_MS)
 	const remote = Boolean(target.remote)
 	const emit = toolOutputEmitter(args)
@@ -630,7 +642,6 @@ function createInlineShellEvaluate(shell_name, resolveShells) {
 		const shells = await resolveShells(args, attrs)
 		if (!isShellUsable(shell_name, shells))
 			throw new Error(shellUnavailableMessage(shell_name, shells))
-		call.executionTarget = executionTargetOf(resolveTarget(args, attrs))
 		const limits = parseRunLimits(attrs, SHELL_DEFAULT_TIMEOUT_MS)
 		const resolver = previewExecutorResolvers.get(args) ?? previewExecutorResolvers.set(args, createArgsExecutorResolver(args)).get(args)
 		const emit = toolOutputEmitter(args)
@@ -674,14 +685,18 @@ function createInlineShellEvaluate(shell_name, resolveShells) {
  */
 function createInlineHandle(lang) {
 	return async (reply, args, call) => {
+		const executionTarget = inlineExecutionTarget(lang, args, call.params)
 		if (call.error) {
 			console.error(`内联${lang}代码执行失败：`, call.error)
+			const errorText = String(call.error?.stack || call.error)
 			args.AddLongTimeLog({
 				name: `code-execution.inline-${lang}`,
 				role: 'tool',
-				content: `内联${lang}代码执行失败：\n` + (call.error.stack || String(call.error)),
+				// agent 层经过密钥擦除；人类展示层把不可信错误文本包进代码块，避免被当 markdown / HTML 渲染
+				content: `内联${lang}代码执行失败：\n` + redactSecrets(errorText),
+				content_for_show: renderMarkdownCodeBlock(`内联${lang}代码执行失败：\n${errorText}`, { lang: 'ansi' }),
 				files: [],
-				...targetExtension(call.executionTarget),
+				extension: { error: true, executionTarget },
 			})
 			return { regen: true, failed: true }
 		}
@@ -693,7 +708,7 @@ function createInlineHandle(lang) {
 			content_for_show: buildInlineToolCard([{ code: call.inner, result: call.value }], lang),
 			files: [],
 			charVisibility: [args.char_id],
-			...targetExtension(call.executionTarget),
+			...targetExtension(executionTarget),
 		})
 		call.inlineResultLogged = true
 		return {}

@@ -2431,7 +2431,7 @@
 				"emptyTitle": "Aucun groupe public trouvé pour l'instant",
 				"eyebrow": "Explorez la communauté",
 				"join": "Rejoindre le groupe",
-				"loadFailed": "Échec du chargement de la liste de découverte : ${message}",
+				"loadFailed": "Échec du chargement de la liste de découverte : ${error}",
 				"noDescription": "Le propriétaire du groupe n'a pas encore rempli son profil.",
 				"open": "Groupe ouvert",
 				"refresh": "Actualiser la liste de découvertes",
