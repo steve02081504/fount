@@ -25,7 +25,7 @@
 		},
 		{
 			"name": "integration",
-			"expected": "5s",
+			"expected": "51s",
 			"triggers": [
 				"src/public/parts/plugins/context-compress/**",
 				"src/public/parts/shells/chat/src/chat/session/summarize.mjs",

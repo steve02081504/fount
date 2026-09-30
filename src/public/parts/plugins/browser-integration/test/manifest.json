@@ -15,7 +15,7 @@
 	"suites": [
 		{
 			"name": "pure",
-			"expected": "10s",
+			"expected": "1m12s",
 			"trigger": [
 				"pluginCore",
 				"testFramework"
