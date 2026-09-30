@@ -418,7 +418,7 @@ function attachSocketToRun(run, socket) {
  */
 function resolveWorkspaceId(username, workTarget, session) {
 	const found = getWorkspaces(username).list.find(w => String(w.machine) === workTarget.machine && w.path === workTarget.path)
-	return found?.id || (session?.workspaceId ? String(session.workspaceId) : '')
+	return found?.id || String(session?.workspaceId ?? '')
 }
 
 let startCodeRun

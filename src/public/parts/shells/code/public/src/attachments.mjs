@@ -175,20 +175,6 @@ export function readyAttachments(tabKey) {
 	return (getRuntime(tabKey)?.attachments || []).filter(isReady)
 }
 
-/**
- * 序列化为后端 `files` 形状（不含本地状态字段）。
- * @param {string} tabKey - 标签键。
- * @returns {Array<{name: string, mime_type: string, buffer: string, description: string}>} 附件列表。
- */
-export function serializeAttachments(tabKey) {
-	return readyAttachments(tabKey).map(attachment => ({
-		name: attachment.name,
-		mime_type: attachment.mime_type,
-		buffer: attachment.buffer,
-		description: attachment.description || '',
-	}))
-}
-
 /* ---------------- 队列操作 ---------------- */
 
 /**

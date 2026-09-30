@@ -52,7 +52,6 @@ export const elements = {
  * @property {number} savedRevision - 已落盘版本号。
  * @property {{machine: string, workdir: string}|null} flushTarget - 最近一次标记时的落盘目标快照。
  * @property {boolean} flushError - 上次落盘是否失败（可重试）。
- * @property {boolean} missing - 会话在磁盘上已不存在。
  */
 
 /**
@@ -74,7 +73,6 @@ function createRuntime(tabKey) {
 		savedRevision: 0,
 		flushTarget: null,
 		flushError: false,
-		missing: false,
 	}
 }
 

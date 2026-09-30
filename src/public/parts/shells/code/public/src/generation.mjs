@@ -6,9 +6,10 @@ import { showToastI18n } from '/scripts/features/toast.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
 
 import * as api from './endpoints.mjs'
+import { renderMessages } from './messages.mjs'
 import { flushSession, markSessionDirty } from './sessionPersistence.mjs'
 import { getActiveRuntime, getRuntime, isGenerating, store, tabKeyOf } from './store.mjs'
-import { appendVisibleEntry, clearRuntimeView, endGeneratingBubble, generatingBubbleFor, handlePreview, handleToolOutput, insertIncrementalEntries, refreshEmptyMode, renderActiveMessages, startGeneratingBubble } from './streamView.mjs'
+import { appendVisibleEntry, clearRuntimeView, endGeneratingBubble, generatingBubbleFor, handlePreview, handleToolOutput, insertIncrementalEntries, refreshEmptyMode, startGeneratingBubble } from './streamView.mjs'
 
 /** 运行状态变更监听（submission 借此刷新发送/停止按钮，避免反向依赖）。 @type {Set<(runtime: object|null) => void>} */
 const statusListeners = new Set()
@@ -175,7 +176,7 @@ function attachToRun(runtime) {
 		const waiter = { resolve, timer: 0 }
 		waiter.timer = setTimeout(() => settleAttach(runtime, false), ATTACH_TIMEOUT_MS)
 		runtime.attach = waiter
-		void getSocket()
+		getSocket()
 			.then(ws => ws.send(JSON.stringify({ type: 'attach', sessionId: runtime.session.id })))
 			.catch(() => settleAttach(runtime, false))
 	})
@@ -244,7 +245,7 @@ function applyRecoveredSession(runtime, disk) {
 	notifyStatus(runtime)
 	if (runtime === getActiveRuntime()) {
 		endGeneratingBubble()
-		renderActiveMessages()
+		renderMessages()
 		refreshEmptyMode()
 	}
 	void flushSession(runtime.tabKey)

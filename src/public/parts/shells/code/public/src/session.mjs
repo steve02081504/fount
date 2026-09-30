@@ -178,7 +178,6 @@ export async function activateTab(tab) {
 	}
 	const runtime = getRuntime(key, { create: true })
 	runtime.session = session
-	runtime.missing = false
 	session.workspaceId = store.workspace?.id || ''
 	store.session = session
 	store.lastConversationWorkspaceId = store.workspace?.id

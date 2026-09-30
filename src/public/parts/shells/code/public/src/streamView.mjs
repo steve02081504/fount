@@ -5,7 +5,7 @@
 import { StreamRenderer } from '/parts/shells:chat/src/ui/StreamRenderer.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
 
-import { appendEntryBubble, backToBottom, isEntryVisible, messageMarkdown, renderEntryBubble, renderMessages, updateBackToBottom, updateEmptyMode } from './messages.mjs'
+import { appendEntryBubble, backToBottom, isEntryVisible, messageMarkdown, renderEntryBubble, updateBackToBottom, updateEmptyMode } from './messages.mjs'
 import { updateRunCards } from './runCards.mjs'
 import { elements, getActiveRuntime, store } from './store.mjs'
 
@@ -192,11 +192,6 @@ export function clearRuntimeView(runtime) {
 	if (!runtime) return
 	runtime.previewText = ''
 	runtime.liveTools = new Map()
-}
-
-/** 重渲当前会话的全部消息（生成模块经此解耦，避免直接依赖 messages）。 */
-export function renderActiveMessages() {
-	renderMessages()
 }
 
 /**
