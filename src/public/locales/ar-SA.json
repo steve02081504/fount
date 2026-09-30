@@ -2652,7 +2652,7 @@
 					"videoOn": "قم بتشغيل الكاميرا",
 					"you": "أنت"
 				},
-				"connectionLost": null,
+				"connectionLost": "انقطع الاتصال، جارٍ إعادة الاتصال…",
 				"defaultName": "وسائل الإعلام المتدفقة",
 				"embedHttpsRequired": "يجب أن يكون عنوان البث صفحة https:// قابلة للتضمين، أو يجب تكوين إعدادات المجموعة أولاً وتحديثها للحصول على رمز العرض.",
 				"refreshToken": "تحديث رمز الساعة",
@@ -6657,7 +6657,7 @@
 			"viewFiles": "عرض الملفات",
 			"addFiles": "إرسال ملفات",
 			"callback": "استجابة الأداة",
-			"inlineRendered": "Inline results",
+			"inlineRendered": "نتائج مضمّنة",
 			"runShell": "تشغيل ${lang}",
 			"subAgent": {
 				"createBatch": "إنشاء دفعة وكلاء فرعيين",

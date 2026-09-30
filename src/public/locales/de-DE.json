@@ -2652,7 +2652,7 @@
 					"videoOn": "Kamera einschalten",
 					"you": "Du"
 				},
-				"connectionLost": null,
+				"connectionLost": "Verbindung unterbrochen – neuer Verbindungsversuch…",
 				"defaultName": "Streaming-Medien",
 				"embedHttpsRequired": "Die Streaming-Adresse muss eine einbettbare https://-Seite sein, oder die Gruppeneinstellungen müssen zuerst konfiguriert und aktualisiert werden, um ein Anzeigetoken zu erhalten.",
 				"refreshToken": "Überwachungstoken aktualisieren",
@@ -6647,7 +6647,7 @@
 			"viewFiles": "Dateien anzeigen",
 			"addFiles": "Dateien senden",
 			"callback": "Werkzeug-Rückruf",
-			"inlineRendered": "Inline results",
+			"inlineRendered": "Inline-Ergebnisse",
 			"runShell": "${lang} ausführen",
 			"subAgent": {
 				"createBatch": "Subagenten-Batch erstellen",

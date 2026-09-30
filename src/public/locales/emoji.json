@@ -2652,7 +2652,7 @@
 					"videoOn": "📷▶️",
 					"you": "🫵"
 				},
-				"connectionLost": "连接已断开，正在重连…",
+				"connectionLost": "📡❌🔄…",
 				"defaultName": "🌊📺",
 				"embedHttpsRequired": "🌊📺 🔒🔗 https:// 📄，⚙️👥🔄🎫",
 				"refreshToken": "🔄🎫",
@@ -6647,7 +6647,7 @@
 			"viewFiles": "👁️📄",
 			"addFiles": "📤📄",
 			"callback": "↩️",
-			"inlineRendered": "Inline results",
+			"inlineRendered": "📊↪️",
 			"runShell": "▶️ ${lang}",
 			"subAgent": {
 				"createBatch": "🤖➕",

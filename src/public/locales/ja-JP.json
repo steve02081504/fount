@@ -2652,7 +2652,7 @@
 					"videoOn": "カメラをオンにする",
 					"you": "あなた"
 				},
-				"connectionLost": null,
+				"connectionLost": "接続が切断されました。再接続中…",
 				"defaultName": "ストリーミングメディア",
 				"embedHttpsRequired": "ストリーミング アドレスは埋め込み可能な https:// ページである必要があります。または、グループ設定を最初に構成し、表示トークンを取得するために更新する必要があります。",
 				"refreshToken": "ウォッチトークンをリフレッシュ",

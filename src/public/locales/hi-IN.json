@@ -2652,7 +2652,7 @@
 					"videoOn": "कैमरा चालू करें",
 					"you": "आप"
 				},
-				"connectionLost": null,
+				"connectionLost": "कनेक्शन टूट गया, दोबारा कनेक्ट हो रहा है…",
 				"defaultName": "स्ट्रीमिंग मीडिया",
 				"embedHttpsRequired": "स्ट्रीमिंग पता एक एम्बेड करने योग्य https:// पेज होना चाहिए, या देखने का टोकन प्राप्त करने के लिए समूह सेटिंग्स को पहले कॉन्फ़िगर किया जाना चाहिए और ताज़ा किया जाना चाहिए।",
 				"refreshToken": "घड़ी टोकन ताज़ा करें",
@@ -6647,7 +6647,7 @@
 			"viewFiles": "फ़ाइलें देखें",
 			"addFiles": "फ़ाइलें भेजें",
 			"callback": "टूल कॉलबैक",
-			"inlineRendered": "Inline results",
+			"inlineRendered": "इनलाइन परिणाम",
 			"runShell": "${lang} चलाएँ",
 			"subAgent": {
 				"createBatch": "उप-एजेंट बैच बनाएँ",

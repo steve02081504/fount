@@ -2652,7 +2652,7 @@
 					"videoOn": "Schakel de camera in",
 					"you": "Jij"
 				},
-				"connectionLost": null,
+				"connectionLost": "Verbinding verbroken, opnieuw verbinden…",
 				"defaultName": "Streamingmedia",
 				"embedHttpsRequired": "Het streamingadres moet een insluitbare https://-pagina zijn, of de groepsinstellingen moeten eerst worden geconfigureerd en vernieuwd om een ​​weergavetoken te verkrijgen.",
 				"refreshToken": "Horlogetoken vernieuwen",
@@ -6653,7 +6653,7 @@
 			"viewFiles": "Bestanden bekijken",
 			"addFiles": "Bestanden verzenden",
 			"callback": "Tool-callback",
-			"inlineRendered": "Inline results",
+			"inlineRendered": "Inline resultaten",
 			"runShell": "${lang} uitvoeren",
 			"subAgent": {
 				"createBatch": "Subagent-batch aanmaken",

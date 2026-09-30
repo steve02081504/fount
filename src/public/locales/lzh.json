@@ -2652,7 +2652,7 @@
 					"videoOn": "啟明鏡",
 					"you": "君"
 				},
-				"connectionLost": "连接已断开，正在重连…",
+				"connectionLost": "連線已絕，方重連…",
 				"defaultName": "觀影",
 				"embedHttpsRequired": "觀影網址須為可嵌入之 https:// 頁面，或先置群樞機並重覽以獲取觀看符節。",
 				"refreshToken": "復新觀看符節",
@@ -6647,7 +6647,7 @@
 			"viewFiles": "觀檔",
 			"addFiles": "呈檔",
 			"callback": "工具回覆",
-			"inlineRendered": "Inline results",
+			"inlineRendered": "內聯之果",
 			"runShell": "行 ${lang}",
 			"subAgent": {
 				"createBatch": "立子代理之批",

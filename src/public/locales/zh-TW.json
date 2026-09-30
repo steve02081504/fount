@@ -2651,7 +2651,7 @@
 					"videoOn": "開啟攝像頭",
 					"you": "你"
 				},
-				"connectionLost": null,
+				"connectionLost": "連線已中斷，正在重新連線…",
 				"defaultName": "流媒體",
 				"embedHttpsRequired": "流媒體地址須為可嵌入的 https:// 頁面，或先設定群設定並重新整理以獲取觀看令牌。",
 				"refreshToken": "重新整理觀看令牌",
@@ -6646,7 +6646,7 @@
 			"viewFiles": "檢視檔案",
 			"addFiles": "傳送檔案",
 			"callback": "工具回呼",
-			"inlineRendered": "Inline results",
+			"inlineRendered": "內嵌結果",
 			"runShell": "執行 ${lang}",
 			"subAgent": {
 				"createBatch": "建立子代理批次",

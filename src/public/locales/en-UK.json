@@ -2652,7 +2652,7 @@
 					"videoOn": "Turn on camera",
 					"you": "you"
 				},
-				"connectionLost": null,
+				"connectionLost": "Connection lost, reconnecting…",
 				"defaultName": "streaming media",
 				"embedHttpsRequired": "The stream URL must be an embeddable https:// page, or configure group settings and refresh to get a viewing token.",
 				"refreshToken": "Refresh watch token",

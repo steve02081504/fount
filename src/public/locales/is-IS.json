@@ -2652,7 +2652,7 @@
 					"videoOn": "Kveikja á myndavél",
 					"you": "Þú"
 				},
-				"connectionLost": null,
+				"connectionLost": "Tenging rofin, endurtenging…",
 				"defaultName": "Streymi",
 				"embedHttpsRequired": "Streymisfangið verður að vera innfellanleg https:// síða, eða hópstillingar verða að vera stilltar fyrst og Uppfærslurðar til að fá áhorfslykilinn.",
 				"refreshToken": "Endurnýjaðu úrarTákn",
@@ -6647,7 +6647,7 @@
 			"viewFiles": "Skoða skrár",
 			"addFiles": "Senda skrár",
 			"callback": "Endurkall verkfæris",
-			"inlineRendered": "Inline results",
+			"inlineRendered": "Innfelldar niðurstöður",
 			"runShell": "Keyra ${lang}",
 			"subAgent": {
 				"createBatch": "Búa til hóp undiragenta",

@@ -2652,7 +2652,7 @@
 					"videoOn": "카메라 켜기",
 					"you": "나"
 				},
-				"connectionLost": null,
+				"connectionLost": "연결이 끊어졌습니다. 다시 연결하는 중…",
 				"defaultName": "스트리밍 미디어",
 				"embedHttpsRequired": "스트리밍 주소는 임베드 가능한 https:// 페이지여야 합니다. 그렇지 않으면 그룹 설정을 먼저 구성하고 새로고침하여 시청 토큰을 받으세요.",
 				"refreshToken": "시계 토큰 새로 고침",
@@ -6647,7 +6647,7 @@
 			"viewFiles": "파일 보기",
 			"addFiles": "파일 보내기",
 			"callback": "도구 콜백",
-			"inlineRendered": "Inline results",
+			"inlineRendered": "인라인 결과",
 			"runShell": "${lang} 실행",
 			"subAgent": {
 				"createBatch": "하위 에이전트 배치 만들기",

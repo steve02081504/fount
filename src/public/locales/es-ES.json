@@ -2652,7 +2652,7 @@
 					"videoOn": "encender la cámara",
 					"you": "tú"
 				},
-				"connectionLost": null,
+				"connectionLost": "Conexión perdida, reconectando…",
 				"defaultName": "medios de transmisión",
 				"embedHttpsRequired": "La dirección de transmisión debe ser una página https:// incrustable, o las ajustes del grupo deben configurarse primero y actualizarse para obtener un token de visualización.",
 				"refreshToken": "Actualizar token de vigilancia",
@@ -6653,7 +6653,7 @@
 			"viewFiles": "Ver archivos",
 			"addFiles": "Enviar archivos",
 			"callback": "Devolución de llamada de herramienta",
-			"inlineRendered": "Inline results",
+			"inlineRendered": "Resultados integrados",
 			"runShell": "Ejecutar ${lang}",
 			"subAgent": {
 				"createBatch": "Crear lote de subagentes",
