@@ -115,9 +115,6 @@ export async function modifyTimeLine(groupId, channelId, delta) {
 					case 'world_group':
 						result = await world.interfaces.chat.GetGroupGreeting(request, newTimeLineIndex)
 						break
-					default:
-						if (char) result = await char.interfaces.chat.GetReply(request)
-						break
 				}
 
 				if (!result) throw new Error('No greeting result')

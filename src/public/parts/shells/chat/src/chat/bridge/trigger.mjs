@@ -1,6 +1,7 @@
 /**
  * 虚拟桥接会话触发：OnMessage → GetReply → 出站 + typing。
  */
+import { finishAsyncGeneration } from '../../../../../plugins/async-task/registry.mjs'
 import { dispatchCharError } from '../session/charError.mjs'
 import {
 	autoReplyBucketKey,
@@ -135,7 +136,9 @@ async function executeVirtualBridgeReply(username, session, channelId, triggerEn
 	)
 
 	const typingTimer = startTypingHeartbeat(username, session, channelId, request.CharUid)
+	const generationId = crypto.randomUUID()
 	try {
+		request.extension = { ...request.extension, generationId }
 		const reply = await getReply(request)
 		if (!reply || (reply.content == null && !reply.files?.length)) return
 		const { entry } = appendVirtualBridgeCharReply(
@@ -154,6 +157,7 @@ async function executeVirtualBridgeReply(username, session, channelId, triggerEn
 	}
 	finally {
 		clearInterval(typingTimer)
+		finishAsyncGeneration(generationId)
 	}
 }
 
