@@ -232,8 +232,8 @@ export async function runReplyHandlers(result, args, handlers) {
 	let wantRegen = false
 	let stopped = false
 	let failed = false
-	let stopGroupIndex = -1
-	let stopCursor = 0
+	// stop 发生的位置：组下标与组内已消耗到的偏移，用于把未执行的调用折进展示层。
+	let stopPoint = null
 	let handledCount = 0
 	const originalContent = result.content
 	/** @type {Array<{ raw: string, start: number, source: string, displayText: string, inline: boolean }>} 已处理调用段的展示替换。 */
@@ -251,7 +251,7 @@ export async function runReplyHandlers(result, args, handlers) {
 			const outcome = await handler.handle(result, handlerArgs, null) ?? {}
 			if (outcome.content !== undefined) result.content = outcome.content
 			if (outcome.regen) wantRegen = true
-			if (outcome.stop) { stopped = true; stopGroupIndex = groupIndex; stopCursor = 0; break }
+			if (outcome.stop) { stopped = true; stopPoint = { groupIndex, cursor: 0 }; break }
 			if (outcome.failed) {
 				failed = true
 				skippedCalls = collectSkippedCalls(result.content ?? '', groups, groupIndex, 0, handlerArgs)
@@ -314,7 +314,7 @@ export async function runReplyHandlers(result, args, handlers) {
 				}
 				cursor = batch.at(-1).call.end
 				if (result.content !== content) { content = result.content ?? ''; cursor = 0 }
-				if (batchStop) { stopped = true; stopGroupIndex = groupIndex; stopCursor = cursor; break }
+				if (batchStop) { stopped = true; stopPoint = { groupIndex, cursor }; break }
 				if (batchFailed) {
 					// 批次内已启动的调用全部结算，但该步骤整体算失败：不再启动后续批次/调用
 					failed = true
@@ -342,7 +342,7 @@ export async function runReplyHandlers(result, args, handlers) {
 			}, handlerArgs)
 			handledSpans.push({ raw: call.raw, start: call.start, source: content, displayText, inline: Boolean(handler.evaluate) && Boolean(displayText), inlineResultLogged: call.inlineResultLogged })
 
-			if (outcome.stop) { stopped = true; stopGroupIndex = groupIndex; stopCursor = call.end; break }
+			if (outcome.stop) { stopped = true; stopPoint = { groupIndex, cursor: call.end }; break }
 			if (outcome.failed) {
 				failed = true
 				const skipCursor = result.content !== beforeContent ? 0 : call.end
@@ -358,10 +358,10 @@ export async function runReplyHandlers(result, args, handlers) {
 	// 本轮的 content 是否被 handler 整条替换（如 rolesettingfilter 封禁）；替换后 show 必须从新 content 重新派生。
 	const contentReplaced = result.content !== originalContent
 
-	if (stopped && !contentReplaced && stopGroupIndex >= 0) {
+	if (stopped && !contentReplaced && stopPoint) {
 		// stop 是有意短路：未执行的后续调用折进展示替换，避免原始标签泄漏到 show；不加跳过提示日志。
 		const sourceContent = result.content ?? ''
-		for (const { handler, call } of collectSkippedCalls(sourceContent, groups, stopGroupIndex, stopCursor, handlerArgs)) {
+		for (const { handler, call } of collectSkippedCalls(sourceContent, groups, stopPoint.groupIndex, stopPoint.cursor, handlerArgs)) {
 			const displayText = renderCallDisplay(handler, call, { stage: 'final', open: false, skipped: true }, handlerArgs)
 			handledSpans.push({ raw: call.raw, start: call.start, source: sourceContent, displayText, inline: false })
 		}
