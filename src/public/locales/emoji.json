@@ -2652,6 +2652,7 @@
 					"videoOn": "📷▶️",
 					"you": "🫵"
 				},
+				"connectionLost": "连接已断开，正在重连…",
 				"defaultName": "🌊📺",
 				"embedHttpsRequired": "🌊📺 🔒🔗 https:// 📄，⚙️👥🔄🎫",
 				"refreshToken": "🔄🎫",

@@ -2652,6 +2652,7 @@
 					"videoOn": "카메라 켜기",
 					"you": "나"
 				},
+				"connectionLost": null,
 				"defaultName": "스트리밍 미디어",
 				"embedHttpsRequired": "스트리밍 주소는 임베드 가능한 https:// 페이지여야 합니다. 그렇지 않으면 그룹 설정을 먼저 구성하고 새로고침하여 시청 토큰을 받으세요.",
 				"refreshToken": "시계 토큰 새로 고침",

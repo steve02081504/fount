@@ -2652,6 +2652,7 @@
 					"videoOn": "Kamera einschalten",
 					"you": "Du"
 				},
+				"connectionLost": null,
 				"defaultName": "Streaming-Medien",
 				"embedHttpsRequired": "Die Streaming-Adresse muss eine einbettbare https://-Seite sein, oder die Gruppeneinstellungen müssen zuerst konfiguriert und aktualisiert werden, um ein Anzeigetoken zu erhalten.",
 				"refreshToken": "Überwachungstoken aktualisieren",

@@ -2652,6 +2652,7 @@
 					"videoOn": "Schakel de camera in",
 					"you": "Jij"
 				},
+				"connectionLost": null,
 				"defaultName": "Streamingmedia",
 				"embedHttpsRequired": "Het streamingadres moet een insluitbare https://-pagina zijn, of de groepsinstellingen moeten eerst worden geconfigureerd en vernieuwd om een ​​weergavetoken te verkrijgen.",
 				"refreshToken": "Horlogetoken vernieuwen",

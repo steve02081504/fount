@@ -2651,6 +2651,7 @@
 					"videoOn": "開啟攝像頭",
 					"you": "你"
 				},
+				"connectionLost": null,
 				"defaultName": "流媒體",
 				"embedHttpsRequired": "流媒體地址須為可嵌入的 https:// 頁面，或先設定群設定並重新整理以獲取觀看令牌。",
 				"refreshToken": "重新整理觀看令牌",

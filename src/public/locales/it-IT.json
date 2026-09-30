@@ -2652,6 +2652,7 @@
 					"videoOn": "Accendi la fotocamera",
 					"you": "Voi"
 				},
+				"connectionLost": null,
 				"defaultName": "contenuti multimediali in streaming",
 				"embedHttpsRequired": "L'indirizzo di streaming deve essere una pagina https:// incorporabile oppure le impostazioni del gruppo devono essere prima configurate e aggiornate per ottenere un token di visualizzazione.",
 				"refreshToken": "Aggiorna token orologio",

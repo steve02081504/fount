@@ -2652,6 +2652,7 @@
 					"videoOn": "Allumer la caméra",
 					"you": "toi"
 				},
+				"connectionLost": null,
 				"defaultName": "diffusion multimédia en continu",
 				"embedHttpsRequired": "L'adresse de diffusion en continu doit être une page https:// intégrable, ou les paramètres du groupe doivent d'abord être configurés et actualisés pour obtenir un jeton de visualisation.",
 				"refreshToken": "Actualiser le jeton de surveillance",

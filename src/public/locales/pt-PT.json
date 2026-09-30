@@ -2652,6 +2652,7 @@
 					"videoOn": "Ligue a câmera",
 					"you": "Tu"
 				},
+				"connectionLost": null,
 				"defaultName": "Streaming de mídia",
 				"embedHttpsRequired": "O endereço de streaming deve ser uma página https:// incorporável ou as definições do grupo devem ser definidas primeiro e atualizadas para obter um token de visualização.",
 				"refreshToken": "Atualizar watch token",

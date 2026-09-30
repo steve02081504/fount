@@ -2614,6 +2614,7 @@ export type LocaleData = {
 					videoOn: string
 					you: string
 				}
+				connectionLost: string
 				defaultName: string
 				embedHttpsRequired: string
 				refreshToken: string
@@ -6608,6 +6609,7 @@ export type LocaleData = {
 			viewFiles: string
 			addFiles: string
 			callback: string
+			inlineRendered: string
 			runShell: string
 			subAgent: {
 				createBatch: string

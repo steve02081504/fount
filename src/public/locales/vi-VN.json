@@ -2652,6 +2652,7 @@
 					"videoOn": "Bật máy ảnh",
 					"you": "Bạn"
 				},
+				"connectionLost": null,
 				"defaultName": "truyền phát trực tuyến",
 				"embedHttpsRequired": "Địa chỉ phát trực tuyến phải là trang https:// có thể nhúng hoặc cài đặt nhóm phải được định cấu hình trước và làm mới để nhận được mã thông báo xem.",
 				"refreshToken": "Làm mới mã thông báo xem",
