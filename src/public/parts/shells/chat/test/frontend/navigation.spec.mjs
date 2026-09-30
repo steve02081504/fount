@@ -35,10 +35,18 @@ test.describe('Chat hub navigation', () => {
 
 	test('switches between groups and friends mode', async ({ page, baseUrl, apiKey }) => {
 		const { groupId } = await openFreshGroupChannel(page, baseUrl, apiKey)
+		await page.route(`**/groups/${groupId}/federation/catchup`, route => route.fulfill({ json: { federationActive: true, peerRosterSize: 0 } }))
+		await page.evaluate(async groupId => {
+			const { syncGroupFromNetwork } = await import('/parts/shells:chat/hub/sidebar/groupMembership.mjs')
+			await syncGroupFromNetwork(groupId)
+		}, groupId)
+		await expect(page.locator('#sync-banner')).toBeVisible()
+		await expect(page.locator('#sync-banner-text')).toHaveAttribute('data-i18n', 'chat.hub.sync.noPeers')
 		await page.locator('.server-item[data-mode="friends"]').click()
 		await expect(page.locator('#message-input')).toHaveJSProperty('disabled', true, { timeout: 60_000 })
 		await expect(page.locator('.input-area')).toBeHidden()
 		await expect(page.locator('.empty--friends')).toBeVisible()
+		await expect(page.locator('#sync-banner')).toBeHidden()
 		await page.locator('#friends-empty-search-button').click()
 		await expect(page.locator('#friends-search-input')).toBeFocused()
 		await expect(page).toHaveURL(/#friends/)

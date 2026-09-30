@@ -51,7 +51,7 @@ export async function setMode(mode) {
 		closeInboxView()
 	}
 
-	store.context.currentMode = mode
+	setState('context.currentMode', mode)
 	setActiveModeTab(mode)
 	const { showHubNavPane } = await import('./hubPane.mjs')
 	showHubNavPane()

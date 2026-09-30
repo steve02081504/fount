@@ -186,7 +186,7 @@ export function onEnterFriendChat(peer) {
 		void setMode('friends')
 		return
 	}
-	store.context.currentMode = 'friends'
+	setState('context.currentMode', 'friends')
 	setActiveModeTab('friends')
 }
 
@@ -210,8 +210,8 @@ async function openFriendGroupChat(groupId, binding, signal, channelIdOpt) {
 
 	store.privateGroup.peerEntityHash = binding.entityHash
 	store.privateGroup.groupId = groupId
-	store.context.currentGroupId = groupId
-	store.context.currentState = state
+	setState('context.currentGroupId', groupId)
+	setState('context.currentState', state)
 
 	onEnterFriendChat({
 		entityHash: binding.entityHash,

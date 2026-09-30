@@ -70,7 +70,7 @@ async function paintGroupHubChrome(state) {
 	groupNameElement.setAttribute('user-content', '')
 	await renderChannelList(state)
 	await renderMemberList(state)
-	store.context.currentMode = 'groups'
+	setState('context.currentMode', 'groups')
 	document.querySelectorAll('.server-item[data-mode]').forEach(el => {
 		el.classList.toggle('mode-active', el.dataset.mode === 'groups')
 	})
@@ -165,6 +165,7 @@ export async function selectGroup(groupId, presetChannelId = null) {
 		await activateGroupChannel(state, channelIdFromHashOr(groupId, channelId))
 	}
 	catch (error) {
+		if (!stillCurrent()) return
 		setPinsBookmarksWrapVisible(false)
 		updateStatusBanners()
 		const err = handleError('chat.hub.load.groupFailed')(error)

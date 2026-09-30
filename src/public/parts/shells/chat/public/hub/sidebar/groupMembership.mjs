@@ -13,9 +13,13 @@ import {
 	updateStatusBanners,
 } from '../banners.mjs'
 import { warmCharEntityHashCache } from '../core/domUtils.mjs'
+import { captureGroupContext } from '../core/groupContext.mjs'
 import { store, setState } from '../core/state.mjs'
 import { consumePendingJoin, inviteCodeFromUrl, updateHash } from '../core/urlHash.mjs'
 import { loadGroups } from '../serverBar.mjs'
+import { refreshGroupState } from '../stream/stateRefresh.mjs'
+
+let syncRequestSequence = 0
 
 import { renderChannelList } from './channels.mjs'
 import { rebindFederationRoomQuiet } from './federationRoom.mjs'
@@ -29,6 +33,11 @@ import { renderMemberList } from './members.mjs'
  * @returns {Promise<void>}
  */
 export async function syncGroupFromNetwork(groupId, options = {}) {
+	const contextCurrent = captureGroupContext(groupId)
+	if (!contextCurrent() || store.context.currentMode !== 'groups') return
+	const sequence = ++syncRequestSequence
+	/** @returns {boolean} 同群视图的最新同步请求 */
+	const stillCurrent = () => contextCurrent() && sequence === syncRequestSequence
 	setSyncBanner(true)
 	/** @type {{ federationActive?: boolean, wantIds: number, eventsFilled: number, wantIdsStillMissing: number, wantIdsRateLimited: boolean, tipsCollected?: number, peerRosterSize: number }} */
 	let catchup
@@ -36,15 +45,20 @@ export async function syncGroupFromNetwork(groupId, options = {}) {
 		catchup = await federationCatchUp(groupId, { waitMs: options.waitMs ?? 1400 })
 	}
 	catch (error) {
+		if (!stillCurrent()) return
 		setSyncBanner(true, { i18nKey: 'chat.hub.sync.failed', params: { error: handleError('chat.hub.sync.failed')(error).message } })
 		return
 	}
 
-	if (store.context.currentGroupId === groupId && store.context.currentChannelId) {
-		setState('context.currentState', await getGroupState(groupId))
+	if (!stillCurrent()) return
+	if (store.context.currentChannelId) {
+		const state = await refreshGroupState(groupId)
+		if (!stillCurrent()) return
 		const { loadMessages } = await import('../messages/messages.mjs')
-		await loadMessages()
+		if (!stillCurrent()) return
+		if (state) await loadMessages()
 	}
+	if (!stillCurrent()) return
 
 	if (!catchup.federationActive) {
 		setSyncBanner(false)
@@ -140,7 +154,7 @@ export async function ensureGroupMembership(groupId, state) {
 			return joined
 		}
 		setState('context.currentState', state)
-		store.context.currentMode = 'groups'
+		setState('context.currentMode', 'groups')
 		document.querySelectorAll('.server-item[data-mode]').forEach(el => {
 			el.classList.toggle('mode-active', el.dataset.mode === 'groups')
 		})
@@ -178,20 +192,25 @@ export async function ensureGroupMembership(groupId, state) {
  * @returns {Promise<object>} 同步后的 state
  */
 export async function syncGroupStateForHub(groupId, state, presetChannelId) {
+	const stillCurrent = captureGroupContext(groupId)
+	if (!stillCurrent()) return state
 	setState('context.currentState', state)
 	// 先等分区房间重绑，再 catch-up；否则 tip ping 打在空 roster 上，横幅误报无邻居。
 	await rebindFederationRoomQuiet(groupId, {
 		channelId: presetChannelId || state.groupSettings?.defaultChannelId || null,
 	})
+	if (!stillCurrent()) return state
 	void warmCharEntityHashCache()
 	if (state.viewerEntityHash)
 		store.viewer.viewerEntityHash = state.viewerEntityHash
 	const { refreshViewerHubPresentation } = await import('../init.mjs')
 	await refreshViewerHubPresentation()
+	if (!stillCurrent()) return state
 	if (state.viewerEntityHash) {
 		const { syncViewerPresence } = await import('../hubStatus.mjs')
 		await syncViewerPresence(state.viewerEntityHash)
 	}
+	if (!stillCurrent()) return state
 	const needsHeavySync = !Object.keys(state.channels || {}).length
 	if (needsHeavySync)
 		await syncGroupFromNetwork(groupId, { waitMs: 8000 })
@@ -200,8 +219,8 @@ export async function syncGroupStateForHub(groupId, state, presetChannelId) {
 	else
 		setSyncBanner(false)
 	if (needsHeavySync) {
-		state = await getGroupState(groupId)
-		setState('context.currentState', state)
+		if (!stillCurrent()) return state
+		state = await refreshGroupState(groupId) || state
 	}
 	return state
 }

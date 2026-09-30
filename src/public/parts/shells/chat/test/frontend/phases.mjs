@@ -35,6 +35,7 @@ export const phases = [
 		name: 'logic',
 		testMatch: [
 			'markdownSecureRender.spec.mjs',
+			'banners.spec.mjs',
 			'messageStability.spec.mjs',
 			'sanitizeHtml.spec.mjs',
 			'toolStreamRender.spec.mjs',

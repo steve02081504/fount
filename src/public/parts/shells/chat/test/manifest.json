@@ -876,6 +876,19 @@
 					]
 				},
 				{
+					"name": "banners",
+					"expected": "15s",
+					"triggers": [
+						"src/public/parts/shells/chat/test/frontend/banners.spec.mjs",
+						"src/public/parts/shells/chat/public/hub/banners.mjs",
+						"src/public/parts/shells/chat/public/hub/core/{bindings,state,groupContext}.mjs",
+						"src/public/parts/shells/chat/public/hub/sidebar/groupMembership.mjs",
+						"src/public/parts/shells/chat/public/hub/mode.mjs",
+						"src/public/parts/shells/chat/public/hub/friendChat.mjs",
+						"src/public/parts/shells/chat/public/hub/stream/stateRefresh.mjs"
+					]
+				},
+				{
 					"name": "dmChannelContext",
 					"expected": "35s",
 					"triggers": [

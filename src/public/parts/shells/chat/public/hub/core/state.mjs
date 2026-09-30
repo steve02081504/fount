@@ -11,7 +11,7 @@ export const store = {
 	federation: {
 		dagTips: [],
 		/** 联邦同步横幅（由 setSyncBanner 写入，bindings 订阅） */
-		syncBanner: { visible: false, i18nKey: 'chat.hub.banners.syncing', params: {} },
+		syncBanner: { visible: false, groupId: null, contextVersion: -1, i18nKey: 'chat.hub.banners.syncing', params: {} },
 	},
 	context: {
 		currentMode: 'groups',

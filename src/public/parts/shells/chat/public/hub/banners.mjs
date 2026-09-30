@@ -13,7 +13,11 @@ import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { refreshBoundBanners } from './core/bindings.mjs'
-import { store } from './core/state.mjs'
+import { captureGroupContext, currentGroupContextVersion } from './core/groupContext.mjs'
+import { store, setState } from './core/state.mjs'
+
+let forkRequestSequence = 0
+let pinsRequestSequence = 0
 
 /**
  * 显示或隐藏顶栏的置顶/书签弹出按钮（搜索栏左侧）。
@@ -47,6 +51,7 @@ export function refreshQuarantineBanner() {
 
 /** @returns {Promise<void>} */
 export async function refreshDagForkBanner() {
+	const sequence = ++forkRequestSequence
 	const banner = document.getElementById('fork-banner')
 	const textElement = document.getElementById('fork-banner-text')
 	const mergeButton = document.getElementById('fork-merge-button')
@@ -57,7 +62,10 @@ export async function refreshDagForkBanner() {
 		store.federation.dagTips = []
 		return
 	}
-	const data = await getDagTips(store.context.currentGroupId)
+	const groupId = store.context.currentGroupId
+	const stillCurrent = captureGroupContext(groupId)
+	const data = await getDagTips(groupId)
+	if (!stillCurrent() || sequence !== forkRequestSequence) return
 	const tips = Array.isArray(data.tips) ? data.tips : []
 	store.federation.dagTips = tips
 	const governanceFork = !!data.governanceFork || !!store.context.currentState?.governanceFork
@@ -89,7 +97,9 @@ export async function refreshDagForkBanner() {
 					selected: id === preferred,
 				}
 			})
-			tipSelect.innerHTML = await renderTemplateAsHtmlString('hub/banners/fork_tip_options', { tips: tipRows })
+			const html = await renderTemplateAsHtmlString('hub/banners/fork_tip_options', { tips: tipRows })
+			if (!stillCurrent() || sequence !== forkRequestSequence) return
+			tipSelect.innerHTML = html
 		}
 		const current = tipSelect.value
 		if (current && [...tipSelect.options].some(opt => opt.value === current)) tipSelect.value = current
@@ -103,12 +113,13 @@ export async function refreshDagForkBanner() {
  * @returns {void}
  */
 export function setSyncBanner(on, options) {
-	store.federation.syncBanner = {
+	setState('federation.syncBanner', {
 		visible: on,
+		groupId: store.context.currentGroupId,
+		contextVersion: currentGroupContextVersion(),
 		i18nKey: options?.i18nKey || 'chat.hub.banners.syncing',
 		params: options?.params || {},
-	}
-	refreshBoundBanners()
+	})
 }
 
 /**
@@ -122,6 +133,7 @@ export function selectedForkTipId() {
 
 /** @returns {Promise<void>} */
 export async function refreshChannelPinsBar() {
+	const sequence = ++pinsRequestSequence
 	const bar = document.getElementById('channel-pins-bar')
 	if (!bar) return
 	if (store.context.currentMode !== 'groups' || !store.context.currentGroupId || !store.context.currentChannelId) {
@@ -140,7 +152,11 @@ export async function refreshChannelPinsBar() {
 		const short = eventId.length > 10 ? `${eventId.slice(0, 8)}…` : eventId
 		return { eventId: escapeHtml(eventId), short: escapeHtml(short) }
 	})
-	bar.innerHTML = await renderTemplateAsHtmlString('hub/banners/pins_chips', { pins })
+	const stillCurrent = captureGroupContext(store.context.currentGroupId)
+	const channelId = store.context.currentChannelId
+	const html = await renderTemplateAsHtmlString('hub/banners/pins_chips', { pins })
+	if (!stillCurrent() || store.context.currentChannelId !== channelId || sequence !== pinsRequestSequence) return
+	bar.innerHTML = html
 	bar.querySelectorAll('.pinned-message-chip').forEach(pinChip => {
 		pinChip.addEventListener('click', () => {
 			document.querySelector(`#messages [data-message-id="${pinChip.getAttribute('data-pinned-message-event')}"]`)

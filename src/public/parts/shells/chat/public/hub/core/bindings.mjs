@@ -3,10 +3,11 @@
  */
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { syncArchive } from '../../src/endpoints/channelArchive.mjs'
-import { getGroupState } from '../../src/endpoints/groupCore.mjs'
 import { dismissShunBanner } from '../../src/endpoints/groupFederation.mjs'
+import { refreshGroupState } from '../stream/stateRefresh.mjs'
 
-import { store, setState, watchState } from './state.mjs'
+import { currentGroupContextVersion } from './groupContext.mjs'
+import { store, watchState } from './state.mjs'
 
 /**
  * @typedef {{
@@ -88,7 +89,12 @@ function archiveCoverageBannerI18n() {
 
 /** @returns {boolean} 是否显示联邦同步横幅 */
 function syncBannerVisible() {
-	return !!store.federation.syncBanner?.visible
+	const banner = store.federation.syncBanner
+	return store.context.currentMode === 'groups'
+		&& !!store.context.currentGroupId
+		&& banner?.groupId === store.context.currentGroupId
+		&& banner.contextVersion === currentGroupContextVersion()
+		&& !!banner.visible
 }
 
 /** @returns {string} i18n 键 */
@@ -255,6 +261,8 @@ let wired = false
 export function wireHubBannerBindings() {
 	if (wired) return
 	wired = true
+	watchState('context.currentMode', refreshBoundBanners)
+	watchState('federation.syncBanner', refreshBoundBanners)
 	watchState('context.currentGroupId', refreshBoundBanners)
 	watchState('context.currentChannelId', refreshBoundBanners)
 	watchState('context.currentState', refreshBoundBanners)
@@ -263,7 +271,7 @@ export function wireHubBannerBindings() {
 		if (!groupId) return
 		try {
 			await syncArchive(groupId)
-			setState('context.currentState', await getGroupState(groupId))
+			await refreshGroupState(groupId)
 			refreshBoundBanners()
 		}
 		catch (error) {
@@ -275,7 +283,7 @@ export function wireHubBannerBindings() {
 		if (!groupId) return
 		try {
 			await dismissShunBanner(groupId)
-			setState('context.currentState', await getGroupState(groupId))
+			await refreshGroupState(groupId)
 			refreshBoundBanners()
 		}
 		catch (error) {
