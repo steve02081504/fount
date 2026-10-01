@@ -97,7 +97,8 @@
 			"tokenVerifyError": "🔑✅❌: ${error}",
 			"refreshTokenError": "🔄🔑❌: ${error}",
 			"logoutRefreshTokenProcessError": "🚪🔄🔑❌: ${error}",
-			"revokeTokenNoJTI": "🚫🔑🆔"
+			"revokeTokenNoJTI": "🚫🔑🆔",
+			"tokenRevoked": "令牌已被撤销：${jti}"
 		},
 		"verification": {
 			"codeGeneratedLog": "🔢: ${code} (⏳60s)",
@@ -503,6 +504,7 @@
 				"alreadyUpToDate": "👍💯",
 				"localBranchAhead": "🏠🌳 > ☁️🌳 ✅",
 				"branchesDiverged": "🔀 🌳 ‼️ ➡️ 💪🔄",
+				"unrelatedHistories": "本地与远程仓库没有共同历史。强制更新中...",
 				"notOnBranch": "🤷‍♂️🌳 ➡️ 'master'",
 				"upstreamGoneFallbackMaster": "🗑️ ☁️🌳 '${branch}' ➡️ 🔗 'master'",
 				"noUpstreamBranch": "⚠️ branch '${branch}' no upstream, using '${remote}'",
@@ -624,6 +626,9 @@
 					"protocolHandlerFailed": "❌ 👋 🔗⛲://: ${message}"
 				}
 			}
+		},
+		"telegrambot": {
+			"alreadyRunning": "Telegram Bot ${botname} 已在运行"
 		}
 	},
 	"installer_wait_screen": {
@@ -6179,8 +6184,13 @@
 				"aria-label": "📏"
 			},
 			"crop": "✂️",
+			"exportFailed": "图片导出失败",
 			"image": "✏️",
-			"mosaic": "🔲"
+			"loadFailed": "图片加载失败",
+			"mosaic": "🔲",
+			"redo": "重做",
+			"reset": "重置",
+			"undo": "撤销"
 		},
 		"common": {
 			"cancel": "↩️",
@@ -6498,6 +6508,12 @@
 				"left": "❌📑⬅️",
 				"right": "❌📑➡️",
 				"all": "❌📑🌐"
+			},
+			"generating": {
+				"aria-label": "「${title}」正在生成"
+			},
+			"unread": {
+				"aria-label": "「${title}」有未读消息"
 			}
 		},
 		"newTab": {
@@ -6558,7 +6574,14 @@
 					"aria-label": "✏️",
 					"title": "✏️"
 				},
-				"saveHtml": "💾"
+				"saveGist": {
+					"aria-label": "保存到 gist",
+					"title": "保存到 gist"
+				},
+				"downloadHtml": {
+					"aria-label": "下载 HTML",
+					"title": "下载 HTML"
+				}
 			},
 			"copied": "📋✅",
 			"edit": {
@@ -6600,10 +6623,30 @@
 				"title": "📎"
 			},
 			"remove": {
-				"aria-label": "🗑️"
+				"aria-label": "🗑️",
+				"title": "移除附件"
 			},
 			"drop": "📎",
-			"tooLarge": "📎 ${name} ❌10MB"
+			"tooLarge": "📎 ${name} ❌10MB",
+			"edit": {
+				"aria-label": "编辑图片",
+				"title": "编辑图片"
+			},
+			"preview": {
+				"aria-label": "预览附件",
+				"title": "预览附件"
+			},
+			"download": {
+				"aria-label": "下载附件",
+				"title": "下载附件"
+			},
+			"description": {
+				"aria-label": "附件说明",
+				"placeholder": "添加说明…"
+			},
+			"tooLargeTotal": "附件总大小超过 ${limit} 限制",
+			"reading": "正在读取…",
+			"failed": "读取附件 ${name} 失败"
 		},
 		"error": {
 			"generic": "❌ ${error}",
@@ -6714,6 +6757,11 @@
 				"failed": "❌",
 				"unknown": "❓",
 				"idle": "⏳"
+			}
+		},
+		"generation": {
+			"reconnect": {
+				"aria-label": "重新连接"
 			}
 		}
 	},

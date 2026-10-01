@@ -504,6 +504,7 @@
 				"alreadyUpToDate": "もう最新です。",
 				"localBranchAhead": "ローカル ブランチはリモート ブランチよりも先にあります。アップデートは必要ありません。",
 				"branchesDiverged": "ローカル ブランチとリモート ブランチが分岐されました。強制アップデート中です...",
+				"unrelatedHistories": null,
 				"notOnBranch": "ブランチ上にありません。「マスター」に切り替えてください...",
 				"upstreamGoneFallbackMaster": "リモート ブランチ '${branch}' は削除されました。代わりに master を追跡します…",
 				"noUpstreamBranch": "警告: ブランチ '${branch}' に upstream が設定されていません。'${remote}' を使用します。",

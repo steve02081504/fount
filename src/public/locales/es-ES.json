@@ -97,7 +97,8 @@
 			"tokenVerifyError": "Error de verificación del token: ${error}",
 			"refreshTokenError": "Error del token de actualización: ${error}",
 			"logoutRefreshTokenProcessError": "Error al procesar el token de actualización al cerrar sesión: ${error}",
-			"revokeTokenNoJTI": "No se puede revocar el token sin JTI."
+			"revokeTokenNoJTI": "No se puede revocar el token sin JTI.",
+			"tokenRevoked": null
 		},
 		"verification": {
 			"codeGeneratedLog": "Código de verificación: ${code} (expira en 60 segundos)",
@@ -503,6 +504,7 @@
 				"alreadyUpToDate": "Ya lo último.",
 				"localBranchAhead": "La sucursal local está por delante de la sucursal remota. No se requieren actualizaciones.",
 				"branchesDiverged": "Se han bifurcado las sucursales locales y remotas. Actualización forzada en curso...",
+				"unrelatedHistories": null,
 				"notOnBranch": "No en la rama, cambia a 'maestro'...",
 				"upstreamGoneFallbackMaster": "La rama remota «${branch}» fue eliminada; se hace seguimiento de master en su lugar…",
 				"noUpstreamBranch": "Aviso: no hay rama upstream para «${branch}»; usando «${remote}».",
@@ -6563,8 +6565,7 @@
 				"edit": {
 					"aria-label": "Editar",
 					"title": "Editar"
-				},
-				"saveHtml": "Guardar como HTML"
+				}
 			},
 			"copied": "Copiado al portapapeles",
 			"edit": {

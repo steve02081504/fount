@@ -18,7 +18,7 @@ export async function notifyUser(username, payload = {}) {
 		body: payload.body || '',
 		tag: payload.tag,
 		icon,
-		data: { url, ...payload.data || {} },
+		data: { url, ...payload.data },
 	}
 	const sent = sendEventToUser(username, 'notification', { title, options, targetUrl: url })
 	if (sent) return

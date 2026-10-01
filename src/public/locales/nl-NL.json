@@ -97,7 +97,8 @@
 			"tokenVerifyError": "Tokenverificatiefout: ${error}",
 			"refreshTokenError": "Tokenverversingsfout: ${error}",
 			"logoutRefreshTokenProcessError": "Fout bij verwerken van tokenverversing bij uitloggen: ${error}",
-			"revokeTokenNoJTI": "Kan token zonder jti niet intrekken"
+			"revokeTokenNoJTI": "Kan token zonder jti niet intrekken",
+			"tokenRevoked": null
 		},
 		"verification": {
 			"codeGeneratedLog": "Verificatiecode: ${code} (verloopt na 60 seconden)",
@@ -6563,8 +6564,7 @@
 				"edit": {
 					"aria-label": "Bewerken",
 					"title": "Bewerken"
-				},
-				"saveHtml": "Opslaan als HTML"
+				}
 			},
 			"copied": "Gekopieerd naar het klembord",
 			"edit": {

@@ -97,7 +97,8 @@
 			"tokenVerifyError": "Token-Verifizierungsfehler: ${error}",
 			"refreshTokenError": "Fehler beim Aktualisieren des Tokens: ${error}",
 			"logoutRefreshTokenProcessError": "Fehler beim Verarbeiten des Logout-Refresh-Tokens: ${error}",
-			"revokeTokenNoJTI": "Token ohne JTI kann nicht widerrufen werden."
+			"revokeTokenNoJTI": "Token ohne JTI kann nicht widerrufen werden.",
+			"tokenRevoked": null
 		},
 		"verification": {
 			"codeGeneratedLog": "Verifizierungscode: ${code} (läuft nach 60 Sekunden ab)",
@@ -503,6 +504,7 @@
 				"alreadyUpToDate": "Schon das Neueste.",
 				"localBranchAhead": "Der lokale Zweig ist dem entfernten Zweig voraus. Keine Updates erforderlich.",
 				"branchesDiverged": "Die lokalen und Remote-Zweige wurden gegabelt. Erzwungenes Update läuft...",
+				"unrelatedHistories": null,
 				"notOnBranch": "Nicht auf dem Zweig, wechseln Sie zu „Master“ ...",
 				"upstreamGoneFallbackMaster": "Remote-Zweig „${branch}“ wurde gelöscht; verfolge stattdessen master …",
 				"noUpstreamBranch": "Warnung: Für Branch '${branch}' kein Upstream konfiguriert, verwende '${remote}'.",
@@ -6557,8 +6559,7 @@
 				"edit": {
 					"aria-label": "Bearbeiten",
 					"title": "Bearbeiten"
-				},
-				"saveHtml": "Als HTML speichern"
+				}
 			},
 			"copied": "In die Zwischenablage kopiert",
 			"edit": {

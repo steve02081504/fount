@@ -81,6 +81,7 @@ export type LocaleData = {
 			refreshTokenError: string
 			logoutRefreshTokenProcessError: string
 			revokeTokenNoJTI: string
+			tokenRevoked: string
 		}
 		verification: {
 			codeGeneratedLog: string
@@ -602,6 +603,9 @@ export type LocaleData = {
 					protocolHandlerFailed: string
 				}
 			}
+		}
+		telegrambot: {
+			alreadyRunning: string
 		}
 	}
 	installer_wait_screen: {
@@ -6142,8 +6146,13 @@ export type LocaleData = {
 				'aria-label': string
 			}
 			crop: string
+			exportFailed: string
 			image: string
+			loadFailed: string
 			mosaic: string
+			redo: string
+			reset: string
+			undo: string
 		}
 		common: {
 			cancel: string
@@ -6462,6 +6471,12 @@ export type LocaleData = {
 				right: string
 				all: string
 			}
+			generating: {
+				'aria-label': string
+			}
+			unread: {
+				'aria-label': string
+			}
 		}
 		newTab: {
 			'aria-label': string
@@ -6513,9 +6528,22 @@ export type LocaleData = {
 		}
 		message: {
 			actions: {
-				copy: string
-				edit: string
-				saveHtml: string
+				copy: {
+					'aria-label': string
+					title: string
+				}
+				edit: {
+					'aria-label': string
+					title: string
+				}
+				saveGist: {
+					'aria-label': string
+					title: string
+				}
+				downloadHtml: {
+					'aria-label': string
+					title: string
+				}
 			}
 			copied: string
 			edit: {
@@ -6526,8 +6554,14 @@ export type LocaleData = {
 				}
 			}
 			feedback: {
-				up: string
-				down: string
+				up: {
+					'aria-label': string
+					title: string
+				}
+				down: {
+					'aria-label': string
+					title: string
+				}
 				reasonPlaceholder: {
 					placeholder: string
 				}
@@ -6536,8 +6570,14 @@ export type LocaleData = {
 					'aria-label': string
 				}
 			}
-			regen: string
-			retry: string
+			regen: {
+				'aria-label': string
+				title: string
+			}
+			retry: {
+				'aria-label': string
+				title: string
+			}
 		}
 		attach: {
 			add: {
@@ -6546,9 +6586,29 @@ export type LocaleData = {
 			}
 			remove: {
 				'aria-label': string
+				title: string
 			}
 			drop: string
 			tooLarge: string
+			edit: {
+				'aria-label': string
+				title: string
+			}
+			preview: {
+				'aria-label': string
+				title: string
+			}
+			download: {
+				'aria-label': string
+				title: string
+			}
+			description: {
+				'aria-label': string
+				placeholder: string
+			}
+			tooLargeTotal: string
+			reading: string
+			failed: string
 		}
 		error: {
 			generic: string
@@ -6659,6 +6719,11 @@ export type LocaleData = {
 				failed: string
 				unknown: string
 				idle: string
+			}
+		}
+		generation: {
+			reconnect: {
+				'aria-label': string
 			}
 		}
 	}
@@ -7204,7 +7269,7 @@ export type LocaleKeyParams = {
 	'chat.hub.createChatFailed': { error: string | number }
 	'chat.hub.createModal.failed': { error: string | number }
 	'chat.hub.deleteSessionConfirm': { name: string | number }
-	'chat.hub.discovery.loadFailed': { message: string | number }
+	'chat.hub.discovery.loadFailed': { error: string | number }
 	'chat.hub.discovery.sourceCount': { count: string | number }
 	'chat.hub.fed.nonceRotated': { nonce: string | number }
 	'chat.hub.fed.repairJoinSnapshotFailed': { error: string | number }
@@ -7309,7 +7374,9 @@ export type LocaleKeyParams = {
 	'chat.voiceRecording.speechRecognitionFailed': { error: string | number }
 	'code.asyncTasks.open': { label: string | number }
 	'code.asyncTasks.working': { kind: string | number }
+	'code.attach.failed': { name: string | number }
 	'code.attach.tooLarge': { name: string | number }
+	'code.attach.tooLargeTotal': { limit: string | number }
 	'code.char.recommend.installed': { charname: string | number }
 	'code.char.recommend.main': { charname: string | number }
 	'code.composer.modeSwitched': { mode: string | number }
@@ -7319,6 +7386,8 @@ export type LocaleKeyParams = {
 	'code.sessions.deleteConfirm': { title: string | number }
 	'code.subagent.open': { task: string | number }
 	'code.subagent.working': { roundLimit: string | number; rounds: string | number }
+	'code.tabs.generating.aria-label': { title: string | number }
+	'code.tabs.unread.aria-label': { title: string | number }
 	'code.tool.async.run': { kind: string | number }
 	'code.tool.runShell': { lang: string | number }
 	'code.workspaces.removeConfirm': { name: string | number }
@@ -7337,6 +7406,7 @@ export type LocaleKeyParams = {
 	'fountConsole.auth.accountLockedLog': { username: string | number }
 	'fountConsole.auth.logoutRefreshTokenProcessError': { error: string | number }
 	'fountConsole.auth.refreshTokenError': { error: string | number }
+	'fountConsole.auth.tokenRevoked': { jti: string | number }
 	'fountConsole.auth.tokenVerifyError': { error: string | number }
 	'fountConsole.botStarted': { botusername: string | number; charname: string | number; platform: string | number }
 	'fountConsole.ipc.invokePartLog': { invokedata: string | number; partpath: string | number; username: string | number }
@@ -7398,6 +7468,7 @@ export type LocaleKeyParams = {
 	'fountConsole.server.mdns.failed': { error: string | number }
 	'fountConsole.server.showUrl.http': { url: string | number }
 	'fountConsole.server.showUrl.https': { url: string | number }
+	'fountConsole.telegrambot.alreadyRunning': { botname: string | number }
 	'fountConsole.test.available': { ids: string | number }
 	'fountConsole.test.blocked': { deps: string | number; label: string | number }
 	'fountConsole.test.cleanupLeak': { paths: string | number }

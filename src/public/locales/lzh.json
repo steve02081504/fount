@@ -97,7 +97,8 @@
 			"tokenVerifyError": "令符勘驗有誤: ${error}",
 			"refreshTokenError": "令符重煥有誤: ${error}",
 			"logoutRefreshTokenProcessError": "告退之時，重煥令符有誤: ${error}",
-			"revokeTokenNoJTI": "無 jti 之令符，如無根之木，不可撤也。"
+			"revokeTokenNoJTI": "無 jti 之令符，如無根之木，不可撤也。",
+			"tokenRevoked": "令牌已被撤销：${jti}"
 		},
 		"verification": {
 			"codeGeneratedLog": "驗碼已生: ${code} (稍縱即逝)",
@@ -503,6 +504,7 @@
 				"alreadyUpToDate": "已為最新",
 				"localBranchAhead": "本地分支已先於遠端，無需更",
 				"branchesDiverged": "本地與遠端分支已分歧，強行更之...",
+				"unrelatedHistories": "本地与远程仓库没有共同历史。强制更新中...",
 				"notOnBranch": "非在支上，今切至 'master'...",
 				"upstreamGoneFallbackMaster": "遠端分支 '${branch}' 既刪，今改蹤 master…",
 				"noUpstreamBranch": "警：未為分支 '${branch}' 置上遊分支，用 '${remote}'。",
@@ -624,6 +626,9 @@
 					"protocolHandlerFailed": "移除 `fount://` 協議未遂: ${message}"
 				}
 			}
+		},
+		"telegrambot": {
+			"alreadyRunning": "Telegram Bot ${botname} 已在运行"
 		}
 	},
 	"installer_wait_screen": {
@@ -6179,8 +6184,13 @@
 				"aria-label": "畫筆粗細"
 			},
 			"crop": "裁",
+			"exportFailed": "图片导出失败",
 			"image": "修",
-			"mosaic": "打碼"
+			"loadFailed": "图片加载失败",
+			"mosaic": "打碼",
+			"redo": "重做",
+			"reset": "重置",
+			"undo": "撤销"
 		},
 		"common": {
 			"cancel": "止",
@@ -6498,6 +6508,12 @@
 				"left": "閉左側標籤",
 				"right": "閉右側標籤",
 				"all": "盡閉標籤"
+			},
+			"generating": {
+				"aria-label": "「${title}」正在生成"
+			},
+			"unread": {
+				"aria-label": "「${title}」有未读消息"
 			}
 		},
 		"newTab": {
@@ -6558,7 +6574,14 @@
 					"aria-label": "編輯",
 					"title": "編輯"
 				},
-				"saveHtml": "存為 HTML"
+				"saveGist": {
+					"aria-label": "保存到 gist",
+					"title": "保存到 gist"
+				},
+				"downloadHtml": {
+					"aria-label": "下载 HTML",
+					"title": "下载 HTML"
+				}
 			},
 			"copied": "已鈔至剪貼板",
 			"edit": {
@@ -6600,10 +6623,30 @@
 				"title": "加附件"
 			},
 			"remove": {
-				"aria-label": "去附件"
+				"aria-label": "去附件",
+				"title": "移除附件"
 			},
 			"drop": "釋以加附件",
-			"tooLarge": "附件 ${name} 逾 10MB 之限"
+			"tooLarge": "附件 ${name} 逾 10MB 之限",
+			"edit": {
+				"aria-label": "编辑图片",
+				"title": "编辑图片"
+			},
+			"preview": {
+				"aria-label": "预览附件",
+				"title": "预览附件"
+			},
+			"download": {
+				"aria-label": "下载附件",
+				"title": "下载附件"
+			},
+			"description": {
+				"aria-label": "附件说明",
+				"placeholder": "添加说明…"
+			},
+			"tooLargeTotal": "附件总大小超过 ${limit} 限制",
+			"reading": "正在读取…",
+			"failed": "读取附件 ${name} 失败"
 		},
 		"error": {
 			"generic": "出錯矣：${error}",
@@ -6714,6 +6757,11 @@
 				"failed": "已敗",
 				"unknown": "未見",
 				"idle": "後臺務"
+			}
+		},
+		"generation": {
+			"reconnect": {
+				"aria-label": "重新连接"
 			}
 		}
 	},
