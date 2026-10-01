@@ -504,6 +504,7 @@
 				"alreadyUpToDate": "Al het nieuwste.",
 				"localBranchAhead": "De lokale vestiging loopt voor op de externe vestiging. Geen updates vereist.",
 				"branchesDiverged": "De lokale en afgelegen vestigingen zijn gesplitst. Geforceerde update wordt uitgevoerd...",
+				"unrelatedHistories": null,
 				"notOnBranch": "Niet op het filiaal, schakel over naar 'master'...",
 				"upstreamGoneFallbackMaster": "Externe branch '${branch}' is verwijderd; volg nu master…",
 				"noUpstreamBranch": "Waarschuwing: geen upstream-branch voor '${branch}', gebruik '${remote}'.",
