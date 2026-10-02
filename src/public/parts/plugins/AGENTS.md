@@ -10,6 +10,8 @@ alwaysApply: false
 
 ## Key Interfaces
 
+- **Role customization**: `char.interfaces.plugins.{OnEvent,GetServiceSource,GetPrompt}` via `src/scripts/plugin_context.mjs`; see [plugin-customization.md](plugin-customization.md). Observe tools in the shared pipeline; keep role achievements out of host plugins. Async producers pass `eventContext: args` and `meta.{pluginName,tool}` to `registerTask`, returning `pending: true` until settlement. Roles persist background event ids to deduplicate replay. Services inherit the active AI or their service-specific default. Sensitive prompts use `getPluginOwnerPrompt` for host ownership attribution.
+
 - **`GetPrompt`**: Return `single_part_prompt_t` to inject system instructions or additional logs. **Keep it side-effect free** — secondary prompt builds (`get-tool-info` / sub-agent) call it too.
 - **`TweakPrompt`**: Modify the final `prompt_struct` before sending to AI.
 - **`BeforeReply`**: pre-generation hook, called once after `buildPromptStruct` and before the first `StructCall` (`runBeforeReplyHooks`, `shells/chat/src/reply/handlerPipeline.mjs`). Use it for content that must be visible in the **first** generation AND persisted (e.g. pre-read mentioned files): write via the provided `AddLongTimeLog`, which lands in both `prompt_struct.chat_log` (this-generation timeline) and `result.logContextBefore` (session). Must be **idempotent** — background-notification and regenerate runs call it again. Never do side-effecting writes in `GetPrompt`.

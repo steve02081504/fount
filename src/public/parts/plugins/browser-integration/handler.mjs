@@ -357,6 +357,10 @@ ${util.inspect(data, { depth: null })}
 		content: redactSecrets(text),
 		content_for_show: renderMarkdownCodeBlock(text, { lang: 'text' }),
 		files: [],
+		extension: {
+			from_browser_js_callback: true,
+			pluginEvent: { id: crypto.randomUUID(), pluginName: 'browser-integration', type: 'background', status: 'succeeded', tool: 'browser-integration.callback', data: { pageId } },
+		},
 	}
 	if (char_id) entry.charVisibility = [char_id]
 	await appendAndWake(channels[0], entry)

@@ -45,7 +45,7 @@ export type ReplyHandlerLeaf_t = {
 		reply: chatReply_t,
 		args: chatReplyRequest_t & { prompt_struct: prompt_struct_t, AddLongTimeLog?: (entry: chatLogEntry_t) => void },
 		call: any | null,
-	) => Promise<{ regen?: boolean, content?: string, stop?: boolean, failed?: boolean } | void>
+	) => Promise<{ regen?: boolean, content?: string, stop?: boolean, failed?: boolean, pending?: boolean } | void>
 }
 
 /**

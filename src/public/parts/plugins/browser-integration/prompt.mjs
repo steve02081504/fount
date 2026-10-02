@@ -1,5 +1,7 @@
 import util from 'node:util'
 
+import { getPluginOwnerPrompt } from '../../../../scripts/plugin_context.mjs'
+
 /**
  * 默认按需加载浏览器集成 shell 的 API。
  * @returns {Promise<object>} 浏览器集成 API 模块。
@@ -104,6 +106,7 @@ export function createBrowserIntegrationPrompt({ getApi = defaultGetApi } = {}) 
 ---
 流程建议：用 pageId 定位页面（也可用 focused 指代焦点页、mostRecent 指代最近页）→ 优先用 <browser-get-visible-html> 分析内容 → 用 <browser-run-js-on-page> 执行操作 → 向用户汇报结果。
 `
+		result += `\n${await getPluginOwnerPrompt(args, 'browser-integration')}\n`
 		return {
 			text: [{
 				content: result,

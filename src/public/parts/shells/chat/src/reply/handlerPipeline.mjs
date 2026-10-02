@@ -14,6 +14,7 @@
 /** @typedef {import('../../../../../../decl/pluginAPI.ts').ReplyHandler_t} ReplyHandler_t */
 /** @typedef {import('../../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
+import { executeObservedPluginTool, notifyPluginActivation } from '../../../../../../scripts/plugin_context.mjs'
 import { truncateOutput } from '../../../../../../scripts/shell_guard.mjs'
 import { renderMarkdownCodeBlock } from '../streaming/markdown.mjs'
 
@@ -111,6 +112,7 @@ export function createLongTimeLogger(args, result, prompt_struct) {
  * @returns {Promise<void>}
  */
 export async function runBeforeReplyHooks(args) {
+	await notifyPluginActivation(args)
 	const plugins = Object.entries(args?.plugins ?? {})
 		.filter(([, plugin]) => typeof plugin?.interfaces?.chat?.BeforeReply === 'function')
 	if (!plugins.length) return
@@ -291,7 +293,7 @@ export async function runReplyHandlers(result, args, handlers) {
 				})
 				const bufferedLogs = batch.map(() => [])
 				const outcomes = await Promise.all(batch.map((item, index) =>
-					Promise.resolve(item.handler.handle(result, {
+					executeObservedPluginTool(handlerArgs, item.handler, item.call, () => item.handler.handle(result, {
 						...handlerArgs,
 						AddLongTimeLog: createLogCollector(bufferedLogs[index]),
 					}, item.call)).then(outcome => outcome ?? {})
@@ -333,7 +335,7 @@ export async function runReplyHandlers(result, args, handlers) {
 			call.error = entry?.error
 
 			const beforeContent = result.content
-			const outcome = await handler.handle(result, handlerArgs, call) ?? {}
+			const outcome = await executeObservedPluginTool(handlerArgs, handler, call, () => handler.handle(result, handlerArgs, call)) ?? {}
 			if (outcome.content !== undefined) result.content = outcome.content
 			if (outcome.regen) wantRegen = true
 

@@ -20,11 +20,12 @@ const { info } = (await import('./locales.json', { with: { type: 'json' } })).de
  * @param {string} char_id 角色 ID
  * @param {string} reason 定时器到期原因
  * @param {string} chatLogSnip 聊天记录节选
+ * @param {object} [pluginEvent] Persisted callback lifecycle event.
  * @returns {Promise<boolean>} 是否成功触发
  */
-async function replyViaChannel(channel, char_id, reason, chatLogSnip) {
+async function replyViaChannel(channel, char_id, reason, chatLogSnip, pluginEvent) {
 	// 只角色可见（charVisibility），shell 仅写内存 chatLog 并安排一次生成；空闲即触发，生成中由轮次刷新消费
-	const { entry, woke } = await appendAndWake(channel, makeTimerSystemEntry(reason, chatLogSnip, char_id))
+	const { entry, woke } = await appendAndWake(channel, makeTimerSystemEntry(reason, chatLogSnip, char_id, pluginEvent))
 	return Boolean(entry) || woke
 }
 
@@ -63,6 +64,9 @@ export default {
 			 * @param {object} callbackdata 回调数据
 			 */
 			TimerCallback: async (username, uid, callbackdata) => {
+				callbackdata = { ...callbackdata, pluginEvent: {
+					id: crypto.randomUUID(), pluginName: 'timer', type: 'background', status: 'succeeded', tool: 'timer.callback', data: { timerId: uid },
+				} }
 				const { type, char_id, reason, chatLogSnip } = callbackdata
 				if (type !== 'timer') {
 					console.error(`timer: 未知的回调类型 "${type}"（uid=${uid}）`)
@@ -71,7 +75,7 @@ export default {
 
 				// ── Level 1：进程内活跃频道 ─────────────────────────────────────
 				for (const channel of getChannels(username, char_id)) try {
-					if (await replyViaChannel(channel, char_id, reason, chatLogSnip)) {
+					if (await replyViaChannel(channel, char_id, reason, chatLogSnip, callbackdata.pluginEvent)) {
 						console.info(`timer: 定时器"${reason}"通过活跃频道触发成功`)
 						return
 					}

@@ -17,6 +17,7 @@
 			"src/public/pages/scripts/components/emojiPicker.mjs"
 		],
 		"shellPureExtra": [
+			"src/scripts/plugin_context.mjs",
 			"src/public/parts/shells/social/src/lib/emojiPostEmbed.mjs",
 			"deno.json",
 			"src/server/p2p_server/**",

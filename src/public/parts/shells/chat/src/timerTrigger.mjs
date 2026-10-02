@@ -12,9 +12,10 @@ import { renderMarkdownCodeBlock } from './streaming/index.mjs'
  * @param {string} reason 定时器到期原因
  * @param {string} chatLogSnip 聊天记录节选
  * @param {string} char_id 角色 ID
+ * @param {object} [pluginEvent] Persisted callback lifecycle event.
  * @returns {object} chatLogEntry_t 形状
  */
-export function makeTimerSystemEntry(reason, chatLogSnip, char_id) {
+export function makeTimerSystemEntry(reason, chatLogSnip, char_id, pluginEvent) {
 	const content = `\
 定时器"${reason}"到期。
 设置定时器时的聊天记录节选：
@@ -32,6 +33,7 @@ ${chatLogSnip}
 		content_for_show: renderMarkdownCodeBlock(content, { lang: 'text' }),
 		files: [],
 		charVisibility: [char_id],
+		extension: { from_timer: true, ...pluginEvent ? { pluginEvent } : {} },
 		time_stamp: new Date(),
 	}
 }
@@ -44,12 +46,13 @@ ${chatLogSnip}
  * @param {string} reason 定时器原因
  * @param {string} chatLogSnip 聊天记录节选
  * @param {(groupId: string, char_id: string, entry: object) => void} setPendingNotification 待注入通知
+ * @param {object} [pluginEvent] Persisted callback lifecycle event.
  * @returns {Promise<boolean>} 是否成功
  */
-async function triggerViaGroupId(username, groupId, char_id, reason, chatLogSnip, setPendingNotification) {
+async function triggerViaGroupId(username, groupId, char_id, reason, chatLogSnip, setPendingNotification, pluginEvent) {
 	const chatMetadata = await getActiveGroupRuntime(groupId)
 	if (!chatMetadata?.LastTimeSlice.chars[char_id]) return false
-	setPendingNotification(groupId, char_id, makeTimerSystemEntry(reason, chatLogSnip, char_id))
+	setPendingNotification(groupId, char_id, makeTimerSystemEntry(reason, chatLogSnip, char_id, pluginEvent))
 	const channelId = await getDefaultChannelId(username, groupId)
 	if (!channelId) return false
 	requestCharReply(groupId, channelId, char_id)
@@ -71,7 +74,7 @@ async function triggerViaNewGroup(username, uid, callbackdata, dependencies) {
 	const { pluginPath, setPendingNotification } = dependencies
 	const groupId = await newGroup(username)
 	await addchar(groupId, char_id, username)
-	setPendingNotification(groupId, char_id, makeTimerSystemEntry(reason, chatLogSnip, char_id))
+	setPendingNotification(groupId, char_id, makeTimerSystemEntry(reason, chatLogSnip, char_id, callbackdata.pluginEvent))
 	const channelId = await getDefaultChannelId(username, groupId)
 	requestCharReply(groupId, channelId, char_id)
 
@@ -102,7 +105,7 @@ export async function handleTimerGroupFallback(username, uid, callbackdata, depe
 	const { char_id, groupId, reason, chatLogSnip } = callbackdata
 
 	if (groupId) try {
-		if (await triggerViaGroupId(username, groupId, char_id, reason, chatLogSnip, dependencies.setPendingNotification))
+		if (await triggerViaGroupId(username, groupId, char_id, reason, chatLogSnip, dependencies.setPendingNotification, callbackdata.pluginEvent))
 			return 'group'
 	}
 	catch (e) { console.error('timer: 通过 groupId 触发失败，尝试新建群', e) }

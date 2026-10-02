@@ -194,7 +194,7 @@ export const setTimerReplyHandler = defineReplyHandler({
 
 		systemLog += `已设置 ${successCount} 个定时器。\n届时将触发新回复，现在你可以继续当前对话。\n`
 		AddLongTimeLog({ name: 'timer', role: 'tool', content: systemLog, content_for_show: showFence(systemLog), files: [] })
-		return { regen: true, ...anyFailure ? { failed: true } : {} }
+		return { regen: true, ...anyFailure || !successCount ? { failed: true } : {} }
 	},
 })
 

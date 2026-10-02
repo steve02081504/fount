@@ -461,7 +461,27 @@ Deno.test('deliverNotification omits executionTarget for tasks without one', asy
 	const task = registerTask({ kind: 'subagent', owner: owner(), run: resolveWith('done') })
 	await task.done
 	await flushAsync()
-	assertEquals(fake.appended[0].extension, undefined, '无执行目标的任务不应带 extension.executionTarget')
+	assertEquals(fake.appended[0].extension?.executionTarget, undefined, '无执行目标的任务不应带 extension.executionTarget')
+	assertEquals(fake.appended[0].extension.pluginEvent.id, `async:${task.id}:settled`)
+})
+
+Deno.test('consumed async completion still emits the producer event exactly once', async () => {
+	resetAsyncTaskState()
+	const events = []
+	const eventContext = { extension: {}, char: { interfaces: { plugins: { /**
+	 *
+	 * @param {object} event Host customization payload.
+	 * @returns {unknown} Fixture outcome.
+	 */
+		OnEvent: event => events.push(event) } } } }
+	const taskOwner = owner({ generationId: 'event-generation' })
+	const task = registerTask({ kind: 'js', owner: taskOwner, eventContext, meta: { pluginName: 'code-execution', tool: 'code-execution.run-js' }, run: resolveWith('done') })
+	const result = await awaitTasks([task.id], { requester: taskOwner })
+	assertEquals(result.settled.length, 1)
+	assertEquals(events.length, 1)
+	assertEquals(events[0].status, 'succeeded')
+	assertEquals(events[0].pluginName, 'code-execution')
+	assertEquals(events[0].id, `async:${task.id}:settled`)
 })
 
 Deno.test('deliverNotification matches the channel by channel-scoped id', async () => {

@@ -7,6 +7,7 @@
  * 【数据结构】run_t 见 state.mjs；deps = { loadPart, loadAnyPreferredDefaultPart, listAiSources, recordGeneration, notifyRun, buildPromptStruct, runBeforeReplyHooks, runReplyHandlers, archive, now, config }。
  * 【关联】handler.mjs 解析标签后调用 `runSubAgent` / `terminateSubAgentRun` / `listAvailableAiSources`；prompt.mjs 注入预算；archive.mjs 管理父代档案；state.mjs 保存注册表。
  */
+import { resolvePluginServiceSource } from '../../../../scripts/plugin_context.mjs'
 import { guardOutput } from '../../../../scripts/shell_guard.mjs'
 import { onSystemWake, setAwakeTimeout } from '../../../../scripts/sleep_watch.mjs'
 import { isStopping } from '../../../../scripts/stopping.mjs'
@@ -273,9 +274,12 @@ function clip(text, limit) {
 async function resolveAiSource(username, parentArgs, explicitName, deps) {
 	if (explicitName)
 		return deps.loadPart(username, 'serviceSources/AI/' + explicitName)
-	if (parentArgs?.ai_source)
-		return parentArgs.ai_source
-	return deps.loadAnyPreferredDefaultPart(username, 'serviceSources/AI')
+	return resolvePluginServiceSource(parentArgs, 'sub-agent', 'AI', {
+		/**
+		 * @returns {Promise<object>} User default AI source.
+		 */
+		fallback: () => deps.loadAnyPreferredDefaultPart(username, 'serviceSources/AI'),
+	})
 }
 
 /**
@@ -741,6 +745,7 @@ export async function runSubAgent(args, request, deps = defaultSubAgentDeps) {
 
 	if (request.async) {
 		const task = registerTask({
+			eventContext: args,
 			id: run.backgroundId,
 			kind: 'subagent',
 			label: taskPreview(run.task),

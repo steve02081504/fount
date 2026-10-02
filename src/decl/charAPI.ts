@@ -100,6 +100,15 @@ export class CharAPI_t {
 	 * 与外壳（如聊天 WebUI、Live2D 模型等）的接口。
 	 */
 	interfaces: {
+		/** 通用插件的可选角色定制；钩子在角色实例中运行。 */
+		plugins?: {
+			/** 激活、实际工具结果与后台完成；事件 id 支持持久去重。 */
+			OnEvent?: (event: { id: string, pluginName: string, type: 'activated' | 'tool' | 'background', status?: 'started' | 'pending' | 'succeeded' | 'failed', tool?: string, call?: object, data?: object, error?: string }, args: chatReplyRequest_t) => Promise<void> | void
+			/** 返回服务源实例或 serviceSources/<serviceType>/<name>（或短名称）；undefined 表示继承当前 AI / 插件默认。 */
+			GetServiceSource?: (args: chatReplyRequest_t & { pluginName: string, serviceType: string }) => Promise<object | string | undefined> | object | string | undefined
+			/** 宿主已验证主人归属后追加的插件指引；须无副作用。 */
+			GetPrompt?: (args: chatReplyRequest_t & { pluginName: string, ownerContext: { isFromOwner: boolean, declaredOwnerEntityHash: string | null, authorEntityHash: string | null } }) => Promise<string | undefined> | string | undefined
+		}
 		/**
 		 * 信息接口，用于更新角色的信息。
 		 */

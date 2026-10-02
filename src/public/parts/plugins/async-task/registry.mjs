@@ -7,6 +7,7 @@
  * 【数据结构】asyncTask_t；任务表 `Map<id, task>`；频道注册表 `Map<agentKey, args[]>`；待注入通知 `Map<queueKey, entry[]>`。
  * 【关联】prompt.mjs 注入工具说明与通知；handler.mjs 解析 `<list-async>` / `<await-async>`；sub-agent/runtime.mjs 与 code-execution/handler.mjs 注册任务。
  */
+import { emitPluginEvent } from '../../../../scripts/plugin_context.mjs'
 import { setAwakeTimeout } from '../../../../scripts/sleep_watch.mjs'
 import { appendAndWake } from '../../shells/chat/src/lib/charWake.mjs'
 import { chatScopeId } from '../../shells/chat/src/lib/chatScopeId.mjs'
@@ -175,9 +176,10 @@ function normalizeError(error) {
  * @param {object} [options.meta] 附加数据
  * @param {(task: asyncTask_t) => string} [options.format] 自定义完成通知文本
  * @param {(task: asyncTask_t) => unknown} [options.inspect] 运行中检视回调
+ * @param {object} [options.eventContext] Producer request for role lifecycle observations.
  * @returns {asyncTask_t} 任务对象
  */
-export function registerTask({ id, kind, label = '', owner = {}, run, meta = {}, format, inspect }) {
+export function registerTask({ id, kind, label = '', owner = {}, run, meta = {}, format, inspect, eventContext }) {
 	/** @type {asyncTask_t} */
 	const task = {
 		id: id ?? crypto.randomUUID(),
@@ -196,6 +198,7 @@ export function registerTask({ id, kind, label = '', owner = {}, run, meta = {},
 		meta,
 		format,
 		inspect,
+		eventContext,
 	}
 	tasks.set(task.id, task)
 	emitTaskEvent('start', task)
@@ -222,6 +225,7 @@ function finishTask(task, state, result, error) {
 	task.result = result
 	task.error = error
 	task.finishedAt = Date.now()
+	if (task.eventContext) void emitPluginEvent(task.eventContext, pluginEventForTask(task))
 	if (!task.consumed)
 		void deliverNotification(task).catch(err => console.warn('async-task: 完成通知投递失败', err))
 	if (task.consumed || task.generationEnded || !task.owner?.generationId) tasks.delete(task.id)
@@ -257,9 +261,23 @@ function defaultNotificationText(task) {
 }
 
 /**
- * 构造通知条目。
- * @param {asyncTask_t} task 任务
- * @returns {object} chatLogEntry 形状
+ * Stable producer event shared by immediate observers and persisted notifications.
+ * @param {object} task Settled task.
+ * @returns {object} Plugin lifecycle event.
+ */
+export function pluginEventForTask(task) {
+	return {
+		id: `async:${task.id}:settled`, pluginName: task.meta?.pluginName ?? (task.kind === 'subagent' ? 'sub-agent' : 'async-task'),
+		type: 'background', status: task.state === 'failed' || task.result?.failed ? 'failed' : 'succeeded',
+		tool: task.meta?.tool ?? (task.kind === 'subagent' ? 'sub-agent.run' : 'async-task.complete'),
+		data: { taskId: task.id, kind: task.kind },
+	}
+}
+
+/**
+ * 构造持久后台通知条目。
+ * @param {asyncTask_t} task 结算任务。
+ * @returns {object} chatLogEntry 形状。
  */
 function makeNotificationEntry(task) {
 	let text
@@ -282,7 +300,7 @@ function makeNotificationEntry(task) {
 		files: [],
 		time_stamp: new Date(),
 		...charId ? { charVisibility: [charId] } : {},
-		...executionTarget ? { extension: { executionTarget } } : {},
+		extension: { ...executionTarget ? { executionTarget } : {}, pluginEvent: pluginEventForTask(task) },
 	}
 }
 

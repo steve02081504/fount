@@ -149,7 +149,7 @@ export const runSubAgentHandler = defineReplyHandler({
 			}
 			return { regen: true, failed: true }
 		}
-		return { regen: true }
+		return { regen: true, pending: request.async }
 	},
 })
 
