@@ -400,7 +400,8 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 			errors,
 			`all ${errors.length} request candidates failed:\n${errors.map(error => `- ${error?.message ?? error}`).join('\n')}`,
 		)
-		if (hasAssistantAttachments(messages)) failure.message += `\n${ASSISTANT_ATTACHMENT_HINT}`
+		if (errors.some(error => error.apiStyle === 'chat') && hasAssistantAttachments(messages))
+			failure.message += `\n${ASSISTANT_ATTACHMENT_HINT}`
 		throw failure
 	}
 }

@@ -51,6 +51,7 @@ const configTemplate = {
 		top_logprobs: 5,
 	},
 	custom_headers: {},
+	allowed_mime_types: null,
 	convert_config: defaultConvertConfig(),
 	use_stream: true,
 }

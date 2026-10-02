@@ -6,11 +6,51 @@
 import { Buffer } from 'node:buffer'
 
 import { assert, assertEquals } from 'jsr:@std/assert'
+import sharp from 'npm:sharp'
 
 import { serializeSnapshotValue } from 'fount/public/parts/shells/chat/src/prompt_struct/serializeSnapshot.mjs'
 import { createPromptStructConversation } from 'fount/scripts/test/fixtures/ai_conversation.mjs'
 
 import generator from '../../main.mjs'
+import { mockJsonFetch, strictResponsesHandler } from '../mockFetch.mjs'
+
+Deno.test('configured AVIF conversion matches BuildPrompt and the Responses request', async () => {
+	const source = await makeSource({
+		url: 'https://example.invalid/v1/responses',
+		api_mode: 'responses',
+		allowed_mime_types: ['image/png'],
+		convert_config: { assistantPrefill: false },
+	})
+	const conversation = createPromptStructConversation({ charName: 'ZL-31', userName: 'Tester' })
+	conversation.addUser('hello')
+	conversation.addChar('sticker')
+	const prompt = conversation.makePromptStruct()
+	const bytes = await sharp({ create: { width: 2, height: 2, channels: 3, background: 'red' } }).avif().toBuffer()
+	prompt.chat_log.find(entry => entry.role === 'char').files = [{ name: 'sticker.avif', mime_type: 'image/avif', buffer: bytes }]
+	const snapshot = await source.BuildPrompt(prompt)
+	const snapshotImage = snapshot.input.flatMap(item => Array.isArray(item.content) ? item.content : []).find(part => part.type === 'input_image')
+	assertEquals(snapshotImage.image_url.mime_type, 'image/png')
+	const mock = mockJsonFetch(strictResponsesHandler('ok'))
+	try {
+		await source.StructCall(prompt, {})
+		const body = JSON.parse(mock.calls[0].init.body)
+		const image = body.input.flatMap(item => Array.isArray(item.content) ? item.content : []).find(part => part.type === 'input_image')
+		assertEquals(image.image_url, `data:image/png;base64,${snapshotImage.image_url.data.toString('base64')}`)
+	}
+	finally { mock.restore() }
+})
+
+Deno.test('allowed MIME policy produces a system hint when no compatible target exists', async () => {
+	const source = await makeSource({ allowed_mime_types: ['audio/wav'] })
+	const conversation = createPromptStructConversation()
+	conversation.addUser('look').files = [{ name: 'a.avif', mime_type: 'image/avif', buffer: Buffer.from('bytes') }]
+	const built = await source.BuildPrompt(conversation.makePromptStruct())
+	const user = built.find(message => message.role === 'user')
+	assert(typeof user.content === 'string')
+	assert(user.content.includes('System Notice'))
+	assert(user.content.includes('a.avif'))
+	assert(user.content.includes('image/avif'))
+})
 
 /**
  * 构造带默认 convert_config 的 proxy 源。

@@ -16,6 +16,7 @@ export async function buildMessagesFromPromptStruct(prompt_struct, config, confi
 	const ignoreFiles = normalizeMimePatterns(config.convert_config?.ignoreFiles ?? configTemplate.convert_config.ignoreFiles)
 	const forbidSystemFiles = normalizeMimePatterns(config.convert_config?.forbidSystemFiles ?? configTemplate.convert_config.forbidSystemFiles)
 	const forbidAssistantFiles = normalizeMimePatterns(config.convert_config?.forbidAssistantFiles ?? configTemplate.convert_config.forbidAssistantFiles)
+	const allowedMimeTypes = config.allowed_mime_types === undefined ? configTemplate.allowed_mime_types ?? null : config.allowed_mime_types
 
 	let messages = await Promise.all(mergeStructPromptChatLog(prompt_struct).map(async chatLogEntry => {
 		const uid = chatLogEntry.id ||= crypto.randomUUID().slice(0, 8)
@@ -44,12 +45,12 @@ ${chatLogEntry.content}
 			message.content = textContent
 		}
 		if (kept.length) {
-			const { parts, skipped } = await buildFileContentParts(kept, textContent, options)
+			const { parts, skipped, notices } = await buildFileContentParts(kept, textContent, { ...options, allowedMimeTypes })
 			if (parts.length > 1)
 				message.content = parts
-			if (skipped.length) {
-				const notices = skipped.map(name =>
-					`[System Notice: can't show you about file '${name}' because its bytes are unavailable, but you may be able to access it by using code tools if you have.]`)
+			if (skipped.length || notices.length) {
+				notices.push(...skipped.map(name =>
+					`[System Notice: can't show you about file '${name}' because its bytes are unavailable, but you may be able to access it by using code tools if you have.]`))
 				const noticeText = '\n' + notices.join('\n')
 				if (Array.isArray(message.content))
 					message.content.push({ type: 'text', text: noticeText })

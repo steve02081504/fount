@@ -4,13 +4,19 @@
  */
 import { Buffer } from 'node:buffer'
 
-/**
- * 剥离 MIME 参数（`image/png; charset=utf-8` → `image/png`）。
- * @param {string} mimeType 原始 MIME
- * @returns {string} 基础 MIME
- */
-export function mimeTypeBase(mimeType) {
-	return String(mimeType || '').split(';')[0].trim()
+import { convertAttachment, mimeTypeBase } from './attachmentConversion.mjs'
+
+/** OpenAI `input_audio.format` 支持的 MIME 映射。 */
+const AUDIO_FORMATS = {
+	'audio/wav': 'wav',
+	'audio/wave': 'wav',
+	'audio/x-wav': 'wav',
+	'audio/mpeg': 'mp3',
+	'audio/mp3': 'mp3',
+	'audio/mp4': 'mp4',
+	'audio/m4a': 'm4a',
+	'audio/webm': 'webm',
+	'audio/ogg': 'ogg',
 }
 
 /**
@@ -66,49 +72,65 @@ export async function resolveFileBuffer(file) {
  * 构建附件 contentParts（image_url / input_audio），空字节或加载失败的文件跳过并计入 skipped。
  * @param {object[]} files 附件描述符
  * @param {string} textContent 正文
- * @param {{ binaryMode?: 'base64' | 'buffer' }} [options] `binaryMode='buffer'` 时二进制保留为 Buffer（供快照构建），默认 `'base64'`（真实出站）
- * @returns {Promise<{ parts: object[], skipped: string[] }>} contentParts 与跳过名单
+ * @param {{ binaryMode?: 'base64' | 'buffer', allowedMimeTypes?: string[] | null }} [options] 快照模式与允许的 MIME 列表；null/缺省保持原样，空列表拒绝全部。
+ * @returns {Promise<{ parts: object[], skipped: string[], notices: string[] }>} contentParts、不可用附件与不支持格式提示。
  */
 export async function buildFileContentParts(files, textContent, options = {}) {
-	const binaryMode = options.binaryMode ?? 'base64'
+	const { binaryMode = 'base64', allowedMimeTypes = null } = options
 	const parts = [{ type: 'text', text: textContent }]
 	const skipped = []
+	const notices = []
+	/**
+	 * 记录一条无法以本请求格式呈现的附件提示。
+	 * @param {object} file 附件描述符
+	 * @param {string} mime 实际 MIME
+	 * @returns {void}
+	 */
+	const unsupported = (file, mime) => notices.push(`[System Notice: can't show you about file '${file.name || 'unknown'}' with type '${mime}' because this request format cannot represent its content.]`)
 	for (const file of files) {
 		const rawMime = file.mime_type || ''
-		if (!rawMime) continue
-		const mime = mimeTypeBase(rawMime)
+		if (!rawMime && allowedMimeTypes == null) continue
+		const mime = mimeTypeBase(rawMime) || 'application/octet-stream'
 		const bytes = await resolveFileBuffer(file)
 		if (!bytes) {
 			skipped.push(file.name || 'unknown')
 			continue
 		}
-		if (mime.startsWith('image/'))
+		const converted = await convertAttachment(bytes, mime, allowedMimeTypes)
+		if (!converted) {
+			unsupported(file, mime)
+			continue
+		}
+		const { bytes: convertedBytes, mime: convertedMime } = converted
+		if (convertedMime.startsWith('image/'))
 			parts.push({
 				type: 'image_url',
 				image_url: binaryMode === 'buffer'
-					? { mime_type: mime, data: bytes }
-					: { url: `data:${mime};base64,${bytes.toString('base64')}` },
+					? { mime_type: convertedMime, data: convertedBytes }
+					: { url: `data:${convertedMime};base64,${convertedBytes.toString('base64')}` },
 			})
-		else if (mime.startsWith('audio/')) {
-			const formatMap = {
-				'audio/wav': 'wav',
-				'audio/wave': 'wav',
-				'audio/x-wav': 'wav',
-				'audio/mpeg': 'mp3',
-				'audio/mp3': 'mp3',
-				'audio/mp4': 'mp4',
-				'audio/m4a': 'm4a',
-				'audio/webm': 'webm',
-				'audio/ogg': 'ogg',
+		else if (convertedMime.startsWith('audio/')) {
+			const format = AUDIO_FORMATS[convertedMime]
+			if (!format && allowedMimeTypes != null) {
+				unsupported(file, convertedMime)
+				continue
 			}
-			const format = formatMap[mime.toLowerCase()] || 'wav'
 			parts.push({
 				type: 'input_audio',
 				input_audio: binaryMode === 'buffer'
-					? { mime_type: mime, format, data: bytes }
-					: { data: bytes.toString('base64'), format },
+					? { mime_type: convertedMime, format: format || 'wav', data: convertedBytes }
+					: { data: convertedBytes.toString('base64'), format: format || 'wav' },
 			})
 		}
+		else if (allowedMimeTypes != null) {
+			if (convertedMime.startsWith('text/'))
+				try {
+					parts.push({ type: 'text', text: new TextDecoder('utf-8', { fatal: true }).decode(convertedBytes) })
+					continue
+				}
+				catch { /* 非法文本在下方记入提示。 */ }
+			unsupported(file, convertedMime)
+		}
 	}
-	return { parts, skipped }
+	return { parts, skipped, notices }
 }

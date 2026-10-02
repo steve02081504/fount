@@ -2,10 +2,33 @@
  * 请求错误的统一类型、回退判定与 Responses 参数映射的纯逻辑。
  */
 /* global Deno */
-import { assertEquals } from 'jsr:@std/assert'
+import { assertEquals, assertRejects } from 'jsr:@std/assert'
 
-import { toResponsesArguments } from '../../src/chatCompletion.mjs'
+import { createFetchChatCompletionWithRetry, toResponsesArguments } from '../../src/chatCompletion.mjs'
 import { AIRequestError, isRetryableCandidateError, readErrorResponse } from '../../src/requestError.mjs'
+import { mockJsonFetch } from '../mockFetch.mjs'
+
+Deno.test('assistant attachment hint applies to Chat failures but not Responses spills', async () => {
+	for (const api_mode of ['chat', 'responses']) {
+		const mock = mockJsonFetch(() => new Response('unsupported image format: application/octet-stream', { status: 400 }))
+		try {
+			const call = createFetchChatCompletionWithRetry(
+				{ url: 'https://example.com/v1', api_mode, model: 'mock', use_stream: false },
+				{
+					/**
+					 * 忽略配置持久化的桩函数。
+					 * @returns {void}
+					 */
+					SaveConfig: () => { }
+				},
+			)
+			const error = await assertRejects(() => call([{ role: 'assistant', content: [{ type: 'image_url', image_url: { url: 'data:image/avif;base64,AAAA' } }] }]), AIRequestError)
+			assertEquals(error.message.includes('forbidAssistantFiles'), api_mode === 'chat')
+			assertEquals(mock.calls.length, 1)
+		}
+		finally { mock.restore() }
+	}
+})
 
 Deno.test('readErrorResponse returns a real Error carrying status, url and payload', async () => {
 	const response = new Response(JSON.stringify({ error: { message: 'boom' } }), {

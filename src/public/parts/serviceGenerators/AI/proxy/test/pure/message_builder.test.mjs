@@ -8,11 +8,11 @@ import { Buffer } from 'node:buffer'
 
 import { assert, assertEquals, assertStringIncludes, assertFalse } from 'jsr:@std/assert'
 
+import { mimeTypeBase } from '../../src/attachmentConversion.mjs'
 import {
 	buildFileContentParts,
 	fileMimeType,
 	matchesMimePatterns,
-	mimeTypeBase,
 	resolveFileBuffer,
 } from '../../src/fileContentParts.mjs'
 import {
