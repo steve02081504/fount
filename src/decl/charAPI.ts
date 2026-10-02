@@ -141,6 +141,15 @@ export class CharAPI_t {
 		 */
 		chat?: {
 			/**
+			 * 获取已加载角色的在线状态。缺省时由聊天壳按资料判定（非 `offline` 即在线），无需浏览器心跳。
+			 * 隐身状态仍按查看者身份隐藏；返回 undefined 时使用资料及心跳逻辑。
+			 * @param {object} arg - 角色身份。
+			 * @param {string} arg.username - 用户。
+			 * @param {string} arg.entityHash - 角色实体。
+			 * @returns {Promise<'online' | 'idle' | 'dnd' | 'invisible' | 'away' | 'busy' | 'offline' | undefined>} - 状态。
+			 */
+			GetStatus?: (arg: { username: string, entityHash: string }) => Promise<'online' | 'idle' | 'dnd' | 'invisible' | 'away' | 'busy' | 'offline' | undefined>
+			/**
 			 * 获取问候语。
 			 * @param {chatReplyRequest_t} arg - 聊天回复请求。
 			 * @param {number} index - 索引。

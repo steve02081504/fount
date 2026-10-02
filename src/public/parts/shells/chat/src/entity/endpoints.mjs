@@ -18,9 +18,9 @@ import {
 } from './identity.mjs'
 import { revokeEntityActiveKey, rotateEntityActiveKey } from './keyAdmin.mjs'
 import { pollOwnedEntityProfileUpdates, updateEntityProfileAsActor } from './ownerProfileUpdate.mjs'
+import { getEffectiveStatus } from './presence.mjs'
 import { localesFromRequest } from './presentation.mjs'
 import {
-	computeEffectiveStatus,
 	ensureLocalEntityProfile,
 	getProfile,
 	getStats,
@@ -133,8 +133,9 @@ export function registerEntityEndpoints(router) {
 		const profile = await getProfile(entityHash, replicaUsername, { skipPresentation: true })
 		res.status(200).json({
 			lastSeenAt,
-			effectiveStatus: computeEffectiveStatus(
+			effectiveStatus: await getEffectiveStatus(
 				{ ...profile, lastSeenAt },
+				replicaUsername,
 				operatorEntityHash,
 				{ isSelf: true },
 			),
@@ -151,7 +152,7 @@ export function registerEntityEndpoints(router) {
 			status: updated.status,
 			customStatus: updated.customStatus,
 			lastSeenAt: updated.lastSeenAt,
-			effectiveStatus: computeEffectiveStatus(updated, operatorEntityHash, { isSelf: true }),
+			effectiveStatus: await getEffectiveStatus({ ...updated, entityHash }, replicaUsername, operatorEntityHash, { isSelf: true }),
 		})
 	})
 
@@ -175,7 +176,7 @@ export function registerEntityEndpoints(router) {
 
 		const isSelf = entityHash === operatorEntityHash
 			|| (groupMemberEntityHash && entityHash === groupMemberEntityHash)
-		profile.effectiveStatus = computeEffectiveStatus(profile, operatorEntityHash, { isSelf })
+		profile.effectiveStatus = await getEffectiveStatus(profile, replicaUsername, operatorEntityHash, { isSelf })
 		res.status(200).json({ profile })
 	})
 

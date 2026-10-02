@@ -8,25 +8,26 @@ export const HEARTBEAT_STALE_MS = 120_000
 /**
  * @param {object} profile 用户资料（至少 status / lastSeenAt / entityHash）
  * @param {string} [viewerEntityHash] 查看者 entityHash
- * @param {{ isSelf?: boolean }} [options] isSelf 为 true 时隐身对本人可见
+ * @param {{ isSelf?: boolean, agentStatus?: string }} [options] 查看选项
  * @returns {string} 有效状态
  */
 export function computeEffectiveStatus(profile, viewerEntityHash, options = {}) {
-	const stored = String(profile?.status || 'online')
+	const stored = String(options.agentStatus ?? (profile?.status || 'online'))
 	const isSelf = options.isSelf
 		?? (viewerEntityHash && profile?.entityHash === viewerEntityHash)
-	const lastSeen = profile?.lastSeenAt || 0
-	const recentlySeen = lastSeen > 0 && Date.now() - lastSeen < HEARTBEAT_STALE_MS
+	// 已加载角色的运行时状态自带时效，不再叠加浏览器心跳判定（显式 offline 仍然生效）
+	const isAgent = options.agentStatus != null
 
 	if (stored === 'invisible')
 		return isSelf ? 'invisible' : 'offline'
 
-	if (!recentlySeen)
+	if (isAgent)
+		return stored
+
+	const lastSeen = profile?.lastSeenAt || 0
+	if (lastSeen <= 0 || Date.now() - lastSeen >= HEARTBEAT_STALE_MS)
 		return 'offline'
 
 	// 磁盘遗留的默认 offline：有心跳则对外为 online（手动状态不含 offline）
-	if (stored === 'offline')
-		return 'online'
-
-	return stored
+	return stored === 'offline' ? 'online' : stored
 }

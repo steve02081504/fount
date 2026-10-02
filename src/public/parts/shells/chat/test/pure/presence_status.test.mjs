@@ -8,6 +8,15 @@ import {
 
 const SELF = 'a'.repeat(128)
 
+Deno.test('computeEffectiveStatus: 角色运行时状态无需心跳且保留显式 offline', () => {
+	const profile = { entityHash: SELF, status: 'offline', lastSeenAt: 0 }
+	assertEquals(computeEffectiveStatus(profile, SELF, { agentStatus: 'online' }), 'online')
+	assertEquals(computeEffectiveStatus(profile, SELF, { agentStatus: 'offline' }), 'offline')
+	assertEquals(computeEffectiveStatus(profile, SELF, { agentStatus: 'dnd' }), 'dnd')
+	assertEquals(computeEffectiveStatus(profile, SELF, { agentStatus: 'invisible' }), 'invisible')
+	assertEquals(computeEffectiveStatus(profile, 'b'.repeat(128), { agentStatus: 'invisible' }), 'offline')
+})
+
 Deno.test('computeEffectiveStatus: 默认 offline + 近期心跳 → online', () => {
 	assertEquals(computeEffectiveStatus({
 		entityHash: SELF,
