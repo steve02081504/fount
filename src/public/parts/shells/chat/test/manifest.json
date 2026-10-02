@@ -8,6 +8,7 @@
 			"src/public/parts/shells/chat/src/**",
 			"src/public/parts/shells/chat/public/shared/**",
 			"src/public/parts/shells/chat/{main.mjs,fount.json,locales.json}",
+			"src/public/parts/shells/agent_studio/src/attachments.mjs",
 			"src/scripts/test/shellLoadProbe.mjs"
 		],
 		"shellLiveCommon": [

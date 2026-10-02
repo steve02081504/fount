@@ -6,6 +6,7 @@
 		],
 		"pureCore": [
 			"src/public/parts/shells/agent_studio/src/benchmark.mjs",
+			"src/public/parts/shells/agent_studio/src/attachments.mjs",
 			"src/public/parts/shells/agent_studio/public/shared/**",
 			"src/public/parts/shells/agent_studio/test/pure/**",
 			"src/public/parts/shells/chat/src/prompt_struct/**"
