@@ -2,6 +2,8 @@
 
 状态：已实施（用户拍板：旧数据不特意兼容/迁移；退群/解群/删频道 GC）
 
+> 2026-10-02 核对（只读代码）：机制与下文语义一致，但下面的「实施方案」是计划稿，落地细节与它不同，**以代码为准**；核对差异与证据见 [open-followups.md](../review/open-followups.md) 第四节。要点：实际文件为 `chat/session/scopedState.mjs`，路径 `groups/{groupId}/scoped_state/{channelId}.json`（每频道一个文件，内部按 charname 分块）；`timeSlice_t` 的 `chars_memories` 是**整字段删除**而非序列化时剥离；测试覆盖在 `test/integration/scoped_state.test.mjs`、`set_workdir_persistence.test.mjs`、`leave_cleans_group_dir.test.mjs`（原写 `test/pure/time_slice_memory.test.mjs` 不存在）。唯一未覆盖项：没有测试显式断言 `deleteChannel → clearScopedState`。
+
 ## 现状
 
 - `chat_scoped_char_memory` 的读写路径：
