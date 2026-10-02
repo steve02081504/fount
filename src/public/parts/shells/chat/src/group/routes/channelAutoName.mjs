@@ -16,6 +16,7 @@ import { messageLineShowText } from '../../../public/shared/channelContent.mjs'
 import { appendChannelLink, createChannel, removeChannelLink, updateChannel } from '../../chat/dag/channelOperations.mjs'
 import { getState } from '../../chat/dag/materialize.mjs'
 import { groupKindFromState } from '../../chat/lib/notificationPreferences.mjs'
+import { buildChannelContext, buildChannelPrompt, parseAutoNameResult } from '../lib/channelAutoNamePrompt.mjs'
 import { withLock } from '../lib/locks.mjs'
 import { readChannelMessagesForUser } from '../queries.mjs'
 
@@ -24,58 +25,12 @@ import { GROUPS_PREFIX } from './path.mjs'
 
 /** 每个空名频道最多读取的消息条数。 */
 const CONTEXT_MESSAGE_COUNT = 13
-/** 每个空名频道送入 AI 的上下文最大字符数 */
-const CONTEXT_MAX_CHARS = 4000
 
 /** 正在异步命名/分类的空名频道（键 `groupId:channelId`），防重复触发。 */
 const autoNamingInFlight = new Map()
 
 /** 每群分类 find-or-create 互斥锁：并发 autoName 共享，避免同群并发创建同名分类。 */
 const categoryCreateLocks = new Map()
-
-/**
- * 将频道最近消息聚合成一个上下文块：合并为一条文本（超长时截断并标注省略）。
- * @param {string[]} texts 消息正文数组（旧→新）
- * @returns {string} 合并后的上下文文本
- */
-function buildChannelContext(texts) {
-	const joined = texts.map(text => `…${text}…`).join('\n')
-	if (joined.length <= CONTEXT_MAX_CHARS) return joined
-	return `${joined.slice(0, CONTEXT_MAX_CHARS)}\n[…以下内容过长已省略…]`
-}
-
-/**
- * 从 AI 回复正文中提取 `<channel-name>` / `<category-name>` 标签内容。
- * @param {string} content AI 回复正文
- * @returns {{ name?: string, category?: string }} 提取到的名称
- */
-function parseAutoNameResult(content) {
-	const name = content.match(/<channel-name>([\S\s]*?)<\/channel-name>/i)?.[1]?.trim()
-	const category = content.match(/<category-name>([\S\s]*?)<\/category-name>/i)?.[1]?.trim()
-	return { name, category }
-}
-
-/**
- * 为单个空名频道构造命名请求 prompt（XML 输出格式，参照内置插件标签式结构）。
- * @param {string} context 频道上下文
- * @param {string[]} categoryNames 现有分类名
- * @returns {string} prompt 文本
- */
-function buildChannelPrompt(context, categoryNames) {
-	return `\
-你是频道整理助手。下面是一个未命名频道的内容摘要，以及该群现有的频道分类列表。
-请为该频道生成一个简短的频道名（<=20字）和合适的分类名。
-分类名尽量复用下面现有的分类；若确实没有合适的现有分类，可以提出一个新的分类名（会自动创建）。
-现有分类：${categoryNames.length ? categoryNames.join('、') : '（无）'}
-
-## 未命名频道内容
-${context}
-
-请严格使用如下 XML 标签输出，不要输出多余内容：
-<channel-name>新的频道名</channel-name>
-<category-name>分类名</category-name>
-`
-}
 
 /**
  * 为单个空名频道异步命名/分类：读取最近消息 → AI StructCall → 必要时创建分类 → 更新频道并归入分类。
@@ -91,17 +46,21 @@ async function autoNameChannelAsync(username, groupId, channelId) {
 	const { state } = await getState(username, groupId)
 	const channels = state.channels || {}
 	const channel = channels[channelId]
-	if (!channel || channel.type !== 'text' || String(channel?.name || '')) return false
+	if (!channel || channel.type !== 'text' || String(channel?.name || '').trim()) return false
 
 	/** 现有分类名（过滤空名分类并去重）。 */
 	const categoryNames = [...new Set(
 		Object.values(channels).filter(
 			ch => ch?.type === 'category'
-		).map(ch => String(ch.name)).filter(Boolean),
+		).map(ch => String(ch.name || '').trim()).filter(Boolean),
 	)]
 
 	const lines = await readChannelMessagesForUser(username, groupId, channelId, { limit: CONTEXT_MESSAGE_COUNT })
-	const texts = lines.map(line => messageLineShowText(line, { onlyMessageTypes: true })).filter(Boolean)
+	const texts = lines.flatMap(line => {
+		const text = messageLineShowText(line, { onlyMessageTypes: true }).trim()
+		return text ? [JSON.stringify({ speaker: line.content?.name || line.sender || '', text })] : []
+	})
+	if (!texts.length) return false
 	const context = buildChannelContext(texts)
 
 	const promptText = buildChannelPrompt(context, categoryNames)
@@ -122,6 +81,11 @@ async function autoNameChannelAsync(username, groupId, channelId) {
 	const result = await aiSource.StructCall(promptStruct)
 	const { name, category } = parseAutoNameResult(String(result?.content || ''))
 	if (!name) return false
+
+	// AI 等待期间频道可能已被手动命名或删除：此时直接作废，不为它建分类。
+	const { state: current } = await getState(username, groupId)
+	const currentChannel = current.channels?.[channelId]
+	if (!currentChannel || String(currentChannel.name || '').trim()) return false
 
 	let categoryId = null
 	if (category) {
@@ -144,7 +108,7 @@ async function autoNameChannelAsync(username, groupId, channelId) {
 		})
 	}
 
-	// AI 调用是异步的，期间频道可能已被删除：重读最新状态并确认频道仍在，避免写回悬空频道/分类链接。
+	// 建分类也是异步写：重读最新状态，避免把名称/父链接写回已删除的频道。
 	const { state: latest } = await getState(username, groupId)
 	const targetChannel = latest.channels?.[channelId]
 	if (!targetChannel) return false
