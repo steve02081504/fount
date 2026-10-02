@@ -65,6 +65,36 @@ function collectLog(logs) {
 	}
 }
 
+Deno.test('web search resolves role-specific source instead of the user default', async () => {
+	const calls = []
+	const overridden = fakeSearchSource(calls, { results: [] })
+	const source = fakeSearchSource([], { results: [] })
+	let defaultSourceReads = 0
+	/** @returns {object} Default search source. */
+	function getDefaultSource() {
+		defaultSourceReads++
+		return source
+	}
+	const logs = []
+	const handler = createWebSearchReplyHandler({ getSearchSource: getDefaultSource })
+	await handler.handle({}, {
+		char: { interfaces: { plugins: { /**
+		 *
+		 * @param {object} context 请求服务上下文。
+		 * @returns {Promise<object>} 角色覆盖的搜索源。
+		 */
+			GetServiceSource: async context => {
+				assertEquals(context.pluginName, 'web-search')
+				assertEquals(context.serviceType, 'search')
+				return overridden
+			} } } },
+		AddLongTimeLog: collectLog(logs),
+	}, { inner: 'query' })
+	assertEquals(calls.length, 1)
+	assertEquals(calls[0].query, 'query')
+	assertEquals(defaultSourceReads, 0)
+})
+
 /**
  * 立即完成的无操作等待。
  * @returns {Promise<void>} 立即完成。

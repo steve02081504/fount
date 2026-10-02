@@ -1,3 +1,5 @@
+import { resolvePluginServiceSource } from '../../../../scripts/plugin_context.mjs'
+import { redactSecrets } from '../../../../scripts/secret_filter.mjs'
 import { guardOutput } from '../../../../scripts/shell_guard.mjs'
 import { defineReplyHandler } from '../../shells/chat/src/reply/defineReplyHandler.mjs'
 import { renderMarkdownCodeBlock } from '../../shells/chat/src/streaming/index.mjs'
@@ -48,11 +50,12 @@ async function retrySearch(search, { attempts, delayMs, sleep }) {
  * 创建网络搜索工具处理器。
  * @param {object} options - 依赖项。
  * @param {() => object|undefined} options.getSearchSource - 获取当前用户默认搜索源。
+ * @param {Function} [options.resolveSource] - 按角色配置解析搜索服务源。
  * @param {(search: () => Promise<any>, options: object) => Promise<any>} [options.retry] - 可替换的重试函数。
  * @param {(milliseconds: number) => Promise<void>} [options.sleep] - 等待函数。
  * @returns {import('../../../../decl/pluginAPI.ts').ReplyHandler_t} 搜索回复处理器。
  */
-export function createWebSearchReplyHandler({ getSearchSource, retry = retrySearch, sleep = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds)) }) {
+export function createWebSearchReplyHandler({ getSearchSource, resolveSource = resolvePluginServiceSource, retry = retrySearch, sleep = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds)) }) {
 	return defineReplyHandler({
 		tag: 'web-search',
 		name: 'web-search.search',
@@ -74,7 +77,7 @@ export function createWebSearchReplyHandler({ getSearchSource, retry = retrySear
 			const addToolLog = (content, contentForShow = content) => args.AddLongTimeLog?.({
 				name: 'web-search.search',
 				role: 'tool',
-				content,
+				content: redactSecrets(content),
 				content_for_show: renderMarkdownCodeBlock(contentForShow),
 				files: [],
 			})
@@ -84,7 +87,12 @@ export function createWebSearchReplyHandler({ getSearchSource, retry = retrySear
 				return { regen: true, failed: true }
 			}
 
-			const searchSource = getSearchSource()
+			let searchSource
+			try { searchSource = await resolveSource(args, 'web-search', 'search', { fallback: getSearchSource }) }
+			catch (error) {
+				addToolLog(`搜索服务源配置错误：${error.message}`)
+				return { regen: true, failed: true }
+			}
 			if (!searchSource?.Search) {
 				addToolLog('搜索功能当前不可用：未找到可用的搜索源。请先配置默认搜索服务源。')
 				return { regen: true, failed: true }
