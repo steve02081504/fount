@@ -10,7 +10,11 @@
 			"src/public/parts/plugins/file-operations/src/target.mjs",
 			"src/public/parts/shells/chat/src/{reply,streaming,tags}/**",
 			"src/scripts/secret_filter.mjs",
-			"src/scripts/shell_guard.mjs"
+			"src/scripts/shell_guard.mjs",
+			"src/public/parts/plugins/fount-api/**",
+			"src/scripts/file_object.mjs",
+			"src/scripts/mimetype.mjs",
+			"src/scripts/plugin_context.mjs"
 		]
 	},
 	"suites": [

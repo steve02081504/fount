@@ -1,3 +1,4 @@
+import { getPluginOwnerPrompt } from '../../../../scripts/plugin_context.mjs'
 import { SHELL_DEFAULT_TIMEOUT_MS } from '../../../../scripts/shell_guard.mjs'
 import { getConnectedSubfounts } from '../../shells/subfounts/src/api.mjs'
 import { isAsyncToolingEnabled } from '../async-task/registry.mjs'
@@ -31,6 +32,7 @@ export async function getCodeExecutionPrompt(args, { resolveShells = resolveAvai
 	).filter(Boolean).join('\n')
 
 	const prompt = `\
+${await getPluginOwnerPrompt(args, 'code-execution')}
 你可以运行js或${availableShells.join('、')}代码，通过返回以下格式来触发执行并获取结果：
 <run-js>code</run-js>
 或
@@ -93,11 +95,13 @@ ${isAsyncToolingEnabled() ? `\
 - 注意：JS 在进程内无法强制终止，异步执行也不会改变这一点。
 
 ` : ''}\
+屏幕观察：<wait-screen seconds="2" monitor="0" machine="0"/> 等待后获取目标机器的屏幕附件，仅供你查看。也可用 <wait-screen>2</wait-screen>。seconds 默认 0，范围 0–3600；monitor 是从 0 开始的屏幕序号；machine 未给时继承当前目标。目标必须有可用显示会话。
+
 js代码相关：
 - 复杂情况下，考虑有什么npm包可以满足你的需求，参照例子使用<run-js>+import。
   * 导入包需要符合deno的包名规范（追加\`npm|node|jsr:\`前缀），如\`npm:mathjs\`或\`node:fs\`。
 - 鼓励你在复杂情况下用workspace变量来存储工作数据，便于后续使用。
-  * \`workspace.data = ...\` 会跨 <run-js> 调用保留；开始新任务时可用 \`workspace.clear()\` 清空。
+  * \`workspace.data = ...\` 会跨 <run-js> 和 <inline-js> 调用保留；开始新任务时可用 \`workspace.clear()\` 清空。
 - JS 在 fount 进程内运行，\`process.cwd()\` 是 fount 进程自身的工作目录，可能与 shell 的 workdir 不一致，且无法按请求切换（切换会影响整个进程）。需要操作工作区文件时，用本机执行时提供的绝对路径变量 \`workdir\` 自行拼路径，如 \`(await import('node:path')).join(workdir, 'deno.json')\`；\`view_files\`/\`add_files\` 的相对路径同样按进程 cwd 解析，请传绝对路径。
 ${args.supported_functions?.add_message ? `\
 - 长任务可不用 await，改用 \`callback(reason: string, promise: Promise)\` 在异步完成后反馈，如 <run-js>callback('unzip result', super_slow_async_function())</run-js>。

@@ -1,6 +1,4 @@
-import { loadData } from '../../../../server/setting_loader.mjs'
-
-import { fountApiReplyHandler } from './handler.mjs'
+import { ensureApiKey, fountApiReplyHandler } from './handler.mjs'
 import { getFountApiPrompt } from './prompt.mjs'
 
 const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
@@ -42,6 +40,12 @@ export default {
 		},
 		chat: {
 			GetPrompt: getFountApiPrompt,
+			/**
+			 * 在首次生成前准备好角色 API 密钥。
+			 * @param {object} args Request context.
+			 * @returns {Promise<void>} Preparation completion.
+			 */
+			BeforeReply: async args => { await ensureApiKey(args.username, args.char_id) },
 			ReplyHandler: fountApiReplyHandler,
 		},
 		code_execution: {
@@ -51,11 +55,7 @@ export default {
 			 * @returns {Promise<Record<string, any>>} JS 代码上下文对象。
 			 */
 			GetJSCodeContext: async (args) => {
-				const parts_config = loadData(args.username, 'parts_config')
-				const apikeys = parts_config['plugins/fount-api']?.apikeys ?? {}
-				const apiKey = apikeys[args.char_id]
-				if (!apiKey) return {}
-				return { fountApiKey: apiKey }
+				return { fountApiKey: await ensureApiKey(args.username, args.char_id) }
 			},
 		},
 	},

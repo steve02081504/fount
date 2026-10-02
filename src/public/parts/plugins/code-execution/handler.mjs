@@ -1,13 +1,12 @@
 import { Buffer } from 'node:buffer'
 import { randomUUID } from 'node:crypto'
-import os from 'node:os'
-import path from 'node:path'
 import process from 'node:process'
 import util from 'node:util'
 
 import { async_eval } from 'npm:@steve02081504/async-eval'
 import { removeTerminalSequences } from 'npm:@steve02081504/exec'
 
+import { toFileObj as normalizeFileObj } from '../../../../scripts/file_object.mjs'
 import { redactSecrets } from '../../../../scripts/secret_filter.mjs'
 import {
 	createCollectingConsole,
@@ -31,6 +30,7 @@ import { isAsyncToolingEnabled, ownerFromArgs, registerTask } from '../async-tas
 import { createArgsExecutorResolver, executionTargetOf, resolveLocalPath, resolveTarget } from '../file-operations/src/target.mjs'
 
 import { isShellUsable, registeredShellNames, resolveAvailableShells } from './availability.mjs'
+import { captureMonitor, captureMonitorSource } from './screen.mjs'
 
 /**
  * 按预览参数缓存执行器解析器（远程内联执行用）。
@@ -283,6 +283,7 @@ function createTailBuffer(limit = 4000) {
  * @param {string} label - 日志前缀。
  * @param {string} code - 要输出的代码。
  * @param {string} [lang] - 语言标识，不传时自动检测。
+ * @returns {Promise<void>} 输出完成。
  */
 async function logCode(label, code, lang) {
 	try {
@@ -293,60 +294,11 @@ async function logCode(label, code, lang) {
 }
 
 /**
- * 解析相对路径，支持 `~` (home) 和 MSYS 风格的路径。
- * @param {string} relativePath - 要解析的相对路径。
- * @returns {string} - 解析后的绝对路径。
+ * 用共享的 MIME 与文件名解析器规范化附件。
+ * @param {string|object} input Attachment source.
+ * @returns {Promise<object>} Normalized attachment.
  */
-function resolvePath(relativePath) {
-	if (relativePath.startsWith('~'))
-		return path.resolve(path.join(os.homedir(), relativePath.slice(1)))
-	const msys_path = process.env.MSYS_ROOT_PATH
-	if (msys_path && relativePath.startsWith('/')) {
-		if (relativePath.match(/^\/[A-Za-z]\//))
-			return path.resolve(path.join(relativePath.slice(1, 2).toUpperCase() + ':\\', relativePath.slice(3)))
-		return path.resolve(path.join(msys_path, relativePath))
-	}
-	return path.resolve(relativePath)
-}
-
-/**
- * 从本地文件路径或 URL 创建一个文件对象。
- * @param {string} pathOrUrl - 文件的本地路径或 URL。
- * @returns {Promise<{name: string, buffer: Buffer, mime_type: string}>} - 包含文件信息的文件对象。
- */
-async function getFileObjFormPathOrUrl(pathOrUrl) {
-	if (pathOrUrl.startsWith('http://') || pathOrUrl.startsWith('https://')) {
-		const response = await fetch(pathOrUrl)
-		if (!response.ok) throw new Error('fetch failed.')
-		const buffer = Buffer.from(await response.arrayBuffer())
-		const mime_type = response.headers.get('content-type') || 'application/octet-stream'
-		const urlPath = new URL(pathOrUrl).pathname
-		const name = path.basename(urlPath) || 'downloaded.bin'
-		return { name, buffer, mime_type }
-	}
-	else {
-		const fs = await import('node:fs')
-		const filePath = resolvePath(pathOrUrl)
-		const buffer = fs.readFileSync(filePath)
-		const name = path.basename(filePath)
-		const mime_type = 'application/octet-stream' // 简化版本，不检测 MIME 类型
-		return { name, buffer, mime_type }
-	}
-}
-
-/**
- * 将输入规范化为一个完整的文件对象。
- * @param {string | {name: string, buffer: Buffer | ArrayBuffer, mime_type?: string}} pathOrFileObj - 输入。
- * @returns {Promise<{name: string, buffer: Buffer, mime_type: string}>} - 规范化后的文件对象。
- */
-async function toFileObj(pathOrFileObj) {
-	if (Object(pathOrFileObj) instanceof String)
-		return getFileObjFormPathOrUrl(pathOrFileObj)
-
-	const buffer = Buffer.isBuffer(pathOrFileObj.buffer) ? pathOrFileObj.buffer : Buffer.from(pathOrFileObj.buffer)
-	const mime_type = pathOrFileObj.mime_type || 'application/octet-stream'
-	return { name: pathOrFileObj.name, buffer, mime_type }
-}
+const toFileObj = input => normalizeFileObj(input, { resolvePath: resolveLocalPath })
 
 /**
  * 回复处理器类型别名。
@@ -363,11 +315,14 @@ async function toFileObj(pathOrFileObj) {
  * @param {string} reason - 回调的原因。
  * @param {string} code - 被执行的代码。
  * @param {any} result - 回调的结果。
+ * @param {boolean} succeeded Whether the background promise fulfilled.
+ * @returns {Promise<void>} 写入完成。
  */
-async function callback_handler(args, reason, code, result) {
+async function callback_handler(args, reason, code, result, succeeded = true) {
 	const feedback = {
 		role: 'tool',
 		name: 'code-execution.callback',
+		extension: { pluginEvent: { id: randomUUID(), pluginName: 'code-execution', type: 'background', status: succeeded ? 'succeeded' : 'failed', tool: 'code-execution.callback', data: { reason } } },
 		uid: 'system',
 		content: redactSecrets(`\
 你的js代码中的callback函数被调用了
@@ -388,6 +343,7 @@ ${renderAnsiBlock(renderAnsiText(result))}
 	}
 	catch (error) {
 		console.error(`Error processing callback for "${reason}":`, error)
+		feedback.extension.pluginEvent.status = 'failed'
 		feedback.content += `处理callback时出错：${error.stack}\n`
 		await args.AppendChatLogEntry?.(feedback)
 	}
@@ -460,7 +416,7 @@ function createRuntime(result, args) {
 				 * @returns {void}
 				 */
 				const handler = callbackResult => callback_handler(args, reason, code, callbackResult)
-				Promise.resolve(promise).then(handler, handler)
+				Promise.resolve(promise).then(handler, error => callback_handler(args, reason, code, error, false))
 				return 'callback已注册'
 			}
 		const view_files = []
@@ -617,11 +573,8 @@ async function evaluateInlineJs(call, args) {
 		outcome = await runJsWithTimeout(() => resolver(attrs).execJsWithTimeout(call.inner, limits.timeoutMs, { onOutput: stream, callbackPartpath: remoteToolCallbackPartpath(args) }), limits.timeoutMs)
 	}
 	else {
-		const target = resolveTarget(args)
-		const context = { console: collecting.console }
-		if (!target.remote && target.workdir)
-			context.workdir = resolveLocalPath(target.workdir)
-		outcome = await runJsWithTimeout(() => async_eval(call.inner, context), limits.timeoutMs)
+		const runtime = getRuntime(args, args)
+		outcome = await runJsWithTimeout(() => runtime.runJscodeForAI(call.inner, collecting.console), limits.timeoutMs)
 	}
 	emit?.({ callId, phase: 'end', name })
 	if (outcome.timedOut) throw new Error('内联 JS 执行超时；JS 无法强制终止，代码可能仍在运行。')
@@ -829,12 +782,14 @@ export const runJsReplyHandler = defineReplyHandler({
 				kind: 'js',
 				label: taskPreview(call.inner),
 				owner: ownerFromArgs(args),
+				eventContext: args,
 				/**
 				 * 后台执行 JS 并返回供完成通知使用的文本。
 				 * @returns {Promise<string>} 结果文本
 				 */
 				run: async () => {
-					const { content } = await executeRunJs({ runtime, args, call, limits, remote, stream: inspectStream })
+					const { content, failed } = await executeRunJs({ runtime, args, call, limits, remote, stream: inspectStream })
+					if (failed) throw new Error(content)
 					return content
 				},
 				/**
@@ -842,10 +797,10 @@ export const runJsReplyHandler = defineReplyHandler({
 				 * @returns {string} 末尾控制台输出。
 				 */
 				inspect: () => redactSecrets(inspectBuffer.read().trim()) || '（暂无控制台输出）',
-				meta: { code: call.inner, remote, executionTarget },
+				meta: { code: call.inner, remote, executionTarget, pluginName: 'code-execution', tool: name },
 			})
 			writeAsyncDispatchLog(args, task, 'JS')
-			return { regen: true }
+			return { regen: true, pending: true }
 		}
 
 		await logCode(`${args.Charname} running JS code:`, call.inner, 'js')
@@ -984,12 +939,14 @@ function createRunShellReplyHandler(shell_name, resolveShells) {
 					kind: shell_name,
 					label: taskPreview(call.inner),
 					owner: ownerFromArgs(args),
+					eventContext: args,
 					/**
 					 * 后台执行 shell 并返回供完成通知使用的文本。
 					 * @returns {Promise<string>} 结果文本
 					 */
 					run: async () => {
-						const { fullOutput } = await executeRunShell({ runtime, args, call, limits, shellName: shell_name, stream: inspectStream })
+						const { fullOutput, failed } = await executeRunShell({ runtime, args, call, limits, shellName: shell_name, stream: inspectStream })
+						if (failed) throw new Error(fullOutput)
 						return (await guardOutput(fullOutput, { name: `shell-${shell_name}`, label: 'shell 输出' })).text
 					},
 					/**
@@ -997,10 +954,10 @@ function createRunShellReplyHandler(shell_name, resolveShells) {
 					 * @returns {string} 末尾输出。
 					 */
 					inspect: () => redactSecrets(removeTerminalSequences(inspectBuffer.read()).trim()) || '（暂无输出）',
-					meta: { code: call.inner, executionTarget },
+					meta: { code: call.inner, executionTarget, pluginName: 'code-execution', tool: name },
 				})
 				writeAsyncDispatchLog(args, task, shell_name)
-				return { regen: true }
+				return { regen: true, pending: true }
 			}
 
 			await logCode(`${args.Charname} running ${shell_name} code:`, call.inner, shell_name)
@@ -1045,14 +1002,57 @@ function createInlineShellReplyHandler(shell_name, resolveShells) {
  * 不可用时回写失败日志引导模型改用其他 shell，而非让标签原样穿透到消息里。
  * @param {object} [options] - 选项。
  * @param {(args: object, attrs: object) => Promise<string[]>} [options.resolveShells] - 覆盖可用 shell 解析函数（测试注入）。
+ * @param {Function} options.capture Monitor capture implementation (test injection).
  * @returns {ReplyHandler_t[]} ReplyHandler 列表
  */
-export function getCodeExecutionReplyHandlers({ resolveShells = resolveAvailableShells } = {}) {
-	const handlers = [runJsReplyHandler, inlineJsReplyHandler]
+export function getCodeExecutionReplyHandlers({ resolveShells = resolveAvailableShells, capture = captureMonitor } = {}) {
+	const handlers = [runJsReplyHandler, inlineJsReplyHandler, createWaitScreenHandler(capture)]
 	for (const shell_name of registeredShellNames())
 		handlers.push(
 			createRunShellReplyHandler(shell_name, resolveShells),
 			createInlineShellReplyHandler(shell_name, resolveShells),
 		)
 	return handlers
+}
+
+/**
+ * 等待后截取目标机器与显示器的画面，写入角色时间线。
+ * @param {Function} capture Monitor capture implementation.
+ * @returns {ReplyHandler_t} 回复处理器。
+ */
+function createWaitScreenHandler(capture) {
+	return defineReplyHandler({
+		tag: 'wait-screen',
+		/**
+		 * 等待后截屏。
+		 * @param {object} reply Current reply.
+		 * @param {object} args Request context.
+		 * @param {object} call Parsed tool call.
+		 * @returns {Promise<object>} Handler outcome.
+		 */
+		handle: async (reply, args, call) => {
+			const seconds = Number(call.params?.seconds ?? String(call.inner ?? '').trim())
+			const monitor = Number(call.params?.monitor ?? 0)
+			try {
+				if (!Number.isFinite(seconds) || seconds < 0 || seconds > 3600)
+					throw new Error('wait-screen seconds must be between 0 and 3600.')
+				if (!Number.isInteger(monitor) || monitor < 0)
+					throw new Error('wait-screen monitor must be a nonnegative integer.')
+				if (seconds) await new Promise(resolve => setTimeout(resolve, seconds * 1000))
+				const target = resolveTarget(args, call.params)
+				const base64 = target.remote
+					? await createArgsExecutorResolver(args)(call.params).execJs(`${captureMonitorSource}(${monitor})`)
+					: await capture(monitor)
+				args.AddLongTimeLog({ name: 'code-execution.wait-screen', role: 'tool', content: '已等待并截屏，内容见附件。', content_for_show: '已等待并截屏。',
+					files: [{ name: 'screen.png', mime_type: 'image/png', buffer: Buffer.from(base64, 'base64') }],
+					...targetExtension(executionTargetOf(target)),
+				})
+				return { regen: true }
+			} catch (error) {
+				const message = String(error?.message || error)
+				args.AddLongTimeLog({ name: 'code-execution.wait-screen', role: 'tool', content: redactSecrets(message), content_for_show: renderMarkdownCodeBlock(message), files: [], extension: { error: true } })
+				return { regen: true, failed: true }
+			}
+		},
+	})
 }

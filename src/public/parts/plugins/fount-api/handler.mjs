@@ -7,6 +7,7 @@ import { loadData, saveData } from '../../../../server/setting_loader.mjs'
 import { defineReplyHandler } from '../../shells/chat/src/reply/defineReplyHandler.mjs'
 
 const PLUGIN_PARTPATH = 'plugins/fount-api'
+const pendingKeys = new Map()
 
 /**
  * 从 parts_config 中按角色获取 fount API 密钥。
@@ -30,6 +31,7 @@ function getKeyForChar(username, charId) {
 function saveKeyForChar(username, charId, apiKey) {
 	const parts_config = loadData(username, 'parts_config')
 	parts_config[PLUGIN_PARTPATH] ??= { apikeys: {} }
+	parts_config[PLUGIN_PARTPATH].apikeys ??= {}
 	parts_config[PLUGIN_PARTPATH].apikeys[charId] = apiKey
 	saveData(username, 'parts_config')
 }
@@ -40,7 +42,21 @@ function saveKeyForChar(username, charId, apiKey) {
  * @param {string} charId - 角色 ID。
  * @returns {Promise<string>} API key。
  */
-async function ensureApiKey(username, charId) {
+export async function ensureApiKey(username, charId) {
+	const identity = JSON.stringify([username, charId])
+	if (pendingKeys.has(identity)) return pendingKeys.get(identity)
+	const pending = createKeyForChar(username, charId)
+	pendingKeys.set(identity, pending)
+	try { return await pending } finally { pendingKeys.delete(identity) }
+}
+
+/**
+ * 仅在缺失时创建一次角色密钥；并发调用共享同一个待决 Promise。
+ * @param {string} username Owning username.
+ * @param {string} charId Role identifier.
+ * @returns {Promise<string>} Role API key.
+ */
+async function createKeyForChar(username, charId) {
 	let apiKey = getKeyForChar(username, charId)
 	if (!apiKey) {
 		const { apiKey: newApiKey } = await generateApiKey(username, `fount-api plugin for char: ${charId}`)
