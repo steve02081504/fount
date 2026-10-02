@@ -24,7 +24,7 @@ import {
 	SHELL_DEFAULT_TIMEOUT_MS,
 	truncateOutput,
 } from '../../../../../../scripts/shell_guard.mjs'
-import { getTask, resetAsyncTaskState, setAsyncToolingEnabled, takePendingNotifications } from '../../../../plugins/async-task/registry.mjs'
+import { awaitTasks, getTask, ownerFromArgs, resetAsyncTaskState, setAsyncToolingEnabled, takePendingNotifications } from '../../../../plugins/async-task/registry.mjs'
 import { getCodeExecutionReplyHandlers } from '../../../../plugins/code-execution/handler.mjs'
 import { fileOperationsReplyHandlers } from '../../../../plugins/file-operations/handler.mjs'
 import { dispatchRemoteStreamOutput, remoteJsStreamScript, remoteShellStreamScript, withRemoteStreamSink } from '../../../../plugins/file-operations/src/remote_stream.mjs'
@@ -360,16 +360,25 @@ Deno.test('code-execution run-* 截断大 shell 输出并保留完整展示', as
 	assert(!logs.some(log => log.role === 'char'), 'run 步骤不应再以 char 角色重放（原始生成由管线负责）')
 })
 
-Deno.test('code-execution run-* 报告超时与终止提示', async () => {
+Deno.test('code-execution run-* 达到等待时限后转为后台任务且不打断执行', async () => {
 	const shell = await pickShell()
 	if (!shell) return
+	resetAsyncTaskState()
 	const { logs, result, args } = createHandlerArgs()
 	result.content = `<run-${shell} expect="1">${commandFor(shell, 'sleep')}</run-${shell}>`
-	assertEquals(await runReplyHandlers(result, args, getCodeExecutionReplyHandlers()), true)
-	const entry = findToolEntry(logs)
-	assert(entry, 'tool entry should exist')
-	assertStringIncludes(entry.content, '超时')
-	assertStringIncludes(entry.content, '已尝试终止')
+	try {
+		assertEquals(await runReplyHandlers(result, args, getCodeExecutionReplyHandlers()), true)
+		const entry = logs.find(log => log.name === 'code-execution.async')
+		assert(entry, '超时应转为后台任务并回写派发回执')
+		assertStringIncludes(entry.content, '超时')
+		assertStringIncludes(entry.content, '继续在后台运行')
+		assertStringIncludes(entry.content, `id=${entry.extension.asyncTask.id}`)
+		assertStringIncludes(entry.content, '<stop-async')
+		// 超时不再杀进程：同一个进程继续跑完，后台任务照常结算。
+		const waited = await awaitTasks([entry.extension.asyncTask.id], { requester: ownerFromArgs(args), timeoutMs: 15000 })
+		assertEquals(waited.pending, [])
+		assertEquals(waited.settled[0].state, 'done')
+	} finally { resetAsyncTaskState() }
 })
 
 Deno.test('code-execution run-js 提示超时 JS 可能仍在运行', async () => {
@@ -379,7 +388,7 @@ Deno.test('code-execution run-js 提示超时 JS 可能仍在运行', async () =
 	const entry = findToolEntry(logs)
 	assert(entry, 'tool entry should exist')
 	assertStringIncludes(entry.content, '无法强制终止')
-	assertStringIncludes(entry.content, '仍在后台运行')
+	assertStringIncludes(entry.content, '继续在后台运行')
 })
 
 Deno.test('code-execution run-js 正常完成附耗时与结果', async () => {

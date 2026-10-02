@@ -1,6 +1,7 @@
 import { getPluginOwnerPrompt } from '../../../../scripts/plugin_context.mjs'
 import { SHELL_DEFAULT_TIMEOUT_MS } from '../../../../scripts/shell_guard.mjs'
 import { getConnectedSubfounts } from '../../shells/subfounts/src/api.mjs'
+import { getAsyncTaskPrompt } from '../async-task/prompt.mjs'
 import { isAsyncToolingEnabled } from '../async-task/registry.mjs'
 
 import { isShellUsable, pickDefaultShell, registeredShellNames, resolveAvailableShells, resolveDefaultShell } from './availability.mjs'
@@ -72,7 +73,7 @@ return Array.from({ length: 201 }, (_, i) => toEnglishWord(i)).join(', ')
 ]
 运行限制（所有 <run-*> 标签均支持）：
 参数：
-- 超时：默认 ${Math.round(SHELL_DEFAULT_TIMEOUT_MS / 60000)} 分钟；expect="时长" + tolerance="时长" 生效（只给 tolerance 时基于默认值累加）；wait="forever" 干等不超时。时长支持 30s / 5m / 1h 或纯秒数，如 <run-${defaultShell} expect="5m" tolerance="1m">。超时会尽力终止（shell 杀进程树；js 在进程内无法强杀，会如实告知你“实际仍在运行”）。
+- 超时：默认 ${Math.round(SHELL_DEFAULT_TIMEOUT_MS / 60000)} 分钟；expect="时长" + tolerance="时长" 生效（只给 tolerance 时基于默认值累加）；wait="forever" 干等不超时。时长支持 30s / 5m / 1h 或纯秒数，如 <run-${defaultShell} expect="5m" tolerance="1m">。达到等待时限后，自动将同一次执行转为异步后台任务（不会停止或重新执行），回执会给出已等待时长、任务 id、查看进展及等待结果的方法。
 - 目标：machine="机器id"、workdir="目录" 单次覆盖，未指定时用当前目标。
 - 返回：<run-js> 给 \`output\`（console 文本）+ \`result\`（返回值），出错时为 \`output\` + \`error\`；正常结束会标注耗时。
 - 大输出：连续的相似行会折叠；压缩后仍超限时只保留头尾，完整内容写入临时文件并给出路径，可用 <view-file> 分页 / <grep> 搜索。
@@ -89,12 +90,10 @@ ${getConnectedSubfounts(args.username).length === 1 ? `\
   * 尤其软件文件夹很可能有用户数据在其中，删除前至少通过命令检查下文件夹架构。
 - 覆写数据时也一样，在用程序删除部分数据或覆写可能的重要文件时考虑进行原文件的备份，以防误操作。
 
-${isAsyncToolingEnabled() ? `\
-异步执行（需加载 async-task 插件）：
+异步执行：
 - 给 <run-js> / <run-${defaultShell}> 等加 async="true" 可后台运行；任务列表与等待（<list-async/>、<await-async>）见 async-task 插件说明。
 - 注意：JS 在进程内无法强制终止，异步执行也不会改变这一点。
 
-` : ''}\
 屏幕观察：<wait-screen seconds="2" monitor="0" machine="0"/> 等待后获取目标机器的屏幕附件，仅供你查看。也可用 <wait-screen>2</wait-screen>。seconds 默认 0，范围 0–3600；monitor 是从 0 开始的屏幕序号；machine 未给时继承当前目标。目标必须有可用显示会话。
 
 js代码相关：
@@ -135,9 +134,11 @@ ${codePluginPrompts}
 需要注意的是run-js执行的是后端代码而不是前端代码，若需要执行前端代码请使用浏览器相关插件${args.supported_functions?.unsafe_html ? '或直接输出script标签' : ''}。
 `
 
+	// async-task 插件没加载时，工具本身仍可用（生产者共用它的注册表），因此由 code-execution 补上工具说明与待注入通知。
+	const asyncPrompt = isAsyncToolingEnabled() ? null : getAsyncTaskPrompt(args)
 	return {
-		text: [{ content: prompt, description: '代码执行能力说明', important: 0 }],
-		additional_chat_log: [],
+		text: [{ content: prompt, description: '代码执行能力说明', important: 0 }, ...asyncPrompt?.text ?? []],
+		additional_chat_log: asyncPrompt?.additional_chat_log ?? [],
 		extension: {},
 	}
 }

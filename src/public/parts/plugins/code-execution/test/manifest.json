@@ -6,8 +6,8 @@
 		],
 		"pluginCore": [
 			"src/public/parts/plugins/code-execution/**",
-			"src/public/parts/plugins/async-task/registry.mjs",
-			"src/public/parts/plugins/file-operations/src/target.mjs",
+			"src/public/parts/plugins/async-task/{registry,handler,prompt}.mjs",
+			"src/public/parts/plugins/file-operations/src/{target,remote_stream}.mjs",
 			"src/public/parts/shells/chat/src/{reply,streaming,tags}/**",
 			"src/scripts/secret_filter.mjs",
 			"src/scripts/shell_guard.mjs",

@@ -16,16 +16,19 @@ import {
 	formatTimeoutNotice,
 	guardOutput,
 	JS_DEFAULT_TIMEOUT_MS,
+	killProcessTree,
 	parseRunLimits,
 	runJsWithTimeout,
 	SHELL_DEFAULT_TIMEOUT_MS,
 	OUTPUT_GUARD_LIMIT,
 	truncateOutput,
 } from '../../../../scripts/shell_guard.mjs'
+import { awakeNow, setAwakeTimeout } from '../../../../scripts/sleep_watch.mjs'
 import { appendAndWake } from '../../shells/chat/src/lib/charWake.mjs'
-import { defineReplyHandler } from '../../shells/chat/src/reply/defineReplyHandler.mjs'
+import { defineReplyHandler, flattenReplyHandlers } from '../../shells/chat/src/reply/defineReplyHandler.mjs'
 import { defaultDisplay } from '../../shells/chat/src/reply/display.mjs'
 import { getChatI18n, renderMarkdownCodeBlock, renderMarkdownInlineCode } from '../../shells/chat/src/streaming/index.mjs'
+import { asyncTaskReplyHandlers } from '../async-task/handler.mjs'
 import { isAsyncToolingEnabled, ownerFromArgs, registerTask } from '../async-task/registry.mjs'
 import { createArgsExecutorResolver, executionTargetOf, resolveLocalPath, resolveTarget } from '../file-operations/src/target.mjs'
 
@@ -124,34 +127,96 @@ function taskPreview(text) {
  * @param {object} args - 请求上下文。
  * @param {object} task - async-task 任务。
  * @param {string} label - 类型标签（如 `JS` / `pwsh`）。
+ * @param {string} reason - 派发原因（已在后台运行 / 等待超时转后台）。
+ * @param {string} stopHint - 可用的停止方式说明（空串表示该任务不可停止）。
  * @returns {void}
  */
-function writeAsyncDispatchLog(args, task, label) {
+function writeAsyncDispatchLog(args, task, label, reason, stopHint = '') {
+	const controls = `id=${task.id}。可用 <inspect-async id="${task.id}"/> 查看进展，<await-async ids="${task.id}"/> 等待结果，或 <list-async/> 查看任务列表；未被等待时完成后会以系统消息通知你。${stopHint}`
 	args.AddLongTimeLog?.({
 		name: 'code-execution.async',
 		role: 'tool',
-		content: `${label} 已在后台运行，id=${task.id}。可用 <await-async ids="${task.id}"/> 等待，或用 <list-async/> 查看；未被等待时完成后会以系统消息通知你。`,
-		content_for_show: `${label} 已在后台运行（id：${task.id}）。`,
+		content: `${reason}（${label}），${controls}`,
+		content_for_show: `${reason}（${label}）。\n\n${renderMarkdownCodeBlock(controls)}`,
 		files: [],
 		extension: { asyncTask: { id: task.id, kind: task.kind, label: task.label } },
 	})
 }
 
 /**
- * 写一条异步不可用的错误回执。
- * @param {object} args - 请求上下文。
- * @returns {object} handler 返回值。
+ * 在时限内等待执行结果；超时返回 null，但**不**打断执行（调用方把它转为后台任务，继续等同一 Promise）。
+ * @param {Promise<{value?: unknown, error?: unknown}>} settled - 已捕获异常的完成 Promise。
+ * @param {number|null} timeoutMs - 等待上限（null = 一直等）。
+ * @returns {Promise<{value?: unknown, error?: unknown}|null>} 完成结果，或超时 null。
  */
-function rejectAsyncWithoutTooling(args) {
-	args.AddLongTimeLog?.({
-		name: 'code-execution.async',
-		role: 'tool',
-		content: 'async="true" 需要加载 async-task 插件才能管理异步任务；当前未启用，请改用同步执行。',
-		content_for_show: '异步执行不可用（缺少 async-task 插件）。',
-		files: [],
-		extension: { error: true },
+async function settleWithin(settled, timeoutMs) {
+	if (timeoutMs === null) return await settled
+	let cancelTimer
+	try {
+		return await Promise.race([
+			settled,
+			new Promise(resolve => { cancelTimer = setAwakeTimeout(() => resolve(null), timeoutMs) }),
+		])
+	} finally { cancelTimer?.() }
+}
+
+/**
+ * 前台等待一段时间后，把同一次执行转为统一异步任务。
+ * @param {object} options - 执行与任务上下文。
+ * @param {object} options.args - 请求上下文。
+ * @param {object} options.call - 解析后的调用。
+ * @param {string} options.kind - 任务类型（`js` 或 shell 名）。
+ * @param {{machine: string, workdir: string|null}} options.executionTarget - 执行目标快照。
+ * @param {object} options.limits - 前台等待限制。
+ * @param {(output: Function) => Promise<object>} options.execute - 执行一次，输出经给定回调回传。
+ * @param {Function} options.stream - 前台输出回调。
+ * @param {Function} [options.stop] - 可选的取消回调（仅 shell 任务有）。
+ * @param {string} [options.stopHint] - 回执里的停止方式说明。
+ * @returns {Promise<object|null>} 前台结果；已转后台时为 null。
+ */
+async function runWithBackgroundFallback({ args, call, kind, executionTarget, limits, execute, stream, stop, stopHint }) {
+	const output = createTailBuffer()
+	let foreground = !isAsyncRequested(call.params)
+	const started = awakeNow()
+	const settle = Promise.resolve().then(() => execute((channel, data) => {
+		output.push(data)
+		if (foreground) stream(channel, data)
+	})).then(value => ({ value }), error => ({ error }))
+	if (foreground) {
+		const outcome = await settleWithin(settle, limits.timeoutMs)
+		if (outcome) {
+			if ('error' in outcome) throw outcome.error
+			return outcome.value
+		}
+	}
+	const waitedMs = foreground ? awakeNow() - started : null
+	foreground = false
+	const task = registerTask({
+		kind, label: taskPreview(call.inner), owner: ownerFromArgs(args), eventContext: args, stop,
+		/**
+		 * 等这次执行结束后返回其结果文本。
+		 * @returns {Promise<string>} 过护栏的结果。
+		 */
+		run: async () => {
+			const result = await settle
+			if (result.error) throw result.error
+			const { content, fullOutput, failed } = result.value
+			const text = content ?? (await guardOutput(fullOutput, { name: `shell-${kind}`, label: 'shell 输出' })).text
+			if (failed) throw new Error(text)
+			return text
+		},
+		/**
+		 * 运行中检视：返回最近一段输出。
+		 * @returns {string} 最近输出。
+		 */
+		inspect: () => redactSecrets(removeTerminalSequences(output.read()).trim()) || '（暂无输出）',
+		meta: { code: call.inner, executionTarget, pluginName: 'code-execution', tool: `code-execution.run-${kind}` },
 	})
-	return { regen: true, failed: true }
+	writeAsyncDispatchLog(args, task, kind === 'js' ? 'JS' : kind,
+		waitedMs === null ? '已在后台运行'
+			: `已等待 ${formatElapsed(waitedMs)} 达到等待时限（超时），执行未被打断、继续在后台运行`,
+		stopHint ?? 'JS 在进程内运行，无法强制终止。')
+	return null
 }
 
 /**
@@ -288,7 +353,7 @@ function createTailBuffer(limit = 4000) {
 async function logCode(label, code, lang) {
 	try {
 		const { highlight } = await import('npm:cli-highlight')
-		console.info(label + '\n' + highlight(code, { language: lang, ignoreIllegals: true }))
+		console.info(label + '\n' + highlight(code, { language: lang === 'pwsh' ? 'powershell' : lang, ignoreIllegals: true }))
 	}
 	catch { console.info(label, code) }
 }
@@ -768,45 +833,15 @@ export const runJsReplyHandler = defineReplyHandler({
 		const stream = (channel, data) => emit?.({ callId, phase: 'chunk', name, stream: channel, data })
 		const limits = parseRunLimits(attrs, JS_DEFAULT_TIMEOUT_MS)
 
-		if (isAsyncRequested(attrs)) {
-			if (!isAsyncToolingEnabled()) return rejectAsyncWithoutTooling(args)
-			const inspectBuffer = createTailBuffer()
-			/**
-			 * 记录控制台输出末尾片段，供运行中检视。
-			 * @param {'stdout'|'stderr'} channel - 输出通道。
-			 * @param {string} data - 分片文本。
-			 * @returns {void}
-			 */
-			const inspectStream = (channel, data) => inspectBuffer.push(data)
-			const task = registerTask({
-				kind: 'js',
-				label: taskPreview(call.inner),
-				owner: ownerFromArgs(args),
-				eventContext: args,
-				/**
-				 * 后台执行 JS 并返回供完成通知使用的文本。
-				 * @returns {Promise<string>} 结果文本
-				 */
-				run: async () => {
-					const { content, failed } = await executeRunJs({ runtime, args, call, limits, remote, stream: inspectStream })
-					if (failed) throw new Error(content)
-					return content
-				},
-				/**
-				 * 运行中检视：返回控制台输出的最后一段。
-				 * @returns {string} 末尾控制台输出。
-				 */
-				inspect: () => redactSecrets(inspectBuffer.read().trim()) || '（暂无控制台输出）',
-				meta: { code: call.inner, remote, executionTarget, pluginName: 'code-execution', tool: name },
-			})
-			writeAsyncDispatchLog(args, task, 'JS')
-			return { regen: true, pending: true }
-		}
-
 		await logCode(`${args.Charname} running JS code:`, call.inner, 'js')
 		emit?.({ callId, phase: 'start', name, lang: 'js', code: call.inner })
-		const { content, showParts, failed } = await executeRunJs({ runtime, args, call, limits, remote, stream })
+		const outcome = await runWithBackgroundFallback({
+			args, call, kind: 'js', executionTarget, limits, stream,
+			execute: output => executeRunJs({ runtime, args, call, limits: { ...limits, timeoutMs: null }, remote, stream: output }),
+		})
 		emit?.({ callId, phase: 'end', name })
+		if (!outcome) return { regen: true, pending: true }
+		const { content, showParts, failed } = outcome
 		AddLongTimeLog({
 			name: 'code-execution.run-js',
 			role: 'tool',
@@ -838,16 +873,20 @@ export const inlineJsReplyHandler = defineReplyHandler({
  * @param {object} options.call - 调用对象。
  * @param {object} options.limits - 运行限制。
  * @param {string} options.shellName - shell 名。
+ * @param {Function} [options.onSpawn] 接收本机进程（供取消）。
+ * @param {Function} [options.onStop] 接收远程取消回调。
  * @param {Function|null} options.stream - 流式输出回调（后台执行传 null）。
  * @returns {Promise<{fullOutput: string, rawOutput: string, showBody: string}>}
  *   完整结果文本（已去终端控制序列）、保留 ANSI 的原始输出、人类展示层结果区（ansi 代码块）。
  */
-async function executeRunShell({ runtime, args, call, limits, shellName, stream }) {
+async function executeRunShell({ runtime, args, call, limits, shellName, stream, onSpawn, onStop }) {
 	const chunks = []
 	let shell_result
 	try {
 		shell_result = await runtime.executorFor(call.params).execShell(shellName, call.inner, {
 			timeoutMs: limits.timeoutMs,
+			onSpawn,
+			onStop,
 			/**
 			 * 记录原始输出分片并转发给流式回调。
 			 * @param {'stdout'|'stderr'} channel - 输出通道。
@@ -872,7 +911,7 @@ async function executeRunShell({ runtime, args, call, limits, shellName, stream 
 	})
 	let fullOutput
 	let showBody
-	const failed = Boolean(shell_result instanceof Error || timedOut || shell_result?.code)
+	const failed = Boolean(shell_result instanceof Error || timedOut || shell_result?.code || shell_result?.signal)
 	if (shell_result instanceof Error) {
 		fullOutput = '执行出错：\n' + (shell_result.stack || String(shell_result)) + notice
 		showBody = fullOutput
@@ -925,45 +964,43 @@ function createRunShellReplyHandler(shell_name, resolveShells) {
 			const stream = (channel, data) => emit?.({ callId, phase: 'chunk', name, stream: channel, data })
 			const limits = parseRunLimits(attrs, SHELL_DEFAULT_TIMEOUT_MS)
 
-			if (isAsyncRequested(attrs)) {
-				if (!isAsyncToolingEnabled()) return rejectAsyncWithoutTooling(args)
-				const inspectBuffer = createTailBuffer()
-				/**
-				 * 记录原始输出末尾片段，供运行中检视（去掉终端控制序列）。
-				 * @param {'stdout'|'stderr'} channel - 输出通道。
-				 * @param {string} data - 分片文本。
-				 * @returns {void}
-				 */
-				const inspectStream = (channel, data) => inspectBuffer.push(data)
-				const task = registerTask({
-					kind: shell_name,
-					label: taskPreview(call.inner),
-					owner: ownerFromArgs(args),
-					eventContext: args,
-					/**
-					 * 后台执行 shell 并返回供完成通知使用的文本。
-					 * @returns {Promise<string>} 结果文本
-					 */
-					run: async () => {
-						const { fullOutput, failed } = await executeRunShell({ runtime, args, call, limits, shellName: shell_name, stream: inspectStream })
-						if (failed) throw new Error(fullOutput)
-						return (await guardOutput(fullOutput, { name: `shell-${shell_name}`, label: 'shell 输出' })).text
-					},
-					/**
-					 * 运行中检视：返回 stdall 的最后一段（去终端控制序列）。
-					 * @returns {string} 末尾输出。
-					 */
-					inspect: () => redactSecrets(removeTerminalSequences(inspectBuffer.read()).trim()) || '（暂无输出）',
-					meta: { code: call.inner, executionTarget, pluginName: 'code-execution', tool: name },
-				})
-				writeAsyncDispatchLog(args, task, shell_name)
-				return { regen: true, pending: true }
-			}
-
 			await logCode(`${args.Charname} running ${shell_name} code:`, call.inner, shell_name)
 			emit?.({ callId, phase: 'start', name, lang: shell_name, code: call.inner })
-			const { fullOutput, showBody, failed } = await executeRunShell({ runtime, args, call, limits, shellName: shell_name, stream })
+			let child
+			let remoteStop
+			const local = !resolveTarget(args, attrs).remote
+			const outcome = await runWithBackgroundFallback({
+				args, call, kind: shell_name, executionTarget, limits, stream,
+				stopHint: '需要时可 <stop-async id="任务id"/> 终止它的进程树。',
+				/**
+				 * 在任务自己的目标机器上终止进程树。
+				 * @returns {Promise<void>} 终止请求完成。
+				 */
+				stop: async () => {
+					if (!local) {
+						if (!remoteStop) throw new Error('远程执行尚未就绪，请稍后重试。')
+						return await remoteStop()
+					}
+					if (!child) throw new Error('进程尚未启动，请稍后重试。')
+					if (child.exitCode !== null || child.signalCode !== null) return
+					await killProcessTree(child)
+				},
+				/**
+				 * 无生命周期限制地执行一次。
+				 * @param {Function} output 输出回调。
+				 * @returns {Promise<object>} 完成后的执行结果。
+				 */
+				execute: output => executeRunShell({
+					runtime, args, call, limits: { ...limits, timeoutMs: null }, shellName: shell_name, stream: output,
+					/** 记下本机进程，供停止使用。 @param {object} spawned 已 spawn 的进程。 @returns {void} 无返回值。 */
+					onSpawn: spawned => { child = spawned },
+					/** 记下远程取消回调，供停止使用。 @param {Function} stop 远程取消回调。 @returns {void} 无返回值。 */
+					onStop: stop => { remoteStop = stop },
+				}),
+			})
 			emit?.({ callId, phase: 'end', name })
+			if (!outcome) return { regen: true, pending: true }
+			const { fullOutput, showBody, failed } = outcome
 			console.info(`${args.Charname} ${shell_name} result:`, runtime.execedCodes[call.inner])
 			const guarded = await guardOutput(fullOutput, { name: `shell-${shell_name}`, label: 'shell 输出' })
 			AddLongTimeLog({
@@ -1007,6 +1044,7 @@ function createInlineShellReplyHandler(shell_name, resolveShells) {
  */
 export function getCodeExecutionReplyHandlers({ resolveShells = resolveAvailableShells, capture = captureMonitor } = {}) {
 	const handlers = [runJsReplyHandler, inlineJsReplyHandler, createWaitScreenHandler(capture)]
+	if (!isAsyncToolingEnabled()) handlers.push(...flattenReplyHandlers(asyncTaskReplyHandlers))
 	for (const shell_name of registeredShellNames())
 		handlers.push(
 			createRunShellReplyHandler(shell_name, resolveShells),
