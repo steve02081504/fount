@@ -73,3 +73,18 @@ Deno.test('buildDialogue records an edit at the round it happens and replay adva
 	assertEquals(replayDialogue(dialogue.events, { upToRound: 1 })[0].content, 'v1')
 	assertEquals(replayDialogue(dialogue.events, { upToRound: 2 })[0].content, 'v2')
 })
+
+Deno.test('attachment edits replay at their request round even when text is unchanged', () => {
+	const a = [{ name: 'a.txt', hash: 'a'.repeat(64) }]
+	const b = [{ name: 'b.txt', hash: 'b'.repeat(64) }]
+	const dialogue = buildDialogue([
+		request(1, [{ id: 'm', role: 'user', content: '', files: a }]),
+		request(2, [{ id: 'm', role: 'user', content: '', files: b }]),
+		request(3, [{ id: 'm', role: 'user', content: '', files: b }]),
+		request(4, [{ id: 'm', role: 'user', content: '', files: [] }]),
+	])
+	assertEquals(dialogue.events.map(event => event.round), [1, 2, 4])
+	assertEquals(replayDialogue(dialogue.events, { upToRound: 1 })[0].files, a)
+	assertEquals(replayDialogue(dialogue.events, { upToRound: 3 })[0].files, b)
+	assertEquals(replayDialogue(dialogue.events)[0].files, [])
+})

@@ -18,6 +18,8 @@ import { buildDialogue } from '../public/shared/dialogueReplay.mjs'
 import { conversationKey, mergeDialogueEvents, summarizeConversations } from '../public/shared/generationChain.mjs'
 import { estimateGenerationCache } from '../public/shared/promptCache.mjs'
 
+import { isAttachmentHash, storeAttachments, sweepAttachments } from './attachments.mjs'
+
 /**
  * 重导出生成链 / 会话聚合纯函数，供调用方从本模块统一获取。
  */
@@ -91,6 +93,15 @@ function settingsDir(username) {
  */
 function storeDir(username) {
 	return path.join(os.tmpdir(), TEMP_STORE_REL, username)
+}
+
+/**
+ * 用户附件（内容寻址 blob）目录。
+ * @param {string} username 用户
+ * @returns {string} 目录路径
+ */
+function attachmentsDir(username) {
+	return path.join(storeDir(username), 'attachments')
 }
 
 /**
@@ -293,6 +304,7 @@ export function pruneGenerations(username, { index } = {}) {
 		loadedIndex.records = kept
 		saveIndex(username, loadedIndex)
 	}
+	sweepAttachments(attachmentsDir(username), loadedIndex.records.map(summary => recordPath(username, summary.id)))
 	return removed
 }
 
@@ -333,12 +345,14 @@ export async function recordGeneration(username, record) {
 		full.cacheRate = full.requests?.length
 			? estimateGenerationCache(previousConversationPrompt(username, index, full), full.requests).rate
 			: null
-		saveJsonFile(recordPath(username, full.id), full)
+		const stored = storeAttachments(attachmentsDir(username), full)
+		saveJsonFile(recordPath(username, full.id), stored)
 		index.records = index.records.filter(summary => summary.id !== full.id)
 		index.records.push(toSummary(full))
 		saveIndex(username, index)
-		void events.emit('GenerationRecorded', { username, record: full }).catch(console.error)
-		return full
+		void events.emit('GenerationRecorded', { username, record: stored }).catch(console.error)
+		sweepAttachments(attachmentsDir(username), index.records.map(summary => recordPath(username, summary.id)))
+		return stored
 	})
 }
 
@@ -398,6 +412,7 @@ export async function clearGenerations(username, filter = {}) {
 			index.records = kept
 			saveIndex(username, index)
 		}
+		sweepAttachments(attachmentsDir(username), index.records.map(summary => recordPath(username, summary.id)))
 		return { removed }
 	})
 }
@@ -416,7 +431,8 @@ export async function getGeneration(username, id) {
 	const retention = loadRetention(username)
 	const action = retentionAction(record, retention, Date.now())
 	if (action === 'delete') {
-		try { fs.rmSync(file, { force: true }) } catch { /* 忽略删除失败 */ }
+		// 过期记录连带其附件一起清掉：单条删除不会做可达性分析，交给整用户清理。
+		pruneGenerations(username)
 		return null
 	}
 	if (action === 'strip-input' && stripPromptPayloads(record)) saveJsonFile(file, record)
@@ -491,4 +507,40 @@ export async function getConversation(username, key) {
 	}
 	if (!generations.length) return null
 	return { key, generations, dialogue: mergeDialogueEvents(generations) }
+}
+
+/**
+ * 在记录子树（含嵌套的对话 / 请求快照）中定位附件引用，可选按引用文件名匹配。
+ * @param {any} value 子树
+ * @param {string} hash Blob 键
+ * @param {string} [name] 引用文件名
+ * @returns {object | null} 匹配的引用描述；无则 null
+ */
+function findAttachmentReference(value, hash, name) {
+	if (!value || typeof value !== 'object') return null
+	if (value.hash === hash && (name === undefined || value.name === name)) return value
+	for (const item of Object.values(value)) {
+		const found = findAttachmentReference(item, hash, name)
+		if (found) return found
+	}
+	return null
+}
+
+/**
+ * 按保留策略清理后，解析当前用户可达的附件。
+ * @param {string} username 用户
+ * @param {string} hash Blob 键
+ * @param {string} [name] 引用文件名
+ * @returns {{ path: string, file: object } | null} blob 路径与引用描述；无则 null
+ */
+export function getAttachment(username, hash, name) {
+	if (!isAttachmentHash(hash)) return null
+	pruneGenerations(username)
+	for (const summary of loadIndex(username).records) {
+		const file = findAttachmentReference(loadJsonFileIfExists(recordPath(username, summary.id), null), hash, name)
+		if (!file) continue
+		const blob = path.join(attachmentsDir(username), hash)
+		if (fs.existsSync(blob)) return { path: blob, file }
+	}
+	return null
 }

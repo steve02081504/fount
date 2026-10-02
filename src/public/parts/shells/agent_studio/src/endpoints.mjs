@@ -12,6 +12,7 @@ import {
 	buildChains,
 	clearGenerations,
 	getConversation,
+	getAttachment,
 	getGeneration,
 	getRetention,
 	listConversations,
@@ -63,12 +64,27 @@ function generationFilter(query = {}) {
 	return filter
 }
 
+/** 可内联渲染的媒体类型白名单；其余一律当作纯文本投递，避免 HTML 之类被当作页面执行。 */
+const INLINE_MEDIA_MIME = /^(?:image\/(?:png|jpeg|gif|webp|avif|bmp)|(?:audio|video)\/[a-z0-9.+-]+)$/i
+
 /**
  * 注册 agent_studio 的全部端点。
  * @param {object} router Express 路由实例
  * @returns {void}
  */
 export function setEndpoints(router) {
+	router.get(`${PREFIX}/attachment/:hash`, authenticate, (req, res) => {
+		const { username } = getUserByReq(req)
+		const attachment = getAttachment(username, req.params.hash, typeof req.query.name === 'string' ? req.query.name : undefined)
+		if (!attachment) throw httpError(404, 'attachment not found')
+		res.set('Cache-Control', 'private, no-store')
+		res.set('X-Content-Type-Options', 'nosniff')
+		if (req.query.download) return res.download(attachment.path, attachment.file.name || req.params.hash)
+		const mime = (attachment.file.mime_type || '').split(';')[0].trim()
+		res.type(INLINE_MEDIA_MIME.test(mime) ? mime : 'text/plain')
+		res.sendFile(attachment.path)
+	})
+
 	router.get(`${PREFIX}/chars`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		res.status(200).json(await listChars(username))

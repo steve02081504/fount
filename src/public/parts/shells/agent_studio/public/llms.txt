@@ -115,3 +115,12 @@ Agent Studio 经 shell 的 `ArgumentsHandler` 暴露 CLI，便于 agent dump 数
 
 ### GET /api/parts/shells:agent_studio/runs/:id
 - 用途：单次基准运行完整结果（含每用例回复与裁判评分）。
+
+## 生成附件
+
+### GET /api/parts/shells:agent_studio/attachment/:hash
+- 用途：读取当前用户保留记录引用的附件内容，支持字节范围请求（音视频播放和文本分段读取）。`hash` 为附件内容的 SHA-256。
+- 查询：`name` 可指定该哈希对应的引用文件名；`download=1` 下载完整文件并保留该引用的名称。
+- 逐轮请求的 `messages[].files` 和对话消息的 `files` 包含 `{ hash, byteLength, name, mime_type, description }`，不包含文件数据。
+- 相同内容在当前用户的不同 prompt 间共用一份临时附件；记录清理或过期后，对剩余记录进行可达性分析并自动删除不再引用的附件。仍由对话记录引用的附件会保留至该记录清理。
+- 附件内容和 prompt 均保存在系统临时目录，不进入 shell 数据目录。历史上未采集的数据无法恢复；不存在、已过期或不属于当前用户的附件返回 404。

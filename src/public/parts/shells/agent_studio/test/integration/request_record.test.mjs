@@ -105,3 +105,16 @@ Deno.test('beginPromptRequest records message ids so consecutive rounds can alig
 	assertEquals(ops, ['insert', 'insert', 'insert'])
 	assertEquals(record.dialogue.events[1].message.id, 'm2')
 })
+
+Deno.test('request snapshots retain immutable attachment bytes and hashes', async () => {
+	const bytes = new Uint8Array([1, 2, 3])
+	const args = makeArgs()
+	const prompt = makePromptStruct([{ id: 'file', role: 'user', content: '', files: [{ name: 'image.png', mime_type: 'image/png', buffer: bytes }] }])
+	await beginPromptRequest(args, prompt)
+	bytes.fill(0)
+	const record = collectGenerationRecord(args)
+	const file = record.requests[0].messages[0].files[0]
+	assertEquals([...file.buffer], [1, 2, 3])
+	assertEquals(file.hash.length, 64)
+	assertEquals(record.dialogue.events[0].message.files[0].hash, file.hash)
+})

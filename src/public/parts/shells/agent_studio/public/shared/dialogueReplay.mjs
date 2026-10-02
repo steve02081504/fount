@@ -19,6 +19,7 @@ function pickMessage(message) {
 		name: message.name ?? '',
 		uid: message.uid ?? '',
 		content: message.content ?? '',
+		...message.files?.length ? { files: message.files } : {},
 	}
 }
 
@@ -41,14 +42,15 @@ export function buildDialogue(requests, final = {}) {
 		for (const message of request.messages || []) {
 			if (!message?.id) continue
 			const content = message.content ?? ''
+			const signature = JSON.stringify([content, (message.files ?? []).map(({ buffer, ...file }) => file)])
 			const previous = latest.get(message.id)
 			if (previous === undefined) {
-				latest.set(message.id, content)
+				latest.set(message.id, signature)
 				events.push({ round: ['char', 'tool'].includes(message.role) ? Math.max(1, round - 1) : round, op: 'insert', message: pickMessage(message) })
 			}
-			else if (previous !== content) {
-				latest.set(message.id, content)
-				events.push({ round, op: 'update', id: message.id, content })
+			else if (previous !== signature) {
+				latest.set(message.id, signature)
+				events.push({ round, op: 'update', id: message.id, content, files: message.files ?? [] })
 			}
 		}
 	}
@@ -88,7 +90,10 @@ export function replayDialogue(events, { upToRound } = {}) {
 		}
 		else if (event.op === 'update' && event.id) {
 			const existing = byId.get(event.id)
-			if (existing) existing.content = event.content
+			if (existing) {
+				existing.content = event.content
+				if (event.files !== undefined) existing.files = event.files
+			}
 		}
 	}
 	return order.map(id => byId.get(id))

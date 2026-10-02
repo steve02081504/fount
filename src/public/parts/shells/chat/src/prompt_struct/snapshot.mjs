@@ -10,6 +10,7 @@
 /** @typedef {import('../../../../../../decl/AIsource.ts').AIsource_t} AIsource_t */
 
 import { formatErrorMessage } from '../../../../../../scripts/error_format.mjs'
+import { snapshotAttachment } from '../../../agent_studio/src/attachments.mjs'
 
 import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from './index.mjs'
 import { serializeSnapshotValue } from './serializeSnapshot.mjs'
@@ -89,6 +90,7 @@ export async function projectPromptStruct(prompt, options = {}) {
 			// 保留条目类型（如 `summary`）：供缓存报告识别发生上下文压缩的轮次
 			...entry.type ? { type: entry.type } : {},
 			content: clampText(entry.content),
+			...entry.files?.length ? { files: entry.files.map(snapshotAttachment) } : {},
 		}
 	})
 	let snapshot = null

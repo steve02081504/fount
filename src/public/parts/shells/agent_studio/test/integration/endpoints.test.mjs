@@ -32,6 +32,7 @@ Deno.test('setEndpoints registers the full agent_studio REST surface', async () 
 	setEndpoints(router)
 	const registered = router.routes.map(route => `${route.method} ${route.path}`).sort()
 	const expected = [
+		`GET ${PREFIX}/attachment/:hash`,
 		`GET ${PREFIX}/chars`,
 		`GET ${PREFIX}/char/:id/overview`,
 		`GET ${PREFIX}/subagents`,
