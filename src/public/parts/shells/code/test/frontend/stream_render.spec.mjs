@@ -24,6 +24,34 @@ test('orphan-fence repair leaves intentional and closed code fences intact', asy
 
 const SUBAGENT_HEADING_TEXT = '<run-subagent plugins="code-execution,file-operations" round-limit="20" time-limit="15m" ai-source="deepseek">\n# 任务：优化文件夹预读机制，排除已处理文件\n\n## 背景\n\n正文\n</run-subagent>'
 
+test('stream append preserves earlier nodes and the growing code block toolbar', async ({ modulePage }) => {
+	const result = await modulePage.run(async () => {
+		const { StreamRenderer } = await import('/parts/shells:chat/src/ui/StreamRenderer.mjs')
+		const body = document.createElement('div')
+		document.body.appendChild(body)
+		const renderer = new StreamRenderer(body, { allowDangerousHtml: true })
+		renderer.setTarget('前文。\n\n```js\nconst a = 1;\n')
+		await renderer.finish()
+		const paragraph = body.querySelector('p')
+		const block = body.querySelector('.markdown-code-block')
+		const button = block.querySelector('button')
+		const id = block.id
+		renderer.setTarget('前文。\n\n```js\nconst a = 1;\nconst b = 2;\n')
+		await renderer.finish()
+		const growing = !!button && paragraph === body.querySelector('p') && block === body.querySelector('.markdown-code-block')
+			&& button === block.querySelector('button') && id === block.id
+		renderer.setTarget('前文。\n\n```js\nconst a = 1;\nconst b = 2;\n```\n\n后文。')
+		await renderer.finish()
+		const appended = paragraph === body.querySelector('p') && block === body.querySelector('.markdown-code-block')
+			&& button === block.querySelector('button') && body.textContent.includes('后文。')
+		body.remove()
+		return { growing, appended, code: block.querySelector('pre')?.textContent }
+	})
+	expect(result.growing).toBe(true)
+	expect(result.appended).toBe(true)
+	expect(result.code).toContain('const b = 2;')
+})
+
 test('unknown subagent tags stay literal and keep headings through messageMarkdown and the stream transform', async ({ modulePage }) => {
 	const result = await modulePage.run(async markdown => {
 		// messages.mjs 经 session.mjs 拉起 composer.mjs，其模块顶层即需 #messages / #composer-input
