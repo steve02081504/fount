@@ -830,6 +830,8 @@
 					"expected": "3m4s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/composer.spec.mjs",
+						"src/public/pages/scripts/components/emojiPicker{,Window}.{mjs,css}",
+						"src/public/parts/shells/chat/public/hub/widgets.css",
 						"src/public/parts/shells/chat/public/hub/composerExtras.mjs",
 						"src/public/parts/shells/chat/public/hub/composerDraft.mjs",
 						"src/public/parts/shells/chat/public/hub/messages/composerController.mjs",

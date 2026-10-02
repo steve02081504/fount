@@ -1,5 +1,5 @@
 /**
- * 共享 emoji picker：包头像 rail + 连续滚动分区（Discord 式）。
+ * 共享 emoji picker：包头像 rail + 可折叠分组，共用一个内容滚动区。
  */
 import {
 	orderPackSections,
@@ -20,9 +20,11 @@ import {
 } from '../features/emoji/unicodeData.mjs'
 import { handleError } from '../features/errorHandlers.mjs'
 import { escapeHtml } from '../lib/escapeHtml.mjs'
+import { onElementRemoved } from '../lib/onElementRemoved.mjs'
 import { svgInliner } from '../lib/svgInliner.mjs'
 
 import { showEmojiPackPreview } from './emojiPackPreview.mjs'
+import { createEmojiPickerWindow } from './emojiPickerWindow.mjs'
 import { positionFloatingPanel, wireOutsideClickClose } from './floatingPanel.mjs'
 
 /** 重导出 showEmojiPackPreview。 */
@@ -238,63 +240,6 @@ async function buildSections(context = {}) {
 }
 
 /**
- * 绑定 rail 与滚动区的 intersection 高亮，并按位置显隐跳转按钮。
- * @param {HTMLElement} rail 左侧 rail 容器
- * @param {HTMLElement} scroll 右侧滚动区
- * @param {object[]} sections 分区元数据
- * @param {{ jumpStart: HTMLElement, jumpUnicode: HTMLElement, firstUnicodeId: string | undefined, sectionById: Map<string, object> }} jump 跳转按钮与 unicode 首分区
- * @returns {() => void} 断开 observer / scroll 监听的清理函数
- */
-function wireScrollSpy(rail, scroll, sections, jump) {
-	const buttons = [...rail.querySelectorAll('[data-section]')]
-	/** @type {Map<string, number>} */
-	const ratios = new Map()
-	/** @type {string | null} */
-	let activeSectionId = null
-
-	/**
-	 * 已在顶部则藏「回开头」；已在 unicode 区则藏「跳到 unicode」。
-	 * @returns {void}
-	 */
-	function updateJumpVisibility() {
-		jump.jumpStart.classList.toggle('hidden', scroll.scrollTop < 8)
-		const active = activeSectionId ? jump.sectionById.get(activeSectionId) : null
-		jump.jumpUnicode.classList.toggle('hidden', !jump.firstUnicodeId || active?.kind === 'unicode')
-	}
-
-	const observer = new IntersectionObserver(entries => {
-		for (const entry of entries)
-			ratios.set(entry.target.dataset.section, entry.intersectionRatio)
-		let bestId = null
-		let bestRatio = 0
-		for (const [id, ratio] of ratios)
-			if (ratio > bestRatio) {
-				bestRatio = ratio
-				bestId = id
-			}
-		if (!bestId) return
-		activeSectionId = bestId
-		for (const btn of buttons) {
-			const active = btn.dataset.section === bestId
-			btn.classList.toggle('emoji-rail-active', active)
-			btn.setAttribute('aria-current', active ? 'true' : 'false')
-		}
-		updateJumpVisibility()
-	}, { root: scroll, threshold: [0, 0.25, 0.5, 0.75, 1] })
-
-	for (const section of sections) {
-		const el = scroll.querySelector(`[data-section="${CSS.escape(section.id)}"]`)
-		if (el) observer.observe(el)
-	}
-	scroll.addEventListener('scroll', updateJumpVisibility, { passive: true })
-	updateJumpVisibility()
-	return () => {
-		observer.disconnect()
-		scroll.removeEventListener('scroll', updateJumpVisibility)
-	}
-}
-
-/**
  * @param {HTMLElement} anchor 锚点
  * @param {object} section 分区
  * @returns {void}
@@ -315,7 +260,7 @@ function openSectionPackPreview(anchor, section) {
  * @param {{ onInsert: (token: string) => void, usage?: object | null }} handlers 插入与 usage 回调
  * @returns {{ disconnect: () => void, scrollElement: HTMLElement, railElement: HTMLElement }} DOM 引用与清理句柄
  */
-function renderContinuousPicker(host, sections, handlers) {
+export function renderContinuousPicker(host, sections, handlers) {
 	host.replaceChildren()
 
 	const sectionById = new Map(sections.map(section => [section.id, section]))
@@ -348,7 +293,12 @@ function renderContinuousPicker(host, sections, handlers) {
 
 	const firstUnicodeId = sections.find(s => s.kind === 'unicode')?.id
 
-	for (const section of sections) {
+	/**
+	 * 渲染单个 rail 按钮。
+	 * @param {object} section 分区
+	 * @returns {HTMLButtonElement} rail 按钮
+	 */
+	function renderRail(section) {
 		const packName = section.kind === 'pack' ? section.pack?.name || section.packId || '' : ''
 		const railBtn = document.createElement('button')
 		railBtn.type = 'button'
@@ -362,47 +312,51 @@ function renderContinuousPicker(host, sections, handlers) {
 		else
 			railBtn.innerHTML = `<span class="emoji-rail-glyph" aria-hidden="true">${escapeHtml(section.glyph || '?')}</span>`
 
-		const sectionEl = document.createElement('section')
-		sectionEl.className = 'emoji-section'
-		sectionEl.dataset.section = section.id
-		const header = document.createElement(section.kind === 'pack' ? 'button' : 'h2')
-		header.className = section.kind === 'pack'
-			? 'emoji-section-header emoji-section-header-pack'
-			: 'emoji-section-header'
-		if (section.kind === 'pack') {
-			header.type = 'button'
-			header.dataset.packPreview = '1'
-		}
-		if (section.i18nKey) {
-			railBtn.dataset.i18n = section.i18nKey
-			header.dataset.i18n = `${section.i18nKey}.title`
-		}
-		else if (packName) {
+		if (section.i18nKey) railBtn.dataset.i18n = section.i18nKey
+		else {
 			railBtn.title = packName
 			railBtn.setAttribute('aria-label', packName)
 			railBtn.setAttribute('user-content', '')
-			header.textContent = packName
-			header.setAttribute('user-content', '')
 		}
-		rail.appendChild(railBtn)
+		return railBtn
+	}
+
+	/**
+	 * 渲染分区外壳（summary + 空网格）。
+	 * @param {object} section 分区
+	 * @returns {HTMLDetailsElement} 分区元素
+	 */
+	function renderSection(section) {
+		const packName = section.pack?.name || section.packId || ''
+		const sectionEl = document.createElement('details')
+		sectionEl.open = true
+		sectionEl.className = 'emoji-section'
+		sectionEl.dataset.section = section.id
+		const header = document.createElement('summary')
+		const label = document.createElement('span')
+		header.className = section.kind === 'pack'
+			? 'emoji-section-header emoji-section-header-pack'
+			: 'emoji-section-header'
+		if (section.kind === 'pack')
+			header.dataset.packPreview = '1'
+
+		if (section.i18nKey) label.dataset.i18n = `${section.i18nKey}.title`
+		else {
+			label.textContent = packName
+			label.setAttribute('user-content', '')
+		}
+		header.appendChild(label)
 		const grid = document.createElement('div')
 		grid.className = 'emoji-grid'
-		if (!section.items.length) {
-			const empty = document.createElement('div')
-			empty.className = 'emoji-grid-empty'
-			empty.dataset.i18n = 'chat.emoji.emptyPack'
-			grid.appendChild(empty)
-		}
-		for (const item of section.items)
-			appendEmojiGridItem(grid, item)
 		sectionEl.append(header, grid)
-		scroll.appendChild(sectionEl)
+		return sectionEl
 	}
 
 	rail.addEventListener('wheel', event => {
 		if (rail.scrollWidth <= rail.clientWidth) return
 		event.preventDefault()
-		const delta = event.deltaMode === 1 ? event.deltaY * 16 : event.deltaMode === 2 ? event.deltaY * rail.clientWidth : event.deltaY
+		const amount = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY
+		const delta = event.deltaMode === 1 ? amount * 16 : event.deltaMode === 2 ? amount * rail.clientWidth : amount
 		rail.scrollLeft += delta
 	}, { passive: false })
 
@@ -419,31 +373,25 @@ function renderContinuousPicker(host, sections, handlers) {
 	footer.appendChild(discoverLink)
 	host.appendChild(footer)
 
-	const disconnectSpy = wireScrollSpy(rail, scroll, sections, {
-		jumpStart,
-		jumpUnicode,
-		firstUnicodeId,
-		sectionById,
+	const windowed = createEmojiPickerWindow({
+		rail, scroll, sections, renderRail, renderSection, appendItem: appendEmojiGridItem,
+		/**
+		 * 活动分区变化时更新跳转按钮显隐。
+		 * @param {object} section 活动分区
+		 */
+		onActive: section => {
+			jumpStart.classList.toggle('hidden', scroll.scrollTop < 8)
+			jumpUnicode.classList.toggle('hidden', !firstUnicodeId || section?.kind === 'unicode')
+		},
 	})
-
-	/**
-	 * 平滑滚动到指定分区。
-	 * @param {string} sectionId 分区 ID
-	 * @returns {void}
-	 */
-	function scrollToSection(sectionId) {
-		const el = scroll.querySelector(`[data-section="${CSS.escape(sectionId)}"]`)
-		el?.scrollIntoView({ block: 'start', behavior: 'smooth' })
-		const railBtn = rail.querySelector(`[data-section="${CSS.escape(sectionId)}"]`)
-		railBtn?.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' })
-	}
+	const disconnect = onElementRemoved(host, windowed.destroy)
 
 	jumpStart.addEventListener('click', () => {
 		scroll.scrollTo({ top: 0, behavior: 'smooth' })
 		rail.scrollTo({ left: 0, behavior: 'smooth' })
 	})
 	jumpUnicode.addEventListener('click', () => {
-		if (firstUnicodeId) scrollToSection(firstUnicodeId)
+		if (firstUnicodeId) windowed.jump(firstUnicodeId)
 	})
 	rail.addEventListener('click', event => {
 		const btn = event.target.closest('[data-section]')
@@ -454,7 +402,7 @@ function renderContinuousPicker(host, sections, handlers) {
 			openSectionPackPreview(btn, section)
 			return
 		}
-		scrollToSection(btn.dataset.section)
+		windowed.jump(btn.dataset.section)
 	})
 	rail.addEventListener('contextmenu', event => {
 		const btn = event.target.closest('[data-section]')
@@ -474,12 +422,20 @@ function renderContinuousPicker(host, sections, handlers) {
 		openSectionPackPreview(btn, section)
 	})
 
+	/**
+	 * 从包 summary 元素打开其所在分区预览。
+	 * @param {HTMLElement} header 包 summary
+	 * @returns {void}
+	 */
+	function previewPack(header) {
+		openSectionPackPreview(header, sectionById.get(header.closest('[data-section]')?.dataset.section))
+	}
+
 	scroll.addEventListener('click', event => {
 		const header = event.target.closest('[data-pack-preview]')
-		if (header) {
-			const sectionEl = header.closest('[data-section]')
-			const section = sectionById.get(sectionEl?.dataset?.section)
-			openSectionPackPreview(header, section)
+		if (header && event.altKey) {
+			event.preventDefault()
+			previewPack(header)
 			return
 		}
 		const groupButton = event.target.closest('[data-group-emoji-ref]')
@@ -498,9 +454,15 @@ function renderContinuousPicker(host, sections, handlers) {
 		void handlers.usage?.record?.({ kind: 'unicode', unicode: emoji })
 		handlers.onInsert(emoji)
 	})
+	scroll.addEventListener('contextmenu', event => {
+		const header = event.target.closest('[data-pack-preview]')
+		if (!header) return
+		event.preventDefault()
+		previewPack(header)
+	})
 
 	return {
-		disconnect: disconnectSpy,
+		disconnect,
 		scrollElement: scroll,
 		railElement: rail,
 	}
@@ -655,5 +617,5 @@ export function wireEmojiPickerButton(button, onInsert, pickerContext = {}) {
 
 document.head.prepend(Object.assign(document.createElement('link'), {
 	rel: 'stylesheet',
-	href: '/scripts/components/emojiPicker.css',
+	href: new URL('./emojiPicker.css', import.meta.url).href,
 }))

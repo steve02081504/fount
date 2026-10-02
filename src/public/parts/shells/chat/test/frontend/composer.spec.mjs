@@ -120,6 +120,21 @@ test.describe('Chat composer', () => {
 		await expect(picker.locator('.emoji-rail-jump-unicode')).toBeVisible()
 		await picker.locator('.emoji-rail-item').first().click()
 		await expect(picker.locator('.emoji-section').first()).toBeVisible()
+		const section = picker.locator('.emoji-section').first()
+		await section.locator('summary').press('Enter')
+		await expect(section.locator('.emoji-grid')).toBeHidden()
+		await picker.locator('.emoji-rail-item').first().click()
+		await expect(section.locator('.emoji-grid')).toBeVisible()
+		const gridStyles = await picker.locator('.emoji-grid').evaluateAll(grids => grids.map(grid => ({
+			maxHeight: getComputedStyle(grid).maxHeight,
+			overflowY: getComputedStyle(grid).overflowY,
+		})))
+		for (const style of gridStyles) {
+			expect(style.maxHeight).toBe('none')
+			expect(style.overflowY).toBe('visible')
+		}
+		const scrollWidth = await picker.locator('.emoji-scroll').evaluate(el => ({ width: el.clientWidth, scrollWidth: el.scrollWidth }))
+		expect(scrollWidth.scrollWidth).toBeLessThanOrEqual(scrollWidth.width)
 		const gridButton = picker.locator('.emoji-grid-button').first()
 		await expect(gridButton).toBeVisible({ timeout: 30_000 })
 		const title = await gridButton.getAttribute('title')
@@ -144,4 +159,61 @@ test.describe('Chat composer', () => {
 		await page.locator('#vote-cancel-button').click()
 		await expect(page.locator('#vote-modal')).toBeHidden({ timeout: 10_000 })
 	})
+})
+
+test('emoji picker keeps DOM bounded across 500 packs and a large pack', async ({ modulePage }) => {
+	const { page } = modulePage
+	await modulePage.run(async () => {
+		const { renderContinuousPicker } = await import('/scripts/components/emojiPicker.mjs')
+		const host = document.createElement('div')
+		host.className = 'emoji-picker-body'
+		host.style.cssText = 'width:320px;height:360px'
+		document.body.append(host)
+		const sections = Array.from({ length: 500 }, (_, index) => ({
+			id: `pack:test-${index}`, kind: 'pack', packId: `test-${index}`,
+			pack: { name: `Pack ${index}` },
+			items: Array.from({ length: index === 250 ? 10000 : 100 }, (_, emojiIndex) => ({
+				kind: 'pack', packId: `test-${index}`, emojiId: String(emojiIndex), name: `Emoji ${emojiIndex}`,
+			})),
+		}))
+		renderContinuousPicker(host, sections, { /**
+		 *
+		 * @param {string} token Selected emoji token.
+		 */
+			onInsert: token => { host.dataset.selected = token } })
+	})
+	const rail = page.locator('.emoji-rail')
+	const scroll = page.locator('.emoji-scroll')
+	await expect(rail).toHaveCSS('height', '32px')
+	await expect.poll(() => page.locator('.emoji-grid-button').count()).toBeLessThan(200)
+	await expect.poll(() => page.locator('.emoji-rail-item').count()).toBeLessThan(25)
+	await rail.locator('[data-section="pack:test-0"]').press('End')
+	await expect(rail.locator('[data-section="pack:test-499"]')).toBeFocused()
+	await rail.locator('[data-section="pack:test-499"]').click()
+	await expect(scroll.locator('[data-section="pack:test-499"] summary')).toBeVisible()
+	await expect.poll(() => page.locator('.emoji-section').count()).toBeLessThan(8)
+	await rail.evaluate(element => { element.scrollLeft = 250 * 36 })
+	await rail.locator('[data-section="pack:test-250"]').click()
+	const pack = scroll.locator('[data-section="pack:test-250"]')
+	await expect(pack.locator('summary')).toBeVisible()
+	await pack.locator('summary').press('Enter')
+	await expect(pack).toHaveJSProperty('open', false)
+	await rail.locator('[data-section="pack:test-250"]').click()
+	await expect(pack).toHaveJSProperty('open', true)
+	await scroll.evaluate(element => { element.scrollTop += 20000 })
+	await expect.poll(() => pack.locator('.emoji-grid-button').first().getAttribute('data-group-emoji-id').then(Number)).toBeGreaterThan(2000)
+	await expect.poll(() => page.locator('.emoji-grid-button').count()).toBeLessThan(200)
+	const emojiId = await scroll.evaluate(element => {
+		const viewport = element.getBoundingClientRect()
+		return [...element.querySelectorAll('.emoji-grid-button')].find(button => {
+			const rect = button.getBoundingClientRect()
+			return rect.top >= viewport.top && rect.bottom <= viewport.bottom
+		})?.dataset.groupEmojiId
+	})
+	expect(Number(emojiId)).toBeGreaterThan(2000)
+	await pack.locator(`[data-group-emoji-id="${emojiId}"]`).click()
+	await expect(page.locator('.emoji-picker-body')).toHaveAttribute('data-selected', `:[emoji:test-250/${emojiId}]:`)
+	await page.setViewportSize({ width: 260, height: 600 })
+	await page.locator('.emoji-picker-body').evaluate(element => { element.style.width = '240px' })
+	await expect.poll(() => scroll.evaluate(element => element.scrollWidth <= element.clientWidth)).toBe(true)
 })
