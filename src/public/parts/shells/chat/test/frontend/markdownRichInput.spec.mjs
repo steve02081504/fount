@@ -7,6 +7,226 @@ import {
 const ENTITY_HASH = 'f'.repeat(128)
 
 test.describe('Markdown rich input', () => {
+	test('language fences highlight while native editing, selection and clipboard preserve markdown', async ({ modulePage }) => {
+		const raw = 'before\n```JS\nconst value = "<b>hello</b>";\n\nconsole.log(value)\n```\nafter'
+		await modulePage.run(async raw => {
+			const { createMarkdownRichInput } = await import('/scripts/components/markdownRichInput.mjs')
+			const el = document.createElement('div')
+			el.id = 'highlight-input'
+			document.body.appendChild(el)
+			createMarkdownRichInput(el, { useRegisteredInlineTokens: false, enableToolbar: false }).value = raw
+			el.focus()
+			el.setSelectionRange(raw.indexOf('value'), raw.indexOf('value') + 5)
+		}, raw)
+		const input = modulePage.page.locator('#highlight-input')
+		const tokens = input.locator('.fount-markdown-rich-input-code-token')
+		await expect(tokens.first()).toBeVisible()
+		await expect(input).toHaveJSProperty('value', raw)
+		const result = await input.evaluate(el => {
+			const clipboard = new DataTransfer()
+			el.dispatchEvent(new ClipboardEvent('copy', { clipboardData: clipboard, bubbles: true, cancelable: true }))
+			return {
+				selected: [el.selectionStart, el.selectionEnd],
+				copied: clipboard.getData('text/plain'),
+				colors: new Set([...el.querySelectorAll('.fount-markdown-rich-input-code-token')].map(node => getComputedStyle(node).color)).size,
+				html: el.querySelector('b') !== null,
+			}
+		})
+		expect(result.selected).toEqual([raw.indexOf('value'), raw.indexOf('value') + 5])
+		expect(result.copied).toBe('value')
+		expect(result.colors).toBeGreaterThan(1)
+		expect(result.html).toBe(false)
+		const themeColors = await tokens.first().evaluate(node => {
+			const root = document.documentElement
+			const original = root.getAttribute('color-scheme')
+			root.setAttribute('color-scheme', 'only light')
+			const light = getComputedStyle(node).color
+			root.setAttribute('color-scheme', 'only dark')
+			const dark = getComputedStyle(node).color
+			if (original === null) root.removeAttribute('color-scheme')
+			else root.setAttribute('color-scheme', original)
+			return { light, dark }
+		})
+		expect(themeColors.light).not.toBe(themeColors.dark)
+		await modulePage.page.keyboard.type('answer')
+		const edited = raw.replace('value', 'answer')
+		await expect(input).toHaveJSProperty('value', edited)
+		await expect(tokens.first()).toBeVisible()
+		await modulePage.page.keyboard.press('Control+Z')
+		await expect(input).toHaveJSProperty('value', raw.replace('value', 'answe'))
+		await modulePage.page.keyboard.press('Control+Y')
+		await expect(input).toHaveJSProperty('value', edited)
+		await input.locator('button').click()
+		await expect(tokens).toHaveCount(0)
+		await input.locator('button').click()
+		await expect(tokens.first()).toBeVisible()
+		await input.evaluate(el => { el.value = '```unknown-language\nconst value = 1\n```\n```\nplain\n```' })
+		await expect(tokens).toHaveCount(0)
+		await expect(input).toHaveJSProperty('value', '```unknown-language\nconst value = 1\n```\n```\nplain\n```')
+	})
+
+	test('typed fences close automatically, enter moves into body and nested fences grow the outer pair', async ({ modulePage }) => {
+		await modulePage.run(async () => {
+			const { createMarkdownRichInput } = await import('/scripts/components/markdownRichInput.mjs')
+			const el = document.createElement('div')
+			document.body.appendChild(el)
+			createMarkdownRichInput(el, { useRegisteredInlineTokens: false, enableToolbar: false })
+			el.id = 'fence-input'
+			el.focus()
+		})
+		const page = modulePage.page
+		const input = page.locator('#fence-input')
+		await page.keyboard.type('```js')
+		await expect(input).toHaveJSProperty('value', '```js\n\n```')
+		await page.keyboard.press('Enter')
+		await page.keyboard.type('```')
+		await expect(input).toHaveJSProperty('value', '````js\n```\n\n```\n````')
+		await page.keyboard.press('Control+Z')
+		await expect(input).toHaveJSProperty('value', '```js\n``\n```')
+		await page.keyboard.press('Control+Y')
+		await expect(input).toHaveJSProperty('value', '````js\n```\n\n```\n````')
+		await input.evaluate(el => el.setSelectionRange(11, 11))
+		await page.keyboard.type('```')
+		await expect(input).toHaveJSProperty('value', '`````js\n````\n```\n\n```\n````\n`````')
+		await input.evaluate(el => { el.value = 'inline ' })
+		await page.keyboard.type('```')
+		await expect(input).toHaveJSProperty('value', 'inline ```')
+	})
+
+	test('lengthening opening fences updates their closing fences and enclosing pairs', async ({ modulePage }) => {
+		await modulePage.run(async () => {
+			const { createMarkdownRichInput } = await import('/scripts/components/markdownRichInput.mjs')
+			const el = document.createElement('div')
+			el.id = 'lengthen-fence-input'
+			document.body.appendChild(el)
+			createMarkdownRichInput(el, { useRegisteredInlineTokens: false, enableToolbar: false })
+			el.focus()
+		})
+		const page = modulePage.page
+		const input = page.locator('#lengthen-fence-input')
+		await page.keyboard.type('`````js')
+		await expect(input).toHaveJSProperty('value', '`````js\n\n`````')
+		await input.evaluate(el => el.setSelectionRange(5, 5))
+		await page.keyboard.type('`')
+		await expect(input).toHaveJSProperty('value', '``````js\n\n``````')
+		await expect(input).toHaveJSProperty('selectionStart', 6)
+		await page.keyboard.press('Control+Z')
+		await expect(input).toHaveJSProperty('value', '`````js\n\n`````')
+		await page.keyboard.press('Control+Y')
+		await expect(input).toHaveJSProperty('value', '``````js\n\n``````')
+		await input.evaluate(el => {
+			el.value = '````\n```\nbody\n```\n````'
+			el.setSelectionRange(8, 8)
+		})
+		await page.keyboard.type('`')
+		await expect(input).toHaveJSProperty('value', '`````\n````\nbody\n````\n`````')
+		await expect(input).toHaveJSProperty('selectionStart', 10)
+		await input.evaluate(el => {
+			el.value = '  ```js\nbody\n  `````\nafter'
+			el.setSelectionRange(3, 4)
+		})
+		await page.keyboard.type('``')
+		await expect(input).toHaveJSProperty('value', '  ````js\nbody\n  `````\nafter')
+		await page.keyboard.type('``')
+		await expect(input).toHaveJSProperty('value', '  ``````js\nbody\n  ``````\nafter')
+	})
+
+	test('deleting fence ticks updates the pair and collapses empty blocks', async ({ modulePage }) => {
+		await modulePage.run(async () => {
+			const { createMarkdownRichInput } = await import('/scripts/components/markdownRichInput.mjs')
+			const el = document.createElement('div')
+			el.id = 'delete-fence-input'
+			document.body.appendChild(el)
+			createMarkdownRichInput(el, { useRegisteredInlineTokens: false, enableToolbar: false })
+			el.focus()
+		})
+		const page = modulePage.page
+		const input = page.locator('#delete-fence-input')
+		await page.keyboard.type('```')
+		await page.keyboard.press('Backspace')
+		await expect(input).toHaveJSProperty('value', '``')
+		await expect(input).toHaveJSProperty('selectionStart', 2)
+		await page.keyboard.press('Control+Z')
+		await expect(input).toHaveJSProperty('value', '```\n\n```')
+		await page.keyboard.press('Control+Y')
+		await expect(input).toHaveJSProperty('value', '``')
+		await input.evaluate(el => {
+			el.value = 'before\n  `````js\nbody\n  `````\nafter'
+			el.setSelectionRange(14, 14)
+		})
+		await page.keyboard.press('Backspace')
+		await expect(input).toHaveJSProperty('value', 'before\n  ````js\nbody\n  ````\nafter')
+		await input.evaluate(el => {
+			el.value = '````\nbody\n````'
+			el.setSelectionRange(10, 10)
+		})
+		await page.keyboard.press('Delete')
+		await expect(input).toHaveJSProperty('value', '```\nbody\n```')
+		await expect(input).toHaveJSProperty('selectionStart', 9)
+		await input.evaluate(el => {
+			el.value = '```\n\n```'
+			el.setSelectionRange(8, 8)
+		})
+		await page.keyboard.press('Backspace')
+		await expect(input).toHaveJSProperty('value', '``')
+		await expect(input).toHaveJSProperty('selectionStart', 2)
+		await input.evaluate(el => {
+			el.value = '```js\nbody\n```\nafter'
+			el.setSelectionRange(1, 3)
+		})
+		await page.keyboard.press('Backspace')
+		await expect(input).toHaveJSProperty('value', '`js\nbody\nafter')
+		await input.evaluate(el => { el.value = 'inline ```' })
+		await page.keyboard.press('Backspace')
+		await expect(input).toHaveJSProperty('value', 'inline ``')
+	})
+
+	test('folding preserves raw selection, clipboard text and editing after expansion', async ({ modulePage }) => {
+		const result = await modulePage.run(async () => {
+			const { createMarkdownRichInput } = await import('/scripts/components/markdownRichInput.mjs')
+			const el = document.createElement('div')
+			document.body.appendChild(el)
+			const handle = createMarkdownRichInput(el, { useRegisteredInlineTokens: false, enableToolbar: false })
+			const raw = 'before\n```js\n@[entity:literal]\n```\nafter'
+			handle.value = raw
+			el.querySelector('button').click()
+			const folded = el.querySelector('[data-raw]')?.dataset.raw
+			el.setSelectionRange(7, raw.length - 6)
+			const selected = [handle.selectionStart, handle.selectionEnd]
+			const clipboard = new DataTransfer()
+			el.dispatchEvent(new ClipboardEvent('copy', { clipboardData: clipboard, bubbles: true, cancelable: true }))
+			const copied = clipboard.getData('text/plain')
+			el.querySelector('button').click()
+			handle.setRangeText('x', 13, 13)
+			return { folded, selected, copied, edited: handle.value }
+		})
+		expect(result).toEqual({
+			folded: '```js\n@[entity:literal]\n```',
+			selected: [7, 34],
+			copied: '```js\n@[entity:literal]\n```',
+			edited: 'before\n```js\nx@[entity:literal]\n```\nafter',
+		})
+	})
+
+	test('pasted longer fences grow both outer boundaries and inline backticks stay unchanged', async ({ modulePage }) => {
+		const result = await modulePage.run(async () => {
+			const { createMarkdownRichInput } = await import('/scripts/components/markdownRichInput.mjs')
+			const el = document.createElement('div')
+			document.body.appendChild(el)
+			const handle = createMarkdownRichInput(el, { useRegisteredInlineTokens: false, enableToolbar: false })
+			handle.value = '  ```md\n\n  ```\ntail'
+			el.setSelectionRange(8, 8)
+			const clipboard = new DataTransfer()
+			clipboard.setData('text/plain', '`````js\nx\n`````')
+			el.dispatchEvent(new ClipboardEvent('paste', { clipboardData: clipboard, bubbles: true, cancelable: true }))
+			const nested = handle.value
+			handle.value = 'text ``'
+			handle.setRangeText('`', 7, 7)
+			return { nested, inline: handle.value }
+		})
+		expect(result).toEqual({ nested: '  ``````md\n`````js\nx\n`````\n  ``````\ntail', inline: 'text ```' })
+	})
+
 	test('clicking empty composer places caret at start (before placeholder)', async ({ page, groupChannel: _ }) => {
 		const input = page.locator('#message-input')
 		await input.click()

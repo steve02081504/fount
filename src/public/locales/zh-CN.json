@@ -6427,7 +6427,15 @@
 				},
 				"aria-label": "粘贴"
 			},
-			"linkUrl": "链接地址"
+			"linkUrl": "链接地址",
+			"foldCode": {
+				"aria-label": "折叠代码块",
+				"title": "折叠代码块"
+			},
+			"expandCode": {
+				"aria-label": "展开代码块",
+				"title": "展开代码块"
+			}
 		}
 	},
 	"pro_cancel_screen": {

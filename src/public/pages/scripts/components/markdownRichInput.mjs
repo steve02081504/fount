@@ -20,6 +20,35 @@ import { setElementI18n } from '/scripts/i18n/index.mjs'
 /** 块级标签（Firefox/浏览器 Enter 可能产生 `<div>` 等，序列化时视为换行）。 */
 const BLOCK_TAGS = /^(?:DIV|P|LI|H[1-6]|PRE|BLOCKQUOTE|TR|TD)$/
 
+/** 高亮器按需加载，语言与主题由 Shiki 的单例缓存。 */
+let shikiModule
+
+/**
+ * 扫描闭合的反引号围栏；短围栏留在外层代码正文中。
+ * @param {string} text 原始文本
+ * @param {boolean} [nested=false] 是否包含正文中的内层围栏
+ * @returns {Array<{ start: number, body: number, close: number, end: number, size: number }>} 围栏范围
+ */
+function codeBlocks(text, nested = false) {
+	const lines = /^[\t ]{0,3}(`{3,})([^\n]*)$/gm
+	const blocks = []
+	let opening = null
+	for (const match of text.matchAll(lines))
+		if (!opening) {
+			if (!match[2].includes('`')) opening = { start: match.index, body: match.index + match[0].length + 1, size: match[1].length }
+		}
+		else if (!match[2].trim() && match[1].length >= opening.size) {
+			const block = { ...opening, close: match.index, end: match.index + match[0].length }
+			blocks.push(block)
+			if (nested)
+				for (const inner of codeBlocks(text.slice(block.body, block.close), true))
+					blocks.push({ ...inner, start: inner.start + block.body, body: inner.body + block.body, close: inner.close + block.body, end: inner.end + block.body })
+			opening = null
+		}
+
+	return blocks
+}
+
 /** markdown 行内包裹语法：前缀 → 后缀。 */
 const WRAP_SYNTAX = {
 	bold: ['**', '**'],
@@ -49,6 +78,8 @@ const ACTION_I18N = {
 
 /** 动作对应的 iconify（mdi）图标。 */
 const ACTION_ICON = {
+	foldCode: 'https://api.iconify.design/mdi/chevron-down.svg',
+	expandCode: 'https://api.iconify.design/mdi/chevron-right.svg',
 	headingLarge: 'https://api.iconify.design/mdi/format-header-1.svg',
 	headingMedium: 'https://api.iconify.design/mdi/format-header-2.svg',
 	headingSmall: 'https://api.iconify.design/mdi/format-header-3.svg',
@@ -154,6 +185,9 @@ export function createMarkdownRichInput(element, options = {}) {
 	element.spellcheck = true
 
 	let rawText = ''
+	const foldedBlocks = new Set()
+	const highlightedBlocks = new Map()
+	let renderVersion = 0
 	let composing = false
 	let disabled = element.hasAttribute('disabled')
 	/**
@@ -329,10 +363,132 @@ export function createMarkdownRichInput(element, options = {}) {
 	}
 
 	/**
+	 * 追加可编辑的围栏行；换行单独追加，避免装饰跨到正文。
+	 * @param {number} start 围栏起点
+	 * @param {number} end 围栏终点（不含换行）
+	 * @returns {void}
+	 */
+	function appendFence(start, end) {
+		const span = document.createElement('span')
+		span.className = 'fount-markdown-rich-input-fence'
+		const node = document.createTextNode(rawText.slice(start, end))
+		span.appendChild(node)
+		element.appendChild(span)
+		segments.push({ node, kind: 'text', start, end })
+	}
+
+	/**
+	 * 取代码高亮 token（按围栏原文缓存，按需加载 Shiki）。
+	 * @param {string} raw 围栏原文（缓存键）
+	 * @param {string} code 代码正文
+	 * @param {string} language 语言标识
+	 * @returns {Array<Array<object>> | Promise<Array<Array<object>> | null> | null} token 行数组 / 加载中 Promise / null 表示不可高亮
+	 */
+	function highlightTokens(raw, code, language) {
+		if (!highlightedBlocks.has(raw)) {
+			shikiModule ??= import('https://esm.sh/shiki')
+			const pending = shikiModule.then(async ({ bundledLanguages, codeToTokensWithThemes }) => {
+				if (!Object.hasOwn(bundledLanguages, language)) return null
+				const tokens = await codeToTokensWithThemes(code, {
+					lang: language,
+					themes: { light: 'github-light', dark: 'github-dark-dimmed' },
+				})
+				// 不让高亮器的换行规范化改变可编辑原文。
+				return tokens.map(line => line.map(token => token.content).join('')).join('\n') === code ? tokens : null
+			}).catch(() => null)
+			highlightedBlocks.set(raw, pending)
+			// 当前文档的块不能逐出，否则多个异步块会反复加载和重建。
+			if (highlightedBlocks.size > 32)
+				for (const key of highlightedBlocks.keys()) {
+					if (!rawText.includes(key)) highlightedBlocks.delete(key)
+					if (highlightedBlocks.size <= 32) break
+				}
+			void pending.then(tokens => {
+				if (highlightedBlocks.get(raw) === pending) highlightedBlocks.set(raw, tokens)
+			})
+		}
+		return highlightedBlocks.get(raw)
+	}
+
+	/**
+	 * 构造代码块折叠/展开按钮。
+	 * @param {string} raw 围栏原文
+	 * @param {number} start 围栏起点
+	 * @param {boolean} folded 当前是否折叠
+	 * @returns {HTMLButtonElement} 按钮元素
+	 */
+	function makeFoldButton(raw, start, folded) {
+		const button = document.createElement('button')
+		button.type = 'button'
+		button.className = 'fount-markdown-rich-input-fold'
+		button.contentEditable = 'false'
+		button.dataset.emptySlot = '1'
+		button.setAttribute('aria-expanded', String(!folded))
+		setElementI18n(button, folded ? 'util.markdownRichInput.expandCode' : 'util.markdownRichInput.foldCode')
+		button.appendChild(makeActionIcon(folded ? 'expandCode' : 'foldCode'))
+		void svgInliner(button)
+		button.addEventListener('mousedown', event => event.preventDefault())
+		button.addEventListener('click', () => {
+			if (disabled) return
+			if (folded) foldedBlocks.delete(raw)
+			else foldedBlocks.add(raw)
+			rebuildDom()
+			setSelection(start, start)
+		})
+		return button
+	}
+
+	/**
+	 * 渲染可编辑的高亮正文；围栏保留原文，span 不参与块级序列化。
+	 * @param {{ start: number, body: number, close: number, end: number }} block 围栏范围
+	 * @returns {void}
+	 */
+	function appendCodeBlock(block) {
+		const raw = rawText.slice(block.start, block.end)
+		const code = rawText.slice(block.body, block.close)
+		const language = rawText.slice(block.start, block.body).match(/`{3,}\s*([^\s`]+)/)?.[1]?.toLowerCase()
+		appendFence(block.start, block.body - 1)
+		appendTextRun('\n', block.body - 1)
+		const tokens = language && highlightTokens(raw, code, language)
+		if (tokens instanceof Promise) {
+			const version = renderVersion
+			void tokens.then(() => {
+				if (version !== renderVersion || composing) return
+				const offsets = getOffsets()
+				rebuildDom()
+				if (document.activeElement === element) setSelection(offsets.start, offsets.end)
+			})
+		}
+		if (!tokens || tokens instanceof Promise) {
+			appendTextRun(code, block.body)
+			appendFence(block.close, block.end)
+			return
+		}
+		let cursor = block.body
+		for (let i = 0; i < tokens.length; i++) {
+			if (i) cursor = appendTextRun('\n', cursor)
+			for (const token of tokens[i]) {
+				if (!token.content) continue
+				const span = document.createElement('span')
+				span.className = 'fount-markdown-rich-input-code-token'
+				span.style.setProperty('--shiki-light', token.variants.light.color)
+				span.style.setProperty('--shiki-dark', token.variants.dark.color)
+				const node = document.createTextNode(token.content)
+				span.appendChild(node)
+				element.appendChild(span)
+				segments.push({ node, kind: 'text', start: cursor, end: cursor + token.content.length })
+				cursor += token.content.length
+			}
+		}
+		appendFence(block.close, block.end)
+	}
+
+	/**
 	 * 根据 rawText 重建 DOM 与 segments。
 	 * @returns {void}
 	 */
 	function rebuildDom() {
+		renderVersion++
 		segments = []
 		hintRendered = false
 		element.replaceChildren()
@@ -359,8 +515,26 @@ export function createMarkdownRichInput(element, options = {}) {
 			return
 		}
 		let cursor = 0
-		let hit = null
-		while ((hit = findNextToken(rawText, cursor, getTokens())) != null) {
+		const blocks = codeBlocks(rawText)
+		while (cursor < rawText.length) {
+			const block = blocks.find(item => item.start >= cursor)
+			const hit = findNextToken(rawText, cursor, getTokens())
+			if (block && (!hit || block.start <= hit.match.index)) {
+				if (block.start > cursor) appendTextRun(rawText.slice(cursor, block.start), cursor)
+				const raw = rawText.slice(block.start, block.end)
+				const folded = foldedBlocks.has(raw)
+				element.appendChild(makeFoldButton(raw, block.start, folded))
+				if (folded) {
+					const chip = makeChip(raw, 'code-block')
+					chip.firstElementChild.textContent = raw.split('\n')[0] + ' …'
+					element.appendChild(chip)
+					segments.push({ node: chip, kind: 'chip', raw, start: block.start, end: block.end })
+				}
+				else appendCodeBlock(block)
+				cursor = block.end
+				continue
+			}
+			if (!hit) break
 			const { token, match } = hit
 			if (match.index > cursor) cursor = appendTextRun(rawText.slice(cursor, match.index), cursor)
 			const raw = match[0]
@@ -390,7 +564,7 @@ export function createMarkdownRichInput(element, options = {}) {
 		element.appendChild(padding)
 		segments.push({ node: padding, kind: 'br', start: rawText.length, end: rawText.length })
 		for (const seg of segments) {
-			if (seg.kind !== 'chip') continue
+			if (seg.kind !== 'chip' || !seg.token) continue
 			const chip = /** @type {HTMLSpanElement} */ seg.node
 			void resolveChipLabel(chip, seg.token, seg.raw).then(label => {
 				if (!label || !chip.isConnected) return
@@ -420,6 +594,14 @@ export function createMarkdownRichInput(element, options = {}) {
 		}
 		let acc = 0
 		for (const child of element.childNodes) {
+			if (child instanceof HTMLElement && child.contains(node) && child.dataset.raw == null && child.dataset.emptySlot == null) {
+				const range = document.createRange()
+				range.setStart(child, 0)
+				range.setEnd(node, offset)
+				let text = ''
+				for (const part of range.cloneContents().childNodes) text += serializeNode(part)
+				return acc + text.length
+			}
 			if (child === node) {
 				if (node.nodeType === Node.TEXT_NODE) return acc + Math.min(offset, childNodeLength(node))
 				return offset > 0 ? acc + childNodeLength(child) : acc
@@ -521,13 +703,96 @@ export function createMarkdownRichInput(element, options = {}) {
 		const text = String(replacement ?? '')
 		const st = Math.max(0, Math.min(rawText.length, start))
 		const en = Math.max(st, Math.min(rawText.length, end))
-		rawText = rawText.slice(0, st) + text + rawText.slice(en)
+		const edit = editCodeText(text, st, en)
+		rawText = edit.text
 		// 空 composer 里敲 Enter 会插入 `\n`，归一为空避免占位符被吃掉/落盘成空草稿
 		if (!rawText.trim()) rawText = ''
 		render()
-		if (selectionMode === 'select') setSelection(st, st + text.length)
-		else if (selectionMode === 'start') setSelection(st, st)
-		else setSelection(st + text.length, st + text.length)
+		if (selectionMode === 'select') setSelection(edit.start, edit.caret)
+		else if (selectionMode === 'start') setSelection(edit.start, edit.start)
+		else setSelection(edit.caret, edit.caret)
+	}
+
+	/**
+	 * 删除围栏时同步配对边界；加长开头或插入正文围栏时加长配对边界；逐字输入时补全闭合部分。
+	 * @param {string} text 插入文本
+	 * @param {number} start 替换起点
+	 * @param {number} end 替换终点
+	 * @param {boolean} [complete=false] 是否补全新开头
+	 * @returns {{ text: string, start: number, caret: number }} 编辑结果
+	 */
+	function editCodeText(text, start, end, complete = false) {
+		let next = rawText.slice(0, start) + text + rawText.slice(end)
+		let caret = start + text.length
+		const lineStart = next.lastIndexOf('\n', caret - 1) + 1
+		const lineEnd = next.indexOf('\n', caret)
+		const line = next.slice(lineStart, lineEnd < 0 ? next.length : lineEnd)
+		const newOpening = complete && text === '`' && /^[\t ]{0,3}`{3}$/.test(line) && caret === lineStart + line.length
+		const blocks = codeBlocks(rawText, true)
+		if (!text && end > start && /^`+$/.test(rawText.slice(start, end)))
+			for (const block of blocks) {
+				const opening = block.start + /^[\t ]*/.exec(rawText.slice(block.start))[0].length
+				const closingMatch = /^[\t ]*(`+)/.exec(rawText.slice(block.close))
+				const closing = block.close + closingMatch[0].length - closingMatch[1].length
+				const inOpening = start >= opening && end <= opening + block.size
+				const inClosing = start >= closing && end <= closing + closingMatch[1].length
+				if (!inOpening && !inClosing) continue
+				const size = (inOpening ? block.size : closingMatch[1].length) - (end - start)
+				let pairStart = inOpening ? closing : opening
+				let pairEnd = pairStart + (inOpening ? closingMatch[1].length : block.size)
+				let replacement = '`'.repeat(Math.max(0, size))
+				if (size < 3) {
+					replacement = ''
+					if (!rawText.slice(opening + block.size, closing).trim()) {
+						pairStart = inOpening ? opening + block.size : block.start
+						pairEnd = inOpening ? block.end : closing
+					}
+					else if (inOpening) {
+						pairStart = block.close - 1
+						pairEnd = block.end
+					}
+				}
+				const delta = text.length - (end - start)
+				if (pairStart >= end) { pairStart += delta; pairEnd += delta }
+				next = next.slice(0, pairStart) + replacement + next.slice(pairEnd)
+				if (pairEnd <= start) {
+					start += replacement.length - (pairEnd - pairStart)
+					caret += replacement.length - (pairEnd - pairStart)
+				}
+				return { text: next, start, caret }
+			}
+		const outers = blocks.filter(block => start >= block.body && end <= block.close && start < block.close).sort((a, b) => b.start - a.start)
+		if (/^`+$/.test(text) && text.length > end - start) {
+			const block = blocks.find(item => {
+				const opening = item.start + /^[\t ]*/.exec(rawText.slice(item.start))[0].length
+				return start >= opening && end <= opening + item.size
+			})
+			if (block) {
+				const close = block.close + text.length - (end - start)
+				const closing = /^[\t ]*(`+)/.exec(next.slice(close))
+				const extra = Math.max(0, block.size + text.length - (end - start) - closing[1].length)
+				const position = close + closing[0].length
+				next = next.slice(0, position) + '`'.repeat(extra) + next.slice(position)
+			}
+		}
+		if (newOpening) next = next.slice(0, caret) + '\n\n```' + next.slice(caret)
+		for (const outer of outers) {
+			const delta = next.length - rawText.length
+			const body = next.slice(outer.body, outer.close + delta)
+			let longest = 0
+			for (const match of body.matchAll(/^[\t ]{0,3}(`{3,})/gm)) longest = Math.max(longest, match[1].length)
+			const extra = Math.max(0, longest + 1 - outer.size)
+			if (extra) {
+				const ticks = '`'.repeat(extra)
+				const close = outer.close + delta + /^[\t ]*/.exec(next.slice(outer.close + delta))[0].length
+				next = next.slice(0, close) + ticks + next.slice(close)
+				const opening = outer.start + /^[\t ]*/.exec(next.slice(outer.start))[0].length
+				next = next.slice(0, opening) + ticks + next.slice(opening)
+				start += extra
+				caret += extra
+			}
+		}
+		return { text: next, start, caret }
 	}
 
 	/**
@@ -642,10 +907,17 @@ export function createMarkdownRichInput(element, options = {}) {
 		if (disabled || composing) return
 		const next = serializeDom()
 		if (next === rawText) return
-		rawText = next.trim() ? next : ''
 		const offsets = getOffsets()
+		let start = 0
+		while (start < rawText.length && start < next.length && rawText[start] === next[start]) start++
+		let end = rawText.length
+		let nextEnd = next.length
+		while (end > start && nextEnd > start && rawText[end - 1] === next[nextEnd - 1]) { end--; nextEnd-- }
+		const edit = editCodeText(next.slice(start, nextEnd), start, end, true)
+		rawText = edit.text.trim() ? edit.text : ''
 		rebuildDom()
-		setSelection(offsets.start, offsets.end)
+		if (offsets.start === offsets.end && offsets.start === nextEnd) setSelection(edit.caret, edit.caret)
+		else setSelection(offsets.start, offsets.end)
 		commitChange()
 	}
 
@@ -670,9 +942,29 @@ export function createMarkdownRichInput(element, options = {}) {
 	 */
 	function onBeforeInput(event) {
 		if (disabled || composing) return
-		if (event.inputType === 'insertParagraph') {
+		if (event.inputType === 'deleteContentBackward' || event.inputType === 'deleteContentForward') {
+			let { start, end } = getOffsets()
+			if (start === end)
+				if (event.inputType === 'deleteContentBackward') start = Math.max(0, start - 1)
+				else end = Math.min(rawText.length, end + 1)
+			const edit = editCodeText('', start, end)
+			if (edit.text !== rawText.slice(0, start) + rawText.slice(end)) {
+				event.preventDefault()
+				rawText = edit.text
+				rebuildDom()
+				setSelection(edit.caret, edit.caret)
+				commitChange()
+				return
+			}
+		}
+		if (event.inputType === 'insertParagraph' || event.inputType === 'insertLineBreak') {
 			event.preventDefault()
 			const { start, end } = getOffsets()
+			const block = codeBlocks(rawText).find(item => item.body === start + 1 && rawText[item.body] === '\n')
+			if (start === end && block) {
+				setSelection(start + 1, start + 1)
+				return
+			}
 			setRangeText('\n', start, end, 'end')
 			commitChange()
 		}
@@ -705,6 +997,22 @@ export function createMarkdownRichInput(element, options = {}) {
 		if (disabled) return
 		event.preventDefault()
 		insertPastedText(event.clipboardData?.getData('text/plain') ?? '')
+	}
+
+	/**
+	 * 复制/剪切使用原始 Markdown（折叠正文与 chip 也保持原样）。
+	 * @param {ClipboardEvent} event 剪贴板事件
+	 * @returns {void}
+	 */
+	function onCopyOrCut(event) {
+		const { start, end } = getOffsets()
+		if (start === end || !event.clipboardData || (event.type === 'cut' && disabled)) return
+		event.preventDefault()
+		event.clipboardData.setData('text/plain', rawText.slice(start, end))
+		if (event.type === 'cut') {
+			setRangeText('', start, end)
+			commitChange()
+		}
 	}
 
 	// ---- 浮动工具栏 ----
@@ -1083,6 +1391,8 @@ export function createMarkdownRichInput(element, options = {}) {
 	element.addEventListener('beforeinput', onBeforeInput)
 	element.addEventListener('keydown', onKeyDown)
 	element.addEventListener('paste', onPaste)
+	element.addEventListener('copy', onCopyOrCut)
+	element.addEventListener('cut', onCopyOrCut)
 	element.addEventListener('focus', placeCaretWhenEmpty)
 	element.addEventListener('click', placeCaretWhenEmpty)
 	document.addEventListener('selectionchange', updateToolbar)
@@ -1252,6 +1562,10 @@ export function createMarkdownRichInput(element, options = {}) {
 		 * @returns {void}
 		 */
 		destroy: () => {
+			renderVersion++
+			highlightedBlocks.clear()
+			element.removeEventListener('copy', onCopyOrCut)
+			element.removeEventListener('cut', onCopyOrCut)
 			document.removeEventListener('selectionchange', updateToolbar)
 			hideToolbar()
 			closeContextMenu()
@@ -1294,6 +1608,65 @@ document.head.prepend(Object.assign(document.createElement('style'), {
 	word-break: break-word;
 	cursor: text;
 	outline: none;
+}
+.fount-markdown-rich-input-fold {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 1.45em;
+	height: 1.45em;
+	vertical-align: -.2em;
+	color: var(--text-muted);
+	background: var(--surface);
+	border: var(--border) solid var(--border-color);
+	border-radius: var(--radius-selector);
+	padding: 0;
+	margin-inline-end: .4em;
+	font: inherit;
+	line-height: 1;
+	cursor: pointer;
+	transition: color var(--duration-hover) var(--ease-standard), background-color var(--duration-hover) var(--ease-standard), border-color var(--duration-hover) var(--ease-standard);
+}
+.fount-markdown-rich-input-fold .text-icon {
+	width: 1em;
+	height: 1em;
+}
+.fount-markdown-rich-input-fold:hover {
+	color: var(--color-primary);
+	background: var(--surface-hover);
+	border-color: var(--border-strong);
+}
+.fount-markdown-rich-input-fold:focus-visible {
+	outline: var(--border) solid var(--color-primary);
+	outline-offset: .15em;
+}
+.fount-markdown-rich-input-fold[aria-expanded="false"] {
+	color: var(--color-primary);
+	background: color-mix(in srgb, var(--color-primary) 10%, var(--surface));
+}
+.fount-markdown-rich-input-fence {
+	font-family: var(--font-code);
+	font-size: .9em;
+	color: var(--text-muted);
+	background: var(--surface-sunken);
+	border: var(--border) solid var(--border-color);
+	border-radius: var(--radius-selector);
+	padding: .08em .35em;
+	box-decoration-break: clone;
+	-webkit-box-decoration-break: clone;
+}
+.fount-markdown-rich-input-code-block {
+	font-family: var(--font-code);
+	color: var(--text-muted);
+	background: var(--surface-sunken);
+	border: var(--border) solid var(--border-color);
+	padding: .12em .5em;
+}
+.fount-markdown-rich-input-code-token {
+	color: var(--shiki-light);
+}
+[color-scheme*="dark"] .fount-markdown-rich-input-code-token {
+	color: var(--shiki-dark);
 }
 .fount-markdown-rich-input.is-disabled {
 	cursor: default;
