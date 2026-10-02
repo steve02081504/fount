@@ -7,6 +7,46 @@ import {
 	openFreshGroupChannel,
 } from './fixtures.mjs'
 
+test('sidebar profile fits its rail and long bio expands with keyboard without an inner scrollbar', async ({ modulePage }) => {
+	const { page } = modulePage
+	await modulePage.run(async () => {
+		const { createEntityProfileCardElement, paintEntityProfileBio } = await import('/parts/shells:chat/shared/entityProfileCard.mjs')
+		const rail = document.createElement('aside')
+		rail.id = 'profile-test-rail'
+		rail.style.width = '240px'
+		const card = await createEntityProfileCardElement('sidebar')
+		rail.append(card)
+		document.body.append(rail)
+		await paintEntityProfileBio(card.querySelector('[data-entity-profile-bio]'), Array.from({ length: 20 }, (_, i) => `Paragraph ${i}: ${'long biography '.repeat(10)}`).join('\n\n'))
+		await Promise.all([...document.querySelectorAll('link[rel="stylesheet"]')].map(link => link.sheet ? Promise.resolve() : new Promise(resolve => link.addEventListener('load', resolve, { once: true }))))
+	})
+	const rail = page.locator('#profile-test-rail')
+	const bio = rail.locator('[data-entity-profile-bio]')
+	await expect(bio).toBeHidden()
+	const summary = rail.locator('summary')
+	await summary.focus()
+	await summary.press('Enter')
+	await expect(bio).toBeVisible()
+	const geometry = await rail.evaluate(el => {
+		const bio = el.querySelector('[data-entity-profile-bio]')
+		const card = el.querySelector('.profile-popup')
+		return {
+			width: el.clientWidth,
+			scrollWidth: el.scrollWidth,
+			cardRight: card.getBoundingClientRect().right,
+			railRight: el.getBoundingClientRect().right,
+			bioHeight: bio.clientHeight,
+			bioScrollHeight: bio.scrollHeight,
+		}
+	})
+	expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.width)
+	expect(geometry.cardRight).toBeLessThanOrEqual(geometry.railRight)
+	expect(geometry.bioHeight).toBeGreaterThan(125)
+	expect(geometry.bioScrollHeight).toBeLessThanOrEqual(geometry.bioHeight + 1)
+	await summary.press('Space')
+	await expect(bio).toBeHidden()
+})
+
 /**
  * 通过 API 向测试群添加角色。
  * @param {string} baseUrl 测试根 URL

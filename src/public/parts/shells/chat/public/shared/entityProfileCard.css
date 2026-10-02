@@ -236,13 +236,26 @@
 }
 
 .profile-popup-bio {
-	max-height: 125px;
-	overflow-y: auto;
+	min-width: 0;
 	color: var(--text-normal, var(--color-base-content));
 	font-size: 13px;
 	line-height: 1.58;
 	white-space: pre-wrap;
 	overflow-wrap: anywhere;
+}
+
+.profile-popup-about > summary {
+	padding-block: 6px;
+	cursor: pointer;
+}
+
+.profile-popup-about > summary:focus-visible {
+	outline: var(--border) solid var(--color-primary);
+	outline-offset: 2px;
+}
+
+.profile-popup-bio.markdown-body {
+	white-space: normal;
 }
 
 .profile-tags-row {
@@ -370,13 +383,10 @@
 	font-size: 18px;
 }
 
-.entity-profile-card--hover .profile-popup-bio {
-	max-height: 80px;
-}
-
 .entity-profile-card--embedded,
 .entity-profile-card--preview,
 .entity-profile-card--sidebar {
+	min-width: 0;
 	width: 100%;
 	max-height: none;
 	overflow: hidden;
@@ -384,6 +394,8 @@
 }
 
 .entity-profile-card--sidebar {
+	box-sizing: border-box;
+	width: calc(100% - 24px);
 	margin: 0 12px 16px;
 	border: var(--border) solid var(--border-subtle, color-mix(in srgb, var(--color-base-content) 6%, transparent));
 	box-shadow: 0 2px 8px var(--shadow, color-mix(in srgb, var(--color-neutral) 40%, transparent));
