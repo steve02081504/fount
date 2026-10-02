@@ -10,7 +10,8 @@
 			"src/scripts/test/shellLoadProbe.mjs"
 		],
 		"shellIntegrationTests": [
-			"src/public/parts/shells/subfounts/test/integration/**"
+			"src/public/parts/shells/subfounts/test/integration/**",
+			"src/public/parts/plugins/file-operations/src/remote_stream.mjs"
 		]
 	},
 	"suites": [

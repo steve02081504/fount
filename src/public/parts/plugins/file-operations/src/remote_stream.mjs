@@ -42,24 +42,19 @@ export function dispatchRemoteStreamOutput(payload) {
  * @param {string|undefined} cwd - 工作目录（分机本地路径）。
  * @param {number|null} timeoutMs - 超时毫秒（null = 不限时）。
  * @param {string} execId - 流式分派 id。
+ * @param {boolean} [cancellable] 是否在分机上登记执行级取消标记（供 {@link remoteShellStopScript} 查询）。
  * @returns {string} 可经 `executeCodeOnSubfount` 执行的脚本。
  */
-export function remoteShellStreamScript(shell, code, cwd, timeoutMs, execId) {
+export function remoteShellStreamScript(shell, code, cwd, timeoutMs, execId, cancellable = false) {
 	return `\
-const { exec, execFile, shell_exec_map } = await import('npm:@steve02081504/exec')
-const shellName = ${JSON.stringify(shell || null)}
-const command = ${JSON.stringify(code)}
-const timeoutMs = ${JSON.stringify(timeoutMs)}
-const cwd = ${JSON.stringify(cwd || null)}
-const emit = payload => { try { callback(payload) } catch { /* ignore */ } }
-if (shellName && !shell_exec_map[shellName]) throw new Error('Unsupported shell: ' + shellName)
-const start = Date.now()
+const stopped = ${cancellable ? 'globalThis[Symbol.for(\'fount.remote-shell-stops\')] ??= new Set()' : 'null'}
+if (stopped) stopped.add(${JSON.stringify(execId)})
 let spawned = null
-let timedOut = false
 let pendingTermination = null
-const terminate = async child => {
-	if (!child?.pid) return null
+async function terminate(child) {
+	if (!child?.pid || child.exitCode !== null || child.signalCode !== null) return null
 	if (process.platform === 'win32') {
+		const { execFile } = await import('npm:@steve02081504/exec')
 		const result = await execFile('taskkill', ['/pid', String(child.pid), '/T', '/F']).catch(error => ({ error }))
 		if (result.error) return result.error
 		return result.code === 0 ? null : new Error('taskkill failed with exit code ' + result.code)
@@ -70,10 +65,22 @@ const terminate = async child => {
 		catch (killError) { return new AggregateError([groupError, killError], 'Failed to terminate remote shell process') }
 	}
 }
+try {
+const { exec, shell_exec_map } = await import('npm:@steve02081504/exec')
+const shellName = ${JSON.stringify(shell || null)}
+const command = ${JSON.stringify(code)}
+const timeoutMs = ${JSON.stringify(timeoutMs)}
+const cwd = ${JSON.stringify(cwd || null)}
+const emit = payload => { try { callback(payload) } catch { /* ignore */ } }
+const cancelled = stopped ? stopped.has(${JSON.stringify(execId)}) : false
+if (shellName && !shell_exec_map[shellName]) throw new Error('Unsupported shell: ' + shellName)
+const start = Date.now()
+if (cancelled) return { code: null, signal: 'SIGKILL', stdout: '', stderr: '', stdall: '', timedOut: false, cancelled: true, elapsedMs: 0 }
+let timedOut = false
 const options = {
 	no_ansi_terminal_sequences: true,
 	...cwd ? { cwd } : {},
-	on_spawn: child => { spawned = child; if (timedOut) pendingTermination = terminate(child) },
+	on_spawn: child => { spawned = child; if (timedOut || cancelled) pendingTermination = terminate(child) },
 	on_stdout: data => emit({ execId: ${JSON.stringify(execId)}, stream: 'stdout', data }),
 	on_stderr: data => emit({ execId: ${JSON.stringify(execId)}, stream: 'stderr', data }),
 }
@@ -89,14 +96,33 @@ const finish = outcome => {
 	if (outcome.result instanceof Error) throw Object.assign(outcome.result, { timedOut: outcome.timedOut, elapsedMs })
 	return { ...outcome.result, timedOut: outcome.timedOut, elapsedMs }
 }
+/**
+ * 轮询停止标记；进程未启动时也会立即返回，随后由调用方确认未 spawn。
+ * @param {Set<string>} stopped 停止标记集合。
+ * @param {string} execId 执行 id。
+ * @returns {Promise<void>} 标记出现即完成。
+ */
+async function waitForStop(stopped, execId) {
+	while (!stopped.has(execId)) await new Promise(resolve => setTimeout(resolve, 50))
+}
+if (cancelled) return { code: null, signal: 'SIGKILL', stdout: '', stderr: '', stdall: '', timedOut: false, cancelled: true, elapsedMs: 0 }
+if (stopped) {
+	let stopTimer
+	const interrupted = await Promise.race([
+		waitForStop(stopped, ${JSON.stringify(execId)}).then(() => true),
+		run.then(() => false, () => false),
+		...(timeoutMs == null ? [] : [new Promise(resolve => { stopTimer = setTimeout(() => resolve(false), timeoutMs) })]),
+	])
+	clearTimeout(stopTimer)
+	// 取消与自然结束同时发生时以自然结果为准（stop 标记留给 finally 清理）。
+	if (interrupted) {
+		const terminationError = await terminate(spawned) ?? await pendingTermination
+		if (terminationError) throw terminationError
+		return { code: null, signal: 'SIGKILL', stdout: '', stderr: '', stdall: '', timedOut: false, cancelled: true, elapsedMs: Date.now() - start }
+	}
+}
 if (timeoutMs == null) return finish(await settle())
-let timer
-const beat = await Promise.race([
-	run.then(() => false, () => false),
-	new Promise(resolve => { timer = setTimeout(() => resolve(true), timeoutMs) }),
-])
-clearTimeout(timer)
-if (!beat) return finish(await settle())
+if (Date.now() - start >= timeoutMs) return finish(await settle())
 timedOut = true
 let terminationError = await terminate(spawned)
 let graceTimer
@@ -112,7 +138,17 @@ if (!settled)
 		{ timedOut: true, elapsedMs: Date.now() - start }
 	)
 return finish({ result: settled.result, timedOut: true })
+} finally { stopped?.delete(${JSON.stringify(execId)}) }
 `
+}
+
+/**
+ * 查询分机上某次执行是否已被登记（登记后任意时刻打标记即可取消，进程未启动也有效）。
+ * @param {string} execId 执行 id。
+ * @returns {string} 返回布尔值的远程脚本。
+ */
+export function remoteShellStopScript(execId) {
+	return `return globalThis[Symbol.for('fount.remote-shell-stops')]?.has(${JSON.stringify(execId)}) ?? false`
 }
 
 /**

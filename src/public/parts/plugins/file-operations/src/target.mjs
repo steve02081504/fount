@@ -19,7 +19,7 @@ import { execShellWithTimeout, KILL_GRACE_MS, SHELL_DEFAULT_TIMEOUT_MS } from '.
 import { parseAttrs } from '../../../shells/chat/src/tags/index.mjs'
 import { executeCodeOnSubfount, executeShellOnSubfount, getAllSubfounts } from '../../../shells/subfounts/src/api.mjs'
 
-import { remoteJsStreamScript, remoteShellStreamScript, withRemoteStreamSink } from './remote_stream.mjs'
+import { remoteJsStreamScript, remoteShellStopScript, remoteShellStreamScript, withRemoteStreamSink } from './remote_stream.mjs'
 import { findWindowsBash, mapWindowsPath, resolveNativePath } from './windows_paths.mjs'
 
 /**
@@ -60,7 +60,7 @@ function withWriteLock(key, fn) {
 /**
  * 统一目标执行器。
  * @typedef {object} targetExecutor_t
- * @property {(shell: string|null, code: string, options?: {timeoutMs?: number|null, onOutput?: (stream: 'stdout'|'stderr', data: string) => void, callbackPartpath?: string}) => Promise<any>} execShell - 执行 shell（shell 为 null 时按目标机器默认 shell）；`options.timeoutMs` 覆盖默认超时（null 表示不限时），结果附 `timedOut` / `elapsedMs`。本机 `onOutput` 直接流式回调；远程需同时给 `callbackPartpath`（主机侧实现 `interfaces.subfount.RemoteCallBack` 的 part）以经回调通道流式回显。
+ * @property {(shell: string|null, code: string, options?: {timeoutMs?: number|null, onOutput?: (stream: 'stdout'|'stderr', data: string) => void, callbackPartpath?: string, onSpawn?: Function, onStop?: (stop: () => Promise<void>) => void}) => Promise<any>} execShell - 执行 shell（shell 为 null 时按目标机器默认 shell）；`options.timeoutMs` 覆盖默认超时（null 表示不限时），结果附 `timedOut` / `elapsedMs`。本机 `onOutput` 直接流式回调；远程需同时给 `callbackPartpath`（主机侧实现 `interfaces.subfount.RemoteCallBack` 的 part）以经回调通道流式回显。`onSpawn` 收到本机进程（供终止），`onStop` 收到「请求终止该次执行」的异步函数（本机传进程、远程登记取消标记）。
  * @property {(codeOrFn: string|Function, ...args: any[]) => Promise<any>} execJs - 执行 JS（返回 EvalResult.result）；函数经参数注入序列化，字符串原样执行。
  * @property {(code: string, timeoutMs: number|null, streamOptions?: {onOutput?: (stream: 'stdout'|'stderr', data: string) => void, callbackPartpath?: string}) => Promise<any>} [execJsWithTimeout] - 远程执行 JS 并放宽请求超时（仅远程执行器实现）；给 `onOutput` + `callbackPartpath` 时流式回显 console 输出。
  * @property {(p: string) => Promise<string>} resolvePath - 将路径解析为目标机器上的绝对路径（相对路径基于工作目录，支持 `~`）。
@@ -241,7 +241,7 @@ function createLocalExecutor(target) {
 		 * 执行 shell 命令（shell 为 null 时用 exec 默认 shell），支持超时杀进程树。
 		 * @param {string|null} shell - shell 名。
 		 * @param {string} code - 命令。
-		 * @param {{timeoutMs?: number|null, onOutput?: (stream: 'stdout'|'stderr', data: string) => void, env?: Record<string, string>}} [options] - 执行选项；`onOutput` 逐块回显；`env` 为本机追加环境变量（与 `process.env` 合并）。
+		 * @param {{timeoutMs?: number|null, onOutput?: (stream: 'stdout'|'stderr', data: string) => void, env?: Record<string, string>, onSpawn?: Function}} [options] - 执行选项；`onOutput` 逐块回显；`env` 为本机追加环境变量（与 `process.env` 合并）。
 		 * @returns {Promise<any>} 执行结果（附 `timedOut` / `elapsedMs`；出错时抛出并附带该二字段）。
 		 */
 		async execShell(shell, code, options = {}) {
@@ -262,7 +262,7 @@ function createLocalExecutor(target) {
 				 */
 				on_stderr: data => options.onOutput('stderr', data),
 			} : {}
-			const { result, timedOut, elapsedMs } = await execShellWithTimeout(shell, code, { ...spawnOptions, ...cwd ? { cwd: await resolveNativePath(cwd) } : {}, ...streamOptions, ...env ? { env } : {} }, timeoutMs)
+			const { result, timedOut, elapsedMs } = await execShellWithTimeout(shell, code, { ...spawnOptions, ...options.onSpawn ? { on_spawn: options.onSpawn } : {}, ...cwd ? { cwd: await resolveNativePath(cwd) } : {}, ...streamOptions, ...env ? { env } : {} }, timeoutMs)
 			if (result instanceof Error) throw Object.assign(result, { timedOut, elapsedMs })
 			return { ...result, timedOut, elapsedMs }
 		},
@@ -432,10 +432,10 @@ function createRemoteExecutor(username, target) {
 	 * @param {(stream: 'stdout'|'stderr', data: string) => void} onOutput - 逐块输出回调。
 	 * @param {string} callbackPartpath - 主机侧实现 `interfaces.subfount.RemoteCallBack` 的 partpath。
 	 * @param {number|null} timeoutMs - 超时毫秒（null = 不限时）。
+	 * @param {string} [execId] Optional execution id shared with cancellation.
 	 * @returns {Promise<any>} 解包后的 result 值。
 	 */
-	const runStreaming = async (scriptFactory, onOutput, callbackPartpath, timeoutMs) => {
-		const execId = randomUUID()
+	const runStreaming = async (scriptFactory, onOutput, callbackPartpath, timeoutMs, execId = randomUUID()) => {
 		return await withRemoteStreamSink(execId, onOutput, async () => unwrapEval(
 			await executeCodeOnSubfount(username, machine, scriptFactory(execId),
 				{ username, partpath: callbackPartpath },
@@ -452,13 +452,29 @@ function createRemoteExecutor(username, target) {
 		 * 传入 `onOutput` + `callbackPartpath` 时经回调通道流式回显（分机侧自行超时杀进程树）。
 		 * @param {string|null} shell - shell 名。
 		 * @param {string} code - 命令。
-		 * @param {{timeoutMs?: number|null, onOutput?: (stream: 'stdout'|'stderr', data: string) => void, callbackPartpath?: string}} [options] - 执行选项。
+		 * @param {{timeoutMs?: number|null, onOutput?: (stream: 'stdout'|'stderr', data: string) => void, callbackPartpath?: string, onStop?: (stop: () => Promise<void>) => void}} [options] - 执行选项。
 		 * @returns {Promise<any>} 执行结果（附 `timedOut` / `elapsedMs`）。
 		 */
 		execShell: async (shell, code, options = {}) => {
 			const timeoutMs = options && 'timeoutMs' in options ? options.timeoutMs : SHELL_DEFAULT_TIMEOUT_MS
+			const cancellable = typeof options.onStop === 'function'
+			// 取消标记由分机脚本自己登记，`execId` 先于请求存在，因此随时可取消。
+			const execId = cancellable ? randomUUID() : undefined
+			if (cancellable)
+				options.onStop(async () => {
+					// 标记查询要等分机侧脚本登记完成：进程内切换只差一次 RPC 往返，冷启动则要等它把脚本跑起来。
+					const deadline = Date.now() + 10000
+					while (!await run(remoteShellStopScript(execId))) {
+						if (Date.now() >= deadline) throw new Error('远程执行尚未就绪，未能确认停止，请重试。')
+						await new Promise(resolve => setTimeout(resolve, 100))
+					}
+				})
 			if (typeof options.onOutput === 'function' && options.callbackPartpath)
-				return await runStreaming(id => remoteShellStreamScript(shell, code, base, timeoutMs, id), options.onOutput, options.callbackPartpath, timeoutMs)
+				return await runStreaming(id => remoteShellStreamScript(shell, code, base, timeoutMs, cancellable ? execId : id, cancellable), options.onOutput, options.callbackPartpath, timeoutMs, execId)
+			if (cancellable)
+				return await unwrapEval(await executeCodeOnSubfount(username, machine,
+					remoteShellStreamScript(shell, code, base, timeoutMs, execId, true), null, null,
+					{ requestTimeoutMs: timeoutMs === null ? null : timeoutMs + KILL_GRACE_MS + 5000 }))
 			return await executeShellOnSubfount(username, machine, code, shell, {
 				no_ansi_terminal_sequences: true,
 				...base ? { cwd: base } : {},

@@ -12,6 +12,8 @@ import { assert, assertEquals } from 'jsr:@std/assert'
 import { REPO_ROOT } from 'fount/scripts/test/core/repo_root.mjs'
 import { launchNode, stopNode } from 'fount/scripts/test/node/launch.mjs'
 
+import { remoteShellStopScript, remoteShellStreamScript } from '../../../../plugins/file-operations/src/remote_stream.mjs'
+
 import { subfountFetch } from './helpers/subfount_http.mjs'
 
 const integrationDir = dirname(fileURLToPath(import.meta.url))
@@ -214,6 +216,37 @@ Deno.test({
 		assertEquals(execRes.status, 200, `${execRaw}\n--- host log ---\n${host.takeOutput()}\n--- client log ---\n${clientOutput}`)
 		const execBody = JSON.parse(execRaw)
 		assertEquals(execBody.result?.result, 42)
+
+		// A second RPC must be able to cancel an in-flight run_code on the same peer.
+		const executionId = crypto.randomUUID()
+		const remoteShell = Deno.build.os === 'windows' ? 'powershell' : 'sh'
+		const command = remoteShell === 'sh' ? 'sleep 30' : 'Start-Sleep -Seconds 30'
+		const running = subfountFetch(host, 'POST', '/execute', {
+			subfountId: remote.id,
+			script: remoteShellStreamScript(remoteShell, command, undefined, 15000, executionId, true),
+		})
+		try {
+			await waitFor(10000, async () => {
+				const stopped = await subfountFetch(host, 'POST', '/execute', {
+					subfountId: remote.id, script: remoteShellStopScript(executionId),
+				})
+				assertEquals(stopped.status, 200)
+				return (await stopped.json()).result?.result === true
+			})
+			const stoppedRun = await running
+			assertEquals(stoppedRun.status, 200)
+			const stoppedBody = (await stoppedRun.json()).result
+			assert(stoppedBody.error || stoppedBody.result?.code || stoppedBody.result?.signal)
+			const stale = await subfountFetch(host, 'POST', '/execute', {
+				subfountId: remote.id, script: remoteShellStopScript(executionId),
+			})
+			assertEquals((await stale.json()).result?.result, false)
+		} finally {
+			await subfountFetch(host, 'POST', '/execute', {
+				subfountId: remote.id, script: remoteShellStopScript(executionId),
+			}).then(response => response.arrayBuffer())
+			await running
+		}
 	}
 	finally {
 		if (client) {
