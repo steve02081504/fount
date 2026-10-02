@@ -134,7 +134,12 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 	const localPlugins = await resolveLocalPlugins(groupId, replicaUsername)
 
 	const i18n = await loadDagHydrationI18n(replicaUsername)
-	const prelude = chatMetadata.chatLog.filter(entry => isGreetingEntry(entry))
+	// 角色 DM 的每个频道各有一份开场；只在这一频道里带上它，也不把别的频道开场混进 prompt。
+	const dmCharname = state.groupMeta?.friendBinding?.charname
+	const prelude = chatMetadata.chatLog.filter(entry => isGreetingEntry(entry)
+		&& (!dmCharname
+			|| !entry.extension?.timeSlice?.charname
+			|| entry.extension.chat.channelId === effectiveChannelId))
 	const channelEntries = await buildChatLogEntriesFromChannelLines(
 		lines,
 		chatMetadata.LastTimeSlice,
@@ -148,7 +153,9 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 	const knownIds = new Set([...prelude, ...channelEntries].map(entry => String(entry.id)))
 	const localOnlyEntries = chatMetadata.chatLog.filter(entry =>
 		entry.charVisibility?.length && !knownIds.has(String(entry.id)))
-	const chatLogForRequest = [...prelude, ...channelEntries, ...localOnlyEntries].sort((a, b) =>
+	// 频道水合会带回 prelude 里已有的开场，按 id 去重后统一按时间排序
+	const preludeIds = new Set(prelude.map(entry => String(entry.id)))
+	const chatLogForRequest = [...prelude, ...channelEntries.filter(entry => !preludeIds.has(String(entry.id))), ...localOnlyEntries].sort((a, b) =>
 		new Date(a.time_stamp).getTime() - new Date(b.time_stamp).getTime())
 
 	// 用户消息的实际语言（UI locale）按出现次数排序，作为 user.locales 之后的次要提示：

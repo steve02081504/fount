@@ -45,6 +45,7 @@
 		],
 		"shellIntegrationTests": [
 			"src/public/parts/shells/chat/test/integration/**",
+			"src/public/parts/shells/chat/test/fixtures/chars/dm_greeting_agent/**",
 			"src/public/parts/shells/chat/test/fixtures/chars/set_workdir_agent/**",
 			"src/public/parts/shells/chat/test/fixtures/chars/gentian_shell_contract/**",
 			"default/templates/user/chars/ZL-31/**",

@@ -168,6 +168,7 @@ export async function bindWorld(groupId, channelId, worldname, replicaUsername) 
 		if (!result) return null
 
 		const greetingEntry = await buildChatLogEntryFromCharReply(result, timeSlice, undefined, username, greetingType)
+		greetingEntry.extension.chat = { ...greetingEntry.extension.chat, channelId }
 		await addChatLogEntry(groupId, greetingEntry)
 		return greetingEntry
 	}
@@ -192,16 +193,17 @@ export async function bindWorld(groupId, channelId, worldname, replicaUsername) 
  * @param {import('./models.mjs').chatMetadata_t} chatMetadata 群运行时
  * @param {object} timeSlice 时间片副本
  * @param {string | null} [greetingType] 问候子类型
+ * @param {string | null} [channelId] 显式目标频道
  * @returns {Promise<chatLogEntry_t | null>} 问候日志条目或 null
  */
-async function insertCharGreeting(groupId, charname, username, chatMetadata, timeSlice, greetingType = null) {
+async function insertCharGreeting(groupId, charname, username, chatMetadata, timeSlice, greetingType = null, channelId = null) {
 	const char = timeSlice.chars[charname]
 	if (!char) return null
 	const getGreeting = greetingType === 'group'
 		? char.interfaces?.chat?.GetGroupGreeting || char.interfaces?.chat?.GetGreeting
 		: char.interfaces?.chat?.GetGreeting
 	if (!getGreeting) return null
-	const greetingChannelId = await getDefaultChannelId(username, groupId)
+	const greetingChannelId = channelId || await getDefaultChannelId(username, groupId)
 	// 群无可用频道时没有地方安放问候语。
 	if (!greetingChannelId) return null
 	const request = await getChatRequest(groupId, charname, greetingChannelId, { replicaUsername: username })
@@ -209,6 +211,7 @@ async function insertCharGreeting(groupId, charname, username, chatMetadata, tim
 		const result = await getGreeting(request, 0)
 		if (!result) return null
 		const greetingEntry = await buildChatLogEntryFromCharReply(result, timeSlice, charname, username, greetingType)
+		greetingEntry.extension.chat = { ...greetingEntry.extension.chat, channelId: greetingChannelId }
 		// 问候事实源统一为 entry.type（`greeting:<subtype>`）：modifyTimeLine 靠它重 roll 开场；greetingLog 也按此过滤
 		await addChatLogEntry(groupId, greetingEntry)
 		return greetingEntry
@@ -218,6 +221,39 @@ async function insertCharGreeting(groupId, charname, username, chatMetadata, tim
 			console.error(error)
 		return null
 	}
+}
+
+/** @type {Map<string, Promise<void>>} 每个 DM 频道的问候任务。 */
+const dmChannelGreetings = new Map()
+
+/**
+ * 新建角色 DM 文本频道的独立开场；同一频道并发调用共享任务。
+ * @param {string} username 本机 replica
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 新频道 ID
+ * @returns {Promise<void>} 问候写入完成
+ */
+export function greetDmChannel(username, groupId, channelId) {
+	const key = `${username}\u0000${groupId}\u0000${channelId}`
+	if (dmChannelGreetings.has(key)) return dmChannelGreetings.get(key)
+	const task = (async () => {
+		const { state } = await getState(username, groupId)
+		const charname = state.groupMeta?.friendBinding?.charname
+		const channel = state.channels?.[channelId]
+		// 分类与子线程没有开场；本机未绑定该角色时也无从问候。
+		if (!charname || channel?.type !== 'text' || channel.parentEventId) return
+		if (!sessionHasChar(await getMaterializedSession(username, groupId), charname)) return
+		const { readChannelMessagesForUser } = await import('../../group/queries.mjs')
+		const lines = await readChannelMessagesForUser(username, groupId, channelId, { limit: 500 })
+		if (lines.some(line => line.charId === charname && line.content?.extension?.chat?.isGreeting)) return
+		const metadata = await getGroupRuntime(groupId, username)
+		await insertCharGreeting(groupId, charname, username, metadata, metadata.LastTimeSlice.copy(), 'single', channelId)
+	})()
+	dmChannelGreetings.set(key, task)
+	/** 任务完成（含失败）后释放槽位。 */
+	const cleanup = () => { if (dmChannelGreetings.get(key) === task) dmChannelGreetings.delete(key) }
+	task.then(cleanup, cleanup)
+	return task
 }
 
 /**

@@ -263,6 +263,16 @@ export function createChannel(apiContext, groupId, channelId, projection = {}) {
 			}, signOptions)
 			const resolvedId = created.content?.channelId || options.channelId
 			const { channel } = await buildConversationContext(apiContext.username, groupId, resolvedId)
+			// 创建接口不等开场：角色 DM 的开场在后台补，ChatClient 各创建入口行为一致。
+			void (async () => {
+				try {
+					const { greetDmChannel } = await import('../chat/session/partConfig.mjs')
+					await greetDmChannel(apiContext.username, groupId, resolvedId)
+				}
+				catch (error) {
+					console.error('DM channel greeting failed:', error)
+				}
+			})()
 			return createChannel(apiContext, groupId, resolvedId, channel)
 		},
 	}

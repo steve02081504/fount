@@ -63,6 +63,25 @@ async function createDmWithGreeting(baseUrl, apiKey) {
 test.describe('DM channel list context menu', () => {
 	test.describe.configure({ timeout: ms('3m') })
 
+	test('each quick-created character DM channel receives its own greeting', async ({ page, baseUrl, apiKey }) => {
+		const { groupId, channelId } = await createFriendChatGroup(baseUrl, apiKey, 'noai_locale_reporter', { forceNew: true })
+		await waitForHub(page, baseUrl, { friendsMode: false })
+		await navigateGroupChannelHash(page, groupId, channelId)
+		await expectMessageInChat(page, '你好！我是本地化回复器。')
+		const channelIds = new Set([channelId])
+		for (let index = 0; index < 2; index++) {
+			await openChannelListContextMenu(page)
+			await page.locator('[data-action="create-channel"]').click()
+			await expect.poll(() => parseGroupHashFromUrl(page.url())?.channelId).not.toBe([...channelIds].at(-1))
+			const createdId = parseGroupHashFromUrl(page.url())?.channelId
+			expect(createdId).toBeTruthy()
+			expect(channelIds.has(createdId)).toBe(false)
+			channelIds.add(createdId)
+			await expectMessageInChat(page, '你好！我是本地化回复器。')
+			await expect(page.locator('#message-input')).toHaveJSProperty('disabled', false)
+		}
+	})
+
 	test('DM list right-click opens menu and quick-creates a channel without a dialog', async ({ page, baseUrl }) => {
 		await page.goto(`${baseUrl}/parts/shells:chat/hub/?char=on_message_yes`, {
 			waitUntil: 'domcontentloaded',

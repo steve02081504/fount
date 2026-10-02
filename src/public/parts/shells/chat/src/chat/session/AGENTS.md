@@ -44,6 +44,7 @@ World shared state / `WorldChatHost`: [docs/world-host.md](docs/world-host.md).
 
 - Inject `state.members[*].roles` into top-level and `extension.member_roles`. Resolve char via `resolveActiveAgentMemberKeyByCharname`; local user via `resolveActiveMemberKeyForLocalUser`. Do not look up `state.members` by `extension.memberId` (operator entity hash).
 - Skip greeting when hooks are missing. Keep the greeting marker on `entry.type` (`greeting:<subtype>`, runtime helpers `isGreetingEntry` / `greetingSubtypeOf` in `src/chat/logEntryTypes.mjs`) — deleting breaks re-roll / `greetingLog`. Wire side stays `extension.chat.isGreeting` / `greetingType`. `bindWorld` greeting uses `resolveWorld(channelId)`, not only `LastTimeSlice.world`.
+- Each new text channel in a character DM gets its own greeting through `greetDmChannel` after ChatClient creation. Always set `entry.extension.chat.channelId`; character DM greeting preludes stay in their own channel and deduplicate hydrated DAG entries. Categories and threads do not get an opening message.
 
 ## Write / edit path
 
