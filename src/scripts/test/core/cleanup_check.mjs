@@ -7,6 +7,8 @@ import { homedir, tmpdir } from 'node:os'
 import { join } from 'node:path'
 import process from 'node:process'
 
+import { readTempDirOwner } from './temp_origin.mjs'
+
 /** 残留检测失败时 fount test 的退出码。 */
 export const CLEANUP_LEAK_EXIT_CODE = 3
 
@@ -43,24 +45,37 @@ export function msPlaywrightPath() {
 
 /**
  * 扫描遗留的 ms-playwright / fount 临时目录。
- * @param {string[]} [baseline] 起始基线路径（debug job 启动时记录），返回中剔除其中已存在者
+ * @param {string[]} [baseline] 起始基线路径；有匹配归属的目录不受基线排除
+ * @param {object} [options] job 归属过滤；无 owner 时保留全局基线扫描
+ * @param {string} [options.owner] 所属 job
+ * @param {boolean} [options.includeUnowned] 是否扫描没有归属的目录（仅在无其它套件运行时安全）
  * @returns {string[]} 残留路径（空 = 干净）
  */
-export function findCleanupLeaks(baseline = []) {
+export function findCleanupLeaks(baseline = [], { owner, includeUnowned = true } = {}) {
 	if (inGitHubActions()) return []
 	/** @type {string[]} */
 	const leaks = []
 	const playwrightDir = msPlaywrightPath()
-	if (playwrightDir && existsSync(playwrightDir)) leaks.push(playwrightDir)
+	if (includeUnowned && playwrightDir && existsSync(playwrightDir) && !baseline.includes(playwrightDir)) leaks.push(playwrightDir)
 	let tempEntries = []
 	try {
 		tempEntries = readdirSync(tmpdir())
 	}
 	catch {
-		return leaks.filter(leak => !baseline.includes(leak))
+		return leaks
 	}
-	for (const entry of tempEntries)
-		if (/^fount[-_]/.test(entry))
-			leaks.push(join(tmpdir(), entry))
-	return leaks.filter(leak => !baseline.includes(leak))
+	for (const entry of tempEntries) {
+		if (!/^fount[-_]/.test(entry)) continue
+		const path = join(tmpdir(), entry)
+		if (owner) {
+			const jobId = readTempDirOwner(path)
+			if (jobId === owner) {
+				leaks.push(path)
+				continue
+			}
+			if (jobId || !includeUnowned) continue
+		}
+		if (!baseline.includes(path)) leaks.push(path)
+	}
+	return leaks
 }

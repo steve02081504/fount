@@ -2,6 +2,7 @@
  * 内核单例、退出、空波次与依赖丢弃。
  */
 /* global Deno */
+import { existsSync } from 'node:fs'
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -11,6 +12,8 @@ import { execFile } from 'npm:@steve02081504/exec'
 
 import { parseNetstatListenPid } from '../../listener.mjs'
 import { ms } from '../../ms.mjs'
+import { inGitHubActions } from '../core/cleanup_check.mjs'
+import { MiB } from '../core/concurrency.mjs'
 import { reportJsonPath, reportMarkdownPath, triggeredReasonsMarkdownPath } from '../core/paths.mjs'
 import { waitUntil } from '../core/wait.mjs'
 import { startTestHub, testHubUrl } from '../hub/index.mjs'
@@ -18,6 +21,7 @@ import { kernelHealthy, rebootTestKernel, shutdownTestKernel } from '../kernel/e
 import { ignoreWatchPath } from '../kernel/runtime.mjs'
 import { startTestKernel } from '../kernel/server.mjs'
 
+import { makeSuite } from './fixtures.mjs'
 import {
 	awaitJob,
 	awaitWithTimeout,
@@ -28,6 +32,136 @@ import {
 	KERNEL_PORT,
 	SKIP_URL,
 } from './kernel_fixtures.mjs'
+
+Deno.test('a parallel job reports its owned leak before a live peer finishes', async () => {
+	if (inGitHubActions()) return
+	const root = join(tmpdir(), `fount-kernel-cleanup-${crypto.randomUUID()}`)
+	await mkdir(root)
+	const handle = await startTestKernel({
+		port: KERNEL_PORT + 62, autoExit: false, watchFs: false,
+		writeReport: false, autoUpdateExpected: false,
+	})
+	const kernel = handle.kernel
+	const events = []
+	const viewer = kernel.viewers.add({
+		readyState: 1,
+		/** @param {string} raw 事件 JSON @returns {void} */
+		send: raw => { events.push(JSON.parse(raw)) },
+	}, { mode: 'overview' })
+	viewer.jobId = 'cleanup-early'
+	const markerUrl = new URL('../core/temp_origin.mjs', import.meta.url).href
+	const script = `
+		(async () => {
+			const fs = await import('node:fs/promises');
+			const { existsSync } = await import('node:fs');
+			const { markTempDirOrigin } = await import(${JSON.stringify(markerUrl)});
+			const [dir, release] = process.argv.slice(1);
+			await fs.mkdir(dir);
+			await markTempDirOrigin(dir, 'parallel cleanup regression');
+			while (!existsSync(release)) await new Promise(r => setTimeout(r, 20));
+		})().catch(error => { console.error(error); process.exitCode = 1; });
+	`
+	let first
+	let second
+	try {
+		for (const name of ['early', 'peer']) {
+			const suite = makeSuite('testkit', `__cleanup_${name}__`, {
+				run: ['node', '-e', script, join(root, `fount-${name}`), join(root, `release-${name}`)],
+				triggers: [], resources: { memMb: 20, cpuPct: 1 },
+			})
+			const key = `testkit:${suite.name}`
+			kernel.catalog.byKey.set(key, suite)
+			kernel.catalog.allSuites.push(suite)
+			kernel.state.suites[key] = { baselineMemMb: 20, baselineCpuPct: 1 }
+		}
+		// 使用系统 Temp 下的顶层目录，确保实际扫描能看见。
+		const earlyDir = join(tmpdir(), `fount-early-${crypto.randomUUID()}`)
+		const peerDir = join(tmpdir(), `fount-peer-${crypto.randomUUID()}`)
+		kernel.catalog.byKey.get('testkit:__cleanup_early__').run[3] = earlyDir
+		kernel.catalog.byKey.get('testkit:__cleanup_peer__').run[3] = peerDir
+		// peer 的清理由测试显式执行；先验证活跃目录不会被 early 误报。
+		try {
+			first = enqueueDummyJob(kernel, { key: 'testkit:__cleanup_early__', jobId: 'cleanup-early' })
+			kernel.wake()
+			await waitUntil(() => existsSync(join(earlyDir, 'origin.txt')), 8000)
+			second = enqueueDummyJob(kernel, { key: 'testkit:__cleanup_peer__', jobId: 'cleanup-peer' })
+			kernel.wake()
+			await waitUntil(() => existsSync(join(peerDir, 'origin.txt')), 8000)
+			await writeFile(join(root, 'release-early'), '')
+			await awaitJob(first.job, 'early cleanup job did not finish while peer was running')
+			assertEquals(first.job.exitCode, 3)
+			assertEquals(kernel.running.has('testkit:__cleanup_peer__'), true)
+			const leak = events.find(event => event.type === 'cleanup-leak' && event.jobId === first.job.id)
+			assertEquals(leak?.leaks, [earlyDir])
+			assertEquals(events.find(event => event.type === 'job-done' && event.jobId === first.job.id)?.exitCode, 3)
+			await rm(peerDir, { recursive: true, force: true })
+			await writeFile(join(root, 'release-peer'), '')
+			await awaitJob(second.job, 'peer cleanup job did not finish')
+			assertEquals(second.job.exitCode, 0)
+		}
+		finally {
+			await writeFile(join(root, 'release-early'), '')
+			await writeFile(join(root, 'release-peer'), '')
+			if (first) await awaitJob(first.job, 'cleanup early teardown timed out')
+			if (second) await awaitJob(second.job, 'cleanup peer teardown timed out')
+			await rm(earlyDir, { recursive: true, force: true })
+			await rm(peerDir, { recursive: true, force: true })
+		}
+	}
+	finally {
+		kernel.viewers.remove(viewer.id)
+		await handle.close()
+		await rm(root, { recursive: true, force: true })
+	}
+})
+
+Deno.test('concurrent jobs fill spare resources past a queued oversized suite', async () => {
+	const handle = await startTestKernel({
+		port: KERNEL_PORT + 61,
+		autoExit: false,
+		watchFs: false,
+		writeReport: false,
+		autoUpdateExpected: false,
+	})
+	const kernel = handle.kernel
+	clearInterval(kernel.budgetTimer)
+	kernel.gate.updateBudget(1000 * MiB)
+	const occupied = kernel.gate.tryAcquire(makeSuite('testkit', 'occupied', {
+		resources: { memMb: 700, cpuPct: 15 },
+	}))
+	const blockedKey = 'testkit:__parallel_large__'
+	const fittingKey = 'testkit:__parallel_small__'
+	const large = makeSuite('testkit', '__parallel_large__', {
+		run: ['node', '-e', ''], resources: { memMb: 800, cpuPct: 10 }, triggers: [],
+	})
+	const small = makeSuite('testkit', '__parallel_small__', {
+		run: ['node', '-e', ''], resources: { memMb: 100, cpuPct: 10 }, triggers: [],
+	})
+	// 实测资源覆盖默认推断，保证只有小任务能装下。
+	for (const suite of [large, small]) {
+		const key = `testkit:${suite.name}`
+		kernel.catalog.byKey.set(key, suite)
+		kernel.catalog.allSuites.push(suite)
+		kernel.state.suites[key] = { baselineMemMb: suite.resources.memMb, baselineCpuPct: 10 }
+	}
+	try {
+		const first = enqueueDummyJob(kernel, { key: blockedKey, jobId: 'parallel-large' })
+		const second = enqueueDummyJob(kernel, { key: fittingKey, jobId: 'parallel-small' })
+		kernel.wake()
+		await awaitJob(second.job, 'small job remained behind oversized queue head')
+		assertEquals(second.end()?.passed, true)
+		assertEquals(first.end(), null)
+		assertEquals(kernel.queues.cli.some(item => item.key === blockedKey), true)
+		occupied()
+		kernel.wake()
+		await awaitJob(first.job, 'older job never resumed after resources freed')
+		assertEquals(first.end()?.passed, true)
+	}
+	finally {
+		occupied?.()
+		await handle.close()
+	}
+})
 
 Deno.test('ignoreWatchPath drops git, node_modules, debug_logs, data/test', () => {
 	assertEquals(ignoreWatchPath('.git/HEAD'), true)

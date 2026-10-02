@@ -45,6 +45,7 @@ export function applyTestHeapCapToDenoRun(command) {
  * @property {string[]} [onlyFiles] FOUNT_TEST_ONLY：范围过滤（少用）
  * @property {string[]} [triggeredFiles] 本波次命中 trigger 的变更路径（写入临时文件后经 env 传路径）
  * @property {string} [moduleCheckTicket] 模组检查租约
+ * @property {string} [cleanupOwner] 临时目录所属 job
  */
 
 /**
@@ -65,6 +66,7 @@ export function buildSuiteInvocation(suite, options, failuresOut, timingsOut, tr
 		FOUNT_TEST_TIMINGS_OUT: timingsOut,
 		FOUNT_TEST_SCOPE: suite.manifestId,
 		FOUNT_TEST_SUITE_KEY: suiteKey(suite.manifestId, suite.name),
+		FOUNT_TEST_CLEANUP_OWNER: options?.cleanupOwner ?? process.env.FOUNT_TEST_CLEANUP_OWNER ?? '',
 		FOUNT_TEST_ONLY: onlyFiles?.length ? onlyFiles.join('\n') : '',
 		FOUNT_TEST_FIRST: firstFiles?.length ? firstFiles.join('\n') : '',
 		FOUNT_TEST_SUBTESTS: subtests?.length ? subtests.join('\n') : '',
@@ -136,7 +138,7 @@ export function mapTimingsToSubtests(suite, timings, ranSubtests) {
 async function runSuiteOnce(suite, options, stream, watchdog) {
 	// suite 结束时 finally 清理；进程被杀时泄漏由 cleanup_check 的 fount[-_]* 全局扫描兜底抓取。
 	const tempDir = await mkdtemp(join(tmpdir(), 'fount-test-'))
-	await markTempDirOrigin(tempDir, `suite ${suite.manifestId}:${suite.name} (runSuiteOnce)`)
+	await markTempDirOrigin(tempDir, `suite ${suite.manifestId}:${suite.name} (runSuiteOnce)`, options?.cleanupOwner)
 	const failuresOut = join(tempDir, 'failures.json')
 	const timingsOut = join(tempDir, 'timings.json')
 	const triggeredFilesPath = join(tempDir, 'triggered.txt')

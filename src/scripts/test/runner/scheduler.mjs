@@ -6,6 +6,7 @@ import {
 	resolveSerialUnitResources,
 	resolveSuiteResources,
 	resourcesMemBytes,
+	suiteUsesSerialRunner,
 } from '../core/resources.mjs'
 
 /**
@@ -97,6 +98,37 @@ export class ResourceRunGate {
 	#unitWaiters
 	/** @type {Map<SuiteDef, Set<() => void>>} */
 	#unitReleases
+	/** 正在运行的非 serial 套件数：它们可能无需 unit lease 就在消耗资源。 */
+	#nonSerialRunning = 0
+	/** @type {SuiteDef | null} 独占套件，仅允许其自己的文件 worker 获取租约。 */
+	#exclusiveSuite = null
+
+	/**
+	 * 更新预算并立即唤醒能装下的等待项。
+	 * @param {number} memBytes 新内存预算
+	 */
+	updateBudget(memBytes) {
+		this.memBudgetBytes = memBytes
+		this.#tryAdmit()
+		this.#tryAdmitUnits()
+	}
+
+	/**
+	 * 查询能否放行，不占用资源；用于内核跳过暂时装不下的队首。
+	 * @param {SuiteDef} suite 套件
+	 * @returns {boolean} 是否有余量
+	 */
+	canAcquire(suite) {
+		if (this.exclusiveRunning) return false
+		if (suite.heavy) return this.isIdle
+		return this.#canFit(this.#needs(suite))
+	}
+
+	/** @returns {boolean} 两池均空闲 */
+	get isIdle() {
+		return !this.exclusiveRunning && this.usedMemBytes === 0 && this.usedCpuPct === 0
+			&& this.#usedUnitMemBytes === 0 && this.#usedUnitCpuPct === 0
+	}
 
 	/** @returns {number} 单元池已占内存字节 */
 	get usedUnitMemBytes() {
@@ -167,15 +199,17 @@ export class ResourceRunGate {
 	#admit(w) {
 		if (w.suite.heavy) {
 			this.exclusiveRunning = true
+			this.#exclusiveSuite = w.suite
 			this.#notifyChange()
-			w.resolve(() => this.#releaseExclusive())
+			w.resolve(once(() => this.#releaseExclusive()))
 			return
 		}
 		const need = this.#needs(w.suite)
 		this.usedMemBytes += resourcesMemBytes(need)
 		this.usedCpuPct += need.cpuPct
+		if (!suiteUsesSerialRunner(w.suite)) this.#nonSerialRunning++
 		this.#notifyChange()
-		w.resolve(() => this.#releaseSuite(w.suite, need))
+		w.resolve(once(() => this.#releaseSuite(w.suite, need)))
 	}
 
 	/**
@@ -205,7 +239,7 @@ export class ResourceRunGate {
 	#tryAdmit() {
 		if (this.exclusiveRunning) return
 
-		const idle = this.usedMemBytes === 0 && this.usedCpuPct === 0
+		const idle = this.isIdle
 		if (idle && this.waiters.length) {
 			const heavyIdx = this.waiters.findIndex(w => w.suite.heavy)
 			if (heavyIdx >= 0) {
@@ -262,6 +296,7 @@ export class ResourceRunGate {
 		let bestIdx = -1
 		let bestScore = -1
 		for (let i = 0; i < this.#unitWaiters.length; i++) {
+			if (this.exclusiveRunning && this.#unitWaiters[i].suite !== this.#exclusiveSuite) continue
 			const need = this.#unitNeeds(this.#unitWaiters[i].suite)
 			if (requireFit && !this.#canFit(need)) continue
 			if (!requireFit) return i
@@ -275,13 +310,12 @@ export class ResourceRunGate {
 	}
 
 	/**
-	 * 单元池放行：先保证非空转（单元与 suite 全空才算空闲），再按单元需求填缝。
+	 * 单元池放行：仅 serial 编排器占位时保证至少一个 worker 开工，再按需求填缝。
 	 */
 	#tryAdmitUnits() {
-		if (this.exclusiveRunning) return
-
 		const machineIdle = this.#usedUnitMemBytes === 0 && this.#usedUnitCpuPct === 0
-			&& this.usedMemBytes === 0 && this.usedCpuPct === 0
+			&& this.#nonSerialRunning === 0
+			&& (!this.exclusiveRunning || suiteUsesSerialRunner(this.#exclusiveSuite))
 		if (machineIdle && this.#unitWaiters.length) {
 			const startIdx = this.#pickUnitWaiterIndex(true)
 			const idx = startIdx >= 0 ? startIdx : this.#pickUnitWaiterIndex(false)
@@ -329,19 +363,20 @@ export class ResourceRunGate {
 	 * @returns {(() => void) | null} 释放函数；装不下则为 null
 	 */
 	tryAcquire(suite) {
-		if (this.exclusiveRunning) return null
+		if (!this.canAcquire(suite)) return null
 		if (suite.heavy) {
-			if (this.usedMemBytes !== 0 || this.usedCpuPct !== 0) return null
 			this.exclusiveRunning = true
+			this.#exclusiveSuite = suite
 			this.#notifyChange()
-			return () => this.#releaseExclusive()
+			return once(() => this.#releaseExclusive())
 		}
 		const need = this.#needs(suite)
 		if (!this.#canFit(need)) return null
 		this.usedMemBytes += resourcesMemBytes(need)
 		this.usedCpuPct += need.cpuPct
+		if (!suiteUsesSerialRunner(suite)) this.#nonSerialRunning++
 		this.#notifyChange()
-		return () => this.#releaseSuite(suite, need)
+		return once(() => this.#releaseSuite(suite, need))
 	}
 
 	/**
@@ -358,6 +393,8 @@ export class ResourceRunGate {
 
 	/** 释放 heavy 独占槽位。 */
 	#releaseExclusive() {
+		this.#releaseSuiteUnits(this.#exclusiveSuite)
+		this.#exclusiveSuite = null
 		this.exclusiveRunning = false
 		this.#notifyChange()
 		this.#tryAdmit()
@@ -372,6 +409,7 @@ export class ResourceRunGate {
 	 */
 	#releaseSuite(suite, need) {
 		this.#releaseSuiteUnits(suite)
+		if (!suiteUsesSerialRunner(suite)) this.#nonSerialRunning--
 		this.#releaseSlot(need)
 	}
 
@@ -380,6 +418,12 @@ export class ResourceRunGate {
 	 * @param {SuiteDef} suite suite
 	 */
 	#releaseSuiteUnits(suite) {
+		const pending = this.#unitWaiters.filter(waiter => waiter.suite === suite)
+		this.#unitWaiters = this.#unitWaiters.filter(waiter => waiter.suite !== suite)
+		for (const waiter of pending) {
+			waiter.signal?.removeEventListener('abort', waiter.onAbort)
+			waiter.reject(new DOMException('suite finished before unit admission', 'AbortError'))
+		}
 		const releases = this.#unitReleases.get(suite)
 		if (!releases?.size) return
 		this.#unitReleases.delete(suite)

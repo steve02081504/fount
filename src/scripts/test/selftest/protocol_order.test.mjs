@@ -148,12 +148,13 @@ Deno.test('buildSuiteInvocation passes FOUNT_TEST_TRIGGERED_FILES as temp path',
 	const triggeredPath = '/tmp/fount-test-xyz/triggered.txt'
 	const { env } = buildSuiteInvocation(
 		suite,
-		{ triggeredFiles: ['a.json', 'b.json'] },
+		{ triggeredFiles: ['a.json', 'b.json'], cleanupOwner: 'invoking-job' },
 		'/tmp/failures.json',
 		'/tmp/timings.json',
 		triggeredPath,
 	)
 	assertEquals(env.FOUNT_TEST_TRIGGERED_FILES, triggeredPath)
+	assertEquals(env.FOUNT_TEST_CLEANUP_OWNER, 'invoking-job')
 })
 
 Deno.test('writeTestTriggeredFiles / readTestTriggeredFiles round-trip', async () => {

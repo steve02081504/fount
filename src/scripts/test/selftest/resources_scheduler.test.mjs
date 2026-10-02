@@ -12,7 +12,7 @@ import {
 	nextBaselineEma,
 	nextBaselineMemMb,
 } from '../core/baseline.mjs'
-import { MiB } from '../core/concurrency.mjs'
+import { availableTestMemoryBytes, computeGlobalBudget, MEM_HEADROOM, MiB, windowsCommitAvailableBytes } from '../core/concurrency.mjs'
 import {
 	DEFAULT_UNIT_MEM_MB,
 	SERIAL_BASE_CPU_PCT,
@@ -29,6 +29,85 @@ import { PlanRunCoordinator } from '../runner/dependency_scheduler.mjs'
 import { ResourceRunGate } from '../runner/scheduler.mjs'
 
 import { makeSuite } from './fixtures.mjs'
+import { awaitWithTimeout } from './kernel_fixtures.mjs'
+
+Deno.test('Windows budget reads commit headroom rather than virtual address space', () => {
+	const buffer = new Uint8Array(64)
+	const view = new DataView(buffer.buffer)
+	view.setBigUint64(32, BigInt(3000 * MiB), true)
+	view.setBigUint64(40, 128n * 1024n ** 4n, true)
+	view.setBigUint64(48, 127n * 1024n ** 4n, true)
+	assertEquals(windowsCommitAvailableBytes(buffer), 3000 * MiB)
+})
+
+Deno.test('global budget includes available virtual memory and restores tracked usage once', () => {
+	assertEquals(computeGlobalBudget(100 * MiB, 3000 * MiB).memBytes, Math.floor(3100 * MiB * MEM_HEADROOM))
+	assert(Number.isFinite(availableTestMemoryBytes()))
+	assert(availableTestMemoryBytes() >= 0)
+})
+
+Deno.test('budget growth wakes queued units without waiting for another worker to finish', async () => {
+	const gate = new ResourceRunGate(700 * MiB)
+	const suite = makeSerialSuite()
+	const first = await gate.acquireUnit(suite)
+	const pending = gate.acquireUnit(suite)
+	assertEquals(gate.unitWaiterCount, 1)
+	gate.updateBudget(1000 * MiB)
+	const second = await awaitWithTimeout(pending, 'expanded budget did not wake unit')
+	first()
+	second()
+})
+
+Deno.test('serial orchestrators cannot deadlock their first oversized worker', async () => {
+	const gate = new ResourceRunGate(300 * MiB)
+	const suite = makeSerialSuite({ unitMemMb: 900, unitCpuPct: 90 })
+	const owner = await gate.acquire(suite)
+	const worker = await awaitWithTimeout(gate.acquireUnit(suite), 'orchestrator starved its worker')
+	assertEquals(gate.usedUnitMemBytes, 900 * MiB)
+	worker()
+	owner()
+	owner()
+	assertEquals(gate.usedMemBytes, 0)
+})
+
+Deno.test('heavy serial suite admits its own workers and excludes foreign workers', async () => {
+	const gate = new ResourceRunGate(1000 * MiB)
+	const suite = { ...makeSerialSuite(), heavy: true }
+	const owner = await gate.acquire(suite)
+	const ownWorker = await awaitWithTimeout(gate.acquireUnit(suite), 'heavy suite blocked its own worker')
+	const foreign = gate.acquireUnit(makeSerialSuite())
+	assertEquals(gate.unitWaiterCount, 1)
+	owner()
+	const foreignWorker = await awaitWithTimeout(foreign, 'heavy release did not wake foreign worker')
+	ownWorker()
+	foreignWorker()
+	assertEquals(gate.usedUnitMemBytes, 0)
+})
+
+Deno.test('unit leases prevent an exclusive suite from starting on an occupied machine', async () => {
+	const gate = new ResourceRunGate(1000 * MiB)
+	const worker = await gate.acquireUnit(makeSerialSuite())
+	const heavy = makeSuite('testkit', 'exclusive', { heavy: true })
+	assertEquals(gate.tryAcquire(heavy), null)
+	const pending = gate.acquire(heavy)
+	assertEquals(gate.exclusiveRunning, false)
+	worker()
+	const owner = await awaitWithTimeout(pending, 'exclusive suite did not wake')
+	owner()
+})
+
+Deno.test('suite completion rejects queued workers before reaping running workers', async () => {
+	const gate = new ResourceRunGate(700 * MiB)
+	const suite = makeSerialSuite()
+	const owner = await gate.acquire(suite)
+	const worker = await gate.acquireUnit(suite)
+	const pending = assertRejects(() => gate.acquireUnit(suite), DOMException)
+	owner()
+	await pending
+	worker()
+	assertEquals(gate.unitWaiterCount, 0)
+	assertEquals(gate.usedUnitMemBytes, 0)
+})
 
 Deno.test('nextBaselineEma smooths with fixed window N', () => {
 	assertEquals(nextBaselineEma(null, 100, 4), 100)

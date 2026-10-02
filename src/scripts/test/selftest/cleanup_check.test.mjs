@@ -11,6 +11,7 @@ import process from 'node:process'
 import { assertEquals, assert } from 'jsr:@std/assert'
 
 import { CLEANUP_LEAK_EXIT_CODE, findCleanupLeaks, inGitHubActions, isWindows, msPlaywrightPath } from '../core/cleanup_check.mjs'
+import { markTempDirOrigin, markTempDirOriginSync } from '../core/temp_origin.mjs'
 
 Deno.test('cleanup leak exit code is distinct from pass/fail', () => {
 	assertEquals(CLEANUP_LEAK_EXIT_CODE, 3)
@@ -56,6 +57,43 @@ Deno.test('findCleanupLeaks reports a stray ms-playwright dir', () => {
 		const leaks = findCleanupLeaks()
 		assert(leaks.includes(expected), `expected ms-playwright leak, got ${JSON.stringify(leaks)}`)
 	})
+})
+
+Deno.test('owned cleanup detects an earlier job leak despite a later baseline and excludes live peers', () => {
+	if (inGitHubActions()) return
+	withIsolatedCleanupEnv(scratch => {
+		const own = join(scratch, 'fount-own')
+		const peer = join(scratch, 'fount-peer')
+		const legacy = join(scratch, 'fount-legacy')
+		for (const dir of [own, peer, legacy]) mkdirSync(dir)
+		markTempDirOriginSync(own, 'earlier job', 'first')
+		markTempDirOriginSync(peer, 'still running', 'second')
+		markTempDirOriginSync(legacy, 'old marker', '')
+		const laterBaseline = findCleanupLeaks()
+		assertEquals(findCleanupLeaks(laterBaseline, { owner: 'first', includeUnowned: false }), [own])
+		assertEquals(findCleanupLeaks([], { owner: 'first', includeUnowned: false }), [own])
+		assertEquals(findCleanupLeaks([], { owner: 'first' }).sort(), [own, legacy].sort())
+		assertEquals(findCleanupLeaks(laterBaseline, { owner: 'third' }), [])
+	})
+})
+
+Deno.test('async and sync origin markers inherit the child job owner', async () => {
+	if (inGitHubActions()) return
+	const scratch = mkdtempSync(join(tmpdir(), 'fount-origin-test-'))
+	const saved = process.env.FOUNT_TEST_CLEANUP_OWNER
+	try {
+		process.env.FOUNT_TEST_CLEANUP_OWNER = 'inherited-job'
+		const baseline = findCleanupLeaks()
+		await markTempDirOrigin(scratch, 'async creator')
+		assertEquals(findCleanupLeaks(baseline, { owner: 'inherited-job', includeUnowned: false }), [scratch])
+		markTempDirOriginSync(scratch, 'sync creator')
+		assertEquals(findCleanupLeaks(baseline, { owner: 'inherited-job', includeUnowned: false }), [scratch])
+	}
+	finally {
+		if (saved === undefined) delete process.env.FOUNT_TEST_CLEANUP_OWNER
+		else process.env.FOUNT_TEST_CLEANUP_OWNER = saved
+		rmSync(scratch, { recursive: true, force: true })
+	}
 })
 
 /**

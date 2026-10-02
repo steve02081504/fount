@@ -699,7 +699,7 @@
 		},
 		{
 			"name": "kernel",
-			"expected": "5m5s",
+			"expected": "2m4s",
 			"run": [
 				"deno",
 				"test",
@@ -738,6 +738,7 @@
 				"src/scripts/test/display/**",
 				"src/scripts/test/core/state.mjs",
 				"src/scripts/test/core/cleanup_check.mjs",
+				"src/scripts/test/core/temp_origin.mjs",
 				"src/scripts/test/core/estimate.mjs",
 				"src/scripts/test/core/plan.mjs",
 				"src/scripts/test/core/manifest.mjs",

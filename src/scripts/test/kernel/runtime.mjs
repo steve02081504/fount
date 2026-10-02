@@ -698,11 +698,12 @@ export class TestKernel {
 		const next = computeGlobalBudget(SharedProcessSampler.instance.getTotalMemBytes())
 		const prev = this.globalBudget
 		const delta = Math.abs(next.memBytes - prev.memBytes) / Math.max(1, prev.memBytes)
-		if (delta < BUDGET_CHANGE_THRESHOLD && next.cores === prev.cores) return
 		this.globalBudget = next
 		// 同步闸门内存预算，使准入决策与 ETA 使用同一份当前预算。
-		this.gate.memBudgetBytes = next.memBytes
-		this.#broadcastSchedule('resource_budget_changed')
+		this.gate.updateBudget(next.memBytes)
+		this.wake()
+		if (delta >= BUDGET_CHANGE_THRESHOLD || next.cores !== prev.cores)
+			this.#broadcastSchedule('resource_budget_changed')
 	}
 
 	/**
@@ -1056,7 +1057,11 @@ export class TestKernel {
 		while (true) {
 			const debugSerial = this.#debugSerialActive()
 			if (debugSerial && this.running.size > 0) break
-			const picked = this.queues.peekReady(item => this.#isHardReady(item))
+			const picked = this.queues.peekReady(item => {
+				if (!this.#isHardReady(item)) return false
+				const candidate = this.catalog.byKey.get(item.key)
+				return !candidate || this.gate.isIdle || this.gate.canAcquire(candidate)
+			})
 			if (!picked) break
 			const suite = this.catalog.byKey.get(picked.item.key)
 			if (!suite) {
@@ -1065,7 +1070,7 @@ export class TestKernel {
 			}
 			let release = this.gate.tryAcquire(suite)
 			if (!release) {
-				const idle = this.gate.usedMemBytes === 0 && this.gate.usedCpuPct === 0 && !this.gate.exclusiveRunning
+				const idle = this.gate.isIdle
 				if (!idle) break
 				release = await this.gate.acquire(suite)
 			}
@@ -1135,6 +1140,7 @@ export class TestKernel {
 						? resolveSerialOnlyFiles(suite, item.fileFilters, this.repoRoot).files
 						: serialRunnerRoots(suite, this.repoRoot).length ? [] : undefined,
 					moduleCheckTicket: ticket,
+					cleanupOwner: job?.id,
 					triggeredFiles: suiteTriggeredFiles(suite, changedFilesForRun(fingerprints, key)),
 				},
 				false,
@@ -1375,7 +1381,10 @@ export class TestKernel {
 	 * @returns {Promise<boolean>} 是否发现残留
 	 */
 	async #checkCleanupLeak(job, { stopJob = false } = {}) {
-		const leaks = findCleanupLeaks(job.cleanupBaseline)
+		const leaks = findCleanupLeaks(job.cleanupBaseline, {
+			owner: job.id,
+			includeUnowned: this.running.size === 0 && process.env.FOUNT_TEST_IN_PARALLEL !== '1',
+		})
 		if (!leaks.length) return false
 		job.exitCode = CLEANUP_LEAK_EXIT_CODE
 		this.viewers.broadcast({ type: 'cleanup-leak', jobId: job.id, leaks })
@@ -1404,9 +1413,8 @@ export class TestKernel {
 	async #finishJob(job) {
 		if (job.finishing) return
 		job.finishing = true
-		// 残留扫描只在可靠时运行：串行（无其它在跑套件）且本 run 非并行聚合
-		// （并行时其它套件可能正写入临时目录，且该 env 会传给子进程/内嵌 kernel）。
-		if (!job.spec?.debug && this.running.size === 0 && process.env.FOUNT_TEST_IN_PARALLEL !== '1')
+		// 有归属标记的目录可在 job 完成时检查；无归属目录仅在无其它套件运行时扫描。
+		if (!job.spec?.debug)
 			await this.#checkCleanupLeak(job, { stopJob: false })
 		const finished = await this.#finishReport(job)
 		job.done.resolve(job.exitCode)
