@@ -30,8 +30,8 @@ export function fileIdentityKey(machine, resolved) {
 }
 
 // 路径尾部止于换行/冒号/反引号/双引号：引用里的路径（`"…\a.txt"`）不会把后续散文吞进候选，避免生成一串无效的带后缀候选。
-const PATH_LIKE_REGEX = /(`|[A-Za-z]:\\|(\.|\.\.|~)[/\\]|[/\\])[^\n"`:]+/gu
-const ABSOLUTE_OR_RELATIVE_REGEX = /^([A-Za-z]:\\|(\.|\.\.|~)[/\\]|[/\\])[^\n:`]+/u
+const PATH_LIKE_REGEX = /(`|[A-Za-z]:[/\\]|(\.|\.\.|~)[/\\]|[/\\])[^\n"`:]+/gu
+const ABSOLUTE_OR_RELATIVE_REGEX = /^([A-Za-z]:[/\\]|(\.|\.\.|~)[/\\]|[/\\])[^\n:`]+/u
 /** 绝对路径候选（盘符 / 根 / UNC），供「目标无工作目录时只认绝对路径」筛选。 */
 const ABSOLUTE_PATH_REGEX = /^(?:[A-Za-z]:[\\/]|[\\/])/u
 

@@ -69,6 +69,25 @@ Deno.test('extractPathCandidates finds backticked and absolute paths with spans'
 		assertEquals(text.slice(candidate.start, candidate.end), candidate.path, '区间应指向原文中的候选串')
 })
 
+Deno.test('preload without workdir reads absolute mentions once and skips relative mentions', async () => {
+	const root = await tempDir()
+	try {
+		const file = path.join(root, 'absolute.txt')
+		await fs.writeFile(file, 'absolute content')
+		const { args, logs } = makeArgs(root, [{ role: 'user', id: 'no-workdir-user', content: `Read "${file}" and \`relative.txt\`` }])
+		delete args.workdir
+		await preloadMentionedFiles(args)
+		assertEquals(logs.length, 1)
+		assert(String(logs[0].content).includes('absolute content'))
+		assert(!String(logs[0].content).includes('relative.txt'))
+		args.chat_log.push(...logs)
+		await preloadMentionedFiles(args)
+		assertEquals(logs.length, 1, 'Persisted user marker prevents duplicate reads')
+		assert(extractPathCandidates('C:/Users/alice/test.txt').some(candidate => candidate.path === 'C:/Users/alice/test.txt'))
+	}
+	finally { await fs.rm(root, { recursive: true, force: true }) }
+})
+
 Deno.test('collectMentionedFiles does not list ancestor dirs or fragments of a mentioned file', async () => {
 	const root = await tempDir()
 	try {

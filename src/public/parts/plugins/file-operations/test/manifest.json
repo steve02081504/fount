@@ -5,6 +5,7 @@
 			"src/scripts/test/{deno/serial.mjs,node/boot.mjs}"
 		],
 		"pluginCore": [
+			"src/scripts/plugin_context.mjs",
 			"src/public/parts/plugins/file-operations/**",
 			"src/public/parts/shells/chat/src/{prompt_struct,reply}/**",
 			"src/scripts/secret_filter.mjs"

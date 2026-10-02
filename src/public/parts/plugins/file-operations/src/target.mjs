@@ -20,6 +20,7 @@ import { parseAttrs } from '../../../shells/chat/src/tags/index.mjs'
 import { executeCodeOnSubfount, executeShellOnSubfount, getAllSubfounts } from '../../../shells/subfounts/src/api.mjs'
 
 import { remoteJsStreamScript, remoteShellStreamScript, withRemoteStreamSink } from './remote_stream.mjs'
+import { findWindowsBash, mapWindowsPath, resolveNativePath } from './windows_paths.mjs'
 
 /**
  * 每路径写锁：串行化同一目标路径上的并发写入，避免交叉覆盖或读到半截文件。
@@ -82,12 +83,7 @@ function withWriteLock(key, fn) {
 export function resolveLocalPath(relativePath) {
 	if (relativePath.startsWith('~'))
 		return path.resolve(path.join(os.homedir(), relativePath.slice(1)))
-	const msys_path = process.env.MSYS_ROOT_PATH
-	if (msys_path && relativePath.startsWith('/')) {
-		if (relativePath.match(/^\/[A-Za-z]\//))
-			return path.resolve(path.join(relativePath.slice(1, 2).toUpperCase() + ':\\', relativePath.slice(3)))
-		return path.resolve(path.join(msys_path, relativePath))
-	}
+	if (process.platform === 'win32') return path.resolve(mapWindowsPath(relativePath, { bash: findWindowsBash(process.env.PATH), root: process.env.MSYS_ROOT_PATH, distro: process.env.WSL_DISTRO_NAME, home: os.homedir() }))
 	return path.resolve(relativePath)
 }
 
@@ -233,15 +229,13 @@ function lambdaSource(codeOrFn, args) {
  */
 function createLocalExecutor(target) {
 	const cwd = target.workdir
-	const spawnOptions = { no_ansi_terminal_sequences: true, ...cwd ? { cwd: resolveLocalPath(cwd) } : {} }
+	const spawnOptions = { no_ansi_terminal_sequences: true }
 	/**
 	 * 将路径解析为本机绝对路径（相对路径基于目标 workdir）。
 	 * @param {string} p - 原始路径。
 	 * @returns {string} 绝对路径。
 	 */
-	const abs = p => path.isAbsolute(p) || p.startsWith('~') || /^[A-Za-z]:[\\/]/.test(p)
-		? resolveLocalPath(p)
-		: resolveLocalPath(joinWorkdir(cwd, p))
+	const abs = p => resolveNativePath(p, cwd)
 	return {
 		/**
 		 * 执行 shell 命令（shell 为 null 时用 exec 默认 shell），支持超时杀进程树。
@@ -268,7 +262,7 @@ function createLocalExecutor(target) {
 				 */
 				on_stderr: data => options.onOutput('stderr', data),
 			} : {}
-			const { result, timedOut, elapsedMs } = await execShellWithTimeout(shell, code, { ...spawnOptions, ...streamOptions, ...env ? { env } : {} }, timeoutMs)
+			const { result, timedOut, elapsedMs } = await execShellWithTimeout(shell, code, { ...spawnOptions, ...cwd ? { cwd: await resolveNativePath(cwd) } : {}, ...streamOptions, ...env ? { env } : {} }, timeoutMs)
 			if (result instanceof Error) throw Object.assign(result, { timedOut, elapsedMs })
 			return { ...result, timedOut, elapsedMs }
 		},
@@ -290,20 +284,20 @@ function createLocalExecutor(target) {
 		 * @param {string} p - 路径。
 		 * @returns {Promise<string>} 真实绝对路径。
 		 */
-		realpath: async p => await fs.promises.realpath(abs(p)),
+		realpath: async p => await fs.promises.realpath(await abs(p)),
 		/**
 		 * 读文本文件。
 		 * @param {string} p - 路径。
 		 * @returns {Promise<string>} 文件内容。
 		 */
-		readTextFile: async p => await fs.promises.readFile(abs(p), 'utf-8'),
+		readTextFile: async p => await fs.promises.readFile(await abs(p), 'utf-8'),
 		/**
 		 * 读文本文件并附带最后修改时间（毫秒）。
 		 * @param {string} p - 路径。
 		 * @returns {Promise<{text: string, mtimeMs: number}>} 文本与 mtime。
 		 */
 		readTextFileWithMtime: async p => {
-			const absPath = abs(p)
+			const absPath = await abs(p)
 			const [text, stat] = await Promise.all([fs.promises.readFile(absPath, 'utf-8'), fs.promises.stat(absPath)])
 			return { text, mtimeMs: stat.mtimeMs }
 		},
@@ -312,7 +306,7 @@ function createLocalExecutor(target) {
 		 * @param {string} p - 路径。
 		 * @returns {Promise<Buffer>} 文件内容。
 		 */
-		readFileBuffer: async p => await fs.promises.readFile(abs(p)),
+		readFileBuffer: async p => await fs.promises.readFile(await abs(p)),
 		/**
 		 * 写文本文件。
 		 * @param {string} p - 路径。
@@ -320,7 +314,7 @@ function createLocalExecutor(target) {
 		 * @returns {Promise<void>}
 		 */
 		writeTextFile: async (p, content) => {
-			const absPath = abs(p)
+			const absPath = await abs(p)
 			await withWriteLock('0|' + absPath, async () => {
 				await fs.promises.mkdir(path.dirname(absPath), { recursive: true })
 				// 原子写：先写同目录临时文件再 rename 覆盖，避免中断/崩溃留下半截文件。
@@ -341,7 +335,7 @@ function createLocalExecutor(target) {
 		 * @returns {Promise<dirEntry_t[]>} 条目列表。
 		 */
 		listDir: async p => {
-			const dir = abs(p)
+			const dir = await abs(p)
 			const entries = await fs.promises.readdir(dir, { withFileTypes: true })
 			return await Promise.all(entries.map(async e => {
 				let isDirectory = e.isDirectory()
@@ -361,7 +355,7 @@ function createLocalExecutor(target) {
 		 */
 		statEntry: async p => {
 			try {
-				const st = await fs.promises.stat(abs(p))
+				const st = await fs.promises.stat(await abs(p))
 				return { isDirectory: st.isDirectory(), isFile: st.isFile(), size: st.size }
 			}
 			catch {
@@ -375,7 +369,7 @@ function createLocalExecutor(target) {
 		 */
 		pathExists: async p => {
 			try {
-				await fs.promises.access(abs(p))
+				await fs.promises.access(await abs(p))
 				return true
 			}
 			catch {
@@ -407,7 +401,7 @@ function createLocalExecutor(target) {
  * @returns {string} 完整脚本。
  */
 function remoteFsScript(body) {
-	return `const fs = await import('node:fs/promises');\nconst path = await import('node:path');\n${body}`
+	return `const fs = await import('node:fs/promises');\nconst path = await import('node:path');\nconst findWindowsBash = ${findWindowsBash.toString()};\nconst mapWindowsPath = ${mapWindowsPath.toString()};\nconst resolveNativePath = ${resolveNativePath.toString()};\n${body}`
 }
 
 /**
@@ -431,7 +425,7 @@ function createRemoteExecutor(username, target) {
 	 * @param {string} p - 原始路径。
 	 * @returns {Promise<any>} result 值。
 	 */
-	const withPath = (bodyFactory, p) => run(remoteFsScript(bodyFactory(`path.resolve(${JSON.stringify(base || '.')}, ${JSON.stringify(p)})`)))
+	const withPath = (bodyFactory, p) => run(remoteFsScript(bodyFactory(`(await resolveNativePath(${JSON.stringify(p)}, ${JSON.stringify(base || null)}))`)))
 	/**
 	 * 经 `run_code` + 回调通道执行远程流式脚本（无需 P2P 协议支持）。
 	 * @param {(execId: string) => string} scriptFactory - 以流式分派 id 生成脚本。

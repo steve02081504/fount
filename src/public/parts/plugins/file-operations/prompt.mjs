@@ -1,3 +1,4 @@
+import { getPluginOwnerPrompt } from '../../../../scripts/plugin_context.mjs'
 import { getConnectedSubfounts } from '../../shells/subfounts/src/api.mjs'
 
 /**
@@ -20,6 +21,7 @@ export async function getFileOperationsPrompt(args) {
 - 单行超过 \`max-line-chars\`（默认 2000）会被截断；整体超过 \`max-chars\`（默认 50000）会提前停止并提示续读；连续的相似行会折叠。
 - 结果被截断时按提示用 \`offset\`/\`limit\` 续读；避免反复读取同样的小片段，编辑请用 <replace-file> 而不是重复查看
 - 最近消息中提及的、能解析的文件会被自动预读并注入，无需再次 <view-file>
+- 未设置工作目录时仍预读绝对路径；相对路径需先设置工作目录。Windows 上也支持 /c/、/cygdrive/c/、/mnt/c/ 与当前 bash 安装的根目录路径；WSL 可用 \\wsl.localhost\\发行版\\目录 明确选择发行版。
 
 **查找文件（glob）**：
 <glob path="可选起始目录，默认当前工作目录">
@@ -101,7 +103,7 @@ ${args.Charname}: <view-file machine="1">~/Desktop/新建文本文件.txt</view-
 `
 
 	return {
-		text: [{ content: prompt, description: '文件操作能力说明', important: 0 }],
+		text: [{ content: prompt + await getPluginOwnerPrompt(args, 'file-operations'), description: '文件操作能力说明', important: 0 }],
 		additional_chat_log: [],
 		extension: {},
 	}

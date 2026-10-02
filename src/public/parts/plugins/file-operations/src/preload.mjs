@@ -206,15 +206,15 @@ export async function preloadMentionedFiles(args) {
 			if (item.resolved) knownFiles.add(fileIdentityKey(machine, item.resolved))
 	}
 
-	// 用户消息：报错窗口 + 通用路径候选。无请求工作目录时相对提及不可解析，跳过；同一用户消息已预读过则跳过。
+	// 用户消息：报错窗口 + 通用路径候选。无请求工作目录时只解析绝对路径；同一用户消息已预读过则跳过。
 	const latest = findLatestUserEntry(log)
 	const userText = String(latest?.content ?? '')
-	if (latest && userText.trim() && requestTarget.workdir) {
+	if (latest && userText.trim()) {
 		const userKey = String(latest.id ?? hashContent(userText))
 		const already = log.some(entry => entry?.extension?.pluginData?.[PLUGIN_DATA_KEY]?.preload?.forUser === userKey)
 		if (!already) {
 			const result = await collectMentionedFiles(createTargetExecutor(args.username, requestTarget), userText, {
-				maxFiles: PRELOAD_MAX_FILES, knownFiles, machine: requestTarget.machine,
+				maxFiles: PRELOAD_MAX_FILES, knownFiles, machine: requestTarget.machine, absoluteOnly: !requestTarget.workdir,
 			})
 			// 并入已知集合：本次工具输出预读不再重复读取同一文件。
 			markResultKnown(result, requestTarget.machine)
