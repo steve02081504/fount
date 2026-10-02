@@ -36,6 +36,7 @@ import { chatScopeId } from '../../shells/chat/src/lib/chatScopeId.mjs'
  * @property {boolean} notified 是否已投递完成通知
  * @property {boolean} generationEnded 父生成循环是否已结束
  * @property {Promise<asyncTask_t>} done 完成 Promise（结算为任务自身）
+ * @property {() => Promise<void>} [stop] 生产者的取消回调（缺省表示该任务不可停止）
  * @property {object} meta 生产者附加数据
  * @property {(task: asyncTask_t) => string} [format] 自定义完成通知文本
  * @property {(task: asyncTask_t) => unknown} [inspect] 运行中检视回调（只读，返回面向角色的最新进展）
@@ -177,9 +178,10 @@ function normalizeError(error) {
  * @param {(task: asyncTask_t) => string} [options.format] 自定义完成通知文本
  * @param {(task: asyncTask_t) => unknown} [options.inspect] 运行中检视回调
  * @param {object} [options.eventContext] Producer request for role lifecycle observations.
+ * @param {() => Promise<void>} [options.stop] 生产者的取消回调（缺省表示该任务不可停止）
  * @returns {asyncTask_t} 任务对象
  */
-export function registerTask({ id, kind, label = '', owner = {}, run, meta = {}, format, inspect, eventContext }) {
+export function registerTask({ id, kind, label = '', owner = {}, run, meta = {}, format, inspect, eventContext, stop }) {
 	/** @type {asyncTask_t} */
 	const task = {
 		id: id ?? crypto.randomUUID(),
@@ -198,6 +200,7 @@ export function registerTask({ id, kind, label = '', owner = {}, run, meta = {},
 		meta,
 		format,
 		inspect,
+		stop,
 		eventContext,
 	}
 	tasks.set(task.id, task)
@@ -403,6 +406,24 @@ export function inspectTask(id, requester = {}) {
 		console.warn('async-task: 检视失败', error)
 		return { ok: false, reason: 'unsupported' }
 	}
+}
+
+/**
+ * 请求取消一个运行中的任务，归属规则与检视一致。
+ *
+ * `stop` 只表达「已请求终止」，不改任务状态：任务照常由自身 `run` 结算（被终止的 shell 任务以非零退出码失败结算）。
+ * @param {string} id 任务 id
+ * @param {asyncTaskOwner_t} requester 请求者归属
+ * @returns {Promise<{ok: boolean, reason?: string}>} 取消结果
+ */
+export async function stopTask(id, requester) {
+	const task = tasks.get(id)
+	if (!task) return { ok: false, reason: 'not_found' }
+	if (!canInspect(task.owner, requester)) return { ok: false, reason: 'forbidden' }
+	if (task.finishedAt !== null) return { ok: false, reason: 'settled' }
+	if (!task.stop) return { ok: false, reason: 'unsupported' }
+	await task.stop()
+	return { ok: true }
 }
 
 /**

@@ -1,6 +1,6 @@
 /**
  * 【文件】src/public/parts/plugins/async-task/handler.mjs
- * 【职责】async-task 插件的 ReplyHandler 组：解析 `<list-async>` / `<await-async>` 两个统一异步工具标签。
+ * 【职责】async-task 插件的 ReplyHandler 组：解析 `<list-async>` / `<await-async>` / `<inspect-async>` / `<stop-async>` 统一异步工具标签。
  * 【原理】标签层只做参数解析与工具回执；真正的任务注册表、等待与通知在 registry.mjs。
  *   提示词与工具回执固定中文（不做多语言化）。
  * 【数据结构】handler = defineReplyHandler(...)；`<await-async ids="a,b" mode="all|any" time-limit="5m"/>`。
@@ -12,7 +12,7 @@ import { defineReplyHandler, defineReplyHandlers } from '../../shells/chat/src/r
 import { renderMarkdownCodeBlock } from '../../shells/chat/src/streaming/index.mjs'
 
 import { DEFAULT_AWAIT_TIMEOUT_MS, parseDurationMs } from './duration.mjs'
-import { awaitTasks, inspectTask, listTasksForOwner, ownerFromArgs } from './registry.mjs'
+import { awaitTasks, inspectTask, listTasksForOwner, ownerFromArgs, stopTask } from './registry.mjs'
 
 /**
  * 写一条 async-task 工具回执。
@@ -223,6 +223,21 @@ function inspectFailureText(reason, id) {
 }
 
 /**
+ * 停止失败原因 → 面向角色的文案。
+ * @param {'not_found'|'settled'|'forbidden'|'unsupported'} reason 失败原因
+ * @param {string} id 任务 id
+ * @returns {string} 文案
+ */
+function stopFailureText(reason, id) {
+	switch (reason) {
+		case 'settled': return `异步任务 "${id}" 已结束，无需停止；可用 <await-async ids="${id}"/> 取回结果。`
+		case 'forbidden': return `异步任务 "${id}" 不属于当前会话，无法停止。`
+		case 'unsupported': return `异步任务 "${id}" 不支持停止：只有本机与远程 shell 任务能终止进程树，JS 与子代理在进程内运行。`
+		default: return `未找到异步任务 "${id}"（可能已被取回、父生成已结束，或 id 有误）。`
+	}
+}
+
+/**
  * `<inspect-async id="..."/>`：检视一个运行中的异步任务的最新进展（只读，不等待、不消费）。
  * @type {import('../../../../decl/pluginAPI.ts').ReplyHandler_t}
  */
@@ -268,9 +283,43 @@ export const inspectAsyncHandler = defineReplyHandler({
 	},
 })
 
+/**
+ * `<stop-async id="..."/>`：请求终止一个支持取消的运行中异步任务（本机 / 远程 shell 进程树）。
+ * @type {import('../../../../decl/pluginAPI.ts').ReplyHandler_t}
+ */
+export const stopAsyncHandler = defineReplyHandler({
+	tag: 'stop-async', params: { id: 'string' },
+	/**
+	 * 请求生产者取消任务。
+	 * @param {object} reply 回复对象
+	 * @param {object} args 请求上下文
+	 * @param {object} call 调用
+	 * @returns {Promise<object>} 结果
+	 */
+	handle: async (reply, args, call) => {
+		const id = String(call.params.id ?? '').trim()
+		if (!id) {
+			writeToolLog(args, 'async-task.stop', 'stop-async 需要 id。', true)
+			return { regen: true, failed: true }
+		}
+		try {
+			const result = await stopTask(id, ownerFromArgs(args))
+			writeToolLog(args, 'async-task.stop', result.ok
+				? `已请求停止异步任务 ${id} 的进程树；进程结束后任务会以失败结算并给出输出。`
+				: stopFailureText(result.reason, id), !result.ok)
+			return { regen: true, ...!result.ok ? { failed: true } : {} }
+		}
+		catch (error) {
+			writeToolLog(args, 'async-task.stop', `停止异步任务 "${id}" 失败：${error?.message ?? error}`, true)
+			return { regen: true, failed: true }
+		}
+	},
+})
+
 /** async-task 插件的完整 ReplyHandler 组。 */
 export const asyncTaskReplyHandlers = defineReplyHandlers([
 	listAsyncHandler,
 	awaitAsyncHandler,
 	inspectAsyncHandler,
+	stopAsyncHandler,
 ])

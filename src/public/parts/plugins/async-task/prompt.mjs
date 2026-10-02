@@ -21,6 +21,10 @@ const ASYNC_TASK_PROMPT = `\
 - 子代理返回最近的对话；JS 返回控制台输出的最后一段；shell 返回 stdall 的最后一段。
 - 只对**运行中**的任务有效；已结束的任务可在本次生成结束前用 \`<await-async>\` 取回结果。
 
+**停止一个后台执行：**
+<stop-async id="任务id"/>
+- 请求终止进程树；只有本机与远程 shell 任务能停，JS 与子代理在进程内运行，只能等它自己结束。
+
 **等待一个或多个异步任务：**
 <await-async ids="id1,id2" mode="all" time-limit="5m"/>
 - \`ids\`（必填）：逗号分隔的任务 id。
