@@ -1,4 +1,5 @@
 import { createWebBrowseReplyHandler } from './handler.mjs'
+import { preloadMentionedUrls } from './preload.mjs'
 import { getWebBrowsePrompt } from './prompt.mjs'
 
 const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
@@ -11,6 +12,7 @@ export default {
 	info,
 	interfaces: {
 		chat: {
+			BeforeReply: preloadMentionedUrls,
 			GetPrompt: getWebBrowsePrompt,
 			ReplyHandler: createWebBrowseReplyHandler(),
 		},

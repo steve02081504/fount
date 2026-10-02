@@ -3,7 +3,9 @@ import { assert, assertEquals, assertStringIncludes } from 'jsr:@std/assert'
 
 import { allowNoise } from 'fount/scripts/test/core/allowNoise.mjs'
 
+import { parseParams } from '../../../../shells/chat/src/tags/index.mjs'
 import { createWebBrowseReplyHandler, formatWebBrowseResult, parseWebBrowseCall } from '../../handler.mjs'
+import { extractUrls, preloadMentionedUrls } from '../../preload.mjs'
 
 /**
  * 构造一个返回固定 Markdown 的假抓取函数。
@@ -50,6 +52,69 @@ Deno.test('formatWebBrowseResult appends the question when present', () => {
 	)
 })
 
+Deno.test('web browse defaults to AI summary with isolated context, raw mode bypasses AI', async () => {
+	const logs = []
+	const prompts = []
+	const source = { /**
+	 *
+	 * @param {object} prompt 临时提示。
+	 * @param {object} options 生成选项。
+	 * @returns {Promise<void>} 完成。
+	 */
+		StructCall: async (prompt, options) => { prompts.push(prompt); options.base_result.content = 'AI summary' } }
+	const handler = createWebBrowseReplyHandler({ fetchMarkdown: fetchReturning('full page'), /**
+	 *
+	 * @param {object} args 请求。
+	 * @returns {Promise<object>} 服务源。
+	 */
+		resolveSource: async args => args.ai_source })
+	const args = { ai_source: source, chat_log: [{ role: 'user', content: 'PRIVATE HISTORY' }], AddLongTimeLog: collectLog(logs) }
+	await handler.handle({}, args, { params: parseParams(handler.pattern.params, {}), inner: '<url>https://example.com</url><question>why?</question>' })
+	assertEquals(prompts.length, 1)
+	assertStringIncludes(prompts[0].chat_log[0].content, 'full page')
+	assert(!JSON.stringify(prompts[0]).includes('PRIVATE HISTORY'))
+	assertEquals(prompts[0].plugin_prompts, {})
+	assertStringIncludes(logs[0].content, 'AI summary')
+	await handler.handle({}, args, { params: parseParams(handler.pattern.params, { summarize: 'false' }), inner: '<url>https://example.com</url>' })
+	assertEquals(prompts.length, 1)
+	assertStringIncludes(logs[1].content, 'full page')
+})
+
+Deno.test('URL preload persists metadata, normalizes fragments and is idempotent across requests', async () => {
+	assertEquals(extractUrls('[page](https://example.com/a#x) https://example.com/a#y, file:///a'), ['https://example.com/a'])
+	const logs = [{ role: 'user', content: 'See https://example.com/a#x' }]
+	let fetches = 0
+	const options = { /**
+	 *
+	 * @returns {Promise<string>} 元信息。
+	 */
+		fetchMetadata: async () => { fetches++; return '<unsafe> title' } }
+	const args = { char_id: 'test', chat_log: logs, AddLongTimeLog: collectLog(logs) }
+	await preloadMentionedUrls(args, options)
+	await preloadMentionedUrls(args, options)
+	await preloadMentionedUrls({ char_id: 'test', chat_log: logs, AddLongTimeLog: collectLog(logs) }, options)
+	assertEquals(fetches, 1)
+	assertEquals(logs[1].role, 'tool')
+	assertStringIncludes(logs[1].id, 'web-browse-preload:')
+	assertStringIncludes(logs[1].content_for_show, '```')
+	assertEquals(logs[1].extension.pluginData['web-browse'].urls, ['https://example.com/a'])
+})
+
+Deno.test('URL preload bounds each request and records failures without retrying them', async () => {
+	const logs = [{ role: 'user', content: Array.from({ length: 9 }, (_, index) => `https://example.com/${index}`).join(' ') }]
+	const options = { /**
+	 * 始终失败的元信息抓取。
+	 * @returns {Promise<string>} 从不返回。
+	 */
+		fetchMetadata: async () => { throw new Error('offline') } }
+	const args = { chat_log: logs, AddLongTimeLog: collectLog(logs) }
+	await preloadMentionedUrls(args, options)
+	assertEquals(logs.length, 6)
+	assertStringIncludes(logs[1].content, 'offline')
+	await preloadMentionedUrls(args, options)
+	assertEquals(logs.length, 10)
+})
+
 Deno.test('web browse fetches the page and logs a code-fenced result', async () => {
 	const logs = []
 	const handler = createWebBrowseReplyHandler({ fetchMarkdown: fetchReturning('markdown of the page') })
@@ -61,6 +126,7 @@ Deno.test('web browse fetches the page and logs a code-fenced result', async () 
 	assertEquals(logs.length, 1)
 	assertEquals(logs[0].name, 'web-browse.browse')
 	assertStringIncludes(logs[0].content, 'markdown of the page')
+	assertStringIncludes(logs[0].content, '无可用 AI 服务源')
 	assertStringIncludes(logs[0].content, 'summary?')
 	assertStringIncludes(logs[0].content_for_show, '```')
 })
