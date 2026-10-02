@@ -927,6 +927,8 @@
 					"expected": "39s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/mobilePane.spec.mjs",
+						"src/public/parts/shells/chat/public/hub/scrollbars.mjs",
+						"src/public/parts/shells/chat/public/hub/layout.css",
 						"src/public/parts/shells/chat/public/hub/hubPane.mjs",
 						"src/public/parts/shells/chat/public/hub/widgets.css",
 						"src/public/parts/shells/chat/public/hub/index.html",

@@ -577,6 +577,8 @@ body[data-surface="discovery"] .main-header {
 
 /* —— 成员侧栏 —— */
 .member-bar {
+	min-width: 0;
+	overflow-x: hidden;
 	border-left: var(--border) solid var(--border-subtle);
 }
 

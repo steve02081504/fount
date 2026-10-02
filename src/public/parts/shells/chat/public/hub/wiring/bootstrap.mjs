@@ -13,6 +13,7 @@ import { bindDomContext } from '../domContext.mjs'
 import { registerFountUserApi } from '../fountUser.mjs'
 import { installHubRichInput } from '../markdownRichInput.mjs'
 import { syncComposerAlignment } from '../messages/composerController.mjs'
+import { bindScrollingScrollbar } from '../scrollbars.mjs'
 import { reportTyping } from '../stream/outbound.mjs'
 
 /** @returns {Promise<void>} 惰性加载 messages 图并提交 composer */
@@ -142,6 +143,8 @@ async function showServerActionPicker() {
 
 /** 注册 Hub 壳层关键点击（建群、成员侧栏等），供 index 同步调用。 @returns {void} */
 export function wireBootstrap() {
+	for (const element of document.querySelectorAll('#messages, #member-bar'))
+		bindScrollingScrollbar(element)
 	registerFountUserApi()
 	bindDomContext()
 	wireComposerControls()

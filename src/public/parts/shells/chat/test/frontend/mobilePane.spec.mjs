@@ -2,6 +2,36 @@ import { createChatTestGroup } from 'fount/scripts/test/playwright/api.mjs'
 
 import { test, expect, openFreshGroupChannel, waitForHub } from './fixtures.mjs'
 
+test('list scrollbars appear during scrolling and disappear without changing list width', async ({ modulePage }) => {
+	const { page } = modulePage
+	await modulePage.run(async () => {
+		const { bindScrollingScrollbar } = await import('/parts/shells:chat/hub/scrollbars.mjs')
+		const style = document.createElement('link')
+		style.rel = 'stylesheet'
+		style.href = '/parts/shells:chat/hub/layout.css'
+		const loaded = new Promise(resolve => style.addEventListener('load', resolve, { once: true }))
+		document.head.append(style)
+		const list = document.createElement('div')
+		list.id = 'messages'
+		list.style.cssText = 'width:240px;height:100px;overflow:auto;--text-muted:gray'
+		const content = document.createElement('div')
+		content.style.height = '1000px'
+		list.append(content)
+		document.body.append(list)
+		bindScrollingScrollbar(list)
+		await loaded
+	})
+	const list = page.locator('#messages')
+	await expect(list).not.toHaveClass(/is-scrolling/)
+	const width = await list.evaluate(el => el.clientWidth)
+	await list.evaluate(el => { el.scrollTop = 200 })
+	await expect(list).toHaveClass(/is-scrolling/)
+	expect(await list.evaluate(el => el.clientWidth)).toBe(width)
+	await expect(list).not.toHaveClass(/is-scrolling/)
+	expect(await list.evaluate(el => el.scrollTop)).toBe(200)
+	expect(await list.evaluate(el => el.clientWidth)).toBe(width)
+})
+
 test.describe('Chat hub mobile pane', () => {
 	test.use({ viewport: { width: 390, height: 844 }, hasTouch: true })
 

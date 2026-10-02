@@ -1,4 +1,35 @@
 /* 仅保留：伪元素、滚动条与状态交互 */
+#messages,
+.member-bar {
+	--list-scrollbar-thumb: transparent;
+	scrollbar-width: thin;
+	scrollbar-gutter: stable;
+	scrollbar-color: var(--list-scrollbar-thumb) transparent;
+	transition: scrollbar-color 0.15s ease;
+}
+
+#messages.is-scrolling,
+.member-bar.is-scrolling {
+	--list-scrollbar-thumb: var(--text-muted);
+}
+
+#messages::-webkit-scrollbar,
+.member-bar::-webkit-scrollbar {
+	width: 6px;
+}
+
+#messages::-webkit-scrollbar-track,
+.member-bar::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+#messages::-webkit-scrollbar-thumb,
+.member-bar::-webkit-scrollbar-thumb {
+	border-radius: var(--radius-box);
+	background: var(--list-scrollbar-thumb);
+	transition: background-color 0.15s ease;
+}
+
 .server-bar {
 	overflow-x: hidden;
 }

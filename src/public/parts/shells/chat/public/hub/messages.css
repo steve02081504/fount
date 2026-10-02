@@ -14,15 +14,6 @@
 	height: var(--message-avatar-size);
 }
 
-.messages::-webkit-scrollbar {
-	width: 8px;
-}
-
-.messages::-webkit-scrollbar-thumb {
-	background: var(--bg-server);
-	border-radius: var(--radius-field);
-}
-
 /* 连续同作者：隐藏重复头像（chat-image）与头部 */
 .chat.message-row:not(.last-in-group) .chat-image {
 	visibility: hidden;
