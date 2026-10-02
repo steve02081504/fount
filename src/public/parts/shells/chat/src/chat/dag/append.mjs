@@ -3,6 +3,7 @@
  */
 import { mkdir } from 'node:fs/promises'
 
+import { sortedPrevEventIds } from 'npm:@steve02081504/fount-p2p/dag/index'
 import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 import { computeAppendHlcAndPrev } from 'npm:@steve02081504/fount-p2p/timeline/append_core'
@@ -12,8 +13,10 @@ import { ensureFederationRoom, invalidateFederationRoomCache } from '../federati
 import { shouldRebindFederationRoomForEvent } from '../federation/rosterChange.mjs'
 import { checkMessageRateLimit } from '../governance/messageRateLimit.mjs'
 import { isChannelIdValid } from '../lib/channelId.mjs'
-import { groupDir, eventsPath } from '../lib/paths.mjs'
+import { safeReadJson } from '../lib/fsSafe.mjs'
+import { groupDir, eventsPath, snapshotPath } from '../lib/paths.mjs'
 
+import { isSignedBaseCheckpoint } from './checkpointPayload.mjs'
 import { commitSignedChatEvent } from './commitSignedEvent.mjs'
 import { buildMemberJoinBindingFields } from './entityBinding.mjs'
 import { isFederatableDagEvent } from './eventTypes.mjs'
@@ -84,6 +87,16 @@ export async function appendEvent(username, groupId, event, secretKey, options =
 		// 否则后续世界/消息事件会挂上对端没有的 session 父节点，物化折叠会丢成员。
 		const previousForTips = previous.filter(isFederatableDagEvent)
 		const { hlc, prev_event_ids: prevFromCaller } = computeAppendHlcAndPrev(previousForTips, event, { multiTip: true })
+		/** 本次提交的父事件 id。 */
+		let parents = prevFromCaller
+		// 事件被进程事件折叠后，checkpoint 锚点可能已不在 events 里；只接磁盘叶会让新事件
+		// 与签名基态失去因果关系，被物化器当作已覆盖的旧历史跳过（首次创建的频道消失）。
+		if (isFederatableDagEvent(event) && !event.prev_event_ids?.length) {
+			const checkpoint = await safeReadJson(snapshotPath(username, groupId))
+			const anchor = checkpoint?.checkpoint_event_id
+			if (isSignedBaseCheckpoint(checkpoint) && anchor && !previousForTips.some(row => row.id === anchor))
+				parents = sortedPrevEventIds([...prevFromCaller, anchor])
+		}
 		const signed = await signLocalChatEvent({
 			username,
 			groupId,
@@ -91,7 +104,7 @@ export async function appendEvent(username, groupId, event, secretKey, options =
 			secretKey,
 			state,
 			hlc,
-			prev_event_ids: prevFromCaller,
+			prev_event_ids: parents,
 		})
 		wirePayload = signed.wirePayload
 		return wirePayload
