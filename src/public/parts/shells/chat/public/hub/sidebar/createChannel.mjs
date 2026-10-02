@@ -5,11 +5,11 @@
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
 import { findParentChannelId } from '../../shared/channelReorder.mjs'
 import { createChannel, promoteChannel } from '../../src/endpoints/groupChannel.mjs'
-import { getGroupState } from '../../src/endpoints/groupCore.mjs'
 import { openDialogFromTemplate, renderTemplate } from '../../src/templates.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
-import { store, setState } from '../core/state.mjs'
+import { store } from '../core/state.mjs'
 import { updateHash } from '../core/urlHash.mjs'
+import { refreshGroupState } from '../stream/stateRefresh.mjs'
 
 import { selectChannel } from './selectChannel.mjs'
 
@@ -20,12 +20,7 @@ import { selectChannel } from './selectChannel.mjs'
 export async function refreshChannelSidebar() {
 	const groupId = store.context.currentGroupId
 	if (!groupId) return
-	const state = await getGroupState(groupId)
-	if (store.context.currentGroupId !== groupId) return
-	setState('context.currentState', state)
-	const { renderHubChannelSidebar } = await import('./index.mjs')
-	if (store.context.currentGroupId !== groupId) return
-	await renderHubChannelSidebar(state)
+	await refreshGroupState(groupId, { renderSidebar: true })
 }
 
 /**
@@ -63,6 +58,7 @@ export async function quickCreateChannel() {
 	if (!groupId) return
 	try {
 		const channelId = await createChannel(groupId, '')
+		if (store.context.currentGroupId !== groupId) return
 		// 创建完成立即落 hash：侧栏刷新（含异步渲染）会让测试在 count 变化时读 URL，必须赶在渲染前同步新频道。
 		updateHash(groupId, channelId)
 		const rootChannelId = store.context.currentState?.groupSettings?.rootChannelId || null
