@@ -4,6 +4,7 @@
  */
 import { StreamRenderer } from '/parts/shells:chat/src/ui/StreamRenderer.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
+import { compactToolSummary } from '/parts/shells:chat/shared/toolSummary.mjs'
 
 import { appendEntryBubble, backToBottom, isEntryVisible, messageMarkdown, renderEntryBubble, updateBackToBottom, updateEmptyMode } from './messages.mjs'
 import { updateRunCards } from './runCards.mjs'
@@ -29,6 +30,11 @@ function createLiveToolCard(tool) {
 	name.className = 'code-tool-log-name'
 	name.textContent = tool.lang ? geti18n('code.tool.runShell', { lang: tool.lang }) : geti18n('code.tool.userShell')
 	summary.append(chevron, name)
+	const operation = document.createElement('span')
+	operation.className = 'code-tool-log-operation'
+	operation.textContent = compactToolSummary(tool.code)
+	operation.title = operation.textContent
+	summary.appendChild(operation)
 	const content = document.createElement('div')
 	content.className = 'mt-1'
 	const code = document.createElement('pre')

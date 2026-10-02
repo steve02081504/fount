@@ -16,6 +16,7 @@
 
 import { executeObservedPluginTool, notifyPluginActivation } from '../../../../../../scripts/plugin_context.mjs'
 import { truncateOutput } from '../../../../../../scripts/shell_guard.mjs'
+import { summarizeToolCall } from '../../public/shared/toolSummary.mjs'
 import { renderMarkdownCodeBlock } from '../streaming/markdown.mjs'
 
 import { collectHandlerCalls } from './collectCalls.mjs'
@@ -75,6 +76,46 @@ function canRunParallel(handlerA, handlerB) {
  */
 function createLogCollector(buffer) {
 	return entry => { buffer.push(entry) }
+}
+
+/**
+ * 在调用结算后写入带摘要和状态的结果，覆盖串行与并行工具。
+ *
+ * 工具自己写的日志先收进缓冲，等 handle 结算后再补 `toolCall`（摘要与最终状态）并回放，
+ * 这样 `pending` / `failed` 等只有结算时才知道的状态不会漏标。
+ * @param {object} args 请求上下文。
+ * @param {object} handler 工具处理器。
+ * @param {object} call 已解析的调用。
+ * @param {object} result 回复对象。
+ * @returns {Promise<object>} 执行结果。
+ */
+async function executeToolWithSummary(args, handler, call, result) {
+	const logs = []
+	let outcome
+	let thrown = false
+	try {
+		outcome = await executeObservedPluginTool(args, handler, call, () => handler.handle(result, {
+			...args, AddLongTimeLog: entry => { logs.push(entry) },
+		}, call)) ?? {}
+		return outcome
+	}
+	catch (error) {
+		thrown = true
+		throw error
+	}
+	finally {
+		for (const entry of logs) {
+			if (entry.role === 'tool')
+				entry.extension = { ...entry.extension, toolCall: {
+					tag: call.tag || call.name,
+					summary: summarizeToolCall(call),
+					state: thrown || outcome?.failed || call.error || entry.extension?.error ? 'failed'
+						: outcome?.pending ? 'pending' : 'succeeded',
+				} }
+
+			args.AddLongTimeLog(entry)
+		}
+	}
 }
 
 /**
@@ -293,10 +334,10 @@ export async function runReplyHandlers(result, args, handlers) {
 				})
 				const bufferedLogs = batch.map(() => [])
 				const outcomes = await Promise.all(batch.map((item, index) =>
-					executeObservedPluginTool(handlerArgs, item.handler, item.call, () => item.handler.handle(result, {
+					executeToolWithSummary({
 						...handlerArgs,
 						AddLongTimeLog: createLogCollector(bufferedLogs[index]),
-					}, item.call)).then(outcome => outcome ?? {})
+					}, item.handler, item.call, result)
 				))
 				let batchStop = false
 				let batchFailed = false
@@ -335,7 +376,7 @@ export async function runReplyHandlers(result, args, handlers) {
 			call.error = entry?.error
 
 			const beforeContent = result.content
-			const outcome = await executeObservedPluginTool(handlerArgs, handler, call, () => handler.handle(result, handlerArgs, call)) ?? {}
+			const outcome = await executeToolWithSummary(handlerArgs, handler, call, result)
 			if (outcome.content !== undefined) result.content = outcome.content
 			if (outcome.regen) wantRegen = true
 

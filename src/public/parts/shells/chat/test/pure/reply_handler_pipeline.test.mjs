@@ -524,3 +524,53 @@ Deno.test('预览：只显示占位，求值由管线启动后就地显示结果
 	assertStringIncludes(settled.content_for_show, 'R:hi')
 	assertStringIncludes(settled.content_for_show, '[[pending]]')
 })
+
+Deno.test('tool summaries retain per-call status and targets in parallel batches', async () => {
+	const args = makeArgs()
+	const result = makeResult('<view-file>ok.txt</view-file><view-file>missing.txt</view-file>')
+	const snapshots = []
+	/**
+	 * 保存实际发送时的快照。
+	 * @param {object} entry 日志条目。
+	 * @returns {number} 条目数。
+	 */
+	args.AddLongTimeLog = entry => snapshots.push(JSON.parse(JSON.stringify(entry)))
+	const handler = defineReplyHandler({
+		tag: 'view-file', parallel: true, display: emptyDisplay,
+		/**
+		 * 模拟逐文件结果。
+		 * @param {object} reply 回复对象。
+		 * @param {object} context 请求上下文。
+		 * @param {object} call 工具调用。
+		 * @returns {Promise<object>} 结果。
+		 */
+		handle: async (reply, context, call) => {
+			context.AddLongTimeLog({ role: 'tool', content: call.inner, extension: { executionTarget: { machine: '0', workdir: '/tmp' } } })
+			return { regen: true, failed: call.inner === 'missing.txt' }
+		},
+	})
+	await runReplyHandlers(result, args, [handler])
+	assertEquals(snapshots.map(entry => entry.extension.toolCall), [
+		{ tag: 'view-file', summary: 'ok.txt', state: 'succeeded' },
+		{ tag: 'view-file', summary: 'missing.txt', state: 'failed' },
+	])
+	assertEquals(snapshots[0].extension.executionTarget, { machine: '0', workdir: '/tmp' })
+})
+
+Deno.test('sequential tool summaries identify edited files without replacement contents', async () => {
+	const args = makeArgs()
+	const result = makeResult('<replace-file><file path="src/a.mjs"><replacement><search>SECRET</search><replace>other</replace></replacement></file><file path="src/b.mjs"></file></replace-file>')
+	const handler = defineReplyHandler({ tag: 'replace-file', display: emptyDisplay, /**
+	 * 模拟失败的文件编辑。
+	 * @param {object} reply 回复对象。
+	 * @param {object} context 请求上下文。
+	 * @returns {Promise<object>} 结果。
+	 */
+		handle: async (reply, context) => {
+			context.AddLongTimeLog({ role: 'tool', content: 'not found' })
+			return { regen: true, failed: true }
+		} })
+	await runReplyHandlers(result, args, [handler])
+	assertEquals(result.logContextBefore.find(entry => entry.role === 'tool').extension.toolCall,
+		{ tag: 'replace-file', summary: 'src/a.mjs, src/b.mjs', state: 'failed' })
+})

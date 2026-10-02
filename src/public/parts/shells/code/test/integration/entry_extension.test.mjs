@@ -15,6 +15,7 @@ Deno.test('pickEntryExtension keeps frontend-rendering fields and drops the rest
 		asyncAwait: { settled: [] },
 		asyncInspect: { id: 't', kind: 'js' },
 		error: true,
+		toolCall: { summary: 'src/main.mjs', state: 'failed' },
 		executionTarget: { machine: '0', workdir: '/w' },
 		pluginData,
 		preloadFiles: [{ path: 'a.mjs', resolved: '/w/a.mjs' }],
@@ -29,6 +30,7 @@ Deno.test('pickEntryExtension keeps frontend-rendering fields and drops the rest
 		asyncAwait: { settled: [] },
 		asyncInspect: { id: 't', kind: 'js' },
 		error: true,
+		toolCall: { summary: 'src/main.mjs', state: 'failed' },
 		executionTarget: { machine: '0', workdir: '/w' },
 		pluginData,
 	})

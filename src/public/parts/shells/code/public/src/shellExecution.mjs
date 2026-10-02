@@ -9,6 +9,7 @@ import { appendEntryBubble, updateEntryBubble, updateShellStreamBubble } from '.
 import { refreshAllSessions } from './session.mjs'
 import { markSessionDirty } from './sessionPersistence.mjs'
 import { activeTab, getActiveRuntime, getRuntime, store, tabKeyOf, target } from './store.mjs'
+import { compactToolSummary } from '/parts/shells:chat/shared/toolSummary.mjs'
 
 /**
  * 执行 `!` shell 命令并流式回显。
@@ -46,6 +47,7 @@ export async function execShellMode(command) {
 		content: '',
 		time: new Date().toISOString(),
 		extension: {
+			toolCall: { summary: compactToolSummary(command), state: 'pending' },
 			shellStream: { command, shell, output: '' },
 			executionTarget: { machine: execTarget.machine, workdir: execTarget.workdir || null },
 		},
@@ -75,6 +77,8 @@ export async function execShellMode(command) {
 				scheduleUpdate()
 			},
 		})
+		const exitCode = result.code ?? result.exitCode
+		toolEntry.extension.toolCall.state = exitCode != null && Number(exitCode) !== 0 ? 'failed' : 'succeeded'
 		// 未指定工作区时服务端回退到目标机器家目录：用实际目录补全执行目标快照
 		if (result?.resolvedWorkdir && !toolEntry.extension.executionTarget.workdir)
 			toolEntry.extension.executionTarget.workdir = String(result.resolvedWorkdir)
@@ -82,6 +86,7 @@ export async function execShellMode(command) {
 			+ '\n```' + (Number(result.elapsedMs) > 0 ? `（耗时 ${(result.elapsedMs / 1000).toFixed(2)}s）` : '')
 	}
 	catch (error) {
+		toolEntry.extension.toolCall.state = 'failed'
 		toolEntry.content = codeBlock + String(error?.message || error) + '\n```'
 	}
 	finally {

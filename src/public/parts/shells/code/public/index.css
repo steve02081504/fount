@@ -434,6 +434,29 @@ details.code-tool-log>summary .code-tool-log-name {
 	opacity: 0.9;
 }
 
+.code-tool-log-name,
+.code-tool-log-status {
+	flex-shrink: 0;
+}
+
+.code-tool-log-operation {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-family: var(--font-mono, monospace);
+}
+
+details.code-tool-log.code-tool-log-failed {
+	border-inline-start: 3px solid var(--color-error);
+	background: color-mix(in oklch, var(--color-error) 8%, transparent);
+}
+
+details.code-tool-log.code-tool-log-failed>summary {
+	color: var(--color-error);
+	opacity: 1;
+}
+
 /* 运行状态卡（子代理运行 / 统一异步任务）：共用基类 + 各自强调色 + 状态修饰符 */
 .code-run-card {
 	/* 强调色：默认主色；异步任务卡覆盖为 info */

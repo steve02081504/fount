@@ -104,8 +104,8 @@ test.describe('code shell message actions & layout', () => {
 				entries: [
 					// 纯工具调用生成的原始条目：人类展示层被管线清空 → 不应渲染空气泡
 					{ id: 'raw-1', uid: 'char', role: 'char', name: 'codeBuddy', content: '<view-file>\nsrc/a.mjs\n</view-file>', content_for_show: '', time: now },
-					{ id: 'tool-1', uid: 'system', role: 'tool', name: 'file-operations.view-file', content: '文件内容', time: now },
-					{ id: 'tool-2', uid: 'system', role: 'tool', name: 'file-operations.replace-file', content: '已修改', time: now },
+					{ id: 'tool-1', uid: 'system', role: 'tool', name: 'file-operations.view-file', content: '文件内容', time: now, extension: { toolCall: { summary: 'src/a.mjs', state: 'succeeded' } } },
+					{ id: 'tool-2', uid: 'system', role: 'tool', name: 'file-operations.replace-file', content: '替换失败', time: now, extension: { toolCall: { summary: 'src/a.mjs, src/b.mjs', state: 'failed' } } },
 					{ id: 'tool-3', uid: 'system', role: 'tool', name: 'code-execution.run-pwsh', content: 'echo hi', time: now },
 					// 未知第三方工具：无 i18n 映射，后备从调用卡解析触发标签名
 					{ id: 'tool-4', uid: 'system', role: 'tool', name: 'timer', content: '定时器已设置', content_for_show: '```\n<set-timer duration="5s">\n```\n\n定时器已设置', time: now },
@@ -126,6 +126,21 @@ test.describe('code shell message actions & layout', () => {
 			for (const label of labels) expect(label).not.toContain('file-operations')
 			// 未知工具用触发标签名兜底
 			expect(labels).toContain('set-timer')
+			const failed = page.locator('.code-tool-log-failed')
+			await expect(failed.locator('summary')).toContainText('src/a.mjs, src/b.mjs')
+			await expect(failed.locator('.code-tool-log-status')).toBeVisible()
+			await page.reload()
+			await page.waitForFunction(() => globalThis.fount?.test?.pageState?.ready === true)
+			await expect(failed.locator('summary')).toContainText('src/a.mjs, src/b.mjs')
+			await page.setViewportSize({ width: 390, height: 844 })
+			const geometry = await failed.evaluate(node => {
+				const summary = node.querySelector('summary')
+				const style = getComputedStyle(summary)
+				return { width: summary.getBoundingClientRect().width, viewport: innerWidth, color: style.color, border: getComputedStyle(node).borderInlineStartWidth }
+			})
+			expect(geometry.width).toBeLessThan(geometry.viewport)
+			expect(geometry.border).toBe('3px')
+			expect(geometry.color).not.toBe('rgba(0, 0, 0, 0)')
 		}
 		finally {
 			await removeAllWorkspacesViaApi(page, baseUrl)
@@ -447,4 +462,31 @@ test.describe('code shell message actions & layout', () => {
 			await rmDirRetry(dir)
 		}
 	})
+})
+
+
+test('tool summaries expose targets and failures as plain text', async ({ modulePage }) => {
+	const result = await modulePage.run(async () => {
+		const flow = document.createElement('div')
+		flow.id = 'messages'
+		const composer = document.createElement('textarea')
+		composer.id = 'composer-input'
+		document.body.append(flow, composer)
+		const { renderEntryBubble } = await import('/parts/shells:code/src/messages.mjs')
+		const entries = [
+			{ name: 'file-operations.replace-file', content: '', extension: { toolCall: { summary: 'src/a.mjs, src/b.mjs', state: 'failed' } } },
+			{ name: 'code-execution.run-js', content: '', extension: { toolCall: { summary: '<img src=x onerror="alert(1)">', state: 'succeeded' } } },
+			{ name: 'file-operations.override-file', content_for_show: '\x60\x60\x60\n<override-file path="old.txt">body</override-file>\n\x60\x60\x60', extension: { error: true } },
+			{ name: 'shell', content: '', extension: { toolCall: { summary: 'exit 7', state: 'failed' } } },
+		]
+		return entries.map((entry, index) => {
+			const bubble = renderEntryBubble({ id: String(index), role: 'tool', ...entry })
+			const summary = bubble.querySelector('summary')
+			return { operation: summary.querySelector('.code-tool-log-operation')?.textContent, failed: bubble.querySelector('details').classList.contains('code-tool-log-failed'), status: !!summary.querySelector('[data-i18n="code.asyncTasks.state.failed"]'), injected: !!summary.querySelector('img') }
+		})
+	})
+	expect(result.map(row => row.operation)).toEqual(['src/a.mjs, src/b.mjs', '<img src=x onerror="alert(1)">', 'old.txt', 'exit 7'])
+	expect(result.map(row => row.failed)).toEqual([true, false, true, true])
+	expect(result.map(row => row.status)).toEqual([true, false, true, true])
+	expect(result.every(row => !row.injected)).toBe(true)
 })

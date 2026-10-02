@@ -8,6 +8,7 @@ import { renderMarkdownAsString } from '/scripts/features/markdown/index.mjs'
 import { svgInliner } from '/scripts/lib/svgInliner.mjs'
 import { downloadHtmlDocument, renderMarkdownAsStandaloneDocument } from '/parts/shells:gist/src/standaloneDocument.mjs'
 import { createGist } from '/parts/shells:gist/src/endpoints.mjs'
+import { compactToolSummary, summarizeToolCall } from '/parts/shells:chat/shared/toolSummary.mjs'
 
 import { asyncStateLabel, asyncTaskCardElement } from './asynctasks.mjs'
 import { renderAttachmentStrip, renderMessageAttachments } from './attachments.mjs'
@@ -98,6 +99,21 @@ function toolDisplayLabel(entry) {
 	if (TOOL_NAME_I18N[name] || /^code-execution\.(?:run|inline)-/.test(name))
 		return labelForToolName(name)
 	return toolTagName(entry) ?? labelForToolName(name)
+}
+
+/**
+ * 新日志读取结构化摘要，历史日志从首个调用代码块恢复操作对象。
+ * @param {object} entry 工具条目。
+ * @returns {string} 单行操作摘要。
+ */
+function toolOperationSummary(entry) {
+	if (entry.extension?.toolCall) return compactToolSummary(entry.extension.toolCall.summary)
+	if (entry.extension?.shellStream) return compactToolSummary(entry.extension.shellStream.command)
+	const code = entryShowText(entry).match(/^(`{3,})[^\n]*\n([\s\S]*?)\n\1(?:\n|$)/)?.[2] || ''
+	const tag = code.match(/^\s*<([\w.-]+)\b([^>]*)>/)
+	if (!tag) return entry.name === 'shell' || /^code-execution\.(?:run|inline)-/.test(entry.name || '') ? compactToolSummary(code) : ''
+	const params = Object.fromEntries([...tag[2].matchAll(/([\w-]+)="([^"]*)"/g)].map(match => [match[1], match[2]]))
+	return summarizeToolCall({ tag: tag[1], params, inner: code.slice(tag[0].length).replace(/<\/[\w.-]+>\s*$/, '') })
 }
 
 /**
@@ -582,6 +598,8 @@ export function renderEntryBubble(entry, { isLast = false } = {}) {
 	else if (entry.role === 'tool' || entry.role === 'system') {
 		const details = document.createElement('details')
 		details.className = 'code-tool-log'
+		const failed = isErrorEntry(entry) || entry.extension?.error || entry.extension?.toolCall?.state === 'failed'
+		details.classList.toggle('code-tool-log-failed', Boolean(failed))
 		if (!isErrorEntry(entry) && (entry.name === 'shell' || entry.name?.startsWith('code-execution'))) details.open = true
 		const summary = document.createElement('summary')
 		const chevron = document.createElement('span')
@@ -591,6 +609,20 @@ export function renderEntryBubble(entry, { isLast = false } = {}) {
 		name.className = 'code-tool-log-name'
 		name.textContent = toolDisplayLabel(entry)
 		summary.append(chevron, name)
+		if (failed) {
+			const status = document.createElement('span')
+			status.className = 'code-tool-log-status'
+			setElementI18n(status, 'code.asyncTasks.state.failed')
+			summary.appendChild(status)
+		}
+		const operation = toolOperationSummary(entry)
+		if (operation) {
+			const operationSpan = document.createElement('span')
+			operationSpan.className = 'code-tool-log-operation'
+			operationSpan.textContent = operation
+			operationSpan.title = operation
+			summary.appendChild(operationSpan)
+		}
 		const content = document.createElement('div')
 		content.className = 'mt-1 markdown-body'
 		details.append(summary, content)
