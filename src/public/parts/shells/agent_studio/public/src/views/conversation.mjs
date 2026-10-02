@@ -13,6 +13,7 @@ import { generationRoundSpan } from '../../shared/generationChain.mjs'
 import { commonPrefixLength, estimatePromptCache } from '../../shared/promptCache.mjs'
 import { messagesToText } from '../../shared/promptText.mjs'
 import { getConversation, getSubAgent, sendSubAgentMessage } from '../endpoints.mjs'
+import { attachmentList } from '../lib/attachments.mjs'
 import { CACHE_GOOD_RATIO } from '../lib/cacheBadge.mjs'
 import { formatTime } from '../lib/format.mjs'
 import { messageBody } from '../lib/messageBody.mjs'
@@ -358,6 +359,7 @@ function renderSubagentEntry(message) {
 	row.append(title, messageBody(message.content_for_show ?? message.content ?? '', {
 		collapseLines: message.role === 'tool' ? TOOL_COLLAPSE_LINES : 0,
 	}))
+	if (message.files?.length) row.append(attachmentList(message.files))
 	return row
 }
 
@@ -564,6 +566,7 @@ function renderMessages(messages, reuse = null) {
 			collapseLines: message.role === 'tool' ? TOOL_COLLAPSE_LINES : 0,
 		})
 		row.append(name, body)
+		if (message.files?.length) row.append(attachmentList(message.files))
 		return row
 	})
 }

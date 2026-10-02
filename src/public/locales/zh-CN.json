@@ -7093,6 +7093,11 @@
 				"rate": "缓存率 ≈${rate}%",
 				"summary": "Prompt 前缀复用估算 ${rate}%（字符口径）"
 			}
+		},
+		"attachments": {
+			"preview": "预览文本文件",
+			"unavailable": "附件数据不可用",
+			"truncated": "预览已截断，请下载查看完整文件。"
 		}
 	}
 }

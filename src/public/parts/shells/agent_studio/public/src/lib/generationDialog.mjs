@@ -9,6 +9,7 @@ import { showToastI18n } from '/scripts/features/toast.mjs'
 
 import { getGeneration } from '../endpoints.mjs'
 
+import { attachmentList } from './attachments.mjs'
 import { formatTime } from './format.mjs'
 import { appendMetaChips } from './metaChip.mjs'
 import { textActions } from './textActions.mjs'
@@ -75,6 +76,13 @@ export async function openGenerationDialog(id) {
 			() => responseText,
 			{ filename: `generation-${record.id}-response.txt` },
 		))
+		const previews = document.getElementById('generationDialogAttachments')
+		if (previews) {
+			previews.replaceChildren()
+			for (const request of record.requests ?? [])
+				for (const message of request.messages ?? [])
+					if (message.files?.length) previews.append(attachmentList(message.files))
+		}
 		dialog.showModal()
 	}
 	catch (error) {

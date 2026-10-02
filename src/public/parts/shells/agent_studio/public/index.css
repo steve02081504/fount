@@ -1286,3 +1286,10 @@
 		max-height: 38vh;
 	}
 }
+
+.studio-attachments { display: grid; gap: 0.75rem; min-width: 0; }
+.studio-attachment { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; min-width: 0; }
+.studio-attachment > span { overflow-wrap: anywhere; }
+.studio-attachment :is(img, video) { display: block; max-width: 100%; max-height: 28rem; object-fit: contain; }
+.studio-attachment :is(audio, details) { width: 100%; }
+.studio-attachment pre { max-height: 28rem; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; }

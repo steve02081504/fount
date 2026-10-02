@@ -1,12 +1,25 @@
 /**
  * 【文件】public/src/endpoints.mjs — agent_studio 前端 HTTP 客户端
  * 【职责】以命名导出封装 `shells:agent_studio` 的全部 REST 调用；UI / 模板层不得直接 `fetch`。
- * 【原理】统一 `requestJson` 处理非 2xx：优先抛出服务端 `error`（真实原因），回退 `message` 与状态文本。
+ * 【原理】统一 `responseError` 处理非 2xx：优先抛出服务端 `error`（真实原因），回退 `message` 与状态文本；`requestJson` 负责 JSON 解析。
  * 【关联】后端 src/endpoints.mjs；public/index.mjs 消费。
  */
 
 /** API 前缀。 */
 const API_BASE = '/api/parts/shells:agent_studio'
+
+/** 文本预览读取的字节上限（下载仍返回完整文件）。 */
+const PREVIEW_BYTES = 1024 * 1024
+
+/**
+ * 由响应体还原服务端错误（优先 `error`，回退 `message` 与状态文本）。
+ * @param {Response} response 非 2xx 响应
+ * @returns {Promise<Error>} 错误
+ */
+async function responseError(response) {
+	const body = await response.json().catch(() => ({}))
+	return new Error(body.error || body.message || response.statusText)
+}
 
 /**
  * 发送请求并解析 JSON。
@@ -16,10 +29,7 @@ const API_BASE = '/api/parts/shells:agent_studio'
  */
 async function requestJson(path, options = {}) {
 	const response = await fetch(API_BASE + path, options)
-	if (!response.ok) {
-		const body = await response.json().catch(() => ({}))
-		throw new Error(body.error || body.message || response.statusText)
-	}
+	if (!response.ok) throw await responseError(response)
 	if (response.status === 204) return null
 	return response.json()
 }
@@ -244,4 +254,28 @@ export function listRuns(filter = {}) {
  */
 export function getRun(id) {
 	return requestJson(`/runs/${encodeURIComponent(id)}`)
+}
+
+/**
+ * 读取附件引用的用户鉴权 URL。
+ * @param {string} hash Blob 键
+ * @param {{ download?: boolean, name?: string }} [options] 投递模式（`download` 为完整下载，`name` 指定该哈希对应的引用文件名）
+ * @returns {string} URL
+ */
+export function attachmentUrl(hash, { download = false, name } = {}) {
+	return `${API_BASE}/attachment/${encodeURIComponent(hash)}${querySuffix({ name, download: download ? 1 : undefined })}`
+}
+
+/**
+ * 读取有限长度的文本预览；下载仍返回完整文件。
+ * @param {string} hash Blob 键
+ * @param {string} [name] 引用文件名
+ * @returns {Promise<{ text: string, truncated: boolean }>} 预览文本与是否被截断
+ */
+export async function readAttachmentText(hash, name) {
+	const response = await fetch(attachmentUrl(hash, { name }), { headers: { Range: `bytes=0-${PREVIEW_BYTES - 1}` } })
+	if (!response.ok) throw await responseError(response)
+	const bytes = await response.arrayBuffer()
+	const total = Number(response.headers.get('Content-Range')?.split('/').at(-1) || bytes.byteLength)
+	return { text: new TextDecoder().decode(bytes), truncated: total > bytes.byteLength }
 }

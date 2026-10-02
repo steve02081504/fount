@@ -2,6 +2,8 @@
  * Agent Studio 前端冒烟：命名导出客户端、跨运行时生成链纯函数与模板渲染在真实浏览器里可加载，
  * 并实际启动页面壳、验证视图切换。
  */
+import { Buffer } from 'node:buffer'
+
 import { test, expect } from './fixtures.mjs'
 
 const ENDPOINT_EXPORTS = [
@@ -390,4 +392,51 @@ test.describe('Agent Studio shell boot', () => {
 		await page.locator('#subagentMessageForm button').click()
 		await expect(page.locator('#subagentTranscript')).toContainText('new instruction')
 	})
+})
+
+
+test('conversation and prompt render media, inert text previews and arbitrary downloads', async ({ page, baseUrl }) => {
+	const files = [
+		{ name: 'image.png', mime_type: 'image/png', hash: '1'.repeat(64) },
+		{ name: 'sound.wav', mime_type: 'audio/wav', hash: '2'.repeat(64) },
+		{ name: 'movie.mp4', mime_type: 'video/mp4', hash: '3'.repeat(64) },
+		{ name: 'notes.txt', mime_type: 'text/plain', hash: '4'.repeat(64) },
+		{ name: 'archive.bin', mime_type: 'application/octet-stream', hash: '5'.repeat(64) },
+	]
+	const message = { id: 'with-files', role: 'user', content: 'attachments', files }
+	await page.route('**/api/parts/shells:agent_studio/attachment/**', route => {
+		const url = new URL(route.request().url())
+		if (url.searchParams.has('download')) return route.fulfill({
+			body: 'opaque bytes', contentType: 'application/octet-stream', headers: { 'Content-Disposition': 'attachment; filename="archive.bin"' },
+		})
+		if (url.pathname.endsWith('1'.repeat(64))) return route.fulfill({
+			body: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aZ1sAAAAASUVORK5CYII=', 'base64'), contentType: 'image/png',
+		})
+		return route.fulfill({ status: 206, body: '<script>window.attachmentExecuted = true</script>', contentType: 'text/plain', headers: { 'Content-Range': 'bytes 0-50/2000000' } })
+	})
+	await page.route('**/api/parts/shells:agent_studio/conversation/attachments', route => route.fulfill({ json: {
+		key: 'attachments',
+		generations: [{ id: 'files-generation', charId: 'demo', startedAt: 1000, requestCount: 1, requests: [{ index: 1, messages: [message] }], response: 'done' }],
+		dialogue: { rounds: 1, events: [
+			{ round: 1, op: 'insert', message },
+			{ round: 1, op: 'insert', message: { id: 'files-generation:final', role: 'char', content: 'done' } },
+		] },
+	} }))
+	await openAgentStudio(page, baseUrl)
+	await page.evaluate(() => { location.hash = '#conversation/attachments' })
+	const attachments = page.locator('#conversationGenerations .conversation-entry').first().locator('.studio-attachments')
+	await expect(attachments.locator('.studio-attachment')).toHaveCount(5)
+	await expect(attachments.locator('img')).toBeVisible()
+	await expect(attachments.locator('audio')).toHaveAttribute('controls', '')
+	await expect(attachments.locator('video')).toHaveAttribute('preload', 'none')
+	await attachments.locator('details summary').click()
+	await expect(attachments.locator('pre')).toContainText('<script>')
+	await expect(attachments.locator('pre')).toContainText(/预览已截断|Preview truncated|プレビューは省略/)
+	expect(await page.evaluate(() => window.attachmentExecuted)).toBeUndefined()
+	const downloadEvent = page.waitForEvent('download')
+	await attachments.locator('.studio-attachment').last().getByRole('link').click()
+	expect((await downloadEvent).suggestedFilename()).toBe('archive.bin')
+	const prompt = page.locator('.conversation-requests').last()
+	await prompt.locator(':scope > summary').click()
+	await expect(prompt.locator('.studio-attachment')).toHaveCount(5)
 })

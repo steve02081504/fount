@@ -7085,6 +7085,11 @@
 				"rate": "Cache ≈${rate}%",
 				"summary": "Estimated prompt prefix reuse ${rate}% (characters)"
 			}
+		},
+		"attachments": {
+			"preview": "Preview text file",
+			"unavailable": "Attachment data unavailable",
+			"truncated": "Preview truncated. Download the complete file to see the rest."
 		}
 	}
 }
