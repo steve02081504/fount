@@ -6429,8 +6429,12 @@
 			},
 			"linkUrl": "Link address",
 			"foldCode": {
-				"aria-label": null,
-				"title": null
+				"aria-label": "Collapse code block",
+				"title": "Collapse code block"
+			},
+			"expandCode": {
+				"aria-label": "Expand code block",
+				"title": "Expand code block"
 			}
 		}
 	},
@@ -7092,8 +7096,8 @@
 		},
 		"attachments": {
 			"preview": "Preview text file",
-			"unavailable": "Attachment data unavailable",
-			"truncated": "Preview truncated. Download the complete file to see the rest."
+			"unavailable": "Attachment unavailable",
+			"truncated": "Preview shortened. Download the full file to read it all."
 		}
 	}
 }

@@ -628,7 +628,7 @@
 			}
 		},
 		"telegrambot": {
-			"alreadyRunning": null
+			"alreadyRunning": "Бот ${botname} у Telegram уже запущено"
 		}
 	},
 	"installer_wait_screen": {
@@ -6184,7 +6184,7 @@
 				"aria-label": "Розмір пензлика"
 			},
 			"crop": "Обрізати",
-			"exportFailed": null,
+			"exportFailed": "Не вдалося експортувати зображення",
 			"image": "Редагувати",
 			"mosaic": "Пікселізація"
 		},
@@ -6423,7 +6423,15 @@
 				},
 				"aria-label": "Вставити"
 			},
-			"linkUrl": "Адреса посилання"
+			"linkUrl": "Адреса посилання",
+			"foldCode": {
+				"aria-label": "Згорнути блок коду",
+				"title": "Згорнути блок коду"
+			},
+			"expandCode": {
+				"aria-label": "Розгорнути блок коду",
+				"title": "Розгорнути блок коду"
+			}
 		}
 	},
 	"pro_cancel_screen": {
@@ -7042,6 +7050,11 @@
 				"rate": "Кеш ≈${rate}%",
 				"summary": "Оцінка повторного використання префікса запиту ${rate}% (символи)"
 			}
+		},
+		"attachments": {
+			"preview": "Перегляд текстового файлу",
+			"unavailable": "Вкладення недоступне",
+			"truncated": "Перегляд обрізано. Завантажте файл повністю, щоб побачити решту."
 		}
 	}
 }

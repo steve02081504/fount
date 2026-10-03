@@ -628,7 +628,7 @@
 			}
 		},
 		"telegrambot": {
-			"alreadyRunning": null
+			"alreadyRunning": "Telegram बॉट ${botname} पहले से चल रहा है"
 		}
 	},
 	"installer_wait_screen": {
@@ -6184,7 +6184,7 @@
 				"aria-label": "ब्रश का आकार"
 			},
 			"crop": "क्रॉप",
-			"exportFailed": null,
+			"exportFailed": "छवि निर्यात करने में विफल",
 			"image": "संपादित करें",
 			"mosaic": "पिक्सेलेट"
 		},
@@ -6423,7 +6423,15 @@
 				},
 				"aria-label": "पेस्ट करें"
 			},
-			"linkUrl": "लिंक पता"
+			"linkUrl": "लिंक पता",
+			"foldCode": {
+				"aria-label": "कोड ब्लॉक संकुचित करें",
+				"title": "कोड ब्लॉक संकुचित करें"
+			},
+			"expandCode": {
+				"aria-label": "कोड ब्लॉक विस्तृत करें",
+				"title": "कोड ब्लॉक विस्तृत करें"
+			}
 		}
 	},
 	"pro_cancel_screen": {
@@ -7042,6 +7050,11 @@
 				"rate": "कैश ≈${rate}%",
 				"summary": "प्रॉम्प्ट प्रीफ़िक्स पुनरुपयोग का अनुमान ${rate}% (अक्षर)"
 			}
+		},
+		"attachments": {
+			"preview": "पाठ फ़ाइल का पूर्वावलोकन करें",
+			"unavailable": "अनुलग्नक उपलब्ध नहीं है",
+			"truncated": "पूर्वावलोकन छोटा कर दिया गया है। शेष देखने के लिए पूरी फ़ाइल डाउनलोड करें।"
 		}
 	}
 }

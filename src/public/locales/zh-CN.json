@@ -7096,8 +7096,8 @@
 		},
 		"attachments": {
 			"preview": "预览文本文件",
-			"unavailable": "附件数据不可用",
-			"truncated": "预览已截断，请下载查看完整文件。"
+			"unavailable": "附件不可用",
+			"truncated": "预览已截断，请下载完整文件查看。"
 		}
 	}
 }

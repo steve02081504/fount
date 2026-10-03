@@ -6184,7 +6184,7 @@
 				"aria-label": "ブラシの太さ"
 			},
 			"crop": "トリミング",
-			"exportFailed": "画像の書き出しに失敗しました",
+			"exportFailed": "画像のエクスポートに失敗しました",
 			"image": "編集",
 			"loadFailed": "画像の読み込みに失敗しました",
 			"mosaic": "モザイク",
@@ -6429,8 +6429,12 @@
 			},
 			"linkUrl": "リンクのURL",
 			"foldCode": {
-				"aria-label": null,
-				"title": null
+				"aria-label": "コードブロックを折りたたむ",
+				"title": "コードブロックを折りたたむ"
+			},
+			"expandCode": {
+				"aria-label": "コードブロックを展開する",
+				"title": "コードブロックを展開する"
 			}
 		}
 	},
@@ -7092,8 +7096,8 @@
 		},
 		"attachments": {
 			"preview": "テキストファイルをプレビュー",
-			"unavailable": "添付ファイルのデータを取得できません",
-			"truncated": "プレビューは省略されています。完全なファイルをダウンロードしてください。"
+			"unavailable": "添付ファイルを利用できません",
+			"truncated": "プレビューは省略されています。全体を見るにはファイルをダウンロードしてください。"
 		}
 	}
 }

@@ -628,7 +628,7 @@
 			}
 		},
 		"telegrambot": {
-			"alreadyRunning": null
+			"alreadyRunning": "Telegram 봇 ${botname}이(가) 이미 실행 중입니다"
 		}
 	},
 	"installer_wait_screen": {
@@ -6184,6 +6184,7 @@
 				"aria-label": "브러시 크기"
 			},
 			"crop": "자르기",
+			"exportFailed": "이미지 내보내기에 실패했습니다",
 			"image": "편집",
 			"mosaic": "모자이크"
 		},
@@ -6422,7 +6423,15 @@
 				},
 				"aria-label": "붙여넣기"
 			},
-			"linkUrl": "링크 주소"
+			"linkUrl": "링크 주소",
+			"foldCode": {
+				"aria-label": "코드 블록 접기",
+				"title": "코드 블록 접기"
+			},
+			"expandCode": {
+				"aria-label": "코드 블록 펼치기",
+				"title": "코드 블록 펼치기"
+			}
 		}
 	},
 	"pro_cancel_screen": {
@@ -7041,6 +7050,11 @@
 				"rate": "캐시 ≈${rate}%",
 				"summary": "프롬프트 접두사 재사용 추정 ${rate}% (문자 기준)"
 			}
+		},
+		"attachments": {
+			"preview": "텍스트 파일 미리 보기",
+			"unavailable": "첨부 파일을 사용할 수 없습니다",
+			"truncated": "미리 보기가 잘렸습니다. 나머지를 보려면 전체 파일을 내려받으세요."
 		}
 	}
 }

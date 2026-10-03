@@ -628,7 +628,7 @@
 			}
 		},
 		"telegrambot": {
-			"alreadyRunning": null
+			"alreadyRunning": "الروبوت ${botname} على Telegram قيد التشغيل بالفعل"
 		}
 	},
 	"installer_wait_screen": {
@@ -6194,7 +6194,7 @@
 				"aria-label": "سُمك الفرشاة"
 			},
 			"crop": "اقتصاص",
-			"exportFailed": null,
+			"exportFailed": "فشل تصدير الصورة",
 			"image": "تعديل",
 			"mosaic": "تمويه"
 		},
@@ -6433,7 +6433,15 @@
 				},
 				"aria-label": "لصق"
 			},
-			"linkUrl": "عنوان الرابط"
+			"linkUrl": "عنوان الرابط",
+			"foldCode": {
+				"aria-label": "طيّ كتلة التحرير",
+				"title": "طيّ كتلة التحرير"
+			},
+			"expandCode": {
+				"aria-label": "بسط كتلة التحرير",
+				"title": "بسط كتلة التحرير"
+			}
 		}
 	},
 	"pro_cancel_screen": {
@@ -7052,6 +7060,11 @@
 				"rate": "معدل التخزين المؤقت ≈${rate}%",
 				"summary": "تقدير إعادة استخدام بادئة الطلب ${rate}% (بالحروف)"
 			}
+		},
+		"attachments": {
+			"preview": "معاينة ملف نصي",
+			"unavailable": "المرافق غير متوفر",
+			"truncated": "المعاينة مقتطعة. نزّل الملف كاملًا لعرض بقية المحتوى."
 		}
 	}
 }

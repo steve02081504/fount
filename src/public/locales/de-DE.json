@@ -628,7 +628,7 @@
 			}
 		},
 		"telegrambot": {
-			"alreadyRunning": null
+			"alreadyRunning": "Der Telegram-Bot ${botname} läuft bereits"
 		}
 	},
 	"installer_wait_screen": {
@@ -6184,7 +6184,7 @@
 				"aria-label": "Pinselgröße"
 			},
 			"crop": "Zuschneiden",
-			"exportFailed": null,
+			"exportFailed": "Export des Bildes fehlgeschlagen",
 			"image": "Bearbeiten",
 			"mosaic": "Verpixeln"
 		},
@@ -6423,7 +6423,15 @@
 				},
 				"aria-label": "Einfügen"
 			},
-			"linkUrl": "Linkadresse"
+			"linkUrl": "Linkadresse",
+			"foldCode": {
+				"aria-label": "Codeblock einklappen",
+				"title": "Codeblock einklappen"
+			},
+			"expandCode": {
+				"aria-label": "Codeblock ausklappen",
+				"title": "Codeblock ausklappen"
+			}
 		}
 	},
 	"pro_cancel_screen": {
@@ -7042,6 +7050,11 @@
 				"rate": "Cache ≈${rate}%",
 				"summary": "Geschätzte Wiederverwendung des Prompt-Präfixes ${rate}% (Zeichen)"
 			}
+		},
+		"attachments": {
+			"preview": "Textdatei ansehen",
+			"unavailable": "Anhang nicht verfügbar",
+			"truncated": "Vorschau gekürzt. Lade die vollständige Datei herunter, um den Rest zu sehen."
 		}
 	}
 }

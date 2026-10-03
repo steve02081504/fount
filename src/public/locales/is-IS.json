@@ -628,7 +628,7 @@
 			}
 		},
 		"telegrambot": {
-			"alreadyRunning": null
+			"alreadyRunning": "Telegram-vél ${botname} er þegar í gangi"
 		}
 	},
 	"installer_wait_screen": {
@@ -6184,7 +6184,7 @@
 				"aria-label": "Stærð pensils"
 			},
 			"crop": "Klippa",
-			"exportFailed": null,
+			"exportFailed": "Mistókst að flytja myndina út",
 			"image": "Breyta",
 			"mosaic": "Pixla"
 		},
@@ -6423,7 +6423,15 @@
 				},
 				"aria-label": "Líma"
 			},
-			"linkUrl": "Tengilslóð"
+			"linkUrl": "Tengilslóð",
+			"foldCode": {
+				"aria-label": "Fella kóðablokk saman",
+				"title": "Fella kóðablokk saman"
+			},
+			"expandCode": {
+				"aria-label": "Fella kóðablokk út",
+				"title": "Fella kóðablokk út"
+			}
 		}
 	},
 	"pro_cancel_screen": {
@@ -7042,6 +7050,11 @@
 				"rate": "Skyndiminni ≈${rate}%",
 				"summary": "Áætluð endurnýting forskeytis kvaðar ${rate}% (stafir)"
 			}
+		},
+		"attachments": {
+			"preview": "Skoða textaskrá",
+			"unavailable": "Viðhengi ekki tiltækt",
+			"truncated": "Sýnishorn stytt. Sæktu alla skrána til að sjá restina."
 		}
 	}
 }

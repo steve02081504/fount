@@ -98,7 +98,7 @@
 			"refreshTokenError": "令符重煥有誤: ${error}",
 			"logoutRefreshTokenProcessError": "告退之時，重煥令符有誤: ${error}",
 			"revokeTokenNoJTI": "無 jti 之令符，如無根之木，不可撤也。",
-			"tokenRevoked": "令牌已被撤销：${jti}"
+			"tokenRevoked": "令牌已被撤銷：${jti}"
 		},
 		"verification": {
 			"codeGeneratedLog": "驗碼已生: ${code} (稍縱即逝)",
@@ -168,7 +168,7 @@
 			},
 			"skipBecause": {
 				"pass": "略（issue 未闔，或已闔而未及延緩）：${label} — ${url}",
-				"fail": "敗（下列 issue 已闔且延緩已盡，宜跟進并更 skip_because 而後再驗）：${label} — ${url}"
+				"fail": "敗（下列 issue 已闔且延緩已盡，宜跟進並更 skip_because 而後再驗）：${label} — ${url}"
 			},
 			"moduleCheck": {
 				"missedReady": "模組檢未成 ready 而進程已退：${label}"
@@ -272,7 +272,7 @@
 			"allReusedHint": "本次未真跑任何套件：失利為沿用上番結果，阻塞隨之未解（相關卷未變）。修繕相關卷後重跑，或以 fount test --force 強制真跑。",
 			"failuresSaved": "已存失利名錄：${path}（${count} 個套件）",
 			"failuresCleared": "manifest ${manifestId} 已全部通過，失利名錄已清除。",
-			"terminated": "超時終止：${label} — ${reason}",
+			"terminated": "逾時終止：${label} — ${reason}",
 			"sleepDetected": "察系休眠（監犬間隔躍 ${gap} ≥ ${limit}），已止 ${label}，待再跑（已行 ${elapsed}）",
 			"sleepRetry": "系休眠中絕，再跑 ${label}（第 ${attempt} 次）",
 			"nothingToContinue": "全部綠且無過期項，無需再跑。",
@@ -504,7 +504,7 @@
 				"alreadyUpToDate": "已為最新",
 				"localBranchAhead": "本地分支已先於遠端，無需更",
 				"branchesDiverged": "本地與遠端分支已分歧，強行更之...",
-				"unrelatedHistories": "本地与远程仓库没有共同历史。强制更新中...",
+				"unrelatedHistories": "本地與遠程倉庫無共同之史。強制更新中…",
 				"notOnBranch": "非在支上，今切至 'master'...",
 				"upstreamGoneFallbackMaster": "遠端分支 '${branch}' 既刪，今改蹤 master…",
 				"noUpstreamBranch": "警：未為分支 '${branch}' 置上遊分支，用 '${remote}'。",
@@ -628,7 +628,7 @@
 			}
 		},
 		"telegrambot": {
-			"alreadyRunning": "Telegram Bot ${botname} 已在运行"
+			"alreadyRunning": "Telegram Bot ${botname} 已在運行"
 		}
 	},
 	"installer_wait_screen": {
@@ -884,7 +884,7 @@
 	},
 	"login_info": {
 		"title": "登錄資訊",
-		"description": "此乃藏鑰之密所，掌君秘聞之符節。",
+		"description": "此乃藏鑰之密所，掌君祕聞之符節。",
 		"modal": {
 			"title": "憑證傳送之誤",
 			"retrieve_error": "錄存登錄憑證時有誤：\n${error}\n可續行，然憑證不得存，如鏡花水月。",
@@ -921,13 +921,13 @@
 		"achievements": {
 			"complete_tutorial": {
 				"name": "初窺門徑",
-				"description": "新手之训，业已毕也。",
-				"locked_description": "宜先成启蒙之训。"
+				"description": "新手之訓，業已畢也。",
+				"locked_description": "宜先成啓蒙之訓。"
 			},
 			"skip_tutorial": {
 				"name": "不循常道",
 				"description": "「訓者何物？可為食？」",
-				"locked_description": "宜至少略启蒙之训一次。"
+				"locked_description": "宜至少略啓蒙之訓一次。"
 			}
 		},
 		"home_function_buttons": {
@@ -1005,7 +1005,7 @@
 			},
 			"worlds": {
 				"title": "世界擇選",
-				"subtitle": "踏入一方天地，沉浸万千可能。",
+				"subtitle": "踏入一方天地，沉浸萬千可能。",
 				"card": {
 					"defaultCheckbox": {
 						"title": "定為恆常世界"
@@ -1032,7 +1032,7 @@
 			},
 			"ImportHandlers": {
 				"title": "納入司",
-				"subtitle": "海纳百川，兼容并蓄。",
+				"subtitle": "海納百川，兼容並蓄。",
 				"card": {
 					"defaultCheckbox": {
 						"title": "定為恆常納入司"
@@ -1147,24 +1147,24 @@
 		},
 		"achievements": {
 			"first_login": {
-				"name": "初临贵地",
+				"name": "初臨貴地",
 				"description": "初至新天地，幸甚至哉！",
-				"locked_description": "宜先登录一次。"
+				"locked_description": "宜先登錄一次。"
 			},
 			"sfw_mode_on": {
 				"name": "正襟危坐",
-				"description": "恐有视瞻，正此容仪。",
-				"locked_description": "宜启方正模式一次。"
+				"description": "恐有視瞻，正此容儀。",
+				"locked_description": "宜啓方正模式一次。"
 			},
 			"sfw_mode_off": {
-				"name": "别有洞天",
+				"name": "別有洞天",
 				"description": "藩籬既撤，豁然開朗。",
 				"locked_description": "宜休方正模式一次。"
 			},
 			"open_function_list": {
 				"name": "開卷有益",
-				"description": "琳琅满目，尽收眼底。",
-				"locked_description": "宜启百宝录一次。"
+				"description": "琳琅滿目，盡收眼底。",
+				"locked_description": "宜啓百寶錄一次。"
 			},
 			"set_default_persona": {
 				"name": "名正言順",
@@ -1174,8 +1174,8 @@
 		},
 		"dragAndDrop": {
 			"dropSuccess": "置之已妥。",
-			"dropError": "置之有误：${error}",
-			"noHandler": "无以应之。"
+			"dropError": "置之有誤：${error}",
+			"noHandler": "無以應之。"
 		},
 		"home_common_interfaces": {
 			"open": {
@@ -1471,7 +1471,7 @@
 			"deleteConfirm": "允刪此札？",
 			"saveEdit": "存",
 			"cancelEdit": "否",
-			"editingMessage": "正編輯",
+			"editingMessage": "方修",
 			"groupNameLabel": "群組名稱",
 			"groupName": {
 				"placeholder": "己群"
@@ -1611,7 +1611,7 @@
 					"hlcTip": "容遠端節點時鍾比本機快出之極限，用以拒絕異常未來之事。",
 					"sfuTip": "可選之外部聲影傳遞驛址。留空則用內置點對點/中繼通話。",
 					"iceTip": "助 WebRTC 穿透路由器；直連不成時，TURN 代為傳遞聲影與諸邦流量。",
-					"fileEncryptionTip": "收斂加密可去重，然同文牘之實將暴露；隨機符鑰隱私更佳，惟占空間更多。",
+					"fileEncryptionTip": "收斂加密可去重，然同文牘之實將暴露；隨機符鑰隱私更佳，惟佔空間更多。",
 					"allowDangerousHtml": "可信作者札聽許內聯織文",
 					"save": "存樞機",
 					"loadFailed": "載入群組樞機未遂: ${error}",
@@ -1784,7 +1784,7 @@
 				"pinContext": "高懸鄰域（±N 鄰帖）",
 				"rtcBudget": "RTC 通聯預算",
 				"rtcJoinRate": "RTC 每分鐘載入上限",
-				"streamGeneratingIdle": "AI 生成佔位空閒超時（毫秒）",
+				"streamGeneratingIdle": "AI 生成佔位空閒逾時（毫秒）",
 				"streamingSfu": "觀影 SFU WebSocket 地址（可選）",
 				"trustedPeers": "信任鄰居槽位（Top-K）",
 				"wantIdsBudget": "單次 wantIds 預算"
@@ -1835,7 +1835,7 @@
 				"groupTitle": "立群組"
 			},
 			"stream": {
-				"generationFailed": "AI 生成超時未完成，已止更",
+				"generationFailed": "AI 生成逾時未竟，已止更",
 				"noEmbed": {
 					"textContent": "觀影網址須為可嵌入之 https:// 頁面，或先置群樞機並重覽以獲取觀看符節。"
 				},
@@ -2246,7 +2246,7 @@
 				"resetFrom": {
 					"part": "從角色部件建置",
 					"partConfirm": "將以角色 part 之 info 覆蓋現簿牒，可？",
-					"partDone": "已從角色部件建建簿牒",
+					"partDone": "已自角色部件立簿牒",
 					"partFailed": "建建未遂：${error}"
 				},
 				"banner": {
@@ -2854,7 +2854,7 @@
 				"downloadFailed": "文牘拓存未遂",
 				"loadFailed": "文牘取錄有失",
 				"noKey": "難以解密（缺少符鑰）",
-				"skippedDedup": "已跳過建復块傳輸",
+				"skippedDedup": "已跳過建復塊傳輸",
 				"uploadChecking": "正察是否已有同內容…",
 				"uploadFailed": "文牘傳未遂",
 				"uploadRegistering": "正登記文牘…",
@@ -2899,7 +2899,7 @@
 			},
 			"list": {
 				"channelEmpty": "名錄為空。",
-				"editorTitle": "編輯名錄條目（JSON 數組）",
+				"editorTitle": "修名錄條目（JSON 數組）",
 				"itemUntitled": "未名",
 				"jsonInvalid": "JSON 無效：${message}",
 				"saveFailed": "存未遂",
@@ -3203,18 +3203,18 @@
 		"achievements": {
 			"first_chat": {
 				"name": "相逢之始",
-				"description": "初通一言，缘起于此。",
+				"description": "初通一言，緣起于此。",
 				"locked_description": "宜先與任一角色發一言。"
 			},
 			"multiplayer_chat": {
 				"name": "煮酒論英雄",
-				"description": "众口纷纭，其乐无穷。",
-				"locked_description": "宜令众角共语。"
+				"description": "衆口紛紜，其樂無窮。",
+				"locked_description": "宜令衆角共語。"
 			},
 			"photo_chat": {
 				"name": "圖以傳意",
 				"description": "一圖勝千言，意境自現。",
-				"locked_description": "宜以图传情一次。"
+				"locked_description": "宜以圖傳情一次。"
 			},
 			"code_greeting": {
 				"name": "以碼致候",
@@ -3244,7 +3244,7 @@
 				"title": "常用"
 			},
 			"network": {
-				"title": "互联"
+				"title": "互聯"
 			}
 		},
 		"profile": {
@@ -3378,7 +3378,7 @@
 				"confirm": {
 					"cancel": "止",
 					"cooldown": "已知其險（${seconds}）",
-					"editBody": "所托之人可盡易君之言，若遇非人，則柄權盡失。",
+					"editBody": "所託之人可盡易君之言，若遇非人，則柄權盡失。",
 					"first": "吾已知其險，續行",
 					"renderBody": "其所傳之言，將於君之覽器中盡展（含織文與機巧符法）。開門揖盜，任其於君之機關內肆行。非生死之交，切勿應允。",
 					"second": "再觸以終允",
@@ -3763,7 +3763,7 @@
 			"create_part": {
 				"name": "自無而有",
 				"description": "混沌初開，萬物自生。",
-				"locked_description": "宜以巧法创一部件。"
+				"locked_description": "宜以巧法創一部件。"
 			}
 		},
 		"home_function_buttons": {
@@ -3822,8 +3822,8 @@
 			"unknownError": "未知之禍"
 		},
 		"dragAndDrop": {
-			"fileDropDescription": "以卷装配",
-			"textDropDescription": "以文装配"
+			"fileDropDescription": "以卷裝配",
+			"textDropDescription": "以文裝配"
 		},
 		"home_function_buttons": {
 			"component_related": {
@@ -3913,7 +3913,7 @@
 			"share_part": {
 				"name": "征途多險，請攜此物",
 				"description": "奇貨可居，亦可與人。",
-				"locked_description": "宜公诸同好一次。"
+				"locked_description": "宜公諸同好一次。"
 			}
 		},
 		"dragAndDrop": {
@@ -4235,7 +4235,7 @@
 			"botExists": "靈偶 “${botname}” 已存，請更名。",
 			"unsavedChanges": "尚有未存之變，定欲棄之？",
 			"confirmDeleteBot": "定欲刪靈偶「${botname}」？此舉不可逆。",
-			"invalidJsonConfig": "JSON 枢機無效：${error}",
+			"invalidJsonConfig": "JSON 樞機無效：${error}",
 			"httpError": "HTTP 錯誤",
 			"beforeUnload": "尚有未存之變，定欲離？"
 		},
@@ -4324,7 +4324,7 @@
 			"start_bot": {
 				"name": "現身於群議之地",
 				"description": "召君之化身於群議之界。",
-				"locked_description": "宜启群议之仆一次。"
+				"locked_description": "宜啓群議之僕一次。"
 			}
 		},
 		"home_function_buttons": {
@@ -4454,7 +4454,7 @@
 				"title": "常用"
 			},
 			"network": {
-				"title": "互联"
+				"title": "互聯"
 			}
 		},
 		"nav": {
@@ -4787,7 +4787,7 @@
 			"cabinetsEmpty": "暫無公開藏經閣",
 			"cabinetsFailed": "藏經閣取錄未遂：${error}",
 			"followingTitle": "關注",
-			"followersTitle": "擁趸",
+			"followersTitle": "擁躉",
 			"albums": {
 				"create": "立相冊",
 				"edit": "修相冊",
@@ -4804,7 +4804,7 @@
 				"defaultName": "常制相冊"
 			},
 			"stats": {
-				"followers": "擁趸",
+				"followers": "擁躉",
 				"following": "關注",
 				"group": {
 					"aria-label": "簿牒統計"
@@ -5086,7 +5086,7 @@
 			"submit": "允轉述"
 		},
 		"quote": {
-			"quoting": "方引用",
+			"quoting": "方引",
 			"clear": "否引用",
 			"viewOriginal": "覽原信"
 		},
@@ -5099,7 +5099,7 @@
 			"feed": "暫無言，且去結交",
 			"profilePosts": "暫無言",
 			"following": "尚未結交",
-			"followers": "尚無擁趸",
+			"followers": "尚無擁躉",
 			"notifications": "暫無通知",
 			"saved": "暫無收藏",
 			"drafts": "暫無底稿",
@@ -5151,7 +5151,7 @@
 				"title": "藏經閣"
 			},
 			"asset": {
-				"title": "资产"
+				"title": "資產"
 			}
 		},
 		"upload": "傳",
@@ -5278,18 +5278,18 @@
 		"achievements": {
 			"install_script": {
 				"name": "如虎添翼",
-				"description": "神通既得，更上层楼。",
-				"locked_description": "宜植入神器于浏览器一次。"
+				"description": "神通既得，更上層樓。",
+				"locked_description": "宜植入神器于瀏覽器一次。"
 			},
 			"run_js": {
-				"name": "念念有词",
+				"name": "念念有詞",
 				"description": "奉吾之名，敕令天地。",
-				"locked_description": "宜以JS之术驱浏览器一次。"
+				"locked_description": "宜以JS之術驅瀏覽器一次。"
 			},
 			"star_fount": {
-				"name": "源启之星",
-				"description": "于技府赞之，感君之助。",
-				"locked_description": "宜访技府之仓，以星耀之。"
+				"name": "源啓之星",
+				"description": "于技府贊之，感君之助。",
+				"locked_description": "宜訪技府之倉，以星耀之。"
 			}
 		},
 		"home_function_buttons": {
@@ -5322,9 +5322,9 @@
 		"initialMessageLink": "觸以觀之",
 		"achievements": {
 			"invoke_shell_assist": {
-				"name": "虚室生白",
+				"name": "虛室生白",
 				"description": "幽暗之中，一念通神。",
-				"locked_description": "宜于终端召唤辅佐一次。"
+				"locked_description": "宜于終端召喚輔佐一次。"
 			}
 		},
 		"home_function_buttons": {
@@ -5337,10 +5337,10 @@
 				}
 			},
 			"dev": {
-				"title": "开发",
+				"title": "開發",
 				"sub_items": {
 					"terminalAssist": {
-						"title": "终端辅助"
+						"title": "終端輔助"
 					}
 				}
 			}
@@ -5400,9 +5400,9 @@
 		"title": "案頭靈寵",
 		"description": "化君之泉源人物為桌面靈寵，與君互動，生趣盎然。",
 		"launcherCard": {
-			"title": "案上宠",
+			"title": "案上寵",
 			"buttons": {
-				"start": "启之"
+				"start": "啓之"
 			}
 		},
 		"charSelectDropdown": {
@@ -5412,23 +5412,23 @@
 			"placeholder": "尋角色…"
 		},
 		"runningCard": {
-			"title": "行宠",
-			"noPets": "尚无行宠",
+			"title": "行寵",
+			"noPets": "尚無行寵",
 			"buttons": {
 				"stop": "止之"
 			}
 		},
 		"toasts": {
-			"started": "宠 '${charname}' 已启。",
-			"stopped": "宠 '${charname}' 已止。",
-			"start_failed": "宠 '${charname}' 启之不成：${message}",
-			"stop_failed": "宠 '${charname}' 止之不成：${message}"
+			"started": "寵 '${charname}' 已啓。",
+			"stopped": "寵 '${charname}' 已止。",
+			"start_failed": "寵 '${charname}' 啓之不成：${message}",
+			"stop_failed": "寵 '${charname}' 止之不成：${message}"
 		},
 		"achievements": {
 			"start_deskpet": {
-				"name": "案上新宠",
-				"description": "野有角色，忽現君之几案。",
-				"locked_description": "宜先启动一次案上之宠。"
+				"name": "案上新寵",
+				"description": "野有角色，忽現君之幾案。",
+				"locked_description": "宜先啓動一次案上之寵。"
 			}
 		},
 		"home_char_interfaces": {
@@ -5592,8 +5592,8 @@
 		},
 		"achievements": {
 			"change_theme": {
-				"name": "焕然一新",
-				"description": "改换门庭，气象万千。",
+				"name": "煥然一新",
+				"description": "改換門庭，氣象萬千。",
 				"locked_description": "宜更易面貌一次。"
 			}
 		},
@@ -5653,7 +5653,7 @@
 	"userSettings": {
 		"title": "客樞機",
 		"PageTitle": "客樞機",
-		"description": "此乃君之靜室，可理身份之細，護行蹤之秘，觀所聯之器。",
+		"description": "此乃君之靜室，可理身份之細，護行蹤之祕，觀所聯之器。",
 		"shell": {
 			"unauthorized": "須先登臺。",
 			"responseNotJson": "伺服所返莫之能辨。",
@@ -5760,7 +5760,7 @@
 			"neverUsed": "未嘗用",
 			"noKeysForUser": "未見符鑰之籍。",
 			"keyNotFound": "未見此符鑰。",
-			"verifyMissingApiKey": "须具 API 符鑰。",
+			"verifyMissingApiKey": "須具 API 符鑰。",
 			"errorDescriptionRequired": "述不可缺。",
 			"createSuccess": "符鑰創成。",
 			"refreshButton": {
@@ -5876,7 +5876,7 @@
 				"title": "常用"
 			},
 			"network": {
-				"title": "互联"
+				"title": "互聯"
 			}
 		}
 	},
@@ -5998,10 +5998,10 @@
 		},
 		"home_function_buttons": {
 			"network": {
-				"title": "互联",
+				"title": "互聯",
 				"sub_items": {
 					"subfounts": {
-						"title": "子设备"
+						"title": "子設備"
 					}
 				}
 			}
@@ -6016,24 +6016,24 @@
 		"locked": "尚未功成",
 		"toast_title": "功成！",
 		"error": {
-			"load_failed": "誊录功绩不成：${message}",
-			"unlock_failed": "启功勋不成：${error}"
+			"load_failed": "謄錄功績不成：${message}",
+			"unlock_failed": "啓功勳不成：${error}"
 		},
 		"achievements": {
 			"open_achievements_page": {
 				"name": "登堂入室",
 				"description": "功過是非，皆在此中。",
-				"locked_description": "宜启功绩之页。"
+				"locked_description": "宜啓功績之頁。"
 			},
 			"relock_by_clicking": {
-				"name": "岂有此理？",
-				"description": "已启之功，屡击而复锁之，何也？",
+				"name": "豈有此理？",
+				"description": "已啓之功，屢擊而復鎖之，何也？",
 				"locked_description": "？？？"
 			}
 		},
 		"home_function_buttons": {
 			"main": {
-				"title": "功绩"
+				"title": "功績"
 			}
 		}
 	},
@@ -6184,13 +6184,13 @@
 				"aria-label": "畫筆粗細"
 			},
 			"crop": "裁",
-			"exportFailed": "图片导出失败",
-			"image": "修",
-			"loadFailed": "图片加载失败",
+			"exportFailed": "圖像匯出未遂",
+			"image": "修圖",
+			"loadFailed": "圖像取錄未遂",
 			"mosaic": "打碼",
 			"redo": "重做",
 			"reset": "重置",
-			"undo": "撤销"
+			"undo": "撤"
 		},
 		"common": {
 			"cancel": "止",
@@ -6429,12 +6429,12 @@
 			},
 			"linkUrl": "連結之址",
 			"foldCode": {
-				"aria-label": "折叠代码块",
-				"title": "折叠代码块"
+				"aria-label": "藏此碼塊",
+				"title": "藏此碼塊"
 			},
 			"expandCode": {
-				"aria-label": "展开代码块",
-				"title": "展开代码块"
+				"aria-label": "展此碼塊",
+				"title": "展此碼塊"
 			}
 		}
 	},
@@ -6518,10 +6518,10 @@
 				"all": "盡閉標籤"
 			},
 			"generating": {
-				"aria-label": "「${title}」正在生成"
+				"aria-label": "「${title}」方生成"
 			},
 			"unread": {
-				"aria-label": "「${title}」有未读消息"
+				"aria-label": "「${title}」有未讀訊息"
 			}
 		},
 		"newTab": {
@@ -6537,15 +6537,15 @@
 			"goodAgent": "何以成一善 agent？",
 			"none": "未擇角色",
 			"recommend": {
-				"main": "薦角色 ${charname} 未裝，願安裝乎？",
-				"aria": "安裝角色之薦",
+				"main": "薦角色 ${charname} 未裝，願裝之乎？",
+				"aria": "角色之薦",
 				"dismiss": "闔之",
-				"install": "安裝",
+				"install": "裝",
 				"installed": "已裝角色 ${charname}"
 			}
 		},
 		"composer": {
-			"shellDefault": "默認",
+			"shellDefault": "常制",
 			"sendButton": {
 				"aria-label": "傳訊"
 			},
@@ -6562,7 +6562,7 @@
 			}
 		},
 		"aiSource": {
-			"panelTitle": "理 AI 源顯示",
+			"panelTitle": "理 AI 源之示",
 			"charOwn": "角色自有",
 			"manage": "理 AI 源…"
 		},
@@ -6575,28 +6575,28 @@
 		"message": {
 			"actions": {
 				"copy": {
-					"aria-label": "複製",
-					"title": "複製"
+					"aria-label": "謄錄",
+					"title": "謄錄"
 				},
 				"edit": {
-					"aria-label": "編輯",
-					"title": "編輯"
+					"aria-label": "修文",
+					"title": "修文"
 				},
 				"saveGist": {
-					"aria-label": "保存到 gist",
-					"title": "保存到 gist"
+					"aria-label": "存至 gist",
+					"title": "存至 gist"
 				},
 				"downloadHtml": {
-					"aria-label": "下载 HTML",
-					"title": "下载 HTML"
+					"aria-label": "下載 HTML",
+					"title": "下載 HTML"
 				}
 			},
 			"copied": "已鈔至剪貼板",
 			"edit": {
 				"save": "儲存",
-				"cancel": "取消",
+				"cancel": "罷",
 				"ariaLabel": {
-					"aria-label": "編輯訊之原文"
+					"aria-label": "修札之原文"
 				}
 			},
 			"feedback": {
@@ -6632,29 +6632,29 @@
 			},
 			"remove": {
 				"aria-label": "去附件",
-				"title": "移除附件"
+				"title": "去附件"
 			},
 			"drop": "釋以加附件",
 			"tooLarge": "附件 ${name} 逾 10MB 之限",
 			"edit": {
-				"aria-label": "编辑图片",
-				"title": "编辑图片"
+				"aria-label": "修圖",
+				"title": "修圖"
 			},
 			"preview": {
-				"aria-label": "预览附件",
-				"title": "预览附件"
+				"aria-label": "預覽附件",
+				"title": "預覽附件"
 			},
 			"download": {
-				"aria-label": "下载附件",
-				"title": "下载附件"
+				"aria-label": "下載附件",
+				"title": "下載附件"
 			},
 			"description": {
-				"aria-label": "附件说明",
-				"placeholder": "添加说明…"
+				"aria-label": "附件之釋",
+				"placeholder": "補其釋…"
 			},
-			"tooLargeTotal": "附件总大小超过 ${limit} 限制",
-			"reading": "正在读取…",
-			"failed": "读取附件 ${name} 失败"
+			"tooLargeTotal": "附件總大小超過 ${limit} 限制",
+			"reading": "取錄中…",
+			"failed": "取附件 ${name} 未遂"
 		},
 		"error": {
 			"generic": "出錯矣：${error}",
@@ -6710,7 +6710,7 @@
 			"searchContent": "索文",
 			"editFile": "修檔",
 			"writeFile": "寫檔",
-			"setWorkdir": "定作業目錄",
+			"setWorkdir": "定作業之所",
 			"listMachines": "列機器",
 			"preload": "載文脈",
 			"viewFiles": "觀檔",
@@ -6769,7 +6769,7 @@
 		},
 		"generation": {
 			"reconnect": {
-				"aria-label": "重新连接"
+				"aria-label": "重新連接"
 			}
 		}
 	},
@@ -6784,18 +6784,18 @@
 				"title": "gist 文庫"
 			},
 			"asset": {
-				"title": "资产"
+				"title": "資產"
 			}
 		},
 		"home_drag_in_handlers": {
 			"handleMarkdownDrop": {
-				"description": "创建或预览拖入的 Markdown 文档"
+				"description": "立或預覽拖入之 Markdown 文牘"
 			}
 		},
 		"list": {
 			"new": "新作 gist",
 			"empty": "尚無 gist，可點右上「新作 gist」以建其首。",
-			"updatedAt": "更新於",
+			"updatedAt": "更於",
 			"selectAll": "盡選",
 			"noneSelected": "未選",
 			"selectedCount": "已選 ${count} 者",
@@ -6907,10 +6907,10 @@
 			"settings": "樞機"
 		},
 		"actions": {
-			"refreshData": "更新數據",
+			"refreshData": "重覽數據",
 			"refresh": {
-				"title": "更新",
-				"aria-label": "更新數據"
+				"title": "重覽",
+				"aria-label": "重覽數據"
 			},
 			"close": {
 				"title": "閉",
@@ -7095,9 +7095,13 @@
 			}
 		},
 		"attachments": {
-			"preview": "预览文本文件",
-			"unavailable": "附件数据不可用",
-			"truncated": "预览已截断，请下载查看完整文件。"
+			"preview": "預覽文牘",
+			"unavailable": "不得附件",
+			"truncated": "預覽已截，請下載全文。",
+			"aria-label": "附件之釋",
+			"placeholder": "補其釋…",
+			"reading": "取錄中…",
+			"failed": "取附件 ${name} 未遂"
 		}
 	}
 }

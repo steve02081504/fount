@@ -628,7 +628,7 @@
 			}
 		},
 		"telegrambot": {
-			"alreadyRunning": null
+			"alreadyRunning": "De Telegram-bot ${botname} draait al"
 		}
 	},
 	"installer_wait_screen": {
@@ -6190,7 +6190,7 @@
 				"aria-label": "Penseeldikte"
 			},
 			"crop": "Bijsnijden",
-			"exportFailed": null,
+			"exportFailed": "Exporteren van de afbeelding mislukt",
 			"image": "Bewerken",
 			"mosaic": "Verpixelen"
 		},
@@ -6429,7 +6429,15 @@
 				},
 				"aria-label": "Plakken"
 			},
-			"linkUrl": "Koppelingsadres"
+			"linkUrl": "Koppelingsadres",
+			"foldCode": {
+				"aria-label": "Codeblok samenvouwen",
+				"title": "Codeblok samenvouwen"
+			},
+			"expandCode": {
+				"aria-label": "Codeblok uitvouwen",
+				"title": "Codeblok uitvouwen"
+			}
 		}
 	},
 	"pro_cancel_screen": {
@@ -7048,6 +7056,11 @@
 				"rate": "Cache ≈${rate}%",
 				"summary": "Geschat hergebruik van promptvoorvoegsel ${rate}% (tekens)"
 			}
+		},
+		"attachments": {
+			"preview": "Tekstbestand bekijken",
+			"unavailable": "Bijlage niet beschikbaar",
+			"truncated": "Voorbeeld ingekort. Download het volledige bestand om de rest te zien."
 		}
 	}
 }

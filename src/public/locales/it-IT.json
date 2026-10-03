@@ -628,7 +628,7 @@
 			}
 		},
 		"telegrambot": {
-			"alreadyRunning": null
+			"alreadyRunning": "Il bot Telegram ${botname} è già in esecuzione"
 		}
 	},
 	"installer_wait_screen": {
@@ -6190,6 +6190,7 @@
 				"aria-label": "Dimensione del pennello"
 			},
 			"crop": "Ritaglia",
+			"exportFailed": "Esportazione dell’immagine non riuscita",
 			"image": "modificare",
 			"mosaic": "Pixelizza"
 		},
@@ -6428,7 +6429,15 @@
 				},
 				"aria-label": "Incolla"
 			},
-			"linkUrl": "Indirizzo del collegamento"
+			"linkUrl": "Indirizzo del collegamento",
+			"foldCode": {
+				"aria-label": "Comprimi blocco di codice",
+				"title": "Comprimi blocco di codice"
+			},
+			"expandCode": {
+				"aria-label": "Espandi blocco di codice",
+				"title": "Espandi blocco di codice"
+			}
 		}
 	},
 	"pro_cancel_screen": {
@@ -7047,6 +7056,11 @@
 				"rate": "Cache ≈${rate}%",
 				"summary": "Riutilizzo stimato del prefisso del prompt ${rate}% (caratteri)"
 			}
+		},
+		"attachments": {
+			"preview": "Anteprima file di testo",
+			"unavailable": "Allegato non disponibile",
+			"truncated": "Anteprima troncata. Scarica il file completo per vedere il resto."
 		}
 	}
 }

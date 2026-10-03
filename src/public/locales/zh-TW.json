@@ -627,7 +627,7 @@
 			}
 		},
 		"telegrambot": {
-			"alreadyRunning": null
+			"alreadyRunning": "Telegram Bot ${botname} 已在執行"
 		}
 	},
 	"installer_wait_screen": {
@@ -6183,7 +6183,7 @@
 				"aria-label": "畫筆粗細"
 			},
 			"crop": "裁剪",
-			"exportFailed": null,
+			"exportFailed": "圖片匯出失敗",
 			"image": "編輯",
 			"mosaic": "打碼"
 		},
@@ -6422,7 +6422,15 @@
 				},
 				"aria-label": "貼上"
 			},
-			"linkUrl": "連結位址"
+			"linkUrl": "連結位址",
+			"foldCode": {
+				"aria-label": "折疊程式碼區塊",
+				"title": "折疊程式碼區塊"
+			},
+			"expandCode": {
+				"aria-label": "展開程式碼區塊",
+				"title": "展開程式碼區塊"
+			}
 		}
 	},
 	"pro_cancel_screen": {
@@ -7041,6 +7049,11 @@
 				"rate": "快取率 ≈${rate}%",
 				"summary": "Prompt 前綴複用估算 ${rate}%（字元計）"
 			}
+		},
+		"attachments": {
+			"preview": "預覽文字檔",
+			"unavailable": "附件無法取得",
+			"truncated": "預覽已截斷，請下載完整檔案查看。"
 		}
 	}
 }

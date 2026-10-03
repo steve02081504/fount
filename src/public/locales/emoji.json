@@ -6427,14 +6427,14 @@
 				},
 				"aria-label": "📥"
 			},
-			"linkUrl": "🔗📍",
+			"linkUrl": "🔗📍 ／ 🔽💻",
 			"foldCode": {
-				"aria-label": "折叠代码块",
-				"title": "折叠代码块"
+				"aria-label": "🔽💻",
+				"title": "🔽💻"
 			},
 			"expandCode": {
-				"aria-label": "展开代码块",
-				"title": "展开代码块"
+				"aria-label": "▶️💻",
+				"title": "▶️💻"
 			}
 		}
 	},
@@ -7095,9 +7095,9 @@
 			}
 		},
 		"attachments": {
-			"preview": "预览文本文件",
-			"unavailable": "附件数据不可用",
-			"truncated": "预览已截断，请下载查看完整文件。"
+			"preview": "👁️📄",
+			"unavailable": "📎❌",
+			"truncated": "✂️👁️📄 ➕ ⬇️✅"
 		}
 	}
 }

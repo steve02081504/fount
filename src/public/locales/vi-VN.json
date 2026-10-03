@@ -628,7 +628,7 @@
 			}
 		},
 		"telegrambot": {
-			"alreadyRunning": null
+			"alreadyRunning": "Bot ${botname} trên Telegram đang chạy rồi"
 		}
 	},
 	"installer_wait_screen": {
@@ -6184,7 +6184,7 @@
 				"aria-label": "Độ dày cọ"
 			},
 			"crop": "Cắt",
-			"exportFailed": null,
+			"exportFailed": "Xuất ảnh thất bại",
 			"image": "Chỉnh sửa",
 			"mosaic": "Che pixel"
 		},
@@ -6423,7 +6423,15 @@
 				},
 				"aria-label": "Dán"
 			},
-			"linkUrl": "Địa chỉ liên kết"
+			"linkUrl": "Địa chỉ liên kết",
+			"foldCode": {
+				"aria-label": "Thu gọn khối mã",
+				"title": "Thu gọn khối mã"
+			},
+			"expandCode": {
+				"aria-label": "Mở rộng khối mã",
+				"title": "Mở rộng khối mã"
+			}
 		}
 	},
 	"pro_cancel_screen": {
@@ -7042,6 +7050,11 @@
 				"rate": "Tỷ lệ đệm ≈${rate}%",
 				"summary": "Ước tính tái sử dụng tiền tố prompt ${rate}% (theo ký tự)"
 			}
+		},
+		"attachments": {
+			"preview": "Xem trước tệp văn bản",
+			"unavailable": "Tệp đính kèm không khả dụng",
+			"truncated": "Bản xem trước đã bị cắt. Tải tệp đầy đủ để xem phần còn lại."
 		}
 	}
 }
