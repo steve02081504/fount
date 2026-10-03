@@ -92,6 +92,25 @@
 			]
 		},
 		{
+			"name": "i18n_copy",
+			"expected": 600,
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/checks/test/i18n_copy.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/checks/i18n_copy.mjs",
+				"src/scripts/checks/test/i18n_copy.test.mjs",
+				"src/public/locales/*.json"
+			]
+		},
+		{
 			"name": "i18n_refs",
 			"expected": "2s",
 			"triggerFilter": {
@@ -161,6 +180,18 @@
 			],
 			"triggers": [
 				".esh/commands/update_locale_data.py"
+			]
+		},
+		{
+			"name": "locale_copy_sample",
+			"expected": 300,
+			"run": [
+				"python",
+				".esh/commands/locale_copy_sample.py",
+				"--self-test"
+			],
+			"triggers": [
+				".esh/commands/locale_copy_sample.py"
 			]
 		},
 		{
