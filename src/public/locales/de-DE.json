@@ -6186,7 +6186,9 @@
 			"crop": "Zuschneiden",
 			"exportFailed": "Export des Bildes fehlgeschlagen",
 			"image": "Bearbeiten",
-			"mosaic": "Verpixeln"
+			"loadFailed": null,
+			"mosaic": "Verpixeln",
+			"redo": null
 		},
 		"common": {
 			"cancel": "Abbrechen",

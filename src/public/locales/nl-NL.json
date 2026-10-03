@@ -6192,6 +6192,7 @@
 			"crop": "Bijsnijden",
 			"exportFailed": "Exporteren van de afbeelding mislukt",
 			"image": "Bewerken",
+			"loadFailed": null,
 			"mosaic": "Verpixelen"
 		},
 		"common": {

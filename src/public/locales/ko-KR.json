@@ -6186,6 +6186,7 @@
 			"crop": "자르기",
 			"exportFailed": "이미지 내보내기에 실패했습니다",
 			"image": "편집",
+			"loadFailed": null,
 			"mosaic": "모자이크"
 		},
 		"common": {

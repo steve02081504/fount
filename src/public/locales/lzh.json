@@ -7097,11 +7097,7 @@
 		"attachments": {
 			"preview": "預覽文牘",
 			"unavailable": "不得附件",
-			"truncated": "預覽已截，請下載全文。",
-			"aria-label": "附件之釋",
-			"placeholder": "補其釋…",
-			"reading": "取錄中…",
-			"failed": "取附件 ${name} 未遂"
+			"truncated": "預覽已截，請下載全文。"
 		}
 	}
 }

@@ -6192,7 +6192,9 @@
 			"crop": "Recortar",
 			"exportFailed": "Falha ao exportar a imagem",
 			"image": "Editar",
-			"mosaic": "Pixelizar"
+			"loadFailed": null,
+			"mosaic": "Pixelizar",
+			"redo": null
 		},
 		"common": {
 			"cancel": "Cancelar",

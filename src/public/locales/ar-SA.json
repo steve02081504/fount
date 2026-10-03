@@ -6196,7 +6196,9 @@
 			"crop": "اقتصاص",
 			"exportFailed": "فشل تصدير الصورة",
 			"image": "تعديل",
-			"mosaic": "تمويه"
+			"loadFailed": null,
+			"mosaic": "تمويه",
+			"redo": null
 		},
 		"common": {
 			"cancel": "إلغاء",

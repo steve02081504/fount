@@ -6192,7 +6192,9 @@
 			"crop": "Ritaglia",
 			"exportFailed": "Esportazione dell’immagine non riuscita",
 			"image": "modificare",
-			"mosaic": "Pixelizza"
+			"loadFailed": null,
+			"mosaic": "Pixelizza",
+			"redo": null
 		},
 		"common": {
 			"cancel": "Annulla",

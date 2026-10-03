@@ -6194,7 +6194,9 @@
 			"crop": "Обрезать",
 			"exportFailed": "Не удалось экспортировать изображение",
 			"image": "Редактировать",
-			"mosaic": "Пикселизация"
+			"loadFailed": null,
+			"mosaic": "Пикселизация",
+			"redo": null
 		},
 		"common": {
 			"cancel": "Отмена",

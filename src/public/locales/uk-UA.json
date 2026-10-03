@@ -6186,7 +6186,9 @@
 			"crop": "Обрізати",
 			"exportFailed": "Не вдалося експортувати зображення",
 			"image": "Редагувати",
-			"mosaic": "Пікселізація"
+			"loadFailed": null,
+			"mosaic": "Пікселізація",
+			"redo": null
 		},
 		"common": {
 			"cancel": "Скасувати",

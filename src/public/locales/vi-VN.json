@@ -6186,7 +6186,9 @@
 			"crop": "Cắt",
 			"exportFailed": "Xuất ảnh thất bại",
 			"image": "Chỉnh sửa",
-			"mosaic": "Che pixel"
+			"loadFailed": null,
+			"mosaic": "Che pixel",
+			"redo": null
 		},
 		"common": {
 			"cancel": "Hủy bỏ",

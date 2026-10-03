@@ -6186,7 +6186,9 @@
 			"crop": "क्रॉप",
 			"exportFailed": "छवि निर्यात करने में विफल",
 			"image": "संपादित करें",
-			"mosaic": "पिक्सेलेट"
+			"loadFailed": null,
+			"mosaic": "पिक्सेलेट",
+			"redo": null
 		},
 		"common": {
 			"cancel": "रद्द करें",

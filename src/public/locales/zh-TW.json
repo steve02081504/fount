@@ -6185,7 +6185,9 @@
 			"crop": "裁剪",
 			"exportFailed": "圖片匯出失敗",
 			"image": "編輯",
-			"mosaic": "打碼"
+			"loadFailed": null,
+			"mosaic": "打碼",
+			"redo": null
 		},
 		"common": {
 			"cancel": "取消",

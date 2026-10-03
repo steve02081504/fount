@@ -6186,7 +6186,9 @@
 			"crop": "Klippa",
 			"exportFailed": "Mistókst að flytja myndina út",
 			"image": "Breyta",
-			"mosaic": "Pixla"
+			"loadFailed": null,
+			"mosaic": "Pixla",
+			"redo": null
 		},
 		"common": {
 			"cancel": "Hætta við",
