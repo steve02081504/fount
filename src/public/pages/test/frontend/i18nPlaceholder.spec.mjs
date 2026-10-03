@@ -33,7 +33,7 @@ function captureWarnings(modulePage, key, params) {
 	}, { key, params })
 }
 
-test('geti18n warns [i18n:missing] when a placeholder is not provided', async ({ modulePage }) => {
+test('geti18n warns when a placeholder is not provided', async ({ modulePage }) => {
 	const warnings = await captureWarnings(modulePage, 'code.error.generic', {})
 	expect(warnings.some(line => line.includes('[i18n:missing]') && line.includes('error'))).toBe(true)
 })
