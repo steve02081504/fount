@@ -439,14 +439,24 @@ export async function openGroupSettingsPage(page, baseUrl, groupId) {
 }
 /**
  * 通过共享浮动 emoji picker（`#fount-shared-emoji-picker`）选取 Unicode 表情。
+ *
+ * picker 只挂载滚动视口内的分区与行，目标表情在其他分组时要先滚动到它——
+ * 直接按 `[data-emoji]` 查会等到超时（分区是差量挂载的，不是渲染慢）。
  * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
- * @param {string} [emoji='👍'] - 要选中的 emoji。
+ * @param {string} emoji - 要选中的 emoji。
  * @returns {Promise<void>} 无返回值。
  */
-export async function pickEmojiFromPicker(page, emoji = '👍') {
+export async function pickEmojiFromPicker(page, emoji) {
 	const picker = page.locator('#fount-shared-emoji-picker')
 	await expect(picker).toBeVisible({ timeout: ms('30s') })
-	await picker.locator(`[data-emoji="${emoji}"]`).first().click()
+	await expect.poll(async () => {
+		const button = picker.locator(`[data-emoji="${emoji}"]`)
+		if (await button.count()) return true
+		// picker 只挂载视口内的分区与行：没找到就往下滚一屏，滚到底仍找不到才超时。
+		await page.locator('#emoji-scroll').evaluate(element => { element.scrollTop += element.clientHeight })
+		return false
+	}, { timeout: ms('30s') }).toBe(true)
+	await picker.locator(`[data-emoji="${emoji}"]`).first().click({ timeout: ms('30s') })
 	await expect(picker).toHaveCount(0, { timeout: ms('10s') })
 }
 
