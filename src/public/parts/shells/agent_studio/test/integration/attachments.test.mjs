@@ -1,5 +1,5 @@
 /* global Deno */
-/** Attachment durability, deduplication, reachability and retention integration. */
+/** 测试附件的持久性、去重、可达性与保留策略。 */
 import { Buffer } from 'node:buffer'
 import fs from 'node:fs'
 import os from 'node:os'

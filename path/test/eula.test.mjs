@@ -98,7 +98,7 @@ Deno.test({
 	name: 'runner unblocks existing path scripts before loading locale',
 	ignore: Deno.build.os !== 'windows',
 	/**
-	 *
+	 * 确认现有 path 脚本会先完成安装，再加载语言并显示许可协议。
 	 */
 	async fn() {
 		const dir = await mkdtemp(join(tmpdir(), 'fount-runner-zone-'))
