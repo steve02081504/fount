@@ -94,6 +94,54 @@ Deno.test('runner installs fount before loading locale and prompting EULA', asyn
 	assertMarkerOrder(powerShellFlow, 'Open-FountInstallWaitPage', 'Confirm-FountEula', 'pwsh: wait/install before EULA prompt')
 })
 
+Deno.test({
+	name: 'runner unblocks existing path scripts before loading locale',
+	ignore: Deno.build.os !== 'windows',
+	/**
+	 *
+	 */
+	async fn() {
+		const dir = await mkdtemp(join(tmpdir(), 'fount-runner-zone-'))
+		try {
+			await mkdir(join(dir, 'data'), { recursive: true })
+			await mkdir(join(dir, 'path', 'src', 'cmd'), { recursive: true })
+			await writeFile(join(dir, 'data', 'config.json'), '{}')
+			const result = await pwsh_exec(`
+$ErrorActionPreference = 'Stop'
+$env:PSExecutionPolicyPreference = 'Unrestricted'
+$root = '${dir.replaceAll('\'', '\'\'')}'
+$runner = '${runnerPs1Path.replaceAll('\'', '\'\'')}'
+$ast = [System.Management.Automation.Language.Parser]::ParseFile($runner, [ref]$null, [ref]$null)
+$import = $ast.Find({ param($node) $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq 'Import-FountLocale' }, $true)
+Invoke-Expression $import.Extent.Text
+$scripts = @('path/src/i18n.ps1', 'path/src/eula.ps1', 'path/fount.ps1', 'path/src/cmd/nop.ps1')
+foreach ($relative in $scripts) {
+	$file = Join-Path $root $relative
+	Set-Content -LiteralPath $file -Value 'if (Get-Item -LiteralPath $PSCommandPath -Stream Zone.Identifier -ErrorAction SilentlyContinue) { throw "loaded blocked script" }'
+	Set-Content -LiteralPath $file -Stream Zone.Identifier -Value "[ZoneTransfer]\nZoneId=3"
+}
+$unrelated = Join-Path $root 'download.txt'
+Set-Content -LiteralPath $unrelated -Value 'outside path'
+Set-Content -LiteralPath $unrelated -Stream Zone.Identifier -Value "[ZoneTransfer]\nZoneId=3"
+Import-FountLocale $root
+if ((Get-ExecutionPolicy) -ne 'Bypass') { throw 'runner did not set process execution policy before loading scripts' }
+foreach ($relative in $scripts) {
+	$file = Join-Path $root $relative
+	if (Get-Item -LiteralPath $file -Stream Zone.Identifier -ErrorAction SilentlyContinue) { throw "still blocked: $relative" }
+}
+if (-not (Get-Item -LiteralPath $unrelated -Stream Zone.Identifier -ErrorAction SilentlyContinue)) { throw 'unrelated download was unblocked' }
+Import-FountLocale $root
+Write-Output 'UNBLOCKED'
+`)
+			assertEquals(result.code, 0, result.stderr || result.stdout)
+			assertStringIncludes(result.stdout, 'UNBLOCKED')
+		}
+		finally {
+			await rm(dir, { recursive: true, force: true })
+		}
+	},
+})
+
 Deno.test('Get-I18n loads eula.prompt from the fount locale tree', async () => {
 	const zhCnLocale = JSON.parse(await readFile(zhCnPath, 'utf8'))
 	const expectedPrompt = zhCnLocale.fountConsole.path.eula.prompt

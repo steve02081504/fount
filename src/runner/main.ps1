@@ -325,6 +325,8 @@ function Remove-FountAfterEulaDecline {
 
 function Import-FountLocale([string]$Dir) {
 	$script:FOUNT_DIR = $Dir
+	$env:PSExecutionPolicyPreference = 'Bypass'
+	Get-ChildItem -LiteralPath (Join-Path $Dir 'path') -Recurse -File -Filter '*.ps1' -ErrorAction SilentlyContinue | Unblock-File -ErrorAction SilentlyContinue
 	. (Join-Path $Dir 'path/src/i18n.ps1')
 	. (Join-Path $Dir 'path/src/eula.ps1')
 }
