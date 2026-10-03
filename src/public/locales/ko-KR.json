@@ -626,6 +626,9 @@
 					"protocolHandlerFailed": "`fount://` 프로토콜 핸들러를 제거하지 못했습니다: ${message}"
 				}
 			}
+		},
+		"telegrambot": {
+			"alreadyRunning": null
 		}
 	},
 	"installer_wait_screen": {

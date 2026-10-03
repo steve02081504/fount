@@ -626,6 +626,9 @@
 					"protocolHandlerFailed": "Не вдалося видалити обробник протоколу `fount://`: ${message}"
 				}
 			}
+		},
+		"telegrambot": {
+			"alreadyRunning": null
 		}
 	},
 	"installer_wait_screen": {
@@ -6181,6 +6184,7 @@
 				"aria-label": "Розмір пензлика"
 			},
 			"crop": "Обрізати",
+			"exportFailed": null,
 			"image": "Редагувати",
 			"mosaic": "Пікселізація"
 		},

@@ -625,6 +625,9 @@
 					"protocolHandlerFailed": "移除 `fount://` 協定處理器失敗：${message}"
 				}
 			}
+		},
+		"telegrambot": {
+			"alreadyRunning": null
 		}
 	},
 	"installer_wait_screen": {
@@ -6180,6 +6183,7 @@
 				"aria-label": "畫筆粗細"
 			},
 			"crop": "裁剪",
+			"exportFailed": null,
 			"image": "編輯",
 			"mosaic": "打碼"
 		},

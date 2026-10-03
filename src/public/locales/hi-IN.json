@@ -626,6 +626,9 @@
 					"protocolHandlerFailed": "`fount://` प्रोटोकॉल हैंडलर को हटाने में विफल: ${message}"
 				}
 			}
+		},
+		"telegrambot": {
+			"alreadyRunning": null
 		}
 	},
 	"installer_wait_screen": {
@@ -6181,6 +6184,7 @@
 				"aria-label": "ब्रश का आकार"
 			},
 			"crop": "क्रॉप",
+			"exportFailed": null,
 			"image": "संपादित करें",
 			"mosaic": "पिक्सेलेट"
 		},

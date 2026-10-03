@@ -626,6 +626,9 @@
 					"protocolHandlerFailed": "Không xóa được trình xử lý giao thức `fount://`: ${message}"
 				}
 			}
+		},
+		"telegrambot": {
+			"alreadyRunning": null
 		}
 	},
 	"installer_wait_screen": {
@@ -6181,6 +6184,7 @@
 				"aria-label": "Độ dày cọ"
 			},
 			"crop": "Cắt",
+			"exportFailed": null,
 			"image": "Chỉnh sửa",
 			"mosaic": "Che pixel"
 		},

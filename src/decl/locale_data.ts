@@ -6390,6 +6390,14 @@ export type LocaleData = {
 				'aria-label': string
 			}
 			linkUrl: string
+			foldCode: {
+				'aria-label': string
+				title: string
+			}
+			expandCode: {
+				'aria-label': string
+				title: string
+			}
 		}
 	}
 	pro_cancel_screen: {
@@ -7047,6 +7055,11 @@ export type LocaleData = {
 				rate: string
 				summary: string
 			}
+		}
+		attachments: {
+			preview: string
+			unavailable: string
+			truncated: string
 		}
 	}
 }

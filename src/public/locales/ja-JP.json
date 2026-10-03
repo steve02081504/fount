@@ -6427,7 +6427,11 @@
 				},
 				"aria-label": "貼り付け"
 			},
-			"linkUrl": "リンクのURL"
+			"linkUrl": "リンクのURL",
+			"foldCode": {
+				"aria-label": null,
+				"title": null
+			}
 		}
 	},
 	"pro_cancel_screen": {

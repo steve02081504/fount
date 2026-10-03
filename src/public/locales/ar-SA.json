@@ -626,6 +626,9 @@
 					"protocolHandlerFailed": "فشل في إزالة معالج البروتوكول `fount://`: ${message}"
 				}
 			}
+		},
+		"telegrambot": {
+			"alreadyRunning": null
 		}
 	},
 	"installer_wait_screen": {
@@ -6191,6 +6194,7 @@
 				"aria-label": "سُمك الفرشاة"
 			},
 			"crop": "اقتصاص",
+			"exportFailed": null,
 			"image": "تعديل",
 			"mosaic": "تمويه"
 		},

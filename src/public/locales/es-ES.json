@@ -626,6 +626,9 @@
 					"protocolHandlerFailed": "No se pudo eliminar el controlador de protocolo `fount://`: ${message}"
 				}
 			}
+		},
+		"telegrambot": {
+			"alreadyRunning": null
 		}
 	},
 	"installer_wait_screen": {
@@ -6187,6 +6190,7 @@
 				"aria-label": "Tamaño del pincel"
 			},
 			"crop": "Recortar",
+			"exportFailed": null,
 			"image": "editar",
 			"mosaic": "Pixelar"
 		},

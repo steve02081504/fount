@@ -626,6 +626,9 @@
 					"protocolHandlerFailed": "Не удалось удалить обработчик протокола `fount://`: `${message}"
 				}
 			}
+		},
+		"telegrambot": {
+			"alreadyRunning": null
 		}
 	},
 	"installer_wait_screen": {

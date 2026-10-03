@@ -626,6 +626,9 @@
 					"protocolHandlerFailed": "Impossibile rimuovere il gestore del protocollo `fount://`: ${message}"
 				}
 			}
+		},
+		"telegrambot": {
+			"alreadyRunning": null
 		}
 	},
 	"installer_wait_screen": {

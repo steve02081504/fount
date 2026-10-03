@@ -504,6 +504,7 @@
 				"alreadyUpToDate": "Já é o mais recente.",
 				"localBranchAhead": "A filial local está à frente da filial remota. Não são necessárias atualizações.",
 				"branchesDiverged": "As filiais locais e remotas foram bifurcadas. Atualização forçada em andamento...",
+				"unrelatedHistories": "Os repositórios local e remoto não têm histórico comum. A forçar atualização…",
 				"notOnBranch": "Fora do branch, mude para 'master'...",
 				"upstreamGoneFallbackMaster": "O ramo remoto «${branch}» foi eliminado; a seguir master em alternativa…",
 				"noUpstreamBranch": "Aviso: sem ramo upstream configurado para '${branch}', a usar '${remote}'.",
@@ -515,8 +516,7 @@
 				"fetchFailedSkippingUpdate": "Não foi possível obter as atualizações do GitHub; atualização ignorada.",
 				"remoteRefUnavailable": "A referência remota '${ref}' não está disponível; sincronização Git ignorada.",
 				"installFailedWinget": "Como a instalação do Winget falhou, o Git não pode ser instalado. Instale-o manualmente.",
-				"installFailedManual": "Não é possível instalar o Git, instale-o manualmente.",
-				"unrelatedHistories": "Os repositórios local e remoto não têm histórico comum. A forçar atualização…"
+				"installFailedManual": "Não é possível instalar o Git, instale-o manualmente."
 			},
 			"deno": {
 				"missing": "Deno não encontrado, instalando automaticamente...",
@@ -626,6 +626,9 @@
 					"protocolHandlerFailed": "Falha ao remover o manipulador de protocolo `fount://`: ${message}"
 				}
 			}
+		},
+		"telegrambot": {
+			"alreadyRunning": null
 		}
 	},
 	"installer_wait_screen": {

@@ -626,6 +626,9 @@
 					"protocolHandlerFailed": "Mistókst að fjarlægja `fount://` samskiptareglur: ${message}"
 				}
 			}
+		},
+		"telegrambot": {
+			"alreadyRunning": null
 		}
 	},
 	"installer_wait_screen": {
@@ -6181,6 +6184,7 @@
 				"aria-label": "Stærð pensils"
 			},
 			"crop": "Klippa",
+			"exportFailed": null,
 			"image": "Breyta",
 			"mosaic": "Pixla"
 		},

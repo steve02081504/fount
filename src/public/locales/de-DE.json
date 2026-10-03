@@ -626,6 +626,9 @@
 					"protocolHandlerFailed": "`fount://`-Protokollhandler konnte nicht entfernt werden: ${message}"
 				}
 			}
+		},
+		"telegrambot": {
+			"alreadyRunning": null
 		}
 	},
 	"installer_wait_screen": {
@@ -6181,6 +6184,7 @@
 				"aria-label": "Pinselgröße"
 			},
 			"crop": "Zuschneiden",
+			"exportFailed": null,
 			"image": "Bearbeiten",
 			"mosaic": "Verpixeln"
 		},
