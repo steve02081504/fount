@@ -8,12 +8,7 @@
 
 world 在 chat 里原先隐含 **单一主机托管**：`homeNodeHash` 不在本机则一律 RPC，主机离线时 world 钩子全部 `REMOTE_UNAVAILABLE`——即使该 world 的工作与主机毫无关系。
 
-但很多 world 根本不需要单一主机。以默认 fount world 为例，它本质上只做两件事：
-
-1. 总结上文（`GetChatLogForViewer` 里裁剪 + AI 摘要）
-2. 给 fount 角色提供有关 chat 前端渲染能力的知识（`GetPrompt`）
-
-这两件事都是**本机视角的**：每台机器给自己托管的角色做总结、注入渲染知识即可，完全允许不同机子运行不同内容、产出不同摘要。
+但很多 world 根本不需要单一主机。例如本机视角的世界规则，只影响当前节点的 viewer 与 prompt，不需要跨节点共享状态。
 
 另一个极端是狼人杀 / 跑团 DM 世界：有隐藏真相（暗牌、狼人身份、DM 的剧本），必须单一权威——这正是 `hosted` 该服务的场景。
 
@@ -25,7 +20,7 @@ world 在 chat 里原先隐含 **单一主机托管**：`homeNodeHash` 不在本
 
 | distribution | 运行位置            | 共享状态               | 隐藏真相               | 典型             |
 | ------------ | ------------------- | ---------------------- | ---------------------- | ---------------- |
-| `local`      | 每个 replica 本机   | 无（各自为政）         | 无                     | 默认 fount world |
+| `local`      | 每个 replica 本机   | 无（各自为政）         | 无                     | 本机视角规则     |
 | `replicated` | 每个 replica 本机   | DAG `world_state` 事件 | 无（共享状态全员可见） | 规则型 RPG       |
 | `hosted`     | `homeNodeHash` 单机 | 主机私有，按需播报     | 有（主机独占）         | 狼人杀 / 跑团 DM |
 
@@ -36,7 +31,6 @@ world 在 chat 里原先隐含 **单一主机托管**：`homeNodeHash` 不在本
 - 每个 replica 用自己安装的同名 world part，在本机执行全部钩子；不发 RPC，不写共享状态。
 - 不同节点甚至允许装**不同实现**的同名 world——效果只影响本机 viewer / prompt，无一致性要求。
 - 未安装该 world 的节点：回退 chat 内置的**极小 world**（`BUILTIN_WORLD`，钩子全透传），chat 正常运转。
-- 默认 fount world（`distribution: 'local'`）：每台机器自己跑摘要、自己注入渲染知识 prompt；主机离线不再影响任何人。
 
 ### replicated：p2p 副本共识世界
 
@@ -144,11 +138,6 @@ world 可向**当前频道**所有本机生成的 char 注入插件活对象（�
 
 ## 示例映射
 
-### 默认 fount world → `local`
-
-- `distribution: 'local'`；摘要与渲染知识本来就是本机语义。
-- 收益：主机离线不再拖垮任何群；每台机器的摘要 AI 源用自己的配置。
-
 ### 规则型 RPG world → `replicated`
 
 - 公共状态：`host.state.set('weather', ...)`、`host.state.set('quest/main/stage', 3)`。
@@ -175,7 +164,7 @@ world 可向**当前频道**所有本机生成的 char 注入插件活对象（�
 | WorldChatHost        | `src/public/parts/shells/chat/src/chat/session/worldHost.mjs`         |
 | world_state reducer  | `src/public/parts/shells/chat/src/chat/dag/reducers/worldState.mjs`   |
 | 入站清扫             | `src/public/parts/shells/chat/src/chat/dag/remoteIngest.mjs`          |
-| 默认 fount world     | `default/templates/user/worlds/fount/main.mjs`                        |
+| 网页输出指南         | `src/public/parts/shells/chat/src/prompt_struct/webOutputGuide.mjs`   |
 | replicated fixture   | `src/public/parts/shells/chat/test/fixtures/worlds/replicated_world/` |
 
 测试：`test/pure/world_distribution_validate.test.mjs`、`test/integration/world_distribution.test.mjs`、`test/integration/world_state.test.mjs`、`test/integration/world_chat_host.test.mjs`（均在 chat shell `test/manifest.json`）。
