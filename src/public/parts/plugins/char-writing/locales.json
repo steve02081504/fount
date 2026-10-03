@@ -30,6 +30,16 @@
 				"插件"
 			]
 		},
+		"ar-SA": {
+			"name": null,
+			"avatar": "https://api.iconify.design/line-md/file-plus.svg",
+			"description": null
+		},
+		"de-DE": {
+			"name": null,
+			"avatar": "https://api.iconify.design/line-md/file-plus.svg",
+			"description": null
+		},
 		"emoji": {
 			"name": "✍️🤓",
 			"avatar": "https://api.iconify.design/line-md/file-plus.svg",
@@ -43,6 +53,83 @@
 				"🧑🎨",
 				"🔌"
 			]
+		},
+		"es-ES": {
+			"name": null,
+			"avatar": "https://api.iconify.design/line-md/file-plus.svg"
+		},
+		"fr-FR": {
+			"name": null,
+			"avatar": "https://api.iconify.design/line-md/file-plus.svg",
+			"description": null
+		},
+		"hi-IN": {
+			"name": null,
+			"avatar": "https://api.iconify.design/line-md/file-plus.svg",
+			"description": null
+		},
+		"is-IS": {
+			"name": null,
+			"avatar": "https://api.iconify.design/line-md/file-plus.svg",
+			"description": null
+		},
+		"it-IT": {
+			"name": null,
+			"avatar": "https://api.iconify.design/line-md/file-plus.svg",
+			"description": null
+		},
+		"ja-JP": {
+			"name": null,
+			"avatar": "https://api.iconify.design/line-md/file-plus.svg"
+		},
+		"ko-KR": {
+			"name": null,
+			"avatar": "https://api.iconify.design/line-md/file-plus.svg",
+			"description": null
+		},
+		"lzh": {
+			"name": "角色写作",
+			"avatar": "https://api.iconify.design/line-md/file-plus.svg",
+			"description": "让角色能够创作新的角色与用户人设",
+			"description_markdown": "**角色写作**插件让角色具备创作新角色与用户人设的能力。它只给出类型声明（decl）与样例目录的路径，角色据此阅读接口与样例，再用文件插件把源码写入用户的部件目录，从而新建角色 / 用户人设。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"角色",
+				"人设",
+				"创作",
+				"插件"
+			]
+		},
+		"nl-NL": {
+			"name": null,
+			"avatar": "https://api.iconify.design/line-md/file-plus.svg",
+			"description": null
+		},
+		"pt-PT": {
+			"name": null,
+			"avatar": "https://api.iconify.design/line-md/file-plus.svg",
+			"description": null
+		},
+		"ru-RU": {
+			"name": null,
+			"avatar": "https://api.iconify.design/line-md/file-plus.svg",
+			"description": null
+		},
+		"uk-UA": {
+			"name": null,
+			"avatar": "https://api.iconify.design/line-md/file-plus.svg",
+			"description": null
+		},
+		"vi-VN": {
+			"name": null,
+			"avatar": "https://api.iconify.design/line-md/file-plus.svg"
+		},
+		"zh-TW": {
+			"name": null,
+			"avatar": "https://api.iconify.design/line-md/file-plus.svg",
+			"description": null
 		}
 	}
 }

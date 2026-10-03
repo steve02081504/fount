@@ -6189,8 +6189,8 @@
 			"loadFailed": "Mistókst að hlaða myndinni",
 			"mosaic": "Pixla",
 			"redo": "Endurgera",
-			"undo": "Afturkalla",
-			"reset": "Endurstilla"
+			"reset": "Endurstilla",
+			"undo": "Afturkalla"
 		},
 		"common": {
 			"cancel": "Hætta við",
@@ -6582,13 +6582,13 @@
 					"aria-label": "Breyta",
 					"title": "Breyta"
 				},
-				"downloadHtml": {
-					"title": "Hlaða niður HTML",
-					"aria-label": "Hlaða niður HTML"
-				},
 				"saveGist": {
-					"title": "Vista í gist",
-					"aria-label": "Vista í gist"
+					"aria-label": "Vista í gist",
+					"title": "Vista í gist"
+				},
+				"downloadHtml": {
+					"aria-label": "Hlaða niður HTML",
+					"title": "Hlaða niður HTML"
 				}
 			},
 			"copied": "Afritað í klippispjald",
@@ -6630,31 +6630,31 @@
 				"aria-label": "Bæta við viðhengi",
 				"title": "Bæta við viðhengi"
 			},
-			"failed": "Mistókst að lesa viðhengið ${name}",
-			"reading": "Les…",
 			"remove": {
 				"aria-label": "Fjarlægja viðhengi",
 				"title": "Fjarlægja viðhengi"
 			},
-			"tooLargeTotal": "Viðhengin fara yfir ${limit} heildarhámark",
 			"drop": "Slepptu til að hengja við",
 			"tooLarge": "Viðhengið ${name} fer yfir 10MB hámark",
-			"description": {
-				"placeholder": "Bættu við lýsingu…",
-				"aria-label": "Lýsing á viðhengi"
-			},
-			"download": {
-				"title": "Hlaða niður viðhengi",
-				"aria-label": "Hlaða niður viðhengi"
-			},
 			"edit": {
-				"title": "Breyta mynd",
-				"aria-label": "Breyta mynd"
+				"aria-label": "Breyta mynd",
+				"title": "Breyta mynd"
 			},
 			"preview": {
-				"title": "Forskoða viðhengi",
-				"aria-label": "Forskoða viðhengi"
-			}
+				"aria-label": "Forskoða viðhengi",
+				"title": "Forskoða viðhengi"
+			},
+			"download": {
+				"aria-label": "Hlaða niður viðhengi",
+				"title": "Hlaða niður viðhengi"
+			},
+			"description": {
+				"aria-label": "Lýsing á viðhengi",
+				"placeholder": "Bættu við lýsingu…"
+			},
+			"tooLargeTotal": "Viðhengin fara yfir ${limit} heildarhámark",
+			"reading": "Les…",
+			"failed": "Mistókst að lesa viðhengið ${name}"
 		},
 		"error": {
 			"generic": "Eitthvað fór úrskeiðis: ${error}",

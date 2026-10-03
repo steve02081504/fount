@@ -6195,8 +6195,8 @@
 			"loadFailed": "Error al cargar la imagen",
 			"mosaic": "Pixelar",
 			"redo": "Rehacer",
-			"undo": "Deshacer",
-			"reset": "Restablecer"
+			"reset": "Restablecer",
+			"undo": "Deshacer"
 		},
 		"common": {
 			"cancel": "Cancelar",
@@ -6588,13 +6588,13 @@
 					"aria-label": "Editar",
 					"title": "Editar"
 				},
-				"downloadHtml": {
-					"title": "Descargar HTML",
-					"aria-label": "Descargar HTML"
-				},
 				"saveGist": {
-					"title": "Guardar en gist",
-					"aria-label": "Guardar en gist"
+					"aria-label": "Guardar en gist",
+					"title": "Guardar en gist"
+				},
+				"downloadHtml": {
+					"aria-label": "Descargar HTML",
+					"title": "Descargar HTML"
 				}
 			},
 			"copied": "Copiado al portapapeles",
@@ -6636,31 +6636,31 @@
 				"aria-label": "Añadir adjunto",
 				"title": "Añadir adjunto"
 			},
-			"failed": "No se pudo leer el adjunto ${name}",
-			"reading": "Leyendo…",
 			"remove": {
 				"aria-label": "Quitar adjunto",
 				"title": "Quitar adjunto"
 			},
-			"tooLargeTotal": "El tamaño total de los adjuntos supera el límite de ${limit}",
 			"drop": "Suelta para adjuntar",
 			"tooLarge": "El adjunto ${name} supera el límite de 10 MB",
-			"description": {
-				"placeholder": "Añade una descripción…",
-				"aria-label": "Descripción del adjunto"
-			},
-			"download": {
-				"title": "Descargar adjunto",
-				"aria-label": "Descargar adjunto"
-			},
 			"edit": {
-				"title": "Editar imagen",
-				"aria-label": "Editar imagen"
+				"aria-label": "Editar imagen",
+				"title": "Editar imagen"
 			},
 			"preview": {
-				"title": "Previsualizar adjunto",
-				"aria-label": "Previsualizar adjunto"
-			}
+				"aria-label": "Previsualizar adjunto",
+				"title": "Previsualizar adjunto"
+			},
+			"download": {
+				"aria-label": "Descargar adjunto",
+				"title": "Descargar adjunto"
+			},
+			"description": {
+				"aria-label": "Descripción del adjunto",
+				"placeholder": "Añade una descripción…"
+			},
+			"tooLargeTotal": "El tamaño total de los adjuntos supera el límite de ${limit}",
+			"reading": "Leyendo…",
+			"failed": "No se pudo leer el adjunto ${name}"
 		},
 		"error": {
 			"generic": "Algo salió mal: ${error}",

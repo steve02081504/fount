@@ -6195,8 +6195,8 @@
 			"loadFailed": "Échec du chargement de l'image",
 			"mosaic": "Pixeliser",
 			"redo": "Refaire",
-			"undo": "Annuler",
-			"reset": "Réinitialiser"
+			"reset": "Réinitialiser",
+			"undo": "Annuler"
 		},
 		"common": {
 			"cancel": "Annuler",
@@ -6588,13 +6588,13 @@
 					"aria-label": "Modifier",
 					"title": "Modifier"
 				},
-				"downloadHtml": {
-					"title": "Télécharger HTML",
-					"aria-label": "Télécharger HTML"
-				},
 				"saveGist": {
-					"title": "Enregistrer dans un gist",
-					"aria-label": "Enregistrer dans un gist"
+					"aria-label": "Enregistrer dans un gist",
+					"title": "Enregistrer dans un gist"
+				},
+				"downloadHtml": {
+					"aria-label": "Télécharger HTML",
+					"title": "Télécharger HTML"
 				}
 			},
 			"copied": "Copié dans le presse-papiers",
@@ -6636,31 +6636,31 @@
 				"aria-label": "Ajouter une pièce jointe",
 				"title": "Ajouter une pièce jointe"
 			},
-			"failed": "Impossible de lire la pièce jointe ${name}",
-			"reading": "Lecture…",
 			"remove": {
 				"aria-label": "Retirer la pièce jointe",
 				"title": "Retirer la pièce jointe"
 			},
-			"tooLargeTotal": "Les pièces jointes dépassent la limite totale de ${limit}",
 			"drop": "Relâchez pour joindre",
 			"tooLarge": "La pièce jointe ${name} dépasse la limite de 10 Mo",
-			"description": {
-				"placeholder": "Ajouter une description…",
-				"aria-label": "Description de la pièce jointe"
-			},
-			"download": {
-				"title": "Télécharger la pièce jointe",
-				"aria-label": "Télécharger la pièce jointe"
-			},
 			"edit": {
-				"title": "Modifier l'image",
-				"aria-label": "Modifier l'image"
+				"aria-label": "Modifier l'image",
+				"title": "Modifier l'image"
 			},
 			"preview": {
-				"title": "Aperçu de la pièce jointe",
-				"aria-label": "Aperçu de la pièce jointe"
-			}
+				"aria-label": "Aperçu de la pièce jointe",
+				"title": "Aperçu de la pièce jointe"
+			},
+			"download": {
+				"aria-label": "Télécharger la pièce jointe",
+				"title": "Télécharger la pièce jointe"
+			},
+			"description": {
+				"aria-label": "Description de la pièce jointe",
+				"placeholder": "Ajouter une description…"
+			},
+			"tooLargeTotal": "Les pièces jointes dépassent la limite totale de ${limit}",
+			"reading": "Lecture…",
+			"failed": "Impossible de lire la pièce jointe ${name}"
 		},
 		"error": {
 			"generic": "Une erreur est survenue : ${error}",

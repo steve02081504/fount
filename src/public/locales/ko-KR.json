@@ -6188,9 +6188,9 @@
 			"image": "편집",
 			"loadFailed": "이미지를 불러오지 못했습니다",
 			"mosaic": "모자이크",
-			"undo": "실행 취소",
+			"redo": "다시 실행",
 			"reset": "초기화",
-			"redo": "다시 실행"
+			"undo": "실행 취소"
 		},
 		"common": {
 			"cancel": "취소",
@@ -6582,13 +6582,13 @@
 					"aria-label": "편집",
 					"title": "편집"
 				},
-				"downloadHtml": {
-					"title": "HTML 다운로드",
-					"aria-label": "HTML 다운로드"
-				},
 				"saveGist": {
-					"title": "gist로 저장",
-					"aria-label": "gist로 저장"
+					"aria-label": "gist로 저장",
+					"title": "gist로 저장"
+				},
+				"downloadHtml": {
+					"aria-label": "HTML 다운로드",
+					"title": "HTML 다운로드"
 				}
 			},
 			"copied": "클립보드에 복사됨",
@@ -6630,31 +6630,31 @@
 				"aria-label": "첨부 파일 추가",
 				"title": "첨부 파일 추가"
 			},
-			"failed": "첨부 파일 ${name} 읽기 실패",
-			"reading": "읽는 중…",
 			"remove": {
 				"aria-label": "첨부 파일 제거",
 				"title": "첨부 파일 제거"
 			},
-			"tooLargeTotal": "첨부 파일 총 용량이 ${limit} 한도를 초과합니다",
 			"drop": "놓아서 첨부",
 			"tooLarge": "첨부 파일 ${name}이(가) 10MB 제한을 초과합니다",
-			"description": {
-				"placeholder": "설명 추가…",
-				"aria-label": "첨부 파일 설명"
-			},
-			"download": {
-				"title": "첨부 파일 다운로드",
-				"aria-label": "첨부 파일 다운로드"
-			},
 			"edit": {
-				"title": "이미지 편집",
-				"aria-label": "이미지 편집"
+				"aria-label": "이미지 편집",
+				"title": "이미지 편집"
 			},
 			"preview": {
-				"title": "첨부 파일 미리보기",
-				"aria-label": "첨부 파일 미리보기"
-			}
+				"aria-label": "첨부 파일 미리보기",
+				"title": "첨부 파일 미리보기"
+			},
+			"download": {
+				"aria-label": "첨부 파일 다운로드",
+				"title": "첨부 파일 다운로드"
+			},
+			"description": {
+				"aria-label": "첨부 파일 설명",
+				"placeholder": "설명 추가…"
+			},
+			"tooLargeTotal": "첨부 파일 총 용량이 ${limit} 한도를 초과합니다",
+			"reading": "읽는 중…",
+			"failed": "첨부 파일 ${name} 읽기 실패"
 		},
 		"error": {
 			"generic": "문제가 발생했습니다: ${error}",

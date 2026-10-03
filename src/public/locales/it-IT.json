@@ -6195,8 +6195,8 @@
 			"loadFailed": "Caricamento dell’immagine non riuscito",
 			"mosaic": "Pixelizza",
 			"redo": "Ripeti",
-			"undo": "Annulla",
-			"reset": "Reimposta"
+			"reset": "Reimposta",
+			"undo": "Annulla"
 		},
 		"common": {
 			"cancel": "Annulla",
@@ -6588,13 +6588,13 @@
 					"aria-label": "Modifica",
 					"title": "Modifica"
 				},
-				"downloadHtml": {
-					"title": "Scarica HTML",
-					"aria-label": "Scarica HTML"
-				},
 				"saveGist": {
-					"title": "Salva su gist",
-					"aria-label": "Salva su gist"
+					"aria-label": "Salva su gist",
+					"title": "Salva su gist"
+				},
+				"downloadHtml": {
+					"aria-label": "Scarica HTML",
+					"title": "Scarica HTML"
 				}
 			},
 			"copied": "Copiato negli appunti",
@@ -6636,31 +6636,31 @@
 				"aria-label": "Aggiungi allegato",
 				"title": "Aggiungi allegato"
 			},
-			"failed": "Impossibile leggere l'allegato ${name}",
-			"reading": "Lettura in corso…",
 			"remove": {
 				"aria-label": "Rimuovi allegato",
 				"title": "Rimuovi allegato"
 			},
-			"tooLargeTotal": "La dimensione totale degli allegati supera il limite di ${limit}",
 			"drop": "Rilascia per allegare",
 			"tooLarge": "L'allegato ${name} supera il limite di 10 MB",
-			"description": {
-				"placeholder": "Aggiungi una descrizione…",
-				"aria-label": "Descrizione dell'allegato"
-			},
-			"download": {
-				"title": "Scarica allegato",
-				"aria-label": "Scarica allegato"
-			},
 			"edit": {
-				"title": "Modifica immagine",
-				"aria-label": "Modifica immagine"
+				"aria-label": "Modifica immagine",
+				"title": "Modifica immagine"
 			},
 			"preview": {
-				"title": "Anteprima allegato",
-				"aria-label": "Anteprima allegato"
-			}
+				"aria-label": "Anteprima allegato",
+				"title": "Anteprima allegato"
+			},
+			"download": {
+				"aria-label": "Scarica allegato",
+				"title": "Scarica allegato"
+			},
+			"description": {
+				"aria-label": "Descrizione dell'allegato",
+				"placeholder": "Aggiungi una descrizione…"
+			},
+			"tooLargeTotal": "La dimensione totale degli allegati supera il limite di ${limit}",
+			"reading": "Lettura in corso…",
+			"failed": "Impossibile leggere l'allegato ${name}"
 		},
 		"error": {
 			"generic": "Qualcosa è andato storto: ${error}",
