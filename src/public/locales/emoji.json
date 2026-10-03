@@ -575,7 +575,7 @@
 			},
 			"remove": {
 				"confirmPrompt": "🗑️ ⛲ 📁: `${path}`\n✅ ❓",
-				"yn": "[Y/N]",
+				"yn": "[Y/N] ",
 				"aborted": "⛔ 🚫",
 				"externalMountWarning": "⚠️ ⛲ 🔗/🌍 `${target}`\n🛑 🖥️/📦 `fount remove` 🗑️",
 				"nonInteractiveRequiresForce": "❌ 🔒 💬 ❓ ⛲ `${path}`\n👉 `fount remove --force`",

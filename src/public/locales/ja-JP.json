@@ -251,7 +251,7 @@
 			"planSlotSummary": "プランスロット: 実実行 ${run}、再利用 ${reuse}、ブロック ${blocked}、スキップ ${skipped}",
 			"noMatchingSuites": "一致するテスト スイートがありません。",
 			"reportPath": "レポート: ${path}",
-			"reportPathFinal": "レポート: ${path}",
+			"reportPathFinal": "\nレポート: ${path}",
 			"statePathFinal": "現在のステータス: ${path}",
 			"blocked": "ブロック: ${label}（依存未通過: ${deps}）",
 			"skippedTree": "スキップ: ${label}（skip_tree: ${deps}）",
@@ -260,12 +260,12 @@
 			"continueImperfect": "失敗/ノイズ/未完了: スイート ${count} 件",
 			"outdatedSelected": "期限切れ: 古い/未実行のスイート ${count} 件",
 			"runningSuite": {
-				"base": ">>> ${manifestId}:${name} を実行中",
+				"base": "\n>>> ${manifestId}:${name} を実行中",
 				"speculative": "楽観的な並列処理",
 				"heavy": "高負荷",
 				"expected": "期待される ${expected}"
 			},
-			"reusedSuite": ">>> ${manifestId}:${name} を再利用 (トリガーは変更されず、最後の ${status} が使用されます)",
+			"reusedSuite": "\n>>> ${manifestId}:${name} を再利用 (トリガーは変更されず、最後の ${status} が使用されます)",
 			"prunedAbsentState": "存在しないスイートの状態を削除しました：スイート ${suites} 件、サブテスト ${subtests} 件",
 			"noisyOnlyRemain": "まだ ${count} 個のスイートが通過していますが、ノイズが発生しています: ${suites}",
 			"noRealRunPlanned": "今回は実行不要: 再利用 ${reused} 件、ブロック予定 ${blocked} 件、スキップ ${skipped} 件（trigger 不変）",
@@ -305,7 +305,7 @@
 			},
 			"ws": {
 				"pass": "\n合格: ${detail}",
-				"fail": "失敗: ${detail}"
+				"fail": "\n失敗: ${detail}"
 			},
 			"report": {
 				"title": "fount テストレポート",
@@ -496,7 +496,7 @@
 				"exeFailed": "fount.exe を生成できなかったため、Steam への登録をスキップしました。"
 			},
 			"git": {
-				"repoNotFound": "Font の git リポジトリが見つかりませんでした。新しいものを初期化しています...",
+				"repoNotFound": "fount の git リポジトリが見つかりませんでした。新しいものを初期化しています...",
 				"fetchingAndResetting": "リモートリポジトリから取得してマスターにリセットしています...",
 				"localChangesDetected": "ローカルの変更が検出されました。上書きする前に差分が保存されます。",
 				"backupSavedTo": "ローカルでの変更のバックアップが `${path}` に保存されました。",
@@ -575,7 +575,7 @@
 			},
 			"remove": {
 				"confirmPrompt": "fount のインストール ディレクトリをディスクから削除しようとしています: `${path}`\nこれが本当に削除するディレクトリであることを確認してください。",
-				"yn": "[Y/N]",
+				"yn": "[Y/N] ",
 				"aborted": "キャンセルされました。何も削除されませんでした。",
 				"externalMountWarning": "警告: fount は外部/共有マウント (`${target}`) 上にあります。\nこのディレクトリはホストまたは仮想マシンに同時に存在する可能性があります。`fount remove` を実行するとそこも一緒に削除されてしまうため、十分に注意してください。",
 				"nonInteractiveRequiresForce": "非対話型環境では削除を確認できません。`fount` (${path}) を確実に削除したい場合は、`fount remove --force` を使用して確認をスキップします。",
@@ -1416,7 +1416,7 @@
 				"placeholder": "リスト チャンネルではナビゲーション カードのみが表示され、メッセージは送信されません。"
 			},
 			"mentionHandle": "@${name}",
-			"mentionInsert": "@${name}",
+			"mentionInsert": "@${name} ",
 			"attachmentsHint": "(${n} 個の添付ファイル)",
 			"copied": "コピーされました",
 			"addBookmark": {
@@ -1433,9 +1433,9 @@
 			"forceTriggerAllLocalTitle": {
 				"title": "すべてのローカルキャラクターを強制的に話すようにする"
 			},
-			"quoteHeader": "> **${sender}**${sep}${time}",
-			"quoteHeaderWithTime": "> **${sender}** · ${time}",
-			"quoteHeaderWithoutTime": "> **${sender}**",
+			"quoteHeader": "> **${sender}**${sep}${time}\n\n",
+			"quoteHeaderWithTime": "> **${sender}** · ${time}\n\n",
+			"quoteHeaderWithoutTime": "> **${sender}**\n\n",
 			"stopGenerating": "生成を停止する",
 			"reactionAdd": {
 				"title": "応答を追加"
@@ -5978,7 +5978,7 @@
 			"title": "サブfountクライアントをダウンロードする",
 			"description": "スタンドアロンのSubfount クライアント スクリプトをダウンロードして、リモート デバイス上で実行します。",
 			"tabsLabel": {
-				"aria-label": "Select the operating system"
+				"aria-label": "オペレーティングシステムを選択"
 			},
 			"tabs": {
 				"linux": "Linux",
@@ -5987,7 +5987,7 @@
 				"windows": "Windows"
 			},
 			"copyButton": "コピー",
-			"copied": "Install script copied to clipboard"
+			"copied": "インストールスクリプトをクリップボードにコピーしました"
 		},
 		"errors": {
 			"loadConnectionCodeFailed": "接続コードのロードに失敗しました: ${message}",

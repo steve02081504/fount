@@ -251,7 +251,7 @@
 			"planSlotSummary": "Slots do plano: execução real ${run}, reutilização ${reuse}, bloqueada ${blocked}, ignorada ${skipped}",
 			"noMatchingSuites": "Nenhuma suite de teste correspondente.",
 			"reportPath": "Relatório: ${path}",
-			"reportPathFinal": "relatório: ${path}",
+			"reportPathFinal": "\nrelatório: ${path}",
 			"statePathFinal": "Status atual: ${path}",
 			"blocked": "Bloqueio: ${label} (dependência não passada: ${deps})",
 			"skippedTree": "Ignorado: ${label} (skip_tree: ${deps})",
@@ -260,12 +260,12 @@
 			"continueImperfect": "Falha/ruído/ondas incompletas: ${count} kits",
 			"outdatedSelected": "Ondas expiradas: ${count} suites obsoletos/não executados",
 			"runningSuite": {
-				"base": ">>> A executar ${manifestId}:${name}",
+				"base": "\n>>> A executar ${manifestId}:${name}",
 				"speculative": "paralelo especulativo",
 				"heavy": "alta carga",
 				"expected": "esperado ${expected}"
 			},
-			"reusedSuite": ">>> Reutilizar ${manifestId}:${name} (o gatilho permanece inalterado, o último ${status} é usado)",
+			"reusedSuite": "\n>>> Reutilizar ${manifestId}:${name} (o gatilho permanece inalterado, o último ${status} é usado)",
 			"prunedAbsentState": "Estado de suites removidas limpo: ${suites} suites, ${subtests} subtestes",
 			"noisyOnlyRemain": "Ainda há ${count} suítes passando mas com ruído: ${suites}",
 			"noRealRunPlanned": "Não é necessário executar: ${reused} reutilizadas, ${blocked} previstas como bloqueadas, ${skipped} ignoradas (trigger inalterado)",
@@ -280,7 +280,7 @@
 			"triggerNoMatchSummary": "Um total de ${count} gatilhos não correspondeu a nenhum ficheiro do warehouse (consulte report.md para obter detalhes)",
 			"federationCleanupPre": "limpeza de federação (pré-execução): ${output}",
 			"federationCleanupPost": "limpeza de federação (pós-execução): ${output}",
-			"suiteHeader": "=== SUITE ${name} ===",
+			"suiteHeader": "\n=== Suite ${name} ===",
 			"heapSnapshotSaved": "Instantâneo de heap próximo ao nó de teste: ${path}",
 			"liveUsage": "Utilização: --suite <nome> | --list",
 			"serialUsage": "Utilização: serial.mjs <deno-test-path> [...]",
@@ -304,8 +304,8 @@
 				"error": "Worker do nó: ${error}"
 			},
 			"ws": {
-				"pass": "APROVADO: ${detail}",
-				"fail": "FALHOU: ${detail}"
+				"pass": "\nAPROVADO: ${detail}",
+				"fail": "\nFALHOU: ${detail}"
 			},
 			"report": {
 				"title": "Relatório de testes fount",
@@ -575,7 +575,7 @@
 			},
 			"remove": {
 				"confirmPrompt": "O diretório de instalação do fount está prestes a ser eliminado do disco: `${path}`\nConfirme que este é realmente o diretório que deseja eliminar.",
-				"yn": "[Y/N]",
+				"yn": "[Y/N] ",
 				"aborted": "Cancelado, nada foi eliminado.",
 				"externalMountWarning": "Aviso: o fount está localizado numa montagem externa/partilhada (`${target}`)!\nEste diretório pode existir simultaneamente no host ou na máquina virtual. O `fount remove` irá eliminá-lo também aí, por isso tenha muito cuidado.",
 				"nonInteractiveRequiresForce": "A eliminação não pode ser confirmada num ambiente não interativo. Se tiver a certeza de que deseja remover o `fount` (${path}), use `fount remove --force` para ignorar a confirmação.",
@@ -1252,7 +1252,7 @@
 			"followAuthor": "Seguir o autor",
 			"sourceGroup": "Pack do grupo",
 			"sourceAuthor": "Pack do autor",
-			"itemCount": "${count} emoji"
+			"itemCount": "${count} emojis"
 		},
 		"unicodeEmojiGroups": {
 			"Smileys_and_Emotion": {
@@ -1416,7 +1416,7 @@
 				"placeholder": "Os canais da lista exibem apenas cartões de navegação e não enviam mensagens"
 			},
 			"mentionHandle": "@${name}",
-			"mentionInsert": "@${name}",
+			"mentionInsert": "@${name} ",
 			"attachmentsHint": "(${n} anexos)",
 			"copied": "Copiado",
 			"addBookmark": {
@@ -1433,9 +1433,9 @@
 			"forceTriggerAllLocalTitle": {
 				"title": "Forçar todos os personagens locais a falar"
 			},
-			"quoteHeader": "> **${sender}**${sep}${time}",
-			"quoteHeaderWithTime": "> **${sender}** · ${time}",
-			"quoteHeaderWithoutTime": "> **${sender}**",
+			"quoteHeader": "> **${sender}**${sep}${time}\n\n",
+			"quoteHeaderWithTime": "> **${sender}** · ${time}\n\n",
+			"quoteHeaderWithoutTime": "> **${sender}**\n\n",
 			"stopGenerating": "Pare de gerar",
 			"reactionAdd": {
 				"title": "Adicionar response"
@@ -5313,7 +5313,7 @@
 		"update": {
 			"prompt": "Uma nova versão do script de integração do navegador fount está disponível. A página de atualização está agora aberta?"
 		},
-		"csp_warning": "O script de integração do navegador da fount detecta que a política do CSP existe na página, o que pode fazer com que o script de integração não funcione corretamente. Por favor, considere instalar o plug -in para fechar o CSP.",
+		"csp_warning": "O script de integração do navegador da fount detecta que a política do CSP existe na página, o que pode fazer com que o script de integração não funcione corretamente. Por favor, considere instalar o plug-in para fechar o CSP.",
 		"hostChange": {
 			"securityWarningTitle": "--- Aviso de segurança da fount ---",
 			"message": "A página atual (\"${origin}\") está tentando alterar seu endereço de host para:\n\n\"${newHost}\"\n\nAVISO: A aprovação desta ação permitirá que o novo host controla totalmente seus recursos de integração do navegador, o que pode levar a vazamentos sensíveis de informações ou roubo de contas.\nA aprovação só deve ser feita se você tiver certeza de que esta é sua própria operação (por exemplo, migrando um servidor fount).\n\nTem certeza de que deseja permitir essa alteração?",
@@ -5592,7 +5592,7 @@
 			"dim": "Ténue",
 			"nord": "Nórdico",
 			"sunset": "Pôr do sol",
-			"caramellatte": "Caramel Latte",
+			"caramellatte": "Latte de caramelo",
 			"abyss": "Abismo",
 			"silk": "Seda"
 		},
@@ -5984,7 +5984,7 @@
 			"title": "Baixar cliente de sub-fount",
 			"description": "Baixe o script do cliente de subfount autônomo para execução no dispositivo remoto.",
 			"tabsLabel": {
-				"aria-label": "Select the operating system"
+				"aria-label": "Selecionar o sistema operativo"
 			},
 			"tabs": {
 				"linux": "Linux",
@@ -5993,7 +5993,7 @@
 				"windows": "Windows"
 			},
 			"copyButton": "Copiar",
-			"copied": "Install script copied to clipboard"
+			"copied": "Script de instalação copiado para a área de transferência"
 		},
 		"errors": {
 			"loadConnectionCodeFailed": "Falha ao carregar o código de conexão: ${message}",
@@ -6192,9 +6192,11 @@
 			"crop": "Recortar",
 			"exportFailed": "Falha ao exportar a imagem",
 			"image": "Editar",
-			"loadFailed": null,
+			"loadFailed": "Falha ao carregar a imagem",
 			"mosaic": "Pixelizar",
-			"redo": null
+			"redo": "Refazer",
+			"undo": "Desfazer",
+			"reset": "Reiniciar"
 		},
 		"common": {
 			"cancel": "Cancelar",
@@ -6243,7 +6245,7 @@
 		},
 		"pow_captcha": {
 			"initial": "Eu não sou um robô",
-			"verifying": "Verificando ...",
+			"verifying": "Verificando...",
 			"solved": "Verificação bem-sucedida",
 			"wasm_disabled": "Ative o WASM para uma verificação mais rápida",
 			"error": "Verificação falhou",
@@ -6520,6 +6522,12 @@
 				"left": "Fechar separadores à esquerda",
 				"right": "Fechar separadores à direita",
 				"all": "Fechar todos os separadores"
+			},
+			"generating": {
+				"aria-label": "«${title}» está a gerar"
+			},
+			"unread": {
+				"aria-label": "«${title}» tem mensagens não lidas"
 			}
 		},
 		"newTab": {
@@ -6579,6 +6587,14 @@
 				"edit": {
 					"aria-label": "Editar",
 					"title": "Editar"
+				},
+				"downloadHtml": {
+					"title": "Descarregar HTML",
+					"aria-label": "Descarregar HTML"
+				},
+				"saveGist": {
+					"title": "Guardar no gist",
+					"aria-label": "Guardar no gist"
 				}
 			},
 			"copied": "Copiado para a área de transferência",
@@ -6620,11 +6636,31 @@
 				"aria-label": "Adicionar anexo",
 				"title": "Adicionar anexo"
 			},
+			"failed": "Falha ao ler o anexo ${name}",
+			"reading": "A ler…",
 			"remove": {
-				"aria-label": "Remover anexo"
+				"aria-label": "Remover anexo",
+				"title": "Remover anexo"
 			},
+			"tooLargeTotal": "Os anexos excedem o limite total de ${limit}",
 			"drop": "Largue para anexar",
-			"tooLarge": "O anexo ${name} excede o limite de 10 MB"
+			"tooLarge": "O anexo ${name} excede o limite de 10 MB",
+			"description": {
+				"placeholder": "Adicione uma descrição…",
+				"aria-label": "Descrição do anexo"
+			},
+			"download": {
+				"title": "Descarregar anexo",
+				"aria-label": "Descarregar anexo"
+			},
+			"edit": {
+				"title": "Editar imagem",
+				"aria-label": "Editar imagem"
+			},
+			"preview": {
+				"title": "Pré-visualizar anexo",
+				"aria-label": "Pré-visualizar anexo"
+			}
 		},
 		"error": {
 			"generic": "Algo correu mal: ${error}",
@@ -6735,6 +6771,11 @@
 				"failed": "Falhado",
 				"unknown": "Não encontrado",
 				"idle": "Tarefa em segundo plano"
+			}
+		},
+		"generation": {
+			"reconnect": {
+				"aria-label": "Reconectar"
 			}
 		}
 	},
@@ -7055,7 +7096,7 @@
 				"lowestTitle": "As 7 rondas com a taxa de acertos de cache mais baixa",
 				"missing": "Sem dados de reutilização do prefixo do prompt",
 				"noRate": "Cache —",
-				"rate": "Cache ≈${rate}%",
+				"rate": "Taxa de cache ≈${rate}%",
 				"summary": "Reutilização estimada do prefixo do prompt ${rate}% (caracteres)"
 			}
 		},

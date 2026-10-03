@@ -575,7 +575,7 @@
 			},
 			"remove": {
 				"confirmPrompt": "El directorio de instalación de fount está a punto de eliminarse del disco: `${path}`\nConfirme que es efectivamente el directorio que desea eliminar.",
-				"yn": "[Y/N]",
+				"yn": "[Y/N] ",
 				"aborted": "Cancelado, no se eliminó nada.",
 				"externalMountWarning": "Advertencia: fount está ubicado en un soporte externo/compartido (`${target}`)!\nEste directorio puede existir a la vez en el host o en la máquina virtual. `fount remove` lo eliminará también allí, así que tenga mucho cuidado.",
 				"nonInteractiveRequiresForce": "La eliminación no se puede confirmar en un entorno no interactivo. Si está seguro de que desea eliminar `fount` (${path}), use `fount remove --force` para omitir la confirmación.",
@@ -584,7 +584,7 @@
 				"protocolHandlerRemoved": "Se ha eliminado el controlador de protocolo `fount://`.",
 				"fountPwshRemovedFromProfile": "fount-pwsh se eliminó del perfil de PowerShell.",
 				"pwshProfileNotFound": "Perfil de PowerShell no encontrado, omitiendo la eliminación de `fount-pwsh` del perfil.",
-				"uninstallFountPwshFailed": "Error al desinstalar font-pwsh: ${message}",
+				"uninstallFountPwshFailed": "Error al desinstalar fount-pwsh: ${message}",
 				"terminalProfileRemoved": "Se ha eliminado el directorio de perfil de terminal de Windows.",
 				"terminalProfileNotFound": "No se encontró el directorio del perfil de terminal de Windows.",
 				"desktopShortcutRemoved": "Se eliminó el acceso directo del escritorio.",
@@ -609,7 +609,7 @@
 						"fromGitSafeDir": "Eliminando la fount de `git safe.directory`...",
 						"fromPath": "Eliminando fount de PATH...",
 						"installationDir": "Eliminando el directorio de instalación de founts...",
-						"pwshFromProfile": "Eliminando font-pwsh del perfil de PowerShell..."
+						"pwshFromProfile": "Eliminando fount-pwsh del perfil de PowerShell..."
 					},
 					"installedPwshModules": "Eliminando el módulo pwsh instalado...",
 					"installedSystemPackages": "Eliminando paquetes del sistema instalados...",
@@ -761,7 +761,7 @@
 	},
 	"protocolhandler": {
 		"title": "Procesando Protocolo fount",
-		"description": "De manera silenciosa y eficiente, esta página traduce su intención en una transición perfecta dentro de font. Considérelo la magia silenciosa detrás de la cortina.",
+		"description": "De manera silenciosa y eficiente, esta página traduce su intención en una transición perfecta dentro de fount. Considérelo la magia silenciosa detrás de la cortina.",
 		"processing": "Procesando protocolo...",
 		"invalidProtocol": "Protocolo inválido",
 		"insufficientParams": "Parámetros insuficientes",
@@ -1252,7 +1252,7 @@
 			"followAuthor": "Seguir al autor",
 			"sourceGroup": "Pack del grupo",
 			"sourceAuthor": "Pack del autor",
-			"itemCount": "${count} emoji"
+			"itemCount": "${count} emojis"
 		},
 		"unicodeEmojiGroups": {
 			"Smileys_and_Emotion": {
@@ -1433,9 +1433,9 @@
 			"forceTriggerAllLocalTitle": {
 				"title": "Obligar a todos los personajes locales a hablar."
 			},
-			"quoteHeader": "> ** ${sender} ** ${sep} ${time}",
-			"quoteHeaderWithTime": "> ** ${sender} ** · ${time}",
-			"quoteHeaderWithoutTime": "> ** ${sender} **",
+			"quoteHeader": "> ** ${sender} ** ${sep} ${time}\n\n",
+			"quoteHeaderWithTime": "> ** ${sender} ** · ${time}\n\n",
+			"quoteHeaderWithoutTime": "> ** ${sender} **\n\n",
 			"stopGenerating": "Ausente de generar",
 			"reactionAdd": {
 				"title": "agregar respuesta"
@@ -1823,7 +1823,7 @@
 				"nodeTimeout": "El nodo remoto no responde, inténtelo nuevamente más tarde.",
 				"typing": "${name} está escribiendo...",
 				"typingMany": "${name} y ${count} más están escribiendo...",
-				"typingTwo": "${name1} , ${name2} Entrando...",
+				"typingTwo": "${name1}, ${name2} Entrando...",
 				"unavailable": "El componente remoto no está disponible o no puede enrutar el RPC",
 				"unsafe": "Este mensaje proviene de una ubicación remota y el autor no está en la lista de confianza local. Se ha deshabilitado la representación de texto enriquecido."
 			},
@@ -2889,7 +2889,7 @@
 					"subtitle": "Sesión con ${name}"
 				},
 				"chatsTitle": "Conversaciones históricas con ${name}",
-				"count": "${count} roles",
+				"count": "${count} personajes",
 				"descriptionEmpty": "El personaje aún tiene que presentarse.",
 				"intro": "introducir",
 				"streaming": "Generando…",
@@ -3214,7 +3214,7 @@
 			},
 			"multiplayer_chat": {
 				"name": "La temporada de White Album",
-				"description": "\"¿Por qué se volvió así ...\"",
+				"description": "\"¿Por qué se volvió así...\"",
 				"locked_description": "Haz que dos o más personajes hablen en el mismo chat."
 			},
 			"photo_chat": {
@@ -3475,7 +3475,7 @@
 				"deleted": "Eliminar correctamente"
 			},
 			"sticker": {
-				"count": "${count} stickers",
+				"count": "${count} pegatinas",
 				"name": {
 					"placeholder": "Introduce el nombre de la pegatina"
 				},
@@ -5592,7 +5592,7 @@
 			"dim": "Tenue",
 			"nord": "Nórdico",
 			"sunset": "Atardecer",
-			"caramellatte": "Caramel Latte",
+			"caramellatte": "Latte de caramelo",
 			"abyss": "Abismo",
 			"silk": "Seda"
 		},
@@ -5984,7 +5984,7 @@
 			"title": "Descargar cliente de Subfount",
 			"description": "Descargue el script del cliente Subfount independiente para ejecutarlo en el dispositivo remoto.",
 			"tabsLabel": {
-				"aria-label": "Select the operating system"
+				"aria-label": "Selecciona el sistema operativo"
 			},
 			"tabs": {
 				"linux": "Linux",
@@ -5993,7 +5993,7 @@
 				"windows": "Windows"
 			},
 			"copyButton": "Copiar",
-			"copied": "Install script copied to clipboard"
+			"copied": "Script de instalación copiado al portapapeles"
 		},
 		"errors": {
 			"loadConnectionCodeFailed": "No se pudo cargar el código de conexión: ${message}",
@@ -6015,7 +6015,7 @@
 	},
 	"achievements": {
 		"title": "Logro",
-		"description": "Explora los hitos y logros de tu viaje con font. Cada logro marca un paso en tu narrativa única.",
+		"description": "Explora los hitos y logros de tu viaje con fount. Cada logro marca un paso en tu narrativa única.",
 		"pageHeader": "Salón de los logros",
 		"pageDescription": "Consulta aquí tus logros e hitos desbloqueados.",
 		"unlocked_on": "Desbloqueado el ${date}",
@@ -6191,10 +6191,12 @@
 			},
 			"crop": "Recortar",
 			"exportFailed": "No se pudo exportar la imagen",
-			"image": "editar",
-			"loadFailed": null,
+			"image": "Editar",
+			"loadFailed": "Error al cargar la imagen",
 			"mosaic": "Pixelar",
-			"redo": null
+			"redo": "Rehacer",
+			"undo": "Deshacer",
+			"reset": "Restablecer"
 		},
 		"common": {
 			"cancel": "Cancelar",
@@ -6520,6 +6522,12 @@
 				"left": "Cerrar las pestañas a la izquierda",
 				"right": "Cerrar las pestañas a la derecha",
 				"all": "Cerrar todas las pestañas"
+			},
+			"generating": {
+				"aria-label": "«${title}» se está generando"
+			},
+			"unread": {
+				"aria-label": "«${title}» tiene mensajes sin leer"
 			}
 		},
 		"newTab": {
@@ -6579,6 +6587,14 @@
 				"edit": {
 					"aria-label": "Editar",
 					"title": "Editar"
+				},
+				"downloadHtml": {
+					"title": "Descargar HTML",
+					"aria-label": "Descargar HTML"
+				},
+				"saveGist": {
+					"title": "Guardar en gist",
+					"aria-label": "Guardar en gist"
 				}
 			},
 			"copied": "Copiado al portapapeles",
@@ -6620,11 +6636,31 @@
 				"aria-label": "Añadir adjunto",
 				"title": "Añadir adjunto"
 			},
+			"failed": "No se pudo leer el adjunto ${name}",
+			"reading": "Leyendo…",
 			"remove": {
-				"aria-label": "Quitar adjunto"
+				"aria-label": "Quitar adjunto",
+				"title": "Quitar adjunto"
 			},
+			"tooLargeTotal": "El tamaño total de los adjuntos supera el límite de ${limit}",
 			"drop": "Suelta para adjuntar",
-			"tooLarge": "El adjunto ${name} supera el límite de 10 MB"
+			"tooLarge": "El adjunto ${name} supera el límite de 10 MB",
+			"description": {
+				"placeholder": "Añade una descripción…",
+				"aria-label": "Descripción del adjunto"
+			},
+			"download": {
+				"title": "Descargar adjunto",
+				"aria-label": "Descargar adjunto"
+			},
+			"edit": {
+				"title": "Editar imagen",
+				"aria-label": "Editar imagen"
+			},
+			"preview": {
+				"title": "Previsualizar adjunto",
+				"aria-label": "Previsualizar adjunto"
+			}
 		},
 		"error": {
 			"generic": "Algo salió mal: ${error}",
@@ -6735,6 +6771,11 @@
 				"failed": "Fallido",
 				"unknown": "No encontrado",
 				"idle": "Tarea en segundo plano"
+			}
+		},
+		"generation": {
+			"reconnect": {
+				"aria-label": "Reconectar"
 			}
 		}
 	},

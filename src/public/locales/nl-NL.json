@@ -561,9 +561,9 @@
 				"cleaningOldPwshModules": "Oude pwsh-modules opruimen..."
 			},
 			"keepalive": {
-				"initComplete": "Herinitialisatie voltooid. Ik probeer font opnieuw op te starten...",
-				"autoInitDisabled": "font is de afgelopen korte tijd meerdere keren opnieuw opgestart, maar automatische herinitialisatie is uitgeschakeld vanwege de aanwezigheid van het bestand `.noautoinit`. Afsluiten.",
-				"restartingTooFast": "font is in korte tijd meerdere keren opnieuw opgestart. Geforceerde herinitialisatie...",
+				"initComplete": "Herinitialisatie voltooid. Ik probeer fount opnieuw op te starten...",
+				"autoInitDisabled": "fount is de afgelopen korte tijd meerdere keren opnieuw opgestart, maar automatische herinitialisatie is uitgeschakeld vanwege de aanwezigheid van het bestand `.noautoinit`. Afsluiten.",
+				"restartingTooFast": "fount is in korte tijd meerdere keren opnieuw opgestart. Geforceerde herinitialisatie...",
 				"failedToStart": "Zelfs na automatische reparatiepogingen start de fontein korte tijd niet. Controleer de logboeken op fouten.",
 				"initFailed": "Initialisatie van fount is mislukt. Afsluiten."
 			},
@@ -575,14 +575,14 @@
 			},
 			"remove": {
 				"confirmPrompt": "De fount-installatiemap staat op het punt om van de schijf te worden verwijderd: `${path}`\nBevestig dat dit inderdaad de map is die je wilt verwijderen.",
-				"yn": "[Y/N]",
+				"yn": "[Y/N] ",
 				"aborted": "Geannuleerd, er is niets verwijderd.",
 				"externalMountWarning": "Waarschuwing: fount bevindt zich op een externe/gedeelde mount (`${target}`)!\nDeze map kan tegelijkertijd op de host of op de virtuele machine bestaan. `fount remove` verwijdert hem daar ook, dus wees extra voorzichtig.",
 				"nonInteractiveRequiresForce": "Verwijdering kan niet worden bevestigd in een niet-interactieve omgeving. Als je zeker weet dat je `fount` (${path}) wilt verwijderen, gebruik dan `fount remove --force` om de bevestiging over te slaan.",
 				"fountUninstallationComplete": "Het verwijderen van de fount is voltooid.",
-				"fountInstallationDirRemoved": "De font-installatiemap is verwijderd.",
+				"fountInstallationDirRemoved": "De fount-installatiemap is verwijderd.",
 				"protocolHandlerRemoved": "De protocolhandler `fount://` is verwijderd.",
-				"fountPwshRemovedFromProfile": "font-pwsh is verwijderd uit het PowerShell-profiel.",
+				"fountPwshRemovedFromProfile": "fount-pwsh is verwijderd uit het PowerShell-profiel.",
 				"pwshProfileNotFound": "PowerShell-profiel niet gevonden. Het verwijderen van `fount-pwsh` uit het profiel wordt overgeslagen.",
 				"uninstallFountPwshFailed": "Verwijderen van `fount-pwsh` mislukt: ${message}",
 				"terminalProfileRemoved": "De map Windows Terminal Profile is verwijderd.",
@@ -597,7 +597,7 @@
 				"uninstalling": {
 					"chrome": "Chrome verwijderen...",
 					"deno": "Deno verwijderen...",
-					"fountPwsh": "Font-pwsh verwijderen...",
+					"fountPwsh": "fount-pwsh verwijderen...",
 					"git": "Git verwijderen...",
 					"winget": "Winget verwijderen..."
 				},
@@ -606,10 +606,10 @@
 					"desktopShortcut": "Snelkoppeling op het bureaublad verwijderen...",
 					"fount": {
 						"main": "fount verwijderen...",
-						"fromGitSafeDir": "Font verwijderen uit `git safe.directory`...",
+						"fromGitSafeDir": "fount verwijderen uit `git safe.directory`...",
 						"fromPath": "Lettertype uit PATH verwijderen...",
 						"installationDir": "Installatiemap voor fount verwijderen...",
-						"pwshFromProfile": "font-pwsh verwijderen uit PowerShell-profiel..."
+						"pwshFromProfile": "fount-pwsh verwijderen uit PowerShell-profiel..."
 					},
 					"installedPwshModules": "Geïnstalleerde pwsh-module verwijderen...",
 					"installedSystemPackages": "Geïnstalleerde systeempakketten verwijderen...",
@@ -633,7 +633,7 @@
 	},
 	"installer_wait_screen": {
 		"title": "Welkom bij fount!",
-		"description": "Volg de voortgang van de installatie en bekijk de functies ervan. font zal binnen enkele ogenblikken klaar zijn voor lancering.",
+		"description": "Volg de voortgang van de installatie en bekijk de functies ervan. fount zal binnen enkele ogenblikken klaar zijn voor lancering.",
 		"hero": {
 			"title": "Een Vonk van de Geest, een Vriend voor het Leven",
 			"description": "fount is een AI-aangedreven platform voor personage-interactie, ontworpen om <i>jou</i> de controle te geven. Het is een brug die je verbindt met de personages uit je verbeelding, waardoor je moeiteloos met hen kunt praten, je eigen personages kunt creëren en ze met de wereld kunt delen."
@@ -761,7 +761,7 @@
 	},
 	"protocolhandler": {
 		"title": "fount-protocol verwerken",
-		"description": "Geruisloos en efficiënt vertaalt deze pagina uw intentie naar een naadloze overgang binnen font. Beschouw het als de stille magie achter het gordijn.",
+		"description": "Geruisloos en efficiënt vertaalt deze pagina uw intentie naar een naadloze overgang binnen fount. Beschouw het als de stille magie achter het gordijn.",
 		"processing": "Protocol wordt verwerkt...",
 		"invalidProtocol": "Ongeldig protocol",
 		"insufficientParams": "Onvoldoende parameters",
@@ -943,7 +943,7 @@
 	},
 	"home": {
 		"title": "Startpagina",
-		"description": "Het hart van uw font-ervaring. Beheer hier de bewoners van je verbeelding: personages, werelden en persona's. Jouw verhalen beginnen en vertakken zich vanuit dit centrale knooppunt.",
+		"description": "Het hart van uw fount-ervaring. Beheer hier de bewoners van je verbeelding: personages, werelden en persona's. Jouw verhalen beginnen en vertakken zich vanuit dit centrale knooppunt.",
 		"sidebarTitle": "Details",
 		"closeSidebar": "Zijbalk sluiten",
 		"itemDescription": "Selecteer hier een item om de details te bekijken.",
@@ -1252,7 +1252,7 @@
 			"followAuthor": "Auteur volgen",
 			"sourceGroup": "Groepspakket",
 			"sourceAuthor": "Auteurspakket",
-			"itemCount": "${count} emoji"
+			"itemCount": "${count} emoji's"
 		},
 		"unicodeEmojiGroups": {
 			"Smileys_and_Emotion": {
@@ -1416,7 +1416,7 @@
 				"placeholder": "Lijstkanalen geven alleen navigatiekaarten weer en sturen geen berichten"
 			},
 			"mentionHandle": "@${name}",
-			"mentionInsert": "@${name}",
+			"mentionInsert": "@${name} ",
 			"attachmentsHint": "(${n} bijlagen)",
 			"copied": "Gekopieerd",
 			"addBookmark": {
@@ -1433,9 +1433,9 @@
 			"forceTriggerAllLocalTitle": {
 				"title": "Forceer alle lokale karakters om te spreken"
 			},
-			"quoteHeader": "> **${sender}**${sep}${time}",
-			"quoteHeaderWithTime": "> **${sender}** · ${time}",
-			"quoteHeaderWithoutTime": "> **${sender}**",
+			"quoteHeader": "> **${sender}**${sep}${time}\n\n",
+			"quoteHeaderWithTime": "> **${sender}** · ${time}\n\n",
+			"quoteHeaderWithoutTime": "> **${sender}**\n\n",
 			"stopGenerating": "Stop met genereren",
 			"reactionAdd": {
 				"title": "Reactie toevoegen"
@@ -1690,7 +1690,7 @@
 						"packGroupOption": "Standaard van de groep",
 						"idCopied": "Emoji-pack-ID naar klembord gekopieerd",
 						"idCopy": "Kopiëren",
-						"packCount": "${name} - ${count} items",
+						"packCount": "${name} - ${count} onderdelen",
 						"title": "Aangepaste expressies groeperen",
 						"upload": "Emoticons uploaden",
 						"uploadFailed": "Uploaden mislukt: ${error}",
@@ -1895,7 +1895,7 @@
 				},
 				"failed": "Pin mislukt",
 				"message": "speld naar boven",
-				"messageLine": "[Top] ${targetId}",
+				"messageLine": "[Vastgezet] ${targetId}",
 				"ok": "Opgenomen en vastgezet",
 				"thisMessage": "Schrijf dit artikel naar DAG en pin het bovenaan"
 			},
@@ -3983,7 +3983,7 @@
 	"part_config": {
 		"title": "Componentconfiguratie",
 		"pageTitle": "Componentconfiguratie",
-		"description": "Kijk in het hart van Font. Hier kunt u de instellingen van de diverse componenten aanpassen en zo de motor afstemmen die uw ervaring aandrijft.",
+		"description": "Kijk in het hart van fount. Hier kunt u de instellingen van de diverse componenten aanpassen en zo de motor afstemmen die uw ervaring aandrijft.",
 		"labels": {
 			"part": "Kies component"
 		},
@@ -4100,7 +4100,7 @@
 			"modelsDevLoadFailed": "Catalogus laden mislukt: ${message}",
 			"noModelsMatched": "Geen overeenkomende modellen gevonden",
 			"currentModelTitle": "${name} (${model})",
-			"providerLabel": "Provider: ${provider}",
+			"providerLabel": "Aanbieder: ${provider}",
 			"providerDocLink": "[Providerdocumentatie bekijken](${url})",
 			"modelSearch": {
 				"placeholder": "Zoek modelnaam, fabrikant, mogelijkheden..."
@@ -4111,7 +4111,7 @@
 				"inputPrice": "Invoerprijs: ${price} / 1M tokens",
 				"knowledge": "Kennisgrens: ${knowledge}",
 				"modalities": "Modaliteiten: invoer ${input}, uitvoer ${output}",
-				"openWeights": "Open weights",
+				"openWeights": "Open gewichten",
 				"outputLimit": "Max. output: ${output} tokens",
 				"outputPrice": "Uitvoerprijs: ${price} / 1M tokens",
 				"reasoning": "Ondersteunt redenering",
@@ -5223,9 +5223,9 @@
 	},
 	"browser_integration": {
 		"title": "Browserintegratie",
-		"description": "Overbrug de kloof tussen de font en het web. Deze pagina biedt het gebruikersscript om een ​​naadloze integratie mogelijk te maken, waardoor uw AI-metgezellen in uw browse-ervaring terechtkomen.",
+		"description": "Overbrug de kloof tussen de fount en het web. Deze pagina biedt het gebruikersscript om een ​​naadloze integratie mogelijk te maken, waardoor uw AI-metgezellen in uw browse-ervaring terechtkomen.",
 		"pageHeader": "Browserintegratie",
-		"pageDescription": "Om uw fount -rol te laten communiceren met de webpagina, moet u dit browser -integratiescript installeren. Het fungeert als een brug tussen het personage en de browser, waardoor ze de pagina -inhoud kunnen bekijken en acties kunnen uitvoeren.",
+		"pageDescription": "Om uw fount-rol te laten communiceren met de webpagina, moet u dit browser-integratiescript installeren. Het fungeert als een brug tussen het personage en de browser, waardoor ze de pagina-inhoud kunnen bekijken en acties kunnen uitvoeren.",
 		"install_script_title": "Installatiescript",
 		"install_script_description": "Klik op de onderstaande knop om het script van de browserintegratie te installeren. U moet eerst een userscriptmanager zoals Tampermonkey installeren.",
 		"install_button": "Installeren",
@@ -5236,9 +5236,9 @@
 		"what_is_manager": "Wat is een userscriptbeheerder?",
 		"manager_explanation": "Een userscriptbeheerder is een browserverlenging waarmee u scripts kunt installeren en uitvoeren die webpagina's wijzigen. Om het fount Integration Script te gebruiken, hebt u een van de extensies nodig.",
 		"popular_managers": "Populaire keuzes:",
-		"csp_warning": "Mogelijk moet u de plug -in installeren om CSP uit te schakelen om de integratiefunctie goed te laten werken. Voor ${browser} kunt u [deze plugin](${link}).",
+		"csp_warning": "Mogelijk moet u de plug-in installeren om CSP uit te schakelen om de integratiefunctie goed te laten werken. Voor ${browser} kunt u [deze plugin](${link}).",
 		"connected_pages_title": "Verbonden pagina",
-		"fetch_pages_error": "Kan de gekoppelde pagina -lijst niet laden.",
+		"fetch_pages_error": "Kan de gekoppelde pagina-lijst niet laden.",
 		"page_title": "Paginietitel",
 		"page_url": "Url",
 		"page_status": "Status",
@@ -5252,11 +5252,11 @@
 		},
 		"autorun": {
 			"title": "Voer automatisch scripts uit",
-			"description": "Beheer JavaScript -fragmenten die automatisch worden uitgevoerd bij het matchen van een specifieke website. Deze scripts kunnen worden verstrekt door uw AI-rol of plug-in om uw browse-ervaring te verbeteren of te automatiseren.",
+			"description": "Beheer JavaScript-fragmenten die automatisch worden uitgevoerd bij het matchen van een specifieke website. Deze scripts kunnen worden verstrekt door uw AI-rol of plug-in om uw browse-ervaring te verbeteren of te automatiseren.",
 			"form_title": "Voeg een nieuw script toe",
 			"comment_label": "Opmerkingen (optioneel)",
 			"url_regex_label": "URL Regelmatige expressie",
-			"script_label": "JavaScript -code",
+			"script_label": "JavaScript-code",
 			"add_button": "Script toevoegen",
 			"list_title": "Geconfigureerde scripts",
 			"view_script_button": "Bekijk het script",
@@ -5313,7 +5313,7 @@
 		"update": {
 			"prompt": "Een nieuwe versie van het fount Browser Integration Script is beschikbaar. Is de updatepagina nu geopend?"
 		},
-		"csp_warning": "Het fount Browser Integration Script detecteert dat het CSP -beleid op de pagina bestaat, waardoor het integratiescript niet goed werkt. Overweeg de plug -in te installeren om CSP uit te schakelen.",
+		"csp_warning": "Het fount Browser Integration Script detecteert dat het CSP-beleid op de pagina bestaat, waardoor het integratiescript niet goed werkt. Overweeg de plug-in te installeren om CSP uit te schakelen.",
 		"hostChange": {
 			"securityWarningTitle": "--- fount Veiligheidswaarschuwing ---",
 			"message": "De huidige pagina (\"${origin}\") probeert uw fount-hostadres te wijzigen in:\n\n\"${newHost}\"\n\nWaarschuwing: door deze actie goed te keuren, kan de nieuwe host uw browserintegratiefuncties volledig beheersen, wat kan leiden tot gevoelige informatielekkage of accountdiefstal.\nEr mag alleen goedkeuring worden gemaakt als u er zeker van bent dat dit uw eigen bewerking is (bijvoorbeeld een fount-server migreren).\n\nWeet u zeker dat u deze wijziging wilt toestaan?",
@@ -5323,7 +5323,7 @@
 	},
 	"terminal_assistant": {
 		"title": "Terminal-assistent",
-		"description": "Naast de grafische interface is er ruimte voor directe bediening. Communiceer met de kern van Font via de terminalassistent, waar tekst zijn eigen krachtige magie weeft.",
+		"description": "Naast de grafische interface is er ruimte voor directe bediening. Communiceer met de kern van fount via de terminalassistent, waar tekst zijn eigen krachtige magie weeft.",
 		"initialMessage": "fount ondersteunt het implementeren van je favoriete personage in je terminal om je te helpen met coderen!",
 		"initialMessageLink": "Klik hier voor meer informatie",
 		"achievements": {
@@ -5373,7 +5373,7 @@
 			"first_ide_use": {
 				"name": "Eerste keer dat ik het lettertype in een externe IDE gebruik",
 				"description": "Gebruik voor het eerst lettertyperollen voor ondersteuning bij het programmeren in ACP-compatibele editors zoals Zed, JetBrains, Neovim en meer.",
-				"locked_description": "Maak verbinding met de font-rol in een externe IDE en voltooi een sessie."
+				"locked_description": "Maak verbinding met de fount-rol in een externe IDE en voltooi een sessie."
 			}
 		},
 		"supportedEditors": {
@@ -5397,7 +5397,7 @@
 			"config": "Selecteer een rol en genereer eerst een API-sleutel",
 			"configHint": "De rol-ID wordt weergegeven in de vervolgkeuzelijst met rollen op deze pagina en de API-sleutel kan worden beheerd in de gebruikersinstellingen.",
 			"configSample": "Configuratievoorbeeld:",
-			"desc": "Raadpleeg het volgende voorbeeld om het font ACP-script te configureren:",
+			"desc": "Raadpleeg het volgende voorbeeld om het fount ACP-script te configureren:",
 			"scriptLabel": "ACP-script-URL",
 			"title": "Configureer het lettertype ACP-script"
 		}
@@ -5592,7 +5592,7 @@
 			"dim": "Gedimd",
 			"nord": "Nord",
 			"sunset": "Zonsondergang",
-			"caramellatte": "Caramel Latte",
+			"caramellatte": "Karamel-latte",
 			"abyss": "Afgrond",
 			"silk": "Zijde"
 		},
@@ -5755,8 +5755,8 @@
 			}
 		},
 		"apiKeys": {
-			"title": "API -sleutel",
-			"description": "Beheer de API -sleutel voor externe toepassingen.",
+			"title": "API-sleutel",
+			"description": "Beheer de API-sleutel voor externe toepassingen.",
 			"input": {
 				"placeholder": "Nieuwe sleutelbeschrijving"
 			},
@@ -5768,7 +5768,7 @@
 			"keyNotFound": "De API-sleutel is niet gevonden.",
 			"verifyMissingApiKey": "Geef een API-sleutel op.",
 			"errorDescriptionRequired": "Een beschrijving is vereist.",
-			"createSuccess": "De API -sleutel is met succes gemaakt.",
+			"createSuccess": "De API-sleutel is met succes gemaakt.",
 			"refreshButton": {
 				"title": "Lijst vernieuwen"
 			},
@@ -5777,21 +5777,21 @@
 			},
 			"revoke": {
 				"button": "Herroepen",
-				"confirm": "Weet u zeker dat u deze API -sleutel wilt intrekken?",
+				"confirm": "Weet u zeker dat u deze API-sleutel wilt intrekken?",
 				"missingJti": "Geef de sleutel op die u wilt intrekken.",
 				"missingPassword": "Voor het intrekken van een sleutel is een wachtwoord vereist.",
-				"success": "De API -sleutel is succesvol ingetrokken.",
+				"success": "De API-sleutel is succesvol ingetrokken.",
 				"wrongPassword": "Het wachtwoord is onjuist."
 			}
 		},
 		"newApiKey": {
-			"title": "Er is een nieuwe API -sleutel gemaakt",
-			"warning": "Kopieer uw nieuwe API -sleutel. Je kunt het niet meer zien!",
+			"title": "Er is een nieuwe API-sleutel gemaakt",
+			"warning": "Kopieer uw nieuwe API-sleutel. Je kunt het niet meer zien!",
 			"closeButton": "Ik heb mijn sleutel gekopieerd",
 			"copyButton": {
 				"title": "Kopieer nieuwe API-sleutel"
 			},
-			"copiedAlert": "API -sleutel gekopieerd naar klembord!",
+			"copiedAlert": "API-sleutel gekopieerd naar klembord!",
 			"copyKeyFailed": "Kan de sleutel niet naar het klembord kopiëren."
 		},
 		"editorCommand": {
@@ -5984,7 +5984,7 @@
 			"title": "subfount-client downloaden",
 			"description": "Download het zelfstandige subfount-clientscript om op het externe apparaat uit te voeren.",
 			"tabsLabel": {
-				"aria-label": "Select the operating system"
+				"aria-label": "Besturingssysteem selecteren"
 			},
 			"tabs": {
 				"linux": "Linux",
@@ -5993,7 +5993,7 @@
 				"windows": "Windows"
 			},
 			"copyButton": "Kopiëren",
-			"copied": "Install script copied to clipboard"
+			"copied": "Installatiescript naar het klembord gekopieerd"
 		},
 		"errors": {
 			"loadConnectionCodeFailed": "Kan verbindingscode niet laden: ${message}",
@@ -6192,8 +6192,11 @@
 			"crop": "Bijsnijden",
 			"exportFailed": "Exporteren van de afbeelding mislukt",
 			"image": "Bewerken",
-			"loadFailed": null,
-			"mosaic": "Verpixelen"
+			"loadFailed": "De afbeelding kon niet worden geladen",
+			"mosaic": "Verpixelen",
+			"undo": "Ongedaan maken",
+			"reset": "Resetten",
+			"redo": "Opnieuw"
 		},
 		"common": {
 			"cancel": "Annuleren",
@@ -6519,6 +6522,12 @@
 				"left": "Tabbladen links sluiten",
 				"right": "Tabbladen rechts sluiten",
 				"all": "Alle tabbladen sluiten"
+			},
+			"generating": {
+				"aria-label": "‘${title}’ wordt gegenereerd"
+			},
+			"unread": {
+				"aria-label": "‘${title}’ heeft ongelezen berichten"
 			}
 		},
 		"newTab": {
@@ -6578,6 +6587,14 @@
 				"edit": {
 					"aria-label": "Bewerken",
 					"title": "Bewerken"
+				},
+				"downloadHtml": {
+					"title": "HTML downloaden",
+					"aria-label": "HTML downloaden"
+				},
+				"saveGist": {
+					"title": "Opslaan naar gist",
+					"aria-label": "Opslaan naar gist"
 				}
 			},
 			"copied": "Gekopieerd naar het klembord",
@@ -6619,11 +6636,31 @@
 				"aria-label": "Bijlage toevoegen",
 				"title": "Bijlage toevoegen"
 			},
+			"failed": "Bijlage ${name} kon niet worden gelezen",
+			"reading": "Bezig met lezen…",
 			"remove": {
-				"aria-label": "Bijlage verwijderen"
+				"aria-label": "Bijlage verwijderen",
+				"title": "Bijlage verwijderen"
 			},
+			"tooLargeTotal": "Bijlagen overschrijden de totale limiet van ${limit}",
 			"drop": "Loslaten om toe te voegen",
-			"tooLarge": "Bijlage ${name} overschrijdt de limiet van 10 MB"
+			"tooLarge": "Bijlage ${name} overschrijdt de limiet van 10 MB",
+			"description": {
+				"placeholder": "Voeg een beschrijving toe…",
+				"aria-label": "Bijlagebeschrijving"
+			},
+			"download": {
+				"title": "Bijlage downloaden",
+				"aria-label": "Bijlage downloaden"
+			},
+			"edit": {
+				"title": "Afbeelding bewerken",
+				"aria-label": "Afbeelding bewerken"
+			},
+			"preview": {
+				"title": "Bijlage bekijken",
+				"aria-label": "Bijlage bekijken"
+			}
 		},
 		"error": {
 			"generic": "Er is iets misgegaan: ${error}",
@@ -6734,6 +6771,11 @@
 				"failed": "Mislukt",
 				"unknown": "Niet gevonden",
 				"idle": "Achtergrondtaak"
+			}
+		},
+		"generation": {
+			"reconnect": {
+				"aria-label": "Opnieuw verbinden"
 			}
 		}
 	},
@@ -6928,7 +6970,7 @@
 			"chains": "Generatieketens",
 			"filterChar": "Personage",
 			"allChars": "Alle personages",
-			"recordsCount": "${count} records",
+			"recordsCount": "In totaal ${count} records",
 			"empty": "Nog geen generaties.",
 			"chainsEmpty": "Nog geen ketens.",
 			"conversations": "Gesprekken",
@@ -7054,7 +7096,7 @@
 				"lowestTitle": "De 7 rondes met het laagste cachetrefferpercentage",
 				"missing": "Geen gegevens over hergebruik van promptvoorvoegsel",
 				"noRate": "Cache —",
-				"rate": "Cache ≈${rate}%",
+				"rate": "Cachepercentage ≈${rate}%",
 				"summary": "Geschat hergebruik van promptvoorvoegsel ${rate}% (tekens)"
 			}
 		},

@@ -251,7 +251,7 @@
 			"planSlotSummary": "Plan : exécution ${run}, réutilisation ${reuse}, bloqué ${blocked}, ignoré ${skipped}",
 			"noMatchingSuites": "Aucune suite correspondante.",
 			"reportPath": "Rapport : ${path}",
-			"reportPathFinal": "Rapport : ${path}",
+			"reportPathFinal": "\nRapport : ${path}",
 			"statePathFinal": "État : ${path}",
 			"blocked": "Bloqué : ${label} (dépendance non validée : ${deps})",
 			"skippedTree": "Ignoré : ${label} (skip_tree : ${deps})",
@@ -265,7 +265,7 @@
 				"heavy": "charge élevée",
 				"expected": "attendu ${expected}"
 			},
-			"reusedSuite": ">>> Réutilisation de ${manifestId}:${name} (déclencheur inchangé, dernier ${status})",
+			"reusedSuite": "\n>>> Réutilisation de ${manifestId}:${name} (déclencheur inchangé, dernier ${status})",
 			"prunedAbsentState": "État obsolète des suites supprimées nettoyé : ${suites} suites, ${subtests} sous-tests",
 			"noisyOnlyRemain": "Encore ${count} suites réussies avec bruit : ${suites}",
 			"noRealRunPlanned": "Aucune exécution nécessaire : ${reused} réutilisées, ${blocked} bloquées prévues, ${skipped} ignorées (trigger inchangé)",
@@ -280,7 +280,7 @@
 			"triggerNoMatchSummary": "${count} triggers sans fichier dans le dépôt (voir report.md)",
 			"federationCleanupPre": "Nettoyage fédération (avant) échoué : ${output}",
 			"federationCleanupPost": "Nettoyage fédération (après) échoué : ${output}",
-			"suiteHeader": "=== Suite ${name} ===",
+			"suiteHeader": "\n=== Suite ${name} ===",
 			"heapSnapshotSaved": "Snapshot heap nœud de test (proche OOM) : ${path}",
 			"liveUsage": "Usage : --suite <nom> | --list",
 			"serialUsage": "Usage : serial.mjs <chemin-deno-test> [...]",
@@ -304,8 +304,8 @@
 				"error": "Erreur worker nœud de test : ${error}"
 			},
 			"ws": {
-				"pass": "Réussi : ${detail}",
-				"fail": "Échec : ${detail}"
+				"pass": "\nRéussi : ${detail}",
+				"fail": "\nÉchec : ${detail}"
 			},
 			"report": {
 				"title": "Rapport de tests fount",
@@ -465,7 +465,7 @@
 					"title": "Branche : ${branch}",
 					"detached": "HEAD détaché"
 				},
-				"commit": "Commit : `${ref}`",
+				"commit": "Validation : `${ref}`",
 				"remote": "Distant : `${ref}`",
 				"status": {
 					"title": "État : ${status}",
@@ -575,7 +575,7 @@
 			},
 			"remove": {
 				"confirmPrompt": "Le répertoire d'installation de fount est sur le point d'être supprimé du disque : `${path}`\nVeuillez confirmer qu'il s'agit bien du répertoire à supprimer.",
-				"yn": "[Y/N]",
+				"yn": "[Y/N] ",
 				"aborted": "Annulé, rien n'a été supprimé.",
 				"externalMountWarning": "Attention : fount est situé sur un support externe/partagé (`${target}`) !\nCe répertoire peut exister simultanément sur l'hôte ou la machine virtuelle. `fount remove` le supprimera aussi là-bas, soyez donc particulièrement prudent.",
 				"nonInteractiveRequiresForce": "La suppression ne peut pas être confirmée dans un environnement non interactif. Si vous êtes certain de vouloir supprimer `fount` (${path}), utilisez `fount remove --force` pour ignorer la confirmation.",
@@ -1416,7 +1416,7 @@
 				"placeholder": "Les chaînes de la liste affichent uniquement les cartes de navigation et n'envoient pas de messages"
 			},
 			"mentionHandle": "@${name}",
-			"mentionInsert": "@${name}",
+			"mentionInsert": "@${name} ",
 			"attachmentsHint": "(${n} pièces jointes)",
 			"copied": "Copié",
 			"addBookmark": {
@@ -1433,9 +1433,9 @@
 			"forceTriggerAllLocalTitle": {
 				"title": "Forcer tous les personnages locaux à parler"
 			},
-			"quoteHeader": "> **${sender}**${sep}${time}",
-			"quoteHeaderWithTime": "> **${sender}** · ${time}",
-			"quoteHeaderWithoutTime": "> **${sender}**",
+			"quoteHeader": "> **${sender}**${sep}${time}\n\n",
+			"quoteHeaderWithTime": "> **${sender}** · ${time}\n\n",
+			"quoteHeaderWithoutTime": "> **${sender}**\n\n",
 			"stopGenerating": "Arrêter de générer",
 			"reactionAdd": {
 				"title": "Ajouter une réponse"
@@ -5592,7 +5592,7 @@
 			"dim": "Tamisé",
 			"nord": "Nordique",
 			"sunset": "Crépuscule",
-			"caramellatte": "Caramel Latte",
+			"caramellatte": "Latte caramel",
 			"abyss": "Abysse",
 			"silk": "Soie"
 		},
@@ -5984,7 +5984,7 @@
 			"title": "Télécharger le client de subfount",
 			"description": "Téléchargez le script client de Subfount autonome à exécuter sur le périphérique distant.",
 			"tabsLabel": {
-				"aria-label": "Select the operating system"
+				"aria-label": "Sélectionner le système d'exploitation"
 			},
 			"tabs": {
 				"linux": "Linux",
@@ -5993,7 +5993,7 @@
 				"windows": "Windows"
 			},
 			"copyButton": "Copier",
-			"copied": "Install script copied to clipboard"
+			"copied": "Script d'installation copié dans le presse-papiers"
 		},
 		"errors": {
 			"loadConnectionCodeFailed": "Échec du chargement du code de connexion : ${message}",
@@ -6192,9 +6192,11 @@
 			"crop": "Recadrer",
 			"exportFailed": "Échec de l’export de l’image",
 			"image": "Modifier",
-			"loadFailed": null,
+			"loadFailed": "Échec du chargement de l'image",
 			"mosaic": "Pixeliser",
-			"redo": null
+			"redo": "Refaire",
+			"undo": "Annuler",
+			"reset": "Réinitialiser"
 		},
 		"common": {
 			"cancel": "Annuler",
@@ -6520,6 +6522,12 @@
 				"left": "Fermer les onglets à gauche",
 				"right": "Fermer les onglets à droite",
 				"all": "Fermer tous les onglets"
+			},
+			"generating": {
+				"aria-label": "« ${title} » est en cours de génération"
+			},
+			"unread": {
+				"aria-label": "« ${title} » a des messages non lus"
 			}
 		},
 		"newTab": {
@@ -6579,6 +6587,14 @@
 				"edit": {
 					"aria-label": "Modifier",
 					"title": "Modifier"
+				},
+				"downloadHtml": {
+					"title": "Télécharger HTML",
+					"aria-label": "Télécharger HTML"
+				},
+				"saveGist": {
+					"title": "Enregistrer dans un gist",
+					"aria-label": "Enregistrer dans un gist"
 				}
 			},
 			"copied": "Copié dans le presse-papiers",
@@ -6620,11 +6636,31 @@
 				"aria-label": "Ajouter une pièce jointe",
 				"title": "Ajouter une pièce jointe"
 			},
+			"failed": "Impossible de lire la pièce jointe ${name}",
+			"reading": "Lecture…",
 			"remove": {
-				"aria-label": "Retirer la pièce jointe"
+				"aria-label": "Retirer la pièce jointe",
+				"title": "Retirer la pièce jointe"
 			},
+			"tooLargeTotal": "Les pièces jointes dépassent la limite totale de ${limit}",
 			"drop": "Relâchez pour joindre",
-			"tooLarge": "La pièce jointe ${name} dépasse la limite de 10 Mo"
+			"tooLarge": "La pièce jointe ${name} dépasse la limite de 10 Mo",
+			"description": {
+				"placeholder": "Ajouter une description…",
+				"aria-label": "Description de la pièce jointe"
+			},
+			"download": {
+				"title": "Télécharger la pièce jointe",
+				"aria-label": "Télécharger la pièce jointe"
+			},
+			"edit": {
+				"title": "Modifier l'image",
+				"aria-label": "Modifier l'image"
+			},
+			"preview": {
+				"title": "Aperçu de la pièce jointe",
+				"aria-label": "Aperçu de la pièce jointe"
+			}
 		},
 		"error": {
 			"generic": "Une erreur est survenue : ${error}",
@@ -6735,6 +6771,11 @@
 				"failed": "Échoué",
 				"unknown": "Introuvable",
 				"idle": "Tâche en arrière-plan"
+			}
+		},
+		"generation": {
+			"reconnect": {
+				"aria-label": "Reconnecter"
 			}
 		}
 	},

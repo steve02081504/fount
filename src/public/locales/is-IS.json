@@ -251,7 +251,7 @@
 			"planSlotSummary": "Áætlunartímar: raunkeyrsla ${run}, endurnýting ${reuse}, lokað ${blocked}, sleppt ${skipped}",
 			"noMatchingSuites": "Engin samsvarandi prófunarsvíta.",
 			"reportPath": "Skýrsla: ${path}",
-			"reportPathFinal": "Skýrsla: ${path}",
+			"reportPathFinal": "\nSkýrsla: ${path}",
 			"statePathFinal": "Núverandi staða: ${path}",
 			"blocked": "Lokað: ${label} (háð ekki staðið: ${deps})",
 			"skippedTree": "Sleppt: ${label} (skip_tree: ${deps})",
@@ -265,7 +265,7 @@
 				"heavy": "mikið álag",
 				"expected": "búist við ${expected}"
 			},
-			"reusedSuite": ">>> Endurnotaðu ${manifestId}:${name} (kveikja helst óbreytt, síðasti ${status} er notaður)",
+			"reusedSuite": "\n>>> Endurnotaðu ${manifestId}:${name} (kveikja helst óbreytt, síðasti ${status} er notaður)",
 			"prunedAbsentState": "Hreinsað úrelt ástand fjarlægðra svíta: ${suites} svítur, ${subtests} undirpróf",
 			"noisyOnlyRemain": "Enn eru ${count} svítur Staðið en með hávaða: ${suites}",
 			"noRealRunPlanned": "Engin raunkeyrsla nauðsynleg: ${reused} endurnýtt, ${blocked} vænst lokað, ${skipped} sleppt (kveikja óbreytt)",
@@ -280,7 +280,7 @@
 			"triggerNoMatchSummary": "Alls ${count} kveikjar pössuðu ekki við neinar vöruhúsaskrár (sjá report.md fyrir frekari Skilaboð)",
 			"federationCleanupPre": "Sambandsprófhreinsun (áður en hún er keyrð) mistókst: ${output}",
 			"federationCleanupPost": "Sambandsprófhreinsun (eftir keyrslu) mistókst: ${output}",
-			"suiteHeader": "=== Pakki ${name} ===",
+			"suiteHeader": "\n=== Pakki ${name} ===",
 			"heapSnapshotSaved": "OOM-nálægt heap-snapshot prófhnúts: ${path}",
 			"liveUsage": "Notkun: --suite <nafn> | --list",
 			"serialUsage": "Notkun: serial.mjs <deno-test-path> [...]",
@@ -304,8 +304,8 @@
 				"error": "Villa í prófunarhnút: ${error}"
 			},
 			"ws": {
-				"pass": "STAÐIÐ: ${detail}",
-				"fail": "Bilun: ${detail}"
+				"pass": "\nSTAÐIÐ: ${detail}",
+				"fail": "\nBilun: ${detail}"
 			},
 			"report": {
 				"title": "fount prófaskýrsla",
@@ -465,7 +465,7 @@
 					"title": "Grein: ${branch}",
 					"detached": "Aðskilið HEAD"
 				},
-				"commit": "Commit: `${ref}`",
+				"commit": "Festing: `${ref}`",
 				"remote": "Fjarlægt: `${ref}`",
 				"status": {
 					"title": "Staða: ${status}",
@@ -496,7 +496,7 @@
 				"exeFailed": "Gat ekki búið til fount.exe; sleppti skráningu á Steam."
 			},
 			"git": {
-				"repoNotFound": "Git geymslan fyrir font fannst ekki. Byrjar nýjan...",
+				"repoNotFound": "Git geymslan fyrir fount fannst ekki. Byrjar nýjan...",
 				"fetchingAndResetting": "Sækir úr fjarlægri geymslu og endurstillir í master...",
 				"localChangesDetected": "Staðbundnar breytingar fundnar, munur verður vistaður áður en skrifað er yfir.",
 				"backupSavedTo": "Afrit af staðbundnum breytingum þínum hefur verið vistað á: `${path}`",
@@ -551,7 +551,7 @@
 				"untrustedPartsWarning": "Ekki setja upp neina ótryggða leturíhluti á kerfið þitt, þeir geta gert hvað sem er.",
 				"permissionDeniedAsRoot": "Villa: Gat ekki skrifað í fount-möppuna '${path}'. Þú ert að keyra sem rót en aðgangi er enn hafnað — vinsamlegast athugaðu og leiðréttu öryggisheimildir þessarar möppu til að veita núverandi notanda fulla stjórn.",
 				"permissionDeniedNotRoot": "Villa: Gat ekki skrifað í fount-möppuna '${path}'. Vinsamlegast leiðréttu öryggisheimildir möppunnar til að veita núverandi notanda skrifaðgang, eða keyrðu fount sem rót.",
-				"rootWarningAsRoot": "Ekki mælt með því: að keyra font þar sem rót veitir fullan kerfisaðgang að öllum fontahlutum.",
+				"rootWarningAsRoot": "Ekki mælt með því: að keyra fount þar sem rót veitir fullan kerfisaðgang að öllum fount-hlutum.",
 				"rootWarningPreferUser": "Nema þú vitir hvað þú ert að gera er mælt með því að keyra fount sem venjulegur notandi.",
 				"runnerUpdating": "Uppfærir uppsetningarforritið…"
 			},
@@ -561,7 +561,7 @@
 				"cleaningOldPwshModules": "Hreinsar upp gamlar pwsh einingar..."
 			},
 			"keepalive": {
-				"initComplete": "Endurræsingu lokið. Er að reyna að endurræsa font...",
+				"initComplete": "Endurræsingu lokið. Er að reyna að endurræsa fount...",
 				"autoInitDisabled": "fontur hefur verið endurræstur margoft á síðasta stutta tímabili, en sjálfvirk endurræsing hefur verið gerð óvirk vegna þess að `.noautoinit` skráin er til staðar. Hætta.",
 				"restartingTooFast": "lind hefur verið endurræst oft á stuttum tíma. Þvinguð endurræsing...",
 				"failedToStart": "Jafnvel eftir sjálfvirkar viðgerðartilraunir fer gosbrunnurinn ekki í gang í stuttan tíma. Vinsamlegast athugaðu skrárnar fyrir villur.",
@@ -575,7 +575,7 @@
 			},
 			"remove": {
 				"confirmPrompt": "Verið er að eyða uppsetningarmöppunni fyrir fount af disknum: `${path}`\nVinsamlegast staðfestu að þetta sé örugglega mappan sem þú ætlar að fjarlægja.",
-				"yn": "[Y/N]",
+				"yn": "[Y/N] ",
 				"aborted": "Hætt við, ekkert var eytt.",
 				"externalMountWarning": "Viðvörun: fount er á ytri/samnýttum tengistað (`${target}`)!\nÞessi mappa gæti líka verið til í vélinni eða annarri sýndarvél. `fount remove` mun eyða henni þar líka, svo vertu sérstaklega varkár.",
 				"nonInteractiveRequiresForce": "Ekki er hægt að staðfesta eyðingu í ekki gagnvirku umhverfi. Ef þú ert viss um að þú viljir fjarlægja `fount` (${path}), notaðu `fount remove --force` til að sleppa staðfestingu.",
@@ -1416,7 +1416,7 @@
 				"placeholder": "Listarásir sýna aðeins leiðsögukort og senda ekki skilaboð"
 			},
 			"mentionHandle": "@${name}",
-			"mentionInsert": "@${name}",
+			"mentionInsert": "@${name} ",
 			"attachmentsHint": "(${n} viðhengi)",
 			"copied": "Afritað",
 			"addBookmark": {
@@ -1433,9 +1433,9 @@
 			"forceTriggerAllLocalTitle": {
 				"title": "Þvingaðu alla staðbundna stafi til að tala"
 			},
-			"quoteHeader": "> **${sender}**${sep}${time}",
-			"quoteHeaderWithTime": "> **${sender}** · ${time}",
-			"quoteHeaderWithoutTime": "> **${sender}**",
+			"quoteHeader": "> **${sender}**${sep}${time}\n\n",
+			"quoteHeaderWithTime": "> **${sender}** · ${time}\n\n",
+			"quoteHeaderWithoutTime": "> **${sender}**\n\n",
 			"stopGenerating": "Hættu að búa til",
 			"reactionAdd": {
 				"title": "Bæta við svari"
@@ -4553,7 +4553,7 @@
 			}
 		},
 		"composer": {
-			"placeholder": "Hvað ertu að hugsa um? Styðjið Markdown (font mállýska), sláðu inn @ til að nefna",
+			"placeholder": "Hvað ertu að hugsa um? Styðjið Markdown (fount mállýska), sláðu inn @ til að nefna",
 			"locale": {
 				"aria-label": "Efnismál"
 			},
@@ -5366,13 +5366,13 @@
 		"achievements": {
 			"first_ide_use": {
 				"name": "Í fyrsta skipti sem þú notar font í ytri IDE",
-				"description": "Í fyrsta skipti, notaðu font hlutverk til að aðstoða við forritun í ACP-virkum ritstjórum eins og Zed, JetBrains, Neovim og fleira.",
+				"description": "Í fyrsta skipti, notaðu fount hlutverk til að aðstoða við forritun í ACP-virkum ritstjórum eins og Zed, JetBrains, Neovim og fleira.",
 				"locked_description": "Tengstu við uppsprettuhlutverkið í ytri IDE og kláraðu lotu."
 			}
 		},
 		"supportedEditors": {
 			"error": "Mistókst að hlaða lista: ${message}",
-			"intro": "Eftirfarandi viðskiptavinir vinna með font:",
+			"intro": "Eftirfarandi viðskiptavinir vinna með fount:",
 			"loading": "hleður…",
 			"title": "Styður ritstjórar og viðskiptavinir"
 		},
@@ -5409,7 +5409,7 @@
 			"placeholder": "Veldu hlutverk"
 		},
 		"charSearch": {
-			"placeholder": "Leitaðu að hlutverkum ..."
+			"placeholder": "Leitaðu að hlutverkum..."
 		},
 		"runningCard": {
 			"title": "Running Pet",
@@ -5978,7 +5978,7 @@
 			"title": "Sæktu biðlara undirlindar",
 			"description": "Sæktu sjálfstætt smáforrit biðlara til að keyra á ytra tækinu.",
 			"tabsLabel": {
-				"aria-label": "Select the operating system"
+				"aria-label": "Veldu stýrikerfi"
 			},
 			"tabs": {
 				"linux": "Linux",
@@ -5987,7 +5987,7 @@
 				"windows": "Windows"
 			},
 			"copyButton": "Afrita",
-			"copied": "Install script copied to clipboard"
+			"copied": "Uppsetningarskrift afrituð á klippiborð"
 		},
 		"errors": {
 			"loadConnectionCodeFailed": "Mistókst að hlaða tengikóða: ${message}",
@@ -6009,7 +6009,7 @@
 	},
 	"achievements": {
 		"title": "Afrek",
-		"description": "Kannaðu tímamótin og afrek ferðarinnar þinnar með font. Hvert afrek markar skref í þinni einstöku frásögn.",
+		"description": "Kannaðu tímamótin og afrek ferðarinnar þinnar með fount. Hvert afrek markar skref í þinni einstöku frásögn.",
 		"pageHeader": "Afrekshöll",
 		"pageDescription": "Skoðaðu ólæstu afrekin þín og áfangastaði hér.",
 		"unlocked_on": "Opnað ${date}",
@@ -6186,9 +6186,11 @@
 			"crop": "Klippa",
 			"exportFailed": "Mistókst að flytja myndina út",
 			"image": "Breyta",
-			"loadFailed": null,
+			"loadFailed": "Mistókst að hlaða myndinni",
 			"mosaic": "Pixla",
-			"redo": null
+			"redo": "Endurgera",
+			"undo": "Afturkalla",
+			"reset": "Endurstilla"
 		},
 		"common": {
 			"cancel": "Hætta við",
@@ -6514,6 +6516,12 @@
 				"left": "Loka flipum til vinstri",
 				"right": "Loka flipum til hægri",
 				"all": "Loka öllum flipum"
+			},
+			"generating": {
+				"aria-label": "„${title}“ er að mynda"
+			},
+			"unread": {
+				"aria-label": "„${title}“ er með ólesin skilaboð"
 			}
 		},
 		"newTab": {
@@ -6573,6 +6581,14 @@
 				"edit": {
 					"aria-label": "Breyta",
 					"title": "Breyta"
+				},
+				"downloadHtml": {
+					"title": "Hlaða niður HTML",
+					"aria-label": "Hlaða niður HTML"
+				},
+				"saveGist": {
+					"title": "Vista í gist",
+					"aria-label": "Vista í gist"
 				}
 			},
 			"copied": "Afritað í klippispjald",
@@ -6614,11 +6630,31 @@
 				"aria-label": "Bæta við viðhengi",
 				"title": "Bæta við viðhengi"
 			},
+			"failed": "Mistókst að lesa viðhengið ${name}",
+			"reading": "Les…",
 			"remove": {
-				"aria-label": "Fjarlægja viðhengi"
+				"aria-label": "Fjarlægja viðhengi",
+				"title": "Fjarlægja viðhengi"
 			},
+			"tooLargeTotal": "Viðhengin fara yfir ${limit} heildarhámark",
 			"drop": "Slepptu til að hengja við",
-			"tooLarge": "Viðhengið ${name} fer yfir 10MB hámark"
+			"tooLarge": "Viðhengið ${name} fer yfir 10MB hámark",
+			"description": {
+				"placeholder": "Bættu við lýsingu…",
+				"aria-label": "Lýsing á viðhengi"
+			},
+			"download": {
+				"title": "Hlaða niður viðhengi",
+				"aria-label": "Hlaða niður viðhengi"
+			},
+			"edit": {
+				"title": "Breyta mynd",
+				"aria-label": "Breyta mynd"
+			},
+			"preview": {
+				"title": "Forskoða viðhengi",
+				"aria-label": "Forskoða viðhengi"
+			}
 		},
 		"error": {
 			"generic": "Eitthvað fór úrskeiðis: ${error}",
@@ -6729,6 +6765,11 @@
 				"failed": "Mistókst",
 				"unknown": "Fannst ekki",
 				"idle": "Bakgrunnsverk"
+			}
+		},
+		"generation": {
+			"reconnect": {
+				"aria-label": "Tengjast aftur"
 			}
 		}
 	},

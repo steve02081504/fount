@@ -222,7 +222,7 @@
 				},
 				"dashboard": {
 					"idle": "閒",
-					"unknownCount": "+${count} 未知",
+					"unknownCount": "+${count} 未詳",
 					"runningCount": "運行中 ${count}",
 					"passedCount": "通過 ${count}",
 					"failedCount": "失敗 ${count}",
@@ -280,10 +280,10 @@
 			"triggerNoMatchSummary": "共 ${count} 條 trigger 未相契任何倉庫卷（詳見 report.md）",
 			"federationCleanupPre": "諸邦測試清理（運行前）失利：${output}",
 			"federationCleanupPost": "諸邦測試清理（運行後）失利：${output}",
-			"suiteHeader": "\n=== 套件 ${name} ===",
+			"suiteHeader": "\n=== 組 ${name} ===",
 			"heapSnapshotSaved": "測試節點近 OOM 堆快照：${path}",
 			"liveUsage": "用法：--suite <名稱> | --list",
-			"serialUsage": "用法：serial.mjs <deno-test-path> [...]",
+			"serialUsage": "凡例：serial.mjs <deno-test-path> [...]",
 			"silentPassedOne": "1 個試卷通過。",
 			"silentPassedMany": "${count} 個試卷通過。",
 			"ciNoDiffFallback": "CI：未察得 diff，回退為運行全部套件",
@@ -373,7 +373,7 @@
 					"inclusionPath": "納入鏈",
 					"log": "日誌",
 					"matchedPaths": "命中路徑",
-					"matchedTriggerSets": "命中 trigger set",
+					"matchedTriggerSets": "合 trigger set",
 					"matchedTriggers": "命中 trigger",
 					"noise": "噪聲",
 					"pullDownstream": "下遊拉取：${requiredBy} 不完美，連帶納入",
@@ -462,7 +462,7 @@
 			},
 			"version": {
 				"branch": {
-					"title": "分支：${branch}",
+					"title": "分枝：${branch}",
 					"detached": "HEAD 已離"
 				},
 				"commit": "提交：`${ref}`",
@@ -2153,7 +2153,7 @@
 			"trustOk": "已信任該作者",
 			"trustAuthorDialog": {
 				"title": "信此作者",
-				"subtitle": "作者：${author}",
+				"subtitle": "著者：${author}",
 				"warningTitle": "履冰之舉",
 				"warningBody": "信之後，彼所發札將於君瀏覽器中以全墨記敷彩（含織文／符法）。若彼於其所運 fount 上構惡意內容，君閱時或害本機。唯信君所識且願擔險之諸邦節點。",
 				"durationLabel": "信任時長",
@@ -2833,7 +2833,7 @@
 			},
 			"vote": {
 				"closed": "已結束",
-				"count": "${count} 票 · ${pct}%",
+				"count": "得 ${count} 票 · ${pct}%",
 				"createFailed": "立票未遂：${error}",
 				"deadline": "截止：${date}",
 				"minOptions": "至少須 2 個選項",
@@ -2847,7 +2847,7 @@
 				"title": {
 					"title": "起票"
 				},
-				"total": "共 ${total} 票"
+				"total": "凡 ${total} 票"
 			},
 			"file": {
 				"decryptFailed": "無文牘符鑰，難以訪此文牘",
@@ -4882,7 +4882,7 @@
 					"audio": "純音",
 					"av": "聲影",
 					"video": "默影",
-					"whip": "WHIP 推流（如 OBS）"
+					"whip": "WHIP 送流（如 OBS）"
 				}
 			},
 			"danmaku": {
@@ -5978,7 +5978,7 @@
 			"title": "拓存Subfount客端",
 			"description": "拓存獨立Subfount客端腳本，以備遠端之用。",
 			"tabsLabel": {
-				"aria-label": "Select the operating system"
+				"aria-label": "擇作業之統"
 			},
 			"tabs": {
 				"linux": "Linux",
@@ -5987,7 +5987,7 @@
 				"windows": "Windows"
 			},
 			"copyButton": "謄錄",
-			"copied": "Install script copied to clipboard"
+			"copied": "安裝之文已謄於剪貼"
 		},
 		"errors": {
 			"loadConnectionCodeFailed": "載連繫碼敗績: ${message}",
@@ -6188,8 +6188,8 @@
 			"image": "修圖",
 			"loadFailed": "圖像取錄未遂",
 			"mosaic": "打碼",
-			"redo": "重做",
-			"reset": "重置",
+			"redo": "復行",
+			"reset": "復原",
 			"undo": "撤"
 		},
 		"common": {

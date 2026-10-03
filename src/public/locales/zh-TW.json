@@ -2,6 +2,7 @@
 	"lang": "zh-TW",
 	"name": "繁體中文",
 	"tips": {
+		"data[22]": "不，你不知道。",
 		"title": "你知道嗎？",
 		"data": [
 			"在任意 fount 頁面中使用 `esc` 鍵可以返回上一頁。",
@@ -233,7 +234,7 @@
 					"cpu": "CPU ${cpu}",
 					"memory": "記憶體 ${memory}",
 					"queueAppend": "入列 ${label}（${reason}）",
-					"queueRemove": "移出 ${label}（${reason}）"
+					"queueRemove": "移除 ${label}（${reason}）"
 				}
 			},
 			"passed": "透過：${label}",
@@ -303,7 +304,7 @@
 				"error": "測試節點 worker 出錯：${error}"
 			},
 			"ws": {
-				"pass": "\n透過：${detail}",
+				"pass": "\n通過：${detail}",
 				"fail": "\n失敗：${detail}"
 			},
 			"report": {
@@ -434,7 +435,7 @@
 				"manifestId": "未知的 manifest id：${ids}",
 				"subtestFilter": "未知的子測試過濾：${suite} → ${names}",
 				"suite": "未知的套件：${name}",
-				"suiteSelector": "未知的 suite 指名：${ids}"
+				"suiteSelector": "未知的 suite 指定：${ids}"
 			},
 			"cleanupLeak": "測試殘留物偵測失敗：以下路徑本應清理卻仍存在：\n${paths}\n請清理後再試。"
 		},
@@ -574,7 +575,7 @@
 			},
 			"remove": {
 				"confirmPrompt": "即將從磁碟刪除 fount 安裝目錄：`${path}`\n請確認這確實是要刪除的目錄。",
-				"yn": "[Y/N]",
+				"yn": "[Y/N] ",
 				"aborted": "已取消，未刪除任何內容。",
 				"externalMountWarning": "警告：fount 位於外部/共享掛載（`${target}`）上！\n目錄可能也存在於主機或其他虛擬機器中，`fount remove` 會一併刪除，請格外小心。",
 				"nonInteractiveRequiresForce": "無法在非互動式環境中確認刪除。若確定要移除 `fount`（${path}），請使用 `fount remove --force` 略過確認。",
@@ -1146,7 +1147,7 @@
 		},
 		"achievements": {
 			"first_login": {
-				"name": "Hello, World!",
+				"name": "你好，世界！",
 				"description": "writeln('Hello, World!').",
 				"locked_description": "登入 fount 一次。"
 			},
@@ -1356,9 +1357,9 @@
 					"member_leave": "成員離開群組",
 					"member_kick": "踢出成員 ${target}",
 					"member_ban": "封禁成員 ${target}",
-					"member_unban": "解除封禁 ${target}",
+					"member_unban": "解除封鎖 ${target}",
 					"role_create": "建立角色 ${roleName}",
-					"role_update": "更新角色 ${roleName}",
+					"role_update": "更新身分組 ${roleName}",
 					"role_delete": "刪除角色 ${roleName}",
 					"role_assign": "為 ${target} 分配角色 ${roleName}",
 					"role_revoke": "撤銷 ${target} 的角色 ${roleName}",
@@ -2797,7 +2798,7 @@
 				},
 				"joinRequired": "無法開啟此群組，請使用邀請連結或邀請碼加入",
 				"tag": "群組",
-				"unnamed": "未命名群 ·${suffix}"
+				"unnamed": "未命名群組 ·${suffix}"
 			},
 			"block": {
 				"author": {
@@ -2984,7 +2985,7 @@
 				"saved": "已儲存",
 				"slash": {
 					"claimLabel": "主張強度 claim（0–1）",
-					"needHash": "需要 64 位 hex pubKeyHash",
+					"needHash": "需要 64 位元的 hex pubKeyHash",
 					"ok": "reputation_slash 已寫入 DAG",
 					"proof": {
 						"placeholder": "64 hex event id"
@@ -3433,7 +3434,7 @@
 				"placeholder": "例如: 可愛, 表情, 動物"
 			},
 			"author": "作者",
-			"authorLabel": "作者: ${author}",
+			"authorLabel": "作者：${author}",
 			"badgeMine": "我的",
 			"noDescription": "暫無描述",
 			"noStickersInPack": "暫無貼紙",
@@ -5977,7 +5978,7 @@
 			"title": "下載子 fount 客戶端",
 			"description": "下載獨立的子 fount 客戶端指令碼以在遠端裝置上執行。",
 			"tabsLabel": {
-				"aria-label": "Select the operating system"
+				"aria-label": "選擇作業系統"
 			},
 			"tabs": {
 				"linux": "Linux",
@@ -5986,7 +5987,7 @@
 				"windows": "Windows"
 			},
 			"copyButton": "複製",
-			"copied": "Install script copied to clipboard"
+			"copied": "安裝指令碼已複製到剪貼簿"
 		},
 		"errors": {
 			"loadConnectionCodeFailed": "載入連接碼失敗: ${message}",
@@ -6120,7 +6121,7 @@
 		"card_title": "fount 徽章連結轉換器",
 		"original_url_label": "貼上 img.shields.io 網址",
 		"original_url": {
-			"placeholder": "例如: https://img.shields.io/badge/Hello-World-blue"
+			"placeholder": "例如：https://img.shields.io/badge/Hello-World-blue"
 		},
 		"new_url_label": "產生的新網址",
 		"new_url": {
@@ -6185,9 +6186,11 @@
 			"crop": "裁剪",
 			"exportFailed": "圖片匯出失敗",
 			"image": "編輯",
-			"loadFailed": null,
+			"loadFailed": "圖片載入失敗",
 			"mosaic": "打碼",
-			"redo": null
+			"redo": "重做",
+			"undo": "撤銷",
+			"reset": "重設"
 		},
 		"common": {
 			"cancel": "取消",
@@ -6513,6 +6516,12 @@
 				"left": "關閉左側分頁",
 				"right": "關閉右側分頁",
 				"all": "關閉全部分頁"
+			},
+			"generating": {
+				"aria-label": "「${title}」正在產生"
+			},
+			"unread": {
+				"aria-label": "「${title}」有未讀訊息"
 			}
 		},
 		"newTab": {
@@ -6572,6 +6581,14 @@
 				"edit": {
 					"aria-label": "編輯",
 					"title": "編輯"
+				},
+				"downloadHtml": {
+					"title": "下載 HTML",
+					"aria-label": "下載 HTML"
+				},
+				"saveGist": {
+					"title": "儲存到 gist",
+					"aria-label": "儲存到 gist"
 				}
 			},
 			"copied": "已複製到剪貼簿",
@@ -6613,11 +6630,31 @@
 				"aria-label": "新增附件",
 				"title": "新增附件"
 			},
+			"failed": "讀取附件 ${name} 失敗",
+			"reading": "正在讀取…",
 			"remove": {
-				"aria-label": "移除附件"
+				"aria-label": "移除附件",
+				"title": "移除附件"
 			},
+			"tooLargeTotal": "附件總大小超過 ${limit} 限制",
 			"drop": "放開以新增附件",
-			"tooLarge": "附件 ${name} 超過 10MB 限制"
+			"tooLarge": "附件 ${name} 超過 10MB 限制",
+			"description": {
+				"placeholder": "新增說明…",
+				"aria-label": "附件說明"
+			},
+			"download": {
+				"title": "下載附件",
+				"aria-label": "下載附件"
+			},
+			"edit": {
+				"title": "編輯圖片",
+				"aria-label": "編輯圖片"
+			},
+			"preview": {
+				"title": "預覽附件",
+				"aria-label": "預覽附件"
+			}
 		},
 		"error": {
 			"generic": "發生錯誤：${error}",
@@ -6728,6 +6765,11 @@
 				"failed": "已失敗",
 				"unknown": "找不到",
 				"idle": "背景任務"
+			}
+		},
+		"generation": {
+			"reconnect": {
+				"aria-label": "重新連線"
 			}
 		}
 	},

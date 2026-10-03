@@ -265,7 +265,7 @@
 				"heavy": "high load",
 				"expected": "expected ${expected}"
 			},
-			"reusedSuite": ">>> Reusing ${manifestId}:${name} (trigger unchanged — using last ${status})",
+			"reusedSuite": "\n>>> Reusing ${manifestId}:${name} (trigger unchanged — using last ${status})",
 			"prunedAbsentState": "Pruned stale state for removed or renamed suites/subtests: ${suites} suite(s), ${subtests} subtest(s)",
 			"noisyOnlyRemain": "${count} suite(s) still passing with noise: ${suites}",
 			"noRealRunPlanned": "No real run this time: ${reused} reused, ${blocked} expected blocked, ${skipped} skipped (trigger unchanged)",
@@ -1416,7 +1416,7 @@
 				"placeholder": "List channels only display navigation cards and do not send messages"
 			},
 			"mentionHandle": "@${name}",
-			"mentionInsert": "@${name}",
+			"mentionInsert": "@${name} ",
 			"attachmentsHint": "(${n} attachments)",
 			"copied": "Copied",
 			"addBookmark": {
@@ -1433,9 +1433,9 @@
 			"forceTriggerAllLocalTitle": {
 				"title": "Force all local characters to speak"
 			},
-			"quoteHeader": "> **${sender}**${sep}${time}",
-			"quoteHeaderWithTime": "> **${sender}** · ${time}",
-			"quoteHeaderWithoutTime": "> **${sender}**",
+			"quoteHeader": "> **${sender}**${sep}${time}\n\n",
+			"quoteHeaderWithTime": "> **${sender}** · ${time}\n\n",
+			"quoteHeaderWithoutTime": "> **${sender}**\n\n",
 			"stopGenerating": "Stop generating",
 			"reactionAdd": {
 				"title": "add response"

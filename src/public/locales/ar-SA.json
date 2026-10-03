@@ -251,7 +251,7 @@
 			"planSlotSummary": "فتحات الخطة: تشغيل ${run}، إعادة استخدام ${reuse}، حظر ${blocked}، تخطي ${skipped}",
 			"noMatchingSuites": "لا توجد مجموعة اختبار مطابقة.",
 			"reportPath": "التقرير: ${path}",
-			"reportPathFinal": "التقرير: ${path}",
+			"reportPathFinal": "\nالتقرير: ${path}",
 			"statePathFinal": "الوضع الحالي: ${path}",
 			"blocked": "الحظر: ${label} (لم يتم تمرير التبعية: ${deps})",
 			"skippedTree": "تخطي: ${label} (skip_tree: ${deps})",
@@ -260,12 +260,12 @@
 			"continueImperfect": "الفشل/الضوضاء/موجات غير مكتملة: ${count} مجموعات",
 			"outdatedSelected": "الموجات منتهية الصلاحية: ${count} حزم قديمة/غير مشغلة",
 			"runningSuite": {
-				"base": ">>> تشغيل ${manifestId}:${name}",
+				"base": "\n>>> تشغيل ${manifestId}:${name}",
 				"speculative": "موازية متفائلة",
 				"heavy": "حمولة عالية",
 				"expected": "المتوقع ${expected}"
 			},
-			"reusedSuite": ">>> أعد استخدام ${manifestId}:${name} (يظل المشغل بدون تغيير، ويتم استخدام آخر ${status})",
+			"reusedSuite": "\n>>> أعد استخدام ${manifestId}:${name} (يظل المشغل بدون تغيير، ويتم استخدام آخر ${status})",
 			"prunedAbsentState": "تم تنظيف حالة مجموعات الاختبار المحذوفة: ${suites} مجموعة، ${subtests} اختبار فرعي",
 			"noisyOnlyRemain": "لا تزال هناك أجنحة ${count} تمر ولكن مع وجود ضجيج: ${suites}",
 			"noRealRunPlanned": "لا حاجة للتشغيل هذه المرة: إعادة استخدام ${reused}، حظر متوقع ${blocked}، تخطي ${skipped} (المشغّل دون تغيير)",
@@ -280,7 +280,7 @@
 			"triggerNoMatchSummary": "لم يتطابق إجمالي مشغلات ${count} مع أي ملفات مستودع (راجع report.md للحصول على التفاصيل)",
 			"federationCleanupPre": "فشل تنظيف الاختبار الموحد (قبل التشغيل): ${output}",
 			"federationCleanupPost": "فشل تنظيف الاختبار الموحد (بعد التشغيل): ${output}",
-			"suiteHeader": "=== الحزمة ${name} ===",
+			"suiteHeader": "\n=== الحزمة ${name} ===",
 			"heapSnapshotSaved": "عقدة الاختبار بالقرب من لقطة كومة OOM: ${path}",
 			"liveUsage": "الاستخدام: --suite <name> | --قائمة",
 			"serialUsage": "الاستخدام: serial.mjs <deno-test-path> [...]",
@@ -304,8 +304,8 @@
 				"error": "خطأ في عامل عقدة الاختبار: ${error}"
 			},
 			"ws": {
-				"pass": "المرور: ${detail}",
-				"fail": "الفشل: ${detail}"
+				"pass": "\nالمرور: ${detail}",
+				"fail": "\nالفشل: ${detail}"
 			},
 			"report": {
 				"title": "تقرير اختبار fount",
@@ -575,7 +575,7 @@
 			},
 			"remove": {
 				"confirmPrompt": "دليل تثبيت fount على وشك الحذف من القرص: `${path}`\nيرجى التأكد من أن هذا هو بالفعل الدليل الذي تريد حذفه.",
-				"yn": "[Y/N]",
+				"yn": "[Y/N] ",
 				"aborted": "تم الإلغاء، لم يُحذف أي شيء.",
 				"externalMountWarning": "تحذير: يقع fount على قاعدة خارجية/مشتركة (`${target}`)!\nقد يكون هذا الدليل موجودًا أيضًا على المضيف أو في جهاز افتراضي آخر. سيؤدي `fount remove` إلى حذفه هناك أيضًا، لذا يرجى توخي الحذر الشديد.",
 				"nonInteractiveRequiresForce": "لا يمكن تأكيد الحذف في بيئة غير تفاعلية. إذا كنت متأكدًا من رغبتك في إزالة `fount` (${path})، فاستخدم `fount remove --force` لتخطي التأكيد.",
@@ -1416,7 +1416,7 @@
 				"placeholder": "تعرض قائمة القنوات بطاقات التنقل فقط ولا ترسل رسائل"
 			},
 			"mentionHandle": "@${name}",
-			"mentionInsert": "@${name}",
+			"mentionInsert": "@${name} ",
 			"attachmentsHint": "(${n} مرفقات)",
 			"copied": "منقول",
 			"addBookmark": {
@@ -1433,9 +1433,9 @@
 			"forceTriggerAllLocalTitle": {
 				"title": "إجبار جميع الشخصيات المحلية على الكلام"
 			},
-			"quoteHeader": "> **${sender}**${sep}${time}",
-			"quoteHeaderWithTime": "> **${sender}** · ${time}",
-			"quoteHeaderWithoutTime": "> **${sender}**",
+			"quoteHeader": "> **${sender}**${sep}${time}\n\n",
+			"quoteHeaderWithTime": "> **${sender}** · ${time}\n\n",
+			"quoteHeaderWithoutTime": "> **${sender}**\n\n",
 			"stopGenerating": "توقف عن التوليد",
 			"reactionAdd": {
 				"title": "إضافة رد"
@@ -1803,7 +1803,7 @@
 				"deletedBracket": "[تم حذف الرسالة]",
 				"prefixSticker": "ملصق",
 				"refAnchor": "رسالة الاقتباس: ${id}",
-				"withAttachments": "${text} ({n} مرفقات) ${n}"
+				"withAttachments": "${text} (${n} مرفقات)"
 			},
 			"default": {
 				"channel": {
@@ -2076,7 +2076,7 @@
 				"plaintextSidecar": "تتم مزامنة هذه القناة عند الطلب؛ يقوم الجانب الجانبي للرسائل المحلية بتخزين المحتوى مؤقتًا بنص واضح.",
 				"quarantine": "هناك ${count} أحداث اتحادية مخزنة مؤقتًا في منطقة العزل بسبب انحراف الساعة، وسيتم إعادة تشغيلها تلقائيًا بعد استعادة وقت النظام.",
 				"mailboxPending": "هناك ${count} من الرسائل في انتظار تسليمها في صندوق البريد غير المتصل.",
-				"syncing": "المزامنة مع الجيران الفيدراليين ...",
+				"syncing": "المزامنة مع الجيران الفيدراليين...",
 				"archiveCoverageIncomplete": "لم تتم مزامنة بعض أرشيفات الأشهر الباردة من الاتحاد بعد.",
 				"archiveSyncButton": "الأرشفة المتزامنة",
 				"applyBranch": "فرع حوكمة التطبيقات",
@@ -2976,7 +2976,7 @@
 				"repTitle": "المصداقية الذاتية لهذه المجموعة",
 				"repairJoinSnapshot": "طلب الجيران للانضمام إلى إصلاح لقطة المجموعة",
 				"repairJoinSnapshotFailed": "فشل إصلاح لقطة المجموعة: ${error}",
-				"repairJoinSnapshotOk": "تم تطبيق لقطة المجموعة (سجل قناة {channels}) ${channels}",
+				"repairJoinSnapshotOk": "تم تطبيق لقطة المجموعة (${channels} من سجل القنوات)",
 				"resetOk": "لقد تمت كتابة السمعة_reset",
 				"resetSubmitLabel": "إعادة تعيين سمعة الهدف",
 				"rotateRoomSecret": "تدوير كلمة مرور غرفة المجموعة",
@@ -5988,7 +5988,7 @@
 			"title": "قم بتنزيل العميل الفرعي",
 			"description": "قم بتنزيل البرنامج النصي للعميل subfount المستقل لتشغيله على الجهاز البعيد.",
 			"tabsLabel": {
-				"aria-label": "Select the operating system"
+				"aria-label": "اختر نظام التشغيل"
 			},
 			"tabs": {
 				"linux": "Linux",
@@ -5997,7 +5997,7 @@
 				"windows": "Windows"
 			},
 			"copyButton": "نسخ",
-			"copied": "Install script copied to clipboard"
+			"copied": "تم نسخ نص التثبيت إلى الحافظة"
 		},
 		"errors": {
 			"loadConnectionCodeFailed": "فشل تحميل رمز الاتصال: ${message}",
@@ -6196,9 +6196,11 @@
 			"crop": "اقتصاص",
 			"exportFailed": "فشل تصدير الصورة",
 			"image": "تعديل",
-			"loadFailed": null,
+			"loadFailed": "تعذّر تحميل الصورة",
 			"mosaic": "تمويه",
-			"redo": null
+			"redo": "إعادة",
+			"undo": "تراجع",
+			"reset": "إعادة الضبط"
 		},
 		"common": {
 			"cancel": "إلغاء",
@@ -6247,7 +6249,7 @@
 		},
 		"pow_captcha": {
 			"initial": "أنا لست روبوت",
-			"verifying": "التحقق ...",
+			"verifying": "التحقق...",
 			"solved": "تم التحقق بنجاح",
 			"wasm_disabled": "تمكين WASM للتحقق بشكل أسرع",
 			"error": "فشل التحقق",
@@ -6524,6 +6526,12 @@
 				"left": "إغلاق علامات التبويب على اليسار",
 				"right": "إغلاق علامات التبويب على اليمين",
 				"all": "إغلاق كل علامات التبويب"
+			},
+			"generating": {
+				"aria-label": "«${title}» قيد التوليد"
+			},
+			"unread": {
+				"aria-label": "«${title}» فيه رسائل غير مقروءة"
 			}
 		},
 		"newTab": {
@@ -6583,6 +6591,14 @@
 				"edit": {
 					"aria-label": "تعديل",
 					"title": "تعديل"
+				},
+				"downloadHtml": {
+					"title": "تنزيل HTML",
+					"aria-label": "تنزيل HTML"
+				},
+				"saveGist": {
+					"title": "حفظ في gist",
+					"aria-label": "حفظ في gist"
 				}
 			},
 			"copied": "تم النسخ إلى الحافظة",
@@ -6624,11 +6640,31 @@
 				"aria-label": "إضافة مرفق",
 				"title": "إضافة مرفق"
 			},
+			"failed": "تعذّرت قراءة المرفق ${name}",
+			"reading": "جارٍ القراءة…",
 			"remove": {
-				"aria-label": "إزالة المرفق"
+				"aria-label": "إزالة المرفق",
+				"title": "إزالة المرفق"
 			},
+			"tooLargeTotal": "يتجاوز حجم المرفقات الحد الإجمالي ${limit}",
 			"drop": "أفلت للإرفاق",
-			"tooLarge": "يتجاوز المرفق ${name} حد 10 ميجابايت"
+			"tooLarge": "يتجاوز المرفق ${name} حد 10 ميجابايت",
+			"description": {
+				"placeholder": "أضف وصفًا…",
+				"aria-label": "وصف المرفق"
+			},
+			"download": {
+				"title": "تنزيل المرفق",
+				"aria-label": "تنزيل المرفق"
+			},
+			"edit": {
+				"title": "تعديل الصورة",
+				"aria-label": "تعديل الصورة"
+			},
+			"preview": {
+				"title": "معاينة المرفق",
+				"aria-label": "معاينة المرفق"
+			}
 		},
 		"error": {
 			"generic": "حدث خطأ ما: ${error}",
@@ -6739,6 +6775,11 @@
 				"failed": "فشل",
 				"unknown": "غير موجود",
 				"idle": "مهام الخلفية"
+			}
+		},
+		"generation": {
+			"reconnect": {
+				"aria-label": "إعادة الاتصال"
 			}
 		}
 	},

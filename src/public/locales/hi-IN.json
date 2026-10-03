@@ -251,7 +251,7 @@
 			"planSlotSummary": "योजना: वास्तविक रन ${run}, पुन: उपयोग ${reuse}, अवरुद्ध ${blocked}, छोड़ा गया ${skipped}",
 			"noMatchingSuites": "कोई मिलान वाली परीक्षण सूट नहीं.",
 			"reportPath": "रिपोर्ट: ${path}",
-			"reportPathFinal": "रिपोर्ट: ${path}",
+			"reportPathFinal": "\nरिपोर्ट: ${path}",
 			"statePathFinal": "वर्तमान स्थिति: ${path}",
 			"blocked": "अवरुद्ध: ${label} (निर्भरता पारित नहीं हुई: ${deps})",
 			"skippedTree": "छोड़ा गया: ${label} (skip_tree: ${deps})",
@@ -260,12 +260,12 @@
 			"continueImperfect": "विफलता/शोर/अपूर्ण तरंगें: ${count} सुइट",
 			"outdatedSelected": "समाप्त तरंगें: ${count} पुरानी/न चली सुइट",
 			"runningSuite": {
-				"base": ">>> ${manifestId}:${name} चल रहा है",
+				"base": "\n>>> ${manifestId}:${name} चल रहा है",
 				"speculative": "सट्टा समानांतर",
 				"heavy": "भारी",
 				"expected": "अपेक्षित ${expected}"
 			},
-			"reusedSuite": ">>> पुन: उपयोग करें ${manifestId}:${name} (ट्रिगर अपरिवर्तित रहता है, अंतिम ${status} का उपयोग किया जाता है)",
+			"reusedSuite": "\n>>> पुन: उपयोग करें ${manifestId}:${name} (ट्रिगर अपरिवर्तित रहता है, अंतिम ${status} का उपयोग किया जाता है)",
 			"prunedAbsentState": "हटाए गए सुइट्स की स्थिति साफ़ की: ${suites} सुइट्स, ${subtests} उप-परीक्षण",
 			"noisyOnlyRemain": "वहाँ अभी भी ${count} सुइट्स गुजर रहे हैं लेकिन शोर के साथ: ${suites}",
 			"noRealRunPlanned": "इस बार चलाने की आवश्यकता नहीं: ${reused} पुन: उपयोग, ${blocked} अवरुद्ध अपेक्षित, ${skipped} छोड़ा गया (ट्रिगर अपरिवर्तित)",
@@ -280,7 +280,7 @@
 			"triggerNoMatchSummary": "कुल ${count} ट्रिगर किसी भी रिपॉज़िटरी फ़ाइल से ईमेल नहीं खाते (विवरण के लिए report.md देखें)",
 			"federationCleanupPre": "फ़ेडरेटेड परीक्षण क्लीनअप (चलाने से पहले) विफल: ${output}",
 			"federationCleanupPost": "फ़ेडरेटेड परीक्षण क्लीनअप (चलाने के बाद) विफल: ${output}",
-			"suiteHeader": "=== सुइट ${name} ===",
+			"suiteHeader": "\n=== सुइट ${name} ===",
 			"heapSnapshotSaved": "परीक्षण नोड निकट-ओओएम हीप स्नैपशॉट: ${path}",
 			"liveUsage": "उपयोग: --suite <नाम> | --list",
 			"serialUsage": "उपयोग: serial.mjs <डेनो-टेस्ट-पाथ> […]",
@@ -304,8 +304,8 @@
 				"error": "परीक्षण नोड कार्यकर्ता त्रुटि: ${error}"
 			},
 			"ws": {
-				"pass": "पास: ${detail}",
-				"fail": "विफल: ${detail}"
+				"pass": "\nपास: ${detail}",
+				"fail": "\nविफल: ${detail}"
 			},
 			"report": {
 				"title": "fount परीक्षण रिपोर्ट",
@@ -575,7 +575,7 @@
 			},
 			"remove": {
 				"confirmPrompt": "fount इंस्टॉलेशन निर्देशिका डिस्क से हटाई जाने वाली है: `${path}`\nकृपया पुष्टि करें कि यह वास्तव में वही निर्देशिका है जिसे आप हटाना चाहते हैं।",
-				"yn": "[Y/N]",
+				"yn": "[Y/N] ",
 				"aborted": "रद्द किया गया, कुछ भी नहीं हटाया गया।",
 				"externalMountWarning": "चेतावनी: fount बाहरी/साझा माउंट (`${target}`) पर स्थित है!\nयह निर्देशिका होस्ट या किसी अन्य वर्चुअल मशीन में भी मौजूद हो सकती है। `fount remove` इसे वहाँ भी हटा देगा, इसलिए कृपया अत्यधिक सावधान रहें।",
 				"nonInteractiveRequiresForce": "गैर-संवादात्मक वातावरण में हटाने की पुष्टि नहीं की जा सकती। यदि आप `fount` (${path}) को हटाना चाहते हैं, तो पुष्टि छोड़ने के लिए `fount remove --force` का उपयोग करें।",
@@ -1416,7 +1416,7 @@
 				"placeholder": "सूची चैनल केवल नेविगेशन कार्ड प्रदर्शित करते हैं और संदेश नहीं भेजते हैं"
 			},
 			"mentionHandle": "@${name}",
-			"mentionInsert": "@${name}",
+			"mentionInsert": "@${name} ",
 			"attachmentsHint": "(${n} संलग्नक)",
 			"copied": "कॉपी किया",
 			"addBookmark": {
@@ -1433,9 +1433,9 @@
 			"forceTriggerAllLocalTitle": {
 				"title": "सभी स्थानीय पात्रों को बोलने के लिए बाध्य करें"
 			},
-			"quoteHeader": "> **${sender}**${sep}${time}",
-			"quoteHeaderWithTime": "> **${sender}** · ${time}",
-			"quoteHeaderWithoutTime": "> **${sender}**",
+			"quoteHeader": "> **${sender}**${sep}${time}\n\n",
+			"quoteHeaderWithTime": "> **${sender}** · ${time}\n\n",
+			"quoteHeaderWithoutTime": "> **${sender}**\n\n",
 			"stopGenerating": "उत्पादन बंद करो",
 			"reactionAdd": {
 				"title": "प्रतिक्रिया जोड़ें"
@@ -5978,7 +5978,7 @@
 			"title": "सब-फ़ाउंट क्लाइंट डाउनलोड करें",
 			"description": "रिमोट डिवाइस पर चलाने के लिए स्टैंडअलोन सबफ़ाउंट क्लाइंट स्क्रिप्ट डाउनलोड करें।",
 			"tabsLabel": {
-				"aria-label": "Select the operating system"
+				"aria-label": "ऑपरेटिंग सिस्टम चुनें"
 			},
 			"tabs": {
 				"linux": "Linux",
@@ -5987,7 +5987,7 @@
 				"windows": "Windows"
 			},
 			"copyButton": "कॉपी",
-			"copied": "Install script copied to clipboard"
+			"copied": "इंस्टॉल स्क्रिप्ट क्लिपबोर्ड पर कॉपी हो गई"
 		},
 		"errors": {
 			"loadConnectionCodeFailed": "कनेक्शन कोड लोड करने में विफल: ${message}",
@@ -6186,9 +6186,11 @@
 			"crop": "क्रॉप",
 			"exportFailed": "छवि निर्यात करने में विफल",
 			"image": "संपादित करें",
-			"loadFailed": null,
+			"loadFailed": "छवि लोड करने में विफल",
 			"mosaic": "पिक्सेलेट",
-			"redo": null
+			"redo": "फिर से करें",
+			"undo": "पूर्ववत करें",
+			"reset": "रीसेट करें"
 		},
 		"common": {
 			"cancel": "रद्द करें",
@@ -6251,7 +6253,7 @@
 				"straightRow": "कीबोर्ड पर निरंतर कुंजियों को आसानी से अनुमान लगाया जाता है।",
 				"keyPattern": "एक छोटे कीबोर्ड पैटर्न का अनुमान लगाना आसान है।",
 				"simpleRepeat": "\"एएए\" जैसे दोहराए गए पात्रों को आसानी से अनुमान लगाया जाता है।",
-				"extendedRepeat": "\"ABCABCABC\" जैसे बार -बार चरित्र पैटर्न आसानी से अनुमानित हैं।",
+				"extendedRepeat": "\"ABCABCABC\" जैसे बार-बार चरित्र पैटर्न आसानी से अनुमानित हैं।",
 				"sequences": "\"एबीसी\" जैसे सामान्य चरित्र अनुक्रमों का आसानी से अनुमान लगाया जाता है।",
 				"recentYears": "हाल के वर्षों का अनुमान लगाना आसान है।",
 				"dates": "दिनांक आसानी से अनुमान लगाया जाता है।",
@@ -6514,6 +6516,12 @@
 				"left": "बाईं ओर के टैब बंद करें",
 				"right": "दाईं ओर के टैब बंद करें",
 				"all": "सभी टैब बंद करें"
+			},
+			"generating": {
+				"aria-label": "\"${title}\" जनरेट हो रहा है"
+			},
+			"unread": {
+				"aria-label": "\"${title}\" में अपठित संदेश हैं"
 			}
 		},
 		"newTab": {
@@ -6573,6 +6581,14 @@
 				"edit": {
 					"aria-label": "संपादित करें",
 					"title": "संपादित करें"
+				},
+				"downloadHtml": {
+					"title": "HTML डाउनलोड करें",
+					"aria-label": "HTML डाउनलोड करें"
+				},
+				"saveGist": {
+					"title": "gist में सहेजें",
+					"aria-label": "gist में सहेजें"
 				}
 			},
 			"copied": "क्लिपबोर्ड पर कॉपी किया गया",
@@ -6614,11 +6630,31 @@
 				"aria-label": "अनुलग्नक जोड़ें",
 				"title": "अनुलग्नक जोड़ें"
 			},
+			"failed": "अनुलग्नक ${name} पढ़ने में विफल",
+			"reading": "पढ़ा जा रहा है…",
 			"remove": {
-				"aria-label": "अनुलग्नक हटाएँ"
+				"aria-label": "अनुलग्नक हटाएँ",
+				"title": "अनुलग्नक हटाएँ"
 			},
+			"tooLargeTotal": "अनुलग्नकों का कुल आकार ${limit} की सीमा से अधिक है",
 			"drop": "जोड़ने के लिए छोड़ें",
-			"tooLarge": "अनुलग्नक ${name} 10MB सीमा से अधिक है"
+			"tooLarge": "अनुलग्नक ${name} 10MB सीमा से अधिक है",
+			"description": {
+				"placeholder": "विवरण जोड़ें…",
+				"aria-label": "अनुलग्नक विवरण"
+			},
+			"download": {
+				"title": "अनुलग्नक डाउनलोड करें",
+				"aria-label": "अनुलग्नक डाउनलोड करें"
+			},
+			"edit": {
+				"title": "छवि संपादित करें",
+				"aria-label": "छवि संपादित करें"
+			},
+			"preview": {
+				"title": "अनुलग्नक का पूर्वावलोकन करें",
+				"aria-label": "अनुलग्नक का पूर्वावलोकन करें"
+			}
 		},
 		"error": {
 			"generic": "कुछ गड़बड़ हो गई: ${error}",
@@ -6729,6 +6765,11 @@
 				"failed": "विफल",
 				"unknown": "नहीं मिला",
 				"idle": "पृष्ठभूमि कार्य"
+			}
+		},
+		"generation": {
+			"reconnect": {
+				"aria-label": "फिर से कनेक्ट करें"
 			}
 		}
 	},

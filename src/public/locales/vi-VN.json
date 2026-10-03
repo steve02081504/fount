@@ -60,7 +60,7 @@
 			"noInstanceRunning": "Không phát hiện phiên bản đang chạy, vui lòng khởi chạy fount trước.",
 			"runPartLog": "Chạy ${partpath} với tên ${username}, đối số: ${args}",
 			"invokePartLog": "Gọi ${partpath} là ${username}, tham số: ${invokedata}",
-			"invalidCommand": "Lệnh không hợp lệ. Vui lòng sử dụng \"fount run <tên người dùng> <đường dẫn thành phần> <tham số ...>\".",
+			"invalidCommand": "Lệnh không hợp lệ. Vui lòng sử dụng \"fount run <tên người dùng> <đường dẫn thành phần> <tham số...>\".",
 			"invalidCommandFormat": "Định dạng lệnh không hợp lệ.",
 			"unsupportedCommand": "Loại lệnh không được hỗ trợ.",
 			"processMessageError": "Đã xảy ra lỗi khi xử lý tin nhắn IPC: ${error}",
@@ -280,7 +280,7 @@
 			"triggerNoMatchSummary": "Tổng cộng ${count} trigger không khớp tệp nào trong kho (xem report.md)",
 			"federationCleanupPre": "Dọn dẹp kiểm thử liên bang (trước khi chạy) thất bại: ${output}",
 			"federationCleanupPost": "Dọn dẹp kiểm thử liên bang (sau khi chạy) thất bại: ${output}",
-			"suiteHeader": "\n=== SUITE ${name} ===",
+			"suiteHeader": "\n=== Bộ kiểm thử ${name} ===",
 			"heapSnapshotSaved": "Ảnh chụp heap gần OOM của nút kiểm thử: ${path}",
 			"liveUsage": "Cách dùng: --suite <tên> | --list",
 			"serialUsage": "Cách dùng: serial.mjs <deno-test-path> [...]",
@@ -316,7 +316,7 @@
 				"exitPassed": "ĐẠT",
 				"exitFailed": "THẤT BẠI",
 				"exitInProgress": "ĐANG CHẠY",
-				"progressFormat": "${completed}/${total} suite",
+				"progressFormat": "${completed}/${total} bộ kiểm thử",
 				"suitesFormat": "${passed}/${completed} đạt",
 				"artifacts": "Thư mục artifact: `${path}`",
 				"columnSuite": "Suite",
@@ -575,7 +575,7 @@
 			},
 			"remove": {
 				"confirmPrompt": "Thư mục cài đặt fount sắp bị xóa khỏi đĩa: `${path}`\nVui lòng xác nhận đây thực sự là thư mục bạn muốn xóa.",
-				"yn": "[Y/N]",
+				"yn": "[Y/N] ",
 				"aborted": "Đã hủy, không có gì bị xóa.",
 				"externalMountWarning": "Cảnh báo: fount nằm trên mount ngoài/dùng chung (`${target}`)!\nThư mục này cũng có thể tồn tại trên máy chủ hoặc máy ảo khác. `fount remove` sẽ xóa nó ở đó luôn, vì vậy hãy cẩn thận hơn.",
 				"nonInteractiveRequiresForce": "Việc xóa không thể được xác nhận trong môi trường không tương tác. Nếu bạn chắc chắn muốn xóa `fount` (${path}), hãy sử dụng `fount remove --force` để bỏ qua xác nhận.",
@@ -1252,7 +1252,7 @@
 			"followAuthor": "Theo dõi tác giả",
 			"sourceGroup": "Gói của nhóm",
 			"sourceAuthor": "Gói của tác giả",
-			"itemCount": "${count} emoji"
+			"itemCount": "${count} biểu tượng cảm xúc"
 		},
 		"unicodeEmojiGroups": {
 			"Smileys_and_Emotion": {
@@ -1416,7 +1416,7 @@
 				"placeholder": "Danh sách các kênh chỉ hiển thị thẻ điều hướng và không gửi tin nhắn"
 			},
 			"mentionHandle": "@${name}",
-			"mentionInsert": "@${name}",
+			"mentionInsert": "@${name} ",
 			"attachmentsHint": "(${n} tệp đính kèm)",
 			"copied": "Đã sao chép",
 			"addBookmark": {
@@ -1433,9 +1433,9 @@
 			"forceTriggerAllLocalTitle": {
 				"title": "Buộc tất cả nhân vật cục bộ phát biểu"
 			},
-			"quoteHeader": "> **${sender}**${sep}${time}",
-			"quoteHeaderWithTime": "> **${sender}** · ${time}",
-			"quoteHeaderWithoutTime": "> **${sender}**",
+			"quoteHeader": "> **${sender}**${sep}${time}\n\n",
+			"quoteHeaderWithTime": "> **${sender}** · ${time}\n\n",
+			"quoteHeaderWithoutTime": "> **${sender}**\n\n",
 			"stopGenerating": "Dừng tạo",
 			"reactionAdd": {
 				"title": "thêm phản hồi"
@@ -5586,7 +5586,7 @@
 			"dim": "Mờ ảo",
 			"nord": "Nord",
 			"sunset": "Hoàng hôn",
-			"caramellatte": "Caramel Latte",
+			"caramellatte": "Latte caramel",
 			"abyss": "Vực thẳm",
 			"silk": "Lụa"
 		},
@@ -5978,7 +5978,7 @@
 			"title": "Tải xuống ứng dụng khách phụ",
 			"description": "Tải xuống tập lệnh máy khách phụ độc lập để chạy trên thiết bị từ xa.",
 			"tabsLabel": {
-				"aria-label": "Select the operating system"
+				"aria-label": "Chọn hệ điều hành"
 			},
 			"tabs": {
 				"linux": "Linux",
@@ -5987,7 +5987,7 @@
 				"windows": "Windows"
 			},
 			"copyButton": "Sao chép",
-			"copied": "Install script copied to clipboard"
+			"copied": "Đã sao chép tập lệnh cài đặt vào bộ nhớ tạm"
 		},
 		"errors": {
 			"loadConnectionCodeFailed": "Không tải được mã kết nối: ${message}",
@@ -6186,9 +6186,11 @@
 			"crop": "Cắt",
 			"exportFailed": "Xuất ảnh thất bại",
 			"image": "Chỉnh sửa",
-			"loadFailed": null,
+			"loadFailed": "Tải ảnh thất bại",
 			"mosaic": "Che pixel",
-			"redo": null
+			"redo": "Làm lại",
+			"undo": "Hoàn tác",
+			"reset": "Đặt lại"
 		},
 		"common": {
 			"cancel": "Hủy bỏ",
@@ -6514,6 +6516,12 @@
 				"left": "Đóng các thẻ bên trái",
 				"right": "Đóng các thẻ bên phải",
 				"all": "Đóng tất cả thẻ"
+			},
+			"generating": {
+				"aria-label": "\"${title}\" đang được tạo"
+			},
+			"unread": {
+				"aria-label": "\"${title}\" có tin nhắn chưa đọc"
 			}
 		},
 		"newTab": {
@@ -6573,6 +6581,14 @@
 				"edit": {
 					"aria-label": "Chỉnh sửa",
 					"title": "Chỉnh sửa"
+				},
+				"downloadHtml": {
+					"title": "Tải xuống HTML",
+					"aria-label": "Tải xuống HTML"
+				},
+				"saveGist": {
+					"title": "Lưu vào gist",
+					"aria-label": "Lưu vào gist"
 				}
 			},
 			"copied": "Đã sao chép vào bộ nhớ tạm",
@@ -6614,11 +6630,31 @@
 				"aria-label": "Thêm tệp đính kèm",
 				"title": "Thêm tệp đính kèm"
 			},
+			"failed": "Đọc tệp đính kèm ${name} thất bại",
+			"reading": "Đang đọc…",
 			"remove": {
-				"aria-label": "Gỡ tệp đính kèm"
+				"aria-label": "Gỡ tệp đính kèm",
+				"title": "Gỡ tệp đính kèm"
 			},
+			"tooLargeTotal": "Tổng dung lượng tệp đính kèm vượt quá giới hạn ${limit}",
 			"drop": "Thả để đính kèm",
-			"tooLarge": "Tệp đính kèm ${name} vượt quá giới hạn 10 MB"
+			"tooLarge": "Tệp đính kèm ${name} vượt quá giới hạn 10 MB",
+			"description": {
+				"placeholder": "Thêm mô tả…",
+				"aria-label": "Mô tả tệp đính kèm"
+			},
+			"download": {
+				"title": "Tải xuống tệp đính kèm",
+				"aria-label": "Tải xuống tệp đính kèm"
+			},
+			"edit": {
+				"title": "Chỉnh sửa ảnh",
+				"aria-label": "Chỉnh sửa ảnh"
+			},
+			"preview": {
+				"title": "Xem trước tệp đính kèm",
+				"aria-label": "Xem trước tệp đính kèm"
+			}
 		},
 		"error": {
 			"generic": "Đã xảy ra lỗi: ${error}",
@@ -6729,6 +6765,11 @@
 				"failed": "Thất bại",
 				"unknown": "Không tìm thấy",
 				"idle": "Tác vụ nền"
+			}
+		},
+		"generation": {
+			"reconnect": {
+				"aria-label": "Kết nối lại"
 			}
 		}
 	},

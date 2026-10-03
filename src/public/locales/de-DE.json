@@ -6,25 +6,25 @@
 		"data": [
 			"Verwenden Sie die Taste `esc` auf einer beliebigen fount-Seite, um zur vorherigen Seite zurückzukehren.",
 			"Sie können `ctrl+s` verwenden, um die Konfiguration auf der Konfigurationsseite zu speichern.",
-			"Wenn Sie auf der Chat-Seite die Umschalttaste gedrückt halten, können Sie Nachrichten schnell löschen.",
+			"Wenn Sie auf der Chat-Seite die Taste `shift` gedrückt halten, können Sie Nachrichten schnell löschen.",
 			"Wenn Sie es den Entwicklern nicht sagen, erfahren sie möglicherweise nie, auf welches Problem Sie gestoßen sind.",
-			"Wenn Sie plötzlich auf ein seltsames Problem stoßen und der Entwickler eine Weile nicht antwortet, können Sie versuchen, den fount mit dem Befehl `fount init` zurückzusetzen.",
+			"Wenn Sie plötzlich auf ein seltsames Problem stoßen und der Entwickler eine Weile nicht antwortet, können Sie versuchen, fount mit dem Befehl `fount init` zurückzusetzen.",
 			"Wenn Sie auf ein besonders seltsames Problem stoßen, können Sie versuchen, Ihren Computer neu zu starten.",
-			"Die Verwendung des Befehls `fount remove` zum Deinstallieren eines fount ist sauberer als das Löschen des Ordners.",
+			"Um fount zu deinstallieren, ist der Befehl `fount remove` sauberer als das Löschen des Ordners.",
 			"Geben Sie `fount cake` in die Befehlszeile ein, um einen kostenlosen und köstlichen Kuchen zu erhalten!",
 			"Alle Datendateien von fount werden im Verzeichnis `fount/data` gespeichert und Sie können sie jederzeit und überall anzeigen, ändern und sichern.",
-			"Der Name von fount besteht ausschließlich aus Kleinbuchstaben, es heißt `f`ount und nicht `F`ount.",
-			"Sichern Sie alle Daten, mit denen Ihr Agent regelmäßig arbeitet, bevor Sie das neue Modell verwenden – Sie wissen nie, ob das neue Modell an manchen Stellen eine schlechte Leistung erbringen wird.",
-			"Die Hauptzielgruppe von fount sind Softwareentwickler und Rollenspielbegeisterte, es wird aber auch in der Handelsagentenkonstruktion, der medizinischen Versorgung, dem Militär, dem Finanzwesen und anderen Bereichen eingesetzt.",
+			"Der Name von fount besteht ausschließlich aus Kleinbuchstaben: `f`ount, nicht `F`ount.",
+			"Sichern Sie alle Daten, mit denen Ihr Agent regelmäßig arbeitet, bevor Sie das neue Modell verwenden – Sie wissen nie, ob das neue Modell an manchen Stellen schlecht abschneidet.",
+			"Die Hauptzielgruppe von fount sind Softwareentwickler und Rollenspielbegeisterte, fount wird aber auch beim Aufbau kommerzieller Agenten, im Gesundheitswesen, im Militär, im Finanzwesen und in anderen Bereichen eingesetzt.",
 			"Der Name des in fount integrierten Charakters ZL-31 hat keine Bedeutung und war nur eine spontane Idee.",
-			"Die Bilder in den Quelldateien werden alle im SVG-Format gespeichert und bei Bedarf in PNG oder ICO gerendert. Es gibt keine Binärdateien außer LICENSE.",
+			"Alle Bilder in den Quelldateien liegen im SVG-Format vor und werden bei Bedarf nach PNG oder ICO gerendert. Es gibt keine Binärdateien außer LICENSE.",
 			"Jeder Code in fount kann ohne Kompilierung direkt ausgeführt werden. Was Sie sehen, ist das, was Sie erhalten.",
 			"fount hatte einst einen sehr coolen dynamischen interaktiven Seitenhintergrund, der jedoch später gelöscht wurde, weil er zu viel CPU beanspruchte.",
 			"fount wurde ursprünglich für einen NSFW-Agenten namens „GentianAphrodite“ entwickelt.",
 			"Einer der Unterschiede zwischen Agenten und Menschen besteht darin, dass Menschen kacken.",
 			"Agenten sind nur in dem Moment bei Bewusstsein, in dem sie aufgerufen werden, während Menschen jederzeit und überall bei Bewusstsein sind, wenn sie wach sind.",
-			"Manche Menschen verlieben sich in ihre Agenten oder heiraten sogar in sie!",
-			"KI wird verwendet, um Gedichte zu schreiben, sich zu verlieben und Bilder für Menschen zu zeichnen. Das Tragen von Ziegelsteinen, das Fegen von Böden und das Herausbringen von Müll ist das, was Menschen tun sollten.",
+			"Manche Menschen verlieben sich in ihre Agenten oder heiraten sie sogar!",
+			"KI wird verwendet, um Gedichte zu schreiben, sich zu verlieben und Bilder für Menschen zu zeichnen. Ziegelsteine tragen, Böden fegen und den Müll rausbringen – das ist die Arbeit der Menschen.",
 			"Heute ist nicht der 1. April.",
 			"Nein, das wussten Sie nicht."
 		]
@@ -46,7 +46,7 @@
 			},
 			"localUrl": "Zugriff auf fount von anderen Geräten im selben Netzwerk: ${url}",
 			"update": {
-				"restarting": "Eine neue Version wurde entdeckt und das Update wird neu gestartet..."
+				"restarting": "Neue Version gefunden. Neustart für das Update..."
 			}
 		},
 		"jobs": {
@@ -60,7 +60,7 @@
 			"noInstanceRunning": "Keine laufende Instanz erkannt, bitte starten Sie zuerst fount.",
 			"runPartLog": "Führen Sie ${partpath} als ${username} aus, Argumente: ${args}",
 			"invokePartLog": "Rufen Sie ${partpath} als ${username} auf, Parameter: ${invokedata}",
-			"invalidCommand": "Ungültiger Befehl. Bitte verwenden Sie \"fount run <Benutzername> <Komponentenpfad> <Parameter...>\".",
+			"invalidCommand": "Ungültiger Befehl. Bitte verwenden Sie \"fount run <Komponentenpfad> <Parameter...>\" (oder \"fount runas <Benutzername> <Komponentenpfad>\", um einen Benutzer anzugeben).",
 			"invalidCommandFormat": "Ungültiges Befehlsformat",
 			"unsupportedCommand": "Nicht unterstützter Befehlstyp",
 			"processMessageError": "Fehler beim Verarbeiten der IPC-Nachricht: ${error}",
@@ -78,16 +78,16 @@
 				"updating": "Wird vom Remote-Repository aktualisiert...",
 				"upToDate": "Bereits aktuell.",
 				"localAhead": "Lokaler Branch ist dem Remote-Branch voraus. Kein Update erforderlich.",
-				"noUpstream": "Kein Upstream-Branch für Branch '${currentBranch}' konfiguriert, Update-Prüfung wird übersprungen.",
+				"noUpstream": "Kein Upstream-Branch für Branch „${currentBranch}“ konfiguriert; Update-Prüfung wird übersprungen.",
 				"dirtyWorkingDirectory": "Arbeitsverzeichnis ist nicht sauber. Bitte stashen oder committen Sie Ihre Änderungen vor dem Update.",
 				"uncommittedBackedUpTo": "Nicht festgeschriebene Änderungen wurden gesichert unter: ${path}",
 				"diverged": "Lokaler und Remote-Branch sind auseinandergelaufen. Erzwinge Update...",
-				"updateFailed": "Fehler beim Aktualisieren von Parts vom Remote-Repository: ${error}"
+				"updateFailed": "Fehler beim Aktualisieren der Komponenten vom Remote-Repository: ${error}"
 			}
 		},
 		"web": {
 			"requestReceived": "Anfrage erhalten: ${method} ${url}",
-			"frontendFilesChanged": "Die Frontend-Datei [${path}] wurde geändert. Clients werden benachrichtigt, die Seite neu zu laden."
+			"frontendFilesChanged": "Die Frontend-Datei [${path}] wurde geändert. Die Clients werden benachrichtigt und laden die Seite neu."
 		},
 		"route": {
 			"setLanguagePreference": "Benutzer ${username} hat die bevorzugte Sprache eingestellt: ${preferredLanguages}"
@@ -101,9 +101,9 @@
 			"tokenRevoked": "Token wurde widerrufen: ${jti}"
 		},
 		"verification": {
-			"codeGeneratedLog": "Verifizierungscode: ${code} (läuft nach 60 Sekunden ab)",
+			"codeGeneratedLog": "Verifizierungscode: ${code} (läuft in 60 Sekunden ab)",
 			"codeNotifyTitle": "Verifizierungscode",
-			"codeNotifyBody": "Verifizierungscode: ${code} (läuft nach 60 Sekunden ab)"
+			"codeNotifyBody": "Verifizierungscode: ${code} (läuft in 60 Sekunden ab)"
 		},
 		"tray": {
 			"title": "fount",
@@ -141,12 +141,12 @@
 				}
 			}
 		},
-		"botStarted": "Char ${charname} hat sich beim ${platform}-Bot ${botusername} angemeldet.",
+		"botStarted": "Charakter ${charname} hat sich beim ${platform}-Bot ${botusername} angemeldet.",
 		"logViewer": {
 			"replHint": "Enter zum Ausführen · Shift+Enter für Zeilenumbruch"
 		},
 		"test": {
-			"help": "Verwendung: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --list [<groups>...]\n       fount test --kernel shutdown|reboot\n\nSelektoren (Gruppen durch Leerzeichen getrennt; Suites in einer Gruppe durch Komma; / und : gleichwertig):\n  Name              alle Suites der Gruppe (z. B. shells/chat)\n  Name:suite        bestimmte Suite\n  Name:suite:Eintrag bestimmter Subtest oder Testdatei\n\nOhne exakte Übereinstimmung per Präfix erweitern (shells → shells/chat, shells/social); Globs (*, ?, **) unterstützt.\n\nStandard (nur fount test): plant Fehler/Unvollständiges und Veraltetes in einem Durchlauf und führt sie aus; Fehler blockieren nur abhängige Slots — am Ende nicht-null Exit. Der Standardbefehl führt nicht das komplette Repository aus; für einen vollständigen Lauf --all verwenden.\n\n--watch      dauerhaft beobachten; bleibt aktiv, auch wenn die Warteschlange leer ist (Ctrl+C beendet); nicht mit --all, --force, --update-estimates oder Selektoren kombinierbar\n--all        führt alle Suites aus\n--force      erzwingt echten Lauf; letzte Ergebnisse nicht wiederverwenden\n--update-estimates  schreibt expected in jedem Manifest aus aktuellen DB-Durchschnittszeiten zurück; optionale Selektoren; führt keine Tests aus\n--list        listet die Test-Suites auf (kann Selektoren verwenden, um den Umfang einzugrenzen); startet den Kernel nicht und führt keine Tests aus\n--kernel     shutdown beendet den Testkernel; reboot beendet und startet neu; nicht mit anderen Argumenten kombinierbar\n\nBeispiele:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
+			"help": "Verwendung: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --list [<groups>...]\n       fount test --kernel shutdown|reboot\n\nSelektoren (Gruppen durch Leerzeichen getrennt; Suites in einer Gruppe durch Komma; / und : gleichwertig):\n  Name              alle Suites der Gruppe (z. B. shells/chat)\n  Name:suite        bestimmte Suite\n  Name:suite:Eintrag bestimmter Subtest oder Testdatei\n\nOhne exakte Übereinstimmung per Präfix erweitern (shells → shells/chat, shells/social); Globs (*, ?, **) unterstützt.\n\nStandard (nur fount test): plant Fehler/Unvollständiges und Veraltetes in einem Durchlauf und führt sie aus; Fehler blockieren nur abhängige Slots — am Ende Exit-Code ungleich null. Der Standardbefehl führt nicht das komplette Repository aus; für einen vollständigen Lauf --all verwenden.\n\n--watch      dauerhaft beobachten; bleibt aktiv, auch wenn die Warteschlange leer ist (Ctrl+C beendet); nicht mit --all, --force, --update-estimates oder Selektoren kombinierbar\n--all        führt alle Suites aus\n--force      erzwingt einen echten Lauf; letzte Ergebnisse nicht wiederverwenden\n--update-estimates  schreibt expected in jedem Manifest aus aktuellen DB-Durchschnittszeiten zurück; optionale Selektoren; führt keine Tests aus\n--list        listet die Test-Suites auf (kann Selektoren verwenden, um den Umfang einzugrenzen); startet den Kernel nicht und führt keine Tests aus\n--kernel     shutdown beendet den Test-Kernel; reboot beendet und startet neu; nicht mit anderen Argumenten kombinierbar\n\nBeispiele:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
 			"watchNoGroups": "Verwendung: fount test --watch (nicht mit anderen Optionen kombinierbar)",
 			"updateEstimates": {
 				"incompatible": "Verwendung: fount test --update-estimates [<groups>...] (nicht mit anderen Schaltern kombinierbar)",
@@ -167,7 +167,7 @@
 				"rebooted": "Test-Kernel wurde neu gestartet"
 			},
 			"skipBecause": {
-				"pass": "Übersprungen (Issue noch offen oder geschlossen, Karenzzeit noch nicht abgelaufen): ${label} — ${url}",
+				"pass": "Übersprungen (Issue noch offen oder geschlossen, aber Karenzzeit noch nicht abgelaufen): ${label} — ${url}",
 				"fail": "Fehlgeschlagen (Issue geschlossen und Karenzzeit abgelaufen — nachverfolgen und skip_because aktualisieren, dann erneut prüfen): ${label} — ${url}"
 			},
 			"moduleCheck": {
@@ -175,7 +175,7 @@
 			},
 			"serialZeroTests": "[serial] ${path} hat 0 Tests registriert",
 			"frontend": {
-				"isolatedRequired": "Der ${shellLabel}-Front-End-Test muss über test/frontend/run.mjs gestartet werden (das startet selbstständig einen isolierten Knoten). Nicht gegen lokale Entwicklungsinstanzen oder echte Benutzerdaten ausführen.",
+				"isolatedRequired": "Der ${shellLabel}-Frontend-Test muss über test/frontend/run.mjs gestartet werden (das startet selbstständig einen isolierten Knoten). Nicht gegen lokale Entwicklungsinstanzen oder echte Benutzerdaten ausführen.",
 				"isolatedUser": "Tests müssen unter dem isolierten Benutzer „${expectedUsername}“ laufen; aktuell läuft die Sitzung als „${username}“. Bitte über run.mjs starten und nicht auf einen Produktions- oder Entwicklungs-fount zeigen."
 			},
 			"queue": {
@@ -183,8 +183,8 @@
 				"remove": "Entfernt: ${label} (${reason}) ≈ ${remaining} verbleibend"
 			},
 			"display": {
-				"eta": "Voraussichtlich ${expected}, gesamt ≈ ${remaining} verbleibend",
-				"etaUnknown": "Voraussichtlich ${expected}, gesamt ${count} mit unbekannter Dauer verbleibend",
+				"eta": "Erwartet ${expected}, gesamt ≈ ${remaining} verbleibend",
+				"etaUnknown": "Erwartet ${expected}, gesamt ${count} mit unbekannter Dauer verbleibend",
 				"explicitSelectedCount": "Explizit ausgewählt: ${count}",
 				"reason": "${label}: ${reason}",
 				"remaining": "Gesamt ≈ ${remaining} verbleibend",
@@ -192,7 +192,7 @@
 				"remainingOnlyUnknown": "Gesamt: ${count} mit unbekannter Dauer verbleibend",
 				"queued": {
 					"switch": "count",
-					"default": "In der Warteschlange — ${count} vor dir",
+					"default": "In der Warteschlange — ${count} vor Ihnen",
 					"cases": {
 						"0": "In der Warteschlange"
 					}
@@ -208,15 +208,15 @@
 						"suite_failed": "Suite fehlgeschlagen",
 						"blocked": "Blockiert: Abhängigkeit fehlgeschlagen",
 						"skipped": "Übersprungen: Abhängigkeit übersprungen",
-						"queue_appended": "Job eingereiht",
-						"queue_removed": "Job entfernt",
+						"queue_appended": "Aufgabe eingereiht",
+						"queue_removed": "Aufgabe entfernt",
 						"prep_promoted": "Vorbereitung befördert",
 						"module_check_ready": "Modulprüfung bereit",
 						"dependency_ready": "Abhängigkeiten bereit",
 						"resource_budget_changed": "Ressourcenbudget geändert",
-						"job_queued": "Job in Warteschlange",
+						"job_queued": "Aufgabe in Warteschlange",
 						"gate_state_changed": "Ressourcen-Gate geändert",
-						"expected_drift": "Schätzung abgewichen",
+						"expected_drift": "Schätzung weicht ab",
 						"progress": "Fortschritt aktualisiert"
 					}
 				},
@@ -229,7 +229,7 @@
 					"queuedCount": "Wartend: ${count}",
 					"reason": "(${reason})",
 					"elapsed": "${elapsed}",
-					"eta": "Noch≈${remaining}",
+					"eta": "Noch ≈ ${remaining}",
 					"duration": "Dauer: ${duration}",
 					"cpu": "CPU ${cpu}",
 					"memory": "Speicher ${memory}",
@@ -269,9 +269,9 @@
 			"prunedAbsentState": "Veralteter Status entfernter Suiten bereinigt: ${suites} Suites, ${subtests} Subtests",
 			"noisyOnlyRemain": "Noch ${count} Suites bestanden mit Rauschen: ${suites}",
 			"noRealRunPlanned": "Kein echter Lauf nötig: ${reused} wiederverwendet, ${blocked} voraussichtlich blockiert, ${skipped} übersprungen (trigger unverändert)",
-			"allReusedHint": "Kein echter Lauf: Fehler stammen vom letzten Ergebnis, Blockierung bleibt (Dateien unverändert). Nach Fix erneut ausführen oder fount test --force für echten Lauf.",
+			"allReusedHint": "Kein echter Lauf: Fehler stammen vom letzten Ergebnis, Blockierung bleibt (Dateien unverändert). Nach der Behebung erneut ausführen oder `fount test --force` für einen echten Lauf.",
 			"failuresSaved": "Fehlerliste gespeichert: ${path} (${count} Suites)",
-			"failuresCleared": "manifest ${manifestId} vollständig bestanden, Fehlerliste gelöscht.",
+			"failuresCleared": "Manifest ${manifestId} vollständig bestanden, Fehlerliste gelöscht.",
 			"terminated": "Timeout-Abbruch: ${label} — ${reason}",
 			"sleepDetected": "Systemschlaf erkannt (Watchdog-Intervall sprang um ${gap} ≥ ${limit}); ${label} abgebrochen und bereit zum erneuten Lauf (gelaufen ${elapsed})",
 			"sleepRetry": "Durch Systemschlaf unterbrochen; ${label} wird erneut ausgeführt (Versuch ${attempt})",
@@ -281,7 +281,7 @@
 			"federationCleanupPre": "Föderationstest-Bereinigung (vor Lauf) fehlgeschlagen: ${output}",
 			"federationCleanupPost": "Föderationstest-Bereinigung (nach Lauf) fehlgeschlagen: ${output}",
 			"suiteHeader": "\n=== Suite ${name} ===",
-			"heapSnapshotSaved": "Heap-Snapshot bei nahem OOM: ${path}",
+			"heapSnapshotSaved": "Heap-Snapshot kurz vor OOM: ${path}",
 			"liveUsage": "Verwendung: --suite <Name> | --list",
 			"serialUsage": "Verwendung: serial.mjs <deno-test-path> [...]",
 			"silentPassedOne": "1 Testdatei bestanden.",
@@ -308,7 +308,7 @@
 				"fail": "\nFehlgeschlagen: ${detail}"
 			},
 			"report": {
-				"title": "Fount-Testbericht",
+				"title": "fount-Testbericht",
 				"tableHeaderItem": "Eintrag",
 				"tableHeaderValue": "Wert",
 				"estimatePoint": "≈ ${eta}",
@@ -322,7 +322,7 @@
 				"columnSuite": "Suite",
 				"columnDuration": "Dauer",
 				"continueReasonsLink": "Auslösegründe: siehe [${path}](${path})",
-				"deadTriggersHint": "Folgende globs trafen keine Datei im Repo (git-tracked + nicht ignorierte untracked):",
+				"deadTriggersHint": "Folgende Globs trafen keine Datei im Repo (git-tracked + nicht ignorierte untracked):",
 				"durationMs": "${ms} ms",
 				"durationUnit": {
 					"day": "${n} Tage",
@@ -334,7 +334,7 @@
 				"section": {
 					"continue": "Unvollendete fortsetzen",
 					"continueReasons": "Auslösegründe",
-					"deadTriggers": "Tote trigger",
+					"deadTriggers": "Tote Trigger",
 					"failed": "Fehlgeschlagene Suites",
 					"noisyPassed": "Bestanden mit Rauschen",
 					"pending": "Ausstehend",
@@ -357,7 +357,7 @@
 						"failed": "Früher fehlgeschlagen",
 						"noisy": "Früher bestanden mit Rauschen"
 					},
-					"missingRecord": "Kein state-Eintrag, automatisch nachlaufen",
+					"missingRecord": "Kein Status-Eintrag, Neulauf automatisch",
 					"staleContent": "Inhalt geändert, Neulauf nötig",
 					"skipBecause": "skip_because-Nachprüfung",
 					"triggerHashDrift": "Trigger-Fingerabdruck driftet (kein Pfadtreffer)"
@@ -373,11 +373,11 @@
 					"inclusionPath": "Einschlusskette",
 					"log": "Log",
 					"matchedPaths": "Getroffene Pfade",
-					"matchedTriggerSets": "Getroffenes trigger set",
-					"matchedTriggers": "Getroffene trigger",
+					"matchedTriggerSets": "Getroffenes Trigger-Set",
+					"matchedTriggers": "Getroffene Trigger",
 					"noise": "Rauschen",
-					"pullDownstream": "Downstream-Zug: ${requiredBy} unvollkommen, mit eingeschlossen",
-					"pullUpstream": "Upstream-Zug: Abhängigkeit von ${requiredBy} nicht grün",
+					"pullDownstream": "Downstream-Einschluss: ${requiredBy} unvollkommen, ebenfalls eingeschlossen",
+					"pullUpstream": "Upstream-Einschluss: Abhängigkeit von ${requiredBy} nicht grün",
 					"reused": "(wiederverwendet)",
 					"rootCause": "Ursache",
 					"skipBecause": "Issue",
@@ -385,7 +385,7 @@
 					"skipTree": "skip_tree",
 					"terminateReason": "Abbruchgrund",
 					"triggerHashDrift": "Trigger-Fingerabdruck weicht vom Arbeitsbereich ab (dirty→clean ignoriert)",
-					"uncommittedHashRange": "Uncommitteter Digest"
+					"uncommittedHashRange": "Nicht committeter Digest"
 				},
 				"field": {
 					"command": "Befehl",
@@ -394,17 +394,17 @@
 					"exit": "Exit-Status",
 					"failed": "Fehlgeschlagen",
 					"noisyPassed": "Bestanden mit Rauschen",
-					"parallelRate": "Parallelrate",
+					"parallelRate": "Parallelität",
 					"progress": "Fortschritt",
 					"reused": "Wiederverwendet",
 					"runId": "Lauf-ID",
-					"suiteSumDuration": "Suite-Summenlaufzeit",
+					"suiteSumDuration": "Suite-Zeit (Summe)",
 					"suites": "Suites",
 					"wallClock": "Gesamtlaufzeit"
 				}
 			},
 			"state": {
-				"title": "Fount-Teststatus",
+				"title": "fount-Teststatus",
 				"artifacts": "Statusverzeichnis: `${path}`",
 				"sectionDependencyTree": "Abhängigkeitsbaum",
 				"sectionOverview": "Suite-Status",
@@ -423,16 +423,16 @@
 				}
 			},
 			"terminate": {
-				"duration": "Abgebrochen ${label}: Laufzeit über Watchdog-Baseline (Laufzeit ${elapsed}, Baseline ${baseline}, Limit ${limit})",
-				"durationDefault": "Abgebrochen ${label}: Laufzeit über Standard-Watchdog-Limit (Laufzeit ${elapsed}, Limit ${limit})",
-				"idle": "Abgebrochen ${label}: über ${minutes} Min. ohne stdall-Ausgabe (Leerlauf ${idleSec} s, Laufzeit ${elapsed})",
+				"duration": "Abgebrochen ${label}: Watchdog-Baseline überschritten (Laufzeit ${elapsed}, Baseline ${baseline}, Limit ${limit})",
+				"durationDefault": "Abgebrochen ${label}: Standard-Watchdog-Limit überschritten (Laufzeit ${elapsed}, Limit ${limit})",
+				"idle": "Abgebrochen ${label}: seit über ${minutes} Min. keine stdall-Ausgabe (Leerlauf ${idleSec} s, Laufzeit ${elapsed})",
 				"marker": "[Abbruchgrund: ${reason}]",
 				"speculative": "Abgebrochen ${label}: spekulative Abhängigkeit nicht bestanden, Frühstopp aufgehoben",
 				"unknown": "Abgebrochen ${label}: Test unterbrochen"
 			},
 			"unknown": {
 				"fileFilter": "Unbekannter Testdatei-Filter: ${suite} → ${names}",
-				"manifestId": "Unbekannte manifest id: ${ids}",
+				"manifestId": "Unbekannte Manifest-ID: ${ids}",
 				"subtestFilter": "Unbekannter Subtest-Filter: ${suite} → ${names}",
 				"suite": "Unbekannte Suite: ${name}",
 				"suiteSelector": "Unbekannte Suite-Angabe: ${ids}"
@@ -448,17 +448,17 @@
 			"protocol": {
 				"description": "URL:fount-Protokoll",
 				"registerFailed": "Registrierung des `fount://`-Protokollhandlers fehlgeschlagen: ${message}",
-				"noUrl": "Fehler: URL für Protokoll-Handler nicht angegeben."
+				"noUrl": "Fehler: URL für Protokollhandler nicht angegeben."
 			},
 			"update": {
-				"skippingFountUpdate": "Da die Datei `.noupdate` vorhanden ist, wird die Aktualisierung der fount übersprungen",
-				"switchingToBranch": "Wechsle zu Branch '${branch}' …",
-				"switchingToRemote": "Wechsle zum Standard-Branch '${branch}' von Remote '${url}'…",
+				"skippingFountUpdate": "Da die Datei `.noupdate` vorhanden ist, wird die Aktualisierung von fount übersprungen",
+				"switchingToBranch": "Wechsle zu Branch „${branch}“ …",
+				"switchingToRemote": "Wechsle zum Standard-Branch „${branch}“ von Remote „${url}“…",
 				"removedNoUpdate": "`.noupdate` entfernt; automatische Updates wieder aktiv.",
 				"pinningToCommit": "Commit `${ref}` wird festgesetzt und `.noupdate` erstellt …",
 				"pinningToPullRequest": "Pull Request #${pr} wird festgesetzt und `.noupdate` erstellt …",
 				"createdNoUpdate": "`.noupdate` erstellt; automatische Updates pausiert.",
-				"unknownTarget": "'${target}' kann nicht erkannt werden: kein bekannter Branch, Commit oder Pull Request."
+				"unknownTarget": "„${target}“ kann nicht erkannt werden: kein bekannter Branch, Commit oder Pull Request."
 			},
 			"version": {
 				"branch": {
@@ -470,9 +470,9 @@
 				"status": {
 					"title": "Status: ${status}",
 					"upToDate": "Auf dem neuesten Stand",
-					"behind": "Hinter Remote zurück",
-					"ahead": "Remote voraus",
-					"diverged": "Von Remote abgewichen",
+					"behind": "Hinter dem Remote zurück",
+					"ahead": "Dem Remote voraus",
+					"diverged": "Vom Remote abgewichen",
 					"detachedNoCompare": "Abgetrennter HEAD, kein Vergleich mit Remote",
 					"fetchFailed": "Remote-Status konnte nicht abgerufen werden"
 				},
@@ -483,8 +483,8 @@
 			"shortcut": {
 				"desktopShortcutCreated": "Desktop-Verknüpfung erstellt unter `${path}`",
 				"startMenuShortcutCreated": "Startmenü-Verknüpfung erstellt unter `${path}`",
-				"protocolHandlerRegistered": "fount:// Protokollhandler registriert.",
-				"shortcutNotSupported": "Hinweis: Ihr Betriebssystem (${os}) unterstützt das Erstellen von Desktop-Verknüpfungen nicht.",
+				"protocolHandlerRegistered": "`fount://`-Protokollhandler registriert.",
+				"shortcutNotSupported": "Warnung: Ihr Betriebssystem (${os}) unterstützt das Erstellen von Desktop-Verknüpfungen nicht.",
 				"osacompileNotFound": "Fehler: „osacompile“ nicht gefunden. Die macOS-App kann nicht erstellt werden.",
 				"lsregisterFailed": "Warnung: Die Verwendung von `lsregister` zum Registrieren einer Anwendung bei LaunchServices ist fehlgeschlagen.",
 				"createDesktopAppFailed": "Fehler: Desktop-Anwendung konnte nicht erstellt werden."
@@ -496,23 +496,23 @@
 				"exeFailed": "fount.exe konnte nicht erstellt werden; Steam-Registrierung übersprungen."
 			},
 			"git": {
-				"repoNotFound": "Das Git-Repository von fount wurde nicht gefunden. Eine neue initialisieren...",
-				"fetchingAndResetting": "Vom Remote-Repository abrufen und auf Master zurücksetzen ...",
+				"repoNotFound": "Das Git-Repository von fount wurde nicht gefunden. Ein neues wird initialisiert...",
+				"fetchingAndResetting": "Abruf vom Remote-Repository und Zurücksetzen auf master...",
 				"localChangesDetected": "Lokale Änderungen erkannt, Unterschiede werden vor dem Überschreiben gespeichert.",
 				"backupSavedTo": "Eine Sicherung Ihrer lokalen Änderungen wurde gespeichert unter: `${path}`",
 				"updatingFromRemote": "Aktualisierung vom Remote-Repository...",
-				"alreadyUpToDate": "Schon das Neueste.",
-				"localBranchAhead": "Der lokale Zweig ist dem entfernten Zweig voraus. Keine Updates erforderlich.",
-				"branchesDiverged": "Die lokalen und Remote-Zweige wurden gegabelt. Erzwungenes Update läuft...",
-				"unrelatedHistories": "Lokales und entferntes Repository haben keine gemeinsame Historie. Erzwinge Aktualisierung …",
-				"notOnBranch": "Nicht auf dem Zweig, wechseln Sie zu „Master“ ...",
+				"alreadyUpToDate": "Bereits aktuell.",
+				"localBranchAhead": "Der lokale Branch ist dem Remote-Branch voraus. Kein Update erforderlich.",
+				"branchesDiverged": "Die lokalen und Remote-Branches sind auseinandergelaufen. Erzwungenes Update läuft...",
+				"unrelatedHistories": "Lokales und entferntes Repository haben keine gemeinsame Historie. Erzwungenes Update läuft …",
+				"notOnBranch": "Nicht auf einem Branch; Wechsel zu „master“...",
 				"upstreamGoneFallbackMaster": "Remote-Zweig „${branch}“ wurde gelöscht; verfolge stattdessen master …",
-				"noUpstreamBranch": "Warnung: Für Branch '${branch}' kein Upstream konfiguriert, verwende '${remote}'.",
-				"dirtyWorkingDirectory": "Warnung: Das Arbeitsverzeichnis enthält ungesicherte Änderungen. Bitte sichern (stash/commit) Sie Ihre Änderungen vor dem Update.",
-				"notInstalled": "Git ist nicht installiert, versucht zu installieren ...",
+				"noUpstreamBranch": "Warnung: Für Branch „${branch}“ ist kein Upstream konfiguriert; verwende „${remote}“.",
+				"dirtyWorkingDirectory": "Warnung: Das Arbeitsverzeichnis enthält ungesicherte Änderungen. Bitte stashen oder committen Sie Ihre Änderungen vor dem Update.",
+				"notInstalled": "Git ist nicht installiert, versucht zu installieren...",
 				"notInstalledSkippingPull": "Git ist nicht installiert, Git Pull überspringen",
 				"repoNotFoundSkippingPull": "Repository nicht gefunden, Git Pull überspringen",
-				"fetchFailed": "Fehler beim Abrufen von „Ursprung“.",
+				"fetchFailed": "Fehler beim Abrufen von „origin“.",
 				"fetchFailedSkippingUpdate": "GitHub-Updates konnten nicht abgerufen werden; Update übersprungen.",
 				"remoteRefUnavailable": "Remote-Referenz „${ref}“ nicht verfügbar; Git-Synchronisierung übersprungen.",
 				"installFailedWinget": "Da die Winget-Installation fehlgeschlagen ist, kann Git nicht installiert werden. Bitte installieren Sie es manuell.",
@@ -522,10 +522,10 @@
 				"missing": "Deno nicht gefunden, wird automatisch installiert...",
 				"isRequired": "Deno nicht gefunden, fount kann nicht ohne Deno ausgeführt werden",
 				"installingTermux": "Deno für Termux installieren...",
-				"installFailedFallback": "Die Deno-Installation ist fehlgeschlagen. Es wurde versucht, automatisch im Pfadordner des Quellcodes zu installieren.",
+				"installFailedFallback": "Die Deno-Installation ist fehlgeschlagen. Es wurde versucht, Deno automatisch in den `path`-Ordner von fount zu installieren.",
 				"notWorking": "Aus irgendeinem Grund funktioniert Deno nicht. Sie können unter https://github.com/denoland/deno/issues Fragen stellen, um Unterstützung zu erhalten",
 				"upgradeFailed": "Warnung: Das Deno-Upgrade ist möglicherweise fehlgeschlagen. Bitte prüfen Sie, ob Fehler vorliegen.",
-				"upgradeFailedTermux": "Deno-Upgrade-Befehl fehlgeschlagen, Versuch, Deno für Termux neu zu installieren ...",
+				"upgradeFailedTermux": "Deno-Upgrade-Befehl fehlgeschlagen, Versuch, Deno für Termux neu zu installieren...",
 				"patchMissing": "Fehler: Die ausführbare Deno-Datei wurde vor dem Patchen nicht gefunden. Kann nicht gepatcht werden.",
 				"patchUnsupportedArch": "Fehler: Nicht unterstützte Patch-Architektur: ${arch}",
 				"patchFailed": "Fehler: Die ausführbare Datei von Deno konnte nicht mit `patchelf` gepatcht werden.",
@@ -534,7 +534,7 @@
 				"pinNotHonored": "Warnung: Deno wird vom Paketmanager ${manager} verwaltet, daher kann die in .deno-version angegebene Version (${spec}) nicht eingehalten werden. Es wurde auf die Version des Paketmanagers aktualisiert."
 			},
 			"tempDir": {
-				"blocked": "Fehler: `fount` kann nicht im temporären Verzeichnis ausgeführt werden\n\nfount ist eng mit dem System gekoppelt und registriert in `fount` den `PATH`-Befehl sowie mehrere System-Hooks. Wird fount in einem temporären Verzeichnis ausgeführt, können Sie nach dem Löschen der temporären Dateien durch das System `fount remove` nicht mehr ausführen, um fount und seine Hooks zu entfernen.\n\nBitte verschieben Sie fount vor dem Ausführen in ein nicht temporäres Verzeichnis. Wenn Sie nur kurz testen möchten, führen Sie `fount remove` nach Abschluss des Tests manuell aus."
+				"blocked": "Fehler: `fount` kann nicht im temporären Verzeichnis ausgeführt werden\n\nfount ist eng mit dem System gekoppelt und registriert in `fount` den `PATH`-Befehl sowie mehrere System-Hooks. Wird fount in einem temporären Verzeichnis ausgeführt und löscht das System später die temporären Dateien, können Sie `fount remove` nicht mehr ausführen, um fount und seine Hooks zu entfernen.\n\nBitte verschieben Sie fount vor dem Ausführen in ein dauerhaftes Verzeichnis. Wenn Sie nur kurz testen möchten, führen Sie `fount remove` nach Abschluss des Tests manuell aus."
 			},
 			"eula": {
 				"prompt": "Akzeptieren Sie die Endbenutzer-Lizenzvereinbarung (EULA) für fount?",
@@ -548,38 +548,38 @@
 				"compilingFavicon": "Favicon-Datei nicht gefunden; Server wird gestartet, um sie zu erzeugen...",
 				"packageFailed": "Fehler: Die Installation von ${package} ist fehlgeschlagen.",
 				"browserMissing": "Standardbrowser nicht erkannt, Installation wird versucht...",
-				"untrustedPartsWarning": "Installieren Sie keine nicht vertrauenswürdigen Quellkomponenten auf Ihrem System, sie können alles bewirken.",
+				"untrustedPartsWarning": "Installieren Sie keine nicht vertrauenswürdigen fount-Komponenten auf Ihrem System, sie können alles tun.",
 				"permissionDeniedAsRoot": "Fehler: Es konnte nicht in das fount-Verzeichnis „${path}“ geschrieben werden. Sie werden als Root ausgeführt, aber der Zugriff ist weiterhin verweigert. Bitte überprüfen und korrigieren Sie die Sicherheitsberechtigungen dieses Ordners, um dem aktuellen Benutzer Vollzugriff zu gewähren.",
 				"permissionDeniedNotRoot": "Fehler: Es konnte nicht in das fount-Verzeichnis „${path}“ geschrieben werden. Bitte korrigieren Sie die Sicherheitsberechtigungen des Ordners, um dem aktuellen Benutzer Schreibzugriff zu gewähren, oder führen Sie fount als Root aus.",
-				"rootWarningAsRoot": "Nicht empfohlen: Wenn Sie fount als Root ausführen, erhalten Sie vollständigen Systemzugriff auf alle fount-Komponenten.",
-				"rootWarningPreferUser": "Sofern Sie nicht wissen, was Sie tun, wird empfohlen, fount als normaler Benutzer auszuführen.",
+				"rootWarningAsRoot": "Nicht empfohlen: Wenn Sie fount als Root ausführen, erhalten alle fount-Komponenten vollständigen Systemzugriff.",
+				"rootWarningPreferUser": "Wenn Sie nicht genau wissen, was Sie tun, sollten Sie fount als normaler Benutzer ausführen.",
 				"runnerUpdating": "Installer wird aktualisiert…"
 			},
 			"clean": {
 				"removingCaches": "Cache wird entfernt...",
 				"cleaningDenoCaches": "Deno-Cache bereinigen...",
-				"cleaningOldPwshModules": "Bereinigen alter pwsh-Module ..."
+				"cleaningOldPwshModules": "Alte pwsh-Module bereinigen..."
 			},
 			"keepalive": {
-				"initComplete": "Neuinitialisierung abgeschlossen. Ich versuche, die fount neu zu starten...",
-				"autoInitDisabled": "fount wurde in der letzten kurzen Zeit mehrmals neu gestartet, die automatische Neuinitialisierung wurde jedoch aufgrund des Vorhandenseins der Datei `.noautoinit` deaktiviert. Verlassen.",
-				"restartingTooFast": "Die fount wurde in kurzer Zeit mehrmals neu gestartet. Erzwungene Neuinitialisierung...",
+				"initComplete": "Neuinitialisierung abgeschlossen. Ich versuche, fount neu zu starten...",
+				"autoInitDisabled": "fount wurde kürzlich mehrmals neu gestartet; da die Datei `.noautoinit` vorhanden ist, wurde die automatische Neuinitialisierung deaktiviert. Wird beendet.",
+				"restartingTooFast": "fount wurde in kurzer Zeit mehrmals neu gestartet. Erzwungene Neuinitialisierung...",
 				"failedToStart": "Selbst nach automatischen Reparaturversuchen startet fount auch nach kurzer Zeit nicht. Bitte überprüfen Sie die Protokolle auf Fehler.",
-				"initFailed": "Die Initialisierung des Quellcodes ist fehlgeschlagen. Verlassen."
+				"initFailed": "Die Initialisierung von fount ist fehlgeschlagen. Wird beendet."
 			},
 			"terminalKeybindings": {
 				"registered": "Terminal-Tastenkürzel-Patch konfiguriert.",
-				"wtPatchFailed": "Windows-Terminal-Einstellungen konnten nicht gepatcht werden `${path}`: ${message}",
+				"wtPatchFailed": "Windows-Terminal-Einstellungen unter `${path}` konnten nicht gepatcht werden: ${message}",
 				"wtRemoved": "fount-Tastenkürzel aus Windows-Terminal-Einstellungen entfernt: `${path}`",
 				"editorRemoved": "fount-Konfiguration aus Editor-Terminal-Tastenkürzeln entfernt: `${path}`"
 			},
 			"remove": {
 				"confirmPrompt": "Das fount-Installationsverzeichnis wird gleich von der Festplatte gelöscht: „${path}“.\nBitte bestätigen Sie, dass es sich wirklich um das zu löschende Verzeichnis handelt.",
-				"yn": "[Y/N]",
+				"yn": "[Y/N] ",
 				"aborted": "Abgebrochen, es wurde nichts gelöscht.",
 				"externalMountWarning": "Warnung: fount befindet sich auf einem externen/gemeinsam genutzten Mount (`${target}`)!\nDieses Verzeichnis kann gleichzeitig auf dem Host oder der virtuellen Maschine vorhanden sein. `fount remove` löscht es auch dort, seien Sie daher besonders vorsichtig.",
 				"nonInteractiveRequiresForce": "In einer nicht interaktiven Umgebung kann die Löschung nicht bestätigt werden. Wenn Sie sicher sind, dass Sie `fount` (${path}) entfernen möchten, verwenden Sie `fount remove --force`, um die Bestätigung zu überspringen.",
-				"fountUninstallationComplete": "Font-Deinstallation abgeschlossen.",
+				"fountUninstallationComplete": "Deinstallation von fount abgeschlossen.",
 				"fountInstallationDirRemoved": "Das fount-Installationsverzeichnis wurde entfernt.",
 				"protocolHandlerRemoved": "Der `fount://`-Protokollhandler wurde entfernt.",
 				"fountPwshRemovedFromProfile": "fount-pwsh wurde aus dem PowerShell-Profil entfernt.",
@@ -606,8 +606,8 @@
 					"desktopShortcut": "Desktop-Verknüpfung wird entfernt...",
 					"fount": {
 						"main": "fount wird entfernt...",
-						"fromGitSafeDir": "fount wird aus dem Git-Safe-Verzeichnis entfernt...",
-						"fromPath": "fount wird aus PATH entfernt...",
+						"fromGitSafeDir": "fount wird aus `git safe.directory` entfernt...",
+						"fromPath": "fount wird aus dem PATH entfernt...",
 						"installationDir": "fount-Installationsverzeichnis wird entfernt...",
 						"pwshFromProfile": "`fount-pwsh` aus PowerShell-Profil entfernen..."
 					},
@@ -636,7 +636,7 @@
 		"description": "Verfolgen Sie den Installationsfortschritt und werfen Sie einen Blick auf die darin enthaltenen Funktionen. fount ist in Kürze startbereit.",
 		"hero": {
 			"title": "Ein Geistesblitz, aus Gedanken geboren",
-			"description": "fount ist eine KI-gestützte Charakter-Interaktionsplattform, die <i>Sie</i> befähigt. Es ist eine Brücke, die Sie mit Ihren imaginären Charakteren verbindet und es Ihnen ermöglicht, problemlos mit ihnen zu sprechen, Ihre eigenen Charaktere zu erstellen und sie mit der Welt zu teilen."
+			"description": "fount ist eine KI-gestützte Charakter-Interaktionsplattform, die <i>Sie</i> befähigt. Sie ist eine Brücke, die Sie mit Ihren imaginären Charakteren verbindet und Ihnen ermöglicht, problemlos mit ihnen zu sprechen, Ihre eigenen Charaktere zu erstellen und sie mit der Welt zu teilen."
 		},
 		"language_selector": {
 			"button": {
@@ -650,7 +650,7 @@
 			"title": "Wählen Sie Ihr Aussehen",
 			"description": "Wählen Sie ein Design, um Ihre Erfahrung zu personalisieren.",
 			"search": {
-				"placeholder": "Themen suchen..."
+				"placeholder": "Designs suchen..."
 			}
 		},
 		"mini_game": {
@@ -664,21 +664,21 @@
 		},
 		"data_showcase": {
 			"title_prefix": "fount ist ",
-			"title_of": " ",
+			"title_of": " unter den ",
 			"active_users": "Aktive Benutzer",
 			"stars": "GitHub-Sterne",
 			"adjectives": [
-				"erweiterbarste",
-				"potenteste",
-				"fortschrittlichste",
-				"kompatibelste",
-				"kompakteste und leistungsfähigste"
+				"der erweiterbarste",
+				"der potenteste",
+				"der fortschrittlichste",
+				"der kompatibelste",
+				"der kompakteste und leistungsfähigste"
 			],
 			"nouns": [
-				"ein KI-Charakter ",
-				"ein Agent ",
-				"eine Cyber-Waifu ",
-				"ein Digitaler Assistent "
+				"KI-Charakteren ",
+				"Agenten ",
+				"Cyber-Waifus ",
+				"digitalen Assistenten "
 			],
 			"platforms": [
 				"Basis-Plattform",
@@ -718,7 +718,7 @@
 			"open_fount": "fount öffnen",
 			"open_or_install_fount": "fount öffnen/installieren",
 			"error_message": "Och nö :(\n\nEin Fehler ist aufgetreten:\n${error}",
-			"star_thank_you": "Danke, dass du fount einen Stern gegeben hast!",
+			"star_thank_you": "Vielen Dank, dass Sie fount einen Stern gegeben haben!",
 			"telegram": {
 				"title": "Telegram",
 				"aria-label": "Telegram"
@@ -754,8 +754,8 @@
 				"description": "fount nutzt die volle Leistungsfähigkeit von HTML und ermöglicht es Charakteren, sich durch Rich Text, Bilder und sogar interaktive Elemente auszudrücken. Führen Sie dynamische und ansprechende Gruppenchats mit mehreren Charakteren gleichzeitig."
 			},
 			"aiSources": {
-				"title": "Uneingeschränkte Integration von KI-fount",
-				"description": "fount bietet beispiellose Auswahl und Flexibilität. Verbinden Sie sich mit <i>jeder</i> KI-fount – OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), OpenRouter, NovelAI usw. Die Kommunikationslogik wird nach <i>Ihrem</i> Willen durch die Macht des Codes geformt."
+				"title": "Uneingeschränkte Integration von KI-Quellen",
+				"description": "fount bietet beispiellose Auswahl und Flexibilität. Verbinden Sie sich mit <i>jeder</i> KI-Quelle – OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), OpenRouter, NovelAI usw. Die Kommunikationslogik wird nach <i>Ihrem</i> Willen durch die Kraft des Codes gestaltet."
 			}
 		}
 	},
@@ -780,7 +780,7 @@
 			}
 		},
 		"offline_dialog": {
-			"title": "Host offline",
+			"title": "Host ist offline",
 			"message": "Der fount-Host ${hostUrl} scheint offline zu sein. Möchten Sie es erneut versuchen?",
 			"buttons": {
 				"start": "Starten",
@@ -1416,7 +1416,7 @@
 				"placeholder": "Listenkanäle zeigen nur Navigationskarten an und senden keine Nachrichten"
 			},
 			"mentionHandle": "@${name}",
-			"mentionInsert": "@${name}",
+			"mentionInsert": "@${name} ",
 			"attachmentsHint": "(${n} Anhänge)",
 			"copied": "Kopiert",
 			"addBookmark": {
@@ -1433,9 +1433,9 @@
 			"forceTriggerAllLocalTitle": {
 				"title": "Alle lokalen Charaktere zum Sprechen zwingen"
 			},
-			"quoteHeader": "> **${sender}**${sep}${time}",
-			"quoteHeaderWithTime": "> **${sender}** · ${time}",
-			"quoteHeaderWithoutTime": "> **${sender}**",
+			"quoteHeader": "> **${sender}**${sep}${time}\n\n",
+			"quoteHeaderWithTime": "> **${sender}** · ${time}\n\n",
+			"quoteHeaderWithoutTime": "> **${sender}**\n\n",
 			"stopGenerating": "Hören Sie auf zu generieren",
 			"reactionAdd": {
 				"title": "Antwort hinzufügen"
@@ -2155,7 +2155,7 @@
 				"title": "Vertrauen Sie diesem Autor",
 				"subtitle": "Autor: ${author}",
 				"warningTitle": "Operationen mit hohem Risiko",
-				"warningBody": "Sobald sie vertrauenswürdig sind, werden von diesem Autor gesendete Nachrichten in Ihrem Browser als vollständiges Markdown (mit HTML-/Skriptfunktionen) gerendert. Wenn die andere Partei in böswilliger Absicht Inhalte auf der von ihr ausgeführten Font-Instanz erstellt, kann dies beim Anzeigen der Nachricht zu Schäden auf Ihrem lokalen Computer führen. Bitte vertrauen Sie nur Verbundknoten, die Sie genau kennen und bereit sind, Risiken einzugehen.",
+				"warningBody": "Sobald sie vertrauenswürdig sind, werden von diesem Autor gesendete Nachrichten in Ihrem Browser als vollständiges Markdown (mit HTML-/Skriptfunktionen) gerendert. Wenn die andere Partei in böswilliger Absicht Inhalte auf der von ihr ausgeführten fount-Instanz erstellt, kann dies beim Anzeigen der Nachricht zu Schäden auf Ihrem lokalen Computer führen. Bitte vertrauen Sie nur Verbundknoten, die Sie genau kennen und bereit sind, Risiken einzugehen.",
 				"durationLabel": "Vertrauensdauer",
 				"duration3h": "3 Stunden",
 				"duration7d": "7 Tage",
@@ -2374,7 +2374,7 @@
 				"saveFailed": "Speichern fehlgeschlagen: ${error}"
 			},
 			"altImage": {
-				"placeholder": "Fügen Sie dem Bild eine Beschreibung hinzu ...",
+				"placeholder": "Fügen Sie dem Bild eine Beschreibung hinzu...",
 				"label": "Bildbeschreibung (alt)"
 			},
 			"editedLabel": "(bearbeitet)",
@@ -2781,7 +2781,7 @@
 						"batch": "Verlassen Sie die ausgewählte Gruppe (${count})",
 						"batchOk": "${count}-Gruppen wurden Abwesend",
 						"batchPartial": "${failed} / ${total} Gruppen konnten nicht beendet werden, die Liste wurde aktualisiert",
-						"batchPending": "${count} Gruppen wurden aus der Liste entfernt und werden im Hintergrund beendet ...",
+						"batchPending": "${count} Gruppen wurden aus der Liste entfernt und werden im Hintergrund beendet...",
 						"confirm": "Sind Sie sicher, dass Sie die Gruppe „${name}“ Abwesend möchten? Sie können Nachrichten in dieser Gruppe nicht mehr anzeigen.",
 						"confirmBatch": "Sind Sie sicher, dass Sie die ausgewählten ${count}-Gruppen Abwesend möchten? Die Maschine speichert keine Daten mehr für diese Gruppen.",
 						"ok": "Verließ die Gruppe"
@@ -3848,7 +3848,7 @@
 		"title": "Komponenten-Exporter",
 		"pageTitle": "Komponenten-Exporter",
 		"pageSubtitle": "Exportieren Sie Ihre Lieblingsinhalte",
-		"description": "Exportieren Sie Ihre Font-Kreationen. Dieses Tool sammelt Ihre ausgewählten Komponenten in einer einfachen ZIP-Datei zur sicheren Aufbewahrung oder Weitergabe.",
+		"description": "Exportieren Sie Ihre fount-Kreationen. Dieses Tool sammelt Ihre ausgewählten Komponenten in einer einfachen ZIP-Datei zur sicheren Aufbewahrung oder Weitergabe.",
 		"steps": {
 			"part": "Wählen Sie Komponenten aus",
 			"action": "Export"
@@ -4097,7 +4097,7 @@
 			"providerLabel": "Anbieter: ${provider}",
 			"providerDocLink": "[Anbieterdokumentation anzeigen](${url})",
 			"modelSearch": {
-				"placeholder": "Suchen Sie nach Modellname, Hersteller, Funktionen ..."
+				"placeholder": "Suchen Sie nach Modellname, Hersteller, Funktionen..."
 			},
 			"meta": {
 				"cachePrice": "Cache-Lesen/Schreiben: ${read} / ${write}",
@@ -5219,16 +5219,16 @@
 		"title": "Browserintegration",
 		"description": "Überbrücken Sie die Lücke zwischen Quelle und Internet. Diese Seite stellt das Benutzerskript bereit, um eine nahtlose Integration zu ermöglichen und Ihre KI-Begleiter in Ihr Surferlebnis einzubeziehen.",
 		"pageHeader": "Browserintegration",
-		"pageDescription": "Damit Ihre fount -Rolle mit der Webseite interagieren kann, müssen Sie dieses Browser -Integrationsskript installieren. Es fungiert als Brücke zwischen dem Charakter und dem Browser, sodass sie den Seiteninhalt anzeigen und Aktionen ausführen können.",
+		"pageDescription": "Damit Ihre fount-Rolle mit der Webseite interagieren kann, müssen Sie dieses Browser-Integrationsskript installieren. Es fungiert als Brücke zwischen dem Charakter und dem Browser, sodass sie den Seiteninhalt anzeigen und Aktionen ausführen können.",
 		"install_script_title": "Skript installieren",
-		"install_script_description": "Klicken Sie auf die Schaltfläche unten, um das Browser -Integrationsskript zu installieren. Sie müssen zuerst einen Tampermonkey (oder einen ähnlichen Skript-Manager) installieren.",
+		"install_script_description": "Klicken Sie auf die Schaltfläche unten, um das Browser-Integrationsskript zu installieren. Sie müssen zuerst einen Tampermonkey (oder einen ähnlichen Skript-Manager) installieren.",
 		"install_button": "Installieren",
 		"install_from_url_tip": "Ermöglicht Ihr Browser die Installation nicht? Kopieren Sie diese URL und importieren Sie das Skript aus der URL im Tampermonkey-Plugin.",
 		"script_url_input": {
 			"aria-label": "URL des Browser-Integrationsskripts"
 		},
 		"what_is_manager": "Was ist ein Userscript-Manager?",
-		"manager_explanation": "Ein Userscript-Manager ist eine Browser-Erweiterung, mit der Sie Skripte installieren und ausführen können, die Webseiten ändern. Um das fount -Integrationsskript zu verwenden, benötigen Sie eine der Erweiterungen.",
+		"manager_explanation": "Ein Userscript-Manager ist eine Browser-Erweiterung, mit der Sie Skripte installieren und ausführen können, die Webseiten ändern. Um das fount-Integrationsskript zu verwenden, benötigen Sie eine der Erweiterungen.",
 		"popular_managers": "Beliebte Entscheidungen:",
 		"csp_warning": "Möglicherweise müssen Sie das Plugin installieren, um CSP auszuschalten, damit die Integrationsfunktion ordnungsgemäß funktioniert. Für ${browser} können Sie [dieses Plugin](${link}) verwenden.",
 		"connected_pages_title": "Verbundene Seite",
@@ -5246,11 +5246,11 @@
 		},
 		"autorun": {
 			"title": "Automatisch Skripte ausführen",
-			"description": "Verwalten Sie JavaScript -Snippets, die bei der Übereinstimmung mit einer bestimmten Website automatisch ausgeführt werden. Diese Skripte können von Ihrer KI-Rolle oder Ihrem Plug-In bereitgestellt werden, um Ihr Browsing-Erlebnis zu verbessern oder zu automatisieren.",
+			"description": "Verwalten Sie JavaScript-Snippets, die bei der Übereinstimmung mit einer bestimmten Website automatisch ausgeführt werden. Diese Skripte können von Ihrer KI-Rolle oder Ihrem Plug-In bereitgestellt werden, um Ihr Browsing-Erlebnis zu verbessern oder zu automatisieren.",
 			"form_title": "Fügen Sie ein neues Skript hinzu",
 			"comment_label": "Kommentare (optional)",
 			"url_regex_label": "URL regelmäßiger Ausdruck",
-			"script_label": "JavaScript -Code",
+			"script_label": "JavaScript-Code",
 			"add_button": "Skript hinzufügen",
 			"list_title": "Konfigurierte Skripte",
 			"view_script_button": "Das Skript anzeigen",
@@ -5305,14 +5305,14 @@
 	},
 	"browser_integration_script": {
 		"update": {
-			"prompt": "Eine neue Version des fount -Browser -Integrationsskripts ist verfügbar. Ist die Update -Seite jetzt geöffnet?"
+			"prompt": "Eine neue Version des fount-Browser-Integrationsskripts ist verfügbar. Ist die Update-Seite jetzt geöffnet?"
 		},
-		"csp_warning": "Das fount -Browser -Integrationsskript erkennt, dass die CSP -Richtlinie auf der Seite vorhanden ist, wodurch das Integrationsskript nicht ordnungsgemäß funktioniert. Bitte erwägen Sie, das Plugin zu installieren, um CSP auszuschalten.",
+		"csp_warning": "Das fount-Browser-Integrationsskript erkennt, dass die CSP-Richtlinie auf der Seite vorhanden ist, wodurch das Integrationsskript nicht ordnungsgemäß funktioniert. Bitte erwägen Sie, das Plugin zu installieren, um CSP auszuschalten.",
 		"hostChange": {
 			"securityWarningTitle": "--- fount Sicherheitswarnung ---",
-			"message": "Die aktuelle Seite (\"${origin}\") versucht, Ihre fount -Host -Adresse in:\n\n\"${newHost}\"\n\nWARNUNG: Die Genehmigung dieser Aktion ermöglicht es dem neuen Host, Ihre Browser -Integrationsfunktionen vollständig zu steuern, was zu einem sensiblen Informationen oder dem Kontodiebstahl führen kann.\nDie Genehmigung sollte nur erfolgen, wenn Sie sicher sind, dass dies Ihr eigener Vorgang ist (z. B. migrieren Sie einen fount -Server).\n\nSind Sie sicher, dass Sie diese Änderung zulassen möchten?",
-			"uuidMismatchError": "fount -Sicherheitsfehler: Die Identität (UUID) von Host ${newHost} stimmt nicht mit Ihrem vorhandenen überein. Die Operation wurde storniert.",
-			"verificationError": "fount -Sicherheitsfehler: Der neue Host \"${newHost}\" kann nicht verifiziert werden. Bitte überprüfen Sie, ob die Adresse korrekt ist und ob der Dienst ausgeführt wird."
+			"message": "Die aktuelle Seite (\"${origin}\") versucht, Ihre fount-Host-Adresse in:\n\n\"${newHost}\"\n\nWARNUNG: Die Genehmigung dieser Aktion ermöglicht es dem neuen Host, Ihre Browser-Integrationsfunktionen vollständig zu steuern, was zu einem sensiblen Informationen oder dem Kontodiebstahl führen kann.\nDie Genehmigung sollte nur erfolgen, wenn Sie sicher sind, dass dies Ihr eigener Vorgang ist (z. B. migrieren Sie einen fount-Server).\n\nSind Sie sicher, dass Sie diese Änderung zulassen möchten?",
+			"uuidMismatchError": "fount-Sicherheitsfehler: Die Identität (UUID) von Host ${newHost} stimmt nicht mit Ihrem vorhandenen überein. Die Operation wurde storniert.",
+			"verificationError": "fount-Sicherheitsfehler: Der neue Host \"${newHost}\" kann nicht verifiziert werden. Bitte überprüfen Sie, ob die Adresse korrekt ist und ob der Dienst ausgeführt wird."
 		}
 	},
 	"terminal_assistant": {
@@ -5500,7 +5500,7 @@
 	},
 	"themeManage": {
 		"title": "Design-Verwaltung",
-		"description": "Wählen Sie die Ästhetik, die Ihre Stimmung oder Geschichte widerspiegelt. Sehen Sie sich eine Vorschau an und wählen Sie aus einer Palette von Themen aus, die jeweils eine andere Atmosphäre für Ihre Font-Interaktionen bieten. Deine Welt, dein Stil.",
+		"description": "Wählen Sie die Ästhetik, die Ihre Stimmung oder Geschichte widerspiegelt. Sehen Sie sich eine Vorschau an und wählen Sie aus einer Palette von Themen aus, die jeweils eine andere Atmosphäre für Ihre fount-Interaktionen bieten. Deine Welt, dein Stil.",
 		"instruction": "Wählen Sie ein Design!",
 		"search": {
 			"placeholder": "Themen suchen...",
@@ -5586,7 +5586,7 @@
 			"dim": "Dim",
 			"nord": "Nord",
 			"sunset": "Sunset",
-			"caramellatte": "Caramel Latte",
+			"caramellatte": "Karamell-Latte",
 			"abyss": "Abyss",
 			"silk": "Silk"
 		},
@@ -5972,13 +5972,13 @@
 			"noScriptProvided": "Bitte geben Sie den auszuführenden Code ein",
 			"executionSuccess": "Codeausführung erfolgreich",
 			"executionFailed": "Codeausführung fehlgeschlagen: ${message}",
-			"selectSubfount": "Bitte wählen Sie den Subfount aus, um den Code auszuführen ..."
+			"selectSubfount": "Bitte wählen Sie den Subfount aus, um den Code auszuführen..."
 		},
 		"installClient": {
 			"title": "Laden Sie den Subfount-Client herunter",
 			"description": "Laden Sie das eigenständige Subfount-Client-Skript herunter, um es auf dem Remote-Gerät auszuführen.",
 			"tabsLabel": {
-				"aria-label": "Select the operating system"
+				"aria-label": "Betriebssystem auswählen"
 			},
 			"tabs": {
 				"linux": "Linux",
@@ -5987,7 +5987,7 @@
 				"windows": "Windows"
 			},
 			"copyButton": "Kopieren",
-			"copied": "Install script copied to clipboard"
+			"copied": "Installationsskript in die Zwischenablage kopiert"
 		},
 		"errors": {
 			"loadConnectionCodeFailed": "Verbindungscode konnte nicht geladen werden: ${message}",
@@ -6117,7 +6117,7 @@
 	},
 	"badges_maker": {
 		"title": "fount! Abzeichenwandler",
-		"description": "Für den Fall, dass Ihr Projekt einen Hauch von Font-Charakter erfordert. Wandeln Sie Shields.io-Abzeichen um und verleihen Sie ihnen eine neue, klangvolle Identität.",
+		"description": "Für den Fall, dass Ihr Projekt einen Hauch von fount-Charakter erfordert. Wandeln Sie Shields.io-Abzeichen um und verleihen Sie ihnen eine neue, klangvolle Identität.",
 		"card_title": "fount Abzeichen Link Konverter",
 		"original_url_label": "img.shields.io URL einfügen",
 		"original_url": {
@@ -6186,9 +6186,11 @@
 			"crop": "Zuschneiden",
 			"exportFailed": "Export des Bildes fehlgeschlagen",
 			"image": "Bearbeiten",
-			"loadFailed": null,
+			"loadFailed": "Das Bild konnte nicht geladen werden",
 			"mosaic": "Verpixeln",
-			"redo": null
+			"redo": "Wiederholen",
+			"undo": "Rückgängig",
+			"reset": "Zurücksetzen"
 		},
 		"common": {
 			"cancel": "Abbrechen",
@@ -6514,6 +6516,12 @@
 				"left": "Registerkarten links schließen",
 				"right": "Registerkarten rechts schließen",
 				"all": "Alle Registerkarten schließen"
+			},
+			"generating": {
+				"aria-label": "„${title}“ wird generiert"
+			},
+			"unread": {
+				"aria-label": "„${title}“ hat ungelesene Nachrichten"
 			}
 		},
 		"newTab": {
@@ -6573,6 +6581,14 @@
 				"edit": {
 					"aria-label": "Bearbeiten",
 					"title": "Bearbeiten"
+				},
+				"downloadHtml": {
+					"title": "HTML herunterladen",
+					"aria-label": "HTML herunterladen"
+				},
+				"saveGist": {
+					"title": "In gist speichern",
+					"aria-label": "In gist speichern"
 				}
 			},
 			"copied": "In die Zwischenablage kopiert",
@@ -6614,11 +6630,31 @@
 				"aria-label": "Anhang hinzufügen",
 				"title": "Anhang hinzufügen"
 			},
+			"failed": "Anhang ${name} konnte nicht gelesen werden",
+			"reading": "Wird gelesen…",
 			"remove": {
-				"aria-label": "Anhang entfernen"
+				"aria-label": "Anhang entfernen",
+				"title": "Anhang entfernen"
 			},
+			"tooLargeTotal": "Anhänge überschreiten das Gesamtlimit von ${limit}",
 			"drop": "Loslassen zum Anhängen",
-			"tooLarge": "Anhang ${name} überschreitet das 10-MB-Limit"
+			"tooLarge": "Anhang ${name} überschreitet das 10-MB-Limit",
+			"description": {
+				"placeholder": "Beschreibung hinzufügen…",
+				"aria-label": "Anhangsbeschreibung"
+			},
+			"download": {
+				"title": "Anhang herunterladen",
+				"aria-label": "Anhang herunterladen"
+			},
+			"edit": {
+				"title": "Bild bearbeiten",
+				"aria-label": "Bild bearbeiten"
+			},
+			"preview": {
+				"title": "Anhang in der Vorschau anzeigen",
+				"aria-label": "Anhang in der Vorschau anzeigen"
+			}
 		},
 		"error": {
 			"generic": "Etwas ist schiefgelaufen: ${error}",
@@ -6729,6 +6765,11 @@
 				"failed": "Fehlgeschlagen",
 				"unknown": "Nicht gefunden",
 				"idle": "Hintergrundaufgabe"
+			}
+		},
+		"generation": {
+			"reconnect": {
+				"aria-label": "Erneut verbinden"
 			}
 		}
 	},
@@ -7049,7 +7090,7 @@
 				"lowestTitle": "Die 7 Runden mit der niedrigsten Cache-Trefferrate",
 				"missing": "Keine Daten zur Wiederverwendung des Prompt-Präfixes",
 				"noRate": "Cache —",
-				"rate": "Cache ≈${rate}%",
+				"rate": "Cache-Trefferquote ≈${rate}%",
 				"summary": "Geschätzte Wiederverwendung des Prompt-Präfixes ${rate}% (Zeichen)"
 			}
 		},

@@ -146,7 +146,7 @@
 			"replHint": "Enter로 실행 · Shift+Enter 줄바꿈"
 		},
 		"test": {
-			"help": "사용법: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --list [<groups>...]\n       fount test --kernel shutdown|reboot\n\n선택자(그룹은 공백으로 구분, 같은 그룹 내 suite는 쉼표로 구분. / 와 : 는 동일):\n  이름              해당 그룹의 모든 suite(예: shells/chat)\n  이름:suite        특정 suite\n  이름:suite:항목   특정 하위 테스트 또는 테스트 파일\n\n정확히 일치하지 않으면 접두사로 확장(shells → shells/chat, shells/social). glob(*, ?, **)도 지원.\n\n기본(옵션 없는 fount test): 실패/미완료/소음과 만료 항목을 한 번에 계획해 실행. 실패는 의존 슬롯만 막고, 마지막에 0이 아닌 종료 코드. 전체 실행은 하지 않음 — 전체는 --all.\n\n--watch      계속 감시. 큐가 비어도 종료하지 않음(Ctrl+C로 종료). --all / --force / --update-estimates / 선택자와 함께 사용 불가\n--all        범위 내 모든 suite\n--force      강제 실행, 이전 결과 재사용 안 함\n--update-estimates  현재 DB 평균 소요 시간으로 각 manifest의 expected를 다시 기록. 선택자 선택 가능. 테스트는 실행하지 않음\n--list        테스트 suite를 나열합니다(선택자로 범위를 좁힐 수 있음). 커널을 시작하지 않고 테스트를 실행하지 않습니다.\n--kernel     shutdown은 테스트 커널을 종료; reboot는 종료 후 다시 기동; 다른 인자와 함께 사용 불가\n\n예:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
+			"help": "사용법: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --list [<groups>...]\n       fount test --kernel shutdown|reboot\n\n선택자(그룹은 공백으로 구분, 같은 그룹 내 suite는 쉼표로 구분. / 와: 는 동일):\n  이름              해당 그룹의 모든 suite(예: shells/chat)\n  이름:suite        특정 suite\n  이름:suite: 항목   특정 하위 테스트 또는 테스트 파일\n\n정확히 일치하지 않으면 접두사로 확장(shells → shells/chat, shells/social). glob(*, ?, **)도 지원.\n\n기본(옵션 없는 fount test): 실패/미완료/소음과 만료 항목을 한 번에 계획해 실행. 실패는 의존 슬롯만 막고, 마지막에 0이 아닌 종료 코드. 전체 실행은 하지 않음 — 전체는 --all.\n\n--watch      계속 감시. 큐가 비어도 종료하지 않음(Ctrl+C로 종료). --all / --force / --update-estimates / 선택자와 함께 사용 불가\n--all        범위 내 모든 suite\n--force      강제 실행, 이전 결과 재사용 안 함\n--update-estimates  현재 DB 평균 소요 시간으로 각 manifest의 expected를 다시 기록. 선택자 선택 가능. 테스트는 실행하지 않음\n--list        테스트 suite를 나열합니다(선택자로 범위를 좁힐 수 있음). 커널을 시작하지 않고 테스트를 실행하지 않습니다.\n--kernel     shutdown은 테스트 커널을 종료; reboot는 종료 후 다시 기동; 다른 인자와 함께 사용 불가\n\n예:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
 			"watchNoGroups": "사용법: fount test --watch (다른 옵션과 함께 사용할 수 없음)",
 			"updateEstimates": {
 				"incompatible": "사용법: fount test --update-estimates [<groups>...] (다른 플래그와 함께 사용할 수 없음)",
@@ -251,7 +251,7 @@
 			"planSlotSummary": "계획 슬롯: 실제 실행 ${run}, 재사용 ${reuse}, 차단 ${blocked}, 건너뜀 ${skipped}",
 			"noMatchingSuites": "일치하는 테스트 도구 모음이 없습니다.",
 			"reportPath": "보고서: ${path}",
-			"reportPathFinal": "보고서: ${path}",
+			"reportPathFinal": "\n보고서: ${path}",
 			"statePathFinal": "현재 상태: ${path}",
 			"blocked": "차단: ${label}(종속성이 전달되지 않음: ${deps})",
 			"skippedTree": "건너뜀: ${label} (skip_tree: ${deps})",
@@ -260,12 +260,12 @@
 			"continueImperfect": "고장/소음/불완전한 웨이브: ${count} 키트",
 			"outdatedSelected": "만료된 웨이브: ${count}개의 오래된/실행 취소된 스위트",
 			"runningSuite": {
-				"base": ">>> ${manifestId}:${name} 실행 중",
-				"speculative": "",
-				"heavy": "",
+				"base": "\n>>> ${manifestId}:${name} 실행 중",
+				"speculative": "낙관적 병렬",
+				"heavy": "높은 부하",
 				"expected": "${expected} 예상"
 			},
-			"reusedSuite": ">>> ${manifestId}:${name} 재사용(트리거는 변경되지 않고 마지막 ${status}가 사용됨)",
+			"reusedSuite": "\n>>> ${manifestId}:${name} 재사용(트리거는 변경되지 않고 마지막 ${status}가 사용됨)",
 			"prunedAbsentState": "존재하지 않는 스위트 상태를 정리했습니다: 스위트 ${suites}개, 하위 테스트 ${subtests}개",
 			"noisyOnlyRemain": "여전히 ${count}개의 스위트가 지나가지만 소음이 있습니다. ${suites}",
 			"noRealRunPlanned": "이번에는 실행 불필요: 재사용 ${reused}개, 차단 예정 ${blocked}개, 건너뜀 ${skipped}개 (trigger 변경 없음)",
@@ -280,7 +280,7 @@
 			"triggerNoMatchSummary": "총 ${count}개의 트리거가 어떤 웨어하우스 파일과도 일치하지 않았습니다(자세한 내용은 report.md 참조).",
 			"federationCleanupPre": "통합 테스트 정리(실행 전) 실패: ${output}",
 			"federationCleanupPost": "통합 테스트 정리(실행 후) 실패: ${output}",
-			"suiteHeader": "=== 스위트 ${name} ===",
+			"suiteHeader": "\n=== 스위트 ${name} ===",
 			"heapSnapshotSaved": "테스트 노드 OOM 근처 힙 스냅샷: ${path}",
 			"liveUsage": "사용법: --suite <이름> | --list",
 			"serialUsage": "사용법: serial.mjs <deno-test-path> [...]",
@@ -304,8 +304,8 @@
 				"error": "테스트 노드 작업자 오류: ${error}"
 			},
 			"ws": {
-				"pass": "패스: ${detail}",
-				"fail": "실패: ${detail}"
+				"pass": "\n패스: ${detail}",
+				"fail": "\n실패: ${detail}"
 			},
 			"report": {
 				"title": "fount test 보고서",
@@ -575,7 +575,7 @@
 			},
 			"remove": {
 				"confirmPrompt": "fount 설치 디렉터리를 디스크에서 삭제하려고 합니다: `${path}`\n이것이 정말로 삭제할 디렉터리인지 확인해 주십시오.",
-				"yn": "[Y/N]",
+				"yn": "[Y/N] ",
 				"aborted": "취소되었으며 아무것도 삭제되지 않았습니다.",
 				"externalMountWarning": "경고: fount가 외부/공유 마운트(`${target}`)에 있습니다!\n이 디렉터리는 호스트나 가상 머신에 동시에 존재할 수 있습니다. `fount remove`를 실행하면 거기에도 삭제되므로 각별히 주의하시기 바랍니다.",
 				"nonInteractiveRequiresForce": "비대화형 환경에서는 삭제를 확인할 수 없습니다. `fount`(${path})를 확실히 제거하려면 `fount remove --force`를 사용하여 확인을 건너뛰세요.",
@@ -688,7 +688,7 @@
 		},
 		"utm_welcome": {
 			"title": "먼 길 오셨군요",
-			"message": "`${source}`에서 오신 분들, 환영합니다!\n차나 다과는 없지만, 따뜻한 인사를 드립니다 :)",
+			"message": "`${source}`에서 오신 분들, 환영합니다!\n차나 다과는 없지만, 따뜻한 인사를 드립니다:)",
 			"dismiss": "고마워요, 둘러볼게요"
 		},
 		"cool_notice": {
@@ -697,7 +697,7 @@
 			},
 			"badge": "원래 광고 자리",
 			"lede": "원래라면 눈에 띄는 상업 광고, 정치/DEI 선전, 후원 요청, 죄책감 유발 메시지가 여기 있었을 텐데——",
-			"punchline": "하지만 <strong>fount는 쿨하니까</strong> 그런 건 없습니다 :D",
+			"punchline": "하지만 <strong>fount는 쿨하니까</strong> 그런 건 없습니다:D",
 			"nudge": "물 마시고, 일어나서 멀리 바라보세요!",
 			"dismiss": "쿨해요, 감사합니다"
 		},
@@ -1416,7 +1416,7 @@
 				"placeholder": "목록 채널에는 내비게이션 카드만 표시되고 메시지는 보내지 않습니다."
 			},
 			"mentionHandle": "@${name}",
-			"mentionInsert": "@${name}",
+			"mentionInsert": "@${name} ",
 			"attachmentsHint": "(첨부파일 ${n}개)",
 			"copied": "복사됨",
 			"addBookmark": {
@@ -1433,9 +1433,9 @@
 			"forceTriggerAllLocalTitle": {
 				"title": "모든 로컬 캐릭터가 말하도록 강제"
 			},
-			"quoteHeader": "> **${sender}**${sep}${time}",
-			"quoteHeaderWithTime": "> **${sender}** · ${time}",
-			"quoteHeaderWithoutTime": "> **${sender}**",
+			"quoteHeader": "> **${sender}**${sep}${time}\n\n",
+			"quoteHeaderWithTime": "> **${sender}** · ${time}\n\n",
+			"quoteHeaderWithoutTime": "> **${sender}**\n\n",
 			"stopGenerating": "생성 중지",
 			"reactionAdd": {
 				"title": "응답 추가"
@@ -5229,7 +5229,7 @@
 		},
 		"what_is_manager": "유저스크립트 관리자란 무엇입니까?",
 		"manager_explanation": "유저스크립트 관리자는 웹 페이지를 수정하는 스크립트를 설치하고 실행할 수있는 브라우저 확장자입니다. fount 통합 스크립트를 사용하려면 확장자 중 하나가 필요합니다.",
-		"popular_managers": "인기있는 선택 :",
+		"popular_managers": "인기있는 선택:",
 		"csp_warning": "통합 기능이 올바르게 작동하도록 CSP를 끄려면 플러그인을 설치해야 할 수도 있습니다. ${browser}의 경우 [이 플러그인](${link})을 사용할 수 있습니다.",
 		"connected_pages_title": "연결된 페이지",
 		"fetch_pages_error": "링크 된 페이지 목록을로드하지 못했습니다.",
@@ -5271,9 +5271,9 @@
 			"view_script_modal_close_button": "닫기"
 		},
 		"error": {
-			"load_failed": "자동 스크립트를로드하지 못했습니다 : ${message}",
-			"add_failed": "스크립트를 추가하지 못했습니다 : ${message}",
-			"delete_failed": "스크립트 삭제 실패 : ${message}"
+			"load_failed": "자동 스크립트를로드하지 못했습니다: ${message}",
+			"add_failed": "스크립트를 추가하지 못했습니다: ${message}",
+			"delete_failed": "스크립트 삭제 실패: ${message}"
 		},
 		"achievements": {
 			"install_script": {
@@ -5310,9 +5310,9 @@
 		"csp_warning": "fount Browser Integration 스크립트는 CSP 정책이 페이지에 존재 함을 감지하여 통합 스크립트가 제대로 작동하지 않을 수 있습니다. CSP를 끄려면 플러그인 설치를 고려하십시오.",
 		"hostChange": {
 			"securityWarningTitle": "--- fount 안전 경고 ---",
-			"message": "현재 페이지 ( \"${origin}\")는 fount 호스트 주소를 다음과 같이 변경하려고합니다.\n\n\"${newHost}\"\n\n경고 :이 조치를 승인하면 새 호스트가 브라우저 통합 기능을 완전히 제어 할 수 있으므로 민감한 정보 유출 또는 계정 도난으로 이어질 수 있습니다.\n승인은 이것이 자신의 작업 (예 : fount 서버 마이그레이션)인지 확인하는 경우에만 이루어져야합니다.\n\n이 변경을 허용 하시겠습니까?",
+			"message": "현재 페이지 ( \"${origin}\")는 fount 호스트 주소를 다음과 같이 변경하려고합니다.\n\n\"${newHost}\"\n\n경고: 이 조치를 승인하면 새 호스트가 브라우저 통합 기능을 완전히 제어 할 수 있으므로 민감한 정보 유출 또는 계정 도난으로 이어질 수 있습니다.\n승인은 이것이 자신의 작업 (예: fount 서버 마이그레이션)인지 확인하는 경우에만 이루어져야합니다.\n\n이 변경을 허용 하시겠습니까?",
 			"uuidMismatchError": "fount 보안 오류: 호스트 ${newHost}의 식별자(UUID)가 기존의 것과 일치하지 않습니다. 작업이 취소되었습니다.",
-			"verificationError": "fount 보안 오류 : 새 호스트 \"${newHost}\"를 확인할 수 없습니다. 주소가 올바른지 확인하고 서비스가 실행 중인지 확인하십시오."
+			"verificationError": "fount 보안 오류: 새 호스트 \"${newHost}\"를 확인할 수 없습니다. 주소가 올바른지 확인하고 서비스가 실행 중인지 확인하십시오."
 		}
 	},
 	"terminal_assistant": {
@@ -5756,7 +5756,7 @@
 			},
 			"createButton": "생성",
 			"noKeysFound": "API 키가 발견되지 않았습니다.",
-			"keyDetails": "설명 : ${description} | 생성 : ${createdAt} | 마지막 사용 : ${lastUsed}",
+			"keyDetails": "설명: ${description} | 생성: ${createdAt} | 마지막 사용: ${lastUsed}",
 			"neverUsed": "사용하지 않았습니다",
 			"noKeysForUser": "API 키 데이터를 찾을 수 없습니다.",
 			"keyNotFound": "API 키를 찾을 수 없습니다.",
@@ -5978,7 +5978,7 @@
 			"title": "서브폰트 클라이언트 다운로드",
 			"description": "원격 장치에서 실행할 독립형 하위 클라이언트 스크립트를 다운로드합니다.",
 			"tabsLabel": {
-				"aria-label": "Select the operating system"
+				"aria-label": "운영 체제 선택"
 			},
 			"tabs": {
 				"linux": "Linux",
@@ -5987,7 +5987,7 @@
 				"windows": "Windows"
 			},
 			"copyButton": "복사",
-			"copied": "Install script copied to clipboard"
+			"copied": "설치 스크립트를 클립보드에 복사했습니다"
 		},
 		"errors": {
 			"loadConnectionCodeFailed": "연결 코드를 로드하지 못했습니다: ${message}",
@@ -6186,8 +6186,11 @@
 			"crop": "자르기",
 			"exportFailed": "이미지 내보내기에 실패했습니다",
 			"image": "편집",
-			"loadFailed": null,
-			"mosaic": "모자이크"
+			"loadFailed": "이미지를 불러오지 못했습니다",
+			"mosaic": "모자이크",
+			"undo": "실행 취소",
+			"reset": "초기화",
+			"redo": "다시 실행"
 		},
 		"common": {
 			"cancel": "취소",
@@ -6513,6 +6516,12 @@
 				"left": "왼쪽 탭 닫기",
 				"right": "오른쪽 탭 닫기",
 				"all": "모든 탭 닫기"
+			},
+			"generating": {
+				"aria-label": "「${title}」 생성 중"
+			},
+			"unread": {
+				"aria-label": "「${title}」 읽지 않은 메시지 있음"
 			}
 		},
 		"newTab": {
@@ -6572,6 +6581,14 @@
 				"edit": {
 					"aria-label": "편집",
 					"title": "편집"
+				},
+				"downloadHtml": {
+					"title": "HTML 다운로드",
+					"aria-label": "HTML 다운로드"
+				},
+				"saveGist": {
+					"title": "gist로 저장",
+					"aria-label": "gist로 저장"
 				}
 			},
 			"copied": "클립보드에 복사됨",
@@ -6613,11 +6630,31 @@
 				"aria-label": "첨부 파일 추가",
 				"title": "첨부 파일 추가"
 			},
+			"failed": "첨부 파일 ${name} 읽기 실패",
+			"reading": "읽는 중…",
 			"remove": {
-				"aria-label": "첨부 파일 제거"
+				"aria-label": "첨부 파일 제거",
+				"title": "첨부 파일 제거"
 			},
+			"tooLargeTotal": "첨부 파일 총 용량이 ${limit} 한도를 초과합니다",
 			"drop": "놓아서 첨부",
-			"tooLarge": "첨부 파일 ${name}이(가) 10MB 제한을 초과합니다"
+			"tooLarge": "첨부 파일 ${name}이(가) 10MB 제한을 초과합니다",
+			"description": {
+				"placeholder": "설명 추가…",
+				"aria-label": "첨부 파일 설명"
+			},
+			"download": {
+				"title": "첨부 파일 다운로드",
+				"aria-label": "첨부 파일 다운로드"
+			},
+			"edit": {
+				"title": "이미지 편집",
+				"aria-label": "이미지 편집"
+			},
+			"preview": {
+				"title": "첨부 파일 미리보기",
+				"aria-label": "첨부 파일 미리보기"
+			}
 		},
 		"error": {
 			"generic": "문제가 발생했습니다: ${error}",
@@ -6728,6 +6765,11 @@
 				"failed": "실패함",
 				"unknown": "찾을 수 없음",
 				"idle": "백그라운드 작업"
+			}
+		},
+		"generation": {
+			"reconnect": {
+				"aria-label": "다시 연결"
 			}
 		}
 	},

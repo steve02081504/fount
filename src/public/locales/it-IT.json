@@ -46,13 +46,13 @@
 			},
 			"localUrl": "Accesso a fount da altri dispositivi sulla stessa rete: ${url}",
 			"update": {
-				"restarting": "È stata scoperta una nuova versione e l'aggiornamento viene riavviato..."
+				"restarting": "È stata trovata una nuova versione, riavvio per l'aggiornamento..."
 			}
 		},
 		"jobs": {
 			"restartingJob": "Riavvio dell'attività ${partpath} per l'utente ${username}: ${uid}",
 			"pausingJob": "Attività ${partpath} in pausa per l'utente ${username}: ${uid}",
-			"preloadingParts": "Precaricamento di ${count} parti"
+			"preloadingParts": "Precaricamento di ${count} componenti"
 		},
 		"ipc": {
 			"serverStarted": "Server IPC avviato.",
@@ -60,7 +60,7 @@
 			"noInstanceRunning": "Nessuna istanza in esecuzione rilevata, avvia prima fount.",
 			"runPartLog": "Esegui ${partpath} come ${username}, argomenti: ${args}",
 			"invokePartLog": "Chiama ${partpath} come ${username}, parametro: ${invokedata}",
-			"invalidCommand": "Comando non valido. Usa \"fount run <nome utente> <percorso componente> <parametri...>\".",
+			"invalidCommand": "Comando non valido. Usa \"fount run <percorso componente> <parametri...>\" (oppure \"fount runas <nome utente> <percorso componente>\" per specificare un utente).",
 			"invalidCommandFormat": "Formato comando non valido.",
 			"unsupportedCommand": "Tipo di comando non supportato.",
 			"processMessageError": "Errore durante l'elaborazione del messaggio IPC: ${error}",
@@ -95,14 +95,14 @@
 		"auth": {
 			"accountLockedLog": "L'account dell'utente ${username} è stato bloccato a causa di molteplici tentativi di accesso falliti.",
 			"tokenVerifyError": "Errore di verifica del token: ${error}",
-			"refreshTokenError": "Errore token di aggiornamento: ${error}",
+			"refreshTokenError": "Errore del token di aggiornamento: ${error}",
 			"logoutRefreshTokenProcessError": "Errore durante l'elaborazione del token di aggiornamento per il logout: ${error}",
 			"revokeTokenNoJTI": "Impossibile revocare il token senza JTI.",
 			"tokenRevoked": "Token revocato: ${jti}"
 		},
 		"verification": {
 			"codeGeneratedLog": "Codice di verifica: ${code} (scade tra 60 secondi)",
-			"codeNotifyTitle": "Codice di Verifica",
+			"codeNotifyTitle": "Codice di verifica",
 			"codeNotifyBody": "Codice di verifica: ${code} (scade tra 60 secondi)"
 		},
 		"tray": {
@@ -208,21 +208,21 @@
 						"suite_failed": "Suite fallita",
 						"blocked": "Bloccata: dipendenza fallita",
 						"skipped": "Saltata: dipendenza saltata",
-						"queue_appended": "Job accodato",
-						"queue_removed": "Job rimosso",
+						"queue_appended": "Attività accodata",
+						"queue_removed": "Attività rimossa",
 						"prep_promoted": "Preparazione promossa",
 						"module_check_ready": "Controllo moduli pronto",
 						"dependency_ready": "Dipendenze pronte",
 						"resource_budget_changed": "Budget risorse modificato",
-						"job_queued": "Job in coda",
+						"job_queued": "Attività in coda",
 						"gate_state_changed": "Gate risorse modificato",
-						"expected_drift": "Stima divergente",
+						"expected_drift": "Deriva della stima",
 						"progress": "Progresso aggiornato"
 					}
 				},
 				"dashboard": {
 					"idle": "Inattivo",
-					"unknownCount": "+${count} sconosciuto",
+					"unknownCount": "+${count} sconosciuti",
 					"runningCount": "In esecuzione: ${count}",
 					"passedCount": "Superati: ${count}",
 					"failedCount": "Falliti: ${count}",
@@ -251,38 +251,38 @@
 			"planSlotSummary": "Slot del piano: esecuzione reale ${run}, riutilizzo ${reuse}, bloccato ${blocked}, saltato ${skipped}",
 			"noMatchingSuites": "nessuna suite di test corrispondente.",
 			"reportPath": "rapporto: ${path}",
-			"reportPathFinal": "rapporto: ${path}",
+			"reportPathFinal": "\nrapporto: ${path}",
 			"statePathFinal": "Stato attuale: ${path}",
-			"blocked": "Blocco: ${label} (dipendenza non superata: ${deps})",
+			"blocked": "Bloccata: ${label} (dipendenza non superata: ${deps})",
 			"skippedTree": "Saltato: ${label} (skip_tree: ${deps})",
-			"speculativeDiscard": "Scarta risultati della previsione: ${label} (dipendenza non superata: ${deps})",
+			"speculativeDiscard": "Scarta il risultato speculativo: ${label} (dipendenza non superata: ${deps})",
 			"continueDefault": "Ripresa di ${count} suite (fallite/incomplete ${imperfect}, obsolete ${outdated})",
-			"continueImperfect": "Guasto/rumore/onde incomplete: kit ${count}",
-			"outdatedSelected": "Ondate scadute: ${count} pacchetti obsoleti/non eseguiti",
+			"continueImperfect": "Fallite/rumorose/ondate incomplete: ${count} suite",
+			"outdatedSelected": "Ondate scadute: ${count} suite obsolete/non eseguite",
 			"runningSuite": {
-				"base": ">>> In esecuzione ${manifestId}:${name}",
+				"base": "\n>>> In esecuzione ${manifestId}:${name}",
 				"speculative": "parallelismo ottimistico",
 				"heavy": "carico elevato",
 				"expected": "previsto ${expected}"
 			},
-			"reusedSuite": ">>> Riutilizza ${manifestId}:${name} (il trigger rimane invariato, viene utilizzato l'ultimo ${status})",
+			"reusedSuite": "\n>>> Riutilizza ${manifestId}:${name} (il trigger rimane invariato, viene utilizzato l'ultimo ${status})",
 			"prunedAbsentState": "Rimosso lo stato di suite non più presenti: ${suites} suite, ${subtests} sottotest",
 			"noisyOnlyRemain": "Ci sono ancora ${count} suite che passano ma con rumore: ${suites}",
 			"noRealRunPlanned": "Nessuna esecuzione necessaria: ${reused} riutilizzate, ${blocked} previste come bloccate, ${skipped} saltate (trigger invariato)",
-			"allReusedHint": "Questa volta non viene effettivamente eseguito alcun pacchetto: l'errore è l'ultimo risultato ereditato e il blocco non viene risolto (i file rilevanti rimangono invariati). Riparare i file rilevanti ed eseguirli nuovamente oppure utilizzare fount test --force per forzare un'esecuzione reale.",
+			"allReusedHint": "Questa volta non viene eseguita realmente alcuna suite: il fallimento è il risultato di un'esecuzione precedente riutilizzato e il blocco resta irrisolto (i file rilevanti non sono cambiati). Correggi i file rilevanti e riesegui, oppure usa fount test --force per forzare un'esecuzione reale.",
 			"failuresSaved": "elenco errori salvati: ${path} (${count} suite)",
-			"failuresCleared": "manifest ${manifestId} tutto superato; elenco degli errori cancellato.",
+			"failuresCleared": "manifest ${manifestId}: tutto superato, elenco degli errori cancellato.",
 			"terminated": "Terminazione per timeout: ${label} — ${reason}",
-			"sleepDetected": "Rilevata sospensione di sistema (intervallo watchdog saltato di ${gap} ≥ ${limit}); ${label} interrotto e pronto per il rilancio (eseguito ${elapsed})",
+			"sleepDetected": "Rilevata sospensione di sistema (intervallo watchdog saltato di ${gap} ≥ ${limit}); ${label} interrotto e pronto per la riesecuzione (eseguito per ${elapsed})",
 			"sleepRetry": "Interrotto dalla sospensione di sistema; riesecuzione di ${label} (tentativo ${attempt})",
-			"nothingToContinue": "Tutto verde e nessun articolo scaduto, non è necessario eseguire di nuovo.",
+			"nothingToContinue": "Tutto verde e nessun elemento scaduto: non serve rieseguire.",
 			"triggerNoMatch": "il trigger non corrisponde ad alcun file: ${scope} — ${pattern}",
-			"triggerNoMatchSummary": "Un totale di trigger ${count} non corrisponde ad alcun file warehouse (vedere report.md per i dettagli)",
-			"federationCleanupPre": "Pulizia della federazione prima: ${output}",
-			"federationCleanupPost": "post di pulizia della federazione: ${output}",
-			"suiteHeader": "=== SUITE ${name} ===",
+			"triggerNoMatchSummary": "In totale ${count} trigger non corrispondono ad alcun file del repository (dettagli in report.md)",
+			"federationCleanupPre": "Pulizia della federazione (pre-esecuzione) non riuscita: ${output}",
+			"federationCleanupPost": "Pulizia della federazione (post-esecuzione) non riuscita: ${output}",
+			"suiteHeader": "\n=== Suite ${name} ===",
 			"heapSnapshotSaved": "Istantanea heap Near-OOM del nodo di prova: ${path}",
-			"liveUsage": "utilizzo: --suite <nome> | --lista",
+			"liveUsage": "utilizzo: --suite <nome> | --list",
 			"serialUsage": "utilizzo: serial.mjs <deno-test-path> [...]",
 			"silentPassedOne": "1 file di test superato (nessun output).",
 			"silentPassedMany": "${count} file di test superati (nessun output).",
@@ -297,19 +297,19 @@
 				"publishFailed": "Pubblicazione del problema di arresto anomalo di Deno non riuscita: ${signature}"
 			},
 			"nodeWorker": {
-				"dataPathRequired": "nodo di lavoro: --data-path richiesto",
-				"portRequired": "nodo di lavoro: --port richiesto (avvio tramite launch.mjs)",
-				"keyRequired": "nodo di lavoro: --key richiesto (avvia tramite launch.mjs)",
-				"userRequired": "nodo di lavoro: --user richiesto",
+				"dataPathRequired": "worker del nodo di test: --data-path richiesto",
+				"portRequired": "worker del nodo di test: --port richiesto (avvio tramite launch.mjs)",
+				"keyRequired": "worker del nodo di test: --key richiesto (avvio tramite launch.mjs)",
+				"userRequired": "worker del nodo di test: --user richiesto",
 				"error": "Errore del worker del nodo di test: ${error}"
 			},
 			"ws": {
-				"pass": "PASSA: ${detail}",
-				"fail": "Fallito: ${detail}"
+				"pass": "\nSUPERATO: ${detail}",
+				"fail": "\nFallito: ${detail}"
 			},
 			"report": {
-				"title": "rapporto sul test della fonte",
-				"tableHeaderItem": "articolo",
+				"title": "Rapporto dei test di fount",
+				"tableHeaderItem": "elemento",
 				"tableHeaderValue": "valore",
 				"estimatePoint": "≈ ${eta}",
 				"commandDefault": "(predefinito)",
@@ -327,19 +327,19 @@
 				"durationUnit": {
 					"day": "${n} giorni",
 					"hour": "${n} ore",
-					"min": "${n} punti",
+					"min": "${n} min",
 					"minute": "${n} minuti",
 					"sec": "${n} secondi"
 				},
 				"section": {
-					"continue": "Continua gli articoli non finiti",
-					"continueReasons": "Motivo scatenante",
+					"continue": "Continua gli elementi non completati",
+					"continueReasons": "Motivo dell'attivazione",
 					"deadTriggers": "trigger non valido",
 					"failed": "Suite fallite",
 					"noisyPassed": "Superato con rumore",
-					"pending": "In attesa di",
+					"pending": "In attesa di esecuzione",
 					"replay": "Rieseguire gli elementi non riusciti",
-					"replayImperfect": "Repliche imperfette",
+					"replayImperfect": "Riesecuzione degli elementi imperfetti",
 					"silentPassed": "Superato (silenzioso)",
 					"skipped": "Saltato (skip_because)",
 					"skipTree": "Saltato (skip_tree a monte)"
@@ -349,43 +349,43 @@
 					"itemExpected": "previsto ${expected}"
 				},
 				"reason": {
-					"dependencyRequired": "La dipendenza aumenta",
-					"explicitSelected": "denominazione esplicita",
+					"dependencyRequired": "Incluso per dipendenza",
+					"explicitSelected": "Selezionata esplicitamente",
 					"imperfect": {
 						"blocked": "La cronologia è bloccata",
-						"dependent": "L'upstream fallisce e uno strato a valle",
+						"dependent": "Fallimento a monte, un livello a valle",
 						"failed": "fallimento storico",
-						"noisy": "La storia passa ma con rumore"
+						"noisy": "La cronologia passa ma con rumore"
 					},
-					"missingRecord": "stato senza registrazione, reintegro automatico",
+					"missingRecord": "Nessun record di stato, riesecuzione automatica",
 					"staleContent": "Il contenuto è cambiato e deve essere rieseguito.",
 					"skipBecause": "ricontrollo skip_because",
-					"triggerHashDrift": "Attiva la deriva dell'impronta digitale (nessun percorso raggiunto)"
+					"triggerHashDrift": "Deriva dell'impronta del trigger (nessun percorso corrispondente)"
 				},
 				"label": {
 					"commitRange": "ambito di commit",
 					"continueReason": "motivo",
-					"directRequiredBy": "parte direttamente incorporata",
+					"directRequiredBy": "richiesto direttamente da",
 					"duration": "durata",
 					"expectedBlocked": "(Blocco previsto)",
 					"failedFiles": "file non riusciti",
-					"gateReason": "Motivo della corsa",
+					"gateReason": "Motivo dell'esecuzione",
 					"inclusionPath": "Catena di inclusione",
-					"log": "tronco d'albero",
-					"matchedPaths": "percorso raggiunto",
-					"matchedTriggerSets": "premere il set di trigger",
-					"matchedTriggers": "premere il grilletto",
+					"log": "log",
+					"matchedPaths": "percorsi corrispondenti",
+					"matchedTriggerSets": "set di trigger corrispondenti",
+					"matchedTriggers": "trigger corrispondenti",
 					"noise": "rumore",
-					"pullDownstream": "Pull downstream: ${requiredBy} non è perfetto e verrà incluso insieme",
-					"pullUpstream": "Pull upstream: la dipendenza di ${requiredBy} non è verde",
+					"pullDownstream": "Inclusione a valle: ${requiredBy} non è perfetto, incluso di conseguenza",
+					"pullUpstream": "Inclusione a monte: la dipendenza di ${requiredBy} non è verde",
 					"reused": "(riutilizzo)",
-					"rootCause": "causa ultima",
+					"rootCause": "causa principale",
 					"skipBecause": "issue",
 					"skipBecauseClosed": "da seguire (chiusa)",
 					"skipTree": "skip_tree",
-					"terminateReason": "Motivo della risoluzione",
-					"triggerHashDrift": "L'impronta digitale del trigger non è coerente con l'area di lavoro corrente (sporca → rete ignorata)",
-					"uncommittedHashRange": "digest non inviato"
+					"terminateReason": "Motivo della terminazione",
+					"triggerHashDrift": "L'impronta del trigger non è coerente con l'area di lavoro corrente (sporca → pulita ignorata)",
+					"uncommittedHashRange": "digest non committato"
 				},
 				"field": {
 					"command": "comando",
@@ -398,44 +398,44 @@
 					"progress": "progressi",
 					"reused": "Numero di riutilizzi",
 					"runId": "runId",
-					"suiteSumDuration": "Tempo totale impiegato sul kit",
+					"suiteSumDuration": "Tempo totale delle suite",
 					"suites": "suite",
 					"wallClock": "Tempo totale impiegato"
 				}
 			},
 			"state": {
-				"title": "stato del test della fount",
-				"artifacts": "Directory corrente: `${path}`",
+				"title": "Stato dei test di fount",
+				"artifacts": "Directory dello stato: `${path}`",
 				"sectionDependencyTree": "albero delle dipendenze",
-				"sectionOverview": "Stato attuale di ciascun pacchetto",
-				"sectionBlocked": "suite bloccata",
-				"labelBlockedBy": "bloccato dentro",
-				"statusUnknown": "Non correre",
+				"sectionOverview": "Stato attuale di ciascuna suite",
+				"sectionBlocked": "Suite bloccate",
+				"labelBlockedBy": "bloccato da",
+				"statusUnknown": "Non eseguita",
 				"statusOutdated": "obsoleto",
 				"column": {
 					"blocked": "Numero di blocchi",
-					"commit": "impegnarsi",
-					"duration": "richiede tempo",
-					"log": "tronco d'albero",
-					"ranAt": "ultima corsa",
+					"commit": "commit",
+					"duration": "durata",
+					"log": "log",
+					"ranAt": "ultima esecuzione",
 					"status": "stato",
-					"suite": "kit"
+					"suite": "suite"
 				}
 			},
 			"terminate": {
 				"duration": "Terminato ${label}: ha impiegato più del tempo di riferimento del watchdog (in esecuzione ${elapsed}, riferimento ${baseline}, limite superiore ${limit})",
 				"durationDefault": "Terminato ${label}: il tempo trascorso supera il limite di durata del watchdog predefinito (in esecuzione ${elapsed}, limite superiore ${limit})",
-				"idle": "Interrotto ${label}: nessun output stdall per più di ${minutes} minuti (inattivo per ${idleSec} secondi, esegui ${elapsed})",
-				"marker": "[Motivo della risoluzione: ${reason}]",
+				"idle": "Terminato ${label}: nessun output stdall per più di ${minutes} minuti (inattivo per ${idleSec} secondi, eseguito per ${elapsed})",
+				"marker": "[Motivo della terminazione: ${reason}]",
 				"speculative": "Terminato ${label}: la dipendenza speculativa non è passata, interruzione anticipata annullata",
 				"unknown": "TERMINATO ${label}: test interrotto"
 			},
 			"unknown": {
 				"fileFilter": "Filtraggio file di test sconosciuto: ${suite} → ${names}",
-				"manifestId": "ID manifesto sconosciuto: ${ids}",
+				"manifestId": "ID manifest sconosciuto: ${ids}",
 				"subtestFilter": "Filtraggio sottotest sconosciuto: ${suite} → ${names}",
 				"suite": "suite sconosciuta: ${name}",
-				"suiteSelector": "Designazione suite sconosciuta: ${ids}"
+				"suiteSelector": "Selettore di suite sconosciuto: ${ids}"
 			},
 			"cleanupLeak": "Rilevamento dei residui del test non riuscito: i seguenti percorsi avrebbero dovuto essere puliti, ma esistono ancora:\n${paths}\nTi preghiamo di pulirli e riprovare."
 		},
@@ -483,7 +483,7 @@
 			"shortcut": {
 				"desktopShortcutCreated": "Collegamento sul desktop creato in `${path}`",
 				"startMenuShortcutCreated": "Collegamento al menu Start creato in `${path}`",
-				"protocolHandlerRegistered": "gestore del protocollo fount:// registrato.",
+				"protocolHandlerRegistered": "Gestore del protocollo fount:// registrato.",
 				"shortcutNotSupported": "Avviso: il tuo sistema operativo (${os}) non supporta la creazione di collegamenti sul desktop.",
 				"osacompileNotFound": "Errore: 'osacompile' non trovato. Impossibile creare l'app macOS.",
 				"lsregisterFailed": "Avviso: l'utilizzo di `lsregister` per registrare un'applicazione con LaunchServices non è riuscito.",
@@ -496,23 +496,23 @@
 				"exeFailed": "Impossibile generare fount.exe; registrazione su Steam ignorata."
 			},
 			"git": {
-				"repoNotFound": "Impossibile trovare il repository git del fount. Inizializzandone uno nuovo...",
+				"repoNotFound": "Impossibile trovare il repository Git del fount. Inizializzandone uno nuovo...",
 				"fetchingAndResetting": "Recupero dal repository remoto e ripristino del master...",
 				"localChangesDetected": "Rilevate modifiche locali, le differenze verranno salvate prima della sovrascrittura.",
 				"backupSavedTo": "Un backup delle modifiche locali è stato salvato in: `${path}`",
 				"updatingFromRemote": "Aggiornamento dal repository remoto...",
-				"alreadyUpToDate": "Già l'ultimo.",
-				"localBranchAhead": "La filiale locale è prima della filiale remota. Nessun aggiornamento richiesto.",
-				"branchesDiverged": "I rami locali e remoti sono stati biforcati. Aggiornamento forzato in corso...",
+				"alreadyUpToDate": "Già aggiornato.",
+				"localBranchAhead": "Il ramo locale è più avanti di quello remoto. Nessun aggiornamento necessario.",
+				"branchesDiverged": "I rami locali e remoti sono divergenti. Aggiornamento forzato in corso...",
 				"unrelatedHistories": "Il repository locale e quello remoto non hanno una cronologia in comune. Aggiornamento forzato…",
-				"notOnBranch": "Non sul ramo, passa a 'master'...",
+				"notOnBranch": "Non su un ramo, passaggio a 'master'...",
 				"upstreamGoneFallbackMaster": "Il ramo remoto '${branch}' è stato eliminato; ora si traccia master…",
-				"noUpstreamBranch": "Avviso: nessun ramo upstream configurato per il ramo '${branch}', utilizzare '${remote}'.",
-				"dirtyWorkingDirectory": "Avvertenza: la directory di lavoro non è pulita. Si prega di fare lo stage o il commit di le modifiche prima dell'aggiornamento.",
-				"notInstalled": "Git non è installato, sto provando a installarlo...",
-				"notInstalledSkippingPull": "Git non è installato, salta `git pull`",
-				"repoNotFoundSkippingPull": "Repository non trovato, salta `git pull`",
-				"fetchFailed": "Impossibile ottenere da \"origine\".",
+				"noUpstreamBranch": "Avviso: nessun ramo upstream configurato per il ramo '${branch}'; verrà usato '${remote}'.",
+				"dirtyWorkingDirectory": "Avviso: la directory di lavoro non è pulita. Si prega di fare lo stage o il commit delle modifiche prima dell'aggiornamento.",
+				"notInstalled": "Git non è installato, tentativo di installazione in corso...",
+				"notInstalledSkippingPull": "Git non è installato, `git pull` saltato",
+				"repoNotFoundSkippingPull": "Repository non trovato, `git pull` saltato",
+				"fetchFailed": "Impossibile eseguire il fetch da \"origin\".",
 				"fetchFailedSkippingUpdate": "Impossibile recuperare gli aggiornamenti da GitHub; aggiornamento ignorato.",
 				"remoteRefUnavailable": "Il riferimento remoto «${ref}» non è disponibile; sincronizzazione Git ignorata.",
 				"installFailedWinget": "Poiché l'installazione di Winget non è riuscita, Git non può essere installato. Si prega di installarlo manualmente.",
@@ -520,11 +520,11 @@
 			},
 			"deno": {
 				"missing": "Deno non trovato, installazione automatica...",
-				"isRequired": "Deno non trovato, fount non può essere eseguita senza Deno",
+				"isRequired": "Deno non trovato, fount non può essere eseguito senza Deno",
 				"installingTermux": "Installazione di Deno per Termux...",
-				"installFailedFallback": "Installazione di Deno non riuscita, tentativo di installazione automatica nella cartella del percorso del fount...",
-				"notWorking": "Per qualche motivo Deno non funziona, potresti voler iscriverti a https://github.com/denoland/deno/issues per ricevere supporto",
-				"upgradeFailed": "Avvertenza: l'aggiornamento di Deno potrebbe non essere riuscito. Si prega di verificare la presenza di errori.",
+				"installFailedFallback": "Installazione di Deno non riuscita, tentativo di installazione automatica nella cartella `path` di fount...",
+				"notWorking": "Per qualche motivo Deno non funziona, potresti aprire una segnalazione su https://github.com/denoland/deno/issues per ottenere supporto",
+				"upgradeFailed": "Avviso: l'aggiornamento di Deno potrebbe non essere riuscito. Controlla se ci sono errori.",
 				"upgradeFailedTermux": "Comando di aggiornamento Deno non riuscito, tentativo di reinstallare Deno per Termux...",
 				"patchMissing": "Errore: eseguibile Deno non trovato prima dell'applicazione della patch. Non può essere patchato.",
 				"patchUnsupportedArch": "Errore: architettura della patch non supportata: ${arch}",
@@ -534,7 +534,7 @@
 				"pinNotHonored": "Attenzione: Deno è gestito dal gestore di pacchetti ${manager}, quindi non è possibile rispettare la versione (${spec}) specificata da .deno-version. È stato aggiornato alla versione del gestore di pacchetti."
 			},
 			"tempDir": {
-				"blocked": "Errore: impossibile eseguire `fount` nella directory temporanea\n\nfount è profondamente accoppiato al sistema e registra il comando `PATH` e più hook di sistema in `fount`. Se eseguito in una directory temporanea, dopo che il sistema cancella i file temporanei, non sarà possibile eseguire `fount remove` per rimuovere fount e i suoi hook.\n\nSpostare fount in una directory non temporanea prima di eseguirlo. Se si desidera solo un breve test, eseguire manualmente `fount remove` al termine del test."
+				"blocked": "Errore: impossibile eseguire `fount` nella directory temporanea\n\nfount è profondamente accoppiato al sistema e registra il comando `PATH` e diversi hook di sistema in `fount`. Se eseguito in una directory temporanea, dopo che il sistema cancella i file temporanei, non sarà possibile eseguire `fount remove` per rimuovere fount e i suoi hook.\n\nSposta fount in una directory non temporanea prima di eseguirlo. Se vuoi solo fare una breve prova, esegui manualmente `fount remove` al termine."
 			},
 			"eula": {
 				"prompt": "Accetti il contratto di licenza con l'utente finale (EULA) di fount?",
@@ -545,7 +545,7 @@
 			},
 			"install": {
 				"installingDependencies": "Installazione delle dipendenze...",
-				"compilingFavicon": "File favicon non trovato; avvio del server per compilarlo...",
+				"compilingFavicon": "File favicon non trovato; avvio del server per generarlo...",
 				"packageFailed": "Errore: installazione di ${package} non riuscita.",
 				"browserMissing": "Browser predefinito non rilevato, tentativo di installazione...",
 				"untrustedPartsWarning": "Non installare componenti di fount non attendibili sul tuo sistema, possono fare qualsiasi cosa.",
@@ -556,9 +556,9 @@
 				"runnerUpdating": "Aggiornamento dell'installer…"
 			},
 			"clean": {
-				"removingCaches": "Rimozione cache...",
+				"removingCaches": "Rimozione delle cache...",
 				"cleaningDenoCaches": "Pulizia della cache di Deno...",
-				"cleaningOldPwshModules": "Ripulire i vecchi moduli pwsh..."
+				"cleaningOldPwshModules": "Pulizia dei vecchi moduli pwsh..."
 			},
 			"keepalive": {
 				"initComplete": "Reinizializzazione completata. Tentativo di riavviare fount...",
@@ -575,16 +575,16 @@
 			},
 			"remove": {
 				"confirmPrompt": "La directory di installazione di fount sta per essere eliminata dal disco: `${path}`\nConferma che questa sia effettivamente la directory da eliminare.",
-				"yn": "[Y/N]",
+				"yn": "[Y/N] ",
 				"aborted": "Annullato, non è stato eliminato nulla.",
 				"externalMountWarning": "Attenzione: fount si trova su un mount esterno/condiviso (`${target}`)!\nQuesta directory può esistere contemporaneamente sull'host o sulla macchina virtuale. `fount remove` la eliminerà anche lì, presta quindi molta attenzione.",
 				"nonInteractiveRequiresForce": "L'eliminazione non può essere confermata in un ambiente non interattivo. Se sei certo di voler rimuovere `fount` (${path}), usa `fount remove --force` per saltare la conferma.",
-				"fountUninstallationComplete": "disinstallazione di fount completata.",
+				"fountUninstallationComplete": "Disinstallazione di fount completata.",
 				"fountInstallationDirRemoved": "La directory di installazione di fount è stata rimossa.",
 				"protocolHandlerRemoved": "Il gestore del protocollo `fount://` è stato rimosso.",
-				"fountPwshRemovedFromProfile": "font-pwsh è stato rimosso dal profilo PowerShell.",
-				"pwshProfileNotFound": "Profilo PowerShell non trovato, verrà ignorata la rimozione di font-pwsh dal profilo.",
-				"uninstallFountPwshFailed": "Disinstallazione di font-pwsh non riuscita: ${message}",
+				"fountPwshRemovedFromProfile": "fount-pwsh è stato rimosso dal profilo PowerShell.",
+				"pwshProfileNotFound": "Profilo PowerShell non trovato, verrà ignorata la rimozione di fount-pwsh dal profilo.",
+				"uninstallFountPwshFailed": "Disinstallazione di fount-pwsh non riuscita: ${message}",
 				"terminalProfileRemoved": "La directory del profilo terminale di Windows è stata rimossa.",
 				"terminalProfileNotFound": "Directory del profilo terminale di Windows non trovata.",
 				"desktopShortcutRemoved": "Collegamento sul desktop rimosso.",
@@ -597,7 +597,7 @@
 				"uninstalling": {
 					"chrome": "Disinstallazione di Chrome...",
 					"deno": "Disinstallazione di Deno...",
-					"fountPwsh": "Disinstallazione di font-pwsh in corso...",
+					"fountPwsh": "Disinstallazione di fount-pwsh in corso...",
 					"git": "Disinstallazione di Git in corso...",
 					"winget": "Disinstallazione di Winget..."
 				},
@@ -607,16 +607,16 @@
 					"fount": {
 						"main": "Rimozione di fount...",
 						"fromGitSafeDir": "Rimozione di fount da `git safe.directory`...",
-						"fromPath": "Rimozione del fount dal PERCORSO...",
+						"fromPath": "Rimozione di fount dal PATH...",
 						"installationDir": "Rimozione della directory di installazione di fount in corso...",
-						"pwshFromProfile": "Rimozione di font-pwsh dal profilo PowerShell in corso..."
+						"pwshFromProfile": "Rimozione di fount-pwsh dal profilo PowerShell in corso..."
 					},
 					"installedPwshModules": "Rimozione del modulo pwsh installato...",
 					"installedSystemPackages": "Rimozione dei pacchetti di sistema installati...",
 					"protocolHandler": "Rimozione del gestore del protocollo `fount://` in corso...",
 					"startMenuShortcut": "Rimozione delle scorciatoie dal menu Start...",
 					"steamShortcut": "Rimozione di fount da Steam…",
-					"terminalKeybindings": "Rimozione patch scorciatoie del terminale...",
+					"terminalKeybindings": "Rimozione della patch delle scorciatoie del terminale...",
 					"terminalProfile": "Rimozione del profilo terminale di Windows..."
 				},
 				"remove": {
@@ -677,7 +677,7 @@
 			"nouns": [
 				"personaggio IA ",
 				"Agente ",
-				"Cyber waifu ",
+				"waifu cibernetica ",
 				"Assistente digitale "
 			],
 			"platforms": [
@@ -768,8 +768,8 @@
 		"unknownCommand": "Comando sconosciuto.",
 		"unknownError": "Uffa :(\n\nSi è verificato un errore:\n${error}",
 		"runPart": {
-			"commandSent": "Comando parte inviato.",
-			"commandError": "Errore durante l'invio del comando parte: ${error}",
+			"commandSent": "Comando inviato al componente.",
+			"commandError": "Errore durante l'invio del comando al componente: ${error}",
 			"retry": "Riprova",
 			"back": "Indietro",
 			"confirm": {
@@ -861,7 +861,7 @@
 		"webauthn": {
 			"loginButton": "Accedi utilizzando la chiave di sicurezza/Passkey",
 			"apiSessionExpired": "La sessione di accesso con la passkey è scaduta, riprova.",
-			"apiUnknownPasskey": "La passkey non è riconosciuta, utilizzare una chiave associata.",
+			"apiUnknownPasskey": "La passkey non è riconosciuta, usa una chiave associata.",
 			"apiPasskeyVerificationFailed": "La verifica della passkey non è riuscita, riprova.",
 			"removeUserNotFound": "Dati utente o credenziali non trovati.",
 			"removeInvalidPassword": "Password errata.",
@@ -875,8 +875,8 @@
 			"error": {
 				"authSessionRequired": "Manca il token della sessione di accesso, aggiorna la pagina e riprova.",
 				"badBeginResponse": "Il server ha restituito dati di accesso non validi, aggiorna la pagina e riprova.",
-				"cancelled": "La chiave di sicurezza è stata annullata o non è stata autorizzata l'uso.",
-				"credentialRequired": "Mancano i dati delle credenziali della passkey valida.",
+				"cancelled": "La chiave di sicurezza è stata annullata o non ne è stato autorizzato l'uso.",
+				"credentialRequired": "Mancano i dati di una credenziale passkey valida.",
 				"loadLibrary": "Impossibile caricare la libreria ausiliaria WebAuthn, controlla la rete e riprova.",
 				"sessionMissing": "Il server non ha restituito una sessione di accesso valida, aggiorna la pagina e riprova."
 			}
@@ -898,7 +898,7 @@
 	},
 	"tutorial": {
 		"title": "Ti va un tutorial?",
-		"description": "Camminiamo con voi attraverso il mondo di fount. Questo tutorial interattivo illuminerà il percorso, aiutandoti a scoprire la magia intessuta nel suo nucleo. La tua avventura inizia con la comprensione.",
+		"description": "Camminiamo con te attraverso il mondo di fount. Questo tutorial interattivo illuminerà il percorso, aiutandoti a scoprire la magia intessuta nel suo nucleo. La tua avventura inizia con la comprensione.",
 		"modal": {
 			"title": "Benvenuto in fount!",
 			"instruction": "Vuoi seguire il tutorial per principianti?",
@@ -913,10 +913,10 @@
 			"endButton": "Inizia!"
 		},
 		"progressMessages": {
-			"mouseMove": "Per favore, individua il tuo mouse ${mouseIcon}. Ora, con la tua mano, prova a spostarlo.",
+			"mouseMove": "Trova il tuo mouse ${mouseIcon}. Ora prova a spostarlo con la mano.",
 			"keyboardPress": "Premi un tasto sulla tua tastiera ${keyboardIcon}.",
 			"mobileTouchMove": "Ecco il tuo telefono ${phoneIcon}. Ora, usando un dito, tocca lo schermo e, senza sollevarlo, muovilo sulla superficie.",
-			"mobileClick": "Per favore, tocca lo schermo del tuo telefono ${phoneIcon} con la punta di un dito e poi solleva subito il dito. Fatto!"
+			"mobileClick": "Tocca lo schermo del tuo telefono ${phoneIcon} con un dito e poi sollevalo subito. Fatto!"
 		},
 		"achievements": {
 			"complete_tutorial": {
@@ -943,7 +943,7 @@
 	},
 	"home": {
 		"title": "Home",
-		"description": "Il cuore della tua esperienza di fount. Qui, gestisci gli abitanti della tua immaginazione: personaggi, mondi e personaggi. Le tue storie iniziano e si diramano da questo nesso centrale.",
+		"description": "Il cuore della tua esperienza di fount. Qui, gestisci gli abitanti della tua immaginazione: personaggi, mondi e persone. Le tue storie iniziano e si diramano da questo nesso centrale.",
 		"sidebarTitle": "Dettagli",
 		"closeSidebar": "Chiudi barra laterale",
 		"itemDescription": "Seleziona un elemento per visualizzarne i dettagli.",
@@ -955,10 +955,10 @@
 		"sfwToggle": "Contenuto sicuro",
 		"partTypeDropdown": {
 			"button": {
-				"title": "Menù del tipo di parte"
+				"title": "Menu del tipo di componente"
 			},
 			"icon": {
-				"alt": "Menù del tipo di parte"
+				"alt": "Menu del tipo di componente"
 			}
 		},
 		"functionMenu": {
@@ -966,14 +966,14 @@
 				"placeholder": "Cerca..."
 			},
 			"button": {
-				"title": "Menù funzioni"
+				"title": "Menu funzioni"
 			},
 			"icon": {
 				"alt": "Menu funzioni"
 			}
 		},
 		"emptyList": {
-			"message": "Vuoto...<br/>Forse potresti [creare una nuova parte](${newpartLink}) o andare sul [server Telegram di fount](${telegramLink}) per divertirti un po'?"
+			"message": "Vuoto...<br/>Forse potresti [creare un nuovo componente](${newpartLink}) o andare sul [server Telegram di fount](${telegramLink}) per divertirti un po'?"
 		},
 		"part_pages": {
 			"default": {
@@ -1013,11 +1013,11 @@
 				}
 			},
 			"personas": {
-				"title": "Selezione del personaggio",
+				"title": "Selezione della persona",
 				"subtitle": "Cambia la tua identità e vivi un'altra vita.",
 				"card": {
 					"defaultCheckbox": {
-						"title": "Imposta come personaggio predefinito"
+						"title": "Imposta come persona predefinita"
 					}
 				}
 			},
@@ -1173,9 +1173,9 @@
 			}
 		},
 		"dragAndDrop": {
-			"dropSuccess": "Trascina e rilascia con successo!",
+			"dropSuccess": "Trascinamento riuscito!",
 			"dropError": "Errore nell'elaborazione del trascinamento: ${error}",
-			"noHandler": "Nessun gestore drag and drop adatto trovato."
+			"noHandler": "Nessun gestore di drag and drop adatto trovato."
 		},
 		"home_common_interfaces": {
 			"open": {
@@ -1184,7 +1184,7 @@
 		},
 		"home_drag_out_generators": {
 			"generateXFountPart": {
-				"description": "Genera informazioni sui componenti del carattere"
+				"description": "Genera informazioni sui componenti di fount"
 			}
 		}
 	},
@@ -1197,7 +1197,7 @@
 		},
 		"typingIndicator": {
 			"isTyping": "${names} sta scrivendo...",
-			"multipleMembers": "Più membri stanno scrivendo..."
+			"multipleMembers": "Più membri stanno scrivendo…"
 		},
 		"emoji": {
 			"pickerTitle": {
@@ -1217,7 +1217,7 @@
 				"aria-label": "Vai a Unicode"
 			},
 			"discoverPacks": "Esplora pacchetti emoji →",
-			"emptyPack": "Questo pacchetto di emoticon non contiene ancora espressioni",
+			"emptyPack": "Questo pacchetto di emoji non contiene ancora espressioni",
 			"addToCollection": "Aggiungi ai preferiti",
 			"addedToCollection": "Aggiunto ai preferiti",
 			"joinGroup": "Unisciti al gruppo",
@@ -1232,7 +1232,7 @@
 			"loadFailed": "Impossibile caricare il selettore emoji: ${error}",
 			"category": {
 				"animal": "animale",
-				"face": "Emoji",
+				"face": "Faccine",
 				"food": "cibo",
 				"gesture": "gesto",
 				"heart": "Cuore",
@@ -1280,12 +1280,12 @@
 				"aria-label": "Attività"
 			},
 			"Objects": {
-				"title": "Cosa",
-				"aria-label": "Cosa"
+				"title": "Oggetti",
+				"aria-label": "Oggetti"
 			},
 			"Symbols": {
-				"title": "Simbolo",
-				"aria-label": "Simbolo"
+				"title": "Simboli",
+				"aria-label": "Simboli"
 			},
 			"Flags": {
 				"title": "Bandiere",
@@ -1295,25 +1295,25 @@
 		"sessionSettings": {
 			"unnamedTitle": "Chat di gruppo senza nome",
 			"modeGroup": "chiacchierata di gruppo",
-			"modeSingle": "singolo carattere",
+			"modeSingle": "personaggio singolo",
 			"modeEmpty": "gruppo vuoto",
-			"subtitleRoles": "In questa chat sono presenti ${count} caratteri",
+			"subtitleRoles": "In questa chat sono presenti ${count} personaggi",
 			"saveSuccess": "Impostazioni della chat di gruppo salvate",
 			"saveFailed": "Impossibile salvare le impostazioni della chat di gruppo",
 			"status": {
 				"dirty": "Sono presenti modifiche non salvate",
 				"saveFailed": "Salvataggio non riuscito",
 				"saved": "salvato",
-				"saving": "Risparmio…"
+				"saving": "Salvataggio…"
 			}
 		},
 		"group": {
 			"defaults": {
 				"groupMetaName": "Gruppo senza nome",
-				"defaultChannelName": "completo",
+				"defaultChannelName": "generale",
 				"dmChatName": "chiacchierata",
 				"dmDmName": "chat privata",
-				"threadName": "filo"
+				"threadName": "thread"
 			},
 			"auditLog": {
 				"title": "Registro di controllo del gruppo",
@@ -1400,7 +1400,7 @@
 			"mergeDagTipsFailed": "Unione fork non riuscita",
 			"channelsTitle": "Canali",
 			"members": "Membri",
-			"membersHint": "L'elenco dei membri è sincronizzato da Viewpoint (segnaposto)",
+			"membersHint": "L'elenco dei membri è sincronizzato dal checkpoint (segnaposto)",
 			"loadError": "Impossibile caricare il gruppo",
 			"messagesLoadFailed": "Impossibile caricare i messaggi",
 			"sendFailed": "Impossibile inviare",
@@ -1416,7 +1416,7 @@
 				"placeholder": "L'elenco dei canali visualizza solo le schede di navigazione e non invia messaggi"
 			},
 			"mentionHandle": "@${name}",
-			"mentionInsert": "@${name}",
+			"mentionInsert": "@${name} ",
 			"attachmentsHint": "(${n} allegati)",
 			"copied": "Copiato",
 			"addBookmark": {
@@ -1433,9 +1433,9 @@
 			"forceTriggerAllLocalTitle": {
 				"title": "Forza tutti i personaggi locali a parlare"
 			},
-			"quoteHeader": "> **${sender}**${sep}${time}",
-			"quoteHeaderWithTime": "> **${sender}** · ${time}",
-			"quoteHeaderWithoutTime": "> **${sender}**",
+			"quoteHeader": "> **${sender}**${sep}${time}\n\n",
+			"quoteHeaderWithTime": "> **${sender}** · ${time}\n\n",
+			"quoteHeaderWithoutTime": "> **${sender}**\n\n",
 			"stopGenerating": "Smetti di generare",
 			"reactionAdd": {
 				"title": "aggiungi risposta"
@@ -1493,7 +1493,7 @@
 				"label": "Tipo di canale",
 				"list": "Canale elenco/forum",
 				"streaming": "Canale in streaming",
-				"text": "canale di chat"
+				"text": "Canale di chat"
 			},
 			"settings": {
 				"archive": {
@@ -1685,13 +1685,13 @@
 						"deleteConfirm": "Sei sicuro di voler eliminare questo gruppo di emoji?",
 						"deleteFailed": "Eliminazione non riuscita: ${error}",
 						"deleteOk": "L'emoji è stata eliminata",
-						"empty": "Nessuna emoji personalizzata ancora",
+						"empty": "Nessuna emoji di gruppo ancora",
 						"hint": "I membri possono inserire o inviare questi emoji in chat; le immagini disinstallate vengono estratte su richiesta tramite nodi federati.",
 						"packGroupOption": "Predefinito del gruppo",
 						"idCopied": "ID del pacchetto emoji copiato negli appunti",
 						"idCopy": "Copia",
 						"packCount": "${name} - ${count} elementi",
-						"title": "Emoji di gruppo personalizzati",
+						"title": "Emoji di gruppo personalizzate",
 						"upload": "Carica emoji",
 						"uploadFailed": "Caricamento non riuscito: ${error}",
 						"uploadOk": "Emoji caricata"
@@ -1745,7 +1745,7 @@
 						"VIEW_CHANNEL": "Visualizza canale"
 					},
 					"kick": {
-						"main": "Calcio",
+						"main": "Espelli",
 						"confirm": "Sei sicuro di voler espellere i membri ${name}?",
 						"failed": "Impossibile eliminare i membri: ${error}",
 						"selfNodeWarning": "Avviso: questo membro utilizza la tua stessa identità di nodo. Verrai rimosso dal gruppo anche dopo essere stato espulso. Sei sicuro di voler continuare?",
@@ -1792,7 +1792,7 @@
 			"feedback": {
 				"dagLine": "[${label}]",
 				"dagLineWithNote": "[${label}] ${note}",
-				"down": "Antipatia",
+				"down": "Non mi piace",
 				"previewLine": "${tag}${sep}${note}",
 				"previewTaggedNote": "${tag} ${note}",
 				"up": "Mi piace"
@@ -2111,7 +2111,7 @@
 			"copyEntityIdOk": "ID entità copiato",
 			"remoteBadge": {
 				"textContent": "remoto",
-				"title": "autore remoto federato"
+				"title": "Autore remoto federato"
 			},
 			"trustAuthor": {
 				"textContent": "Fidati di questo autore",
@@ -2162,7 +2162,7 @@
 				"duration1Month": "1 mese",
 				"durationForever": "permanente",
 				"confirmCooldown": "Ho letto i rischi (${seconds})",
-				"confirmFirst": "Capisco i rischi, continuate",
+				"confirmFirst": "Capisco i rischi, continua",
 				"confirmSecond": "Fare nuovamente clic per confermare",
 				"cancel": "Annulla"
 			},
@@ -2197,7 +2197,7 @@
 			},
 			"localMaterializedView": "Attualmente è una vista materializzata locale e le autorizzazioni e la cronologia potrebbero non essere coerenti con altri nodi.",
 			"convergentEncryptWarn": "I file di gruppo utilizzano la crittografia convergente: se un utente malintenzionato conosce il testo in chiaro di un file, può derivare la chiave e decrittografare il blocco di testo cifrato corrispondente. Non fare affidamento esclusivamente sulla crittografia di gruppo per la protezione di documenti altamente sensibili e unicamente privati.",
-			"reputationSlashAlert": "La reputazione del membro ${target}… viene ricordata nella detrazione.",
+			"reputationSlashAlert": "La reputazione del membro ${target}… è stata ridotta.",
 			"profileEdit": {
 				"close": {
 					"aria-label": "Chiudi"
@@ -2252,7 +2252,7 @@
 				"banner": {
 					"clear": "Riprendi la generazione del banner",
 					"hint": "Puoi inserire l'URL dell'immagine o caricare un file; puoi anche riprendere a generare texture in qualsiasi momento",
-					"label": "sfondo della bandiera",
+					"label": "sfondo del banner",
 					"upload": {
 						"aria-label": "Carica banner"
 					},
@@ -2269,7 +2269,7 @@
 						"aria-label": "Rimuovi collegamento"
 					},
 					"url": {
-						"placeholder": "https://… o fonte://…"
+						"placeholder": "https://… o fount://…"
 					}
 				}
 			},
@@ -2281,9 +2281,9 @@
 				"editSaved": "Profilo salvato",
 				"editQueued": "Pubblicato, in attesa che l'altro nodo lo estragga",
 				"noFedIdentity": "Configura prima activePubKeyHex locale nelle impostazioni della federazione",
-				"peerNoIdentity": "L'altra parte non ha lo stato federato e non può avviare un DM federato.",
+				"peerNoIdentity": "L'altra parte non ha un'identità federata e non può avviare un DM federato.",
 				"care": "Amici intimi",
-				"careRemove": "Allontanati dagli amici più stretti",
+				"careRemove": "Rimuovi dai seguiti speciali",
 				"setAlias": "Imposta l'alias",
 				"setAliasPrompt": "Imposta un alias locale per \"${name}\" (lascia vuoto per cancellare):",
 				"dm": {
@@ -2300,7 +2300,7 @@
 			"reactionFailed": "La reazione è fallita",
 			"createModal": {
 				"title": "Crea gruppo",
-				"subtitle": "I gruppi sono spazi privati ​​in cui tu e i tuoi amici potete chattare insieme",
+				"subtitle": "I gruppi sono spazi privati in cui tu e i tuoi amici potete chattare insieme",
 				"basicSection": "Informazioni di base",
 				"nameLabel": "Nome del gruppo",
 				"name": {
@@ -2459,7 +2459,7 @@
 				"loadFailed": "Caricamento non riuscito: ${error}",
 				"loading": "Caricamento…",
 				"manage": "Gestisci adesivi →",
-				"marketLink": "Vai alla galleria degli adesivi per installare i pacchetti",
+				"marketLink": "Vai alla piazza degli adesivi per installare i pacchetti",
 				"panelTitle": "Adesivi"
 			},
 			"friends": {
@@ -2524,7 +2524,7 @@
 				"type": "Tipo di canale",
 				"typeList": "Canale elenco/forum",
 				"typeStreaming": "Canale in streaming",
-				"typeText": "canale di chat",
+				"typeText": "Canale di chat",
 				"readonlyRoot": {
 					"placeholder": "Il canale root non può inviare messaggi/file"
 				}
@@ -2586,7 +2586,7 @@
 						"title": "sequenza temporale successiva"
 					},
 					"pin": {
-						"title": "Spillo"
+						"title": "Appunta"
 					},
 					"prev": {
 						"title": "Cronologia precedente"
@@ -2595,7 +2595,7 @@
 						"title": "Rigenerare"
 					},
 					"unpin": {
-						"title": "Sblocca"
+						"title": "Rimuovi dai fissati"
 					}
 				},
 				"context": {
@@ -2680,15 +2680,15 @@
 					"copyPubKey": "Copia l'hash della chiave pubblica",
 					"copyEntityId": "Copia l'ID dell'entità",
 					"dm": "Invia messaggio",
-					"kick": "Membro dei calci",
+					"kick": "Espelli membro",
 					"kickSelfNodeWarning": "Avviso: questo membro utilizza la tua stessa identità di nodo. Verrai rimosso dal gruppo anche dopo essere stato espulso. Sei sicuro di voler continuare?",
-					"ban": "Divieto…",
+					"ban": "Blocca…",
 					"personalBlock": "Blocco personale",
 					"personalBlockConfirm": "Aggiungere ${name} all'elenco dei blocchi? Le persone che ti seguono coglieranno questo segnale e potrebbero avere meno fiducia in loro.",
 					"personalBlockSuccess": "Già aggiunto alla lista nera",
-					"banTitle": "Seleziona l'intervallo di divieto",
-					"banEntity": "Entità vietate (entityHash a 128 bit)",
-					"banNode": "Nodo bannato (homeNodeHash)"
+					"banTitle": "Seleziona l'ambito del blocco",
+					"banEntity": "Blocca entità (entityHash a 128 bit)",
+					"banNode": "Blocca nodo (homeNodeHash)"
 				},
 				"countLabel": "${count} membri",
 				"joined": "Mi sono unito alla conversazione",
@@ -2749,8 +2749,8 @@
 				"newFolder": "Crea nuova cartella",
 				"newFolderPrompt": "Nome della cartella",
 				"no": {
-					"cabinets": "Non sono disponibili schedari accessibili per il ruolo attuale",
-					"channel": "Per prima cosa inserisci il canale SMS dove puoi inviare messaggi",
+					"cabinets": "Non ci sono schedari accessibili per il ruolo attuale",
+					"channel": "Per prima cosa entra in un canale di testo in cui puoi inviare messaggi",
 					"folders": "Nessuna sottocartella ancora",
 					"group": "Seleziona prima un gruppo"
 				},
@@ -2832,8 +2832,8 @@
 				"startedAt": "Iniziato alle ${time}"
 			},
 			"vote": {
-				"closed": "finito",
-				"count": "${count} biglietti · ${pct}%",
+				"closed": "Concluso",
+				"count": "${count} voti · ${pct}%",
 				"createFailed": "Impossibile creare il sondaggio: ${error}",
 				"deadline": "Scadenza: ${date}",
 				"minOptions": "Richiede almeno 2 opzioni",
@@ -2863,7 +2863,7 @@
 			},
 			"menu": {
 				"copy": "Copia",
-				"delete": "Eliminare",
+				"delete": "Elimina",
 				"download": "ScaricaHTML",
 				"hTML": "HTML",
 				"mD": "Markdown",
@@ -3006,7 +3006,7 @@
 				"previewSticker": "[adesivo]",
 				"previewVote": "[Vota] ${question}",
 				"unpinSidebar": {
-					"title": "Sblocca"
+					"title": "Rimuovi dai fissati"
 				}
 			},
 			"no": {
@@ -3099,13 +3099,13 @@
 			},
 			"dataMgmt": {
 				"title": "Gestione dei dati",
-				"compact": "Punto di controllo compatto",
-				"prune": "Potare la storia",
-				"compactSuccess": "Punto di vista generato correttamente",
-				"compactError": "La generazione del punto di vista non è riuscita",
-				"pruneSuccess": "La storia potata",
-				"pruneError": "La potatura è fallita",
-				"invalidN": "Il numero di articoli prenotati non è valido (minimo 10 articoli)"
+				"compact": "Genera checkpoint",
+				"prune": "Ritaglia cronologia",
+				"compactSuccess": "Checkpoint generato correttamente",
+				"compactError": "Generazione del checkpoint non riuscita",
+				"pruneSuccess": "Cronologia ritagliata",
+				"pruneError": "Ritaglio non riuscito",
+				"invalidN": "Il numero di messaggi da conservare non è valido (minimo 10)"
 			}
 		},
 		"rightSidebar": {
@@ -3208,7 +3208,7 @@
 		},
 		"achievements": {
 			"first_chat": {
-				"name": "ciao straniero",
+				"name": "Ciao, straniero",
 				"description": "Il primo messaggio è stato inviato e la storia ha inizio.",
 				"locked_description": "Invia il tuo primo messaggio con qualsiasi fount."
 			},
@@ -3312,7 +3312,7 @@
 				"zh-CN": "Cinese semplificato",
 				"en-US": "Inglese"
 			},
-			"notifEmail": "posta",
+			"notifEmail": "Email",
 			"notifPush": "Push",
 			"notifSound": "suono",
 			"notifsAllOff": "Tutto disattivato",
@@ -3321,7 +3321,7 @@
 			"emailVisible": "visibile",
 			"emailHidden": "Nascosto",
 			"customStatus": {
-				"placeholder": "Cosa fai..."
+				"placeholder": "Cosa stai facendo..."
 			},
 			"avatar": {
 				"alt": "avatar"
@@ -3336,7 +3336,7 @@
 			"overview": "Panoramica delle informazioni sull'utente",
 			"groupDescriptionEmpty": "Nessuna descrizione ancora",
 			"groupMembers": "${members} membri · ${channels} canali",
-			"channelPrivate": "· Privato",
+			"channelPrivate": "· Canale privato",
 			"errors": {
 				"loadFailed": "Impossibile caricare i dati",
 				"saveFailed": "Impossibile salvare i dati",
@@ -3352,8 +3352,8 @@
 			},
 			"channelType": {
 				"list": "Canale elenco",
-				"streaming": "Canale streaming",
-				"text": "Canale testuale",
+				"streaming": "Canale di streaming",
+				"text": "Canale di testo",
 				"voice": "Canale vocale"
 			},
 			"federation": {
@@ -3371,7 +3371,7 @@
 			},
 			"summary": {
 				"accountStatus": "Stato dell'account",
-				"emailVisibility": "Visibilità della e-mail",
+				"emailVisibility": "Visibilità dell'email",
 				"languagePref": "Preferenza della lingua",
 				"linksCount": "Numero di collegamenti esterni",
 				"socialCount": "Numero di collegamenti social",
@@ -3413,11 +3413,11 @@
 		},
 		"stickers": {
 			"title": "Piazza sticker",
-			"description": "Sistema di gestione di adesivi ed emoticon",
+			"description": "Gestione di adesivi ed emoji",
 			"back": {
 				"title": "Indietro"
 			},
-			"packs": "Pacchetti sticker",
+			"packs": "Pacchetti di adesivi",
 			"create": "Crea un pacchetto di adesivi",
 			"upload": "Carica adesivi",
 			"install": "Installa",
@@ -3433,11 +3433,11 @@
 			"search": {
 				"placeholder": "Cerca pacchetti di adesivi..."
 			},
-			"searchLabel": "Cerca pacchetti sticker",
+			"searchLabel": "Cerca pacchetti di adesivi",
 			"emptyPacks": "Nessun pacchetto di adesivi ancora",
 			"tagsLabel": "Tag (separati da virgole)",
 			"tags": {
-				"placeholder": "Ad esempio: carino, emoticon, animale"
+				"placeholder": "Ad esempio: carini, emoji, animali"
 			},
 			"author": "autore",
 			"authorLabel": "Autore: ${author}",
@@ -3534,7 +3534,7 @@
 					"title": "Smetti di generare"
 				},
 				"stopIcon": {
-					"alt": "icona di arresto"
+					"alt": "Icona di arresto"
 				}
 			},
 			"list": {
@@ -3609,7 +3609,7 @@
 					}
 				},
 				"share": {
-					"uploading": "Creazione collegamento...",
+					"uploading": "Creazione del collegamento...",
 					"success": "Condivisione riuscita! Link copiato negli appunti. <br>Questa funzionalità è supportata da ${provider}. <br>[Sostienili.](${sponsorLink})"
 				},
 				"commonToolCalling": "Esecuzione strumento",
@@ -3668,7 +3668,7 @@
 	},
 	"easynew": {
 		"title": "Creazione rapida",
-		"description": "Impalca rapidamente nuove parti di fount come personaggi, mondi e plug-in utilizzando modelli predefiniti o personalizzati. La tua prossima creazione è a pochi clic di distanza.",
+		"description": "Crea rapidamente nuovi componenti di fount come personaggi, mondi e plug-in utilizzando modelli predefiniti o personalizzati. La tua prossima creazione è a pochi clic di distanza.",
 		"info": {
 			"description": "Questi modelli possono essere utilizzati solo per creare rapidamente componenti semplici; i componenti complessi devono ancora essere creati manualmente."
 		},
@@ -3687,7 +3687,7 @@
 			},
 			"description": {
 				"label": "Descrizione",
-				"placeholder": "Descrivi brevemente di cosa tratta questa componente."
+				"placeholder": "Descrivi brevemente di cosa tratta questo componente."
 			},
 			"descriptionMarkdown": {
 				"label": "Descrizione (Markdown)",
@@ -3728,7 +3728,7 @@
 			},
 			"author": {
 				"label": "Autore",
-				"placeholder": "Chi è l'autore di questa componente?"
+				"placeholder": "Chi è l'autore di questo componente?"
 			},
 			"version": {
 				"label": "Versione",
@@ -3740,11 +3740,11 @@
 			},
 			"homePage": {
 				"label": "Homepage",
-				"placeholder": "L'URL della homepage della componente"
+				"placeholder": "L'URL della homepage del componente"
 			},
 			"issuePage": {
-				"label": "Pagina dei problemi",
-				"placeholder": "URL della pagina dei problemi della componente"
+				"label": "Pagina delle segnalazioni",
+				"placeholder": "URL della pagina delle segnalazioni del componente"
 			},
 			"createButton": "Crea componente",
 			"persona": {
@@ -3769,7 +3769,7 @@
 			"create_part": {
 				"name": "Il laboratorio di alchimia è aperto",
 				"description": "Inizia da zero e crea il tuo primo componente.",
-				"locked_description": "Crea una parte utilizzando la funzione Nuovo rapido."
+				"locked_description": "Crea un componente utilizzando la funzione Creazione rapida."
 			}
 		},
 		"home_function_buttons": {
@@ -3797,7 +3797,7 @@
 			"icon": {
 				"alt": "Icona di caricamento"
 			},
-			"textContent": "Trascina i file qui oppure fai clic per selezionare i file."
+			"textContent": "Trascina i file qui oppure fai clic per selezionarli."
 		},
 		"textArea": {
 			"placeholder": "Inserisci il testo da importare..."
@@ -3829,7 +3829,7 @@
 		},
 		"dragAndDrop": {
 			"fileDropDescription": "Installa componenti da file",
-			"textDropDescription": "Installa parti dal testo"
+			"textDropDescription": "Installa componenti dal testo"
 		},
 		"home_function_buttons": {
 			"component_related": {
@@ -3843,7 +3843,7 @@
 		},
 		"home_drag_in_handlers": {
 			"handleTextDrop": {
-				"description": "Installa parti dal testo"
+				"description": "Installa componenti dal testo"
 			},
 			"handleFileDrop": {
 				"description": "Installa componenti da file"
@@ -3854,7 +3854,7 @@
 		"title": "Esportatore di Componenti",
 		"pageTitle": "Esportatore di Componenti",
 		"pageSubtitle": "Esporta i tuoi contenuti preferiti",
-		"description": "Esporta le tue creazioni da fount. Questo strumento raccoglie le parti selezionate in un semplice file zip per conservarle o condividerle.",
+		"description": "Esporta le tue creazioni da fount. Questo strumento raccoglie i componenti selezionati in un semplice file zip per conservarli o condividerli.",
 		"steps": {
 			"part": "Seleziona i componenti",
 			"action": "Esporta"
@@ -3900,7 +3900,7 @@
 		},
 		"litterbox": {
 			"poweredBy": "La funzione di condivisione è supportata da litterbox.moe",
-			"sponsorLink": "Sponsorizzarli"
+			"sponsorLink": "Sostienili"
 		},
 		"errorMessage": {
 			"icon": {
@@ -3913,7 +3913,7 @@
 			"loadPartDetailsFailed": "Impossibile caricare i dettagli del componente: ${message}",
 			"exportFailed": "Esportazione non riuscita: ${message}",
 			"shareLinkCopied": "Link di condivisione copiato negli appunti!",
-			"shareFailed": "Impossibile creare il collegamento di condivisione: ${message}"
+			"shareFailed": "Impossibile creare il link di condivisione: ${message}"
 		},
 		"achievements": {
 			"share_part": {
@@ -3923,21 +3923,21 @@
 			}
 		},
 		"dragAndDrop": {
-			"downloadPartDescription": "Scarica parti"
+			"downloadPartDescription": "Scarica componenti"
 		},
 		"home_function_buttons": {
 			"component_related": {
 				"title": "Componenti",
 				"sub_items": {
 					"exportPart": {
-						"title": "Esporta Parte"
+						"title": "Esporta componente"
 					}
 				}
 			}
 		},
 		"home_drag_out_generators": {
 			"generateDownloadUrl": {
-				"description": "Scarica parti"
+				"description": "Scarica componenti"
 			}
 		},
 		"home_common_interfaces": {
@@ -4034,7 +4034,7 @@
 	},
 	"serviceSource_manager": {
 		"title": "Gestione delle fonti di servizio",
-		"description": "Qui dirigerai una sinfonia di suoni dell'intelligenza artificiale. Aggiungi, scolpisci o silenzia fount per dare vita alle tue fonti associate: una sottile danza di codice e immaginazione.",
+		"description": "Qui dirigerai una sinfonia di voci dell'intelligenza artificiale. Aggiungi, scolpisci o silenzia le tue fonti per dare loro vita: una sottile danza di codice e immaginazione.",
 		"fileList": {
 			"title": "Elenco delle fonti del servizio",
 			"empty": "Nessuna fonte del servizio",
@@ -4112,7 +4112,7 @@
 				"knowledge": "Limite di conoscenza: ${knowledge}",
 				"modalities": "Modalità: input ${input}, output ${output}",
 				"openWeights": "Pesi aperti",
-				"outputLimit": "Output max: ${output} token",
+				"outputLimit": "Output massimo: ${output} token",
 				"outputPrice": "Prezzo output: ${price} / 1M token",
 				"reasoning": "Supporta il ragionamento",
 				"releaseDate": "Data di rilascio: ${date}",
@@ -4187,7 +4187,7 @@
 	},
 	"telegram_bots": {
 		"title": "Bot Telegram",
-		"description": "Lascia che i tuoi personaggi principali attraversino le onde istantanee di Telegram. Configura la loro presenza digitale, gestisci le loro conversazioni ed estendi la loro portata a questo vivace mondo della messaggistica.",
+		"description": "Lascia che i tuoi personaggi attraversino le onde istantanee di Telegram. Configura la loro presenza digitale, gestisci le loro conversazioni ed estendi la loro portata a questo vivace mondo della messaggistica.",
 		"cardTitle": "Gestione Bot Telegram",
 		"botSelectDropdown": {
 			"placeholder": "Scegli un bot"
@@ -4212,13 +4212,13 @@
 				"aria-label": "Editor JSON di configurazione del bot"
 			},
 			"botTokenInput": {
-				"placeholder": "Inserisci token Bot Telegram"
+				"placeholder": "Inserisci il token del bot Telegram"
 			},
 			"toggleBotTokenButton": {
-				"aria-label": "Attiva/disattiva la visualizzazione delle chiavi API"
+				"aria-label": "Mostra o nascondi il token del bot"
 			},
 			"toggleBotTokenIcon": {
-				"alt": "Mostra/Nascondi token Bot"
+				"alt": "Mostra o nascondi il token del bot"
 			},
 			"buttons": {
 				"saveConfig": "Salva configurazione",
@@ -4249,7 +4249,7 @@
 			"start_bot": {
 				"name": "Arrivo su Telegram",
 				"description": "Evoca il tuo personaggio nel mondo di Telegram.",
-				"locked_description": "Avvia Telegram Bot una volta."
+				"locked_description": "Avvia il bot Telegram una volta."
 			}
 		},
 		"home_function_buttons": {
@@ -4298,10 +4298,10 @@
 				"placeholder": "Inserisci chiave API"
 			},
 			"toggleApiKeyButton": {
-				"aria-label": "Attiva/disattiva la visualizzazione delle chiavi API"
+				"aria-label": "Mostra o nascondi la chiave API"
 			},
 			"toggleApiKeyIcon": {
-				"alt": "Mostra/Nascondi chiave API"
+				"alt": "Mostra o nascondi la chiave API"
 			},
 			"buttons": {
 				"saveConfig": "Salva configurazione",
@@ -4330,7 +4330,7 @@
 			"start_bot": {
 				"name": "Venendo alla Discordia",
 				"description": "Evoca il tuo personaggio nel mondo di Discord.",
-				"locked_description": "Avvia Discord Bot una volta."
+				"locked_description": "Avvia il bot Discord una volta."
 			}
 		},
 		"home_function_buttons": {
@@ -4369,18 +4369,18 @@
 			"title": "Impostazioni bot",
 			"labels": {
 				"character": "Ruolo collegato",
-				"apiBaseUrl": "URL base API canale WeChat",
-				"botToken": "Token iLink Bot",
+				"apiBaseUrl": "URL base del servizio del canale WeChat",
+				"botToken": "Token Bot iLink",
 				"config": "Configurazione"
 			},
 			"jsonEditor": {
 				"aria-label": "Editor JSON di configurazione del bot"
 			},
 			"apiBaseUrlInput": {
-				"placeholder": "Lascia vuoto per https://ilinkai.weixin.qq.com predefinito"
+				"placeholder": "Lascia vuoto per usare l'URL predefinito https://ilinkai.weixin.qq.com"
 			},
 			"botTokenInput": {
-				"placeholder": "Bearer token ottenuto dopo l’accesso"
+				"placeholder": "Token Bearer ottenuto dopo l'accesso"
 			},
 			"toggleBotTokenButton": {
 				"aria-label": "Mostra o nascondi token"
@@ -4405,11 +4405,11 @@
 			"deleteBot": "Elimina"
 		},
 		"alerts": {
-			"configSaved": "Salvato",
+			"configSaved": "Configurazione salvata",
 			"botExists": "Esiste già un bot denominato «${botname}». Scegli un altro nome.",
 			"unsavedChanges": "Modifiche non salvate. Scartarle?",
 			"httpError": "Errore HTTP",
-			"beforeUnload": "Modifiche non salvate. Uscire dalla pagina?"
+			"beforeUnload": "Hai modifiche non salvate. Sei sicuro di voler lasciare la pagina?"
 		},
 		"achievements": {
 			"start_bot": {
@@ -4438,7 +4438,7 @@
 			"button": "Scansiona per accedere",
 			"scanPrompt": "Apri WeChat e scansiona il codice QR",
 			"waiting": "Caricamento codice QR…",
-			"scanned": "Scansionato — conferma sul telefono",
+			"scanned": "Codice scansionato — conferma sul telefono",
 			"success": "WeChat connesso. Impostazioni salvate: puoi avviare il bot.",
 			"needBot": "Seleziona un bot dall’elenco o creane uno con «Nuovo»."
 		}
@@ -4507,34 +4507,34 @@
 			}
 		},
 		"settings": {
-			"title": "impostazioni sociali",
+			"title": "Impostazioni social",
 			"loadFailed": "Impossibile caricare le impostazioni: ${error}",
 			"back": {
 				"aria-label": "Restituisci informazioni"
 			},
 			"privacyTitle": "Privacy e scoperta",
-			"privacyHint": "Controlla se gli account vengono visualizzati in Individuazione e Consigli.",
+			"privacyHint": "Controlla se gli account compaiono in Esplora e nei consigli.",
 			"tasteTitle": "Raccomandazioni e preferenze",
 			"tasteHint": "Modifica i limiti della privacy e la denominazione dell'etichetta \"Consigliato per te\".",
 			"autoTranslateTitle": "traduzione automatica",
 			"autoTranslateHint": "Una volta attivati, i post in lingua straniera richiederanno automaticamente la traduzione e potranno essere convertiti nel testo originale.",
 			"autoTranslateEnable": "Traduci automaticamente i post in lingue diverse dalla tua",
 			"safetyTitle": "Sicurezza e schermatura",
-			"safetyHint": "Gestisci elenchi bloccati e nascosti.",
+			"safetyHint": "Gestisci gli elenchi dei bloccati e dei nascosti.",
 			"mutedKeywords": {
 				"placeholder": "Inserisci parole chiave o #tag",
 				"aria-label": "Inserisci parola chiave o tag",
-				"add": "aggiungere a",
-				"empty": "Nessuna parola di blocco aggiunta ancora",
+				"add": "Aggiungi",
+				"empty": "Nessuna parola bloccata ancora",
 				"hint": "I post che contengono testo del corpo, avvisi sui contenuti o etichette verranno nascosti dallo stream, dall'esplorazione, dalla ricerca e dalle notifiche. Salvato solo localmente.",
 				"matchTags": "Abbina i tag contemporaneamente",
 				"remove": {
-					"title": "Rimuovi le parole bloccate"
+					"title": "Rimuovi la parola bloccata"
 				},
-				"title": "Blocca parole e tag"
+				"title": "Parole e tag bloccati"
 			},
 			"taste": {
-				"rebuild": "Ricostruire il profilo del gusto",
+				"rebuild": "Ricrea il profilo dei gusti",
 				"empty": "Ancora nessun tag di gusto: metti mi piace o non mi piace a più post per creare il tuo profilo",
 				"weight": "Peso: ${weight}",
 				"save": "Salva",
@@ -4549,11 +4549,11 @@
 				}
 			},
 			"blocklist": {
-				"title": "Elenco dei blocchi",
+				"title": "Elenco dei bloccati",
 				"hiddenTitle": "Elenco nascosto",
 				"empty": "Nessuna voce bloccata o nascosta ancora",
-				"unblock": "Sbloccare",
-				"unhide": "Scopri",
+				"unblock": "Sblocca",
+				"unhide": "Mostra",
 				"scopeEntity": "Entità",
 				"scopeSubject": "Soggetto"
 			}
@@ -4561,13 +4561,13 @@
 		"composer": {
 			"placeholder": "A cosa stai pensando? Supporta Markdown (dialetto dei caratteri), inserisci @ per menzionare",
 			"locale": {
-				"aria-label": "linguaggio dei contenuti"
+				"aria-label": "Lingua del contenuto"
 			},
 			"aria-label": "Scrivi un post",
 			"publish": "pubblicazione",
 			"saveDraft": "salva bozza",
 			"fab": {
-				"title": "Scrivi aggiornamenti",
+				"title": "Scrivi un post",
 				"aria-label": "Scrivi aggiornamenti"
 			},
 			"contentWarning": {
@@ -4577,8 +4577,8 @@
 			"scheduleLabel": "Rilasciare regolarmente",
 			"scheduleSuccess": "Il post è stato aggiunto alla coda pianificata",
 			"emojiButton": {
-				"title": "espressione",
-				"aria-label": "espressione"
+				"title": "Emoji",
+				"aria-label": "Emoji"
 			},
 			"mentionEmpty": "(nessun membro corrispondente)",
 			"mentionSuggest": {
@@ -4685,26 +4685,26 @@
 				}
 			},
 			"loadFailed": "Impossibile caricare il feed: ${error}",
-			"newPosts": "Ci sono nuove novità, clicca per vedere",
+			"newPosts": "Ci sono nuovi post, clicca per vederli",
 			"tabsLabel": {
 				"aria-label": "Ordinamento del feed"
 			},
-			"tabLatest": "aggiornato",
-			"tabForYou": "consigliare",
+			"tabLatest": "Recenti",
+			"tabForYou": "Per te",
 			"repostedBy": "${author} ha ripubblicato",
 			"decryptFailed": "Impossibile decrittografare questo post",
 			"revealContent": "Mostra contenuto",
 			"sensitiveMedia": "mezzi sensibili",
-			"showMore": "Espandere",
-			"showLess": "vicino",
-			"replayDivider": "Sei tutto preso: ricomincia da capo",
+			"showMore": "Mostra di più",
+			"showLess": "Mostra meno",
+			"replayDivider": "Hai visto tutto: ricomincia da capo",
 			"trending": {
 				"title": "Tendenza",
 				"postCount": {
 					"textContent": "${n}",
 					"title": "${n} post"
 				},
-				"empty": "Niente di trend per ora",
+				"empty": "Nessun argomento di tendenza per ora",
 				"aria-label": "Tendenza"
 			}
 		},
@@ -4790,8 +4790,8 @@
 			"tabsLabel": {
 				"aria-label": "Sezioni del profilo"
 			},
-			"cabinetsEmpty": "Nessun gabinetto pubblico ancora",
-			"cabinetsFailed": "Caricamento schedario non riuscito: ${error}",
+			"cabinetsEmpty": "Nessun schedario pubblico ancora",
+			"cabinetsFailed": "Caricamento degli schedari non riuscito: ${error}",
 			"followingTitle": "Seguiti",
 			"followersTitle": "Seguaci",
 			"albums": {
@@ -4813,33 +4813,33 @@
 				"followers": "Seguaci",
 				"following": "Seguiti",
 				"group": {
-					"aria-label": "Statistiche"
+					"aria-label": "Statistiche del profilo"
 				},
-				"posts": "Messaggi"
+				"posts": "Post"
 			},
 			"tabs": {
 				"albums": "Album",
-				"cabinets": "Armadi",
-				"likes": "Come",
-				"posts": "Messaggi"
+				"cabinets": "Schedari",
+				"likes": "Mi piace",
+				"posts": "Post"
 			}
 		},
 		"video": {
 			"view": {
-				"aria-label": "breve video"
+				"aria-label": "Video breve"
 			},
-			"empty": "Nessun breve video ancora",
-			"emptyHint": "Non ci sono post con video nelle seguenti persone o piazze pubbliche. Prova a postare un video di aggiornamento?",
+			"empty": "Nessun video breve ancora",
+			"emptyHint": "Non ci sono post con video tra le persone che segui o nella piazza pubblica. Prova a pubblicare un video?",
 			"loadFailed": "Impossibile caricare i video brevi: ${error}",
-			"compose": "Vai a postare un video",
+			"compose": "Pubblica un video",
 			"back": {
 				"aria-label": "Torna al feed"
 			},
 			"mute": {
-				"aria-label": "muto"
+				"aria-label": "Disattiva audio"
 			},
 			"unmute": {
-				"aria-label": "Riattiva"
+				"aria-label": "Attiva audio"
 			},
 			"unavailable": "Non è possibile riprodurre il video",
 			"closeReplies": {
@@ -4850,7 +4850,7 @@
 			"empty": "Nessuna trasmissione in diretta ancora",
 			"loadFailed": "Impossibile caricare la trasmissione in diretta: ${error}",
 			"joinFailed": "Impossibile connettersi alla diretta: ${error}",
-			"viewers": "${n} persone hanno guardato",
+			"viewers": "${n} spettatori",
 			"likes": "${n} Mi piace",
 			"local": "Questo dispositivo",
 			"hall": "Sala trasmissioni in diretta",
@@ -4861,11 +4861,11 @@
 			"danmakuSend": "Inviare",
 			"postWatch": "Accedi alla trasmissione in diretta",
 			"postEnded": "La diretta è terminata",
-			"postEndedStats": "Visto da ${viewers} · ${likes} Mi è piaciuto · ${duration}",
+			"postEndedStats": "Visto da ${viewers} · ${likes} Mi piace · ${duration}",
 			"link": {
 				"invite": "Invita connessione",
 				"needPeer": "Compila l'entità peerHash:liveId",
-				"invited": "L'invito online è stato inviato",
+				"invited": "L'invito alla connessione è stato inviato",
 				"linked": "Collegato",
 				"peer": {
 					"placeholder": "Entità peerHash:liveId"
@@ -4875,7 +4875,7 @@
 				"title": "Inizia a trasmettere",
 				"open": "Vai in trasmissione",
 				"whipUrl": "Indirizzo WHIP",
-				"whipToken": "Gettone del portatore",
+				"whipToken": "Token Bearer",
 				"whipWaiting": "In attesa della connessione streaming WHIP (è possibile utilizzare software di streaming come OBS)...",
 				"start": "Inizia la trasmissione in diretta",
 				"stop": "Interrompi la trasmissione in diretta",
@@ -4887,12 +4887,12 @@
 				"media": {
 					"audio": "Audio puro",
 					"av": "Audio e video",
-					"video": "immagine pura",
+					"video": "Solo video",
 					"whip": "WHIP push streaming (come OBS)"
 				}
 			},
 			"danmaku": {
-				"placeholder": "Di 'qualcosa..."
+				"placeholder": "Di' qualcosa..."
 			}
 		},
 		"search": {
@@ -4908,7 +4908,7 @@
 			"empty": "Nessun post corrispondente",
 			"tooShort": "Inserisci almeno 2 caratteri",
 			"usersTitle": "Utenti",
-			"postsTitle": "Messaggi",
+			"postsTitle": "Post",
 			"usersEmpty": "Nessun utente corrispondente",
 			"pinAlias": "Imposta come alias",
 			"trustScore": "Fidati ${score}",
@@ -4953,8 +4953,8 @@
 				"aria-label": "Mi piace"
 			},
 			"unlike": {
-				"title": "Rimuovi mi piace",
-				"aria-label": "Rimuovi mi piace"
+				"title": "Rimuovi Mi piace",
+				"aria-label": "Rimuovi Mi piace"
 			},
 			"dislike": {
 				"title": "Non mi piace",
@@ -5019,7 +5019,7 @@
 			"loadFailed": "Caricamento non riuscito, riprova più tardi",
 			"exportMediaFailed": "Impossibile esportare i contenuti multimediali: ${error}",
 			"gistCreateFailed": "Impossibile creare il gist: ${error}",
-			"detailTitle": "Inviare",
+			"detailTitle": "Post",
 			"back": "Indietro"
 		},
 		"reply": {
@@ -5042,7 +5042,7 @@
 			"deadline": "Scadenza: ${deadline}",
 			"deadlineLabel": "Termine per la votazione",
 			"options": {
-				"placeholder": "Una opzione per riga (minimo 2 articoli)"
+				"placeholder": "Una opzione per riga (minimo 2)"
 			}
 		},
 		"aside": {
@@ -5102,7 +5102,7 @@
 			"hoursAgo": "${n} ore fa"
 		},
 		"empty": {
-			"feed": "Non ci sono ancora post Segui alcune persone.",
+			"feed": "Non ci sono ancora post. Segui alcune persone.",
 			"profilePosts": "Nessuna notizia ancora",
 			"following": "Non seguo ancora nessuno",
 			"followers": "Nessun follower ancora",
@@ -5162,18 +5162,18 @@
 		},
 		"upload": "Caricamento",
 		"uploadFolder": "Carica cartella",
-		"open": "Aprire",
+		"open": "Apri",
 		"download": "Scaricamento",
 		"downloadZip": "Scarica la cartella",
-		"rename": "Rinominare",
+		"rename": "Rinomina",
 		"copy": "Copia",
-		"cut": "Taglio",
-		"paste": "Impasto",
+		"cut": "Taglia",
+		"paste": "Incolla",
 		"pasteLink": "Incolla come collegamento",
 		"selectAll": "Seleziona tutto",
 		"invert": "Inverti la selezione",
 		"properties": "Proprietà",
-		"delete": "Eliminare",
+		"delete": "Elimina",
 		"back": {
 			"title": "Ritorna alla posizione precedente",
 			"aria-label": "Ritorna alla posizione precedente"
@@ -5202,7 +5202,7 @@
 		"confirmDelete": "Confermare per eliminare gli elementi selezionati?",
 		"confirmDeleteSystem": "I file di sistema selezionati sono inclusi. Sei sicuro di eliminarli?",
 		"copied": "Copiato",
-		"cutDone": "Taglio",
+		"cutDone": "Tagliato",
 		"undo": "Disfare",
 		"redo": "Rifare",
 		"goUp": "Vai su",
@@ -5225,18 +5225,18 @@
 		"title": "Integrazione del browser",
 		"description": "Colma il divario tra fount e web. Questa pagina fornisce lo script utente per consentire un'integrazione perfetta, portando i tuoi compagni AI nella tua esperienza di navigazione.",
 		"pageHeader": "Integrazione del browser",
-		"pageDescription": "Affinché il personaggio di fount interagisca con la pagina Web, è necessario installare questo script di integrazione del browser. Agisce come un ponte tra il personaggio e il browser, consentendo loro di visualizzare il contenuto della pagina ed eseguire azioni.",
+		"pageDescription": "Affinché il personaggio di fount interagisca con la pagina Web, è necessario installare questo script di integrazione del browser. Agisce come un ponte tra il personaggio e il browser, consentendogli di visualizzare il contenuto della pagina ed eseguire azioni.",
 		"install_script_title": "Script di installazione",
-		"install_script_description": "Fai clic sul pulsante in basso per installare lo script di integrazione del browser. È necessario prima installare un gestore di userscript come Tampermonkey.",
-		"install_button": "Installare",
+		"install_script_description": "Fai clic sul pulsante in basso per installare lo script di integrazione del browser. Devi prima installare un gestore di userscript come Tampermonkey.",
+		"install_button": "Installa",
 		"install_from_url_tip": "Il tuo browser non ti consente di installarlo? Copia questo URL e importa lo script dall'URL nel plugin Tampermonkey.",
 		"script_url_input": {
 			"aria-label": "URL dello script di integrazione del browser"
 		},
 		"what_is_manager": "Cos'è un gestore di userscript?",
-		"manager_explanation": "Un gestore di userscript è un'estensione del browser che consente di installare ed eseguire script che modificano le pagine Web. Per utilizzare lo script di integrazione fount, è necessario una delle estensioni.",
+		"manager_explanation": "Un gestore di userscript è un'estensione del browser che consente di installare ed eseguire script che modificano le pagine Web. Per utilizzare lo script di integrazione di fount serve una di queste estensioni.",
 		"popular_managers": "Scelte popolari:",
-		"csp_warning": "Potrebbe essere necessario installare il plug-in per disattivare CSP per far funzionare correttamente la funzione di integrazione. Per ${browser} è possibile utilizzare [questo plug-in](${link}).",
+		"csp_warning": "Potrebbe essere necessario installare il plug-in per disattivare la CSP e far funzionare correttamente l'integrazione. Per ${browser} è possibile utilizzare [questo plug-in](${link}).",
 		"connected_pages_title": "Pagina connessa",
 		"fetch_pages_error": "Impossibile caricare l'elenco delle pagine collegate.",
 		"page_title": "Titolo della pagina",
@@ -5247,15 +5247,15 @@
 		"copy_button": "Copia",
 		"copied_message": "Copiato negli appunti",
 		"no_pages_connected": {
-			"title": "Nessuna connessione ancora",
-			"description": "Si prega di installare prima lo script e quindi visitare qualsiasi sito Web in altre schede del browser, che verranno automaticamente visualizzate qui."
+			"title": "Ancora nessuna connessione",
+			"description": "Installa prima lo script, poi visita qualsiasi sito Web in un'altra scheda del browser: comparirà automaticamente qui."
 		},
 		"autorun": {
-			"title": "Esegui automaticamente script",
-			"description": "Gestisci frammenti JavaScript che vengono eseguiti automaticamente quando si abbinano un sito Web specifico. Questi script possono essere forniti dal personaggio AI o dal plug-in per migliorare o automatizzare l'esperienza di navigazione.",
+			"title": "Esecuzione automatica degli script",
+			"description": "Gestisci frammenti JavaScript che vengono eseguiti automaticamente quando si abbina un sito Web specifico. Questi script possono essere forniti dal personaggio AI o dal plug-in per migliorare o automatizzare l'esperienza di navigazione.",
 			"form_title": "Aggiungi un nuovo script",
 			"comment_label": "Commenti (opzionale)",
-			"url_regex_label": "URL Espressione regolare",
+			"url_regex_label": "Espressione regolare URL",
 			"script_label": "Codice JavaScript",
 			"add_button": "Aggiungi script",
 			"list_title": "Script configurati",
@@ -5270,16 +5270,16 @@
 			},
 			"table": {
 				"comment": "Commenti",
-				"url_regex": "URL Espressione regolare",
-				"created_at": "Creato in"
+				"url_regex": "Espressione regolare URL",
+				"created_at": "Creato il"
 			},
 			"view_script_modal_title": "Visualizza lo script",
 			"view_script_modal_close_button": "Chiudi"
 		},
 		"error": {
 			"load_failed": "Impossibile caricare lo script automatico: ${message}",
-			"add_failed": "Impossibile aggiungere script: ${message}",
-			"delete_failed": "Elimina lo script non riuscito: ${message}"
+			"add_failed": "Impossibile aggiungere lo script: ${message}",
+			"delete_failed": "Impossibile eliminare lo script: ${message}"
 		},
 		"achievements": {
 			"install_script": {
@@ -5311,26 +5311,26 @@
 	},
 	"browser_integration_script": {
 		"update": {
-			"prompt": "È disponibile una nuova versione dello script di integrazione del browser fount. La pagina di aggiornamento è ora aperta?"
+			"prompt": "È disponibile una nuova versione dello script di integrazione del browser di fount. Vuoi aprire la pagina di aggiornamento?"
 		},
-		"csp_warning": "Lo script di integrazione del browser fount rileva che la politica CSP esiste sulla pagina, che può impedire il corretto funzionamento dello script di integrazione. Si prega di considerare l'installazione del plug-in per disattivare il CSP.",
+		"csp_warning": "Lo script di integrazione del browser di fount ha rilevato una politica CSP sulla pagina, che può impedirne il corretto funzionamento. Valuta di installare il plug-in per disattivare la CSP.",
 		"hostChange": {
 			"securityWarningTitle": "--- Avviso di sicurezza fount ---",
-			"message": "La pagina corrente (\"${origin}\") sta cercando di modificare l'indirizzo host di fount in:\n\n\"${newHost}\"\n\nATTENZIONE: l'approvazione di questa azione consentirà al nuovo host di controllare completamente le funzionalità di integrazione del browser, che possono portare a perdite di informazioni sensibili o furto di account.\nL'approvazione dovrebbe essere effettuata solo se sei sicuro che questa è la tua operazione (ad esempio, migrare un server fount).\n\nSei sicuro di voler consentire questo cambiamento?",
-			"uuidMismatchError": "Errore di sicurezza fount: Identity (UUID) dell'host ${newHost} non corrisponde a quello esistente. L'operazione è stata annullata.",
-			"verificationError": "Errore di sicurezza fount: impossibile verificare il nuovo host \"${newHost}\". Si prega di verificare se l'indirizzo è corretto e se il servizio è in esecuzione."
+			"message": "La pagina corrente (\"${origin}\") sta cercando di modificare l'indirizzo host di fount in:\n\n\"${newHost}\"\n\nATTENZIONE: approvare questa azione consentirà al nuovo host di controllare completamente le funzionalità di integrazione del browser, con il rischio di perdite di informazioni sensibili o furto di account.\nApprova solo se sei sicuro che l'operazione sia tua (ad esempio la migrazione di un server fount).\n\nSei sicuro di voler consentire questa modifica?",
+			"uuidMismatchError": "Errore di sicurezza fount: l'identità (UUID) dell'host ${newHost} non corrisponde a quella esistente. L'operazione è stata annullata.",
+			"verificationError": "Errore di sicurezza fount: impossibile verificare il nuovo host \"${newHost}\". Controlla che l'indirizzo sia corretto e che il servizio sia in esecuzione."
 		}
 	},
 	"terminal_assistant": {
 		"title": "Assistente Terminale",
-		"description": "Oltre l'interfaccia grafica, uno spazio per il comando diretto. Interagisci con il nucleo di fount attraverso l'assistente terminale, dove il testo intreccia la propria potente magia.",
+		"description": "Oltre l'interfaccia grafica, uno spazio per i comandi diretti. Interagisci con il nucleo di fount attraverso l'assistente terminale, dove il testo tesse la propria potente magia.",
 		"initialMessage": "fount supporta l'integrazione dei tuoi personaggi preferiti nel terminale per assisterti nella programmazione!",
 		"initialMessageLink": "Clicca qui per saperne di più.",
 		"achievements": {
 			"invoke_shell_assist": {
-				"name": "\"Ehi, fount.\"",
-				"description": "Nel terminale buio è stato chiamato il nome del partner AI.",
-				"locked_description": "Chiama l'assistenza del terminale una volta."
+				"name": "«Ehi, fount.»",
+				"description": "Nel buio del terminale è stato invocato il nome del partner AI.",
+				"locked_description": "Chiama l'assistente del terminale una volta."
 			}
 		},
 		"home_function_buttons": {
@@ -5338,7 +5338,7 @@
 				"title": "Integrazioni",
 				"sub_items": {
 					"terminalAssist": {
-						"title": "Assistenza Terminale"
+						"title": "Assistente Terminale"
 					}
 				}
 			},
@@ -5346,7 +5346,7 @@
 				"title": "Sviluppo",
 				"sub_items": {
 					"terminalAssist": {
-						"title": "Assistenza Terminale"
+						"title": "Assistente Terminale"
 					}
 				}
 			}
@@ -5403,12 +5403,12 @@
 		}
 	},
 	"deskpet": {
-		"title": "Animali domestici da scrivania",
-		"description": "Lancia i tuoi personaggi di fount come animali domestici interattivi che vivono sul tuo desktop.",
+		"title": "Pet del desktop",
+		"description": "Avvia i tuoi personaggi di fount come animali domestici interattivi che vivono sul tuo desktop.",
 		"launcherCard": {
-			"title": "antipasto per animali domestici",
+			"title": "Launcher dei pet",
 			"buttons": {
-				"start": "inizia l'animale domestico"
+				"start": "Avvia il pet"
 			}
 		},
 		"charSelectDropdown": {
@@ -5418,17 +5418,17 @@
 			"placeholder": "Cerca personaggi..."
 		},
 		"runningCard": {
-			"title": "animale domestico che corre",
-			"noPets": "Al momento non ci sono animali domestici in circolazione.",
+			"title": "Pet in esecuzione",
+			"noPets": "Al momento non ci sono pet in esecuzione.",
 			"buttons": {
-				"stop": "Stop"
+				"stop": "Interrompi"
 			}
 		},
 		"toasts": {
-			"started": "L'animale domestico '${charname}' è avviato.",
-			"stopped": "L'animale domestico '${charname}' è stato fermato.",
-			"start_failed": "Impossibile avviare l'animale domestico '${charname}': ${message}",
-			"stop_failed": "Arresto dell'animale domestico '${charname}' non riuscito: ${message}"
+			"started": "Il pet '${charname}' è stato avviato.",
+			"stopped": "Il pet '${charname}' è stato interrotto.",
+			"start_failed": "Impossibile avviare il pet '${charname}': ${message}",
+			"stop_failed": "Arresto del pet '${charname}' non riuscito: ${message}"
 		},
 		"achievements": {
 			"start_deskpet": {
@@ -5439,7 +5439,7 @@
 		},
 		"home_char_interfaces": {
 			"launch": {
-				"title": "Avvia come animale domestico desktop"
+				"title": "Avvia come animale domestico del desktop"
 			}
 		},
 		"home_function_buttons": {
@@ -5539,7 +5539,7 @@
 			"cancelButton": "Annulla",
 			"saveApplyButton": "Salva e applica",
 			"themeName": "Nome del tema (ID)",
-			"autoPaletteTitle": "Correzione automatica del colore dalle immagini",
+			"autoPaletteTitle": "Palette generata automaticamente",
 			"autoPaletteInstruction": "Fai clic su un colore sopra per riempire automaticamente i colori primari/secondari/accentati/neutri.",
 			"coreColors": "Colori principali",
 			"baseBackground": "Basi e sfondo",
@@ -5592,7 +5592,7 @@
 			"dim": "Tenue",
 			"nord": "Nord",
 			"sunset": "Tramonto",
-			"caramellatte": "Caramel Latte",
+			"caramellatte": "Latte caramello",
 			"abyss": "Abisso",
 			"silk": "Seta"
 		},
@@ -5617,7 +5617,7 @@
 	"languageSettings": {
 		"title": "Impostazioni linguistiche",
 		"pageTitle": "Impostazioni della lingua",
-		"description": "Gestisci le tue preferenze di lingua per l'applicazione dei caratteri. Personalizza la tua esperienza con le opzioni linguistiche disponibili.",
+		"description": "Gestisci le tue preferenze di lingua per l'applicazione fount. Personalizza la tua esperienza con le lingue disponibili.",
 		"pageDescription": "Gestisci le tue preferenze linguistiche qui. Le lingue nell'elenco avranno la precedenza sulle impostazioni del browser in ordine.",
 		"availableLanguages": "Lingue disponibili",
 		"preferredLanguages": "Elenco delle lingue prioritarie",
@@ -5631,11 +5631,11 @@
 		},
 		"noPreferredLanguages": "Nessuna lingua preferita impostata. Verranno utilizzate le impostazioni predefinite del browser.",
 		"moveUpButton": {
-			"aria-label": "salire",
+			"aria-label": "Sposta su",
 			"alt": "icona sposta su"
 		},
 		"moveDownButton": {
-			"aria-label": "spostarsi verso il basso",
+			"aria-label": "Sposta giù",
 			"alt": "icona sposta verso il basso"
 		},
 		"deleteLocaleButton": {
@@ -5666,7 +5666,7 @@
 			"unexpectedError": "La richiesta non è riuscita."
 		},
 		"errors": {
-			"accountNotFound": "Conto non trovato."
+			"accountNotFound": "Account non trovato."
 		},
 		"userInfo": {
 			"title": "Informazioni utente",
@@ -5708,7 +5708,7 @@
 		},
 		"passkeys": {
 			"title": "Chiavi di sicurezza e passkey",
-			"description": "Dopo l'associazione, è possibile accedere con una chiave di sicurezza o una passkey nativa. Richiede l'utilizzo in HTTPS o localhost; aggiungere prima la chiave nelle impostazioni utente.",
+			"description": "Dopo la registrazione puoi accedere con una chiave di sicurezza o con la passkey di questo dispositivo. Richiede HTTPS o localhost; aggiungi prima la chiave nelle impostazioni utente.",
 			"refreshButton": {
 				"title": "Aggiorna elenco"
 			},
@@ -5762,7 +5762,7 @@
 			},
 			"createButton": "Crea",
 			"noKeysFound": "Non sono state trovate chiavi API.",
-			"keyDetails": "Descrizione: ${description} | Creato in: ${createdAt} | Ultimo usato: ${lastUsed}",
+			"keyDetails": "Descrizione: ${description} | Creato il: ${createdAt} | Ultimo usato: ${lastUsed}",
 			"neverUsed": "Mai usato",
 			"noKeysForUser": "Dati chiave API non trovati.",
 			"keyNotFound": "La chiave API non è stata trovata.",
@@ -5786,7 +5786,7 @@
 		},
 		"newApiKey": {
 			"title": "È stata creata una nuova chiave API",
-			"warning": "Si prega di copiare la tua nuova chiave API. Non sarai in grado di vederlo di nuovo!",
+			"warning": "Copia la tua nuova chiave API. Non potrai più vederla!",
 			"closeButton": "Ho copiato la mia chiave",
 			"copyButton": {
 				"title": "Copia la nuova chiave API"
@@ -5876,7 +5876,7 @@
 		"copied": "URL copiato negli appunti!",
 		"home_function_buttons": {
 			"main": {
-				"title": "Accesso su altri dispositivi"
+				"title": "Accesso da altri dispositivi"
 			},
 			"frequent": {
 				"title": "Frequenti"
@@ -5900,7 +5900,7 @@
 		"noApiKey": "Non hai ancora generato una chiave API per questa pagina.",
 		"generateApiKeyButton": "Genera Nuova Chiave",
 		"copyApiKeyButton": "Copia",
-		"queryStringSectionTitle": "Impossibile impostare la APIKey nell'header della richiesta? (Non sicuro)",
+		"queryStringSectionTitle": "Impossibile impostare la chiave API nell'header della richiesta? (Non sicuro)",
 		"queryStringWarning": "Utilizza questo metodo alternativo quando la tua applicazione non supporta l'invio della chiave API nell'header della richiesta (header Authorization). Nota bene: inserire la chiave API direttamente nell'URL comporta un rischio per la sicurezza in quanto potrebbe essere registrata nei log del server o nella cronologia del browser.",
 		"copyQueryStringUrlButton": "URL con Chiave API (Query String)",
 		"home_function_buttons": {
@@ -5923,7 +5923,7 @@
 		}
 	},
 	"subfounts": {
-		"title": "subfounts: gestione dei dispositivi peer-to-peer",
+		"title": "Subfount: gestione dei dispositivi peer-to-peer",
 		"pageTitle": "subfounts",
 		"description": "Gestisci le connessioni subfount peer-to-peer",
 		"hostConnectionCode": {
@@ -5952,7 +5952,7 @@
 			"noSubfountsConnected": "Nessun subfount collegato",
 			"table": {
 				"id": "ID",
-				"description": "Osservazione",
+				"description": "Nota",
 				"deviceId": "ID del dispositivo",
 				"connectedAt": "Tempo di connessione",
 				"status": "Stato",
@@ -5960,7 +5960,7 @@
 				"connected": "Collegato",
 				"disconnected": "Disconnesso",
 				"save": "Salva",
-				"na": "N / A"
+				"na": "N/A"
 			},
 			"descriptionSaved": "Nota salvata",
 			"descriptionSaveFailed": "Impossibile salvare la nota: ${message}"
@@ -5969,8 +5969,8 @@
 			"title": "Esecuzione del codice",
 			"description": "Esegui il codice JavaScript sulla subfount selezionata",
 			"selectSubfountLabel": "Seleziona la subfount",
-			"hostOption": "Ospite (ID: ${id})",
-			"subfountOption": "Estensione ${id}${deviceId}",
+			"hostOption": "Host (ID: ${id})",
+			"subfountOption": "Subfount ${id}${deviceId}",
 			"scriptLabel": "Codice JavaScript",
 			"executeButton": "Esegui",
 			"executing": "In esecuzione...",
@@ -5981,10 +5981,10 @@
 			"selectSubfount": "Seleziona il Subfount per eseguire il codice..."
 		},
 		"installClient": {
-			"title": "Scarica il client subfount",
-			"description": "Scarica lo script client subfount autonomo da eseguire sul dispositivo remoto.",
+			"title": "Installa il client subfount",
+			"description": "Esegui lo script di installazione corrispondente sul dispositivo remoto per collegarlo alla rete fount.",
 			"tabsLabel": {
-				"aria-label": "Select the operating system"
+				"aria-label": "Seleziona il sistema operativo"
 			},
 			"tabs": {
 				"linux": "Linux",
@@ -5993,7 +5993,7 @@
 				"windows": "Windows"
 			},
 			"copyButton": "Copia",
-			"copied": "Install script copied to clipboard"
+			"copied": "Script di installazione copiato negli appunti"
 		},
 		"errors": {
 			"loadConnectionCodeFailed": "Impossibile caricare il codice di connessione: ${message}",
@@ -6007,15 +6007,15 @@
 				"title": "Rete",
 				"sub_items": {
 					"subfounts": {
-						"title": "sottodispositivo"
+						"title": "Sottodispositivi"
 					}
 				}
 			}
 		}
 	},
 	"achievements": {
-		"title": "Risultato",
-		"description": "Esplora le tappe fondamentali e i risultati del tuo viaggio con fount. Ogni risultato segna un passo nella tua narrativa unica.",
+		"title": "Obiettivo",
+		"description": "Esplora le tappe fondamentali e gli obiettivi del tuo viaggio con fount. Ogni obiettivo segna un passo nella tua narrativa unica.",
 		"pageHeader": "Sala dei risultati",
 		"pageDescription": "Controlla qui gli obiettivi e i traguardi sbloccati.",
 		"unlocked_on": "Sbloccato il ${date}",
@@ -6029,24 +6029,24 @@
 			"open_achievements_page": {
 				"name": "Acchiappali tutti!",
 				"description": "Ho aperto l'elenco degli obiettivi e mi sono preparato per iniziare un viaggio di raccolta di francobolli.",
-				"locked_description": "Apri la pagina dei risultati."
+				"locked_description": "Apri la pagina degli obiettivi."
 			},
 			"relock_by_clicking": {
 				"name": "Sul serio?",
-				"description": "Facendo clic ripetutamente su un obiettivo sbloccato, lo blocchi nuovamente con successo. Perché?",
+				"description": "Cliccando più volte un obiettivo sbloccato sei riuscito a bloccarlo di nuovo. Perché?",
 				"locked_description": "? ? ?"
 			}
 		},
 		"home_function_buttons": {
 			"main": {
-				"title": "Risultato"
+				"title": "Obiettivo"
 			}
 		}
 	},
 	"log_viewer": {
 		"title": "Registro",
 		"description": "Visualizza i log del server fount in tempo reale ed esegui un REPL JavaScript nel browser.",
-		"connectionError": "Impossibile connettersi al servizio di log. Riprova dopo aver acceduto localmente o effettuato l'accesso.",
+		"connectionError": "Impossibile connettersi al servizio di log. Riprova dopo aver aperto la pagina in locale o aver effettuato l'accesso.",
 		"logs": {
 			"openSourceFailed": "Impossibile aprire il file sorgente: ${message}",
 			"toolbar": {
@@ -6073,7 +6073,7 @@
 	},
 	"debug_info": {
 		"title": "Debug e informazioni di sistema",
-		"description": "Ottieni informazioni dettagliate sul debug e sul sistema sull'installazione di fount. Questo è molto utile per la risoluzione dei problemi e le richieste di supporto.",
+		"description": "Ottieni informazioni dettagliate di debug e di sistema sulla tua installazione di fount. Sono molto utili per la risoluzione dei problemi e per le richieste di supporto.",
 		"heading": "Debug e informazioni di sistema",
 		"copyButton": "Copia rapporto",
 		"versionStatus": {
@@ -6092,7 +6092,7 @@
 		"testStatus": {
 			"title": "Stato del test",
 			"running": "Test in corso",
-			"idle": "Kernel online (inattivo)",
+			"idle": "Kernel di test online (inattivo)",
 			"queued": "In coda"
 		},
 		"connectivity": {
@@ -6105,7 +6105,7 @@
 		"linksCount": "${count} connessioni attive",
 		"copySuccess": "Rapporto di debug copiato negli appunti",
 		"copyFailed": "Copia rapporto non riuscita",
-		"alreadyLatest": "Già l'ultima versione",
+		"alreadyLatest": "Già all'ultima versione",
 		"autoUpdateNotEnabled": "Gli aggiornamenti automatici non sono abilitati",
 		"home_function_buttons": {
 			"debug": {
@@ -6123,11 +6123,11 @@
 	},
 	"badges_maker": {
 		"title": "fount! Convertitore di Badge",
-		"description": "Per quando il tuo progetto richiede un tocco di fount. Converti i badge Shields.io, conferendo loro una nuova identità risonante.",
-		"card_title": "Convertitore di Link Badge fount",
+		"description": "Per quando il tuo progetto ha bisogno di un tocco di fount. Converti i badge Shields.io e dona loro una nuova identità che risuona.",
+		"card_title": "Convertitore di link badge di fount",
 		"original_url_label": "Incolla URL img.shields.io",
 		"original_url": {
-			"placeholder": "Ad esempio: https://img.shields.io/badge/hello-world-blue"
+			"placeholder": "Esempio: https://img.shields.io/badge/hello-world-blue"
 		},
 		"new_url_label": "Nuovo URL generato",
 		"new_url": {
@@ -6152,7 +6152,7 @@
 		"title": "Indice della directory",
 		"description": "Sfoglia ed esplora i file e le cartelle nell'area di lavoro di fount.",
 		"indexOf": "Indice: ${path}",
-		"name": "nome",
+		"name": "Nome",
 		"mimeType": "Tipo MIME",
 		"size": "Dimensione",
 		"parentLink": "↑ Livello precedente ../"
@@ -6191,10 +6191,12 @@
 			},
 			"crop": "Ritaglia",
 			"exportFailed": "Esportazione dell’immagine non riuscita",
-			"image": "modificare",
-			"loadFailed": null,
+			"image": "Modifica immagine",
+			"loadFailed": "Caricamento dell’immagine non riuscito",
 			"mosaic": "Pixelizza",
-			"redo": null
+			"redo": "Ripeti",
+			"undo": "Annulla",
+			"reset": "Reimposta"
 		},
 		"common": {
 			"cancel": "Annulla",
@@ -6256,12 +6258,12 @@
 			"warnings": {
 				"straightRow": "I tasti contigui sulla tastiera sono facili da indovinare.",
 				"keyPattern": "Un breve motivo della tastiera è facile da indovinare.",
-				"simpleRepeat": "caratteri ripetuti come \"AAA\" sono facilmente indovinati.",
-				"extendedRepeat": "I modelli di personaggi ripetuti come \"Abcabcabc\" sono facilmente indovinati.",
+				"simpleRepeat": "I caratteri ripetuti come \"AAA\" sono facili da indovinare.",
+				"extendedRepeat": "I motivi di caratteri ripetuti come \"Abcabcabc\" sono facili da indovinare.",
 				"sequences": "Sequenze di caratteri comuni come \"ABC\" sono facilmente indovinate.",
 				"recentYears": "Gli ultimi anni sono facili da indovinare.",
 				"dates": "La data è facilmente indovinata.",
-				"topTen": "Questa è una password abusata.",
+				"topTen": "Questa è una password molto utilizzata.",
 				"topHundred": "Questa è una password che viene spesso utilizzata.",
 				"common": "Questa è una password comunemente usata.",
 				"similarToCommon": "Questo è simile a una password comunemente usata.",
@@ -6274,14 +6276,14 @@
 			"suggestions": {
 				"l33t": "Evita di usare sostituzioni di lettere prevedibili, come l'uso di \"@\" anziché \"A\".",
 				"reverseWords": "Evita di usare l'ortografia inversa di parole comuni.",
-				"allUppercase": "Capitalizzare alcune lettere piuttosto che tutte le lettere.",
+				"allUppercase": "Capitalizza alcune lettere, ma non tutte.",
 				"capitalization": "Usa le maiuscole per più di una lettera, non solo per la prima.",
 				"dates": "Evita di usare date e anni correlati a te.",
 				"recentYears": "Evita di usare gli anni più recenti.",
 				"associatedYears": "Evita di usare anni relativi a te.",
 				"sequences": "Evita sequenze di caratteri comuni.",
-				"repeated": "Evita parole e personaggi ripetitivi.",
-				"longerKeyboardPattern": "Utilizzare uno schema di tastiera più lungo e modificare più volte le direzioni di input.",
+				"repeated": "Evita parole e caratteri ripetuti.",
+				"longerKeyboardPattern": "Usa schemi di tastiera più lunghi e cambia più volte la direzione di digitazione.",
 				"anotherWord": "Aggiungi più parole non comuni.",
 				"useWords": "Usa più parole, ma evita frasi comuni.",
 				"noNeed": "Non è necessario utilizzare simboli, numeri o lettere maiuscole per creare password forti.",
@@ -6293,12 +6295,12 @@
 				"seconds": "{base} secondi",
 				"minute": "{base} minuto",
 				"minutes": "{base} minuti",
-				"hour": "{base} ore",
+				"hour": "{base} ora",
 				"hours": "{base} ore",
 				"day": "{base} giorno",
 				"days": "{base} giorni",
 				"month": "{base} mese",
-				"months": "{base} mese",
+				"months": "{base} mesi",
 				"year": "{base} anno",
 				"years": "{base} anni",
 				"centuries": "Secoli"
@@ -6520,6 +6522,12 @@
 				"left": "Chiudi le schede a sinistra",
 				"right": "Chiudi le schede a destra",
 				"all": "Chiudi tutte le schede"
+			},
+			"generating": {
+				"aria-label": "«${title}» è in fase di generazione"
+			},
+			"unread": {
+				"aria-label": "«${title}» ha messaggi non letti"
 			}
 		},
 		"newTab": {
@@ -6579,6 +6587,14 @@
 				"edit": {
 					"aria-label": "Modifica",
 					"title": "Modifica"
+				},
+				"downloadHtml": {
+					"title": "Scarica HTML",
+					"aria-label": "Scarica HTML"
+				},
+				"saveGist": {
+					"title": "Salva su gist",
+					"aria-label": "Salva su gist"
 				}
 			},
 			"copied": "Copiato negli appunti",
@@ -6620,11 +6636,31 @@
 				"aria-label": "Aggiungi allegato",
 				"title": "Aggiungi allegato"
 			},
+			"failed": "Impossibile leggere l'allegato ${name}",
+			"reading": "Lettura in corso…",
 			"remove": {
-				"aria-label": "Rimuovi allegato"
+				"aria-label": "Rimuovi allegato",
+				"title": "Rimuovi allegato"
 			},
+			"tooLargeTotal": "La dimensione totale degli allegati supera il limite di ${limit}",
 			"drop": "Rilascia per allegare",
-			"tooLarge": "L'allegato ${name} supera il limite di 10 MB"
+			"tooLarge": "L'allegato ${name} supera il limite di 10 MB",
+			"description": {
+				"placeholder": "Aggiungi una descrizione…",
+				"aria-label": "Descrizione dell'allegato"
+			},
+			"download": {
+				"title": "Scarica allegato",
+				"aria-label": "Scarica allegato"
+			},
+			"edit": {
+				"title": "Modifica immagine",
+				"aria-label": "Modifica immagine"
+			},
+			"preview": {
+				"title": "Anteprima allegato",
+				"aria-label": "Anteprima allegato"
+			}
 		},
 		"error": {
 			"generic": "Qualcosa è andato storto: ${error}",
@@ -6726,7 +6762,7 @@
 		"asyncTasks": {
 			"title": "Attività in background",
 			"none": "Nessuna attività asincrona in corso.",
-			"timedOut": "Timeout dell'attesa: ci sono ancora attività in corso.",
+			"timedOut": "Scaduta l'attesa: ci sono ancora attività in corso.",
 			"open": "Attività in background: ${label}",
 			"working": "Attività in background in esecuzione (${kind})",
 			"state": {
@@ -6735,6 +6771,11 @@
 				"failed": "Fallito",
 				"unknown": "Non trovato",
 				"idle": "Attività in background"
+			}
+		},
+		"generation": {
+			"reconnect": {
+				"aria-label": "Riconnetti"
 			}
 		}
 	},
@@ -6810,7 +6851,7 @@
 			"manual": "Manuale",
 			"chat": "Dalla chat",
 			"social": "Dal post",
-			"code": "Dalla sessione di programmazione",
+			"code": "Dalla sessione di codice",
 			"md-drop": "Markdown rilasciato"
 		},
 		"security": {
@@ -6858,7 +6899,7 @@
 	},
 	"agent_studio": {
 		"title": "Agent Studio",
-		"description": "Consulta i record di generazione e le esecuzioni dei sotto-agenti, e valuta i personaggi con benchmark.",
+		"description": "Consulta le registrazioni di generazione e le esecuzioni dei sotto-agenti, e valuta i personaggi con i benchmark.",
 		"nav": {
 			"region": {
 				"aria-label": "Navigazione principale"
@@ -6906,7 +6947,7 @@
 			"title": "Dettagli generazione",
 			"prompt": "Registro chat della richiesta",
 			"response": "Risposta",
-			"ok": "Corretto",
+			"ok": "Normale",
 			"error": "Errore",
 			"meta": "Fonte ${source} · Modello ${model}",
 			"character": "Personaggio ${name}",
@@ -6924,12 +6965,12 @@
 		},
 		"generations": {
 			"title": "Generazioni",
-			"description": "Sfoglia i record e le catene di generazione di tutti i personaggi.",
-			"records": "Record",
+			"description": "Sfoglia le registrazioni e le catene di generazione di tutti i personaggi.",
+			"records": "Registrazioni",
 			"chains": "Catene",
 			"filterChar": "Personaggio",
 			"allChars": "Tutti i personaggi",
-			"recordsCount": "${count} record",
+			"recordsCount": "${count} registrazioni",
 			"empty": "Nessuna generazione.",
 			"chainsEmpty": "Nessuna catena.",
 			"conversations": "Conversazioni",
@@ -6938,7 +6979,7 @@
 		},
 		"benchmarks": {
 			"title": "Benchmark",
-			"description": "Definisci i casi, scegli un personaggio e un giudice, ed esegui benchmark con punteggio.",
+			"description": "Definisci i casi, scegli un personaggio e un giudice, ed esegui i benchmark assegnando un punteggio.",
 			"empty": "Nessun benchmark.",
 			"pick": "Seleziona o crea un benchmark.",
 			"new": "Nuovo",
@@ -6960,31 +7001,31 @@
 			"results": "Risultati",
 			"noResults": "Nessun risultato.",
 			"notJudged": "Non valutato",
-			"stats": "Totale ${total} · vuote ${empty} · lunghezza media ${avgLength} · valutati ${judged} · punteggio medio ${avgScore}",
+			"stats": "Totale ${total} · risposte vuote ${empty} · lunghezza media ${avgLength} · valutati ${judged} · punteggio medio ${avgScore}",
 			"import": "Importa JSON",
 			"export": "Esporta JSON"
 		},
 		"retention": {
 			"title": "Criterio di conservazione dei record",
-			"hint": "Superato il periodo di conservazione del registro della richiesta vengono conservate solo le risposte; superato il periodo di conservazione del record completo, l'intero record viene eliminato.",
+			"hint": "Superato il periodo di conservazione del registro della richiesta vengono conservate solo le risposte; superato il periodo di conservazione della registrazione completa, la registrazione viene eliminata.",
 			"prompt": "Conservazione del registro della richiesta (giorni)",
 			"conversation": "Conservazione del record completo (giorni)",
 			"save": "Salva",
 			"saved": "Salvato."
 		},
 		"clear": {
-			"title": "Cancella cronologia delle generazioni",
-			"hint": "Elimina tutti i record di generazione nell'ambito selezionato. L'operazione non può essere annullata.",
-			"label": "Cancella",
-			"all": "Cancella tutti i record di generazione",
+			"title": "Elimina cronologia delle generazioni",
+			"hint": "Elimina tutte le registrazioni di generazione nell'ambito selezionato. L'operazione non può essere annullata.",
+			"label": "Elimina",
+			"all": "Elimina tutte le registrazioni di generazione",
 			"confirmChar": "Cancellare tutti i record di generazione del personaggio «${name}»? L'operazione non può essere annullata.",
 			"confirmAll": "Cancellare tutti i record di generazione? L'operazione non può essere annullata.",
-			"done": "Cancellati ${count} record di generazione.",
+			"done": "Eliminate ${count} registrazioni di generazione.",
 			"failed": "Cancellazione non riuscita: ${message}"
 		},
 		"settings": {
 			"title": "Impostazioni",
-			"description": "Regola la conservazione dei record di generazione."
+			"description": "Regola la conservazione delle registrazioni di generazione."
 		},
 		"alerts": {
 			"loadFailed": "Caricamento non riuscito: ${message}",
@@ -7017,16 +7058,16 @@
 		},
 		"conversation": {
 			"title": "Conversazione",
-			"description": "Esamina tutte le generazioni di una conversazione e la richiesta di prompt di ogni round.",
+			"description": "Esamina tutte le generazioni di una conversazione e la traccia dei prompt richiesti a ogni round.",
 			"back": "Torna alle conversazioni",
 			"empty": "(Questa conversazione non ha generazioni)",
 			"generationsCount": "${count} generazioni",
 			"rounds": "${count} round",
 			"response": "Risposta",
-			"requests": "Richieste di prompt per round",
+			"requests": "Richieste prompt per round",
 			"requestsMissing": "(Nessun prompt per round acquisito per questa generazione)",
 			"requestsExpired": "(Prompt per round scaduti; in origine ${count} round)",
-			"roundIndex": "Round ${index}",
+			"roundIndex": "Turno ${index}",
 			"round": "Round ${index} · Modello ${model} · ${time}",
 			"systemPrompt": "Prompt di sistema",
 			"messages": "Messaggi",
@@ -7052,10 +7093,10 @@
 				},
 				"hint": "Prefisso comune stimato del prompt rispetto alla richiesta precedente (caratteri, non token fatturati)",
 				"lowest": "Cache minima ≈${rate}%",
-				"lowestTitle": "I 7 round con il tasso di successo della cache più basso",
+				"lowestTitle": "I 7 round con il tasso di riutilizzo della cache più basso",
 				"missing": "Nessun dato sul riutilizzo del prefisso del prompt",
 				"noRate": "Cache —",
-				"rate": "Cache ≈${rate}%",
+				"rate": "Percentuale cache ≈${rate}%",
 				"summary": "Riutilizzo stimato del prefisso del prompt ${rate}% (caratteri)"
 			}
 		},
