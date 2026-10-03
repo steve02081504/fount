@@ -1,5 +1,5 @@
 /**
- * CLI 同优先级 FIFO / FS LIFO / 预备 debounce / viewer 移除 / CLI 完成剔 FS。
+ * CLI job 轮转与组内 priority/FIFO / FS LIFO / 预备 debounce / viewer 移除 / CLI 完成剔 FS。
  */
 /* global Deno */
 import { assertEquals } from 'jsr:@std/assert'
@@ -28,7 +28,7 @@ function mutableClock(start = 0) {
 	}
 }
 
-Deno.test('CLI queue is FIFO among equal priority (no cross-job starvation)', () => {
+Deno.test('CLI queue preserves FIFO within one viewer without job ids', () => {
 	const queues = new TestQueues()
 	queues.enqueueCli({ key: 'earlier', viewerId: 'viewer' })
 	queues.enqueueCli({ key: 'later', viewerId: 'viewer' })
@@ -174,4 +174,51 @@ Deno.test('drain empties cli, fs, and prep', () => {
 	const drained = queues.drain()
 	assertEquals(drained.map(item => item.key), ['cli', 'prep'])
 	assertEquals(queues.allEmpty(), true)
+})
+
+Deno.test('small CLI job gets a turn before an earlier full imperfect batch drains', () => {
+	const queues = new TestQueues()
+	for (let i = 0; i < 300; i++)
+		queues.enqueueCli({ key: `full:${i}`, jobId: 'full', priority: 0 })
+	queues.enqueueCli({ key: 'focused', jobId: 'focused', priority: 1 })
+	const first = queues.peekReady(() => true)
+	assertEquals(first.item.key, 'full:0')
+	assertEquals(queues.peekReady(() => true), first)
+	queues.dequeue(first)
+	assertEquals(queues.peekReady(() => true).item.key, 'focused')
+	queues.dequeue(queues.peekReady(() => true))
+	assertEquals(queues.peekReady(() => true).item.key, 'full:1')
+})
+
+Deno.test('CLI jobs rotate while preserving each job priority and FIFO', () => {
+	const queues = new TestQueues()
+	queues.enqueueCli({ key: 'a:normal', jobId: 'a', priority: 1 })
+	queues.enqueueCli({ key: 'a:first', jobId: 'a', priority: 0 })
+	queues.enqueueCli({ key: 'a:second', jobId: 'a', priority: 0 })
+	queues.enqueueCli({ key: 'b:first', jobId: 'b' })
+	queues.enqueueCli({ key: 'b:second', jobId: 'b' })
+	const actual = []
+	while (!queues.pendingEmpty()) actual.push(queues.dequeue(queues.peekReady(() => true)).key)
+	assertEquals(actual, ['a:first', 'b:first', 'a:second', 'b:second', 'a:normal'])
+})
+
+Deno.test('CLI blocked groups and removed jobs do not prevent other turns', () => {
+	const queues = new TestQueues()
+	queues.enqueueCli({ key: 'blocked', jobId: 'blocked' })
+	queues.enqueueCli({ key: 'cancelled', jobId: 'cancelled' })
+	queues.enqueueCli({ key: 'ready', jobId: 'ready' })
+	queues.removeJob('cancelled')
+	assertEquals(queues.dequeue(queues.peekReady(item => item.key !== 'blocked')).key, 'ready')
+	assertEquals(queues.peekReady(() => true).item.key, 'blocked')
+})
+
+Deno.test('continuously arriving CLI jobs cannot jump ahead of an existing next turn', () => {
+	const queues = new TestQueues()
+	for (let i = 0; i < 4; i++) queues.enqueueCli({ key: `old:${i}`, jobId: 'old' })
+	queues.enqueueCli({ key: 'first newcomer', jobId: 'new:0' })
+	assertEquals(queues.dequeue(queues.peekReady(() => true)).key, 'old:0')
+	queues.enqueueCli({ key: 'second newcomer', jobId: 'new:1' })
+	assertEquals(queues.dequeue(queues.peekReady(() => true)).key, 'first newcomer')
+	queues.enqueueCli({ key: 'third newcomer', jobId: 'new:2' })
+	assertEquals(queues.dequeue(queues.peekReady(() => true)).key, 'old:1')
 })

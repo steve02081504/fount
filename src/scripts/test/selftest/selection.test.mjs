@@ -6,6 +6,7 @@ import { resolveSelector } from '../core/selector.mjs'
 import { collectStaleTriggerEvidence, migrateLegacySuiteKey, migrateLegacyStateSuites, suiteKey } from '../core/state.mjs'
 import { buildVerdicts, judgeSuite } from '../core/verdict.mjs'
 import {
+	buildCommittedChangedByKey,
 	goalContinue,
 	goalExplicit,
 	goalImperfectKeys,
@@ -401,4 +402,31 @@ Deno.test('imperfect_dependent with subtests and fresh green must run, not reuse
 	const plan = buildPlan(new Set([key]), verdicts, byKey, [fedCore, fedBan], evidence)
 	const fedBanSlot = plan.slots.find(slot => slot.key === key)
 	assertEquals(fedBanSlot?.action, 'run')
+})
+
+Deno.test('committed changes share git snapshots within each wave and separate repositories', async () => {
+	const suites = Array.from({ length: 100 }, (_, index) => makeSuite('batch', `suite${index}`, {
+		subtests: [{ name: 'child' }],
+	}))
+	suites.push(makeSuite('nested', 'suite', { gitRoot: 'nested' }))
+	suites.push(makeSuite('detached', 'suite', { gitRoot: null }))
+	const state = { suites: Object.fromEntries(suites.map(suite => [suiteKey(suite.manifestId, suite.name), {
+		commitHash: 'old', subtests: { child: { commitHash: 'old' } },
+	}])) }
+	const calls = []
+	/**
+	 * 记录提交读取并返回可区分波次的结果。
+	 * @param {string} root 仓库
+	 * @param {string} commit 提交
+	 * @returns {Promise<string[]>} 变更路径
+	 */
+	const collect = async (root, commit) => { calls.push([root, commit]); return [`file${calls.length}.mjs`] }
+	const first = await buildCommittedChangedByKey('repo', suites, state, collect)
+	assertEquals(calls.length, 2)
+	assertEquals(first.get('batch:suite0'), first.get('batch:suite99#child'))
+	assertEquals(first.get('nested:suite'), ['nested/file2.mjs'])
+	assertEquals(first.get('detached:suite'), [])
+	const next = await buildCommittedChangedByKey('repo', suites, state, collect)
+	assertEquals(calls.length, 4)
+	assertEquals(next.get('batch:suite0'), ['file3.mjs'])
 })

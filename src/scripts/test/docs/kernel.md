@@ -6,7 +6,7 @@ Detached singleton on `http://127.0.0.1:8903` (`kernel/server.mjs`). CLI `ensure
 
 A second kernel listen hits `EADDRINUSE` and exits 0; the CLI attaches to the winner.
 
-`fount test --kernel shutdown` POSTs `/shutdown` (abort running suites, drain, exit). Already down is success. Health must identify the test kernel (`kernel` field on `GET /health`); a generic `/health` on that port is not ours and is not SIGTERM'd. If our process ignores `/shutdown` (old build, wedged loop), the CLI SIGTERMs the listener on that port after 2s. `--kernel reboot` is shutdown then `ensure`. Neither enqueues a job.
+`fount test --kernel shutdown` POSTs `/shutdown` (abort running suites, drain, exit). Already down is success. Health must identify the test kernel (`kernel` field on `GET /health`); a generic `/health` on that port is not ours and is not SIGTERM'd. If our process ignores `/shutdown` (old build, wedged loop), the CLI may SIGTERM after 2s only when its verified listener PID is unchanged and a fresh health response still proves kernel identity. Health timeouts do not prove shutdown, and replacement or foreign listeners are never killed. `--kernel reboot` is shutdown then `ensure`. Neither enqueues a job.
 
 On Windows the Node `listening` callback can fire before bind (`address()` is `null`). Treat that as `EADDRINUSE` — do not trust the callback alone.
 
@@ -20,7 +20,11 @@ Any new job submitted via `submitJob` **preempts** idle_all: it clears all not-y
 
 After a suite finishes, if its manifest `expected` (or any subtest `expected`) drifts from the state baseline beyond the continuous scale-dependent tolerance (`expectedDriftToleranceMs` ≈ `37·scale^0.656` ms — ~2s at 500ms, ~2min at 4min, ~8min at 30min; relative to the larger, after grid rounding; a missing manifest value with a baseline counts as drift), the kernel rewrites the manifest in place and broadcasts `expected-drift`. Same-manifest concurrent writes are serialized; the in-memory `expectedMs` is synced without a full catalog reload. `--update-estimates` remains the full, unconditional rewrite; the drift check is the incremental safety net. Disable with `autoUpdateExpected: false`.
 
-CLI job queue is FIFO among equal `priority` (earlier enqueued items first; imperfect stays `priority` 0 — priority still wins over arrival order). FS-triggered queue is LIFO.
+Job preparation shares each repository/recorded-commit Git diff across suites and subtests within that wave. The cache is discarded after preparation so later requests see new HEAD changes.
+
+CLI jobs take turns in a round-robin queue. Within each job, imperfect (`priority` 0) stays ahead of normal work and equal priorities remain FIFO. A later focused job gets a turn without waiting for an earlier full batch to drain; newly arriving jobs join the round tail so older jobs continue progressing. Unready jobs are skipped without consuming their turn. Only dispatch advances turns; repeated readiness/ETA queries do not. FS-triggered queue is LIFO.
+
+Fair dispatch does not preempt running workers or duplicate an already-running suite. A focused request for that same suite still waits for its current run to finish, including when the request selects only one subtest. Heavy suites also retain exclusive resource access.
 
 **Idle-exit grace**: instead of exiting the moment the run finishes, the kernel stays alive for `idleExitGraceMs` (`DEFAULT_IDLE_EXIT_GRACE_MS = ms('7m')`) so consecutive `fount test` invocations reuse the same kernel. The countdown only runs when there are **no watcher consumers** and the queues are fully empty (run queues + prep). Any new job enqueue, FS/prep hit, or watcher connection resets the timer (they `wake()` the loop, which re-evaluates eligibility and clears the deadline). Override per process via `FOUNT_TEST_KERNEL_IDLE_EXIT_MS`. An empty CLI job must still deliver `accepted` / `job-done` before the kernel goes away.
 
@@ -43,3 +47,7 @@ Overview/multi do not live-stream suite stdout (parallel runs would interleave).
 A default job with nothing imperfect or outdated is `accepted.empty` — print `nothingToContinue`, do not stay silent. Report files are per job/wave, not written when the kernel starts; an empty wave leaves the previous report on disk.
 
 Bare `fount test` (overview) stays until the kernel sends `idle` (both run queues empty). Explicit selector jobs exit on `job-done`. `--watch` ignores both.
+
+Kernel ensure starts a detached process only when listener discovery confirms an empty port. If the system listener tool is unavailable, a local TCP connection refusal can also confirm an empty port; TCP timeouts remain unknown. Occupied ports and inconclusive listener probes are retried within the ensure deadline; a failed or slow health request never causes an automatic SIGTERM or replacement spawn. If the deadline expires, the CLI reports an error and leaves existing work running. Process termination is reserved for explicit `--kernel shutdown` / `--kernel reboot` after proving kernel identity.
+
+Explicit shutdown also retries an initially failed health check within its timeout budget. Only a confirmed empty port returns `already_down`; an occupied or unknown listener whose kernel identity never recovers causes an error and remains running. Reboot therefore cannot silently skip shutdown after one transient health timeout.

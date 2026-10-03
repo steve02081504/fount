@@ -103,35 +103,35 @@ export function buildFailedFirstByManifest(state, manifestIds) {
  * @param {string} repoRoot 仓库根
  * @param {SuiteDef[]} allSuites 全部 suite
  * @param {TestState} state 现状库
+ * @param {typeof collectChangesSinceRecord} [collectChanges] 提交差异读取器
  * @returns {Promise<Map<string, string[]>>} suite 键（及 `key#subtest`）-> 自记录 commit 以来变更文件
  */
-export async function buildCommittedChangedByKey(repoRoot, allSuites, state) {
+export async function buildCommittedChangedByKey(repoRoot, allSuites, state, collectChanges = collectChangesSinceRecord) {
 	/** @type {Map<string, string[]>} */
 	const map = new Map()
+	/** @type {Map<string, Promise<string[]>>} 同波次相同仓库/ref 只启动一次 git diff。 */
+	const snapshots = new Map()
+	/**
+	 * 共享 suite/subtest 的提交差异，但不跨波次缓存，避免 HEAD 变更后复用旧结果。
+	 * @param {SuiteDef} suite 套件
+	 * @param {string | null | undefined} commit 记录的提交
+	 * @returns {Promise<string[]>} 仓库相对路径
+	 */
+	async function changes(suite, commit) {
+		if (suite.gitRoot === null || !commit) return []
+		const root = suite.gitRoot ? join(repoRoot, suite.gitRoot) : repoRoot
+		const cacheKey = JSON.stringify([root, commit])
+		if (!snapshots.has(cacheKey)) snapshots.set(cacheKey, collectChanges(root, commit, []))
+		const files = await snapshots.get(cacheKey)
+		return files.map(file => suite.gitRoot ? `${suite.gitRoot}/${file}`.replace(/\\/g, '/') : file)
+	}
 	await Promise.all(allSuites.map(async suite => {
 		const key = suiteKey(suite.manifestId, suite.name)
 		const entry = state.suites[key]
-		if (suite.gitRoot) {
-			const abs = join(repoRoot, suite.gitRoot)
-			const files = await collectChangesSinceRecord(abs, entry?.commitHash ?? null, [])
-			map.set(key, files.map(file => `${suite.gitRoot}/${file}`.replace(/\\/g, '/')))
-		}
-		else if (suite.gitRoot === null)
-			map.set(key, [])
-		else
-			map.set(key, await collectChangesSinceRecord(repoRoot, entry?.commitHash ?? null, []))
-		if (!suite.subtests?.length) return
-		await Promise.all(suite.subtests.map(async subtest => {
-			const stCommit = entry?.subtests?.[subtest.name]?.commitHash ?? entry?.commitHash ?? null
-			if (suite.gitRoot) {
-				const abs = join(repoRoot, suite.gitRoot)
-				const files = await collectChangesSinceRecord(abs, stCommit, [])
-				map.set(`${key}#${subtest.name}`, files.map(file => `${suite.gitRoot}/${file}`.replace(/\\/g, '/')))
-			}
-			else if (suite.gitRoot === null)
-				map.set(`${key}#${subtest.name}`, [])
-			else
-				map.set(`${key}#${subtest.name}`, await collectChangesSinceRecord(repoRoot, stCommit, []))
+		map.set(key, await changes(suite, entry?.commitHash))
+		await Promise.all((suite.subtests ?? []).map(async subtest => {
+			const commit = entry?.subtests?.[subtest.name]?.commitHash ?? entry?.commitHash
+			map.set(`${key}#${subtest.name}`, await changes(suite, commit))
 		}))
 	}))
 	return map

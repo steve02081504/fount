@@ -1,5 +1,5 @@
 /**
- * 测试内核待运行队列：CLI 同优先级 FIFO、FS LIFO、预备 debounce。
+ * 测试内核待运行队列：CLI 按 job 轮转（job 内 priority/FIFO）、FS LIFO、预备 debounce。
  */
 import { ms } from '../../ms.mjs'
 
@@ -17,7 +17,7 @@ export const DEFAULT_PREP_SETTLE_MS = ms('3m')
  * @property {boolean} [force] 是否强制真跑
  * @property {string[]} [subtests] 子测试过滤
  * @property {string} [reason] 入队原因
- * @property {number} [priority] 越小越先（同就绪时 imperfect 优先）
+ * @property {number} [priority] job 内越小越先（同就绪时 imperfect 优先）
  * @property {number} enqueuedAt 入队时间
  */
 
@@ -30,7 +30,7 @@ export const DEFAULT_PREP_SETTLE_MS = ms('3m')
  */
 
 /**
- * CLI 同优先级 FIFO + FS LIFO + 预备 debounce。
+ * CLI job 公平轮转 + job 内 priority/FIFO + FS LIFO + 预备 debounce。
  */
 export class TestQueues {
 	/**
@@ -51,6 +51,25 @@ export class TestQueues {
 	}
 
 	#seq
+	/** @type {string[]} CLI job 的下一轮顺序；查询不会消费轮次。 */
+	#cliTurns = []
+
+	/**
+	 * 队列分组：无 job 的旧调用按 viewer 分组，再退化为匿名组。
+	 * @param {QueueItem} item 队列项
+	 * @returns {string} 公平调度组
+	 */
+	#cliGroup(item) {
+		return item.jobId ? `job:${item.jobId}` : `viewer:${item.viewerId ?? ''}`
+	}
+
+	/** 清除空组并把新 job 加到当前轮尾，避免新请求持续插队饿死旧 job。 */
+	#syncCliTurns() {
+		const groups = this.cli.map(item => this.#cliGroup(item))
+		this.#cliTurns = this.#cliTurns.filter(group => groups.includes(group))
+		for (const group of groups)
+			if (!this.#cliTurns.includes(group)) this.#cliTurns.push(group)
+	}
 
 	/**
 	 * @returns {string} 新项 id
@@ -61,7 +80,7 @@ export class TestQueues {
 	}
 
 	/**
-	 * CLI 队列追加（尾部；同优先级由 peekReady 取最先入队者）。
+	 * CLI 队列追加（job 轮尾；同 job 同优先级由 peekReady 取最先入队者）。
 	 * @param {Omit<QueueItem, 'id' | 'source' | 'enqueuedAt'>} spec 项
 	 * @returns {QueueItem} 入队项
 	 */
@@ -73,6 +92,7 @@ export class TestQueues {
 			enqueuedAt: this.now(),
 		}
 		this.cli.push(item)
+		this.#syncCliTurns()
 		return item
 	}
 
@@ -147,31 +167,29 @@ export class TestQueues {
 	}
 
 	/**
-	 * 取下一个可调度项：CLI **同优先级先入队者先（FIFO）**，否则 FS 中最新的 ready。不做出队。
-	 *
-	 * FIFO 而非 LIFO：多个并行 CLI job 共用一个内核队列时，LIFO 会让后到的 job 持续插队、
-	 * 先到的 job 无限等待（实测 4 个 `checks:*` 被饿死到 600s 工具超时）。优先级仍绝对生效
-	 *（imperfect=0 先于普通=1），同优先级按入队先后。
+	 * 取下一个可调度项：job 轮转；job 内优先 imperfect，同优先级 FIFO。
+	 * 不可就绪的 job 跳过；仅 dequeue 消费轮次，重复查询不改变调度。
+	 * 后来的小 job 无须等先前全量 job 跑完，新 job 也不能持续插队。
 	 * @param {(item: QueueItem) => boolean} isReady 是否可开工
 	 * @returns {{ queue: 'cli' | 'fs', item: QueueItem } | null} 选中项
 	 */
 	peekReady(isReady) {
-		let best
-		let bestPriority = Infinity
-		for (const item of this.cli) {
-			if (!isReady(item)) continue
-			const priority = item.priority ?? 1
-			// 严格小于：同优先级保留更早入队的那一项（数组顺序即入队顺序）。
-			if (priority < bestPriority) {
-				bestPriority = priority
-				best = item
+		this.#syncCliTurns()
+		for (const group of this.#cliTurns) {
+			let best
+			let bestPriority = Infinity
+			for (const item of this.cli) {
+				if (this.#cliGroup(item) !== group || !isReady(item)) continue
+				const priority = item.priority ?? 1
+				if (priority < bestPriority) {
+					bestPriority = priority
+					best = item
+				}
 			}
+			if (best) return { queue: 'cli', item: best }
 		}
-		if (best)
-			return { queue: 'cli', item: best }
 		const item = this.fs.find(isReady)
-		if (item)
-			return { queue: 'fs', item }
+		if (item) return { queue: 'fs', item }
 		return null
 	}
 
@@ -184,7 +202,14 @@ export class TestQueues {
 		const list = picked.queue === 'cli' ? this.cli : this.fs
 		const index = list.indexOf(picked.item)
 		if (index < 0) return undefined
-		return list.splice(index, 1)[0]
+		const item = list.splice(index, 1)[0]
+		if (picked.queue === 'cli') {
+			const group = this.#cliGroup(item)
+			this.#cliTurns = this.#cliTurns.filter(turn => turn !== group)
+			this.#cliTurns.push(group)
+			this.#syncCliTurns()
+		}
+		return item
 	}
 
 	/**
@@ -263,6 +288,7 @@ export class TestQueues {
 	drain() {
 		const queued = [...this.cli, ...this.fs]
 		this.cli = []
+		this.#cliTurns = []
 		this.fs = []
 		this.prep.clear()
 		return queued

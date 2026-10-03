@@ -98,6 +98,8 @@ export class ResourceRunGate {
 	#unitWaiters
 	/** @type {Map<SuiteDef, Set<() => void>>} */
 	#unitReleases
+	/** @type {SuiteDef[]} 单元轮转顺序；同 suite 内保持请求先后。 */
+	#unitTurns = []
 	/** 正在运行的非 serial 套件数：它们可能无需 unit lease 就在消耗资源。 */
 	#nonSerialRunning = 0
 	/** @type {SuiteDef | null} 独占套件，仅允许其自己的文件 worker 获取租约。 */
@@ -284,29 +286,32 @@ export class ResourceRunGate {
 			this.#releaseUnit(need)
 		})
 		releases.add(release)
+		this.#unitTurns = this.#unitTurns.filter(suite => suite !== w.suite)
+		this.#unitTurns.push(w.suite)
 		w.resolve(release)
 	}
 
 	/**
-	 * 在单元 waiter 中挑一个：能装下的按填缝分数，否则（仅空闲开工）任意一个。
+	 * 按 suite 轮转选取可放行的首个请求；不可装下的 suite 暂时跳过。
+	 * 新 suite 加到轮尾，避免一个全量 suite 的文件队列垄断后续所有租约。
 	 * @param {boolean} requireFit 是否要求能装进当前余量
 	 * @returns {number} waiter 下标；无候选 -1
 	 */
 	#pickUnitWaiterIndex(requireFit) {
-		let bestIdx = -1
-		let bestScore = -1
-		for (let i = 0; i < this.#unitWaiters.length; i++) {
-			if (this.exclusiveRunning && this.#unitWaiters[i].suite !== this.#exclusiveSuite) continue
-			const need = this.#unitNeeds(this.#unitWaiters[i].suite)
-			if (requireFit && !this.#canFit(need)) continue
-			if (!requireFit) return i
-			const score = this.#fillScore(need)
-			if (score > bestScore) {
-				bestScore = score
-				bestIdx = i
-			}
+		const suites = new Set([
+			...this.#unitWaiters.map(waiter => waiter.suite),
+			...[...this.#unitReleases].filter(([, releases]) => releases.size).map(([suite]) => suite),
+		])
+		this.#unitTurns = this.#unitTurns.filter(suite => suites.has(suite))
+		for (const suite of suites)
+			if (!this.#unitTurns.includes(suite)) this.#unitTurns.push(suite)
+		for (const suite of this.#unitTurns) {
+			if (this.exclusiveRunning && suite !== this.#exclusiveSuite) continue
+			const index = this.#unitWaiters.findIndex(waiter => waiter.suite === suite)
+			if (index < 0 || requireFit && !this.#canFit(this.#unitNeeds(suite))) continue
+			return index
 		}
-		return bestIdx
+		return -1
 	}
 
 	/**
