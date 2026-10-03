@@ -1153,7 +1153,7 @@ export class TestKernel {
 				},
 			)
 			if (ticket && this.moduleCheck.consumeMissedReady(ticket)) {
-				endEvent = await this.#finishMissedReady(item, suite)
+				endEvent = await this.#finishMissedReady(item, suite, result)
 				return
 			}
 			// 被新任务抢占的 idle_all / viewer 断开终止：视为未运行而非失败——不写失败状态、不改 sessionPassed、不广播失败 suite-end。
@@ -1199,7 +1199,7 @@ export class TestKernel {
 		}
 		catch (error) {
 			if (ticket && this.moduleCheck.consumeMissedReady(ticket)) {
-				endEvent = await this.#finishMissedReady(item, suite)
+				endEvent = await this.#finishMissedReady(item, suite, { output: String(error?.stack ?? error) })
 				return
 			}
 			// 等待 moduleCheck 租约期间被 viewer 断开/抢占：视为未运行而非失败，与 terminated 分支一致。
@@ -1328,9 +1328,12 @@ export class TestKernel {
 	 * 子进程未发 ready 就退出：记失败并释放闸（调用方已 consumeMissedReady）。
 	 * @param {object} item 项
 	 * @param {import('../core/manifest.mjs').SuiteDef} suite suite
+	 * @param {object} [result] 原始子进程结果或启动错误
 	 * @returns {Promise<object>} suite-end 事件
 	 */
-	async #finishMissedReady(item, suite) {
+	async #finishMissedReady(item, suite, result = {}) {
+		const output = [result.output, 'module-check missed ready'].filter(Boolean).join('\n')
+		const durationMs = result.durationMs ?? 0
 		const prev = this.state.suites[item.key]
 		const job = item.jobId ? this.jobs.get(item.jobId) : undefined
 		await upsertSuiteRun({
@@ -1339,9 +1342,9 @@ export class TestKernel {
 			suite,
 			result: {
 				passed: false,
-				failedFiles: [],
-				output: 'module-check missed ready',
-				durationMs: 0,
+				failedFiles: result.failedFiles ?? [],
+				output,
+				durationMs,
 			},
 			commitHash: prev?.commitHash ?? null,
 			uncommittedHash: prev?.uncommittedHash ?? null,
@@ -1357,8 +1360,8 @@ export class TestKernel {
 			jobId: item.jobId,
 			passed: false,
 			missedReady: true,
-			durationMs: 0,
-		}, { output: 'module-check missed ready' }, this.state.suites[item.key])
+			durationMs,
+		}, { output }, this.state.suites[item.key])
 	}
 
 	/**

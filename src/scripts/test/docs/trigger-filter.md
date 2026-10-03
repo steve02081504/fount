@@ -1,6 +1,6 @@
 # Trigger filter
 
-Verdict freshness, outdated-wave evidence, and continue-report trigger evidence all filter changed paths before glob matching. Implementation: `core/trigger_filter.mjs`.
+Verdict freshness, outdated-wave evidence, and continue-report trigger evidence all filter changed paths before glob matching. Implementation: `core/trigger_filter.mjs`. Glob matching reuses a bounded cache of compiled picomatch matchers (fixed `dot: true` options); path results remain uncached so new files and edits are always observed. Full-catalog trigger audits must not compile the same pattern once for every repository file: doing so blocks the shared kernel event loop and delays health checks, child ready requests, and later CLI job acceptance.
 
 ## Default ignores
 

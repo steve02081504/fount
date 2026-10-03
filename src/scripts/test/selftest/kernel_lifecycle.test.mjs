@@ -17,7 +17,7 @@ import { MiB } from '../core/concurrency.mjs'
 import { reportJsonPath, reportMarkdownPath, triggeredReasonsMarkdownPath } from '../core/paths.mjs'
 import { waitUntil } from '../core/wait.mjs'
 import { startTestHub, testHubUrl } from '../hub/index.mjs'
-import { kernelHealthy, rebootTestKernel, shutdownTestKernel } from '../kernel/ensure.mjs'
+import { ensureTestKernel, kernelHealthy, rebootTestKernel, shutdownTestKernel } from '../kernel/ensure.mjs'
 import { ignoreWatchPath } from '../kernel/runtime.mjs'
 import { startTestKernel } from '../kernel/server.mjs'
 
@@ -720,7 +720,8 @@ Deno.test('kernelHealthy rejects generic hub /health', async () => {
 	const hub = await startTestHub({ port: CONTROL_PORT + 5 })
 	try {
 		assertEquals(await kernelHealthy(hub.url), false)
-		assertEquals(await shutdownTestKernel({ port: CONTROL_PORT + 5, timeoutMs: 1000 }), 'already_down')
+		await assertRejects(() => shutdownTestKernel({ port: CONTROL_PORT + 5, timeoutMs: 1000 }), Error, 'identity could not be verified')
+		assertEquals((await fetch(`${hub.url}/health`)).ok, true)
 	}
 	finally {
 		await hub.close()
@@ -1410,4 +1411,104 @@ Deno.test('watch idle fires an automatic --all run after the idle window', async
 	finally {
 		await rm(root, { recursive: true, force: true })
 	}
+})
+
+Deno.test('ensure leaves a foreign HTTP health listener running without spawning', async () => {
+	const server = Deno.serve({ hostname: '127.0.0.1', port: 0, /**
+	 * 测试监听启动时保持静默。
+	 */
+		onListen: () => { } }, () => Response.json({ foreign: true }))
+	let spawned = 0
+	try {
+		await assertRejects(() => ensureTestKernel({
+			port: server.addr.port, timeoutMs: 3500,
+			/** @returns {Promise<void>} 启动尝试计数 */
+			spawnKernel: async () => { spawned++ },
+		}), Error, 'occupied listeners are left running')
+		assertEquals(spawned, 0)
+		assertEquals(await (await fetch(`${testHubUrl(server.addr.port)}/health`)).json(), { foreign: true })
+	}
+	finally {
+		await server.shutdown()
+	}
+})
+
+Deno.test('ensure retries a busy listening kernel without spawning a replacement', async () => {
+	let probes = 0
+	let spawned = 0
+	const url = await ensureTestKernel({
+		port: CONTROL_PORT + 70, timeoutMs: 1000,
+		/** @returns {Promise<boolean>} 前两次模拟健康超时 */
+		healthCheck: async () => ++probes >= 3,
+		/** @returns {Promise<boolean>} 内核始终监听 */
+		portListening: async () => true,
+		/** @returns {Promise<void>} 启动尝试计数 */
+		spawnKernel: async () => { spawned++ },
+	})
+	assertEquals(url, testHubUrl(CONTROL_PORT + 70))
+	assertEquals(spawned, 0)
+})
+
+Deno.test('ensure spawns once when the port is confirmed empty', async () => {
+	let spawned = 0
+	await ensureTestKernel({
+		port: CONTROL_PORT + 71, timeoutMs: 1000,
+		/** @returns {Promise<boolean>} 启动后就绪 */
+		healthCheck: async () => spawned > 0,
+		/** @returns {Promise<boolean>} 启动前无监听 */
+		portListening: async () => false,
+		/** @returns {Promise<void>} 模拟成功启动 */
+		spawnKernel: async () => { spawned++ },
+	})
+	assertEquals(spawned, 1)
+})
+
+Deno.test('ensure does not spawn when listener discovery is inconclusive', async () => {
+	let spawned = 0
+	await assertRejects(() => ensureTestKernel({
+		port: CONTROL_PORT + 72, timeoutMs: 20,
+		/** @returns {Promise<boolean>} 健康状态未知 */
+		healthCheck: async () => false,
+		/** @returns {Promise<null>} 系统探查失败 */
+		portListening: async () => null,
+		/** @returns {Promise<void>} 启动尝试计数 */
+		spawnKernel: async () => { spawned++ },
+	}), Error, 'occupied listeners are left running')
+	assertEquals(spawned, 0)
+})
+
+Deno.test('shutdown waits for busy kernel identity before requesting shutdown', async () => {
+	const handle = await startTestKernel({
+		port: CONTROL_PORT + 73, autoExit: false, watchFs: false,
+		writeReport: false, autoUpdateExpected: false,
+	})
+	let probes = 0
+	try {
+		assertEquals(await shutdownTestKernel({
+			port: CONTROL_PORT + 73, timeoutMs: 3000,
+			/**
+			 * 第一次模拟健康超时。
+			 * @param {string} url 内核 URL
+			 * @returns {Promise<boolean>} 是否已经恢复健康
+			 */
+			healthCheck: async url => ++probes > 1 && await kernelHealthy(url),
+		}), 'stopped')
+		assertEquals(probes >= 2, true)
+		await awaitWithTimeout(handle.closed, 'busy kernel was not shut down after identity recovered')
+	}
+	finally {
+		await handle.close()
+	}
+})
+
+Deno.test('shutdown does not treat unresponsive or unknown listeners as already down', async () => {
+	for (const listening of [true, null])
+		await assertRejects(() => shutdownTestKernel({
+			port: CONTROL_PORT + 74, timeoutMs: 20,
+			/** @returns {Promise<boolean>} 内核身份未知 */
+			healthCheck: async () => false,
+			/** @returns {Promise<boolean | null>} 有监听或探查失败 */
+			portListening: async () => listening,
+		}), Error, 'listener left running')
+
 })

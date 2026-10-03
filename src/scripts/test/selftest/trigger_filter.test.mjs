@@ -2,7 +2,7 @@
 import { assertEquals } from 'jsr:@std/assert'
 
 import { collectTriggerEvidence } from '../core/state.mjs'
-import { filterTriggerRelevantFiles, mergeTriggerFilter } from '../core/trigger_filter.mjs'
+import { filterTriggerRelevantFiles, matchGlob, mergeTriggerFilter } from '../core/trigger_filter.mjs'
 import { isContentFresh } from '../core/verdict.mjs'
 
 import { makeStateEntry, makeSuite } from './fixtures.mjs'
@@ -85,4 +85,30 @@ Deno.test('mergeTriggerFilter combines manifest and suite layers', () => {
 		unignore: ['src/a/**'],
 	})
 	assertEquals(mergeTriggerFilter({}, {}), undefined)
+})
+
+Deno.test('repeated trigger matching preserves nested braces, extglobs and dot paths', () => {
+	const pattern = 'src/{server,public/{pages,parts}}/**/@(main|index).{mjs,ts}'
+	for (let pass = 0; pass < 3; pass++) {
+		assertEquals(matchGlob(pattern, 'src/server/.internal/main.mjs'), true)
+		assertEquals(matchGlob(pattern, 'src/public/pages/.cache/index.ts'), true)
+		assertEquals(matchGlob(pattern, 'src/public/parts/plugins/main.mjs'), true)
+		assertEquals(matchGlob(pattern, 'src/server/index.json'), false)
+		assertEquals(matchGlob(pattern, 'src/scripts/main.mjs'), false)
+	}
+})
+
+Deno.test('compiled triggers retain per-filter ignore and unignore behavior', () => {
+	const files = ['src/.draft/guide.md', 'src/.draft/main.mjs', 'src/docs/index.mjs']
+	assertEquals(filterTriggerRelevantFiles(files), ['src/.draft/main.mjs'])
+	assertEquals(filterTriggerRelevantFiles(files, { unignore: ['src/{.draft,docs}/**'] }), files)
+	assertEquals(filterTriggerRelevantFiles(files, { ignore: ['src/{.draft,docs}/**'] }), [])
+	assertEquals(filterTriggerRelevantFiles(files), ['src/.draft/main.mjs'])
+})
+
+Deno.test('trigger matching remains correct after many different patterns', () => {
+	for (let index = 0; index < 2100; index++)
+		assertEquals(matchGlob(`src/generated/${index}/**`, `src/generated/${index}/.keep`), true)
+	assertEquals(matchGlob('src/**/main.{mjs,ts}', 'src/.nested/main.mjs'), true)
+	assertEquals(matchGlob('src/**/main.{mjs,ts}', 'src/.nested/main.json'), false)
 })

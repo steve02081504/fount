@@ -341,12 +341,14 @@ Deno.test('module-check missed ready fails the deno suite', async () => {
 		const suite = {
 			manifestId: 'testkit',
 			name: '__missed_ready__',
-			run: ['deno', 'eval', 'undefined'],
+			run: ['deno', 'eval', 'console.error("startup diagnostic"); Deno.exit(1)'],
 			triggers: [],
 			dependencies: [],
 			heavy: false,
 		}
 		const { end, job } = await enqueueAndAwaitSkip(handle.kernel, suite, 'missed-ready')
+		assert(end?.output?.includes('startup diagnostic'))
+		assert(end?.durationMs > 0)
 		assertEquals(end?.passed, false)
 		assertEquals(end?.missedReady, true)
 		assertEquals(job.exitCode, 1)

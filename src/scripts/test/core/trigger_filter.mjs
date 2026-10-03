@@ -4,13 +4,27 @@
  */
 import picomatch from 'npm:picomatch'
 
+/** glob 编译选项固定为 dot:true；仅缓存 matcher，不缓存随文件变化的匹配结果。 */
+const MAX_GLOB_MATCHERS = 2048
+/** @type {Map<string, (path: string) => boolean>} 有界编译缓存，避免每个 pattern×file 重编译。 */
+const globMatchers = new Map()
+
 /**
  * 路径是否匹配 glob（`*` / `**` / `?` / `{a,b}`；含点路径段）。
  * @param {string} pattern glob
  * @param {string} path 待匹配路径（正斜杠）
  * @returns {boolean} 是否匹配
  */
-export const matchGlob = (pattern, path) => picomatch.isMatch(path, pattern, { dot: true })
+export function matchGlob(pattern, path) {
+	let matcher = globMatchers.get(pattern)
+	if (!matcher) {
+		matcher = picomatch(pattern, { dot: true })
+		if (globMatchers.size >= MAX_GLOB_MATCHERS)
+			globMatchers.delete(globMatchers.keys().next().value)
+		globMatchers.set(pattern, matcher)
+	}
+	return matcher(path)
+}
 
 /**
  * manifest / suite 级 trigger 过滤选项。
