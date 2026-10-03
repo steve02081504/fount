@@ -51,7 +51,7 @@ Deno.test('run-js timeout adopts the same promise and keeps the full result', as
 		const id = logs[0].extension.asyncTask.id
 		assertStringIncludes(logs[0].content, '已等待')
 		assertStringIncludes(logs[0].content, '超时')
-		assertStringIncludes(logs[0].content, '自动转为后台任务')
+		assertStringIncludes(logs[0].content, '执行未被打断、继续在后台运行')
 		assertStringIncludes(logs[0].content, `<inspect-async id="${id}"/>`)
 		assertStringIncludes(logs[0].content_for_show, '已等待')
 		assert(inspectTask(id, ownerFromArgs(args)).ok)
@@ -101,7 +101,8 @@ Deno.test('shell timeout keeps the process alive and stop enforces ownership', a
 	assertEquals(outcome.pending, true)
 	const id = logs[0].extension.asyncTask.id
 	try {
-		assertStringIncludes(logs[0].content, `<stop-async id="${id}"/>`)
+		assertStringIncludes(logs[0].content, '<stop-async id="任务id"/>')
+		assertStringIncludes(logs[0].content, id)
 		assertEquals((await stopTask(id, { ...ownerFromArgs(args), chatName: 'other', chatScopeId: 'other' })).reason, 'forbidden')
 		assert(listTasks().some(task => task.id === id))
 		// Allow local shell initialization before requesting termination.
