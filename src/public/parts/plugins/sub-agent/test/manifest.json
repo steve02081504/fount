@@ -39,7 +39,7 @@
 		},
 		{
 			"name": "integration",
-			"expected": "2m30s",
+			"expected": "57s",
 			"trigger": [
 				"pluginCore",
 				"integrationDeps",

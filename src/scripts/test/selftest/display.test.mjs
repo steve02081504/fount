@@ -335,6 +335,51 @@ Deno.test('dashboard renders running suite with progress bar', () => {
 	dashboard.end()
 })
 
+Deno.test('dashboard uses schedule remaining as the baseline and keeps zero known', () => {
+	// 冻结点时钟（只在这个测试里推进），避免百分比与 ETA 断言依赖真实执行速度。
+	let at = 1_000_000
+	const originalNow = Date.now
+	/** @returns {number} 当前测试时刻 */
+	Date.now = () => at
+	const { out, dashboard } = captureDashboard()
+	const key = 'shells/chat:fed_profile_update'
+	/**
+	 * 最新在跑行。
+	 * @returns {string} 该套件的状态行（纯文本）
+	 */
+	function latestLine() {
+		return stripAnsi(out.at(-1)).split('\r\n').find(line => line.includes(key))
+	}
+	try {
+		dashboard.begin()
+		dashboard.onSuiteStart({ key, expectedMs: 100_000 })
+		dashboard.onScheduleUpdate({ running: [{ key, remainingMs: 60_000 }] })
+		assertEquals(latestLine().endsWith('  0%'), true)
+		assertEquals(latestLine().includes('剩余≈1m0s'), true)
+		// 调度剩余是「此刻」的量：基线 = 已跑 + 剩余，而不是从头再算一遍。
+		at += 40_000
+		dashboard.onScheduleUpdate({ running: [{ key, remainingMs: 60_000 }] })
+		assertEquals(latestLine().endsWith(' 40%'), true)
+		assertEquals(latestLine().includes('剩余≈1m0s'), true)
+		// 没有新的调度预估时，按基线剩下的时间自然递减。
+		at += 10_000
+		dashboard.onJobWait({ aheadCount: 0 })
+		assertEquals(latestLine().endsWith(' 50%'), true)
+		assertEquals(latestLine().includes('剩余≈50s'), true)
+		// 剩余为 0 仍是已知基线（进度满格），不能退回未知。
+		dashboard.onScheduleUpdate({ running: [{ key, remainingMs: 0 }] })
+		assertEquals(latestLine().endsWith('100%'), true)
+		assertEquals(latestLine().includes('剩余≈0s'), true)
+		// 真正无基线（expected 与调度剩余都没有）才显示未知。
+		dashboard.onSuiteStart({ key, expectedMs: null })
+		assertEquals(latestLine().endsWith('   ?'), true)
+	}
+	finally {
+		dashboard.end()
+		Date.now = originalNow
+	}
+})
+
 Deno.test('dashboard commits completed suite stats to scrollback', () => {
 	const { text, dashboard } = captureDashboard()
 	dashboard.begin()
@@ -468,6 +513,29 @@ Deno.test('unknown bar is a constant-width rightward marquee, not a shrink pulse
 	// 确定进度条保持原有行为。
 	assertEquals(stripAnsi(renderBar(58, 20, 0)), `${'█'.repeat(12)}${'░'.repeat(8)}`)
 	assertEquals(stripAnsi(renderBar(100, 20, 0)), '█'.repeat(20))
+})
+
+Deno.test('unknown bar cells each carry their own color at every phase', () => {
+	const width = 20
+	const block = 7
+	// 每格由自己的转义定格（复位 + 暗色/青色），不依赖外层样式；逐个相位都不能漏掉复位。
+	for (let phase = 0; phase < width; phase++) {
+		const pos = phase % width
+		const tokens = renderBar(null, width, phase).match(/\x1b\[0m|\x1b\[2m|\x1b\[36m|[█░]/g)
+		let dim = false
+		let cyan = false
+		let cell = 0
+		for (const token of tokens)
+			if (token === '\x1b[0m') { dim = false; cyan = false }
+			else if (token === '\x1b[2m') dim = true
+			else if (token === '\x1b[36m') cyan = true
+			else {
+				const lit = (cell - pos + width) % width < block
+				assertEquals({ dim, cyan, glyph: token }, { dim: !lit, cyan: lit, glyph: lit ? '█' : '░' })
+				cell++
+			}
+		assertEquals(cell, width)
+	}
 })
 
 Deno.test('unknown and known running lines align to the same right edge', () => {

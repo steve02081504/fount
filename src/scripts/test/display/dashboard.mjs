@@ -137,6 +137,15 @@ function formatMemMb(mb) {
 }
 
 /**
+ * 归一化外部时长字段为「基准总时长」（整段跑完的预计耗时）；不是正的有限数则无基线。
+ * @param {number | null | undefined} estimateMs 估算时长
+ * @returns {number | null} 基准总时长
+ */
+function baselineMs(estimateMs) {
+	return Number.isFinite(estimateMs) && estimateMs > 0 ? estimateMs : null
+}
+
+/**
  * 渲染单项进度条。
  * @param {number | null} pct 进度百分位（null 为不确定，用向右循环的 marquee）
  * @param {number} width 条宽
@@ -154,6 +163,7 @@ export function renderBar(pct, width, phase) {
 
 /**
  * 向右循环的 marquee：一段定长高亮块从 0 滑到尾部，绕回再滑。
+ * 每格自带复位与颜色，这样嵌进任何外层样式（如置灰的结果行）都渲染成同一条。
  * @param {number} phase 相位（毫秒）
  * @param {number} width 条宽
  * @returns {string} 含 ANSI 的条
@@ -161,9 +171,8 @@ export function renderBar(pct, width, phase) {
 function marquee(phase, width) {
 	const block = Math.max(3, Math.ceil(width / 3))
 	const pos = phase % width
-	const cells = Array.from({ length: width }, (_, i) =>
-		(i - pos + width) % width < block ? `${CYAN}█${RESET}` : '░')
-	return `${DIM}${cells.join('')}${RESET}`
+	return Array.from({ length: width }, (_, i) =>
+		(i - pos + width) % width < block ? `${RESET}${CYAN}█` : `${RESET}${DIM}░`).join('') + RESET
 }
 
 /**
@@ -186,7 +195,7 @@ export class TestDashboard {
 	#dirty = false
 	/** @type {number} */
 	#lastRenderAt = 0
-	/** @type {Map<string, { key: string, name: string, expectedMs: number | null | undefined, startedAt: number, remainingMs: number | null }>} */
+	/** @type {Map<string, { key: string, name: string, totalMs: number | null, startedAt: number }>} */
 	#running = new Map()
 	/** @type {number} */
 	#passed = 0
@@ -316,6 +325,7 @@ export class TestDashboard {
 	}
 
 	/**
+	 * 登记一个在跑套件：以 `expected` 作进度基线（无基线则显示未知进度）。
 	 * @param {object} msg suite-start 载荷
 	 * @returns {void}
 	 */
@@ -324,9 +334,8 @@ export class TestDashboard {
 		this.#running.set(msg.key, {
 			key: msg.key,
 			name: msg.key,
-			expectedMs: msg.expectedMs,
 			startedAt: Date.now(),
-			remainingMs: null,
+			totalMs: baselineMs(msg.expectedMs),
 		})
 		this.#scheduleRender()
 	}
@@ -340,9 +349,15 @@ export class TestDashboard {
 		this.#lastCompletionMs = msg.lastCompletionMs
 		this.#unknownCount = msg.unknownCount ?? 0
 		if (msg.reason && msg.reason !== 'initial') this.#reason = msg.reason
+		const now = Date.now()
 		for (const r of msg.running ?? []) {
 			const suite = this.#running.get(r.key)
-			if (suite) suite.remainingMs = r.remainingMs
+			if (!suite || r.remainingMs == null) continue
+			// 调度给的是**此刻**的剩余时长，不能直接当总时长（百分比会一路偏低）；
+			// 换算成基线总时长 = 已跑 + 剩余，与套件自身 expected 的语义一致。
+			// 剩余 0 是已知的「马上完成」，同样采纳（基线归零，进度满格）。
+			const total = now - suite.startedAt + r.remainingMs
+			if (Number.isFinite(total) && total >= 0) suite.totalMs = total
 		}
 		this.#scheduleRender()
 	}
@@ -443,19 +458,18 @@ export class TestDashboard {
 
 	/**
 	 * 在跑套件当前进度百分位。
-	 * @param {{ remainingMs: number | null, expectedMs: number | null | undefined }} suite 套件
+	 * @param {{ totalMs: number | null }} suite 套件
 	 * @param {number} elapsed 已运行毫秒
-	 * @returns {number | null} 0..100；无时长基线时 null
+	 * @returns {number | null} 0..100；无基线时 null
 	 */
 	#progressPct(suite, elapsed) {
-		const total = suite.remainingMs ?? suite.expectedMs
-		return total > 0 ? Math.min(100, elapsed / total * 100) : null
+		return suite.totalMs == null ? null : Math.min(100, elapsed / suite.totalMs * 100)
 	}
 
 	/**
 	 * 渲染在跑套件行（左侧名字、右侧进度条）。名字过长时折成多行，不截断；
 	 * 首行放名字首段 + 信息 + 右侧进度条，续行承接名字余段。
-	 * @param {{ name: string, startedAt: number, remainingMs: number | null, expectedMs: number | null | undefined }} suite 套件
+	 * @param {{ name: string, startedAt: number, totalMs: number | null }} suite 套件
 	 * @returns {string[]} 含 ANSI 的多行
 	 */
 	#renderRunningLine(suite) {
@@ -468,10 +482,8 @@ export class TestDashboard {
 		const leftMax = Math.max(12, this.#cols - 1 - visibleWidth(right) - 1)
 		/** @type {string[]} */
 		const info = [geti18nForTerminal('fountConsole.test.display.dashboard.elapsed', { elapsed: formatCompactDuration(elapsed) })]
-		if (pct != null) {
-			const remaining = Math.max(0, (suite.remainingMs ?? suite.expectedMs) - elapsed)
-			info.push(geti18nForTerminal('fountConsole.test.display.dashboard.eta', { remaining: formatCompactDuration(remaining) }))
-		}
+		if (suite.totalMs != null)
+			info.push(geti18nForTerminal('fountConsole.test.display.dashboard.eta', { remaining: formatCompactDuration(suite.totalMs - elapsed) }))
 		const infoStr = info.join(' ')
 		const nameMax = Math.max(8, leftMax - visibleWidth(infoStr) - 1)
 		const nameRows = wrapByWidth(suite.name, nameMax)
