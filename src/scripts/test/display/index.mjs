@@ -48,6 +48,7 @@ export async function runTestDisplay({ watch = false, job, port, output } = {}) 
 	/** 非 human 模式的事件发射器；human 直走 paint*。 */
 	const emit = human ? null : createEventEmitter(outputMode)
 	let exitCode = 0
+	let interrupted = false
 	let runCount = 0
 	let displayMode = resolveDisplayMode({ watch, job })
 	/** 包管理器式仪表盘：仅 human + TTY + ANSI 且非 stream 模式启用。 */
@@ -438,8 +439,12 @@ export async function runTestDisplay({ watch = false, job, port, output } = {}) 
 	})
 
 	ws.addEventListener('close', () => resolveDone())
-	/** Ctrl+C / kill 时断开 WS。 */
-	const onSig = () => {
+	/** Ctrl+C / kill 时断开 WS。
+	 * @param {'SIGINT' | 'SIGTERM'} signal 收到的信号
+	 */
+	const onSig = signal => {
+		interrupted = true
+		exitCode = signal === 'SIGINT' ? 130 : 143
 		ws.close()
 		resolveDone()
 	}
@@ -449,12 +454,18 @@ export async function runTestDisplay({ watch = false, job, port, output } = {}) 
 	ws.send(JSON.stringify({ type: 'hello', watch, job: watch ? undefined : job }))
 	// watch 无 accepted：连接即挂上仪表盘。
 	if (watch && dashboard.enabled) dashboard.begin()
-	await done.promise
-	process.off('SIGINT', onSig)
-	process.off('SIGTERM', onSig)
-	if (ws.readyState === WebSocket.OPEN) ws.close()
-	if (progressTimer != null) clearTimeout(progressTimer)
-	finishTestProgress(exitCode)
+	try {
+		await done.promise
+	}
+	finally {
+		process.off('SIGINT', onSig)
+		process.off('SIGTERM', onSig)
+		if (ws.readyState === WebSocket.OPEN) ws.close()
+		if (progressTimer != null) clearTimeout(progressTimer)
+		if (heartbeatTimer != null) clearInterval(heartbeatTimer)
+		dashboard.end()
+		finishTestProgress(exitCode, interrupted)
+	}
 	return exitCode
 }
 

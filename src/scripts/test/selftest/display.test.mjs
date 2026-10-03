@@ -8,6 +8,7 @@ import { assertEquals } from 'jsr:@std/assert'
 
 import { console } from '../../i18n/bare.mjs'
 import { allowNoise } from '../core/allowNoise.mjs'
+import { shouldClearTestProgress } from '../core/progress.mjs'
 import { formatNoiseAllowBegin, formatNoiseAllowEnd } from '../core/output_filter.mjs'
 import { TestDashboard, renderBar, stripAnsi, visibleWidth, wrapByWidth } from '../display/dashboard.mjs'
 import { displayShouldResolve, resolveDisplayMode } from '../display/mode.mjs'
@@ -65,6 +66,11 @@ Deno.test('acceptedFromWave marks default empty wave', () => {
 	assertEquals(msg.error, null)
 	assertEquals(msg.code, 0)
 	assertEquals(msg.runCount, 0)
+})
+
+Deno.test('interrupted test clears taskbar progress instead of leaving it active', () => {
+	assertEquals(shouldClearTestProgress(130, true), true)
+	assertEquals(shouldClearTestProgress(1), false)
 })
 
 Deno.test('paintAccepted empty default prints nothingToContinue', () => {
