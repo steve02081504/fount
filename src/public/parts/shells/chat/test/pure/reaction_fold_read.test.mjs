@@ -8,7 +8,7 @@
 import { assertEquals } from 'jsr:@std/assert'
 
 import { messageReducers } from '../../src/chat/dag/reducers/messages.mjs'
-import { aggregateReactionsForMessages } from '../../src/group/queries.mjs'
+import { aggregateReactionsForMessages } from '../../src/chat/lib/reactionAggregation.mjs'
 
 const VOTER_A = 'a'.repeat(64)
 const VOTER_B = 'b'.repeat(64)

@@ -95,7 +95,7 @@ async function executeToolWithSummary(args, handler, call, result) {
 	let thrown = false
 	try {
 		outcome = await executeObservedPluginTool(args, handler, call, () => handler.handle(result, {
-			...args, AddLongTimeLog: entry => { logs.push(entry) },
+			...args, AddLongTimeLog: createLogCollector(logs),
 		}, call)) ?? {}
 		return outcome
 	}
