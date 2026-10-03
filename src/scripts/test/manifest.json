@@ -477,7 +477,7 @@
 			],
 			"triggers": [
 				"src/scripts/test/selftest/disposable_path.test.mjs",
-				"src/scripts/test/core/disposable_path.mjs",
+				"src/scripts/test/core/{data_registry.mjs,disposable_path.mjs}",
 				"src/scripts/test/core/paths.mjs",
 				"src/scripts/test/core/repo_root.mjs",
 				"src/scripts/test/node/{boot.mjs,launch.mjs}"

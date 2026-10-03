@@ -5,6 +5,7 @@
 import 'fount/scripts/test/env.mjs'
 
 import { spawn } from 'node:child_process'
+import { appendFileSync } from 'node:fs'
 import { cp, mkdir, mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
@@ -523,8 +524,12 @@ async function launchNodeOnce(options = {}) {
 		const apiKey = options.apiKey ?? `fount-test-key-${port}`
 		keepData = options.keepData ?? false
 		dataPath = options.dataPath ?? await mkdtemp(join(tmpdir(), `fount_node_${port}_`))
-		if (options.dataPath == null)
+		if (options.dataPath == null) {
 			await markTempDirOrigin(dataPath, `launchNode port=${port} user=${username}`)
+			// watchdog 杀掉本进程时不会再走这里的清理，登记给 suite 运行器兜底回收。
+			if (!keepData && process.env.FOUNT_TEST_DATA_DIRS_OUT)
+				appendFileSync(process.env.FOUNT_TEST_DATA_DIRS_OUT, `${dataPath}\n`, 'utf8')
+		}
 		const starts = options.starts ?? defaultTestStarts({ web: true, p2p: options.p2p === true })
 		/** @type {Record<string, string>} */
 		const extraEnv = { ...options.extraEnv }

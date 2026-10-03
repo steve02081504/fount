@@ -4,6 +4,7 @@ import { basename, join } from 'node:path'
 import process from 'node:process'
 
 import { console } from '../../i18n/bare.mjs'
+import { allocateDataDirRegistryPath, reclaimDataDirs } from '../core/data_registry.mjs'
 import { filterTestOutput } from '../core/output_filter.mjs'
 import {
 	readFailuresOutFile,
@@ -142,6 +143,7 @@ async function runSuiteOnce(suite, options, stream, watchdog) {
 	const failuresOut = join(tempDir, 'failures.json')
 	const timingsOut = join(tempDir, 'timings.json')
 	const triggeredFilesPath = join(tempDir, 'triggered.txt')
+	const dataDirsOut = allocateDataDirRegistryPath()
 	const started = Date.now()
 	try {
 		const triggered = options?.triggeredFiles
@@ -151,6 +153,7 @@ async function runSuiteOnce(suite, options, stream, watchdog) {
 		const { command, env } = buildSuiteInvocation(
 			suite, options ?? {}, failuresOut, timingsOut, triggeredEnvPath,
 		)
+		env.FOUNT_TEST_DATA_DIRS_OUT = dataDirsOut
 		const {
 			code, output, terminated, sleepInterrupted, terminateReason, peakMemMb, peakUnitMemMb, avgCpuPct,
 		} = await runCommand(command, env, {
@@ -180,6 +183,8 @@ async function runSuiteOnce(suite, options, stream, watchdog) {
 		}
 	}
 	finally {
+		// 子进程被 watchdog 杀掉时不会走自己的 exit 清理，按它登记的清单兜底回收。
+		await reclaimDataDirs(dataDirsOut)
 		await rm(tempDir, { recursive: true, force: true })
 	}
 }
