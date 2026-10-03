@@ -45,6 +45,7 @@ import { triggerCodeReply } from './request.mjs'
 import { getRetentionDays, pruneInactiveSessions, setRetentionDays } from './retention.mjs'
 import { runShellCommand } from './runner.mjs'
 import { activeCodeRuns, codeRunKey, codeWakes, requestCodeRunStart, setCodeRunStarter } from './runs.mjs'
+import { startWorkspaceSearchIndex } from './search_index.mjs'
 import { deleteSession, listSessions, loadSession, saveSession, touchSession } from './sessions.mjs'
 import { registerCodeShutdown } from './shutdown.mjs'
 import { readWorkspaceConfig } from './workspace_config.mjs'
@@ -623,6 +624,7 @@ export function setEndpoints(router) {
 		data.list.push(workspace)
 		saveShellData(username, 'code', 'workspaces', data)
 		void ensureSessionsGitignored(username, { machine: workspace.machine, path: workspace.path })
+		void startWorkspaceSearchIndex(workspace)
 		res.json(data)
 	})
 
@@ -645,6 +647,7 @@ export function setEndpoints(router) {
 		workspace.lastUsedAt = new Date().toISOString()
 		saveShellData(username, 'code', 'workspaces', data)
 		scheduleWorkspaceCleanup(username, req.user, workspace)
+		void startWorkspaceSearchIndex(workspace)
 		res.json(data)
 	})
 
