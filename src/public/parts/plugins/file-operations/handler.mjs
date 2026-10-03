@@ -395,7 +395,7 @@ export const globReplyHandler = defineReplyHandler({
 		try {
 			const executor = executorFor(call.params)
 			const root = await executor.resolvePath(call.params.path || '')
-			const result = await executor.execJs(runRipgrep, { mode: 'glob', root, patterns, limit: SEARCH_FILE_LIMIT })
+			const result = await executor.execJs(runRipgrep, { mode: 'glob', root, indexRoot: target.workdir, patterns, limit: SEARCH_FILE_LIMIT })
 			if (!result.ok) {
 				searchFailed = true
 				system_content = `文件搜索失败：${inlineCode(result.error)}\n`
@@ -449,7 +449,7 @@ export const grepReplyHandler = defineReplyHandler({
 			if (!pattern) throw new Error('未提供搜索模式：请把正则表达式写在 <grep> 标签内部。')
 			const executor = executorFor(call.params)
 			const root = await executor.resolvePath(call.params.path || '')
-			const result = await executor.execJs(runRipgrep, { mode: 'grep', root, pattern, includes, filesOnly, limit: SEARCH_MATCH_LIMIT })
+			const result = await executor.execJs(runRipgrep, { mode: 'grep', root, indexRoot: target.workdir, pattern, includes, filesOnly, limit: SEARCH_MATCH_LIMIT })
 			if (!result.ok) {
 				searchFailed = true
 				system_content = `内容搜索失败：${inlineCode(result.error)}\n`

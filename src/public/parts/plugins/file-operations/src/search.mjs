@@ -1,7 +1,9 @@
 /**
- * 基于 ripgrep 的文件搜索（`<glob>` / `<grep>` 标签的执行层）。
+ * 文件搜索（`<glob>` / `<grep>` 标签的执行层）。
  *
- * 使用 `npm:ripgrep`（ripgrep 的 WASM 构建，跨平台且**无需原生二进制**，Windows/Linux/macOS/Termux 一致可用）。
+ * 优先用 tgrep 已建好的索引（code shell 为打开的工作区启动索引服务，见 `indexRoot`），
+ * 其次退回 PATH 上的 `rg`，最后是 `npm:ripgrep`（ripgrep 的 WASM 构建，跨平台且**无需原生二进制**，
+ * Windows/Linux/macOS/Termux 一致可用）。
  * 导出的 `runRipgrep` 自包含、只依赖入参，可经 `targetExecutor.execJs` 在本地或远程机器上执行。
  *
  * @typedef {object} ripgrepParams_t
@@ -12,6 +14,7 @@
  * @property {string[]} [includes] - 文件名 glob 过滤器（mode='grep'）。
  * @property {boolean} [filesOnly] - 仅返回命中的文件路径（mode='grep'）。
  * @property {number} [limit] - 最大返回条数。
+ * @property {string} [indexRoot] - 已启动 tgrep 索引服务的工作区根目录；给出时才尝试索引搜索。
  *
  * @typedef {object} ripgrepMatch_t
  * @property {string} path - 相对 root 的路径（分隔符统一为 `/`）。
@@ -30,14 +33,16 @@
  */
 
 /**
- * 运行一次 ripgrep 文件搜索。
+ * 运行一次文件搜索。
  * 自包含实现：不引用外部作用域，便于作为字符串在本地/远程 `async_eval` 中执行。
  * @param {ripgrepParams_t} params - 搜索参数。
  * @returns {Promise<ripgrepResult_t>} 搜索结果。
  */
 export async function runRipgrep(params) {
-	const { ripgrep } = await import('npm:ripgrep')
 	const { default: path } = await import('node:path')
+	const { default: os } = await import('node:os')
+	const { default: process } = await import('node:process')
+	const { createHash } = await import('node:crypto')
 
 	const root = params.root || '.'
 	const limit = params.limit > 0 ? params.limit : 100
@@ -47,16 +52,54 @@ export async function runRipgrep(params) {
 	 * @returns {string} 相对路径。
 	 */
 	const toRelative = p => (path.relative(path.isAbsolute(p) ? root : '.', p) || p).replace(/\\/g, '/')
+	// 索引目录必须与 code shell 的 search_index.mjs 算出的一致，那里同时起着 `tgrep serve`。
+	const indexKey = params.indexRoot && (process.platform === 'win32' ? params.indexRoot.toLowerCase() : params.indexRoot)
+	const tgrepIndexArgs = indexKey
+		? ['--index-path', path.join(os.tmpdir(), 'tgrep', createHash('sha256').update(indexKey).digest('hex')), '--no-require-git']
+		: null
 
 	/**
-	 * 执行 ripgrep 并返回 { code, stdout, stderr }。
-	 * @param {string[]} args - ripgrep 参数。
+	 * 拼上索引参数后的 tgrep 参数。
+	 * tgrep 把重复的全局开关当参数冲突报错，而各搜索模式自己也会带 `--no-require-git`。
+	 * @param {string[]} args - 搜索参数。
+	 * @returns {string[]} 去重后的参数。
+	 */
+	const withIndex = args => [...new Set([...tgrepIndexArgs, ...args])]
+	/**
+	 * 执行搜索命令，返回 { code, stdout, stderr }。
+	 * @param {string[]} args - 搜索参数。
 	 * @param {object} [options] - WASI 预打开目录等选项。
 	 * @returns {Promise<{code: number, stdout: string, stderr: string}>} 执行结果。
 	 */
 	const exec = async (args, options = {}) => {
-		const { code, stdout, stderr } = await ripgrep(args, { buffer: true, ...options })
-		return { code, stdout: String(stdout || ''), stderr: String(stderr || '') }
+		const candidates = [
+			...tgrepIndexArgs ? [
+				{ name: 'tgrep', args: withIndex(args) },
+				{ name: path.join(os.tmpdir(), 'fount', 'bin', process.platform === 'win32' ? 'tgrep.exe' : 'tgrep'), args: withIndex(args) },
+			] : [],
+			{ name: 'rg', args },
+		]
+		let lastFailure
+		for (const candidate of candidates)
+			try {
+				const output = await new globalThis.Deno.Command(candidate.name, {
+					args: candidate.args, cwd: options.preopens?.['.'] || undefined,
+					stdout: 'piped', stderr: 'piped',
+				}).output()
+				const result = { code: output.code, stdout: new TextDecoder().decode(output.stdout), stderr: new TextDecoder().decode(output.stderr) }
+				if (result.code <= 1) return result
+				lastFailure = result
+			}
+			catch (error) { lastFailure = error }
+		try {
+			const { ripgrep } = await import('npm:ripgrep')
+			const { code, stdout, stderr } = await ripgrep(args, { buffer: true, ...options })
+			return { code, stdout: String(stdout || ''), stderr: String(stderr || '') }
+		}
+		catch (error) {
+			if (lastFailure?.code != null) return lastFailure
+			throw error
+		}
 	}
 
 	if (params.mode === 'glob') {

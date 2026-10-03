@@ -8,6 +8,7 @@
 			"src/scripts/plugin_context.mjs",
 			"src/public/parts/plugins/file-operations/**",
 			"src/public/parts/shells/chat/src/{prompt_struct,reply}/**",
+			"src/public/parts/shells/code/src/search_index.mjs",
 			"src/scripts/secret_filter.mjs"
 		]
 	},

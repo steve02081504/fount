@@ -1,14 +1,16 @@
 /* global Deno */
 /**
- * 文件操作 · glob/grep 搜索（ripgrep WASM）单元测试。
+ * 文件操作 · glob/grep 搜索（tgrep 索引 / ripgrep WASM）单元测试。
  */
 import fs from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
+import process from 'node:process'
 
 import { assert, assertEquals } from 'jsr:@std/assert'
 
 import { runReplyHandlers } from '../../../../shells/chat/src/reply/handlerPipeline.mjs'
+import { tgrepIndexPath } from '../../../../shells/code/src/search_index.mjs'
 import { fileOperationsReplyHandlers } from '../../handler.mjs'
 import { runRipgrep } from '../../src/search.mjs'
 import { createTargetExecutor } from '../../src/target.mjs'
@@ -289,6 +291,95 @@ Deno.test('file-operations handler gives grep/glob tool entries a human content_
 		assert(!grepRun.logs.some(entry => entry.role === 'char'), 'handler should only append tool result logs')
 	}
 	finally {
+		await fs.rm(root, { recursive: true, force: true })
+	}
+})
+
+/**
+ * 替换 `Deno.Command`，记录每次尝试的命令并让它们全部「不存在」。
+ * @returns {{calls: Array<{name: string, args: string[]}>, restore: () => void}} 调用记录与还原函数
+ */
+function recordMissingCommands() {
+	const realCommand = Deno.Command
+	const calls = []
+	/**
+	 * 只记录调用的 Command 替身。
+	 */
+	class RecordingCommand {
+		/**
+		 * @param {string} name 命令名或路径
+		 * @param {{args: string[]}} options 命令选项
+		 */
+		constructor(name, options) {
+			calls.push({ name, args: options.args })
+		}
+		/**
+		 * @returns {Promise<never>} 与真实缺席命令一致地拒绝
+		 */
+		output() {
+			return Promise.reject(new Deno.errors.NotFound('probe'))
+		}
+	}
+	Deno.Command = RecordingCommand
+	/**
+	 * 还原真实的 `Deno.Command`。
+	 * @returns {void}
+	 */
+	const restore = () => { Deno.Command = realCommand }
+	return { calls, restore }
+}
+
+Deno.test('runRipgrep 用 code shell 的索引目录搜索工作区，无 tgrep 时退回 rg', async () => {
+	const root = await tempDir()
+	const { calls, restore } = recordMissingCommands()
+	try {
+		await seedWorkspace(root)
+		const result = await runRipgrep({ mode: 'grep', root, pattern: 'hello', indexRoot: root, limit: 10 })
+		assertEquals(result.matches.length, 2)
+		assertEquals(calls.map(call => call.name), [
+			'tgrep',
+			path.join(os.tmpdir(), 'fount', 'bin', process.platform === 'win32' ? 'tgrep.exe' : 'tgrep'),
+			'rg',
+		])
+		const indexArgs = ['--index-path', tgrepIndexPath(root), '--no-require-git']
+		assertEquals(calls[0].args.slice(0, 3), indexArgs)
+		assertEquals(calls[1].args.slice(0, 3), indexArgs)
+		assertEquals(calls[2].args.slice(0, 3), ['--json', '-e', 'hello'])
+	}
+	finally {
+		restore()
+		await fs.rm(root, { recursive: true, force: true })
+	}
+})
+
+Deno.test('runRipgrep 不给 indexRoot 时只用 rg，不猜测索引', async () => {
+	const root = await tempDir()
+	const { calls, restore } = recordMissingCommands()
+	try {
+		await seedWorkspace(root)
+		const result = await runRipgrep({ mode: 'grep', root, pattern: 'hello', limit: 10 })
+		assertEquals(result.matches.length, 2)
+		assertEquals(calls.map(call => call.name), ['rg'])
+	}
+	finally {
+		restore()
+		await fs.rm(root, { recursive: true, force: true })
+	}
+})
+
+Deno.test('runRipgrep glob 模式不把 --no-require-git 重复传给 tgrep', async () => {
+	const root = await tempDir()
+	const { calls, restore } = recordMissingCommands()
+	try {
+		await seedWorkspace(root)
+		const result = await runRipgrep({ mode: 'glob', root, patterns: ['**/*.mjs'], indexRoot: root, limit: 10 })
+		assertEquals(result.files, ['a.mjs', 'sub/c.mjs'])
+		// tgrep 把重复的全局开关当参数冲突报错（exit 2），去重后索引搜索才真的可用。
+		for (const call of calls)
+			assertEquals(call.args.filter(arg => arg === '--no-require-git').length, 1)
+	}
+	finally {
+		restore()
 		await fs.rm(root, { recursive: true, force: true })
 	}
 })
