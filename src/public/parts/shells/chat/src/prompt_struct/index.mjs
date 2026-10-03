@@ -85,7 +85,7 @@ function injectMultiToolHint(promptStruct, args) {
 	promptStruct.world_prompt ??= getSinglePartPrompt()
 	promptStruct.world_prompt.text ??= []
 	promptStruct.world_prompt.text.push({
-		content: '你可以在单次回复中同时调用多个/多次工具（鼓励这样做）：它们会按出现顺序依次执行，结果在下一轮一并返回。',
+		content: '你可以在单次回复中同时调用多个/多次工具（鼓励这样做）：它们会按出现顺序依次执行，结果在下一轮一并返回。某个调用失败后，后续调用会被跳过。',
 		description: 'multi-tool hint',
 		important: 0,
 	})

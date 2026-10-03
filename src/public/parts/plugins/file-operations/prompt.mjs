@@ -20,8 +20,6 @@ export async function getFileOperationsPrompt(args) {
 - 大文件分页读取：\`offset\` 为起始行（默认 1），\`limit\` 为最多读取行数（默认 2000）
 - 单行超过 \`max-line-chars\`（默认 2000）会被截断；整体超过 \`max-chars\`（默认 50000）会提前停止并提示续读；连续的相似行会折叠。
 - 结果被截断时按提示用 \`offset\`/\`limit\` 续读；避免反复读取同样的小片段，编辑请用 <replace-file> 而不是重复查看
-- 最近消息中提及的、能解析的文件会被自动预读并注入，无需再次 <view-file>
-- 未设置工作目录时仍预读绝对路径；相对路径需先设置工作目录。Windows 上也支持 /c/、/cygdrive/c/、/mnt/c/ 与当前 bash 安装的根目录路径；WSL 可用 \\wsl.localhost\\发行版\\目录 明确选择发行版。
 
 **查找文件（glob）**：
 <glob path="可选起始目录，默认当前工作目录">
@@ -63,7 +61,7 @@ export async function getFileOperationsPrompt(args) {
 </replace-file>
 
 - \`<search>\` 必须唯一命中：命中多处会被拒绝以避免误改。确认需替换全部时使用 \`replaceAll="true"\`
-- \`<search>\` / \`<replace>\` 的正文是无需xml转义的字面量：行首、行尾的tab和空格、内部空行都会原样参与匹配与写入。正文若另起一行书写，只会去掉紧贴标签的首尾各一个换行。
+- \`<search>\` / \`<replace>\` / \`<override-file>\` 的正文是无需xml转义的字面量：行首、行尾的tab和空格、内部空行都会原样参与匹配与写入。正文若另起一行书写，只会去掉紧贴标签的首尾各一个换行。
 - 忽略行尾空白的模糊匹配会自动兜底并在结果中标注匹配方式；\`regex="true"\` 时按你给的正则（\`$1\` 反向引用可用）
 - 行尾（CRLF/LF）与 BOM 会自动保持，无需自行适配
 

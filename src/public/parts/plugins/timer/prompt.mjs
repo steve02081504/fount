@@ -12,9 +12,7 @@ import { takePendingNotification } from './state.mjs'
 const TIMER_PROMPT = `\
 你可以设置定时器，在指定时间或条件满足时自动触发一次新回复。
 
-定时器操作：<set-timer> 设置（可含多个 <item>）；<list-timers/> 列出；<remove-timer> 每行一个 reason 删除。
-
-设置示例：
+设置（可含多个 <item>）：
 <set-timer>
 <item>
   <reason>提醒事项</reason>
