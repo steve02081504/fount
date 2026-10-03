@@ -371,7 +371,8 @@ Deno.test('code-execution run-* 达到等待时限后转为后台任务且不打
 		const entry = logs.find(log => log.name === 'code-execution.async')
 		assert(entry, '超时应转为后台任务并回写派发回执')
 		assertStringIncludes(entry.content, '超时')
-		assertStringIncludes(entry.content, '继续在后台运行')
+		assertEquals(entry.extension.asyncTask.kind, shell)
+		assertEquals(getTask(entry.extension.asyncTask.id)?.state, 'running', '等待超时应保留运行中的原任务')
 		assertStringIncludes(entry.content, `id=${entry.extension.asyncTask.id}`)
 		assertStringIncludes(entry.content, '<stop-async')
 		// 超时不再杀进程：同一个进程继续跑完，后台任务照常结算。
@@ -381,14 +382,24 @@ Deno.test('code-execution run-* 达到等待时限后转为后台任务且不打
 	} finally { resetAsyncTaskState() }
 })
 
-Deno.test('code-execution run-js 提示超时 JS 可能仍在运行', async () => {
-	const { logs, result, args } = createHandlerArgs()
-	result.content = '<run-js expect="1">await new Promise(() => {})</run-js>'
-	assertEquals(await runReplyHandlers(result, args, getCodeExecutionReplyHandlers()), true)
-	const entry = findToolEntry(logs)
-	assert(entry, 'tool entry should exist')
-	assertStringIncludes(entry.content, '无法强制终止')
-	assertStringIncludes(entry.content, '继续在后台运行')
+Deno.test('code-execution run-js 等待超时后保留不可强制停止的后台任务', async () => {
+	resetAsyncTaskState()
+	try {
+		const { logs, result, args } = createHandlerArgs()
+		result.content = '<run-js expect="1">await new Promise(() => {})</run-js>'
+		assertEquals(await runReplyHandlers(result, args, getCodeExecutionReplyHandlers()), true)
+		const entry = logs.find(log => log.name === 'code-execution.async')
+		assert(entry, '等待超时应回写后台任务回执')
+		const id = entry.extension.asyncTask.id
+		assertEquals(entry.extension.asyncTask.kind, 'js')
+		assertEquals(getTask(id)?.state, 'running', '等待超时不应中断 JS')
+		assertStringIncludes(entry.content, `id=${id}`)
+		assertStringIncludes(entry.content, '<inspect-async')
+		assert(!entry.content.includes('<stop-async'), '进程内 JS 不应提供强制停止命令')
+		const waited = await awaitTasks([id], { requester: ownerFromArgs(args), timeoutMs: 0 })
+		assertEquals(waited.pending, [id])
+		assertEquals(waited.settled, [])
+	} finally { resetAsyncTaskState() }
 })
 
 Deno.test('code-execution run-js 正常完成附耗时与结果', async () => {

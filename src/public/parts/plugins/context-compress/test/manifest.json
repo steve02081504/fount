@@ -3,7 +3,7 @@
 	"suites": [
 		{
 			"name": "pure",
-			"expected": "3s",
+			"expected": "2m45s",
 			"triggers": [
 				"src/public/parts/plugins/context-compress/**",
 				"src/public/parts/shells/chat/src/chat/session/summarize.mjs",

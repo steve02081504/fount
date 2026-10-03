@@ -6,7 +6,7 @@ import { awaitTasks, inspectTask, listTasks, ownerFromArgs, resetAsyncTaskState,
 import { getCodeExecutionReplyHandlers, runJsReplyHandler } from '../../handler.mjs'
 
 /**
- * Create an isolated generation context.
+ * 创建隔离的生成上下文。
  * @returns {object} Request and logs.
  */
 function context() {
@@ -17,7 +17,7 @@ function context() {
 		workdir: { machine: '0' }, chat_scoped_char_memory: {},
 		extension: { generationId: crypto.randomUUID() },
 		/**
-		 * Collect tool receipts.
+		 * 收集工具记录。
 		 * @param {object} entry Log entry.
 		 * @returns {void} No return value.
 		 */
@@ -35,7 +35,7 @@ Deno.test('run-js timeout adopts the same promise and keeps the full result', as
 	const events = []
 	args.generation_options = {
 		/**
-		 * Collect streamed events.
+		 * 收集流式事件。
 		 * @param {object} event Output event.
 		 * @returns {number} New event count.
 		 */
@@ -88,7 +88,7 @@ Deno.test('shell timeout keeps the process alive and stop enforces ownership', a
 	const shell = Deno.build.os === 'windows' ? 'pwsh' : 'sh'
 	const handlers = getCodeExecutionReplyHandlers({
 		/**
-		 * Resolve the test shell.
+		 * 解析测试用 shell。
 		 * @returns {Promise<string[]>} Shell names.
 		 */
 		resolveShells: async () => [shell],
@@ -122,7 +122,7 @@ Deno.test('shell result after the foreground deadline preserves both output phas
 	const shell = Deno.build.os === 'windows' ? 'powershell' : 'sh'
 	const handlers = getCodeExecutionReplyHandlers({
 		/**
-		 * Resolve the test shell.
+		 * 解析测试用 shell。
 		 * @returns {Promise<string[]>} Shell names.
 		 */
 		resolveShells: async () => [shell],
