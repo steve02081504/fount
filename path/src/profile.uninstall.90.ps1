@@ -2,10 +2,14 @@
 Write-Host (Get-I18n -key 'remove.removing.fount.fromPath')
 $path = $env:PATH -split ';'
 $path = $path | Where-Object { !$_.StartsWith("$FOUNT_DIR") }
+# 旧版本把临时 bin 目录写进过 PATH，升级到这里的用户仍需要清理掉。
+$fountTempBin = Join-Path ([System.IO.Path]::GetTempPath()) 'fount\bin'
+$path = $path | Where-Object { $_ -ne $fountTempBin }
 $env:Path = $path -join ';'
 $UserPath = [System.Environment]::GetEnvironmentVariable('PATH', [System.EnvironmentVariableTarget]::User)
 $UserPath = $UserPath -split ';'
 $UserPath = $UserPath | Where-Object { !$_.StartsWith("$FOUNT_DIR") }
+$UserPath = $UserPath | Where-Object { $_ -ne $fountTempBin }
 $UserPath = $UserPath -join ';'
 [System.Environment]::SetEnvironmentVariable('PATH', $UserPath, [System.EnvironmentVariableTarget]::User)
 
