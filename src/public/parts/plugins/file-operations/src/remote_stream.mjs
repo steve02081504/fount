@@ -47,8 +47,9 @@ export function dispatchRemoteStreamOutput(payload) {
  */
 export function remoteShellStreamScript(shell, code, cwd, timeoutMs, execId, cancellable = false) {
 	return `\
-const stopped = ${cancellable ? 'globalThis[Symbol.for(\'fount.remote-shell-stops\')] ??= new Set()' : 'null'}
-if (stopped) stopped.add(${JSON.stringify(execId)})
+const stopped = ${cancellable ? 'globalThis[Symbol.for(\'fount.remote-shell-stops\')] ??= new Map()' : 'null'}
+const controller = stopped ? new AbortController() : null
+if (stopped) stopped.set(${JSON.stringify(execId)}, controller)
 let spawned = null
 let pendingTermination = null
 async function terminate(child) {
@@ -65,6 +66,8 @@ async function terminate(child) {
 		catch (killError) { return new AggregateError([groupError, killError], 'Failed to terminate remote shell process') }
 	}
 }
+let timer
+let onStop
 try {
 const { exec, shell_exec_map } = await import('npm:@steve02081504/exec')
 const shellName = ${JSON.stringify(shell || null)}
@@ -72,73 +75,58 @@ const command = ${JSON.stringify(code)}
 const timeoutMs = ${JSON.stringify(timeoutMs)}
 const cwd = ${JSON.stringify(cwd || null)}
 const emit = payload => { try { callback(payload) } catch { /* ignore */ } }
-const cancelled = stopped ? stopped.has(${JSON.stringify(execId)}) : false
 if (shellName && !shell_exec_map[shellName]) throw new Error('Unsupported shell: ' + shellName)
 const start = Date.now()
-if (cancelled) return { code: null, signal: 'SIGKILL', stdout: '', stderr: '', stdall: '', timedOut: false, cancelled: true, elapsedMs: 0 }
+if (controller?.signal.aborted) return { code: null, signal: 'SIGKILL', stdout: '', stderr: '', stdall: '', timedOut: false, cancelled: true, elapsedMs: 0 }
 let timedOut = false
 const options = {
 	no_ansi_terminal_sequences: true,
 	...cwd ? { cwd } : {},
-	on_spawn: child => { spawned = child; if (timedOut || cancelled) pendingTermination = terminate(child) },
+	on_spawn: child => { spawned = child; if (timedOut || controller?.signal.aborted) pendingTermination = terminate(child) },
 	on_stdout: data => emit({ execId: ${JSON.stringify(execId)}, stream: 'stdout', data }),
 	on_stderr: data => emit({ execId: ${JSON.stringify(execId)}, stream: 'stderr', data }),
 }
 if (process.platform !== 'win32') options.detached = true
 const run = Promise.resolve(shellName ? shell_exec_map[shellName](command, options) : exec(command, options))
-run.catch(() => { })
-const settle = () => run.then(
-	result => ({ result, timedOut: false }),
-	error => ({ result: error, timedOut: false })
-)
+run.catch(() => { /* 稍后由 settle 或取消路径结算，避免先行拒绝成为未处理拒绝 */ })
+const settle = run.then(result => ({ result }), error => ({ result: error }))
 const finish = outcome => {
 	const elapsedMs = Date.now() - start
-	if (outcome.result instanceof Error) throw Object.assign(outcome.result, { timedOut: outcome.timedOut, elapsedMs })
-	return { ...outcome.result, timedOut: outcome.timedOut, elapsedMs }
+	if (outcome.result instanceof Error) throw Object.assign(outcome.result, { timedOut, elapsedMs })
+	return { ...outcome.result, timedOut, elapsedMs }
 }
-/**
- * 轮询停止标记；进程未启动时也会立即返回，随后由调用方确认未 spawn。
- * @param {Set<string>} stopped 停止标记集合。
- * @param {string} execId 执行 id。
- * @returns {Promise<void>} 标记出现即完成。
- */
-async function waitForStop(stopped, execId) {
-	while (!stopped.has(execId)) await new Promise(resolve => setTimeout(resolve, 50))
-}
-if (cancelled) return { code: null, signal: 'SIGKILL', stdout: '', stderr: '', stdall: '', timedOut: false, cancelled: true, elapsedMs: 0 }
-if (stopped) {
-	let stopTimer
-	const interrupted = await Promise.race([
-		waitForStop(stopped, ${JSON.stringify(execId)}).then(() => true),
-		run.then(() => false, () => false),
-		...(timeoutMs == null ? [] : [new Promise(resolve => { stopTimer = setTimeout(() => resolve(false), timeoutMs) })]),
-	])
-	clearTimeout(stopTimer)
-	// 取消与自然结束同时发生时以自然结果为准（stop 标记留给 finally 清理）。
-	if (interrupted) {
-		const terminationError = await terminate(spawned) ?? await pendingTermination
-		if (terminationError) throw terminationError
-		return { code: null, signal: 'SIGKILL', stdout: '', stderr: '', stdall: '', timedOut: false, cancelled: true, elapsedMs: Date.now() - start }
-	}
-}
-if (timeoutMs == null) return finish(await settle())
-if (Date.now() - start >= timeoutMs) return finish(await settle())
-timedOut = true
+const races = [settle]
+if (stopped) races.push(new Promise(resolve => {
+	onStop = () => resolve({ cancelled: true })
+	controller.signal.addEventListener('abort', onStop, { once: true })
+	if (controller.signal.aborted) onStop()
+}))
+if (timeoutMs != null) races.push(new Promise(resolve => {
+	timer = setTimeout(() => { timedOut = true; resolve({ timedOut: true }) }, timeoutMs)
+}))
+const outcome = await Promise.race(races)
+clearTimeout(timer)
+if ('result' in outcome) return finish(outcome)
 let terminationError = await terminate(spawned)
 let graceTimer
 const settled = await Promise.race([
-	run.then(result => ({ result }), error => ({ result: error })),
+	settle,
 	new Promise(resolve => { graceTimer = setTimeout(() => resolve(null), 5000) }),
 ])
 clearTimeout(graceTimer)
 if (pendingTermination) terminationError ??= await pendingTermination
-if (!settled)
+if (!settled || terminationError)
 	throw Object.assign(
 		terminationError ?? new Error('Remote shell process was not confirmed terminated within the grace period'),
-		{ timedOut: true, elapsedMs: Date.now() - start }
+		{ timedOut, elapsedMs: Date.now() - start }
 	)
-return finish({ result: settled.result, timedOut: true })
-} finally { stopped?.delete(${JSON.stringify(execId)}) }
+if (outcome.cancelled) return { ...settled.result, code: null, signal: 'SIGKILL', timedOut, cancelled: true, elapsedMs: Date.now() - start }
+return finish(settled)
+} finally {
+	if (timer) clearTimeout(timer)
+	if (onStop) controller.signal.removeEventListener('abort', onStop)
+	stopped?.delete(${JSON.stringify(execId)})
+}
 `
 }
 
@@ -148,7 +136,7 @@ return finish({ result: settled.result, timedOut: true })
  * @returns {string} 返回布尔值的远程脚本。
  */
 export function remoteShellStopScript(execId) {
-	return `return globalThis[Symbol.for('fount.remote-shell-stops')]?.has(${JSON.stringify(execId)}) ?? false`
+	return `const handle = globalThis[Symbol.for('fount.remote-shell-stops')]?.get(${JSON.stringify(execId)}); if (!handle) return false; handle.abort(); return true`
 }
 
 /**

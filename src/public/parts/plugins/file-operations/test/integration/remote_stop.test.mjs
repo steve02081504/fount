@@ -7,9 +7,9 @@ import { remoteShellStopScript, remoteShellStreamScript } from '../../src/remote
 const shell = Deno.build.os === 'windows' ? 'powershell' : 'sh'
 
 /**
- * Execute a cancellation RPC in the receiver's process.
- * @param {string} id Execution id.
- * @returns {Promise<boolean>} Whether the receiver found the stop handle.
+ * 在接收方进程中执行取消 RPC。
+ * @param {string} id 执行 id。
+ * @returns {Promise<boolean>} 接收方是否找到并中止了该执行。
  */
 async function stop(id) {
 	const result = await async_eval(remoteShellStopScript(id))
@@ -18,7 +18,7 @@ async function stop(id) {
 }
 
 /**
- * Await readiness without depending on shell cold-start timing.
+ * 等待就绪，避免依赖 shell 冷启动耗时。
  * @param {Function} predicate Readiness check.
  * @returns {Promise<void>} Readiness completion.
  */
@@ -36,7 +36,7 @@ Deno.test('remote stop terminates a running process tree and releases its handle
 	const command = shell === 'sh' ? 'echo before; sh -c \'sleep 30; echo after\'' : 'Write-Output before; powershell -NoProfile -Command \'Start-Sleep -Seconds 30; Write-Output after\''
 	const running = async_eval(remoteShellStreamScript(shell, command, undefined, 15000, id, true), {
 		/**
-		 * Collect streamed output.
+		 * 收集流式输出。
 		 * @param {object} payload Output payload.
 		 * @returns {number} Output count.
 		 */
@@ -64,7 +64,7 @@ Deno.test('non-streamed remote execution can be stopped before spawn', async () 
 		.replace('try {\nconst { exec, shell_exec_map }', 'try {\nawait spawnGate;\nconst { exec, shell_exec_map }')
 	const running = async_eval(script, { spawnGate })
 	try {
-		await waitFor(() => globalThis[Symbol.for('fount.remote-shell-stops')]?.has(id))
+		await waitFor(() => globalThis[Symbol.for('fount.remote-shell-stops')]?.get(id))
 		assertEquals(await stop(id), true)
 		release()
 		const outcome = await running
