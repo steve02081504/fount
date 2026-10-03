@@ -8,7 +8,9 @@
  * @returns {Promise<void>}
  */
 export async function expectJsonEditorAriaLabel(page, containerSelector, i18nKey, expect) {
-	await page.evaluate(() => globalThis.fount?.test?.watch?.holdLocale?.())
+	// page-watch 挂载 `fount.test.watch` 是异步的；真实 shell 页面上模块未挂载前取不到 hold。
+	await page.waitForFunction(() => globalThis.fount?.test?.watch?.holdLocale)
+	await page.evaluate(() => globalThis.fount.test.watch.holdLocale())
 	try {
 		const content = page.locator(`${containerSelector} .cm-content`)
 		await expect(content).toBeVisible({ timeout: 30_000 })

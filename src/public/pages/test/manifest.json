@@ -21,7 +21,7 @@
 		},
 		{
 			"name": "frontend",
-			"expected": "8m13s",
+			"expected": "4m31s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -68,6 +68,15 @@
 						"src/public/pages/test/frontend/fixtures.mjs",
 						"src/public/pages/scripts/i18n/index.mjs",
 						"src/public/pages/scripts/i18n/placeholders.mjs"
+					]
+				},
+				{
+					"name": "jsonEditorHelper",
+					"expected": "15s",
+					"triggers": [
+						"src/public/pages/test/frontend/jsonEditorHelper.spec.mjs",
+						"src/public/pages/test/frontend/fixtures.mjs",
+						"src/scripts/test/playwright/json_editor.mjs"
 					]
 				},
 				{
