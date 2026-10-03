@@ -36,6 +36,7 @@ export async function buildChangedPromptStruct(prompt_struct, config) {
 		other_chars_prompts: {},
 		other_personas_prompts: {},
 		world_prompt: getSinglePartPrompt(),
+		output_guide: prompt_struct.output_guide,
 		plugin_prompts: {},
 		chat_log: prompt_struct.chat_log,
 	}

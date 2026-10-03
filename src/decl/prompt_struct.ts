@@ -173,6 +173,8 @@ export interface prompt_struct_t {
 	 * 世界提示。
 	 */
 	world_prompt: single_part_prompt_t
+	/** 当前回复的输出环境说明；独立于世界设定。 */
+	output_guide?: string
 	/**
 	 * 插件提示。
 	 */

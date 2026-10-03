@@ -18,6 +18,7 @@ import { hasPromptPayload } from '../chat/logEntryTypes.mjs'
 import { flattenReplyHandlers } from '../reply/defineReplyHandler.mjs'
 
 import { applySummaryBoundary } from './summaryBoundary.mjs'
+import { webOutputGuide } from './webOutputGuide.mjs'
 
 /**
  * 获取单部分提示。
@@ -139,6 +140,8 @@ export async function buildPromptStruct(
 		other_chars_prompts: {},
 		other_personas_prompts: {},
 		world_prompt: getSinglePartPrompt(),
+		// 本函数容忍调用方省略可选字段（见 `user_personas` / `chat_log`），能力声明也按缺省「无渲染能力」处理。
+		output_guide: webOutputGuide(args.supported_functions ?? {}),
 		plugin_prompts: {},
 		chat_log: [...chat_log ?? []],
 		timelines: timelines || [],
@@ -266,6 +269,7 @@ export function structPromptToSingleNoChatLog(/** @type {prompt_struct_t} */ pro
 			result.push(...sorted)
 		}
 	}
+	if (prompt.output_guide) result.push('Output environment and rendering:', prompt.output_guide)
 
 	return result.join('\n')
 }
