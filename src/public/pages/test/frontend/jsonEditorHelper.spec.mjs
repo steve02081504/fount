@@ -37,7 +37,8 @@ test('waits for the page-watch locale API before holding it', async ({ modulePag
 		document.body.append(editor)
 		// modulePage 不跑 page-watch（`watch.disabled`），这里模拟它尚未挂上 API 的窗口。
 		globalThis.fount.test.watch = {
-			/** 未取 hold 就释放即失败。
+			/**
+			 * 未取 hold 就释放即失败。
 			 * @returns {void}
 			 */
 			releaseLocale() {

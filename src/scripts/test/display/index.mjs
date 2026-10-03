@@ -439,7 +439,8 @@ export async function runTestDisplay({ watch = false, job, port, output } = {}) 
 	})
 
 	ws.addEventListener('close', () => resolveDone())
-	/** Ctrl+C / kill 时断开 WS。
+	/**
+	 * Ctrl+C / kill 时断开 WS。
 	 * @param {'SIGINT' | 'SIGTERM'} signal 收到的信号
 	 */
 	const onSig = signal => {
