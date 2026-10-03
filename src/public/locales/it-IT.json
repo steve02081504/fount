@@ -98,7 +98,7 @@
 			"refreshTokenError": "Errore token di aggiornamento: ${error}",
 			"logoutRefreshTokenProcessError": "Errore durante l'elaborazione del token di aggiornamento per il logout: ${error}",
 			"revokeTokenNoJTI": "Impossibile revocare il token senza JTI.",
-			"tokenRevoked": null
+			"tokenRevoked": "Token revocato: ${jti}"
 		},
 		"verification": {
 			"codeGeneratedLog": "Codice di verifica: ${code} (scade tra 60 secondi)",
@@ -504,7 +504,7 @@
 				"alreadyUpToDate": "Già l'ultimo.",
 				"localBranchAhead": "La filiale locale è prima della filiale remota. Nessun aggiornamento richiesto.",
 				"branchesDiverged": "I rami locali e remoti sono stati biforcati. Aggiornamento forzato in corso...",
-				"unrelatedHistories": null,
+				"unrelatedHistories": "Il repository locale e quello remoto non hanno una cronologia in comune. Aggiornamento forzato…",
 				"notOnBranch": "Non sul ramo, passa a 'master'...",
 				"upstreamGoneFallbackMaster": "Il ramo remoto '${branch}' è stato eliminato; ora si traccia master…",
 				"noUpstreamBranch": "Avviso: nessun ramo upstream configurato per il ramo '${branch}', utilizzare '${remote}'.",

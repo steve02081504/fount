@@ -98,7 +98,7 @@
 			"refreshTokenError": "리프레시 토큰 오류: ${error}",
 			"logoutRefreshTokenProcessError": "로그아웃 리프레시 토큰 처리 오류: ${error}",
 			"revokeTokenNoJTI": "JTI가 없는 토큰은 해지할 수 없습니다.",
-			"tokenRevoked": null
+			"tokenRevoked": "토큰이 취소되었습니다: ${jti}"
 		},
 		"verification": {
 			"codeGeneratedLog": "인증 코드: ${code} (60초 후에 만료됩니다)",
@@ -504,7 +504,7 @@
 				"alreadyUpToDate": "이미 최신입니다.",
 				"localBranchAhead": "로컬 지점이 원격 지점보다 앞서 있습니다. 업데이트가 필요하지 않습니다.",
 				"branchesDiverged": "로컬 및 원격 분기가 분기되었습니다. 강제 업데이트 진행 중...",
-				"unrelatedHistories": null,
+				"unrelatedHistories": "로컬 및 원격 저장소에 공통 기록이 없습니다. 강제 업데이트 중…",
 				"notOnBranch": "브랜치에 없으면 '마스터'로 전환하세요..",
 				"upstreamGoneFallbackMaster": "원격 분기 '${branch}'가 삭제되어 대신 master를 추적합니다…",
 				"noUpstreamBranch": "경고: '${branch}' 분기에 구성된 업스트림 분기가 없습니다. '${remote}'를 사용하세요.",

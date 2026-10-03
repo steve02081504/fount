@@ -98,7 +98,7 @@
 			"refreshTokenError": "Помилка оновлення токена: ${error}",
 			"logoutRefreshTokenProcessError": "Помилка обробки оновлення токена при виході: ${error}",
 			"revokeTokenNoJTI": "Неможливо відкликати токен без jti",
-			"tokenRevoked": null
+			"tokenRevoked": "Токен відкликано: ${jti}"
 		},
 		"verification": {
 			"codeGeneratedLog": "Код підтвердження: ${code} (дійсний 60 секунд)",
@@ -504,7 +504,7 @@
 				"alreadyUpToDate": "Вже останній.",
 				"localBranchAhead": "Локальна гілка попереду віддаленої гілки. Оновлення не потрібні.",
 				"branchesDiverged": "Локальні та віддалені гілки були розгалужені. Виконується примусове оновлення...",
-				"unrelatedHistories": null,
+				"unrelatedHistories": "Локальний і віддалений репозиторії не мають спільної історії. Примусове оновлення…",
 				"notOnBranch": "Не на гілці, переключіться на «master»...",
 				"upstreamGoneFallbackMaster": "Віддалена гілка «${branch}» видалена; натомість відстежується master…",
 				"noUpstreamBranch": "Попередження: для гілки '${branch}' не налаштовано вихідну гілку, використовуйте '${remote}'.",

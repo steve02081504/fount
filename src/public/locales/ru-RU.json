@@ -98,7 +98,7 @@
 			"refreshTokenError": "Ошибка токена обновления: ${error}",
 			"logoutRefreshTokenProcessError": "Ошибка обработки токена обновления при выходе из системы: ${error}",
 			"revokeTokenNoJTI": "Невозможно отозвать токен без JTI.",
-			"tokenRevoked": null
+			"tokenRevoked": "Токен отозван: ${jti}"
 		},
 		"verification": {
 			"codeGeneratedLog": "Проверочный код: ${code} (истекает через 60 секунд)",
@@ -504,7 +504,7 @@
 				"alreadyUpToDate": "Уже самый последний.",
 				"localBranchAhead": "Локальная ветвь опережает удаленную ветвь. Никаких обновлений не требуется.",
 				"branchesDiverged": "Локальные и удаленные ветки были разделены. Выполняется принудительное обновление...",
-				"unrelatedHistories": null,
+				"unrelatedHistories": "У локального и удалённого репозиториев нет общей истории. Выполняется принудительное обновление…",
 				"notOnBranch": "Не на ветке, переключись на \"мастер\"...",
 				"upstreamGoneFallbackMaster": "Удалённая ветка «${branch}» больше не существует; вместо неё отслеживается master…",
 				"noUpstreamBranch": "Предупреждение: для ветки «${branch}» не настроена upstream-ветка, используется «${remote}».",

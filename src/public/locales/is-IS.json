@@ -98,7 +98,7 @@
 			"refreshTokenError": "Villa við endurnýjun auðkennis: ${error}",
 			"logoutRefreshTokenProcessError": "Villa við vinnslu endurnýjunar auðkennis við útskráningu: ${error}",
 			"revokeTokenNoJTI": "Get ekki afturkallað auðkenni án jti",
-			"tokenRevoked": null
+			"tokenRevoked": "Tákn afturkallað: ${jti}"
 		},
 		"verification": {
 			"codeGeneratedLog": "Staðfestingarkóði: ${code} (rennur út eftir 60 sekúndur)",
@@ -504,7 +504,7 @@
 				"alreadyUpToDate": "Nú þegar það nýjasta.",
 				"localBranchAhead": "Sveitarfélagið er á undan fjarútibúinu. Engar uppfærslur nauðsynlegar.",
 				"branchesDiverged": "Staðbundnum og afskekktum útibúum hefur verið flokkað. Þvinguð uppfærsla í gangi...",
-				"unrelatedHistories": null,
+				"unrelatedHistories": "Staðbundna og fjartengda safnið eiga engan sameiginlegan feril. Þvinga uppfærslu…",
 				"notOnBranch": "Ekki á útibúinu, skiptu yfir í „meistara“...",
 				"upstreamGoneFallbackMaster": "Fjarri greinin „${branch}“ var eytt; fylgist með master í staðinn…",
 				"noUpstreamBranch": "Viðvörun: Engin uppstreymisgrein stillt fyrir grein '${branch}', nota '${remote}'.",

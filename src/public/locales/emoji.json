@@ -98,7 +98,7 @@
 			"refreshTokenError": "🔄🔑❌: ${error}",
 			"logoutRefreshTokenProcessError": "🚪🔄🔑❌: ${error}",
 			"revokeTokenNoJTI": "🚫🔑🆔",
-			"tokenRevoked": "令牌已被撤销：${jti}"
+			"tokenRevoked": "🔑🚫 ${jti}"
 		},
 		"verification": {
 			"codeGeneratedLog": "🔢: ${code} (⏳60s)",
@@ -504,7 +504,7 @@
 				"alreadyUpToDate": "👍💯",
 				"localBranchAhead": "🏠🌳 > ☁️🌳 ✅",
 				"branchesDiverged": "🔀 🌳 ‼️ ➡️ 💪🔄",
-				"unrelatedHistories": "本地与远程仓库没有共同历史。强制更新中...",
+				"unrelatedHistories": "🏠🌳 ↔️ ☁️🌳 ❌🤝 🔄🔨…",
 				"notOnBranch": "🤷‍♂️🌳 ➡️ 'master'",
 				"upstreamGoneFallbackMaster": "🗑️ ☁️🌳 '${branch}' ➡️ 🔗 'master'",
 				"noUpstreamBranch": "⚠️ branch '${branch}' no upstream, using '${remote}'",
@@ -628,7 +628,7 @@
 			}
 		},
 		"telegrambot": {
-			"alreadyRunning": "Telegram Bot ${botname} 已在运行"
+			"alreadyRunning": "🤖 Telegram ${botname} 🏃‍♂️"
 		}
 	},
 	"installer_wait_screen": {
@@ -6184,13 +6184,13 @@
 				"aria-label": "📏"
 			},
 			"crop": "✂️",
-			"exportFailed": "图片导出失败",
+			"exportFailed": "🖼️📤❌",
 			"image": "✏️",
-			"loadFailed": "图片加载失败",
+			"loadFailed": "🖼️📥❌",
 			"mosaic": "🔲",
-			"redo": "重做",
-			"reset": "重置",
-			"undo": "撤销"
+			"redo": "↪️",
+			"reset": "🔄",
+			"undo": "↩️"
 		},
 		"common": {
 			"cancel": "↩️",
@@ -6510,10 +6510,10 @@
 				"all": "❌📑🌐"
 			},
 			"generating": {
-				"aria-label": "「${title}」正在生成"
+				"aria-label": "「${title}」🤖⏳"
 			},
 			"unread": {
-				"aria-label": "「${title}」有未读消息"
+				"aria-label": "「${title}」📨🔵"
 			}
 		},
 		"newTab": {
@@ -6575,12 +6575,12 @@
 					"title": "✏️"
 				},
 				"saveGist": {
-					"aria-label": "保存到 gist",
-					"title": "保存到 gist"
+					"aria-label": "💾 Gist",
+					"title": "💾 Gist"
 				},
 				"downloadHtml": {
-					"aria-label": "下载 HTML",
-					"title": "下载 HTML"
+					"aria-label": "⬇️ HTML",
+					"title": "⬇️ HTML"
 				}
 			},
 			"copied": "📋✅",
@@ -6624,29 +6624,29 @@
 			},
 			"remove": {
 				"aria-label": "🗑️",
-				"title": "移除附件"
+				"title": "🗑️📎"
 			},
 			"drop": "📎",
 			"tooLarge": "📎 ${name} ❌10MB",
 			"edit": {
-				"aria-label": "编辑图片",
-				"title": "编辑图片"
+				"aria-label": "✏️🖼️",
+				"title": "✏️🖼️"
 			},
 			"preview": {
-				"aria-label": "预览附件",
-				"title": "预览附件"
+				"aria-label": "👁️📎",
+				"title": "👁️📎"
 			},
 			"download": {
-				"aria-label": "下载附件",
-				"title": "下载附件"
+				"aria-label": "⬇️📎",
+				"title": "⬇️📎"
 			},
 			"description": {
-				"aria-label": "附件说明",
-				"placeholder": "添加说明…"
+				"aria-label": "📎📝",
+				"placeholder": "➕📝…"
 			},
-			"tooLargeTotal": "附件总大小超过 ${limit} 限制",
-			"reading": "正在读取…",
-			"failed": "读取附件 ${name} 失败"
+			"tooLargeTotal": "📎📦❌ ${limit}",
+			"reading": "📎📖⏳",
+			"failed": "📎📖❌ ${name}"
 		},
 		"error": {
 			"generic": "❌ ${error}",
@@ -6761,7 +6761,7 @@
 		},
 		"generation": {
 			"reconnect": {
-				"aria-label": "重新连接"
+				"aria-label": "🔄🔌"
 			}
 		}
 	},

@@ -98,7 +98,7 @@
 			"refreshTokenError": "रिफ्रेश टोकन में त्रुटि: ${error}",
 			"logoutRefreshTokenProcessError": "लॉगआउट रिफ्रेश टोकन प्रक्रिया में त्रुटि: ${error}",
 			"revokeTokenNoJTI": "JTI के बिना टोकन रद्द नहीं किया जा सकता।",
-			"tokenRevoked": null
+			"tokenRevoked": "टोकन रद्द किया गया: ${jti}"
 		},
 		"verification": {
 			"codeGeneratedLog": "सत्यापन कोड: ${code} (60 सेकंड में समाप्त हो जाएगा)",
@@ -504,7 +504,7 @@
 				"alreadyUpToDate": "पहले से ही नवीनतम.",
 				"localBranchAhead": "स्थानीय शाखा दूरस्थ शाखा से आगे है. किसी अद्यतन की आवश्यकता नहीं है.",
 				"branchesDiverged": "स्थानीय और दूरस्थ शाखाओं को विभाजित कर दिया गया है। जबरन अद्यतन प्रगति पर है...",
-				"unrelatedHistories": null,
+				"unrelatedHistories": "स्थानीय और दूरस्थ रिपॉज़िटरी का इतिहास साझा नहीं है। ज़बरन अपडेट हो रहा है…",
 				"notOnBranch": "शाखा पर नहीं, 'मास्टर' पर स्विच करें...",
 				"upstreamGoneFallbackMaster": "रिमोट शाखा '${branch}' हटा दी गई है; इसके बजाय master ट्रैक किया जा रहा है…",
 				"noUpstreamBranch": "चेतावनी: शाखा '${branch}' के लिए कोई अपस्ट्रीम शाखा कॉन्फ़िगर नहीं की गई है, '${remote}' का उपयोग करें।",

@@ -98,7 +98,7 @@
 			"refreshTokenError": "Lỗi làm mới mã thông báo: ${error}",
 			"logoutRefreshTokenProcessError": "Lỗi xử lý mã thông báo làm mới khi đăng xuất: ${error}",
 			"revokeTokenNoJTI": "Không thể thu hồi mã thông báo không có JTI.",
-			"tokenRevoked": null
+			"tokenRevoked": "Mã thông báo đã bị thu hồi: ${jti}"
 		},
 		"verification": {
 			"codeGeneratedLog": "Mã xác minh: ${code} (hết hạn sau 60 giây)",
@@ -504,7 +504,7 @@
 				"alreadyUpToDate": "Đã là mới nhất.",
 				"localBranchAhead": "Chi nhánh địa phương đi trước chi nhánh từ xa. Không cần cập nhật.",
 				"branchesDiverged": "Các chi nhánh địa phương và từ xa đã được phân nhánh. Đang cập nhật bắt buộc...",
-				"unrelatedHistories": null,
+				"unrelatedHistories": "Kho cục bộ và kho từ xa không có lịch sử chung. Đang buộc cập nhật…",
 				"notOnBranch": "Không ở trên nhánh, chuyển sang 'master'...",
 				"upstreamGoneFallbackMaster": "Nhánh từ xa '${branch}' đã bị xóa; đang theo dõi master thay thế…",
 				"noUpstreamBranch": "Cảnh báo: Không có nhánh ngược dòng nào được định cấu hình cho nhánh '${branch}', hãy sử dụng '${remote}'.",

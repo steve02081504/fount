@@ -98,7 +98,7 @@
 			"refreshTokenError": "Erro no token de atualização: ${error}",
 			"logoutRefreshTokenProcessError": "Erro ao processar o token de atualização de logout: ${error}",
 			"revokeTokenNoJTI": "Não é possível revogar um token sem JTI.",
-			"tokenRevoked": null
+			"tokenRevoked": "Token revogado: ${jti}"
 		},
 		"verification": {
 			"codeGeneratedLog": "Código de verificação: ${code} (expira em 60 segundos)",
@@ -515,7 +515,8 @@
 				"fetchFailedSkippingUpdate": "Não foi possível obter as atualizações do GitHub; atualização ignorada.",
 				"remoteRefUnavailable": "A referência remota '${ref}' não está disponível; sincronização Git ignorada.",
 				"installFailedWinget": "Como a instalação do Winget falhou, o Git não pode ser instalado. Instale-o manualmente.",
-				"installFailedManual": "Não é possível instalar o Git, instale-o manualmente."
+				"installFailedManual": "Não é possível instalar o Git, instale-o manualmente.",
+				"unrelatedHistories": "Os repositórios local e remoto não têm histórico comum. A forçar atualização…"
 			},
 			"deno": {
 				"missing": "Deno não encontrado, instalando automaticamente...",
