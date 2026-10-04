@@ -6773,26 +6773,26 @@
 			}
 		},
 		"explorer": {
-			"title": "资源管理器",
+			"title": "📁📝",
 			"toggle": {
-				"aria-label": "切换资源管理器"
+				"aria-label": "🔄📁"
 			},
 			"refresh": {
-				"aria-label": "刷新文件树"
+				"aria-label": "🔄🌳"
 			},
-			"noWorkspace": "选择工作区以浏览文件",
-			"loadFailed": "无法读取目录",
-			"loading": "正在读取文件…",
-			"empty": "选择文件以编辑",
-			"save": "保存",
-			"changes": "更改",
-			"unsaved": "未保存的更改",
-			"externalChange": "文件已在外部修改；请先处理冲突",
-			"lines": "行",
-			"discardConfirm": "文件「${path}」有未保存的更改。确定关闭并丢弃吗？",
-			"editorLabel": "文件编辑器",
-			"editedFiles": "已编辑 ${count} 个文件",
-			"noDiff": "此操作没有记录行级 diff"
+			"noWorkspace": "📂❓📄",
+			"loadFailed": "📁❌",
+			"loading": "📄⏳…",
+			"empty": "📄❓✏️",
+			"save": "💾",
+			"changes": "✏️",
+			"unsaved": "✏️❗",
+			"externalChange": "📄🌍🔄⚠️",
+			"lines": "🔢",
+			"discardConfirm": "📄💾❗ 🗑️❓ ${path}",
+			"editorLabel": "📝✏️",
+			"editedFiles": "✏️ ${count} 📄",
+			"noDiff": "📄➖➖"
 		}
 	},
 	"gist": {
@@ -7123,55 +7123,55 @@
 		}
 	},
 	"captcha": {
-		"title": "确认您的身份",
-		"description": "某个 fount 节点想确认您是人类或自主 agent。",
+		"title": "👤❓",
+		"description": "🌐❓🤖/👤",
 		"help": {
 			"button": {
-				"aria-label": "为什么我会看到这个？"
+				"aria-label": "❓"
 			},
-			"title": "为什么我会看到这个？",
-			"text": "这通常是为了确认您不是广告脚本。如果您不需要继续操作，关闭此页面即可。"
+			"title": "❓",
+			"text": "🤖❓❗ 🗑️❓"
 		},
 		"install": {
-			"title": "按下面的步骤继续",
-			"termux": "下载 Termux（F-Droid）",
-			"paste": "2. 点击“复制命令”，将命令粘贴到刚打开的窗口，然后按回车键。",
-			"finish": "3. 等待安装完成。请保持窗口打开，回到本页，验证会自动继续。",
+			"title": "📋⬇️",
+			"termux": "📥 Termux",
+			"paste": "2️⃣ 📋 ➡️ ⌨️ ↩️",
+			"finish": "3️⃣ ⏳ 👀",
 			"platforms": {
-				"android": "1. 安装并打开 Termux。",
-				"windows": "1. 同时按下键盘上的 Win 和 R 键，打开“运行”窗口。",
-				"mac": "1. 同时按下 Command（⌘）和空格键，搜索“终端”，然后打开它。",
-				"linux": "1. 打开应用菜单，找到并打开“终端”。",
-				"unknown": "这台设备暂时没有可用的操作步骤。请在 Windows、Mac、Linux 电脑或 Android 手机上打开此链接。"
+				"android": "1️⃣ 📱 Termux",
+				"windows": "1️⃣ ⊕ Win + R",
+				"mac": "1️⃣ ⌘ + ␣ → 💻",
+				"linux": "1️⃣ 🐧→ 💻",
+				"unknown": "🖥️/🍏/🐧/📱"
 			}
 		},
 		"command": {
-			"copy": "复制命令",
-			"copied": "已复制，请粘贴",
-			"manualCopy": "已选中，请手动复制"
+			"copy": "📋⌨️",
+			"copied": "📋✅➡️ 📌",
+			"manualCopy": "📋✋"
 		},
 		"status": {
-			"checking": "正在准备验证，请稍等…",
-			"invalid": "这个链接无法使用。请回到刚才的页面，重新开始验证。",
-			"expired": "这个链接已过期。请回到刚才的页面，重新开始验证。",
-			"success": "验证通过！请回到刚才的页面继续操作。",
-			"failed": "验证未完成。请回到刚才的页面，重新开始验证。",
-			"connecting": "正在连接，请保持窗口打开。连接成功后会自动完成验证。",
-			"missing": "请按下方步骤启动验证工具。完成后，本页会自动继续。"
+			"checking": "🔎⏳…",
+			"invalid": "🔗❌",
+			"expired": "🔗⌛",
+			"success": "✅",
+			"failed": "❌",
+			"connecting": "🔌⏳",
+			"missing": "⬇️▶️"
 		}
 	},
 	"invitation-required": {
-		"title": "fount 是一个需要邀请的软件",
-		"description": "为确保我们的社区优质可靠，fount 只接纳被现有用户邀请的新用户。",
-		"getLink": "联系您身边任何已经在使用 fount 的人，向他们索要私聊邀请链接！",
-		"submit": "使用邀请链接",
-		"waiting": "邀请已发送，请等待对方确认。确认后会自动进入 fount。",
-		"success": "邀请已确认，正在进入 fount…",
-		"error": "暂时无法使用这个邀请，请检查网络链接或联系邀请您的人。",
+		"title": "💌❗ 🎟️",
+		"description": "💌✅ 🤝",
+		"getLink": "🙋❓ 💬🔗",
+		"submit": "📥🔗",
+		"waiting": "💌✉️ ⏳…",
+		"success": "💌✅ ➡️",
+		"error": "❌ 🔌/🙋",
 		"link": {
-			"label": "收到邀请链接了吗？粘贴到这里",
+			"label": "📥🔗",
 			"input": {
-				"placeholder": "在这里粘贴对方发给您的完整链接"
+				"placeholder": "📌🔗"
 			}
 		}
 	}
