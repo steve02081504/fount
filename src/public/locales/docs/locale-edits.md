@@ -56,3 +56,18 @@ update_locale_data "for key in (...):
 Rail uses the object key (`title` / `aria-label`); section header uses `` `${key}.title` `` as a string leaf so visible text fills without wiping rail glyphs.
 
 Frontend: `data-i18n` on the key; put the icon in `innerHTML` / children — object locales only set `title` / `aria-label`, they do not wipe markup. Do **not** add `textContent`/`innerHTML` to icon-button locales.
+
+## Native-quality review loop
+
+Machine-checkable residue is enforced by `fount test checks:i18n_copy` — null / empty leaves, product name written `font`, a space inside a compound, a lost newline or edge-whitespace frame, punctuation jammed against the wrong side, zero-width junk, doubled spaces, and letters from a writing system the locale does not use. Fix the copy, never the check, and add a rule there when a new class shows up.
+
+What a check cannot see is copy that is grammatical but still reads translated. That part runs as bounded sample rounds, one language at a time:
+
+```text
+python .esh/commands/locale_copy_sample.py sample de-DE --seed round-1 [--count 120]
+#   -> data/locale_copy_review/de-DE/round-1.tsv   (key, value, zh-CN, en-UK; prose-heavy leaves)
+#   a native reviewer reads the TSV and answers with {"key","new","why"} JSONL
+python .esh/commands/locale_copy_sample.py apply de-DE <patch.jsonl>
+```
+
+`apply` skips unchanged values and rejects an unknown key or a `${placeholder}` set that differs from zh-CN, and preserves the file's key order. `sample` records what it handed out in `data/locale_copy_review/<locale>/sampled.json` and skips those keys next time, so rounds cover fresh copy; `status` prints per-locale coverage, and once a locale is sampled through, sample it again with `--resample`. Loop per language: **finish the deterministic sweeps first, then sample immediately before dispatching the round** (a TSV sampled earlier goes stale and wastes the reviewer's attention), fix, apply, and move to the next language after **three consecutive rounds that find nothing**. Reviewer prompt: [locale_copy_review_prompt.md](../../../../.esh/commands/locale_copy_review_prompt.md); regenerate the per-locale `brand.md` / `markup.md` / `drift.md` worklists with `.esh/commands/locale_copy_worklists.py [locale …]` (`brand.md` catches a product name translated into a local word — `fontur`, `fontein`, `Quelle`, `фонд` — which the check's `font`-rooted brand rule cannot see; `drift.md` lists the keys whose zh-CN sentence is identical but whose wording diverges inside one locale). The scan rules are in [fount test checks:i18n_copy](../../../scripts/checks/AGENTS.md); the sampler's own contract is covered by `fount test checks:locale_copy_sample`.

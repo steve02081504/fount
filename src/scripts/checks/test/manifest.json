@@ -191,7 +191,20 @@
 				"--self-test"
 			],
 			"triggers": [
-				".esh/commands/locale_copy_sample.py"
+				".esh/commands/locale_copy_sample.py",
+				".esh/commands/locale_copy_review_prompt.md"
+			]
+		},
+		{
+			"name": "locale_copy_worklists",
+			"expected": 300,
+			"run": [
+				"python",
+				".esh/commands/locale_copy_worklists.py",
+				"--self-test"
+			],
+			"triggers": [
+				".esh/commands/locale_copy_worklists.py"
 			]
 		},
 		{
