@@ -6,6 +6,8 @@ import { getPartList } from '/scripts/endpoints/parts.mjs'
 import { getGroupState, setGroupWorld } from './endpoints/groupCore.mjs'
 import { mountTemplate } from './templates.mjs'
 
+const MOUNT_TOKEN = 'worldSettingsToken'
+
 /**
  * 填充世界选择器：空项在前，已卸载的绑定仍列为选项以便恢复或清除。
  * @param {HTMLSelectElement} select 目标选择器
@@ -40,10 +42,17 @@ export async function mountWorldSettings(host, groupId, options = {}) {
 	try {
 		const [state, worlds] = await Promise.all([options.state || getGroupState(groupId), getPartList('worlds').catch(() => [])])
 		if (!host.isConnected) return
+		// 重挂载会作废旧实例，它在 await 之后不得再改写容器（否则会把新面板的选择打回去）。
+		const token = crypto.randomUUID()
+		host.dataset[MOUNT_TOKEN] = token
+		/** @returns {boolean} 是否仍是当前挂载 */
+		const isCurrentMount = () => host.dataset[MOUNT_TOKEN] === token
 		const worldsI18n = 'chat.group.settings.page.worlds'
 		const bindings = state.worldBindings || { world: null, channelWorlds: {} }
 		const groupWorldName = bindings.world?.worldname || null
-		await mountTemplate(host, 'group/settings/world_panel', { prefix: crypto.randomUUID() })
+		/** 用户为本机频道选定的世界（尚未保存）；`null` 表示清空覆盖回归继承。 @type {Map<string, string | null>} */
+		const pendingOverrides = new Map()
+		await mountTemplate(host, 'group/settings/world_panel', { prefix: token })
 
 		const groupWorldSelect = host.querySelector('[data-world-group]')
 		const groupSave = host.querySelector('[data-world-save-group]')
@@ -71,9 +80,13 @@ export async function mountWorldSettings(host, groupId, options = {}) {
 			setElementI18n(channelSelect.options[0], `${worldsI18n}.noChannels`)
 		}
 
-		/** 按当前绑定重绘频道覆盖选项与生效世界。 */
+		/** 按当前选择重绘频道覆盖选项与生效世界。 */
 		const paint = () => {
-			const override = bindings.channelWorlds[channelSelect.value]?.worldname || null
+			if (!isCurrentMount()) return
+			const savedOverride = bindings.channelWorlds[channelSelect.value]?.worldname || null
+			// 用户动过的频道以选择为准（含清空），没动过的回落到已保存绑定。
+			const override = pendingOverrides.has(channelSelect.value)
+				? pendingOverrides.get(channelSelect.value) : savedOverride
 			fillWorldOptions(overrideSelect, worlds, override, `${worldsI18n}.inherit`)
 			const name = override || groupWorldName
 			setElementI18n(effective, `${worldsI18n}.${override ? 'usingOverride' : name ? 'usingInherited' : 'usingBuiltin'}`, { name })
@@ -83,12 +96,20 @@ export async function mountWorldSettings(host, groupId, options = {}) {
 			// 已保存的绑定可以清空，所以「选择与绑定一致」也只有在没有绑定时才等于无事可做。
 			groupSave.disabled = groupWorldSelect.value === (groupWorldName || '') && !groupWorldName
 			channelSave.disabled = !channelSelect.value
-				|| (overrideSelect.value === (override || '') && !override)
+				|| (overrideSelect.value === (savedOverride || '') && !savedOverride)
+		}
+		/** 记住本频道的选择，清空时与已保存绑定比较以决定是否保留待保存项。 */
+		const onOverrideChange = () => {
+			const value = overrideSelect.value || null
+			const saved = bindings.channelWorlds[channelSelect.value]?.worldname || null
+			pendingOverrides.delete(channelSelect.value)
+			if (value !== saved) pendingOverrides.set(channelSelect.value, value)
+			paint()
 		}
 
 		channelSelect.addEventListener('change', paint)
 		groupWorldSelect.addEventListener('change', paint)
-		overrideSelect.addEventListener('change', paint)
+		overrideSelect.addEventListener('change', onOverrideChange)
 
 		/**
 		 * @param {'group' | 'channel'} scope 绑定范围
@@ -104,10 +125,12 @@ export async function mountWorldSettings(host, groupId, options = {}) {
 					scope === 'channel' ? channelSelect.value : null,
 					scope,
 				)
+				if (!isCurrentMount()) return
 				showToastI18n('success', 'chat.hub.config.saved')
 				await mountWorldSettings(host, groupId, { channelId: channelSelect.value })
 			}
 			catch (error) {
+				if (!isCurrentMount()) return
 				for (const control of controls) control.disabled = false
 				paint()
 				handleError('chat.hub.config.saveFailed')(error)
