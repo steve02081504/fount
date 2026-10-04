@@ -60,7 +60,7 @@
 			"noInstanceRunning": "Aucune instance en cours d'exécution détectée, veuillez d'abord démarrer fount.",
 			"runPartLog": "Exécutez ${partpath} en tant que ${username}, arguments : ${args}",
 			"invokePartLog": "Appelez ${partpath} en tant que ${username}, paramètre : ${invokedata}",
-			"invalidCommand": "Commande non valide. Veuillez utiliser « fount run <nom d'utilisateur> <chemin du composant> <paramètres...> ».",
+			"invalidCommand": "Commande non valide. Utilisez « fount run <chemin du composant> <paramètres...> » (ou « fount runas <nom d'utilisateur> <chemin du composant> » pour préciser un utilisateur).",
 			"invalidCommandFormat": "Format de commande invalide.",
 			"unsupportedCommand": "Type de commande non pris en charge.",
 			"processMessageError": "Erreur lors du traitement du message IPC : ${error}",
@@ -146,7 +146,7 @@
 			"replHint": "Entrée pour exécuter · Maj+Entrée pour nouvelle ligne"
 		},
 		"test": {
-			"help": "Utilisation : fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --list [<groups>...]\n       fount test --kernel shutdown|reboot\n\nSélecteurs (groupes séparés par des espaces ; suites d'un même groupe par des virgules ; / et : équivalents) :\n  nom               toutes les suites du groupe (ex. shells/chat)\n  nom:suite         une suite précise\n  nom:suite:élément un sous-test ou fichier de test précis\n\nSans correspondance exacte, expansion par préfixe (shells → shells/chat, shells/social) ; globs (*, ?, **) pris en charge.\n\nPar défaut (fount test seul) : planifie échecs/incomplets et obsolètes en un passage et les exécute ; les échecs ne bloquent que leurs dépendants — sortie non nulle en fin de course. Jamais tout le dépôt — utiliser --all pour cela.\n\n--watch      surveillance continue ; reste actif même si la file est vide (Ctrl+C pour quitter) ; incompatible avec --all, --force, --update-estimates ou des sélecteurs\n--all        toutes les suites dans la portée\n--force      exécution forcée ; ne réutilise pas les derniers résultats\n--update-estimates  réécrit expected dans chaque manifest à partir des moyennes actuelles de la base ; sélecteurs optionnels ; n'exécute pas les tests\n--list        répertorie les suites de tests (peut utiliser des sélecteurs pour restreindre la portée) ; ne démarre pas le noyau et n'exécute aucun test\n--kernel     shutdown arrête le noyau de test ; reboot l'arrête puis le relance ; incompatible avec les autres arguments\n\nexemples :\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
+			"help": "Utilisation : fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --list [<groups>...]\n       fount test --kernel shutdown|reboot\n\nSélecteurs (groupes séparés par des espaces ; suites d'un même groupe par des virgules ; / et : équivalents) :\n  nom               toutes les suites du groupe (ex. shells/chat)\n  nom:suite         une suite précise\n  nom:suite:élément un sous-test ou fichier de test précis\n\nSans correspondance exacte, expansion par préfixe (shells → shells/chat, shells/social) ; globs (*, ?, **) pris en charge.\n\nPar défaut (fount test seul) : planifie échecs/incomplets et obsolètes en un passage et les exécute ; les échecs ne bloquent que leurs dépendants — sortie non nulle en fin de course. Jamais tout le dépôt — utiliser --all pour cela.\n\n--debug      série pas à pas : chaque suite est une étape ; les résidus sont vérifiés après chaque étape et tout résidu fait échouer la commande\n--watch      surveillance continue ; reste actif même si la file est vide (Ctrl+C pour quitter) ; incompatible avec --all, --force, --update-estimates ou des sélecteurs\n--all        toutes les suites dans la portée\n--force      exécution forcée ; ne réutilise pas les derniers résultats\n--update-estimates  réécrit expected dans chaque manifest à partir des moyennes actuelles de la base ; sélecteurs optionnels ; n'exécute pas les tests\n--list        répertorie les suites de tests (peut utiliser des sélecteurs pour restreindre la portée) ; ne démarre pas le noyau et n'exécute aucun test\n--kernel     shutdown arrête le noyau de test ; reboot l'arrête puis le relance ; incompatible avec les autres arguments\n\nexemples :\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
 			"watchNoGroups": "Utilisation : fount test --watch (incompatible avec toute autre option)",
 			"updateEstimates": {
 				"incompatible": "Utilisation : fount test --update-estimates [<groups>...] (incompatible avec tout autre commutateur)",
@@ -1483,7 +1483,7 @@
 			"shareExternalFailed": "Échec du téléchargement, veuillez vérifier le réseau",
 			"ownerSuccession": {
 				"main": "Initier un vote de succession",
-				"autoSignHint": "Après la soumission, la machine signera automatiquement la graine de signature du groupe sans saisir la clé privée. Dans un groupe multi-administrateurs, plus de la moitié des administrateurs doivent soumettre le même bulletin de vote (même identifiant et candidat) localement.",
+				"autoSignHint": "Après la soumission, la machine signera automatiquement la graine de signature du groupe sans saisir la clé privée. Dans un groupe multi-administrateurs, plus de la moitié des administrateurs doivent soumettre le même bulletin de vote (même ballotId et candidat) localement.",
 				"candidateLabel": "Hachage de clé publique successeur",
 				"description": "Transférez l'autorité administrative la plus élevée du groupe (MANAGE_ADMINS) au membre spécifié. Seuls les administrateurs peuvent opérer.",
 				"needHash": "Veuillez remplir le hachage de la clé publique du successeur",
@@ -1506,7 +1506,7 @@
 						"button": "Supprimer l'archive froide",
 						"confirm": "Êtes-vous sûr de vouloir supprimer tous les fichiers d'archives froides datant de plus de ${month} ? Cette opération est irréversible.",
 						"failed": "Échec de la suppression de l'archive : ${error}",
-						"hint": "Seule l'archive locale/*.jsonl est supprimée ; les points chauds et les ancres DAG ne sont pas affectés.",
+						"hint": "Seule l'archive archive/*.jsonl est supprimée ; les points chauds et les ancres DAG ne sont pas affectés.",
 						"invalidMonth": "Veuillez sélectionner un mois valide AAAA-MM.",
 						"ok": "${files} fichiers d'archive supprimés."
 					},
@@ -1537,7 +1537,7 @@
 				"fileCe": {
 					"mode": "Mode de cryptage des fichiers",
 					"modeConvergent": "Cryptage convergent (peut supprimer les doublons)",
-					"modeHint": "Le mode de confidentialité élevée utilise une clé de contenu aléatoire pour chaque bloc et marque ceMode=random ; cela réduit le risque que le texte clair soit devinable, mais augmente l'utilisation du stockage et de la bande passante.",
+					"modeHint": "Le mode de confidentialité élevée utilise un contentKey aléatoire pour chaque bloc et définit ceMode=random ; cela réduit le risque de deviner le texte en clair, mais augmente l'utilisation du stockage et de la bande passante.",
 					"modeRandom": "Mode haute confidentialité (clés aléatoires, pas de déduplication)"
 				},
 				"gossipTtl": "TTL de transfert de potins (nombre de sauts)",
@@ -1787,7 +1787,7 @@
 				"streamGeneratingIdle": "Délai d'inactivité de l'espace réservé généré par l'IA (millisecondes)",
 				"streamingSfu": "Adresse WebSocket de streaming SFU (facultatif)",
 				"trustedPeers": "Emplacement du voisin de confiance (Top-K)",
-				"wantIdsBudget": "Budget des personnes recherchées"
+				"wantIdsBudget": "Budget wantIds"
 			},
 			"feedback": {
 				"dagLine": "[${label}]",
@@ -2269,7 +2269,7 @@
 						"aria-label": "Supprimer le lien"
 					},
 					"url": {
-						"placeholder": "https://… ou font://…"
+						"placeholder": "https://… ou fount://…"
 					}
 				}
 			},
@@ -2326,7 +2326,7 @@
 				"subtitle": "Entrez l'ID du groupe pour rejoindre le chat correspondant",
 				"groupIdLabel": "Identifiant du groupe",
 				"groupId": {
-					"placeholder": "groupe_1776941580949_xxxx"
+					"placeholder": "group_1776941580949_xxxx"
 				},
 				"inviteLabel": "Code d'invitation (facultatif)",
 				"invite": {
@@ -2676,7 +2676,7 @@
 					"careRemoved": "Soins spéciaux annulés",
 					"setAlias": "Définir un alias",
 					"setAliasPrompt": "Définissez un alias local pour \"${name}\" (laissez vide pour effacer) :",
-					"aliasSaved": "Alias ​​​​mis à jour",
+					"aliasSaved": "Alias mis à jour",
 					"copyPubKey": "Copier le hachage de la clé publique",
 					"copyEntityId": "Copier l'ID de l'entité",
 					"dm": "Envoyer un message privé",
@@ -2775,7 +2775,7 @@
 					"noChars": "Aucun rôle disponible",
 					"setAlias": "Définir l'alias du groupe",
 					"setAliasPrompt": "Définissez un alias local pour \"${name}\" (laissez vide pour effacer) :",
-					"aliasSaved": "Alias ​​de groupe mis à jour",
+					"aliasSaved": "Alias de groupe mis à jour",
 					"leave": {
 						"main": "Quitter le groupe",
 						"batch": "Quitter le groupe sélectionné (${count})",
@@ -2970,7 +2970,7 @@
 				"groupRecoveryTitle": "Correction de la connexion de groupe",
 				"nonceRotated": "rotation occasionnelle (${nonce}…)",
 				"relayUrlsLabel": "adresse de relais réseau",
-				"relayUrlsTip": "Aidez les appareils à se découvrir sur Internet. Remplissez une adresse wss :// par ligne ; laissez vide pour utiliser le relais par défaut.",
+				"relayUrlsTip": "Aidez les appareils à se découvrir sur Internet. Remplissez une adresse wss:// par ligne ; laissez vide pour utiliser le relais par défaut.",
 				"repEmpty": "(nul)",
 				"repTip": "Les scores de préférence de connexion calculés de manière native en fonction du comportement des nœuds fédérés ne constituent pas des évaluations publiques des membres du groupe.",
 				"repTitle": "Crédibilité subjective de ce groupe",
@@ -3224,7 +3224,7 @@
 			},
 			"code_greeting": {
 				"name": "Dites bonjour avec du code",
-				"description": "« Bonjour, fount ! »",
+				"description": "Vous avez fait dire bonjour au code de fount pour la première fois, par un simple `// \"hello fount!\"`",
 				"locked_description": "Exécutez un bloc de code qui affiche 'hello fount!'."
 			}
 		},
@@ -4647,7 +4647,7 @@
 				"allowLabel": "Personnes visibles",
 				"exceptLabel": "Exclure des personnes",
 				"allow": {
-					"placeholder": "visibleHash des personnes, séparés par espace ou virgule"
+					"placeholder": "entityHash des personnes visibles, séparés par espace ou virgule"
 				},
 				"except": {
 					"placeholder": "Personnes à exclure (facultatif)"
@@ -4864,11 +4864,11 @@
 			"postEndedStats": "Vu par ${viewers} · ${likes} Aimé · ${duration}",
 			"link": {
 				"invite": "Inviter une connexion",
-				"needPeer": "Veuillez remplir l'entité homologueHash :liveId",
+				"needPeer": "Veuillez remplir l'entité homologue entityHash :liveId",
 				"invited": "L'invitation en ligne a été envoyée",
 				"linked": "Connecté",
 				"peer": {
-					"placeholder": "Entité homologueHash : liveId"
+					"placeholder": "Entité homologue entityHash : liveId"
 				}
 			},
 			"broadcast": {
@@ -4989,7 +4989,7 @@
 			"careRemoved": "Retiré des amis proches",
 			"setAlias": "Définir un alias",
 			"setAliasPrompt": "Définir un alias local (laisser vide pour effacer) :",
-			"aliasSaved": "Alias ​​​​mis à jour",
+			"aliasSaved": "Alias mis à jour",
 			"replies": "Réponses",
 			"copyLink": "Copier le lien",
 			"downloadHtml": "Télécharger HTML",
@@ -6127,7 +6127,7 @@
 		"card_title": "Convertisseur de Liens de Badges fount",
 		"original_url_label": "Collez l'URL img.shields.io",
 		"original_url": {
-			"placeholder": "Par exemple : https ://img.shields.io/badge/Hello-World-blue"
+			"placeholder": "Par exemple : https://img.shields.io/badge/Hello-World-blue"
 		},
 		"new_url_label": "Nouvelle URL générée",
 		"new_url": {

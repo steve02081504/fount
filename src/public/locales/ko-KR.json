@@ -5,7 +5,7 @@
 		"title": "알고 계셨나요?",
 		"data": [
 			"이전 페이지로 돌아가려면 fount 페이지에서 `esc` 키를 사용하세요.",
-			"'ctrl+s'를 사용하여 구성 페이지에 구성을 저장할 수 있습니다.",
+			"구성 페이지에서는 `ctrl+s`로 구성을 저장할 수 있습니다.",
 			"채팅 페이지에서 `shift` 키를 누르고 있으면 메시지를 빠르게 삭제할 수 있습니다.",
 			"개발자에게 알리지 않으면 어떤 문제가 발생했는지 전혀 알 수 없습니다.",
 			"갑자기 이상한 문제가 발생하고 개발자가 한동안 응답하지 않으면 `fount init` 명령을 사용하여 fount를 재설정해 볼 수 있습니다.",
@@ -60,7 +60,7 @@
 			"noInstanceRunning": "실행 중인 인스턴스가 감지되지 않았습니다. 먼저 fount를 시작하세요.",
 			"runPartLog": "${partpath}으로 ${username}를 실행합니다. 인수: ${args}",
 			"invokePartLog": "${partpath}으로 ${username}를 호출합니다. 매개변수: ${invokedata}",
-			"invalidCommand": "잘못된 명령입니다. \"fount run <사용자 이름> <컴포넌트 경로> <매개변수...>\" 형식을 사용하십시오.",
+			"invalidCommand": "\"fount run <컴포넌트 경로> <매개변수...>\" 형식을 사용하십시오(사용자를 지정하려면 \"fount runas <사용자 이름> <컴포넌트 경로>\").",
 			"invalidCommandFormat": "잘못된 명령 형식입니다.",
 			"unsupportedCommand": "지원되지 않는 명령 유형입니다.",
 			"processMessageError": "IPC 메시지 처리 중 오류가 발생했습니다: ${error}",
@@ -77,7 +77,7 @@
 			"git": {
 				"updating": "원격 리포지토리에서 업데이트하는 중...",
 				"upToDate": "이미 최신 버전입니다.",
-				"localAhead": "로컬 브랜치가 원격 브랜치보다 최신입니다. 업데이트가 필요하지 않습니다.",
+				"localAhead": "로컬 브랜치가 원격 브랜치보다 앞서 있습니다. 업데이트가 필요하지 않습니다.",
 				"noUpstream": "'${currentBranch}' 브랜치에 업스트림 브랜치가 구성되어 있지 않아 업데이트 확인을 건너뜁니다.",
 				"dirtyWorkingDirectory": "작업 디렉터리가 정리되지 않았습니다. 업데이트하기 전에 변경 사항을 스태시하거나 커밋하세요.",
 				"uncommittedBackedUpTo": "커밋되지 않은 변경 사항이 ${path}에 백업되었습니다.",
@@ -146,7 +146,7 @@
 			"replHint": "Enter로 실행 · Shift+Enter 줄바꿈"
 		},
 		"test": {
-			"help": "사용법: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --list [<groups>...]\n       fount test --kernel shutdown|reboot\n\n선택자(그룹은 공백으로 구분, 같은 그룹 내 suite는 쉼표로 구분. / 와: 는 동일):\n  이름              해당 그룹의 모든 suite(예: shells/chat)\n  이름:suite        특정 suite\n  이름:suite: 항목   특정 하위 테스트 또는 테스트 파일\n\n정확히 일치하지 않으면 접두사로 확장(shells → shells/chat, shells/social). glob(*, ?, **)도 지원.\n\n기본(옵션 없는 fount test): 실패/미완료/소음과 만료 항목을 한 번에 계획해 실행. 실패는 의존 슬롯만 막고, 마지막에 0이 아닌 종료 코드. 전체 실행은 하지 않음 — 전체는 --all.\n\n--watch      계속 감시. 큐가 비어도 종료하지 않음(Ctrl+C로 종료). --all / --force / --update-estimates / 선택자와 함께 사용 불가\n--all        범위 내 모든 suite\n--force      강제 실행, 이전 결과 재사용 안 함\n--update-estimates  현재 DB 평균 소요 시간으로 각 manifest의 expected를 다시 기록. 선택자 선택 가능. 테스트는 실행하지 않음\n--list        테스트 suite를 나열합니다(선택자로 범위를 좁힐 수 있음). 커널을 시작하지 않고 테스트를 실행하지 않습니다.\n--kernel     shutdown은 테스트 커널을 종료; reboot는 종료 후 다시 기동; 다른 인자와 함께 사용 불가\n\n예:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
+			"help": "사용법: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --list [<groups>...]\n       fount test --kernel shutdown|reboot\n\n선택자(그룹은 공백으로 구분, 같은 그룹 내 suite는 쉼표로 구분. / 와: 는 동일):\n  이름              해당 그룹의 모든 suite(예: shells/chat)\n  이름:suite        특정 suite\n  이름:suite: 항목   특정 하위 테스트 또는 테스트 파일\n\n정확히 일치하지 않으면 접두사로 확장(shells → shells/chat, shells/social). glob(*, ?, **)도 지원.\n\n기본(옵션 없는 fount test): 실패/미완료/소음과 만료 항목을 한 번에 계획해 실행. 실패는 의존 슬롯만 막고, 마지막에 0이 아닌 종료 코드. 전체 실행은 하지 않음 — 전체는 --all.\n\n--debug      단계 직렬: 각 suite가 한 단계이며, 단계마다 잔여물을 확인하고 발견 시 오류로 종료합니다\n--watch      계속 감시. 큐가 비어도 종료하지 않음(Ctrl+C로 종료). --all / --force / --update-estimates / 선택자와 함께 사용 불가\n--all        범위 내 모든 suite\n--force      강제 실행, 이전 결과 재사용 안 함\n--update-estimates  현재 DB 평균 소요 시간으로 각 manifest의 expected를 다시 기록. 선택자 선택 가능. 테스트는 실행하지 않음\n--list        테스트 suite를 나열합니다(선택자로 범위를 좁힐 수 있음). 커널을 시작하지 않고 테스트를 실행하지 않습니다.\n--kernel     shutdown은 테스트 커널을 종료; reboot는 종료 후 다시 기동; 다른 인자와 함께 사용 불가\n\n예:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
 			"watchNoGroups": "사용법: fount test --watch (다른 옵션과 함께 사용할 수 없음)",
 			"updateEstimates": {
 				"incompatible": "사용법: fount test --update-estimates [<groups>...] (다른 플래그와 함께 사용할 수 없음)",
@@ -180,7 +180,7 @@
 			},
 			"queue": {
 				"append": "대기열 추가: ${label}(${reason}) 남음 ≈ ${remaining}",
-				"remove": "대기열 제거: ${label}(${reason}) 남음 ≈ ${remaining}"
+				"remove": "대기열 제거: ${label} (${reason}) · 남음 ≈ ${remaining}"
 			},
 			"display": {
 				"eta": "예상 ${expected}, 전체 남음 ≈ ${remaining}",
@@ -188,7 +188,7 @@
 				"explicitSelectedCount": "명시적으로 선택됨: ${count}",
 				"reason": "${label}: ${reason}",
 				"remaining": "전체 남음 ≈ ${remaining}",
-				"remainingUnknown": "전체 남음 ≈ ${remaining} (미지 소요 ${count}건 추가)",
+				"remainingUnknown": "전체 남음 ≈ ${remaining}, 소요 시간 미상 ${count}건 추가",
 				"remainingOnlyUnknown": "전체 남음: 미지 소요 ${count}건",
 				"queued": {
 					"switch": "count",
@@ -272,7 +272,7 @@
 			"allReusedHint": "이번에는 실제로 실행된 스위트가 없습니다: 실패는 이전 결과를 재사용한 것이며, 관련 파일이 변경되지 않아 차단이 해소되지 않았습니다. 관련 파일을 수정한 뒤 다시 실행하거나 `fount test --force`로 강제 실행하세요.",
 			"failuresSaved": "저장된 실패 목록: ${path}(${count}개 스위트)",
 			"failuresCleared": "manifest ${manifestId} 모두 통과, 실패 목록 삭제됨.",
-			"terminated": "시간 초과 종료: ${label} — ${reason}",
+			"terminated": "시간 초과로 종료됨: ${label} — ${reason}",
 			"sleepDetected": "시스템 절전 감지(워치독 간격 점프 ${gap} ≥ ${limit}). ${label}을(를) 중단하고 재실행 대기(이미 실행 ${elapsed})",
 			"sleepRetry": "시스템 절전으로 중단됨. ${label} 재실행(${attempt}번째)",
 			"nothingToContinue": "모두 통과했고 만료 항목 없음, 다시 실행할 필요 없습니다.",
@@ -318,16 +318,16 @@
 				"exitInProgress": "진행 중",
 				"progressFormat": "${completed}/${total} 스위트",
 				"suitesFormat": "${passed}/${completed} 통과",
-				"artifacts": "제품 디렉터리: `${path}`",
+				"artifacts": "산출물 디렉터리: `${path}`",
 				"columnSuite": "스위트",
-				"columnDuration": "시간이 많이 걸리는",
+				"columnDuration": "소요 시간",
 				"continueReasonsLink": "트리거 이유: 자세한 내용은 [${path}](${path})를 참조하세요.",
 				"deadTriggersHint": "다음 glob은 저장소 내의 어떤 파일과도 일치하지 않습니다(git 추적됨 + 추적되지 않음 무시되지 않음).",
 				"durationMs": "${ms}밀리초",
 				"durationUnit": {
 					"day": "${n}일",
 					"hour": "${n}시간",
-					"min": "${n}포인트",
+					"min": "${n}분",
 					"minute": "${n}분",
 					"sec": "${n}초"
 				},
@@ -366,7 +366,7 @@
 					"commitRange": "커밋 범위",
 					"continueReason": "이유",
 					"directRequiredBy": "직속 정당",
-					"duration": "시간이 많이 걸리는",
+					"duration": "소요 시간",
 					"expectedBlocked": "(예상 차단)",
 					"failedFiles": "실패 파일",
 					"gateReason": "달리는 이유",
@@ -377,19 +377,19 @@
 					"matchedTriggers": "히트 트리거",
 					"noise": "노이즈",
 					"pullDownstream": "다운스트림 가져오기: ${requiredBy}는 완벽하지 않으며 함께 포함됩니다.",
-					"pullUpstream": "업스트림 가져오기: ${requiredBy}의 종속성이 녹색이 ​​아닙니다.",
+					"pullUpstream": "업스트림 가져오기: ${requiredBy}의 종속성이 녹색이 아닙니다.",
 					"reused": "(재사용)",
 					"rootCause": "근본 원인",
 					"skipBecause": "issue",
 					"skipBecauseClosed": "후속 조치 필요(닫힘)",
 					"skipTree": "skip_tree",
 					"terminateReason": "종료 이유",
-					"triggerHashDrift": "트리거 지문이 현재 작업 공간과 일치하지 않습니다(dirty→net 무시).",
+					"triggerHashDrift": "트리거 지문이 현재 작업 공간과 일치하지 않습니다(정리되지 않음→정리됨은 무시).",
 					"uncommittedHashRange": "다이제스트가 제출되지 않았습니다."
 				},
 				"field": {
 					"command": "주문",
-					"duration": "시간이 많이 걸리는",
+					"duration": "소요 시간",
 					"estimatedRemaining": "예상 남은 시간",
 					"exit": "종료",
 					"failed": "실패",
@@ -405,7 +405,7 @@
 			},
 			"state": {
 				"title": "fount test 상태",
-				"artifacts": "현재 디렉터리: `${path}`",
+				"artifacts": "상태 디렉터리: `${path}`",
 				"sectionDependencyTree": "종속성 트리",
 				"sectionOverview": "각 스위트의 현재 상태",
 				"sectionBlocked": "차단된 제품군",
@@ -415,7 +415,7 @@
 				"column": {
 					"blocked": "차단 횟수",
 					"commit": "커밋",
-					"duration": "시간이 많이 걸리는",
+					"duration": "소요 시간",
 					"log": "로그",
 					"ranAt": "마지막 실행",
 					"status": "상태",
@@ -431,9 +431,9 @@
 				"unknown": "TERMINATED ${label}: 테스트가 중단되었습니다."
 			},
 			"unknown": {
-				"fileFilter": "알 수 없는 테스트 파일 필터링: ${suite} → ${names}",
+				"fileFilter": "알 수 없는 테스트 파일 필터: ${suite} → ${names}",
 				"manifestId": "알 수 없는 매니페스트 ID: ${ids}",
-				"subtestFilter": "알 수 없는 하위 테스트 필터링: ${suite} → ${names}",
+				"subtestFilter": "알 수 없는 하위 테스트 필터: ${suite} → ${names}",
 				"suite": "알 수 없는 스위트: ${name}",
 				"suiteSelector": "알 수 없는 제품군 지정: ${ids}"
 			},
@@ -490,7 +490,7 @@
 				"createDesktopAppFailed": "오류: 데스크톱 애플리케이션을 생성하지 못했습니다."
 			},
 			"steam": {
-				"registering": "fount를 Steam 비 Steam 게임으로 등록하는 중…",
+				"registering": "fount를 Steam 비Steam 게임으로 등록하는 중…",
 				"registered": "fount가 Steam 라이브러리에 추가되었습니다. Steam이 실행 중이면 변경 사항을 적용하려면 다시 시작하세요.",
 				"failed": "Steam 등록 실패: ${message}",
 				"exeFailed": "fount.exe를 생성하지 못해 Steam 등록을 건너뜁니다."
@@ -502,16 +502,16 @@
 				"backupSavedTo": "로컬 변경 사항의 백업이 `${path}`에 저장되었습니다.",
 				"updatingFromRemote": "원격 저장소에서 업데이트 중...",
 				"alreadyUpToDate": "이미 최신입니다.",
-				"localBranchAhead": "로컬 지점이 원격 지점보다 앞서 있습니다. 업데이트가 필요하지 않습니다.",
-				"branchesDiverged": "로컬 및 원격 분기가 분기되었습니다. 강제 업데이트 진행 중...",
+				"localBranchAhead": "로컬 브랜치가 원격 브랜치보다 앞서 있습니다. 업데이트가 필요하지 않습니다.",
+				"branchesDiverged": "로컬 브랜치와 원격 브랜치가 갈라졌습니다. 강제로 업데이트하는 중...",
 				"unrelatedHistories": "로컬 및 원격 저장소에 공통 기록이 없습니다. 강제 업데이트 중…",
 				"notOnBranch": "브랜치에 없으면 '마스터'로 전환하세요..",
-				"upstreamGoneFallbackMaster": "원격 분기 '${branch}'가 삭제되어 대신 master를 추적합니다…",
-				"noUpstreamBranch": "경고: '${branch}' 분기에 구성된 업스트림 분기가 없습니다. '${remote}'를 사용하세요.",
+				"upstreamGoneFallbackMaster": "원격 브랜치 '${branch}'가 삭제되어 대신 master를 추적합니다…",
+				"noUpstreamBranch": "경고: '${branch}' 브랜치에 구성된 업스트림 브랜치가 없습니다. '${remote}'를 사용하세요.",
 				"dirtyWorkingDirectory": "경고: 작업 디렉터리에 커밋되지 않은 변경 사항이 있습니다. 업데이트하기 전에 변경 사항을 스테이징하거나 커밋하세요.",
 				"notInstalled": "Git이 설치되지 않았습니다. 설치하려고 합니다...",
-				"notInstalledSkippingPull": "Git이 설치되지 않았습니다. `git pull`을 건너뛰세요.",
-				"repoNotFoundSkippingPull": "저장소를 찾을 수 없습니다. `git pull`을 건너뛰세요.",
+				"notInstalledSkippingPull": "Git이 설치되지 않았습니다. `git pull`을 건너뜁니다.",
+				"repoNotFoundSkippingPull": "저장소를 찾을 수 없습니다. `git pull`을 건너뜁니다.",
 				"fetchFailed": "'원본'에서 가져오지 못했습니다.",
 				"fetchFailedSkippingUpdate": "GitHub에서 업데이트를 가져올 수 없습니다. 업데이트를 건너뜁니다.",
 				"remoteRefUnavailable": "원격 참조 '${ref}'을(를) 사용할 수 없습니다. Git 동기화를 건너뜁니다.",
@@ -548,7 +548,7 @@
 				"compilingFavicon": "파비콘 파일이 없습니다. 서버를 시작해 생성하는 중...",
 				"packageFailed": "오류: ${package} 설치에 실패했습니다.",
 				"browserMissing": "기본 브라우저가 감지되지 않습니다. 설치를 시도 중입니다...",
-				"untrustedPartsWarning": "시스템에 신뢰할 수 없는 요소 구성 요소를 설치하지 마십시오. 그들은 무엇이든 할 수 있습니다.",
+				"untrustedPartsWarning": "시스템에 신뢰할 수 없는 fount 구성 요소를 설치하지 마십시오. 그것들은 무엇이든 할 수 있습니다.",
 				"permissionDeniedAsRoot": "오류: fount 디렉터리 '${path}'에 쓸 수 없습니다. root로 실행 중이지만 액세스가 여전히 거부되었습니다. 현재 사용자에게 모든 권한을 부여하려면 이 폴더의 보안 권한을 확인하고 수정하십시오.",
 				"permissionDeniedNotRoot": "오류: fount 디렉터리 '${path}'에 쓸 수 없습니다. 폴더의 보안 권한을 수정하여 현재 사용자에게 쓰기 액세스 권한을 부여하거나, root로 fount를 실행하십시오.",
 				"rootWarningAsRoot": "권장되지 않음: 루트로 fount를 실행하면 모든 fount 구성 요소에 대한 전체 시스템 액세스 권한이 부여됩니다.",
@@ -562,14 +562,14 @@
 			},
 			"keepalive": {
 				"initComplete": "재초기화 완료. fount를 다시 시작하는 중입니다...",
-				"autoInitDisabled": "지난 짧은 기간 동안 fount가 여러 번 다시 시작되었지만 `.noautoinit` 파일로 인해 자동 재초기화가 비활성화되었습니다. 종료합니다.",
+				"autoInitDisabled": "최근 짧은 시간 동안 fount가 여러 번 다시 시작되었지만 `.noautoinit` 파일이 있어 자동 재초기화가 비활성화되었습니다. 종료합니다.",
 				"restartingTooFast": "짧은 시간 동안 fount가 여러 번 다시 시작되었습니다. 강제 재초기화...",
 				"failedToStart": "자동 수리를 시도한 후에도 잠시 동안 fount가 작동하지 않는 현상이 발생합니다. 로그에서 오류를 확인하세요.",
 				"initFailed": "fount 초기화에 실패했습니다. 종료합니다."
 			},
 			"terminalKeybindings": {
 				"registered": "터미널 키 바인딩 패치를 구성했습니다.",
-				"wtPatchFailed": "Windows Terminal 설정 `${path}`에 패치를 적용할 수 없습니다: ${message}",
+				"wtPatchFailed": "Windows Terminal 설정 `${path}`을(를) 패치할 수 없습니다: ${message}",
 				"wtRemoved": "Windows Terminal 설정에서 fount 키 바인딩을 제거했습니다: `${path}`",
 				"editorRemoved": "편집기 터미널 키 바인딩에서 fount 설정을 제거했습니다: `${path}`"
 			},
@@ -613,7 +613,7 @@
 					},
 					"installedPwshModules": "설치된 pwsh 모듈 제거 중...",
 					"installedSystemPackages": "설치된 시스템 패키지 제거 중...",
-					"protocolHandler": "`fount://` 프로토콜 핸들러 삭제 중...",
+					"protocolHandler": "`fount://` 프로토콜 핸들러 삭제 중…",
 					"startMenuShortcut": "시작 메뉴 바로가기 삭제 중...",
 					"steamShortcut": "Steam에서 fount를 제거하는 중…",
 					"terminalKeybindings": "터미널 키 바인딩 패치 제거 중...",
@@ -755,13 +755,13 @@
 			},
 			"aiSources": {
 				"title": "자유로운 AI 소스 연동",
-				"description": "fount는 비교할 수 없는 선택의 폭과 유연성을 제공합니다. OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), OpenRouter, NovelAI 등 <i>모든</i> AI 소스에 연결하세요. 커뮤니케이션 로직은 당신의 의지에 따라 코드의 힘으로 만들어집니다."
+				"description": "fount는 비교할 수 없는 선택의 폭과 유연성을 제공합니다. OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), OpenRouter, NovelAI 등 <i>모든</i> AI 소스에 연결하세요 — 커뮤니케이션 로직은 <i>당신의</i> 의지에 따라 코드의 힘으로 만들어집니다."
 			}
 		}
 	},
 	"protocolhandler": {
 		"title": "fount 프로토콜 처리",
-		"description": "조용하고 효율적으로 이 페이지는 귀하의 의도를 원천 내에서 원활한 전환으로 변환합니다. 커튼 뒤의 조용한 마법을 생각해 보세요.",
+		"description": "이 페이지는 조용하고 효율적으로 당신의 의도를 fount 안에서 매끄러운 전환으로 바꿔 줍니다. 무대 뒤의 조용한 마법이라고 생각해 보세요.",
 		"processing": "프로토콜 처리 중...",
 		"invalidProtocol": "잘못된 프로토콜입니다.",
 		"insufficientParams": "매개변수가 부족합니다.",
@@ -909,14 +909,14 @@
 		},
 		"endScreen": {
 			"title": "훌륭합니다! 가이드 완료!",
-			"subtitle": "이제 fount 사용법을 익혔습니다!",
+			"subtitle": "이제 fount 사용법을 익히셨습니다!",
 			"endButton": "시작하기!"
 		},
 		"progressMessages": {
-			"mouseMove": "마우스 ${mouseIcon}를 움직여 보세요.",
-			"keyboardPress": "키보드 ${keyboardIcon}에서 아무 키나 눌러보세요.",
-			"mobileTouchMove": "휴대폰 ${phoneIcon}을(를) 찾아보세요. 이제 손가락 중 하나를 사용하여 화면에 접촉한 후, 그대로 미끄러뜨리세요.",
-			"mobileClick": "손가락으로 휴대폰 ${phoneIcon} 화면을 한 번 가볍게 두드린 다음 바로 떼어보세요. 참 쉽죠?"
+			"mouseMove": "마우스 ${mouseIcon}를 찾아 잡으세요.<br/>그런 다음 움직여 보세요.",
+			"keyboardPress": "키보드 ${keyboardIcon}를 찾으세요.<br/>손가락으로 아무 키나 눌러 보세요.",
+			"mobileTouchMove": "휴대폰 ${phoneIcon}을(를) 찾으세요.<br/>손가락으로 화면을 짚은 뒤 그대로 미끄러뜨려 보세요.",
+			"mobileClick": "손가락으로 휴대폰 ${phoneIcon} 화면을 살짝 눌렀다가<br/>바로 떼어 보세요. 아주 잘하셨어요!"
 		},
 		"achievements": {
 			"complete_tutorial": {
@@ -926,7 +926,7 @@
 			},
 			"skip_tutorial": {
 				"name": "나는 건너뛰었다",
-				"description": "\"튜토리얼? 그게 뭐야? 먹을 수 있는 거야?\"",
+				"description": "튜토리얼? 그게 뭐야? 먹을 수 있는 거야?",
 				"locked_description": "소개 튜토리얼을 한 번 건너뛰세요."
 			}
 		},
@@ -973,7 +973,7 @@
 			}
 		},
 		"emptyList": {
-			"message": "비어 있습니다...<br/>[새 파트를 생성](${newpartLink})하거나 [fount의 텔레그램 서버](${telegramLink})로 가서 재미있게 놀아보는 건 어떨까요?"
+			"message": "비어 있습니다...<br/>[새 파트를 생성](${newpartLink})하거나 [fount의 텔레그램 서버](${telegramLink})에 가서 재미있게 놀아보는 건 어떨까요?"
 		},
 		"part_pages": {
 			"default": {
@@ -1317,7 +1317,7 @@
 			},
 			"auditLog": {
 				"title": "그룹 감사 로그",
-				"hint": "현재 채택 거버넌스 분기의 구성원, 역할, 채널 및 중재 이벤트를 표시합니다. 관리자에게만 표시됩니다.",
+				"hint": "현재 채택 거버넌스 분기의 멤버, 역할, 채널 및 중재 이벤트를 표시합니다. 관리자에게만 표시됩니다.",
 				"filterLabel": "이벤트 유형",
 				"refresh": "새로 고치다",
 				"filterAll": "모든 유형",
@@ -1353,8 +1353,8 @@
 					"file_delete": "파일 삭제"
 				},
 				"event": {
-					"member_join": "${target} 멤버이 그룹에 가입했습니다.",
-					"member_leave": "멤버이 그룹을 탈퇴함",
+					"member_join": "${target} 멤버가 그룹에 가입했습니다.",
+					"member_leave": "멤버가 그룹을 탈퇴함",
 					"member_kick": "멤버 ${target} 추방",
 					"member_ban": "멤버 ${target} 차단",
 					"member_unban": "${target} 차단 해제",
@@ -1388,7 +1388,7 @@
 					"type": "유형"
 				}
 			},
-			"membersEmpty": "(아직 멤버이 없습니다)",
+			"membersEmpty": "(아직 멤버가 없습니다)",
 			"channelEncryptionGsh": "채널 키 종단 간 암호화(CKG)",
 			"e2eDecryptUnavailable": "메시지가 암호화되어 현재 장치에서 해독할 수 없습니다.",
 			"contentRefBodyPending": "외부 링크 텍스트(content_ref, 아직 확인을 위해 가져오지 않음)",
@@ -1485,7 +1485,7 @@
 				"main": "후임투표 개시",
 				"autoSignHint": "제출하면 이 기기가 개인 키 입력 없이 해당 그룹의 서명 시드에 자동으로 서명합니다. 관리자가 여러 명인 그룹에서는 과반수의 관리자가 각자 이 기기에서 동일한 표(동일한 ballotId와 후보)를 제출해야 합니다.",
 				"candidateLabel": "후속 공개 키 해시",
-				"description": "그룹의 최고 관리 권한(MANAGE_ADMINS)을 지정된 구성원에게 이전합니다. 관리자만 작업할 수 있습니다.",
+				"description": "그룹의 최고 관리 권한(MANAGE_ADMINS)을 지정된 멤버에게 이전합니다. 관리자만 작업할 수 있습니다.",
 				"needHash": "후임자의 공개 키 해시를 입력하세요.",
 				"selfButton": "자신을 추천하세요"
 			},
@@ -1519,7 +1519,7 @@
 				"autoChannelGcHint": "30일 이상 침묵하여 접속이 불가능한 고립된 섬 채널은 최대 2개까지 구현 시 삭제됩니다.",
 				"autoReply": {
 					"frequency": "역할 응답 자동 트리거(N개의 사용자 메시지마다 0은 꺼짐)",
-					"frequencyHint": "0은 꺼짐을 의미합니다. @멘션은 여전히 ​​즉시 실행됩니다.",
+					"frequencyHint": "0은 꺼짐을 의미합니다. @멘션은 여전히 즉시 실행됩니다.",
 					"tokenBucket": "자동 응답 압력 스케줄링(토큰 버킷)",
 					"tokenBucketHint": "활성화된 후 각 캐릭터는 채널별로 토큰 버킷을 유지합니다. 버킷이 비어 있으면 onMessage가 일시적으로 트리거되지 않으므로 피크 기간 동안 지속적인 화면 새로 고침이 금지될 수 있습니다."
 				},
@@ -1532,7 +1532,7 @@
 				"eventRetentionDepth": "DAG 이벤트 보존 깊이",
 				"eventRetentionMs": "DAG 이벤트 보존 시간",
 				"explorePeers": "이웃 슬롯 탐색",
-				"fedPartition": "연방 부서 수",
+				"fedPartition": "연합 파티션 수",
 				"fedTuningHint": "DAG 그룹 설정을 작성합니다. 수정 후에는 연합방을 다시 바인딩하는 것이 좋습니다.",
 				"fileCe": {
 					"mode": "파일 암호화 모드",
@@ -1588,7 +1588,7 @@
 					"governanceHint": "DAG의 그룹 수준 정책을 작성합니다. 관리자 또는 MANAGE_ADMINS 권한이 필요합니다.",
 					"governanceDenied": "그룹 거버넌스 설정을 수정할 권한이 없습니다.",
 					"rolesDenied": "역할을 수정할 수 있는 MANAGE_ROLES 권한이 없습니다.",
-					"notMember": "나는 더 이상 이 그룹의 멤버이 아닙니다. 이 그룹의 데이터는 그룹을 탈퇴한 후 자동으로 삭제되었습니다.",
+					"notMember": "나는 더 이상 이 그룹의 멤버가 아닙니다. 이 그룹의 데이터는 그룹을 탈퇴한 후 자동으로 삭제되었습니다.",
 					"basicTitle": "그룹 거버넌스",
 					"profileSectionTitle": "그룹 메시지",
 					"profileSectionHint": "그룹 이름, 소개, 가입 방법은 그룹 메타데이터에 기록됩니다.",
@@ -1603,11 +1603,11 @@
 					"joinPow": "PoW 필요",
 					"powDifficultyLabel": "PoW 난이도",
 					"securityAdvancedTitle": "보안 및 그룹 주인 작업",
-					"securityAdvancedDescription": "주요 순환 및 그룹 리더 승계; 잘못된 작업은 멤버 액세스에 영향을 미칠 수 있습니다.",
+					"securityAdvancedDescription": "키 순환 및 그룹 리더 승계 — 잘못된 작업은 멤버 액세스에 영향을 미칠 수 있습니다.",
 					"powDifficultyTip": "작업 난이도 증명. 값이 높을수록 낯선 사람이 공개 그룹에 가입하는 데 필요한 계산 시간이 길어집니다.",
 					"maxDagPayloadTip": "단일 그룹 이벤트에 허용되는 데이터의 상한입니다. 너무 크면 동기화 메모리와 네트워크 오버헤드가 증가합니다.",
 					"trustedPeersTip": "연결을 유지하기 위해 우선 연결하는 신뢰도 높은 연합 이웃 수입니다.",
-					"gossipTtlTip": "메시지가 전달될 수 있는 최대 연방 노드 수입니다. 이를 늘리면 적용 범위가 늘어나고 트래픽도 늘어납니다.",
+					"gossipTtlTip": "메시지가 전달될 수 있는 최대 연합 노드 수입니다. 이를 늘리면 적용 범위가 늘어나고 트래픽도 늘어납니다.",
 					"hlcTip": "원격 노드의 시계가 로컬 노드의 시계보다 빠르도록 허용되는 최대 시간으로, 향후 비정상적인 이벤트를 거부하는 데 사용됩니다.",
 					"sfuTip": "선택적 외부 오디오 및 비디오 전달 서비스 주소입니다. 내장된 지점 간/중계 호출을 사용하려면 비워 두세요.",
 					"iceTip": "WebRTC가 라우터를 통과하도록 돕습니다. 직접 연결이 실패하면 TURN이 오디오, 영상, 연합 트래픽을 대신 전달합니다.",
@@ -1622,16 +1622,16 @@
 					"roleDefault": "기본",
 					"permissionUpdated": "권한이 업데이트되었습니다.",
 					"permissionUpdateFailed": "권한 업데이트 실패: ${error}",
-					"noMembers": "아직 멤버이 없습니다.",
+					"noMembers": "아직 멤버가 없습니다.",
 					"memberRoles": "역할:",
 					"ban": "차단",
-					"banConfirm": "정말로 ${name} 멤버을 차단하시겠습니까?",
-					"banSuccess": "멤버이 차단되었습니다.",
-					"banFailed": "멤버을 차단하지 못했습니다: ${error}",
+					"banConfirm": "정말로 ${name} 멤버를 차단하시겠습니까?",
+					"banSuccess": "멤버가 차단되었습니다.",
+					"banFailed": "멤버를 차단하지 못했습니다: ${error}",
 					"bannedTitle": "금지된 멤버",
 					"unban": "차단 해제",
 					"unbanConfirm": "${name} 멤버의 차단을 해제하시겠습니까?",
-					"unbanSuccess": "멤버이 차단 해제되었습니다.",
+					"unbanSuccess": "멤버가 차단 해제되었습니다.",
 					"unbanFailed": "차단 해제 실패: ${error}",
 					"gshGenerationRetentionHint": "현재는 가장 최근 64세대의 파일 마스터 키 기록만 유지됩니다. 가장 오래된 기록 파일은 초과되면 복호화가 불가능할 수 있으므로 중요한 데이터는 정기적으로 보관하는 것이 좋습니다.",
 					"gshGenerationNearLimit": "현재 파일 마스터 키의 ${generation}세대(최대 ${maxGenerations}세대)로 순환되었습니다. 계속해서 자주 교체하면 가장 오래된 기록 키가 폐기됩니다.",
@@ -1682,16 +1682,16 @@
 							"packPrompt": "이모티콘 팩 ID"
 						},
 						"delete": "이모티콘 삭제",
-						"deleteConfirm": "이 이모티콘 그룹을 삭제하시겠습니까?",
+						"deleteConfirm": "이 그룹 이모티콘을 삭제하시겠습니까?",
 						"deleteFailed": "삭제 실패: ${error}",
 						"deleteOk": "이모티콘이 삭제되었습니다.",
-						"empty": "아직 그룹 표정이 없습니다.",
+						"empty": "아직 그룹 이모티콘이 없습니다.",
 						"hint": "멤버는 채팅에 이 이모티콘을 넣거나 보낼 수 있습니다. 설치되지 않은 이미지는 연합 노드를 통해 필요할 때 가져옵니다.",
 						"packGroupOption": "그룹 기본",
-						"idCopied": "이모지 팩 ID를 클립보드에 복사했습니다",
+						"idCopied": "이모티콘 팩 ID를 클립보드에 복사했습니다",
 						"idCopy": "복사",
 						"packCount": "${name} - ${count}개",
-						"title": "그룹 맞춤 표정식",
+						"title": "그룹 맞춤 이모티콘",
 						"upload": "이모티콘 업로드",
 						"uploadFailed": "업로드 실패: ${error}",
 						"uploadOk": "이모티콘이 업로드되었습니다."
@@ -1746,10 +1746,10 @@
 					},
 					"kick": {
 						"main": "쫓겨나다",
-						"confirm": "정말로 ${name} 멤버을 추방하시겠습니까?",
-						"failed": "멤버을 추방하지 못했습니다: ${error}",
-						"selfNodeWarning": "경고: 이 구성원은 나와 동일한 노드 ID를 사용합니다. 또한, 퇴출된 후 그룹에서도 제명됩니다. 계속하시겠습니까?",
-						"success": "멤버이 쫓겨났습니다."
+						"confirm": "정말로 ${name} 멤버를 추방하시겠습니까?",
+						"failed": "멤버를 추방하지 못했습니다: ${error}",
+						"selfNodeWarning": "경고: 이 멤버는 나와 동일한 노드 ID를 사용합니다. 또한, 퇴출된 후 그룹에서도 제명됩니다. 계속하시겠습니까?",
+						"success": "멤버가 쫓겨났습니다."
 					},
 					"tabs": {
 						"advanced": "고급의",
@@ -1763,10 +1763,10 @@
 						"groupPermissions": "그룹 권한"
 					},
 					"key": {
-						"managementTip": "교체 후 새 키를 구성원에게 재배포해야 합니다. 키가 손상되었다고 의심되는 경우에만 수동 조치를 취해야 합니다.",
+						"managementTip": "교체 후 새 키를 멤버에게 재배포해야 합니다. 키가 손상되었다고 의심되는 경우에만 수동 조치를 취해야 합니다.",
 						"managementTitle": "키 관리",
 						"rotate": "그룹 파일 마스터 키 순환",
-						"rotateConfirm": "이 그룹 파일의 마스터 키를 수동으로 순환하시겠습니까? 새 구성원은 기록 파일 키를 다시 동기화해야 합니다.",
+						"rotateConfirm": "이 그룹 파일의 마스터 키를 수동으로 순환하시겠습니까? 새 멤버는 기록 파일 키를 다시 동기화해야 합니다.",
 						"rotateFailed": "키 순환 실패: ${error}",
 						"rotateOk": "키가 순환되었습니다."
 					},
@@ -1840,7 +1840,7 @@
 					"textContent": "스트리밍 주소는 임베드 가능한 https:// 페이지여야 합니다. 그렇지 않으면 그룹 설정을 먼저 구성하고 새로고침하여 시청 토큰을 받으세요."
 				},
 				"noSfu": {
-					"textContent": "StreamingSfuWss가 구성되지 않았습니다. 관리자는 그룹 설정에서 LiveKit/mediasoup 시청 주소를 입력할 수 있습니다."
+					"textContent": "streamingSfuWss가 구성되지 않았습니다. 관리자는 그룹 설정에서 LiveKit/mediasoup 시청 주소를 입력할 수 있습니다."
 				},
 				"ok": "미디어 스트림 획득(중지됨, 방송되지 않음)",
 				"test": "미디어 장치 테스트"
@@ -1941,7 +1941,7 @@
 				"empty": {
 					"careDescription": "특히 관심 있는 멤버으로부터 새 메시지가 전송되면 여기에서 최대한 빨리 확인할 수 있습니다.",
 					"careTitle": "특별 관심 사항: 아직 소식이 없습니다.",
-					"mentionDescription": "그룹 채팅에서 다른 멤버이 나를 @하면 메시지가 여기에 표시됩니다.",
+					"mentionDescription": "그룹 채팅에서 다른 멤버가 나를 @하면 메시지가 여기에 표시됩니다.",
 					"mentionTitle": "아직 아무도 나를 언급하지 않았습니다",
 					"messageDescription": "다양한 그룹 채팅 및 채널의 메시지 업데이트가 여기에 표시됩니다.",
 					"messageTitle": "받은편지함이 비어 있습니다.",
@@ -2076,7 +2076,7 @@
 				"plaintextSidecar": "이 채널은 요청 시 동기화됩니다. 로컬 메시지 사이드카는 콘텐츠를 일반 텍스트로 캐시합니다.",
 				"quarantine": "시계 오차로 격리 구역에 임시 보관된 연합 이벤트 ${count}건이 있으며, 시스템 시간이 맞으면 자동으로 재생됩니다.",
 				"mailboxPending": "오프라인 편지함에 배달 대기 중인 메시지 ${count}개가 있습니다.",
-				"syncing": "연방 이웃과 동기화…",
+				"syncing": "연합 이웃과 동기화…",
 				"archiveCoverageIncomplete": "일부 달의 콜드 아카이브는 아직 연합에서 동기화되지 않았습니다.",
 				"archiveSyncButton": "동기식 아카이빙",
 				"applyBranch": "적용 거버넌스 분기",
@@ -2087,7 +2087,7 @@
 				"suspectedRemoved": "나는 이 그룹에서 제거되었을 수 있습니다. ${count}개의 알려진 노드에 확인을 요청했지만 모두 거부되었습니다. 지역 역사를 기념하거나 이 단체 사본을 삭제할 수 있습니다.",
 				"suspectedRemovedKeep": "기념품을 가져가세요",
 				"suspectedRemovedLeave": "그룹 삭제",
-				"shunVerifying": "구성원 자격을 확인 중입니다: 알려진 노드 ${confirmed}/${total}개가 거부했습니다",
+				"shunVerifying": "멤버 자격을 확인 중입니다: 알려진 노드 ${confirmed}/${total}개가 거부했습니다",
 				"fork": {
 					"governance": "권한 레코드에 포크가 있으며 현재 로컬 보기에 있습니다.",
 					"tipLabel": "DAG 잎",
@@ -2195,7 +2195,7 @@
 			"replyInThread": {
 				"title": "하위 스레드에서 응답"
 			},
-			"localMaterializedView": "현재 로컬 물리화 뷰라 권한·기록이 다른 노드와 다를 수 있습니다.",
+			"localMaterializedView": "현재 로컬 구체화 뷰이므로 권한과 기록이 다른 노드와 다를 수 있습니다.",
 			"convergentEncryptWarn": "그룹 파일은 수렴 암호화를 사용합니다. 공격자가 파일 평문을 알고 있으면 키를 유도해 해당 암호문 블록을 복호화할 수 있습니다. 고도로 민감하고 유일한 비공개 문서를 그룹 암호화만으로 보호하지 마세요.",
 			"reputationSlashAlert": "${target} 멤버의 평판이 차감되었음을 상기시켜 드립니다.",
 			"profileEdit": {
@@ -2213,7 +2213,7 @@
 					"hint": "커스텀 배너가 없을 때 텍스처를 생성하고, 라이브 음파 루프에도 사용됩니다. 비워 두면 현재 테마 색상을 사용합니다."
 				},
 				"linksPreview": "${count} 공개 링크",
-				"unsavedHint": "창을 닫으면 저장되지 않은 변경사항이 삭제됩니다.",
+				"unsavedHint": "창을 닫으면 저장되지 않은 변경 사항이 사라집니다.",
 				"tagsLabel": "라벨",
 				"tagAdd": "다음에 추가",
 				"tagRemove": {
@@ -2244,9 +2244,9 @@
 					"placeholder": "예: steve(2~32자의 소문자 영숫자 문자._-)"
 				},
 				"resetFrom": {
-					"part": "캐릭터 부분에서 재설정",
-					"partConfirm": "현재 메시지는 역할 부분의 메시지로 덮어쓰여집니다. 확실합니까?",
-					"partDone": "캐릭터 부분으로 재구성된 프로필",
+					"part": "캐릭터 파트에서 재설정",
+					"partConfirm": "현재 프로필이 캐릭터 파트의 정보로 덮어쓰여집니다. 확실합니까?",
+					"partDone": "캐릭터 파트에서 재구성한 프로필",
 					"partFailed": "재구축 실패: ${error}"
 				},
 				"banner": {
@@ -2281,7 +2281,7 @@
 				"editSaved": "저장된 데이터",
 				"editQueued": "게시되었으며 다른 노드에서 가져올 때까지 기다리고 있습니다.",
 				"noFedIdentity": "먼저 연합 설정에서 이 기기의 activePubKeyHex를 설정하세요.",
-				"peerNoIdentity": "상대방은 연방 신분을 갖고 있지 않으며 연방 개인 메시지를 시작할 수 없습니다.",
+				"peerNoIdentity": "상대방은 연합 신원이 없어 연합 비공개 메시지를 시작할 수 없습니다.",
 				"care": "특별한 관심",
 				"careRemove": "스페셜 케어 취소",
 				"setAlias": "별칭 설정",
@@ -2392,18 +2392,18 @@
 				"title": "그룹"
 			},
 			"membersDigest": {
-				"fetchFailed": "페이지별로 구성원을 가져오지 못했습니다.",
-				"mismatch": "일관성 없는 멤버 다이제스트 · ${root}",
+				"fetchFailed": "페이지별로 멤버를 가져오지 못했습니다.",
+				"mismatch": "멤버 다이제스트 불일치 · ${root}",
 				"ok": "멤버 Merkle 만장일치 · ${root}",
 				"okPaged": "멤버 Merkle 합의(${pages} 페이지) · ${root}",
 				"pagesTitle": {
 					"title": "${expected}\n${pages} 페이지"
 				},
-				"pending": "멤버 요약 확인…"
+				"pending": "멤버 다이제스트 확인 중…"
 			},
 			"unbindFriend": {
 				"main": "바인딩 해제",
-				"confirm": "${name}님과의 비공개 채팅을 해제하시겠습니까? 대화가 그룹 목록으로 다시 이동됩니다.",
+				"confirm": "${name}님과의 비공개 채팅 연결을 해제하시겠습니까? 대화가 그룹 목록으로 다시 이동됩니다.",
 				"description": "바인딩 해제 후 대화는 왼쪽 그룹 목록으로 돌아가며 메시지 기록은 유지됩니다.",
 				"failed": "바인딩 해제 실패: ${error}",
 				"ok": "매여 있지 않은"
@@ -2466,10 +2466,10 @@
 				"contextNewChat": "새 채팅",
 				"count": "${count}명의 친구",
 				"emptyAction": "역할 또는 사용자 검색",
-				"emptyDescription": "로컬 역할이나 다른 노드에서 사용자를 검색하고, 그룹 채팅에서 구성원 프로필 카드를 열어 비공개 메시지를 시작할 수도 있습니다.",
+				"emptyDescription": "로컬 역할이나 다른 노드에서 사용자를 검색하고, 그룹 채팅에서 멤버 프로필 카드를 열어 비공개 메시지를 시작할 수도 있습니다.",
 				"emptyTitle": "새로운 대화를 시작하세요",
 				"header": "친구",
-				"restartConfirm": "\"${name}\"와의 비공개 채팅이 해제되고 새 대화가 생성됩니다. 확실합니까?",
+				"restartConfirm": "${name}님과의 비공개 채팅 연결이 해제되고 새 대화가 생성됩니다. 계속하시겠습니까?",
 				"restartFailed": "새 비공개 채팅을 생성하지 못했습니다: ${error}",
 				"restartOk": "새로운 비공개 채팅이 열렸습니다",
 				"search": {
@@ -2541,10 +2541,10 @@
 					"renamePrompt": "새 카테고리 이름"
 				},
 				"reorder": {
-					"after": "'${source}'을(를) '${target}' 뒤로 이동할까요?",
-					"before": "'${source}'을(를) '${target}' 앞으로 이동할까요?",
-					"into": "'${source}'을(를) '${target}' 안으로 이동할까요?",
-					"toRoot": "'${source}'을(를) 루트로 이동할까요?"
+					"after": "\"${source}\"을(를) \"${target}\" 뒤로 이동할까요?",
+					"before": "\"${source}\"을(를) \"${target}\" 앞으로 이동할까요?",
+					"into": "\"${source}\"을(를) \"${target}\" 안으로 이동할까요?",
+					"toRoot": "\"${source}\"을(를) 루트로 이동할까요?"
 				},
 				"name": "카테고리 이름",
 				"nameInput": {
@@ -2662,7 +2662,7 @@
 				"embedHttpsRequired": "스트리밍 주소는 임베드 가능한 https:// 페이지여야 합니다. 그렇지 않으면 그룹 설정을 먼저 구성하고 새로고침하여 시청 토큰을 받으세요.",
 				"refreshToken": "시계 토큰 새로 고침",
 				"tokenFailed": "시청 토큰을 발급할 수 없습니다.",
-				"webRtcHint": "외부 SFU가 구성되지 않았습니다. 이 채널은 그룹 내 WebRTC를 사용합니다(스트리밍SfuWss 필요 없음)."
+				"webRtcHint": "외부 SFU가 구성되지 않았습니다. 이 채널은 그룹 내 WebRTC를 사용합니다(streamingSfuWss 필요 없음)."
 			},
 			"member": {
 				"bar": {
@@ -2681,13 +2681,13 @@
 					"copyEntityId": "엔터티 ID 복사",
 					"dm": "비공개 메시지 보내기",
 					"kick": "킥 멤버",
-					"kickSelfNodeWarning": "경고: 이 구성원은 나와 동일한 노드 ID를 사용합니다. 또한, 퇴출된 후 그룹에서도 제명됩니다. 계속하시겠습니까?",
+					"kickSelfNodeWarning": "경고: 이 멤버는 나와 동일한 노드 ID를 사용합니다. 또한, 퇴출된 후 그룹에서도 제명됩니다. 계속하시겠습니까?",
 					"ban": "차단…",
 					"personalBlock": "개인 블록",
-					"personalBlockConfirm": "${name}을(를) 차단 목록에 추가하시겠습니까? 나를 따르는 사람들은 이 신호를 받아들이고 그들에 대한 신뢰도가 낮아질 수 있습니다.",
+					"personalBlockConfirm": "${name}을(를) 블랙리스트에 추가하시겠습니까? 나를 팔로우하는 사람들이 이 신호를 확인하고 그에 대한 신뢰를 낮출 수 있습니다.",
 					"personalBlockSuccess": "이미 블랙리스트에 추가됨",
 					"banTitle": "금지 범위 선택",
-					"banEntity": "금지된 엔터티(128비트 엔터티 해시)",
+					"banEntity": "금지된 엔터티(128비트 entityHash)",
 					"banNode": "금지 노드(homeNodeHash)"
 				},
 				"countLabel": "${count}명의 멤버",
@@ -2782,7 +2782,7 @@
 						"batchOk": "${count}개 그룹을 종료했습니다.",
 						"batchPartial": "${failed} / ${total}개 그룹 나가기 실패, 목록이 새로고침되었습니다",
 						"batchPending": "${count}개의 그룹이 목록에서 제거되어 백그라운드에서 종료됩니다...",
-						"confirm": "정말로 \"${name}\" 그룹에서 탈퇴하시겠습니까? 더 이상 이 그룹의 메시지를 볼 수 없습니다.",
+						"confirm": "정말로 \"${name}\" 그룹에서 탈퇴하시겠습니까? 이 그룹의 메시지는 더 이상 볼 수 없습니다.",
 						"confirmBatch": "선택한 ${count}개 그룹에서 나가시겠습니까? 이 기기에는 해당 그룹 데이터가 더 이상 남지 않습니다.",
 						"ok": "그룹을 탈퇴했습니다"
 					}
@@ -2805,9 +2805,9 @@
 					"title": "이 작성자 차단"
 				},
 				"authorTitle": "이 작성자 차단",
-				"confirm": "이 사람을 블랙리스트에 추가하시겠습니까? 이 그룹의 연합은 릴레이를 거부할 것입니다.",
+				"confirm": "이 사람을 블랙리스트에 추가하시겠습니까? 이 그룹의 연합 릴레이는 이 사람의 요청을 거부합니다.",
 				"ok": "막힌",
-				"opposingConfirm": "현재 선거에 없는 거버넌스 발급자를 차단 목록에 넣고 이 그룹의 연합 릴레이를 거부합니다. 계속할까요?",
+				"opposingConfirm": "현재 선거에 없는 거버넌스 발급자를 블랙리스트에 추가하고 이 그룹의 연합 릴레이를 거부합니다. 계속할까요?",
 				"opposingFailed": "표시 실패: ${error}",
 				"opposingOk": "${count}개의 주제가 연결할 수 없는 것으로 표시됨"
 			},
@@ -2922,7 +2922,7 @@
 				"failed": "연합 동기화 실패: ${error}",
 				"incomplete": "${missing}/${total} 이벤트가 동기화되지 않은 상태로 유지됩니다.",
 				"noPeers": "연합 이웃에 연결되지 않아 기록 메시지를 아직 동기화할 수 없습니다.",
-				"rateLimited": "연방 동기화 속도 제한이 진행 중입니다. 나중에 다시 시도해 주세요.",
+				"rateLimited": "연합 동기화 속도가 제한되고 있습니다. 나중에 다시 시도해 주세요.",
 				"truncated": "DAG 증분이 가득 차지 않았습니다. 나중에 다시 시도하거나 한도를 늘릴 수 있습니다.",
 				"truncatedHint": "DAG 기록이 너무 깁니다. 나중에 다시 시도하거나 한도를 늘릴 수 있습니다."
 			},
@@ -2972,7 +2972,7 @@
 				"relayUrlsLabel": "네트워크 릴레이 주소",
 				"relayUrlsTip": "장치가 인터넷에서 서로를 발견하도록 돕습니다. 한 줄에 하나의 wss:// 주소를 입력하세요. 기본 릴레이를 사용하려면 비워 두세요.",
 				"repEmpty": "(널)",
-				"repTip": "연합 노드 동작을 기반으로 기본적으로 계산된 연결 선호도 점수는 그룹 구성원의 공개 등급이 아닙니다.",
+				"repTip": "연합 노드 동작을 기반으로 기본적으로 계산된 연결 선호도 점수는 그룹 멤버의 공개 등급이 아닙니다.",
 				"repTitle": "이 그룹의 주관적 신뢰성",
 				"repairJoinSnapshot": "이웃에게 그룹 스냅샷 수리 참여 요청",
 				"repairJoinSnapshotFailed": "그룹 스냅샷 복구 실패: ${error}",
@@ -3017,7 +3017,7 @@
 				"description": "아직 설명이 없습니다",
 				"friends": "아직 비공개 채팅이 없습니다.",
 				"groups": "아직 그룹이 없습니다.",
-				"members": "아직 멤버이 없습니다.",
+				"members": "아직 멤버가 없습니다.",
 				"pins": "아직 고정된 메시지가 없습니다."
 			},
 			"trustedAuthorBadge": {
@@ -3025,7 +3025,7 @@
 				"title": "이 작성자 신뢰하기(위험한 Markdown/HTML 허용)"
 			},
 			"attachment": {
-				"dropToUpload": "#${channel}에 업로드"
+				"dropToUpload": "#${channel}에 업로드하려면 드롭하세요"
 			},
 			"unreadBadge": {
 				"aria-label": "읽지 않은 항목 ${count}개"
@@ -3218,7 +3218,7 @@
 			},
 			"code_greeting": {
 				"name": "코드로 인사하기",
-				"description": "\"안녕하세요, fount!\"",
+				"description": "당신은 fount의 코드가 첫 인사를 건네게 했습니다. `// \"hello fount!\"`",
 				"locked_description": "코드 블록을 실행하여 'hello fount!'를 출력하세요."
 			}
 		},
@@ -3604,7 +3604,7 @@
 				},
 				"share": {
 					"uploading": "링크 생성 중...",
-					"success": "공유 완료! 링크가 클립보드에 복사되었습니다. <br>이 기능은 ${provider}에서 지원합니다. <br>[후원하기.](${sponsorLink})"
+					"success": "공유 완료! 링크가 클립보드에 복사되었습니다. <br>이 기능은 ${provider}가 지원합니다. <br>[후원하기.](${sponsorLink})"
 				},
 				"commonToolCalling": "도구 호출 중",
 				"commonToolSkipped": "건너뜀 (이전 작업이 실패함)",
@@ -3662,7 +3662,7 @@
 	},
 	"easynew": {
 		"title": "빠른 생성",
-		"description": "사전 정의된 템플릿이나 사용자 정의 템플릿을 사용하여 캐릭터, 세계, 플러그인과 같은 새로운 기반 부분을 신속하게 구성합니다. 몇 번의 클릭만으로 다음 작품을 만들 수 있습니다.",
+		"description": "사전 정의된 템플릿이나 사용자 정의 템플릿을 사용하여 캐릭터, 세계, 플러그인과 같은 새 fount 파트를 빠르게 만듭니다. 몇 번의 클릭만으로 다음 작품을 완성할 수 있습니다.",
 		"info": {
 			"description": "이 템플릿은 간단한 컴포넌트를 빠르게 만드는 데만 사용할 수 있으며, 복잡한 컴포넌트는 여전히 수동으로 만들어야 합니다."
 		},
@@ -3893,7 +3893,7 @@
 			"cancel": "취소"
 		},
 		"litterbox": {
-			"poweredBy": "공유 기능은 Litterbox.Moe에서 지원합니다",
+			"poweredBy": "공유 기능은 Litterbox.Moe가 지원합니다",
 			"sponsorLink": "그들을 후원하십시오"
 		},
 		"errorMessage": {
@@ -3906,7 +3906,7 @@
 			"fetchPartsFailed": "컴포넌트 목록을 가져오는 데 실패했습니다.",
 			"loadPartDetailsFailed": "컴포넌트 세부 정보를 불러오는 데 실패했습니다: ${message}",
 			"exportFailed": "내보내기 실패: ${message}",
-			"shareLinkCopied": "공유 링크가 클립 보드에 복사되었습니다!",
+			"shareLinkCopied": "공유 링크가 클립보드에 복사되었습니다!",
 			"shareFailed": "공유 링크 생성 실패: ${message}"
 		},
 		"achievements": {
@@ -4007,7 +4007,7 @@
 			"saveConfigFailed": "컴포넌트 설정을 저장하는 데 실패했습니다: ${message}",
 			"saveConfigSuccess": "구성이 저장되었습니다",
 			"noPartSelected": "저장할 컴포넌트를 선택하지 않았습니다. 먼저 컴포넌트를 선택하십시오.",
-			"unsavedChanges": "저장되지 않은 변경 사항이 있습니다. 변경 사항을 취소하시겠습니까?",
+			"unsavedChanges": "저장되지 않은 변경 사항이 있습니다. 변경 사항을 버리시겠습니까?",
 			"beforeUnload": "저장되지 않은 변경 사항이 있습니다. 이 페이지를 나가시겠습니까?"
 		},
 		"home_function_buttons": {
@@ -4043,7 +4043,7 @@
 		},
 		"needsConfigReminder": "서비스 소스를 설정한 후, 일반적으로 이 서비스 소스를 사용하는 구성 요소 설정의 해당 필드에 서비스 소스 이름을 입력해야 합니다.",
 		"needsConfigLink": "위젯 구성으로 이동",
-		"modelRankHint": "어떤 모델을 써야 할지 모르시겠나요? fount 제작자의 모델 순위를 확인해 보세요!",
+		"modelRankHint": "어떤 모델을 써야 할지 모르시겠나요? fount 제작자가 정리한 모델 순위를 확인해 보세요!",
 		"subtypeSelect": {
 			"label": "생성기 하위 카테고리",
 			"placeholder": "생성기 카테고리를 선택해 주세요"
@@ -4090,7 +4090,7 @@
 				"apply": "[저도 여기에 등록하고 싶습니다](${url})",
 				"atlasCloud": "[Atlas Cloud](${url})"
 			},
-			"modelsDevLoading": "카탈로그 로딩 중…",
+			"modelsDevLoading": "카탈로그 불러오는 중…",
 			"modelsDevLoadFailed": "카탈로그를 불러오지 못했습니다: ${message}",
 			"noModelsMatched": "일치하는 모델이 없습니다",
 			"currentModelTitle": "${name} (${model})",
@@ -4140,9 +4140,9 @@
 			}
 		},
 		"confirm": {
-			"unsavedChanges": "저장되지 않은 변경사항이 있습니다. 변경사항을 취소하시겠습니까?",
+			"unsavedChanges": "저장되지 않은 변경 사항이 있습니다. 변경 사항을 버리시겠습니까?",
 			"deleteFile": "파일을 삭제하시겠습니까?",
-			"unsavedChangesBeforeUnload": "저장되지 않은 변경사항이 있습니다. 정말로 이 페이지를 떠나시겠습니까?"
+			"unsavedChangesBeforeUnload": "저장되지 않은 변경 사항이 있습니다. 정말로 이 페이지를 떠나시겠습니까?"
 		},
 		"alerts": {
 			"saveFileFailed": "파일 저장 실패: ${error}",
@@ -4233,8 +4233,8 @@
 		"alerts": {
 			"configSaved": "설정이 성공적으로 저장되었습니다!",
 			"botExists": "\"${botname}\" 이름의 봇이 이미 존재합니다. 다른 이름을 사용해주세요.",
-			"unsavedChanges": "저장되지 않은 변경 사항이 있습니다. 변경 사항을 취소하시겠습니까?",
-			"confirmDeleteBot": "\"${botname}\" 봇을 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.",
+			"unsavedChanges": "저장되지 않은 변경 사항이 있습니다. 변경 사항을 버리시겠습니까?",
+			"confirmDeleteBot": "「${botname}」 봇을 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.",
 			"invalidJsonConfig": "유효하지 않은 JSON 설정: ${error}",
 			"httpError": "HTTP 오류가 발생했습니다.",
 			"beforeUnload": "저장되지 않은 변경 사항이 있습니다. 이 페이지를 나가시겠습니까?"
@@ -4264,7 +4264,7 @@
 	},
 	"discord_bots": {
 		"title": "Discord 봇",
-		"description": "분주한 Discord의 홀에서 여러분의 동료들에게 목소리를 들려주세요. 그들의 존재를 구성하고, 운영을 관리하고, 한 번에 하나의 서버씩 세계를 연결하도록 하십시오.",
+		"description": "분주한 Discord의 홀에서 여러분의 fount 동료들에게 목소리를 들려주세요. 그들의 존재를 구성하고, 운영을 관리하고, 한 번에 하나의 서버씩 세계를 연결하도록 하십시오.",
 		"cardTitle": "Discord 봇",
 		"botSelectDropdown": {
 			"placeholder": "봇을 선택하세요"
@@ -4316,7 +4316,7 @@
 		"alerts": {
 			"configSaved": "설정이 성공적으로 저장되었습니다.",
 			"botExists": "\"${botname}\" 이름의 봇이 이미 존재합니다. 다른 이름을 사용해주세요.",
-			"unsavedChanges": "저장되지 않은 변경 사항이 있습니다. 변경 사항을 취소하시겠습니까?",
+			"unsavedChanges": "저장되지 않은 변경 사항이 있습니다. 변경 사항을 버리시겠습니까?",
 			"httpError": "HTTP 오류가 발생했습니다.",
 			"beforeUnload": "저장되지 않은 변경 사항이 있습니다. 이 페이지를 나가시겠습니까?"
 		},
@@ -4392,7 +4392,7 @@
 			}
 		},
 		"prompts": {
-			"newBotName": "새 봇 이름:"
+			"newBotName": "새 봇 이름을 입력하세요:"
 		},
 		"buttons": {
 			"newBot": "새로 만들기",
@@ -4400,10 +4400,10 @@
 		},
 		"alerts": {
 			"configSaved": "저장됨",
-			"botExists": "「${botname}」 이름의 봇이 이미 있습니다. 다른 이름을 쓰세요.",
-			"unsavedChanges": "저장하지 않은 변경이 있습니다. 버릴까요?",
+			"botExists": "\"${botname}\" 이름의 봇이 이미 존재합니다. 다른 이름을 사용해주세요.",
+			"unsavedChanges": "저장되지 않은 변경 사항이 있습니다. 변경 사항을 버리시겠습니까?",
 			"httpError": "HTTP 오류",
-			"beforeUnload": "저장하지 않은 변경이 있습니다. 페이지를 나갈까요?"
+			"beforeUnload": "저장되지 않은 변경 사항이 있습니다. 이 페이지를 나가시겠습니까?"
 		},
 		"achievements": {
 			"start_bot": {
@@ -4434,11 +4434,11 @@
 			"waiting": "QR 코드 불러오는 중…",
 			"scanned": "스캔됨 — 휴대폰에서 확인하세요",
 			"success": "위챗이 연결되었고 설정이 저장되었습니다. 봇을 시작할 수 있습니다.",
-			"needBot": "목록에서 봇을 선택하거나 「새로 만들기」로 만드세요."
+			"needBot": "목록에서 봇을 선택하거나 「새로 만들기」를 누르세요."
 		}
 	},
 	"social": {
-		"title": "정사각형",
+		"title": "광장",
 		"description": "P2P 공개 소셜 업데이트, 팔로우 및 파일 공유",
 		"bootstrapFailed": "소셜 인터페이스 초기화 실패: ${error}",
 		"connectNodeFailed": "노드 연결 실패: ${error}",
@@ -4641,7 +4641,7 @@
 				"allowLabel": "표시 사람들",
 				"exceptLabel": "사람을 제외",
 				"allow": {
-					"placeholder": "표시되는 인물 엔터티해시, 공백 또는 쉼표로 구분됨"
+					"placeholder": "표시되는 인물 entityHash, 공백 또는 쉼표로 구분됨"
 				},
 				"except": {
 					"placeholder": "보여주면 안되는 사람 (선택)"
@@ -4749,7 +4749,7 @@
 				"title": "폴더 삭제",
 				"aria-label": "폴더 삭제"
 			},
-			"deleteFolderConfirm": "폴더를 삭제하시겠습니까? 해당 게시물은 '보관 취소됨'으로 이동됩니다.",
+			"deleteFolderConfirm": "폴더를 삭제하시겠습니까? 해당 게시물은 '보관되지 않음'으로 이동됩니다.",
 			"searchEmpty": "일치하는 컬렉션이 없습니다.",
 			"folderEmpty": "이 폴더는 비어 있습니다.",
 			"emptyHint": "뉴스를 탐색할 때 북마크를 클릭하면 여기에 저장됩니다.",
@@ -4823,7 +4823,7 @@
 				"aria-label": "짧은 영상"
 			},
 			"empty": "아직 짧은 동영상이 없습니다.",
-			"emptyHint": "다음 사용자 또는 공개 광장에는 동영상이 포함된 게시물이 없습니다. 동영상 업데이트를 게시해 보시겠습니까?",
+			"emptyHint": "팔로우한 사람이나 공개 광장에는 동영상이 포함된 게시물이 없습니다. 동영상 업데이트를 게시해 보시겠습니까?",
 			"loadFailed": "짧은 동영상을 불러오지 못했습니다: ${error}",
 			"compose": "동영상 게시하러 가기",
 			"back": {
@@ -4858,11 +4858,11 @@
 			"postEndedStats": "조회자: ${viewers} · ${likes} 좋아요 · ${duration}",
 			"link": {
 				"invite": "연결 초대",
-				"needPeer": "피어 엔터티Hash:liveId를 입력하세요.",
+				"needPeer": "피어 entityHash:liveId를 입력하세요.",
 				"invited": "온라인 초대장이 전송되었습니다",
 				"linked": "연결됨",
 				"peer": {
-					"placeholder": "피어 엔터티Hash:liveId"
+					"placeholder": "피어 entityHash:liveId"
 				}
 			},
 			"broadcast": {
@@ -4890,7 +4890,7 @@
 			}
 		},
 		"search": {
-			"placeholder": "업데이트, 사용자 또는 #주제 검색(최소 2단어)",
+			"placeholder": "업데이트, 사용자 또는 #주제 검색(최소 2자)",
 			"aria-label": "게시물, 사용자 또는 주제 검색",
 			"open": {
 				"aria-label": "찾다"
@@ -5194,7 +5194,7 @@
 		"cabinetActionPrompt": "조치: 이름 바꾸기/삭제/가시성",
 		"confirmDeleteCabinet": "정말로 이 파일 캐비닛을 삭제하시겠습니까?",
 		"confirmDelete": "선택한 항목을 삭제하시겠습니까?",
-		"confirmDeleteSystem": "선택한 시스템 파일이 포함됩니다. 삭제하시겠습니까?",
+		"confirmDeleteSystem": "선택한 항목에 시스템 파일이 포함되어 있습니다. 삭제하시겠습니까?",
 		"copied": "복사됨",
 		"cutDone": "자르기",
 		"undo": "취소",
@@ -5219,16 +5219,16 @@
 		"title": "브라우저 통합",
 		"description": "fount와 웹 사이의 격차를 해소하세요. 이 페이지는 원활한 통합을 가능하게 하는 사용자 스크립트를 제공하여 AI 동료를 탐색 경험으로 가져옵니다.",
 		"pageHeader": "브라우저 통합",
-		"pageDescription": "fount 역할이 웹 페이지와 상호 작용하려면이 브라우저 통합 스크립트를 설치해야합니다. 캐릭터와 브라우저 사이의 브리지 역할을하여 페이지 컨텐츠를보고 작업을 수행 할 수 있습니다.",
+		"pageDescription": "fount 역할이 웹 페이지와 상호 작용하려면 이 브라우저 통합 스크립트를 설치해야 합니다. 캐릭터와 브라우저 사이의 다리 역할을 하여 페이지 콘텐츠를 보고 작업을 수행할 수 있습니다.",
 		"install_script_title": "설치 스크립트",
-		"install_script_description": "아래 버튼을 클릭하여 브라우저 통합 스크립트를 설치하십시오. 먼저 Tampermonkey와 같은 유저스크립트 관리자를 설치해야합니다.",
+		"install_script_description": "아래 버튼을 클릭하여 브라우저 통합 스크립트를 설치하십시오. 먼저 Tampermonkey와 같은 유저스크립트 관리자를 설치해야 합니다.",
 		"install_button": "설치",
-		"install_from_url_tip": "브라우저를 설치할 수 없습니까? 이 URL을 복사하고 Tampermonkey 플러그인에서 URL에서 스크립트를 가져 오십시오.",
+		"install_from_url_tip": "브라우저가 설치를 막나요? 이 URL을 복사한 뒤 Tampermonkey 플러그인에서 URL로 스크립트를 가져오세요.",
 		"script_url_input": {
 			"aria-label": "브라우저 통합 스크립트 URL"
 		},
 		"what_is_manager": "유저스크립트 관리자란 무엇입니까?",
-		"manager_explanation": "유저스크립트 관리자는 웹 페이지를 수정하는 스크립트를 설치하고 실행할 수있는 브라우저 확장자입니다. fount 통합 스크립트를 사용하려면 확장자 중 하나가 필요합니다.",
+		"manager_explanation": "유저스크립트 관리자는 웹 페이지를 수정하는 스크립트를 설치하고 실행할 수 있는 브라우저 확장자입니다. fount 통합 스크립트를 사용하려면 확장자 중 하나가 필요합니다.",
 		"popular_managers": "인기있는 선택:",
 		"csp_warning": "통합 기능이 올바르게 작동하도록 CSP를 끄려면 플러그인을 설치해야 할 수도 있습니다. ${browser}의 경우 [이 플러그인](${link})을 사용할 수 있습니다.",
 		"connected_pages_title": "연결된 페이지",
@@ -5239,14 +5239,14 @@
 		"status_focused": "현재 창",
 		"status_unfocused": "백그라운드에서",
 		"copy_button": "복사",
-		"copied_message": "클립 보드에 복사",
+		"copied_message": "클립보드에 복사",
 		"no_pages_connected": {
 			"title": "아직 연결이 없습니다",
 			"description": "먼저 스크립트를 설치 한 다음 다른 브라우저 탭의 웹 사이트를 방문하십시오. 여기에는 자동으로 표시됩니다."
 		},
 		"autorun": {
 			"title": "스크립트를 자동으로 실행합니다",
-			"description": "특정 웹 사이트와 일치 할 때 자동으로 실행되는 JavaScript 스 니펫을 관리합니다. 이 스크립트는 AI 역할 또는 플러그인에서 제공하여 브라우징 경험을 향상 시키거나 자동화 할 수 있습니다.",
+			"description": "특정 웹 사이트와 일치할 때 자동으로 실행되는 JavaScript 스니펫을 관리합니다. 이 스크립트는 AI 역할 또는 플러그인에서 제공하여 브라우징 경험을 향상시키거나 자동화할 수 있습니다.",
 			"form_title": "새 스크립트를 추가하십시오",
 			"comment_label": "댓글 (선택 사항)",
 			"url_regex_label": "URL 정규 표현식",
@@ -5255,7 +5255,7 @@
 			"list_title": "구성된 스크립트",
 			"view_script_button": "스크립트 보기",
 			"delete_button": "삭제",
-			"confirm_delete": "이 스크립트를 삭제 하시겠습니까? 이 작업은 취소 할 수 없습니다.",
+			"confirm_delete": "이 스크립트를 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.",
 			"add_success": "자동 실행 스크립트가 성공적으로 추가되었습니다!",
 			"delete_success": "스크립트가 성공적으로 삭제되었습니다.",
 			"no_scripts": {
@@ -5288,7 +5288,7 @@
 			},
 			"star_fount": {
 				"name": "오픈소스 스타",
-				"description": "GitHub에서 fount에 스타를 눌러주세요. 지원에 감사드립니다!",
+				"description": "GitHub에서 fount에 스타를 눌러주세요. 성원에 감사드립니다!",
 				"locked_description": "fount의 GitHub 저장소를 방문하여 별을 밝히세요."
 			}
 		},
@@ -5305,24 +5305,24 @@
 	},
 	"browser_integration_script": {
 		"update": {
-			"prompt": "fount 브라우저 통합 스크립트의 새 버전을 사용할 수 있습니다. 업데이트 페이지가 지금 열려 있습니까?"
+			"prompt": "fount 브라우저 통합 스크립트의 새 버전을 사용할 수 있습니다. 지금 업데이트 페이지를 여시겠습니까?"
 		},
 		"csp_warning": "fount Browser Integration 스크립트는 CSP 정책이 페이지에 존재 함을 감지하여 통합 스크립트가 제대로 작동하지 않을 수 있습니다. CSP를 끄려면 플러그인 설치를 고려하십시오.",
 		"hostChange": {
 			"securityWarningTitle": "--- fount 안전 경고 ---",
-			"message": "현재 페이지 ( \"${origin}\")는 fount 호스트 주소를 다음과 같이 변경하려고합니다.\n\n\"${newHost}\"\n\n경고: 이 조치를 승인하면 새 호스트가 브라우저 통합 기능을 완전히 제어 할 수 있으므로 민감한 정보 유출 또는 계정 도난으로 이어질 수 있습니다.\n승인은 이것이 자신의 작업 (예: fount 서버 마이그레이션)인지 확인하는 경우에만 이루어져야합니다.\n\n이 변경을 허용 하시겠습니까?",
+			"message": "현재 페이지(\"${origin}\")는 fount 호스트 주소를 다음과 같이 변경하려고 합니다.\n\n\"${newHost}\"\n\n경고: 이 조치를 승인하면 새 호스트가 브라우저 통합 기능을 완전히 제어할 수 있으므로 민감한 정보 유출 또는 계정 도난으로 이어질 수 있습니다.\n본인의 작업(예: fount 서버 마이그레이션)임을 확인한 경우에만 승인하십시오.\n\n이 변경을 허용하시겠습니까?",
 			"uuidMismatchError": "fount 보안 오류: 호스트 ${newHost}의 식별자(UUID)가 기존의 것과 일치하지 않습니다. 작업이 취소되었습니다.",
 			"verificationError": "fount 보안 오류: 새 호스트 \"${newHost}\"를 확인할 수 없습니다. 주소가 올바른지 확인하고 서비스가 실행 중인지 확인하십시오."
 		}
 	},
 	"terminal_assistant": {
 		"title": "터미널 어시스턴트",
-		"description": "그래픽 인터페이스 너머에는 직접 명령을 내릴 수 있는 공간이 있습니다. 텍스트가 강력한 마법을 엮어내는 터미널 도우미를 통해 원천의 핵심과 상호작용하세요.",
+		"description": "그래픽 인터페이스 너머에는 직접 명령을 내릴 수 있는 공간이 있습니다. 텍스트가 스스로 강력한 마법을 엮어내는 터미널 도우미를 통해 fount의 핵심과 상호작용하세요.",
 		"initialMessage": "fount는 코딩 작업을 돕기 위해 즐겨찾는 캐릭터를 터미널에 배포하는 기능을 지원합니다!",
 		"initialMessageLink": "자세한 내용은 여기를 클릭하세요.",
 		"achievements": {
 			"invoke_shell_assist": {
-				"name": "\"안녕하세요, 파운트.\"",
+				"name": "\"Hey, fount.\"",
 				"description": "어두운 단말기에서는 AI 파트너의 이름이 호명됐다.",
 				"locked_description": "터미널 지원에 한 번 전화하십시오."
 			}
@@ -5367,7 +5367,7 @@
 			"first_ide_use": {
 				"name": "코드의 fount를 발견하다",
 				"description": "처음으로 fount 역할을 사용하여 Zed, JetBrains, Neovim 등과 같은 ACP 지원 편집기에서 프로그래밍을 지원합니다.",
-				"locked_description": "외부 IDE에서 원천 역할에 연결하고 세션을 완료합니다."
+				"locked_description": "외부 IDE에서 fount 캐릭터에 연결하고 대화를 한 번 완료합니다."
 			}
 		},
 		"supportedEditors": {
@@ -5454,7 +5454,7 @@
 	},
 	"blog": {
 		"title": "fount 에이전트 연구소",
-		"description": "fount 워크숍의 에세이: 에이전트 설계에 대한 고찰 — 에이전트란 무엇이며, LLM이 잘하는 것은 무엇이고, 지능을 쓸 가치가 있는 곳에만 지능을 쓰는 시스템을 어떻게 만들 것인가.",
+		"description": "fount 워크숍의 에세이: 에이전트 설계에 대한 고찰 — 에이전트란 무엇이며, LLM이 잘하는 것은 무엇이고, 지능을 꼭 필요한 곳에만 쓰는 시스템을 어떻게 만들 것인가.",
 		"heading": "fount 에이전트 연구소",
 		"intro": "에이전트 설계에 관한 fount 프로젝트의 연재 — 에이전트란 무엇이고, 그 안에서 LLM은 어떤 역할을 하며, 어떤 작업은 차라리 일반 프로그램에 맡기는 편이 나은가. 순서대로 읽어도 되고 마음대로 건너뛰어도 됩니다. 각 글은 다른 글들과 연결되어 있습니다.",
 		"search": {
@@ -5636,7 +5636,7 @@
 			"aria-label": "이 언어 삭제",
 			"alt": "삭제 아이콘"
 		},
-		"savedMessage": "언어 설정이 저장됩니다!",
+		"savedMessage": "언어 설정이 저장되었습니다!",
 		"resetMessage": "언어 설정이 재설정되었습니다!",
 		"fetchLocalesFailed": "사용 가능한 언어를 얻지 못했습니다!",
 		"home_function_buttons": {
@@ -5771,7 +5771,7 @@
 			},
 			"revoke": {
 				"button": "해지",
-				"confirm": "이 API 키를 취소 하시겠습니까?",
+				"confirm": "이 API 키를 취소하시겠습니까?",
 				"missingJti": "취소할 키를 지정하세요.",
 				"missingPassword": "키를 취소하려면 비밀번호가 필요합니다.",
 				"success": "API 키가 성공적으로 취소되었습니다.",
@@ -5780,7 +5780,7 @@
 		},
 		"newApiKey": {
 			"title": "새로운 API 키가 만들어졌습니다",
-			"warning": "새 API 키를 복사하십시오. 당신은 그것을 다시 볼 수 없을 것입니다!",
+			"warning": "새 API 키를 복사해 두세요. 이 키는 다시 볼 수 없습니다!",
 			"closeButton": "내 키를 복사했습니다",
 			"copyButton": {
 				"title": "새 API 키 복사"
@@ -5888,7 +5888,7 @@
 		"endpointSectionTitle": "API 엔드포인트",
 		"endpointInstruction": "다른 서비스와 통합하기 위한 기본 URL입니다.",
 		"usageExampleTitle": "사용 예제",
-		"usageExampleInstruction": "`curl`을 사용하여 사용 가능한 모델 목록을 가져오는 방법의 예입니다.",
+		"usageExampleInstruction": "`curl`을 사용해 사용 가능한 모델 목록을 가져오는 예제입니다.",
 		"copyButton": "복사",
 		"copied": "클립보드에 복사됨",
 		"noApiKey": "아직 이 페이지에 대한 API 키를 생성하지 않았습니다.",
@@ -5942,8 +5942,8 @@
 			"disabledToast": "꺼짐: 하위 장치가 더 이상 네트워크 공익에 참여하지 않습니다"
 		},
 		"connectedSubfounts": {
-			"title": "연결된 서브폰트",
-			"noSubfountsConnected": "연결된 서브폰트가 없습니다",
+			"title": "연결된 subfount",
+			"noSubfountsConnected": "연결된 subfount가 없습니다",
 			"table": {
 				"id": "ID",
 				"description": "비고",
@@ -5972,11 +5972,11 @@
 			"noScriptProvided": "실행할 코드를 입력해주세요",
 			"executionSuccess": "코드 실행 성공",
 			"executionFailed": "코드 실행 실패: ${message}",
-			"selectSubfount": "코드를 실행하려면 서브파운드를 선택하세요..."
+			"selectSubfount": "코드를 실행할 subfount를 선택하세요..."
 		},
 		"installClient": {
-			"title": "서브폰트 클라이언트 다운로드",
-			"description": "원격 장치에서 실행할 독립형 하위 클라이언트 스크립트를 다운로드합니다.",
+			"title": "subfount 클라이언트 설치",
+			"description": "아래 설치 스크립트를 원격 장치에서 실행하면 그 장치를 fount 네트워크에 연결할 수 있습니다.",
 			"tabsLabel": {
 				"aria-label": "운영 체제 선택"
 			},
@@ -6014,7 +6014,7 @@
 		"pageDescription": "여기에서 잠금 해제된 업적과 마일스톤을 확인하세요.",
 		"unlocked_on": "${date}에 잠금 해제됨",
 		"locked": "잠금 해제되지 않음",
-		"toast_title": "업적 잠금 해제!",
+		"toast_title": "업적이 해제되었습니다!",
 		"error": {
 			"load_failed": "업적을 로드하지 못했습니다: ${message}",
 			"unlock_failed": "업적을 잠금 해제하지 못했습니다: ${error}"
@@ -6027,7 +6027,7 @@
 			},
 			"relock_by_clicking": {
 				"name": "실화냐?",
-				"description": "잠금 해제된 업적을 반복적으로 클릭하면 성공적으로 다시 잠길 수 있습니다. 왜?",
+				"description": "잠금 해제된 업적을 반복해서 클릭해 다시 잠그는 데 성공했습니다. 왜?",
 				"locked_description": "? ? ?"
 			}
 		},
@@ -6149,7 +6149,7 @@
 		"name": "이름",
 		"mimeType": "MIME 유형",
 		"size": "크기",
-		"parentLink": "↑ 이전 수준 ../"
+		"parentLink": "↑ 상위 폴더 ../"
 	},
 	"util": {
 		"folderBrowser": {
@@ -6164,7 +6164,7 @@
 			"quickAccess": "빠른 접근",
 			"roots": "드라이브 / 루트",
 			"noMatch": "일치하는 항목 없음",
-			"loading": "로딩 중…",
+			"loading": "불러오는 중…",
 			"error": "찾아보기 오류"
 		},
 		"toast": {
@@ -6252,7 +6252,7 @@
 			"warnings": {
 				"straightRow": "키보드의 연속 키는 쉽게 추측됩니다.",
 				"keyPattern": "짧은 키보드 패턴은 추측하기 쉽습니다.",
-				"simpleRepeat": "\"AAA\"와 같은 반복된 문자는 쉽게 추측 할 수 있습니다.",
+				"simpleRepeat": "\"AAA\"와 같은 반복된 문자는 쉽게 추측할 수 있습니다.",
 				"extendedRepeat": "\"abcabcabc\"와 같은 반복된 문자 패턴은 쉽게 추측됩니다.",
 				"sequences": "\"ABC\"와 같은 일반적인 문자 시퀀스는 쉽게 추측됩니다.",
 				"recentYears": "최근 몇 년 동안 추측하기 쉽습니다.",
@@ -6261,7 +6261,7 @@
 				"topHundred": "이것은 종종 사용되는 비밀번호입니다.",
 				"common": "이것은 일반적으로 사용되는 비밀번호입니다.",
 				"similarToCommon": "이것은 일반적으로 사용되는 비밀번호와 유사합니다.",
-				"wordByItself": "한 마디도 쉽게 추측 할 수 있습니다.",
+				"wordByItself": "한 마디도 쉽게 추측할 수 있습니다.",
 				"namesByThemselves": "단일 이름 또는 성은 쉽게 추측됩니다.",
 				"commonNames": "일반적인 이름과 성은 추측하기 쉽습니다.",
 				"userInputs": "비밀번호에는 개인 또는 페이지 관련 데이터가 포함되어 있지 않아야합니다.",
@@ -6498,7 +6498,7 @@
 			"title": "작업 영역 및 대화",
 			"workspacesTitle": "작업 영역",
 			"sessionsTitle": "대화",
-			"emptyWorkspaces": "아직 작업 영역이 없습니다. \"찾아보기…\"를 클릭하여 추가하세요.",
+			"emptyWorkspaces": "아직 작업 영역이 없습니다. '찾아보기…'를 클릭하여 추가하세요.",
 			"search": {
 				"placeholder": "작업 영역 또는 대화 검색…",
 				"aria-label": "작업 영역 또는 대화 검색"
@@ -6657,7 +6657,7 @@
 			}
 		},
 		"error": {
-			"generic": "문제가 발생했습니다: ${error}",
+			"generic": "오류가 발생했습니다: ${error}",
 			"generate": "답변 생성 실패",
 			"aborted": "생성이 중단되었습니다",
 			"noChar": "먼저 캐릭터를 선택하세요"
@@ -6802,7 +6802,7 @@
 			"batch": {
 				"download": "선택 항목 다운로드",
 				"delete": "선택 항목 삭제",
-				"deleteConfirm": "선택한 gist ${count}개를 삭제하시겠습니까? 되돌릴 수 없습니다.",
+				"deleteConfirm": "선택한 gist ${count}개를 삭제하시겠습니까? 취소할 수 없습니다.",
 				"deleted": "gist ${count}개를 삭제했습니다",
 				"downloaded": "gist ${count}개를 다운로드했습니다"
 			},

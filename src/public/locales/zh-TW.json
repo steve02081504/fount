@@ -12,12 +12,13 @@
 			"如果你突然遇見了稀奇古怪的問題並且開發者一時半會沒有回覆你，可以試試使用 `fount init` 命令來重置 fount。",
 			"遇見特別奇怪的問題可以試試重開機。",
 			"使用 `fount remove` 指令來解除安裝 fount 會比刪除資料夾更乾淨。",
-			"在終端機中輸入 `fount cake` 來獲取一個免費又美味的蛋糕！",
+			"在終端機中輸入 `fount cake` 來取得一個免費又美味的蛋糕！",
 			"fount 的任何資料檔案都保存在 `fount/data` 目錄下，你可以隨時隨地查看、修改、備份它們。",
-			"fount 的名稱是全小寫的，是 `f`ount，不是 `F`ount。",
-			"在您的 Agent 使用新的模型前備份全部其常操作的資料——你永遠不知道新模型會不會在某些地方表現的極其糟糕。",
+			"fount 的名稱全為小寫，是 `f`ount，不是 `F`ount。",
+			"在您的 Agent 使用新的模型前，先備份其平常會操作的全部資料——你永遠不知道新模型會不會在某個地方表現得極為糟糕。",
+			"fount 的主要受眾是軟體開發者與角色扮演愛好者，但在商業 agent 搭建、醫療、軍事、金融等領域也有被使用。",
 			"fount 的內建角色 ZL-31 的名字沒有任何意義，是當時靈光一閃想出來的。",
-			"fount 的檔案中圖片都是以 svg 形式儲存並在需要時渲染為 png 或 ico 的，沒任何的二進位檔案，除了 LICENSE。",
+			"fount 的檔案中圖片都是以 svg 形式儲存，並在需要時渲染為 png 或 ico，沒有任何二進位檔案，除了 LICENSE。",
 			"fount 中的任何程式碼都是可以直接運行而無需編譯，所見即所得的。",
 			"曾經 fount 有過很酷的動態可互動頁面背景，但後來因為佔用了太多 CPU 而被刪除了。",
 			"fount 最初是為了一個名為「龍膽」的成人向 Agent 而開發的。",
@@ -60,7 +61,7 @@
 			"noInstanceRunning": "未偵測到運行中的實例，請先啟動 fount。",
 			"runPartLog": "執行 ${partpath} 作為 ${username}，參數：${args}",
 			"invokePartLog": "呼叫 ${partpath} 作為 ${username}，參數：${invokedata}",
-			"invalidCommand": "無效的指令，請使用 \"fount run <使用者名稱> <組件路徑> <參數...>\"",
+			"invalidCommand": "無效的指令，請使用「fount run <組件路徑> <參數...>」（或以 fount runas <使用者名稱> <組件路徑> 指定使用者）",
 			"invalidCommandFormat": "無效的指令格式",
 			"unsupportedCommand": "不支援的指令類型",
 			"processMessageError": "處理 IPC 訊息時出錯：${error}",
@@ -146,11 +147,11 @@
 			"replHint": "Enter 執行 · Shift+Enter 換行"
 		},
 		"test": {
-			"help": "用法：fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --list [<groups>...]\n       fount test --kernel shutdown|reboot\n\n選擇器（空格分隔多組；逗號分隔同組多個 suite；/ 與 : 等價）：\n  名稱              該組全部 suite（如 shells/chat）\n  名稱:suite        指定 suite\n  名稱:suite:子項   指定子測試或測試檔案\n\n無精確匹配時按前綴展開（shells → shells/chat、shells/social），並支援 glob（*、?、**）。\n\n預設（裸 fount test）一次規劃失敗/未完成與過期項並跑完；失敗只擋住依賴它的槽，收口統一非零。不會全量，全量用 --all。\n\n--watch      持續監視，佇列空也不退出（Ctrl+C 結束）；不能同時帶 --all / --force / --update-estimates 或選擇器\n--all        範圍內全部 suite\n--force      強制重跑，不沿用上次結果\n--update-estimates  依現況資料庫平均耗時回寫各 manifest 的 expected；可帶選擇器；不跑測試\n--list        列出測試套件（可帶選擇器縮小範圍）；不啟動核心，不跑測試\n--kernel     shutdown 關閉測試核心；reboot 關掉再拉起；不能同時帶其他參數\n\n範例：\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
+			"help": "用法：fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --list [<groups>...]\n       fount test --kernel shutdown|reboot\n\n選擇器（空格分隔多組；逗號分隔同組多個 suite；/ 與 : 等價）：\n  名稱              該組全部 suite（如 shells/chat）\n  名稱:suite        指定 suite\n  名稱:suite:子項   指定子測試或測試檔案\n\n無精確匹配時按前綴展開（shells → shells/chat、shells/social），並支援 glob（*、?、**）。\n\n預設（裸 fount test）一次規劃失敗/未完成與過期項並跑完；失敗只擋住依賴它的槽，收口統一非零。不會全量，全量用 --all。\n\n--debug      單步串列：每個 suite 為一步，單步跑完後檢查殘留物，發現則報錯退出\n--watch      持續監視，佇列空也不退出（Ctrl+C 結束）；不能同時帶 --all / --force / --update-estimates 或選擇器\n--all        範圍內全部 suite\n--force      強制重跑，不沿用上次結果\n--update-estimates  依現況資料庫平均耗時回寫各 manifest 的 expected；可帶選擇器；不跑測試\n--list        列出測試套件（可帶選擇器縮小範圍）；不啟動核心，不跑測試\n--kernel     shutdown 關閉測試核心；reboot 關掉再拉起；不能同時帶其他參數\n\n範例：\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
 			"watchNoGroups": "用法：fount test --watch（不能同時使用其他參數）",
 			"updateEstimates": {
 				"incompatible": "用法：fount test --update-estimates [<groups>...]（不能同時使用其他開關）",
-				"summary": "已回寫 ${suitesUpdated} 個套件的預計時長（${filesChanged} 個 manifest），跳過 ${skipped} 個無基線或已是最新"
+				"summary": "已回寫 ${suitesUpdated} 個套件的預計時長（${filesChanged} 個 manifest），跳過 ${skipped} 個無基線或已是最新版本"
 			},
 			"list": {
 				"incompatible": "用法：fount test --list [<groups>...]（不能同時使用其他開關）",
@@ -161,7 +162,7 @@
 			},
 			"kernel": {
 				"incompatible": "用法：fount test --kernel shutdown|reboot（不可與其他參數同時使用）",
-				"unknownAction": "未知內核操作：${action}（應為 shutdown 或 reboot）",
+				"unknownAction": "未知核心操作：${action}（應為 shutdown 或 reboot）",
 				"alreadyDown": "測試內核未在運行",
 				"stopped": "測試內核已停止",
 				"rebooted": "測試內核已重啟"
@@ -175,7 +176,7 @@
 			},
 			"serialZeroTests": "[serial] ${path} 註冊了 0 個測試",
 			"frontend": {
-				"isolatedRequired": "${shellLabel} 前端測試必須透過 test/frontend/run.mjs 啟動（由它自行拉起隔離節點）。請勿在本地開發執行個體或真實使用者資料上執行。",
+				"isolatedRequired": "${shellLabel} 前端測試必須透過 test/frontend/run.mjs 啟動（由它自行拉起隔離節點）。請勿對本機開發執行個體或真實使用者資料執行。",
 				"isolatedUser": "測試必須以隔離使用者 \"${expectedUsername}\" 執行，目前工作階段為 \"${username}\"。請透過 run.mjs 啟動，勿指向生產或開發所用的 fount。"
 			},
 			"queue": {
@@ -269,29 +270,29 @@
 			"prunedAbsentState": "已清除不存在套件的狀態記錄：${suites} 個套件、${subtests} 個子測試",
 			"noisyOnlyRemain": "仍有 ${count} 個套件透過但含噪聲：${suites}",
 			"noRealRunPlanned": "本次無需真跑：複用 ${reused} 個、預計阻塞 ${blocked} 個、跳過 ${skipped} 個（trigger 未變）",
-			"allReusedHint": "本次未真跑任何套件：失敗為沿用的上次結果，阻塞隨之未解（相關檔案未變）。修複相關檔案後重跑，或用 fount test --force 強制真跑。",
+			"allReusedHint": "本次未真跑任何套件：失敗為沿用上次的結果，遭阻塞的套件隨之未解（相關檔案未變）。修復相關檔案後重跑，或用 fount test --force 強制真跑。",
 			"failuresSaved": "已儲存失敗列表：${path}（${count} 個套件）",
 			"failuresCleared": "manifest ${manifestId} 已全部透過，失敗列表已清除。",
 			"terminated": "超時終止：${label} — ${reason}",
 			"sleepDetected": "偵測到系統休眠（看門狗間隔跳變 ${gap} ≥ ${limit}），已中止 ${label} 並準備重跑（已執行 ${elapsed}）",
 			"sleepRetry": "系統休眠中斷，重跑 ${label}（第 ${attempt} 次）",
 			"nothingToContinue": "全部綠且無過期項，無需再跑。",
-			"triggerNoMatch": "trigger 未匹配任何檔案：${scope} — ${pattern}",
-			"triggerNoMatchSummary": "共 ${count} 條 trigger 未匹配任何倉庫檔案（詳見 report.md）",
+			"triggerNoMatch": "trigger 未對應到任何檔案：${scope} — ${pattern}",
+			"triggerNoMatchSummary": "共 ${count} 個 trigger 未匹配任何倉庫檔案（詳見 report.md）",
 			"federationCleanupPre": "聯邦測試清理（執行前）失敗：${output}",
 			"federationCleanupPost": "聯邦測試清理（執行後）失敗：${output}",
 			"suiteHeader": "\n=== 套件 ${name} ===",
 			"heapSnapshotSaved": "測試節點近 OOM 堆快照：${path}",
 			"liveUsage": "用法：--suite <名稱> | --list",
 			"serialUsage": "用法：serial.mjs <deno-test-path> [...]",
-			"silentPassedOne": "1 個測試檔案透過。",
-			"silentPassedMany": "${count} 個測試檔案透過。",
+			"silentPassedOne": "1 個測試檔通過。",
+			"silentPassedMany": "${count} 個測試檔通過。",
 			"ciNoDiffFallback": "CI：未偵測到 diff，改為執行全部測試套件",
 			"noFrontendPhasesMatched": "沒有匹配 FOUNT_TEST_ONLY 的前端測試階段",
 			"denoPanic": {
-				"detected": "檢測到 Deno 崩潰：${label}（位置 ${signature}）",
+				"detected": "偵測到 Deno 崩潰：${label}（位置 ${signature}）",
 				"alreadyReported": "該 Deno 崩潰已上報過，跳過：${signature}",
-				"ghUnavailable": "gh 不可用或未登入，僅本地記錄 Deno 崩潰：${signature}",
+				"ghUnavailable": "gh 不可用或未登入，僅在本機記錄 Deno 崩潰：${signature}",
 				"published": "已向 Deno 提交崩潰 issue：${url}",
 				"duplicate": "上游已存在重複崩潰，跳過上報：${upstream}",
 				"publishFailed": "Deno 崩潰 issue 釋出失敗：${signature}"
@@ -448,7 +449,7 @@
 			"protocol": {
 				"description": "URL:fount 協定",
 				"registerFailed": "註冊 `fount://` 協定處理器失敗：${message}",
-				"noUrl": "錯誤：未提供協定處理程式的 URL。"
+				"noUrl": "錯誤：未提供協定處理器的 URL。"
 			},
 			"update": {
 				"skippingFountUpdate": "因 `.noupdate` 檔案存在，跳過 fount 更新",
@@ -490,10 +491,10 @@
 				"createDesktopAppFailed": "錯誤：建立桌面應用程式失敗。"
 			},
 			"steam": {
-				"registering": "正在將 fount 註冊為 Steam 非 Steam 遊戲…",
+				"registering": "正在將 fount 註冊為 Steam 的非 Steam 遊戲…",
 				"registered": "已將 fount 加入 Steam 遊戲庫。若 Steam 正在執行，需重新啟動後才會生效。",
 				"failed": "Steam 註冊失敗：${message}",
-				"exeFailed": "未能產生 fount.exe，已略過 Steam 註冊。"
+				"exeFailed": "無法產生 fount.exe，已略過 Steam 註冊。"
 			},
 			"git": {
 				"repoNotFound": "未找到 fount 的 git 儲存庫，正在初始化一個新的...",
@@ -577,13 +578,13 @@
 				"confirmPrompt": "即將從磁碟刪除 fount 安裝目錄：`${path}`\n請確認這確實是要刪除的目錄。",
 				"yn": "[Y/N] ",
 				"aborted": "已取消，未刪除任何內容。",
-				"externalMountWarning": "警告：fount 位於外部/共享掛載（`${target}`）上！\n目錄可能也存在於主機或其他虛擬機器中，`fount remove` 會一併刪除，請格外小心。",
+				"externalMountWarning": "警告：fount 位於外部/共享掛載（`${target}`）上！\n該目錄可能也存在於其他主機或虛擬機器中，`fount remove` 會一併刪除，請格外小心。",
 				"nonInteractiveRequiresForce": "無法在非互動式環境中確認刪除。若確定要移除 `fount`（${path}），請使用 `fount remove --force` 略過確認。",
 				"fountUninstallationComplete": "fount 解除安裝完成。",
 				"fountInstallationDirRemoved": "fount 安裝目錄已移除。",
 				"protocolHandlerRemoved": "`fount://` 協定處理器已移除。",
 				"fountPwshRemovedFromProfile": "已從 PowerShell Profile 中移除 fount-pwsh。",
-				"pwshProfileNotFound": "未找到 PowerShell Profile，跳過從 profile 中移除 `fount-pwsh`。",
+				"pwshProfileNotFound": "未找到 PowerShell Profile，略過從 profile 移除 `fount-pwsh`。",
 				"uninstallFountPwshFailed": "解除安裝 `fount-pwsh` 失敗：${message}",
 				"terminalProfileRemoved": "Windows Terminal Profile 目錄已移除。",
 				"terminalProfileNotFound": "未找到 Windows Terminal Profile 目錄。",
@@ -718,7 +719,7 @@
 			"open_fount": "開啟 fount",
 			"open_or_install_fount": "開啟/安裝 fount",
 			"error_message": "哎呀 :(\n\n發生錯誤：\n${error}",
-			"star_thank_you": "感謝您為 fount 加上星號！",
+			"star_thank_you": "感謝您為 fount 按星！",
 			"telegram": {
 				"title": "開啟 Telegram",
 				"aria-label": "開啟 Telegram"
@@ -743,7 +744,7 @@
 		"features": {
 			"seamlessChat": {
 				"title": "無縫對話，隨時隨地",
-				"description": "在電腦上開始聊天，在手機或平板電腦上無縫接續。fount 讓您的對話保持同步，無論您走到哪裡，都能與您的角色保持聯繫。可在 Windows、macOS、Linux 甚至 Android 上執行。"
+				"description": "在電腦上開始聊天，在手機或平板上無縫接續。fount 讓您的對話保持同步，無論走到哪裡，都能與您的角色保持聯繫。可在 Windows、macOS、Linux 甚至 Android 上執行。"
 			},
 			"customUi": {
 				"title": "美觀、可自訂的介面",
@@ -761,7 +762,7 @@
 	},
 	"protocolhandler": {
 		"title": "處理 fount 協定",
-		"description": "該頁面安靜而高效地將您的意圖轉化為 fount 內的無縫過渡。認為這是幕後的安靜魔法。",
+		"description": "這個頁面安靜而有效率地將您的意圖化為 fount 內的無縫過渡。就把它當成幕後的靜謐魔法。",
 		"processing": "正在處理協定...",
 		"invalidProtocol": "無效的協定",
 		"insufficientParams": "參數不足",
@@ -791,7 +792,7 @@
 	},
 	"startPage": {
 		"title": "fount!",
-		"description": "歡迎來到 fount 的門檻。在進入等待展開的對話和故事的核心之前，先進行短暫的準備。"
+		"description": "歡迎來到 fount 的門口。在踏入等待展開的對話與故事核心之前，先短暫準備一下。"
 	},
 	"auth": {
 		"title": "認證",
@@ -1190,7 +1191,7 @@
 	},
 	"chat": {
 		"title": "聊天",
-		"description": "言語飛揚，故事展開。與您的 AI 夥伴互動，塑造敘事，並在數位對話的潮起潮落中迷失自我。fount 的心臟在這裡跳動。",
+		"description": "言語飛揚，故事展開。與您的 AI 夥伴互動，塑造敘事，並在數位對話的潮起潮落中迷失自我。fount 的心跳在這裡迴響。",
 		"new": {
 			"title": "新聊天",
 			"description": "對一個尚未寫下的故事的安靜期待。新的聊天開始，與您選擇的同伴進行新的互動並展開敘述。"
@@ -1512,16 +1513,16 @@
 					},
 					"empty": "尚無冷歸檔檔案。",
 					"filesTitle": "已歸檔檔案",
-					"hint": "冷歸檔為本機明文帖子終態（按月分檔案）。刪除歸檔不會改動 DAG；缺歷史時可向聯邦鄰居拉取。",
+					"hint": "冷歸檔為本機明文貼文終態（按月分檔案）。刪除歸檔不會改動 DAG；缺歷史時可向聯邦鄰居拉取。",
 					"title": "儲存與冷歸檔"
 				},
 				"autoChannelGc": "自動清理沉寂頻道",
 				"autoChannelGcHint": "物化時最多刪除 2 個沉寂 ≥30 天且不可達的孤島頻道。",
 				"autoReply": {
-					"frequency": "自動觸發角色回覆（每 N 條使用者訊息後，0 為關閉）",
+					"frequency": "自動觸發角色回覆（每 N 則使用者訊息後，0 為關閉）",
 					"frequencyHint": "0 表示關閉；@提及 仍會立即觸發",
 					"tokenBucket": "自動回覆壓力排程（Token Bucket）",
-					"tokenBucketHint": "開啟後，每個角色按頻道維護令牌桶；桶空時暫不觸發 onMessage，可抑制高峰期連續刷屏。"
+					"tokenBucketHint": "開啟後，每個角色按頻道維護令牌桶；桶空時暫不觸發 onMessage，可抑制尖峰時段連續洗版。"
 				},
 				"batterySaver": "低功耗模式（縮小聯邦連線池與中繼）",
 				"compactTriggerDepth": "物化壓縮觸發深度",
@@ -1585,7 +1586,7 @@
 					"membersTitle": "成員列表",
 					"overviewTitle": "群組概覽",
 					"overviewHint": "只讀資訊。具備治理許可權時可在「基本」中編輯群資料與策略。",
-					"governanceHint": "寫入 DAG 的群組原則；需管理員或 MANAGE_ADMINS 等權限。",
+					"governanceHint": "寫入 DAG 的群組層級原則；需管理員或 MANAGE_ADMINS 等權限。",
 					"governanceDenied": "你沒有許可權修改群治理設定。",
 					"rolesDenied": "你沒有 MANAGE_ROLES 許可權，無法編輯角色。",
 					"notMember": "你已不是本群成員；本機群資料已在離群后自動清理。",
@@ -1633,7 +1634,7 @@
 					"unbanConfirm": "確定解封成員 ${name} 嗎？",
 					"unbanSuccess": "成員已解封",
 					"unbanFailed": "解封失敗：${error}",
-					"gshGenerationRetentionHint": "當前僅保留最近 64 代檔案主金鑰歷史。超出後最早歷史檔案可能無法解密，建議定期歸檔重要資料。",
+					"gshGenerationRetentionHint": "目前僅保留最近 64 代檔案主金鑰歷史。超出後最早歷史檔案可能無法解密，建議定期歸檔重要資料。",
 					"gshGenerationNearLimit": "當前已輪換到第 ${generation} 代檔案主金鑰（上限 ${maxGenerations} 代）。繼續頻繁輪換將導致最早歷史金鑰被淘汰。",
 					"ownerSuccession": "群主繼任",
 					"ownerSuccessionOk": "群主繼任已生效",
@@ -1837,10 +1838,10 @@
 			"stream": {
 				"generationFailed": "AI 生成超時未完成，已停止更新",
 				"noEmbed": {
-					"textContent": "流媒體地址須為可嵌入的 https:// 頁面，或先設定群設定並重新整理以獲取觀看令牌。"
+					"textContent": "流媒體位址須為可嵌入的 https:// 頁面，或先設定群組設定並重新整理，以取得觀看權杖。"
 				},
 				"noSfu": {
-					"textContent": "未設定 streamingSfuWss；管理員可在群設定中填寫 LiveKit/mediasoup 觀看地址。"
+					"textContent": "未設定 streamingSfuWss；管理員可在群組設定中填寫 LiveKit/mediasoup 觀看位址。"
 				},
 				"ok": "已獲取媒體流（已停止，未廣播）",
 				"test": "測試媒體裝置"
@@ -2073,7 +2074,7 @@
 			"bioEmpty": "這位使用者還沒有簡介。",
 			"banners": {
 				"gshBuffer": "有 ${total} 條訊息等待金鑰輪換後解密",
-				"plaintextSidecar": "此頻道為按需同步；本地 messages sidecar 以明文快取展示內容。",
+				"plaintextSidecar": "此頻道為按需同步；本機 messages sidecar 以明文快取展示內容。",
 				"quarantine": "有 ${count} 條聯邦事件因時鐘偏差暫存於隔離區，待系統時間恢復後自動重放。",
 				"mailboxPending": "離線 mailbox 中有 ${count} 條待投遞訊息。",
 				"syncing": "正在與聯邦鄰居同步…",
@@ -2155,7 +2156,7 @@
 				"title": "信任此作者",
 				"subtitle": "作者：${author}",
 				"warningTitle": "高風險操作",
-				"warningBody": "信任後，此作者發送的訊息將在你的瀏覽器中以完整 Markdown 渲染（含 HTML/腳本能力）。若對方在其運作的 fount 實例上惡意建構內容，可能在你查看訊息時對你的本機造成危害。請僅信任你明確認識且願意承擔風險的聯邦節點。",
+				"warningBody": "信任後，此作者發送的訊息將在你的瀏覽器中以完整 Markdown 渲染（含 HTML/指令碼能力）。若對方在其運作的 fount 執行個體上惡意建構內容，可能在你查看訊息時對你的本機造成危害。請只信任你明確認識、且願意承擔風險的聯邦節點。",
 				"durationLabel": "信任時長",
 				"duration3h": "3 小時",
 				"duration7d": "7 天",
@@ -2202,7 +2203,7 @@
 				"close": {
 					"aria-label": "關閉"
 				},
-				"previewHint": "修改會立即顯示在預覽中，儲存後同步用於 Chat 與 Social。",
+				"previewHint": "修改會立即顯示在預覽中，儲存後同步到 Chat 與 Social。",
 				"sfwMode": "安全內容",
 				"livePreview": "實時預覽",
 				"languageVersion": "語言版本",
@@ -2223,7 +2224,7 @@
 				"handleLabel": "自訂 ID",
 				"handleHint": "可被網路內他節點搜尋；不保證唯一，衝突時按信任度列表消歧。",
 				"newLocale": {
-					"placeholder": "新語言程式碼，如 en-UK"
+					"placeholder": "新語言代碼，例如 en-UK"
 				},
 				"renameLocale": {
 					"aria-label": "重新命名語言代碼"
@@ -2241,7 +2242,7 @@
 					"placeholder": "輸入標籤後新增，可用 # 一次新增多個"
 				},
 				"handle": {
-					"placeholder": "例如 steve（2–32 位小寫字母數字._-）"
+					"placeholder": "例如 steve（2–32 個小寫字母、數字 ._-）"
 				},
 				"resetFrom": {
 					"part": "從角色部件重置",
@@ -2395,7 +2396,7 @@
 				"fetchFailed": "成員分頁拉取失敗",
 				"mismatch": "成員摘要不一致 · ${root}",
 				"ok": "成員 Merkle 一致 · ${root}",
-				"okPaged": "成員 Merkle 一致（${pages} 頁）· ${root}",
+				"okPaged": "成員 Merkle 共識（${pages} 頁）· ${root}",
 				"pagesTitle": {
 					"title": "${expected}\n${pages} 頁"
 				},
@@ -2659,7 +2660,7 @@
 				},
 				"connectionLost": "連線已中斷，正在重新連線…",
 				"defaultName": "流媒體",
-				"embedHttpsRequired": "流媒體地址須為可嵌入的 https:// 頁面，或先設定群設定並重新整理以獲取觀看令牌。",
+				"embedHttpsRequired": "流媒體位址須為可嵌入的 https:// 頁面，或先設定群組設定並重新整理，以取得觀看權杖。",
 				"refreshToken": "重新整理觀看令牌",
 				"tokenFailed": "無法簽發觀看令牌",
 				"webRtcHint": "未設定外部 SFU；本頻道將使用群內 WebRTC（無需 streamingSfuWss）。"
@@ -2963,7 +2964,7 @@
 					"pubKeyLabel": "公鑰 hex（64）",
 					"rotateConfirm": "此前簽發的所有加好友連結都會立即失效，且無法恢復。確定繼續嗎？",
 					"rotateLabel": "使舊連結失效",
-					"secretLabel": "私鑰種子 hex（64）",
+					"secretLabel": "私鑰種子（hex 64 碼）",
 					"urlLabel": "已簽發的加好友連結"
 				},
 				"groupRecoveryTip": "僅在邀請洩露或新裝置無法同步歷史時使用。",
@@ -3218,7 +3219,7 @@
 			},
 			"code_greeting": {
 				"name": "用程式碼問好",
-				"description": "「你好，fount！」",
+				"description": "你讓 fount 中的程式碼發出了第一聲問候。`// \"hello fount!\"`",
 				"locked_description": "通過執行程式碼區塊，成功輸出 'hello fount!'。"
 			}
 		},
@@ -3353,7 +3354,7 @@
 			"federation": {
 				"advanced": "高階選項",
 				"batterySaverLabel": "低功耗模式",
-				"description": "設定 Nostr relay URL 與省電模式。群組的聯邦同步會在首次邀請他人或建立聯邦私訊時自動啟用。",
+				"description": "設定 Nostr relay URL 與省電模式。群的聯邦同步會在第一次邀請他人或建立聯邦私訊時自動啟用。",
 				"relayUrlsLabel": "中繼伺服器（每行一個，留空則使用預設）",
 				"resetDefault": "恢復預設推薦設定",
 				"resetOk": "已恢復預設推薦設定",
@@ -3385,7 +3386,7 @@
 					"title": "確認設定主人？",
 					"warningTitle": "高風險操作，請仔細閱讀"
 				},
-				"description": "設定後，主人可以代為編輯或刪除你的聊天訊息、社交貼文與個人資料；其內容也會在本機以不安全 Markdown 渲染（可含腳本）。可填入任意實體雜湊，並隨時清除。",
+				"description": "設定後，主人可以代為編輯或刪除你的聊天訊息、社交貼文與個人資料；其內容也會在本機以不安全 Markdown 渲染（可含指令碼）。可填入任意實體雜湊，並隨時清除。",
 				"entityHash": {
 					"placeholder": "輸入主人的實體雜湊"
 				},
@@ -3662,7 +3663,7 @@
 	},
 	"easynew": {
 		"title": "快速新建",
-		"description": "使用預定義或自訂範本快速建構新的 fount 部分，例如角色、世界和外掛。只需點擊幾下即可完成您的下一個創作。",
+		"description": "使用預定義或自訂範本快速建構新的 fount 組件，例如角色、世界和外掛。只需點擊幾下即可完成您的下一個創作。",
 		"info": {
 			"description": "這些範本只能用於快速建構簡單的組件，複雜的組件仍然需要手動建立。"
 		},
@@ -3779,7 +3780,7 @@
 	},
 	"import": {
 		"title": "匯入",
-		"description": "將您喜愛的角色、世界和配置帶入 fount 的懷抱。無論是來自檔案還是貼上的文字，新元素都將融入您的個人掛毯中。",
+		"description": "將你喜愛的角色、世界與設定帶進 fount 的懷抱。無論來自檔案或貼上的文字，新元素都會編織進你的專屬收藏。",
 		"tabs": {
 			"tabsLabel": {
 				"aria-label": "匯入類型選擇"
@@ -3848,7 +3849,7 @@
 		"title": "組件匯出器",
 		"pageTitle": "組件匯出器",
 		"pageSubtitle": "匯出你喜歡的內容",
-		"description": "匯出您的 fount 創作。該工具將您選擇的組件收集到一個簡單的 zip 檔案中，以便妥善保存或分享。",
+		"description": "匯出您的 fount 創作。這項工具會將您選擇的組件收集成一個簡單的 zip 檔案，方便妥善保存或分享。",
 		"steps": {
 			"part": "選擇組件",
 			"action": "匯出"
@@ -3977,7 +3978,7 @@
 	"part_config": {
 		"title": "組件設定",
 		"pageTitle": "組件設定",
-		"description": "凝視 fount 的心臟。在這裡，您可以調整其不同組件的設定，調整驅動您體驗的引擎。",
+		"description": "凝視 fount 的心臟。在這裡，您可以調整各組件的設定，調校驅動您體驗的引擎。",
 		"labels": {
 			"part": "選擇組件"
 		},
@@ -4028,7 +4029,7 @@
 	},
 	"serviceSource_manager": {
 		"title": "服務來源管理",
-		"description": "在這裡，你將指揮 AI 聲音的交響樂。新增、雕琢或靜音源泉，為您的源泉夥伴賦予生命——程式碼和想像力的微妙舞蹈。",
+		"description": "在這裡，你將指揮一場 AI 聲音的交響樂。新增、調校或停用各種來源，為你的來源夥伴賦予生命——一場程式碼與想像力的微妙共舞。",
 		"fileList": {
 			"title": "服務來源列表",
 			"empty": "暫無服務來源",
@@ -4167,7 +4168,7 @@
 			"set_default_aisource": {
 				"name": "勝利的法則已然確立！",
 				"description": "指定了一個預設的 AI 作為魔力供應源。",
-				"locked_description": "設置一次預設的 AI 來源。"
+				"locked_description": "設定一次預設的 AI 來源。"
 			}
 		},
 		"home_function_buttons": {
@@ -4232,7 +4233,7 @@
 		},
 		"alerts": {
 			"configSaved": "設定已成功儲存！",
-			"botExists": "名為 “${botname}” 的 bot 已存在，請使用其他名稱。",
+			"botExists": "名為「${botname}」的 bot 已存在，請改用其他名稱。",
 			"unsavedChanges": "您有未儲存的變更。確定要放棄這些變更嗎？",
 			"confirmDeleteBot": "確定要刪除名為「${botname}」的 bot 嗎？此操作無法復原。",
 			"invalidJsonConfig": "JSON 設定無效：${error}",
@@ -4315,7 +4316,7 @@
 		},
 		"alerts": {
 			"configSaved": "設定儲存成功",
-			"botExists": "名為 \"${botname}\" 的 Bot 已存在，請使用其他名稱。",
+			"botExists": "名為 \"${botname}\" 的 Bot 已存在，請改用其他名稱。",
 			"unsavedChanges": "您有未儲存的變更。是否要放棄變更？",
 			"httpError": "HTTP 錯誤",
 			"beforeUnload": "您有未儲存的變更。確定要離開嗎？"
@@ -4345,7 +4346,7 @@
 	},
 	"wechat_bots": {
 		"title": "微信 Bot",
-		"description": "讓你的 fount 角色在微信上與你對話。綁定角色，管理多個 Bot，在熟悉的聊天裡延續陪伴。",
+		"description": "讓你的 fount 角色在微信上與你對話。綁定角色、管理多個 Bot，在熟悉的聊天裡延續陪伴。",
 		"cardTitle": "微信 Bot",
 		"botSelectDropdown": {
 			"placeholder": "選擇一個 Bot"
@@ -4890,7 +4891,7 @@
 			}
 		},
 		"search": {
-			"placeholder": "搜尋動態、使用者或 #話題（至少 2 字）",
+			"placeholder": "搜尋貼文、使用者或 #話題（至少 2 字）",
 			"aria-label": "搜尋動態、使用者或話題",
 			"open": {
 				"aria-label": "搜尋"
@@ -5217,7 +5218,7 @@
 	},
 	"browser_integration": {
 		"title": "瀏覽器整合",
-		"description": "彌合 fount 和網路之間的差距。此頁面提供使用者指令碼以實現無縫整合，將您的 AI 伴侶帶入您的瀏覽體驗中。",
+		"description": "彌合 fount 和網路之間的差距。此頁面提供使用者指令碼來實現無縫整合，將您的 AI 伴侶帶進您的瀏覽體驗中。",
 		"pageHeader": "瀏覽器整合",
 		"pageDescription": "為了讓您的 fount 角色能夠與網頁互動，需要安裝此瀏覽器整合指令碼。它充當角色與瀏覽器之間的橋樑，使他們能夠檢視頁面內容並執行操作。",
 		"install_script_title": "安裝指令碼",
@@ -5230,7 +5231,7 @@
 		"what_is_manager": "什麼是油猴指令碼管理器？",
 		"manager_explanation": "油猴指令碼管理器是一個瀏覽器擴充功能，允許您安裝和執行修改網頁的指令碼。要使用 fount 整合指令碼，您需要其中一個擴充功能。",
 		"popular_managers": "熱門選擇：",
-		"csp_warning": "你可能需要安裝擴充功能停用 CSP 來使得整合功能正常執行，對於 ${browser} 可以使用 [這個擴充功能](${link})。",
+		"csp_warning": "為了讓整合功能正常運作，您可能需要安裝擴充功能來停用頁面的 CSP；以 ${browser} 為例，可以使用 [這個擴充功能](${link})。",
 		"connected_pages_title": "已連接的頁面",
 		"fetch_pages_error": "載入已連接頁面列表失敗。",
 		"page_title": "頁面標題",
@@ -5311,13 +5312,13 @@
 		"hostChange": {
 			"securityWarningTitle": "--- fount 安全警告 ---",
 			"message": "當前頁面 (\"${origin}\") 正試圖將您的 fount 主機位址變更為:\n\n\"${newHost}\"\n\n警告：批准此操作將允許新主機完全控制您的瀏覽器整合功能，可能導致敏感資訊洩露或帳號被盜用。\n只有在您確信這是您本人操作（例如，遷移 fount 伺服器）時才應批准。\n\n您確定要允許這次變更嗎？",
-			"uuidMismatchError": "fount 安全錯誤：主機 ${newHost} 的識別 (UUID) 與您現有的不匹配。操作已取消。",
+			"uuidMismatchError": "fount 安全錯誤：主機 ${newHost} 的識別（UUID）與您現有的不符。操作已取消。",
 			"verificationError": "fount 安全錯誤：無法驗證新的主機 \"${newHost}\"。請檢查位址是否正確以及服務是否正在執行。"
 		}
 	},
 	"terminal_assistant": {
 		"title": "終端機助理",
-		"description": "除了圖形介面之外，還有直接指令的空間。透過終端助手與 fount 的核心進行互動，其中文字編織了自己強大的魔力。",
+		"description": "除了圖形介面之外，還有直接下指令的空間。透過終端機助理與 fount 的核心互動，文字在其中編織出強大的魔力。",
 		"initialMessage": "fount 支援將你喜歡的角色部署到你的終端機中輔助你寫程式！",
 		"initialMessageLink": "點擊這裡了解更多資訊",
 		"achievements": {
@@ -5347,7 +5348,7 @@
 		}
 	},
 	"ide_integration": {
-		"description": "透過 Agent Client Protocol 將 fount 角色接入支援的編輯器（如 Zed、JetBrains、Neovim），設定 API 金鑰與角色，將 AI 夥伴帶入開發工作流。",
+		"description": "透過 Agent Client Protocol（ACP）將 fount 的 Agent 接入支援的編輯器（如 Zed、JetBrains、Neovim），設定 API 金鑰與 Agent，把 AI 夥伴帶進開發工作流。",
 		"title": "IDE 整合",
 		"heading": "IDE 整合",
 		"instruction": "在支援 ACP 的編輯器（如 Zed、JetBrains、Neovim 等）中用 fount 角色輔助程式設計。",
@@ -5367,7 +5368,7 @@
 			"first_ide_use": {
 				"name": "第一次在外部 IDE 裡用 fount",
 				"description": "在支援 ACP 的編輯器（如 Zed、JetBrains、Neovim 等）中首次使用 fount 角色輔助編程。",
-				"locked_description": "在外部 IDE 中連接 fount 角色並完成一次對話。"
+				"locked_description": "在外部 IDE 中連線 fount 角色並完成一次對話。"
 			}
 		},
 		"supportedEditors": {
@@ -5379,7 +5380,7 @@
 		"apiKey": {
 			"copied": "API 金鑰已複製",
 			"createError": "建立 API 金鑰失敗：${message}",
-			"hint": "用於 ACP 指令碼連接 fount（與 API 代理同套金鑰，可在使用者設定中建立）。",
+			"hint": "用於 ACP 指令碼連線 fount（與 API 代理同套金鑰，可在使用者設定中建立）。",
 			"input": {
 				"aria-label": "API 金鑰"
 			},
@@ -5543,7 +5544,7 @@
 			"advancedCustomization": "進階自訂",
 			"customCSS": "自訂 CSS (覆蓋)",
 			"customMjsScript": "自訂 MJS 指令碼 (選填)",
-			"mjsSyntaxHint": "使用 [async-eval 語法](${asyncDocLink})。返回一個包含 `load()` 和 `unload()` 函數的物件。",
+			"mjsSyntaxHint": "使用 [async-eval 語法](${asyncDocLink})。傳回一個包含 `load()` 和 `unload()` 函數的物件。",
 			"themeIdRequired": "需要主題 ID",
 			"newThemeName": "新主題名稱：",
 			"deleteConfirm": "確定要刪除主題 ${id} 嗎？",
@@ -5611,7 +5612,7 @@
 	"languageSettings": {
 		"title": "語言設定",
 		"pageTitle": "語言設定",
-		"description": "管理您的 fount 應用程式的語言偏好。使用可用的語言選項自訂您的體驗。",
+		"description": "管理 fount 應用程式的語言偏好，並用可選的語言自訂您的體驗。",
 		"pageDescription": "在此處管理您的語言偏好。列表中的語言將按順序優先於瀏覽器設定。",
 		"availableLanguages": "可用語言",
 		"preferredLanguages": "優先語言列表",
@@ -5702,7 +5703,7 @@
 		},
 		"passkeys": {
 			"title": "安全金鑰與 Passkey",
-			"description": "綁定後可用安全金鑰或本機 Passkey 登入。需在 HTTPS 或 localhost 下使用；請先在使用者設定中新增金鑰。",
+			"description": "綁定後可用安全金鑰或本機的 Passkey 登入。需在 HTTPS 或 localhost 下使用；請先在使用者設定中新增金鑰。",
 			"refreshButton": {
 				"title": "重新整理清單"
 			},
@@ -5804,7 +5805,7 @@
 				"pathInput": {
 					"placeholder": "供測試用的檔案路徑，例如 C:/work/project/src/main.mjs"
 				},
-				"pathRequired": "請先填寫測試檔案路徑。",
+				"pathRequired": "請先填寫測試檔路徑。",
 				"success": "已嘗試在外部編輯器中開啟。",
 				"lineInput": {
 					"aria-label": "行號"
@@ -5854,7 +5855,7 @@
 	},
 	"access": {
 		"title": "在其他裝置上存取 fount",
-		"description": "將 fount 的覆蓋範圍擴展到單個螢幕之外。這裡有閘道器（一個 URL、一個 QR 碼），用於通過其他設備與您的同伴進行連接，這是一個跨本地乙太網的簡單橋樑。",
+		"description": "將 fount 的覆蓋範圍延伸到單一螢幕之外。這裡是閘道（一個 URL、一個 QR 碼），讓你透過其他裝置與你的同伴連線，一座跨越本機乙太網路的簡單橋樑。",
 		"heading": "想在其他裝置上存取 fount 嗎？",
 		"instruction": {
 			"sameLAN": "確保裝置和 fount 主機在同一個區域網路下",
@@ -5882,11 +5883,11 @@
 	},
 	"proxy": {
 		"title": "API 代理",
-		"description": "對於開發人員和整合商，此頁面推出了 fount API 代理，您可以將 fount 的功能編織到其他應用程式中。",
+		"description": "對於開發人員和整合商，此頁面介紹了 fount API 代理，您可以將 fount 的功能編織到其他應用程式中。",
 		"heading": "API 代理閘道器",
-		"instruction": "在此頁面產生並管理您的 API 金鑰，以將 fount 與其他應用程式整合。",
+		"instruction": "在此頁面產生並管理您的 API 金鑰，用來將 fount 與其他應用程式整合。",
 		"endpointSectionTitle": "API 端點",
-		"endpointInstruction": "這是與其他服務整合的基本 URL。",
+		"endpointInstruction": "這是與其他服務整合的基底 URL。",
 		"usageExampleTitle": "用法範例",
 		"usageExampleInstruction": "以下是如何使用 `curl` 獲取可用模型列表的範例。",
 		"copyButton": "複製",
@@ -5895,7 +5896,7 @@
 		"generateApiKeyButton": "產生新金鑰",
 		"copyApiKeyButton": "複製",
 		"queryStringSectionTitle": "無法在請求標頭中設定 APIKey？ (不安全)",
-		"queryStringWarning": "當您的應用程式不支援在請求標頭（Authorization header）中發送 API 金鑰時，可以使用此備用方法。請注意：將 API 金鑰直接放在 URL 中存在安全風險，因為它可能被記錄在伺服器日誌或瀏覽器歷史中。",
+		"queryStringWarning": "當您的應用程式不支援在請求標頭（Authorization header）中傳送 API 金鑰時，可以使用這個備用方法。請注意：將 API 金鑰直接放在 URL 中會有安全風險，因為它可能被記錄在伺服器日誌或瀏覽器歷史中。",
 		"copyQueryStringUrlButton": "包含 API 金鑰的 URL (查詢字串)",
 		"home_function_buttons": {
 			"other": {
@@ -5933,7 +5934,7 @@
 		},
 		"infra": {
 			"title": "網路公益",
-			"description": "統一設定已連線的子 fount 是否作為公益節點，協助整個 fount 網路。關閉後，分機仍接受本機遠端執行，但不參與網路層協助。",
+			"description": "統一設定已連線的子 fount 是否作為公益節點，協助整個 fount 網路。關閉後，分機仍接受本機遠端執行，但不再參與網路層協助。",
 			"capabilityRelay": "參與 overlay 多跳轉發，在直連失敗時幫助其他節點互通。",
 			"capabilityMailbox": "託管離線投遞，讓對方節點上線後仍能收到私訊。",
 			"hostPriority": "開啟時優先協助本機：依本機信譽表加權路由，並將本機鎖定為最高優先級。",
@@ -6009,7 +6010,7 @@
 	},
 	"achievements": {
 		"title": "成就",
-		"description": "探索您與 fount 旅程的里程碑和成就。每項成就都標誌著您獨特敘事的一步。",
+		"description": "探索你與 fount 旅程中的里程碑與成就。每項成就都標記著你獨特故事裡的一步。",
 		"pageHeader": "成就殿堂",
 		"pageDescription": "在這裡檢視您已解鎖的成就和里程碑。",
 		"unlocked_on": "解鎖於 ${date}",
@@ -6039,7 +6040,7 @@
 	},
 	"log_viewer": {
 		"title": "紀錄",
-		"description": "查看 fount 即時伺服器日誌，並在瀏覽器中執行 JavaScript REPL。",
+		"description": "查看 fount 的即時伺服器日誌，並在瀏覽器中執行 JavaScript REPL。",
 		"connectionError": "無法連線至日誌服務。請在本機存取或登入後再試。",
 		"logs": {
 			"openSourceFailed": "無法在外部編輯器中開啟原始碼：${message}",
@@ -6462,7 +6463,7 @@
 	},
 	"oauth_handler": {
 		"title": "OAuth 登入",
-		"description": "完成 AI 源的 OAuth 登入。Token 交換在伺服器端完成。",
+		"description": "完成 AI 來源的 OAuth 登入。Token 交換在伺服器端完成。",
 		"callback": {
 			"working": "正在完成登入…",
 			"success": "登入成功，可以關閉此頁。",
@@ -6472,7 +6473,7 @@
 	},
 	"code": {
 		"title": "Code",
-		"description": "針對工作區與機器的 AI 程式碼編輯會話。",
+		"description": "針對工作區與機器的 AI 程式開發工作階段。",
 		"sessions": {
 			"new": "新對話",
 			"untitled": "未命名對話",
@@ -6775,7 +6776,7 @@
 	},
 	"gist": {
 		"title": "Gist 文件庫",
-		"description": "儲存、檢視、編輯與分享 Markdown 文件，並可依 gist 設定安全等級。",
+		"description": "儲存、檢視、編輯與分享 Markdown 檔案，並依 gist 設定安全等級。",
 		"error": {
 			"generic": "發生錯誤：${error}"
 		},
@@ -6860,7 +6861,7 @@
 			"delete": "刪除",
 			"empty": "此 gist 內容為空",
 			"dropRerender": "已用拖入的 Markdown 重新渲染",
-			"downgradeConfirm": "切換為「無防護」將允許 HTML 指令碼在預覽中執行，存在 XSS 風險。確認切換？",
+			"downgradeConfirm": "切換為「無防護」將允許 HTML 指令碼在預覽中執行，存在 XSS 風險。確定要切換嗎？",
 			"shareCopied": "分享連結已複製到剪貼簿",
 			"deleteConfirm": "確定刪除這個 gist？此操作無法復原。",
 			"notFound": "找不到這個 gist，它可能已被刪除。"

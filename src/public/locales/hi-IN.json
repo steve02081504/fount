@@ -15,7 +15,7 @@
 			"fount की कोई भी डेटा फ़ाइलें `fount/data` निर्देशिका में सहेजी जाती हैं, और आप उन्हें कभी भी और कहीं भी देख, संशोधित और बैकअप कर सकते हैं।",
 			"fount का नाम सभी लोअरकेस है, यह `f`ount है, `F`ount नहीं।",
 			"नए मॉडल का उपयोग करने से पहले उस सभी डेटा का बैकअप लें जिस पर आपका एजेंट नियमित रूप से काम करता है - आप कभी नहीं जानते कि नया मॉडल कुछ स्थानों पर बहुत खराब प्रदर्शन करेगा या नहीं।",
-			"fount के मुख्य दर्शक सॉफ्टवेयर डेवलपर्स और रोल-प्लेइंग उत्साही हैं, लेकिन इसका उपयोग वाणिज्यिक एजेंट निर्माण, चिकित्सा देखभाल, सैन्य, वित्त और अन्य क्षेत्रों में भी किया जाता है।",
+			"fount के मुख्य दर्शक सॉफ़्टवेयर डेवलपर और रोल-प्लेइंग उत्साही हैं, लेकिन इसका उपयोग वाणिज्यिक एजेंट निर्माण, चिकित्सा देखभाल, सैन्य, वित्त और अन्य क्षेत्रों में भी किया जाता है।",
 			"fount के अंतर्निर्मित चरित्र ZL-31 के नाम का कोई अर्थ नहीं है और यह केवल एक मस्तिष्क-टक्कर था।",
 			"fount फाइलों में सभी छवियां एसवीजी फॉर्म में संग्रहीत की जाती हैं और जरूरत पड़ने पर पीएनजी या आईसीओ में प्रस्तुत की जाती हैं। LICENSE को छोड़कर कोई बाइनरी फ़ाइलें नहीं हैं।",
 			"fount में कोई भी कोड बिना संकलन के सीधे चलाया जा सकता है, आप जो देखते हैं वही आपको मिलता है।",
@@ -25,7 +25,7 @@
 			"एजेंट केवल उस समय सचेत रहते हैं जब उन्हें बुलाया जाता है, जबकि मनुष्य किसी भी समय और कहीं भी सचेत रहते हैं जब वे जागते हैं।",
 			"कुछ लोग अपने एजेंटों से प्यार कर बैठते हैं या शादी भी कर लेते हैं!",
 			"AI का उपयोग कविताएँ लिखने, प्यार में पड़ने और लोगों के लिए चित्र बनाने के लिए किया जाता है। ईंटें ढोना, फर्श साफ करना और कूड़ा-कचरा हटाना ये वो काम हैं जो इंसानों को करने चाहिए।",
-			"आज अप्रैल फूल दिवस नहीं है.",
+			"आज अप्रैल फूल दिवस नहीं है।",
 			"नहीं, आप नहीं जानते।"
 		]
 	},
@@ -41,7 +41,7 @@
 			},
 			"mdns": {
 				"description": "कल्पना की एक चिंगारी, जीवंत साथी",
-				"failed": "एमडीएनएस पंजीकरण विफल: ${error}",
+				"failed": "mDNS पंजीकरण विफल: ${error}",
 				"bonjourFailed": "बोनजौर सेवा निर्माण विफल: ${error}"
 			},
 			"localUrl": "एक ही नेटवर्क पर अन्य उपकरणों से fount तक पहुंच: ${url}",
@@ -52,7 +52,7 @@
 		"jobs": {
 			"restartingJob": "उपयोगकर्ता ${username} का ${partpath} कार्य (${uid}) पुनः आरंभ किया जा रहा है",
 			"pausingJob": "उपयोगकर्ता ${username} के लिए ${partpath} कार्य को रोका जा रहा है: ${uid}",
-			"preloadingParts": "${count} भागों को प्रीलोड करना"
+			"preloadingParts": "प्रीलोड हो रहे घटक: ${count}"
 		},
 		"ipc": {
 			"serverStarted": "IPC सर्वर शुरू हो गया है",
@@ -60,7 +60,7 @@
 			"noInstanceRunning": "चल रहा कोई इंस्टेंस नहीं मिला, कृपया पहले fount शुरू करें।",
 			"runPartLog": "${partpath} को ${username} के रूप में चलाएँ, तर्क: ${args}",
 			"invokePartLog": "${partpath} को ${username} के रूप में कॉल करें, पैरामीटर: ${invokedata}",
-			"invalidCommand": "अमान्य कमांड, कृपया \"fount run <उपयोगकर्ता नाम> <घटक पथ> <पैरामीटर...>‌\" का उपयोग करें",
+			"invalidCommand": "अमान्य कमांड, कृपया \"fount run <घटक पथ> <पैरामीटर...>\" का उपयोग करें (या उपयोगकर्ता निर्दिष्ट करने के लिए \"fount runas <उपयोगकर्ता नाम> <घटक पथ>\")",
 			"invalidCommandFormat": "अमान्य कमांड प्रारूप",
 			"unsupportedCommand": "असमर्थित कमांड प्रकार",
 			"processMessageError": "IPC संदेश को संसाधित करने में त्रुटि: ${error}",
@@ -69,7 +69,7 @@
 			"parseResponseFailed": "सर्वर प्रतिक्रिया को पार्स करने में विफल: ${error}",
 			"cannotParseResponse": "सर्वर प्रतिक्रिया को पार्स नहीं किया जा सकता",
 			"unknownError": "अज्ञात त्रुटि",
-			"partPathRequired": "कृपया कंपोनент पथ प्रदान करें।"
+			"partPathRequired": "कृपया कंपोनेंट पथ प्रदान करें।"
 		},
 		"partManager": {
 			"partInited": "घटक ${partpath} प्रारंभ किया गया है",
@@ -77,7 +77,7 @@
 			"git": {
 				"updating": "रिमोट रिपॉजिटरी से अपडेट किया जा रहा है...",
 				"upToDate": "पहले से ही अपडेटेड है।",
-				"localAhead": "स्थानीय शाखा रिमोट शाखा से आगे है। अपडेट की आवश्यकता नहीं है।",
+				"localAhead": "स्थानीय शाखा रिमोट शाखा से आगे है। अपडेट की ज़रूरत नहीं।",
 				"noUpstream": "शाखा '${currentBranch}' के लिए कोई अपस्ट्रीम शाखा कॉन्फ़िगर नहीं है, अपडेट की जाँच छोड़ी जा रही है।",
 				"dirtyWorkingDirectory": "कार्यरत डायरेक्टरी स्वच्छ नहीं है। कृपया अपडेट करने से पहले अपने बदलावों को स्टैश (stash) या कमिट (commit) करें।",
 				"uncommittedBackedUpTo": "अप्रतिबद्ध परिवर्तनों का बैकअप लिया गया: ${path}",
@@ -146,14 +146,14 @@
 			"replHint": "Enter दबाकर चलाएँ · Shift+Enter नई पंक्ति"
 		},
 		"test": {
-			"help": "उपयोग: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --list [<groups>...]\n       fount test --kernel shutdown|reboot\n\nचयनकर्ता (समूह रिक्त स्थान से अलग; एक समूह में suite कॉमा से अलग; / और : समान):\n  नाम              उस समूह की सभी suite (जैसे shells/chat)\n  नाम:suite        कोई विशिष्ट suite\n  नाम:suite:आइटम   कोई विशिष्ट उप-परीक्षण या परीक्षण फ़ाइल\n\nसटीक मिलान न होने पर उपसर्ग से विस्तार (shells → shells/chat, shells/social); glob (*, ?, **) भी समर्थित।\n\nडिफ़ॉल्ट (सिर्फ fount test): विफल/अधूरे और पुराने को एक ही पास में योजना बनाकर चलाता है; विफलता केवल निर्भर स्लॉट रोकती है — अंत में गैर-शून्य निकास। पूरा रिपो नहीं — उसके लिए --all।\n\n--watch      लगातार निगरानी; कतार खाली होने पर भी नहीं बंद होता (Ctrl+C से बाहर); --all / --force / --update-estimates / चयनकर्ताओं के साथ नहीं\n--all        दायरे की सभी suite\n--force      ज़बरदस्ती चलाएँ; पिछले परिणाम दोबारा नहीं\n--update-estimates  वर्तमान DB औसत से प्रत्येक manifest का expected फिर लिखता है; चयनकर्ता वैकल्पिक; परीक्षण नहीं चलाता\n--list        suite की सूची दिखाता है (दायरा सीमित करने के लिए चयनकर्ताओं का उपयोग कर सकते हैं); कर्नेल प्रारंभ नहीं करता और परीक्षण नहीं चलाता\n--kernel     shutdown परीक्षण कर्नेल बंद करता है; reboot बंद कर फिर चलाता है; अन्य तर्कों के साथ नहीं\n\nउदाहरण:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
+			"help": "उपयोग: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --list [<groups>...]\n       fount test --kernel shutdown|reboot\n\nचयनकर्ता (समूह रिक्त स्थान से अलग; एक समूह में suite कॉमा से अलग; / और : समान):\n  नाम              उस समूह की सभी suite (जैसे shells/chat)\n  नाम:suite        कोई विशिष्ट suite\n  नाम:suite:आइटम   कोई विशिष्ट उप-परीक्षण या परीक्षण फ़ाइल\n\nसटीक मिलान न होने पर उपसर्ग से विस्तार (shells → shells/chat, shells/social); glob (*, ?, **) भी समर्थित।\n\nडिफ़ॉल्ट (सिर्फ fount test): विफल/अधूरे और पुराने को एक ही पास में योजना बनाकर चलाता है; विफलता केवल निर्भर स्लॉट रोकती है — अंत में गैर-शून्य निकास। पूरा रिपो नहीं — उसके लिए --all।\n\n--debug      चरण-दर-चरण क्रमिक: हर suite एक चरण; हर चरण के बाद अवशेष जाँचे जाते हैं और मिलने पर त्रुटि के साथ बाहर\n--watch      लगातार निगरानी; कतार खाली होने पर भी नहीं बंद होता (Ctrl+C से बाहर); --all / --force / --update-estimates / चयनकर्ताओं के साथ नहीं\n--all        दायरे की सभी suite\n--force      ज़बरदस्ती चलाएँ; पिछले परिणाम दोबारा नहीं\n--update-estimates  वर्तमान DB औसत से प्रत्येक manifest का expected फिर लिखता है; चयनकर्ता वैकल्पिक; परीक्षण नहीं चलाता\n--list        suite की सूची दिखाता है (दायरा सीमित करने के लिए चयनकर्ताओं का उपयोग कर सकते हैं); कर्नेल प्रारंभ नहीं करता और परीक्षण नहीं चलाता\n--kernel     shutdown परीक्षण कर्नेल बंद करता है; reboot बंद कर फिर चलाता है; अन्य तर्कों के साथ नहीं\n\nउदाहरण:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
 			"watchNoGroups": "उपयोग: fount test --watch (अन्य विकल्पों के साथ उपयोग नहीं कर सकते)",
 			"updateEstimates": {
 				"incompatible": "उपयोग: fount test --update-estimates [<groups>...] (अन्य फ़्लैग के साथ उपयोग नहीं कर सकते)",
 				"summary": "${suitesUpdated} suite की अपेक्षित अवधि अपडेट (${filesChanged} manifest); बेसलाइन नहीं या पहले से अद्यतन — ${skipped} छोड़े"
 			},
 			"list": {
-				"incompatible": "उपयोग: fount test --list [<groups>...] (अन्य फ़्लैग के साथ उपयोग नहीं कर सकते)",
+				"incompatible": "उपयोग: fount test --list [<groups>...] (अन्य फ़्लैग के साथ उपयोग नहीं)",
 				"header": "${manifestId}",
 				"suite": "  ${name}${expected}",
 				"subtest": "    :${name}",
@@ -168,7 +168,7 @@
 			},
 			"skipBecause": {
 				"pass": "छोड़ा गया (issue अभी खुला है या बंद है लेकिन अनुग्रह अवधि समाप्त नहीं): ${label} — ${url}",
-				"fail": "विफल (issue बंद हो चुका है और अनुग्रह अवधि समाप्त — पुनः जाँच से पहले skip_because अपडेट करें): ${label} — ${url}"
+				"fail": "विफल (issue बंद हो चुका है और अनुग्रह अवधि समाप्त — जाँच से पहले skip_because अपडेट करके आगे बढ़ें): ${label} — ${url}"
 			},
 			"moduleCheck": {
 				"missedReady": "मॉड्यूल जाँच: ready सिग्नल के बिना प्रक्रिया समाप्त: ${label}"
@@ -189,7 +189,7 @@
 				"reason": "${label}: ${reason}",
 				"remaining": "कुल शेष ≈ ${remaining}",
 				"remainingUnknown": "≈ ${remaining} कुल शेष (${count} अतिरिक्त अज्ञात अवधि)",
-				"remainingOnlyUnknown": "≈ ${count} अज्ञात अवधि कुल शेष",
+				"remainingOnlyUnknown": "कुल बचे: ${count} अज्ञात अवधि के साथ",
 				"queued": {
 					"switch": "count",
 					"default": "कतार में — आगे ${count}",
@@ -214,7 +214,7 @@
 						"module_check_ready": "मॉड्यूल जाँच तैयार",
 						"dependency_ready": "निर्भरताएँ तैयार",
 						"resource_budget_changed": "संसाधन बजट बदला",
-						"job_queued": "कार्य पंक्तिबद्ध",
+						"job_queued": "कार्य कतार में",
 						"gate_state_changed": "संसाधन द्वार बदला",
 						"expected_drift": "अनुमान में विचलन",
 						"progress": "प्रगति अद्यतन"
@@ -226,7 +226,7 @@
 					"runningCount": "${count} चल रहे हैं",
 					"passedCount": "${count} पास हुए",
 					"failedCount": "${count} विफल",
-					"queuedCount": "${count} कतार में",
+					"queuedCount": "कतार: ${count}",
 					"reason": "(${reason})",
 					"elapsed": "${elapsed}",
 					"eta": "शेष≈${remaining}",
@@ -247,9 +247,9 @@
 			"unsupportedSubtestFilter": "सुइट सबटेस्ट/फ़ाइल फ़िल्टरिंग का समर्थन नहीं करता: ${suite}(${names})",
 			"available": "उपलब्ध आइटम: ${ids}",
 			"manifestMatched": "प्रकट मिलान परिणाम: ${ids}",
-			"selectedSuites": "${selected}/${total} परीक्षण सुइट चयनित",
-			"planSlotSummary": "योजना: वास्तविक रन ${run}, पुन: उपयोग ${reuse}, अवरुद्ध ${blocked}, छोड़ा गया ${skipped}",
-			"noMatchingSuites": "कोई मिलान वाली परीक्षण सूट नहीं.",
+			"selectedSuites": "${selected}/${total} परीक्षण सुइट चुने गए",
+			"planSlotSummary": "योजना स्लॉट: चलने वाले ${run}, पुन: उपयोग ${reuse}, अवरुद्ध ${blocked}, छोड़े गए ${skipped}",
+			"noMatchingSuites": "कोई मिलान वाली परीक्षण सूट नहीं।",
 			"reportPath": "रिपोर्ट: ${path}",
 			"reportPathFinal": "\nरिपोर्ट: ${path}",
 			"statePathFinal": "वर्तमान स्थिति: ${path}",
@@ -268,14 +268,14 @@
 			"reusedSuite": "\n>>> पुन: उपयोग करें ${manifestId}:${name} (ट्रिगर अपरिवर्तित रहता है, अंतिम ${status} का उपयोग किया जाता है)",
 			"prunedAbsentState": "हटाए गए सुइट्स की स्थिति साफ़ की: ${suites} सुइट्स, ${subtests} उप-परीक्षण",
 			"noisyOnlyRemain": "वहाँ अभी भी ${count} सुइट्स गुजर रहे हैं लेकिन शोर के साथ: ${suites}",
-			"noRealRunPlanned": "इस बार चलाने की आवश्यकता नहीं: ${reused} पुन: उपयोग, ${blocked} अवरुद्ध अपेक्षित, ${skipped} छोड़ा गया (ट्रिगर अपरिवर्तित)",
+			"noRealRunPlanned": "इस बार वाकई चलाने की ज़रूरत नहीं: ${reused} पुनः उपयोग, ${blocked} के अवरुद्ध होने की अपेक्षा, ${skipped} छोड़े गए (ट्रिगर अपरिवर्तित)",
 			"allReusedHint": "इस बार वास्तव में कोई सुइट नहीं चलाया गया है: विफलता विरासत में मिला अंतिम परिणाम है, और रुकावट का समाधान नहीं हुआ है (संबंधित फ़ाइलें अपरिवर्तित रहती हैं)। प्रासंगिक फ़ाइलों की मरम्मत करें और पुनः चलाएँ, या वास्तविक रन को बाध्य करने के लिए fount test --force का उपयोग करें।",
 			"failuresSaved": "सहेजी गई विफलता सूची: ${path} (${count} सुइट)",
 			"failuresCleared": "मैनिफ़ेस्ट ${manifestId} सभी पास हो गए हैं और विफलता सूची साफ़ कर दी गई है।",
 			"terminated": "समय समाप्ति समाप्ति: ${label} — ${reason}",
 			"sleepDetected": "सिस्टम स्लीप पहचानी गई (वॉचडॉग अंतराल ${gap} ≥ ${limit} कूदा); ${label} रोक दिया गया, फिर चलाने को तैयार (चला ${elapsed})",
 			"sleepRetry": "सिस्टम स्लीप से बाधित; ${label} फिर चलाया जा रहा है (प्रयास ${attempt})",
-			"nothingToContinue": "सभी हरे और कोई समय सीमा समाप्त वस्तु नहीं, दोबारा चलाने की कोई आवश्यकता नहीं।",
+			"nothingToContinue": "सभी हरे हैं और कोई पुरानी प्रविष्टि नहीं, दोबारा चलाने की ज़रूरत नहीं।",
 			"triggerNoMatch": "ट्रिगर किसी फ़ाइल से ईमेल नहीं खाता: ${scope} — ${pattern}",
 			"triggerNoMatchSummary": "कुल ${count} ट्रिगर किसी भी रिपॉज़िटरी फ़ाइल से ईमेल नहीं खाते (विवरण के लिए report.md देखें)",
 			"federationCleanupPre": "फ़ेडरेटेड परीक्षण क्लीनअप (चलाने से पहले) विफल: ${output}",
@@ -284,7 +284,7 @@
 			"heapSnapshotSaved": "परीक्षण नोड निकट-ओओएम हीप स्नैपशॉट: ${path}",
 			"liveUsage": "उपयोग: --suite <नाम> | --list",
 			"serialUsage": "उपयोग: serial.mjs <डेनो-टेस्ट-पाथ> […]",
-			"silentPassedOne": "1 परीक्षण फ़ाइल उत्तीर्ण हुई.",
+			"silentPassedOne": "1 परीक्षण फ़ाइल उत्तीर्ण हुई।",
 			"silentPassedMany": "${count} परीक्षण फ़ाइलें उत्तीर्ण हुईं।",
 			"ciNoDiffFallback": "सीआई: अंतर का पता नहीं चला, पूर्ण सुइट चलाने के लिए फ़ॉलबैक",
 			"noFrontendPhasesMatched": "FOUNT_TEST_ONLY से ईमेल खाने वाला कोई फ्रंट-एंड परीक्षण चरण नहीं है",
@@ -355,17 +355,17 @@
 						"blocked": "इतिहास अवरुद्ध है",
 						"dependent": "अपस्ट्रीम विफल हो जाता है और एक लेयर डाउनस्ट्रीम विफल हो जाता है",
 						"failed": "ऐतिहासिक विफलता",
-						"noisy": "पहले पास लेकिन लेकिन शोर के साथ"
+						"noisy": "पहले पास लेकिन शोर के साथ"
 					},
 					"missingRecord": "स्थिति कोई रिकॉर्ड नहीं, स्वचालित मेक-अप",
-					"staleContent": "सामग्री बदल गई है और इसे फिर से चलाने की आवश्यकता है।",
+					"staleContent": "सामग्री बदल गई है; दोबारा चलाना ज़रूरी है।",
 					"skipBecause": "skip_because पुनः जाँच",
 					"triggerHashDrift": "ट्रिगर फ़िंगरप्रिंट बहाव (कोई पथ हिट नहीं)"
 				},
 				"label": {
 					"commitRange": "commit दायरा",
 					"continueReason": "कारण",
-					"directRequiredBy": "सीधे शामिल पार्टी",
+					"directRequiredBy": "सीधे शामिल करने वाला",
 					"duration": "समय",
 					"expectedBlocked": "(अपेक्षित अवरोधन)",
 					"failedFiles": "विफलता फ़ाइल",
@@ -376,12 +376,12 @@
 					"matchedTriggerSets": "हिट ट्रिगर सेट",
 					"matchedTriggers": "मिले trigger",
 					"noise": "शोर",
-					"pullDownstream": "डाउनस्ट्रीम पुल: ${requiredBy} सही नहीं है, और इसे एक साथ शामिल किया जाएगा",
+					"pullDownstream": "डाउनस्ट्रीम पुल: ${requiredBy} अपूर्ण है, इसलिए यह भी शामिल किया जाएगा",
 					"pullUpstream": "अपस्ट्रीम पुल: ${requiredBy} की निर्भरता हरी नहीं है",
 					"reused": "(पुन: उपयोग)",
 					"rootCause": "मूल कारण",
 					"skipBecause": "issue",
-					"skipBecauseClosed": "अनुवर्ती कार्रवाई चाहिए (बंद)",
+					"skipBecauseClosed": "आगे की कार्रवाई चाहिए (बंद)",
 					"skipTree": "skip_tree",
 					"terminateReason": "समाप्ति का कारण",
 					"triggerHashDrift": "ट्रिगर फ़िंगरप्रिंट वर्तमान कार्यस्थान के साथ असंगत है (गंदे→नेट पर ध्यान नहीं दिया गया)",
@@ -428,7 +428,7 @@
 				"idle": "निरस्त ${label}: ${minutes} मिनट से अधिक के लिए कोई stdall आउटपुट नहीं (${idleSec} सेकंड के लिए निष्क्रिय, ${elapsed} चलाएँ)",
 				"marker": "[समाप्ति का कारण: ${reason}]",
 				"speculative": "समाप्त ${label}: सट्टा निर्भरता समाप्त नहीं हुई है, प्रारंभिक रोक रद्द कर दी गई है",
-				"unknown": "समाप्त ${label}: परीक्षण बाधित"
+				"unknown": "${label} समाप्त: परीक्षण बाधित"
 			},
 			"unknown": {
 				"fileFilter": "अज्ञात परीक्षण फ़ाइल फ़िल्टरिंग: ${suite} → ${names}",
@@ -446,14 +446,14 @@
 				"disconnected": "मूल्यांकन पूरा होने से पहले fount सर्वर का कनेक्शन बंद हो गया (localhost:${port})।"
 			},
 			"protocol": {
-				"description": "यूआरएल:फाउंड प्रोटोकॉल",
+				"description": "URL:fount प्रोटोकॉल",
 				"registerFailed": "`fount://` प्रोटोकॉल हैंडलर पंजीकृत करने में विफल: ${message}",
 				"noUrl": "त्रुटि: प्रोटोकॉलहैंडल के लिए यूआरएल प्रदान नहीं किया गया।"
 			},
 			"update": {
 				"skippingFountUpdate": "चूँकि `.noupdate` फ़ाइल मौजूद है, इसलिए fount अपडेट छोड़ दिया गया है",
 				"switchingToBranch": "शाखा '${branch}' पर स्विच किया जा रहा है…",
-				"switchingToRemote": "दूरस्थ '${url}' की डिफ़ॉल्ट शाखा '${branch}' पर स्विच किया जा रहा है…",
+				"switchingToRemote": "रिमोट '${url}' की डिफ़ॉल्ट शाखा '${branch}' पर स्विच किया जा रहा है…",
 				"removedNoUpdate": "`.noupdate` हटाया गया; स्वचालित अपडेट फिर से शुरू हो गए।",
 				"pinningToCommit": "कमिट `${ref}` पर पिन किया जा रहा है और `.noupdate` बनाया जा रहा है…",
 				"pinningToPullRequest": "पुल अनुरोध #${pr} पर पिन किया जा रहा है और `.noupdate` बनाया जा रहा है…",
@@ -485,7 +485,7 @@
 				"startMenuShortcutCreated": "`${path}` पर प्रारंभ मेनू शॉर्टकट बनाया गया",
 				"protocolHandlerRegistered": "fount:// प्रोटोकॉल हैंडलर पंजीकृत।",
 				"shortcutNotSupported": "चेतावनी: आपका ऑपरेटिंग सिस्टम (${os}) डेस्कटॉप शॉर्टकट बनाने का समर्थन नहीं करता है।",
-				"osacompileNotFound": "त्रुटि: 'ओसाकंपाइल' नहीं मिला। MacOS ऐप बनाने में असमर्थ.",
+				"osacompileNotFound": "त्रुटि: 'ओसाकंपाइल' नहीं मिला। macOS ऐप बनाने में असमर्थ।",
 				"lsregisterFailed": "चेतावनी: किसी एप्लिकेशन को लॉन्चसर्विसेज के साथ पंजीकृत करने के लिए `lsregister` का उपयोग करना विफल रहा।",
 				"createDesktopAppFailed": "त्रुटि: डेस्कटॉप एप्लिकेशन बनाने में विफल।"
 			},
@@ -501,9 +501,9 @@
 				"localChangesDetected": "स्थानीय परिवर्तनों का पता चला, अंतरों को ओवरराइटिंग से पहले सहेजा जाएगा।",
 				"backupSavedTo": "आपके स्थानीय परिवर्तनों का बैकअप यहां सहेजा गया है: `${path}`",
 				"updatingFromRemote": "रिमोट रिपॉजिटरी से अपडेट किया जा रहा है...",
-				"alreadyUpToDate": "पहले से ही नवीनतम.",
-				"localBranchAhead": "स्थानीय शाखा दूरस्थ शाखा से आगे है. किसी अद्यतन की आवश्यकता नहीं है.",
-				"branchesDiverged": "स्थानीय और दूरस्थ शाखाओं को विभाजित कर दिया गया है। जबरन अद्यतन प्रगति पर है...",
+				"alreadyUpToDate": "पहले से ही नवीनतम।",
+				"localBranchAhead": "स्थानीय शाखा रिमोट शाखा से आगे है। अपडेट की ज़रूरत नहीं।",
+				"branchesDiverged": "स्थानीय और रिमोट शाखाएँ अलग हो गई हैं। ज़बरदस्ती अपडेट किया जा रहा है...",
 				"unrelatedHistories": "स्थानीय और दूरस्थ रिपॉज़िटरी का इतिहास साझा नहीं है। ज़बरन अपडेट हो रहा है…",
 				"notOnBranch": "शाखा पर नहीं, 'मास्टर' पर स्विच करें...",
 				"upstreamGoneFallbackMaster": "रिमोट शाखा '${branch}' हटा दी गई है; इसके बजाय master ट्रैक किया जा रहा है…",
@@ -512,10 +512,10 @@
 				"notInstalled": "Git स्थापित नहीं है, स्थापित करने का प्रयास कर रहा हूँ...",
 				"notInstalledSkippingPull": "Git स्थापित नहीं है, `git pull` छोड़ें",
 				"repoNotFoundSkippingPull": "रिपॉजिटरी नहीं मिली, `git pull` छोड़ें",
-				"fetchFailed": "'उत्पत्ति' से प्राप्त करने में विफल.",
+				"fetchFailed": "'उत्पत्ति' से प्राप्त करने में विफल।",
 				"fetchFailedSkippingUpdate": "GitHub से अपडेट प्राप्त करने में विफल; अपडेट छोड़ा गया।",
 				"remoteRefUnavailable": "दूरस्थ संदर्भ '${ref}' उपलब्ध नहीं है; Git समन्वयन छोड़ा गया।",
-				"installFailedWinget": "चूँकि विंगेट इंस्टॉलेशन विफल हो गया, Git इंस्टॉल नहीं किया जा सकता। कृपया इसे मैन्युअल रूप से इंस्टॉल करें.",
+				"installFailedWinget": "चूँकि विंगेट इंस्टॉलेशन विफल हो गया, Git इंस्टॉल नहीं किया जा सकता। कृपया इसे मैन्युअल रूप से इंस्टॉल करें।",
 				"installFailedManual": "Git इंस्टॉल करने में असमर्थ, कृपया इसे मैन्युअल रूप से इंस्टॉल करें।"
 			},
 			"deno": {
@@ -524,9 +524,9 @@
 				"installingTermux": "टर्मक्स के लिए डेनो स्थापित किया जा रहा है...",
 				"installFailedFallback": "डेनो इंस्टॉलेशन विफल रहा, fount के पथ फ़ोल्डर में स्वचालित रूप से इंस्टॉल करने का प्रयास किया जा रहा है...",
 				"notWorking": "किसी कारण से Deno काम नहीं कर रहा है, आप समर्थन के लिए https://github.com/denoland/deno/issues पर प्रश्न पूछ सकते हैं",
-				"upgradeFailed": "चेतावनी: डेनो अपग्रेड विफल हो सकता है। कृपया त्रुटियों की जाँच करें.",
+				"upgradeFailed": "चेतावनी: डेनो अपग्रेड विफल हो सकता है। कृपया त्रुटियों की जाँच करें।",
 				"upgradeFailedTermux": "डेनो अपग्रेड कमांड विफल, टर्मक्स के लिए डेनो को पुनः स्थापित करने का प्रयास किया जा रहा है...",
-				"patchMissing": "त्रुटि: पैचिंग से पहले डेनो निष्पादन योग्य नहीं मिला। पैच नहीं किया जा सकता.",
+				"patchMissing": "त्रुटि: पैचिंग से पहले डेनो निष्पादन योग्य नहीं मिला। पैच नहीं किया जा सकता।",
 				"patchUnsupportedArch": "त्रुटि: असमर्थित पैच आर्किटेक्चर: ${arch}",
 				"patchFailed": "त्रुटि: `patchelf` का उपयोग करके Deno निष्पादन योग्य को पैच करने में विफल।",
 				"managedUpgrade": "डेनो को ${manager} पैकेज मैनेजर (पैकेज: ${package}) द्वारा प्रबंधित किया जाता है और ${manager} के माध्यम से अपग्रेड किया जा रहा है।",
@@ -561,11 +561,11 @@
 				"cleaningOldPwshModules": "पुराने pwsh मॉड्यूल की सफ़ाई..."
 			},
 			"keepalive": {
-				"initComplete": "पुनः आरंभीकरण पूरा हुआ. फव्वारा पुनः आरंभ करने का प्रयास किया जा रहा है...",
-				"autoInitDisabled": "पिछले थोड़े समय में fount को कई बार पुनः आरंभ किया गया है, लेकिन `.noautoinit` फ़ाइल की उपस्थिति के कारण स्वचालित पुनः आरंभीकरण अक्षम कर दिया गया है। बाहर निकलना.",
+				"initComplete": "पुनः आरंभीकरण पूरा हुआ। fount पुनः आरंभ करने का प्रयास किया जा रहा है...",
+				"autoInitDisabled": "पिछले थोड़े समय में fount को कई बार पुनः आरंभ किया गया है, लेकिन `.noautoinit` फ़ाइल की उपस्थिति के कारण स्वचालित पुनः आरंभीकरण बंद कर दिया गया है। बाहर निकल रहा है।",
 				"restartingTooFast": "थोड़े समय में fount को कई बार पुनः प्रारंभ किया गया है। जबरन पुनर्प्रारंभीकरण...",
-				"failedToStart": "स्वचालित मरम्मत के प्रयासों के बाद भी, फव्वारा थोड़े समय के लिए चालू नहीं हो पाता है। कृपया त्रुटियों के लिए लॉग की जाँच करें।",
-				"initFailed": "फव्वारा आरंभीकरण विफल रहा. बाहर निकलना."
+				"failedToStart": "स्वचालित मरम्मत के प्रयासों के बाद भी fount बार-बार चालू नहीं हो पाता। कृपया त्रुटियों के लिए लॉग की जाँच करें।",
+				"initFailed": "fount आरंभ नहीं हो सका। बाहर निकल रहा है।"
 			},
 			"terminalKeybindings": {
 				"registered": "टर्मिनल की-बाइंडिंग पैच कॉन्फ़िगर किया गया।",
@@ -580,20 +580,20 @@
 				"externalMountWarning": "चेतावनी: fount बाहरी/साझा माउंट (`${target}`) पर स्थित है!\nयह निर्देशिका होस्ट या किसी अन्य वर्चुअल मशीन में भी मौजूद हो सकती है। `fount remove` इसे वहाँ भी हटा देगा, इसलिए कृपया अत्यधिक सावधान रहें।",
 				"nonInteractiveRequiresForce": "गैर-संवादात्मक वातावरण में हटाने की पुष्टि नहीं की जा सकती। यदि आप `fount` (${path}) को हटाना चाहते हैं, तो पुष्टि छोड़ने के लिए `fount remove --force` का उपयोग करें।",
 				"fountUninstallationComplete": "fount अनइंस्टॉलेशन पूरा हो गया।",
-				"fountInstallationDirRemoved": "फव्वारा स्थापना निर्देशिका हटा दी गई है।",
+				"fountInstallationDirRemoved": "fount स्थापना निर्देशिका हटा दी गई है।",
 				"protocolHandlerRemoved": "`fount://` प्रोटोकॉल हैंडलर हटा दिया गया है।",
 				"fountPwshRemovedFromProfile": "fount-pwsh को पॉवरशेल प्रोफाइल से हटा दिया गया है।",
 				"pwshProfileNotFound": "PowerShell प्रोफ़ाइल नहीं मिली, प्रोफ़ाइल से `fount-pwsh` को हटाया नहीं जा रहा है।",
 				"uninstallFountPwshFailed": "`fount-pwsh` को अनइंस्टॉल करना विफल: ${message}",
 				"terminalProfileRemoved": "विंडोज़ टर्मिनल प्रोफ़ाइल निर्देशिका हटा दी गई है।",
-				"terminalProfileNotFound": "Windows टर्मिनल प्रोफ़ाइल निर्देशिका नहीं मिली.",
-				"desktopShortcutRemoved": "डेस्कटॉप शॉर्टकट हटा दिया गया.",
-				"desktopShortcutNotFound": "डेस्कटॉप शॉर्टकट नहीं मिला.",
-				"startMenuShortcutRemoved": "प्रारंभ मेनू शॉर्टकट हटा दिया गया है.",
-				"startMenuShortcutNotFound": "प्रारंभ मेनू शॉर्टकट नहीं मिला.",
+				"terminalProfileNotFound": "Windows टर्मिनल प्रोफ़ाइल निर्देशिका नहीं मिली।",
+				"desktopShortcutRemoved": "डेस्कटॉप शॉर्टकट हटा दिया गया।",
+				"desktopShortcutNotFound": "डेस्कटॉप शॉर्टकट नहीं मिला।",
+				"startMenuShortcutRemoved": "प्रारंभ मेनू शॉर्टकट हटा दिया गया है।",
+				"startMenuShortcutNotFound": "प्रारंभ मेनू शॉर्टकट नहीं मिला।",
 				"steamShortcutRemoved": "fount को आपकी Steam लाइब्रेरी से हटा दिया गया है।",
 				"steamShortcutNotFound": "Steam में fount नहीं मिला।",
-				"moduleRemoved": "${module} हटा दिया गया है.",
+				"moduleRemoved": "${module} हटा दिया गया है।",
 				"uninstalling": {
 					"chrome": "Chrome अनइंस्टॉल किया जा रहा है...",
 					"deno": "डेनो को अनइंस्टॉल किया जा रहा है...",
@@ -605,15 +605,15 @@
 					"backgroundRunner": "पृष्ठभूमि प्रोग्राम हटा रहा है...",
 					"desktopShortcut": "डेस्कटॉप शॉर्टकट हटाया जा रहा है...",
 					"fount": {
-						"main": "फव्वारा हटाया जा रहा है...",
-						"fromGitSafeDir": "Git सुरक्षित.निर्देशिका से फव्वारा हटाया जा रहा है...",
-						"fromPath": "पथ से फव्वारा हटाया जा रहा है...",
-						"installationDir": "फव्वारा स्थापना निर्देशिका हटाई जा रही है...",
+						"main": "fount हटाया जा रहा है...",
+						"fromGitSafeDir": "fount को `git safe.directory` से हटाया जा रहा है...",
+						"fromPath": "PATH से fount हटाया जा रहा है...",
+						"installationDir": "fount स्थापना निर्देशिका हटाई जा रही है...",
 						"pwshFromProfile": "PowerShell प्रोफाइल से `fount-pwsh` हटाया जा रहा है..."
 					},
 					"installedPwshModules": "स्थापित pwsh मॉड्यूल को हटाया जा रहा है...",
 					"installedSystemPackages": "स्थापित सिस्टम पैकेजों को हटाया जा रहा है...",
-					"protocolHandler": "फ़ॉन्ट://प्रोटोकॉल हैंडलर हटाया जा रहा है...",
+					"protocolHandler": "`fount://` प्रोटोकॉल हैंडलर हटाया जा रहा है...",
 					"startMenuShortcut": "प्रारंभ मेनू शॉर्टकट हटा रहा है...",
 					"steamShortcut": "Steam से fount हटाया जा रहा है…",
 					"terminalKeybindings": "टर्मिनल कुंजी बाइंडिंग पैच हटाया जा रहा है...",
@@ -755,13 +755,13 @@
 			},
 			"aiSources": {
 				"title": "असीमित AI सोर्स इंटीग्रेशन",
-				"description": "fount अद्वितीय विकल्प और लचीलापन प्रदान करता है। <i>किसी भी</i> AI सोर्स से कनेक्ट करें - OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), OpenRouter, NovelAI, आदि। संचार तर्क आपकी इच्छाओं के अनुसार कोड की शक्ति द्वारा आकार दिया जाएगा।"
+				"description": "fount बेजोड़ विकल्प और लचीलापन प्रदान करता है। <i>किसी भी</i> AI सोर्स से कनेक्ट करें - OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), OpenRouter, NovelAI, आदि। संचार तर्क <i>आपकी</i> इच्छाओं के अनुसार कोड की शक्ति से आकार लेगा।"
 			}
 		}
 	},
 	"protocolhandler": {
 		"title": "fount प्रोटोकॉल संसाधित हो रहा है",
-		"description": "चुपचाप और कुशलता से, यह पृष्ठ आपके इरादे को स्रोत के भीतर एक निर्बाध परिवर्तन में बदल देता है। इसे पर्दे के पीछे का शांत जादू समझें।",
+		"description": "यह पृष्ठ चुपचाप और कुशलता से आपके इरादे को fount के भीतर एक निर्बाध परिवर्तन में बदल देता है। इसे पर्दे के पीछे का शांत जादू मानें।",
 		"processing": "प्रोटोकॉल संसाधित हो रहा है...",
 		"invalidProtocol": "अमान्य प्रोटोकॉल।",
 		"insufficientParams": "अपर्याप्त पैरामीटर।",
@@ -787,11 +787,11 @@
 				"retry": "पुनः प्रयास करें"
 			}
 		},
-		"fountNotFound": "ओह हो :(\n\nfount नहीं मिला, शायद आपको इसे पहले इंस्टॉल करने की ज़रूरत है?"
+		"fountNotFound": "अरे! :(\n\nfount नहीं मिला, शायद आपको इसे पहले इंस्टॉल करना होगा?"
 	},
 	"startPage": {
 		"title": "fount!",
-		"description": "फव्वारे की दहलीज पर आपका स्वागत है. बातचीत और सामने आने की प्रतीक्षा कर रही कहानियों के केंद्र में कदम रखने से पहले, तैयारी का एक संक्षिप्त क्षण।"
+		"description": "fount की दहलीज पर आपका स्वागत है। बातचीत और सामने आने की प्रतीक्षा कर रही कहानियों के केंद्र में कदम रखने से पहले, तैयारी का एक संक्षिप्त क्षण।"
 	},
 	"auth": {
 		"title": "प्रमाणीकरण",
@@ -853,7 +853,7 @@
 			"apiErrorBodyUnreadable": "सर्वर ने वह जानकारी लौटा दी जिसे पार्स नहीं किया जा सका। कृपया बाद में पुन: प्रयास करें।",
 			"verificationCode": {
 				"error": "सत्यापन कोड गलत है या समाप्त हो गया है।",
-				"rateLimit": "बहुत ज़्यादा सत्यापन कोड अनुरोध। कृपया थोड़ी देर बाद प्रयास करें।",
+				"rateLimit": "बहुत ज़्यादा सत्यापन कोड अनुरोध भेजे गए। कृपया थोड़ी देर बाद प्रयास करें।",
 				"sendError": "सत्यापन कोड भेजने में विफल।",
 				"sent": "सत्यापन कोड सफलतापूर्वक भेज दिया गया है।"
 			}
@@ -863,14 +863,14 @@
 			"apiSessionExpired": "पासकी लॉगिन सत्र समाप्त हो गया है, कृपया पुनः प्रयास करें।",
 			"apiUnknownPasskey": "पासकी पहचानी नहीं गई है, कृपया बाउंड कुंजी का उपयोग करें।",
 			"apiPasskeyVerificationFailed": "पासकी सत्यापन विफल, कृपया पुनः प्रयास करें।",
-			"removeUserNotFound": "उपयोगकर्ता या क्रेडेंशियल डेटा नहीं मिला.",
-			"removeInvalidPassword": "ग़लत पासवर्ड.",
-			"removePasskeyNotFound": "पासकी नहीं मिली.",
+			"removeUserNotFound": "उपयोगकर्ता या क्रेडेंशियल डेटा नहीं मिला।",
+			"removeInvalidPassword": "ग़लत पासवर्ड।",
+			"removePasskeyNotFound": "पासकी नहीं मिली।",
 			"registration": {
 				"failed": "पासकी पंजीकरण विफल, कृपया पुनः प्रयास करें।",
 				"sessionExpired": "बाइंडिंग सत्र समाप्त हो गया है, कृपया शुरुआत से पुनः प्रयास करें।",
-				"userNotFound": "उपयोगकर्ता खाता नहीं मिला.",
-				"verifyFailed": "पासकी पंजीकरण सत्यापन पूरा करने में असमर्थ."
+				"userNotFound": "उपयोगकर्ता खाता नहीं मिला।",
+				"verifyFailed": "पासकी पंजीकरण का सत्यापन पूरा नहीं किया जा सका।"
 			},
 			"error": {
 				"authSessionRequired": "लॉगिन सत्र टोकन गायब है, कृपया पृष्ठ को ताज़ा करें और पुनः प्रयास करें।",
@@ -889,7 +889,7 @@
 			"title": "प्रमाणपत्र अंतरण त्रुटि",
 			"retrieve_error": "आपकी लॉगिन जानकारी सहेजते समय एक त्रुटि हुई:\n${error}\nआप जारी रख सकते हैं लेकिन लॉगिन जानकारी नहीं सहेज सकते।",
 			"transfer_error": "आपकी लॉगिन जानकारी को स्थानांतरित करने की कोशिश करते समय एक त्रुटि हुई:\n${error}\nआप जारी रख सकते हैं लेकिन लॉगिन जानकारी प्राप्त नहीं कर सकते।",
-			"missing_params": "लिंक में एक आवश्यक पैरामीटर गुम है.",
+			"missing_params": "लिंक में एक आवश्यक पैरामीटर गुम है।",
 			"buttons": {
 				"ignore": "अनदेखा करें और जारी रखें",
 				"retry": "पुनः प्रयास करें"
@@ -898,7 +898,7 @@
 	},
 	"tutorial": {
 		"title": "एक ट्यूटोरियल कैसा रहेगा?",
-		"description": "आइए हम आपके साथ फव्वारे की दुनिया में चलें। यह इंटरैक्टिव ट्यूटोरियल पथ को रोशन करेगा, जिससे आपको इसके मूल में बुने हुए जादू को खोजने में मदद मिलेगी। आपका साहसिक कार्य समझ से शुरू होता है।",
+		"description": "आइए हम आपके साथ fount की दुनिया में चलें। यह इंटरैक्टिव ट्यूटोरियल रास्ता रोशन करेगा और इसके मूल में बुना जादू खोजने में मदद करेगा। आपका साहसिक सफ़र समझ से शुरू होता है।",
 		"modal": {
 			"title": "fount में आपका स्वागत है!",
 			"instruction": "क्या आप शुरुआती ट्यूटोरियल देखना चाहेंगे?",
@@ -913,16 +913,16 @@
 			"endButton": "चलिए शुरू करते हैं!"
 		},
 		"progressMessages": {
-			"mouseMove": "कृपया माउस ${mouseIcon} को हिलाने का प्रयास करें।",
-			"keyboardPress": "कृपया अपने कीबोर्ड ${keyboardIcon} पर कोई कुंजी दबाएँ।",
-			"mobileTouchMove": "कृपया अपने फ़ोन ${phoneIcon} की स्क्रीन को उंगली से स्पर्श करें और फिर उसे स्वाइप करें।",
-			"mobileClick": "कृपया अपने फ़ोन ${phoneIcon} की स्क्रीन को उंगली से टैप करें।"
+			"mouseMove": "कृपया अपना माउस ${mouseIcon} ढूँढ़ें<br/>फिर उसे हिलाएँ।",
+			"keyboardPress": "कृपया अपना कीबोर्ड ${keyboardIcon} ढूँढ़ें<br/>अपनी उंगली से कोई कुंजी दबाएँ।",
+			"mobileTouchMove": "कृपया अपना फ़ोन ${phoneIcon} ढूँढ़ें<br/>उंगली से स्क्रीन छुएँ और फिर उसे स्वाइप करें।",
+			"mobileClick": "कृपया अपने फ़ोन ${phoneIcon} की स्क्रीन को उंगली से टैप करें<br/>और फिर उंगली हटा दें।"
 		},
 		"achievements": {
 			"complete_tutorial": {
 				"name": "उत्तम अंकगणित कक्षा",
 				"description": "अंत में नौसिखिया ट्यूटोरियल समाप्त हुआ।",
-				"locked_description": "एक परिचयात्मक ट्यूटोरियल पूरा करें."
+				"locked_description": "एक परिचयात्मक ट्यूटोरियल पूरा करें।"
 			},
 			"skip_tutorial": {
 				"name": "मैंने छोड़ दिया",
@@ -943,7 +943,7 @@
 	},
 	"home": {
 		"title": "होम",
-		"description": "आपके मूल अनुभव का हृदय. यहां, अपनी कल्पना के निवासियों-पात्रों, दुनियाओं और व्यक्तित्वों को प्रबंधित करें। आपकी कहानियाँ इसी केंद्रीय गठजोड़ से शुरू होती हैं और शाखाबद्ध होती हैं।",
+		"description": "यहीं से आपका fount अनुभव शुरू होता है। पात्र, दुनियाएँ और व्यक्तित्व — आपकी कल्पना का सब कुछ यहीं है। हर कहानी यहीं से शुरू होती है।",
 		"sidebarTitle": "विवरण",
 		"closeSidebar": "साइडबार बंद करें",
 		"itemDescription": "विवरण देखने के लिए यहाँ एक आइटम चुनें।",
@@ -955,10 +955,10 @@
 		"sfwToggle": "सुरक्षित सामग्री",
 		"partTypeDropdown": {
 			"button": {
-				"title": "भाग प्रकार मेनू"
+				"title": "घटक प्रकार मेनू"
 			},
 			"icon": {
-				"alt": "भाग प्रकार मेनू"
+				"alt": "घटक प्रकार मेनू"
 			}
 		},
 		"functionMenu": {
@@ -973,7 +973,7 @@
 			}
 		},
 		"emptyList": {
-			"message": "खाली...<br/>शायद आप कुछ मजा लेने के लिए [एक नया भाग बना सकते हैं](${newpartLink}) या [फाउंट्स के Telegram सर्वर](${telegramLink}) पर जा सकते हैं?"
+			"message": "अभी यहाँ कुछ नहीं है...<br/>शायद आप [एक नया घटक बना सकते हैं](${newpartLink}) या [fount के Telegram सर्वर](${telegramLink}) पर जाकर कुछ मज़ा ले सकते हैं?"
 		},
 		"part_pages": {
 			"default": {
@@ -1013,7 +1013,7 @@
 				}
 			},
 			"personas": {
-				"title": "चरित्र चयन",
+				"title": "किरदार चयन",
 				"subtitle": "अपनी पहचान बदलें और दूसरे जीवन का अनुभव करें।",
 				"card": {
 					"defaultCheckbox": {
@@ -1022,7 +1022,7 @@
 				}
 			},
 			"plugins": {
-				"title": "प्लग-इन चयन",
+				"title": "प्लगइन चयन",
 				"subtitle": "एक नया विंग जोड़ें और अपनी संभावनाओं का विस्तार करें।",
 				"card": {
 					"defaultCheckbox": {
@@ -1059,7 +1059,7 @@
 					}
 				},
 				"generators/AI": {
-					"title": "एआई सेवा जनरेटर",
+					"title": "AI सेवा जनरेटर",
 					"subtitle": "ज्ञान के धागे बुनें और विचार के पुल जोड़ें।",
 					"card": {
 						"defaultCheckbox": {
@@ -1105,7 +1105,7 @@
 				},
 				"sources/search": {
 					"title": "सेवा स्रोत खोजें",
-					"subtitle": "ज्ञान का खजाना और अन्वेषण के लिए एक प्रारंभिक बिंदु।",
+					"subtitle": "ज्ञान का खजाना और खोज की शुरुआत।",
 					"card": {
 						"defaultCheckbox": {
 							"title": "डिफ़ॉल्ट खोज स्रोत के रूप में सेट करें"
@@ -1114,7 +1114,7 @@
 				},
 				"sources/translate": {
 					"title": "अनुवाद सेवा स्रोत",
-					"subtitle": "भाषा का पुल और संचार की कड़ी।",
+					"subtitle": "भाषा का पुल, संवाद की कड़ी।",
 					"card": {
 						"defaultCheckbox": {
 							"title": "डिफ़ॉल्ट अनुवाद सेवा स्रोत के रूप में सेट करें"
@@ -1147,9 +1147,9 @@
 		},
 		"achievements": {
 			"first_login": {
-				"name": "नमस्ते, फव्वारा!",
+				"name": "नमस्ते, विश्व!",
 				"description": "नई दुनिया की ओर बढ़ रहे हैं, पहली बार लॉग इन कर रहे हैं!",
-				"locked_description": "एक बार फव्वारे में लॉग इन करें।"
+				"locked_description": "एक बार fount में लॉग इन करें।"
 			},
 			"sfw_mode_on": {
 				"name": "तुम्हारे पीछे कोई है!",
@@ -1164,18 +1164,18 @@
 			"open_function_list": {
 				"name": "मुझे देखने दो!",
 				"description": "\"वहाँ कौन सी अच्छी चीज़ें हैं?\"",
-				"locked_description": "फ़ंक्शन सूची को एक बार खोलें."
+				"locked_description": "फ़ंक्शन सूची को एक बार खोलें।"
 			},
 			"set_default_persona": {
 				"name": "इसका निर्णय आपको करना है!",
 				"description": "इस दुनिया में अपने कर्मों की एक पहचान बनायें।",
-				"locked_description": "एक डिफ़ॉल्ट प्रोफ़ाइल सेट करें."
+				"locked_description": "एक डिफ़ॉल्ट प्रोफ़ाइल सेट करें।"
 			}
 		},
 		"dragAndDrop": {
 			"dropSuccess": "खींचें और छोड़ें सफल!",
-			"dropError": "ड्रैग और ड्रॉप प्रोसेसिंग में त्रुटि: ${error}",
-			"noHandler": "कोई उपयुक्त ड्रैग और ड्रॉप हैंडलर नहीं मिला."
+			"dropError": "ड्रैग और ड्रॉप प्रक्रिया में त्रुटि: ${error}",
+			"noHandler": "कोई उपयुक्त ड्रैग और ड्रॉप हैंडलर नहीं मिला।"
 		},
 		"home_common_interfaces": {
 			"open": {
@@ -1184,13 +1184,13 @@
 		},
 		"home_drag_out_generators": {
 			"generateXFountPart": {
-				"description": "स्रोत घटक जानकारी उत्पन्न करें"
+				"description": "fount घटक की जानकारी बनाएँ"
 			}
 		}
 	},
 	"chat": {
 		"title": "चैट",
-		"description": "जहां शब्द उड़ान भरते हैं और कहानियां सामने आती हैं। अपने एआई साथियों के साथ जुड़ें, कथा को आकार दें, और डिजिटल संवाद के उतार-चढ़ाव में खुद को खो दें। फव्वारे का दिल यहाँ धड़कता है।",
+		"description": "जहाँ शब्द उड़ान भरते हैं और कहानियाँ सामने आती हैं। अपने AI साथियों के साथ जुड़ें, कथा को आकार दें, और डिजिटल संवाद के उतार-चढ़ाव में खो जाएँ। fount का दिल यहीं धड़कता है।",
 		"new": {
 			"title": "नई चैट",
 			"description": "अभी तक अलिखित कहानी की शांत प्रत्याशा। एक नई बातचीत शुरू होती है, आपके चुने हुए साथियों के साथ ताज़ा बातचीत और खुली कहानियों के लिए एक साफ़ स्लेट।"
@@ -1224,11 +1224,11 @@
 			"alreadyMember": "समूह खोलें",
 			"followAuthor": "लेखक को फ़ॉलो करें",
 			"alreadyFollowing": "फ़ॉलो कर रहे हैं",
-			"followSuccess": "लेखक को फ़ॉलो किया",
+			"followSuccess": "अब लेखक को फ़ॉलो कर रहे हैं",
 			"openAuthor": "लेखक देखें",
 			"previewGroupMeta": "समूह से: ${name}",
 			"previewAuthorMeta": "लेखक से",
-			"previewActionFailed": "कार्रवाई विफल: ${error}",
+			"previewActionFailed": "ऑपरेशन विफल: ${error}",
 			"loadFailed": "इमोजी पिकर लोड नहीं हो सका: ${error}",
 			"category": {
 				"animal": "जानवर",
@@ -1250,14 +1250,14 @@
 			"preview": "पूर्वावलोकन",
 			"joinGroup": "समूह में शामिल हों",
 			"followAuthor": "लेखक को फ़ॉलो करें",
-			"sourceGroup": "समूह का पैक",
-			"sourceAuthor": "लेखक का पैक",
+			"sourceGroup": "समूह का इमोजी पैक",
+			"sourceAuthor": "लेखक का इमोजी पैक",
 			"itemCount": "${count} इमोजी"
 		},
 		"unicodeEmojiGroups": {
 			"Smileys_and_Emotion": {
-				"title": "मुस्कुराते चेहरे और भावनाएं",
-				"aria-label": "मुस्कुराते चेहरे और भावनाएं"
+				"title": "हँसते चेहरे और भावनाएँ",
+				"aria-label": "हँसते चेहरे और भावनाएँ"
 			},
 			"People_and_Body": {
 				"title": "लोग और शरीर",
@@ -1378,7 +1378,7 @@
 					"message_delete": "संदेश हटाएँ ${targetEventId}",
 					"pin_message": "${channelName} को ${targetEventId} पर पिन करें",
 					"unpin_message": "${channelName} पर ${targetEventId} को अनपिन करें",
-					"file_upload": "फ़ाइल अपलोड करें ${fileName}",
+					"file_upload": "फ़ाइल अपलोड की गई ${fileName}",
 					"file_delete": "फ़ाइल ${fileName} हटाएँ"
 				},
 				"col": {
@@ -1394,7 +1394,7 @@
 			"contentRefBodyPending": "बाहरी लिंक टेक्स्ट (content_ref, सत्यापन के लिए अभी तक नहीं निकाला गया)",
 			"contentRefHashMismatch": "बाहरी लिंक टेक्स्ट भंडारण सत्यापन के साथ असंगत है (हैश ईमेल नहीं खाता)",
 			"convergentEncryptWarn": "समूह फ़ाइलें अभिसरण एन्क्रिप्शन का उपयोग करती हैं: यदि हमलावर किसी फ़ाइल का प्लेनटेक्स्ट जानता है, तो वह कुंजी प्राप्त कर सकता है और संबंधित सिफरटेक्स्ट ब्लॉक को डिक्रिप्ट कर सकता है। अत्यधिक संवेदनशील और विशिष्ट निजी दस्तावेज़ों की सुरक्षा के लिए केवल समूह एन्क्रिप्शन पर निर्भर न रहें।",
-			"dagForkDetected": "असंबद्ध डीएजी कांटा का पता चला",
+			"dagForkDetected": "डीएजी का असंबद्ध कांटा मिला",
 			"mergeDagTips": "DAG कांटे मर्ज करें",
 			"mergeDagTipsOk": "कांटा विलीन हो गया",
 			"mergeDagTipsFailed": "मर्ज कांटा विफल रहा",
@@ -1451,7 +1451,7 @@
 			"convertToList": "सूची/फ़ोरम चैनल में कनवर्ट करें",
 			"setAsDefault": "समूह डिफ़ॉल्ट चैनल के रूप में सेट करें",
 			"isDefault": "वर्तमान डिफ़ॉल्ट",
-			"channelUpdateFailed": "चैनल अद्यतन विफल रहा",
+			"channelUpdateFailed": "चैनल अपडेट विफल रहा",
 			"record": "रिकॉर्डिंग",
 			"fileDownload": {
 				"title": "डाउनलोड फ़ाइल"
@@ -1483,15 +1483,15 @@
 			"shareExternalFailed": "अपलोड विफल रहा, कृपया नेटवर्क जांचें",
 			"ownerSuccession": {
 				"main": "उत्तराधिकार वोट आरंभ करें",
-				"autoSignHint": "सबमिट करने के बाद, मशीन निजी कुंजी दर्ज किए बिना समूह के हस्ताक्षर बीज पर स्वचालित रूप से हस्ताक्षर कर देगी। एक बहु-प्रशासक समूह में, आधे से अधिक प्रशासकों को स्थानीय स्तर पर एक ही मतपत्र (समान मतपत्र और उम्मीदवार) जमा करना होगा।",
+				"autoSignHint": "सबमिट करने के बाद, मशीन निजी कुंजी दर्ज किए बिना समूह के हस्ताक्षर बीज पर स्वचालित रूप से हस्ताक्षर कर देगी। एक बहु-प्रशासक समूह में, आधे से अधिक प्रशासकों को स्थानीय स्तर पर एक ही मतपत्र (समान ballotId और उम्मीदवार) जमा करना होगा।",
 				"candidateLabel": "उत्तराधिकारी सार्वजनिक कुंजी हैश",
-				"description": "समूह के सर्वोच्च प्रशासनिक प्राधिकारी (MANAGE_ADMINS) को निर्दिष्ट सदस्य को हस्तांतरित करें। केवल प्रशासक ही कार्य कर सकते हैं.",
+				"description": "समूह की सर्वोच्च प्रशासनिक अनुमति (MANAGE_ADMINS) निर्दिष्ट सदस्य को हस्तांतरित करें। यह कार्य केवल प्रशासक कर सकते हैं।",
 				"needHash": "कृपया उत्तराधिकारी की सार्वजनिक कुंजी हैश भरें",
 				"selfButton": "स्वयं को नामांकित करें"
 			},
 			"channelType": {
 				"label": "चैनल प्रकार",
-				"list": "सूची/फोरम चैनल",
+				"list": "सूची/फ़ोरम चैनल",
 				"streaming": "स्ट्रीमिंग चैनल",
 				"text": "चैट चैनल"
 			},
@@ -1504,13 +1504,13 @@
 					"delete": {
 						"before": "इस महीने पहले हटाएँ",
 						"button": "कोल्ड आर्काइव हटाएँ",
-						"confirm": "क्या आप वाकई ${month} से पुरानी सभी कोल्ड आर्काइव फ़ाइलें हटाना चाहते हैं? यह ऑपरेशन अपरिवर्तनीय है.",
+						"confirm": "क्या आप वाकई ${month} से पुरानी सभी कोल्ड आर्काइव फ़ाइलें हटाना चाहते हैं? यह कार्रवाई अपरिवर्तनीय है।",
 						"failed": "संग्रह हटाने में विफल: ${error}",
-						"hint": "केवल स्थानीय संग्रह/*.jsonl हटाया गया है; हॉटस्पॉट और डीएजी एंकर प्रभावित नहीं होते हैं।",
+						"hint": "केवल स्थानीय archive/*.jsonl हटाया गया है; हॉटस्पॉट और डीएजी एंकर प्रभावित नहीं होते हैं।",
 						"invalidMonth": "कृपया एक वैध महीना YYYY-MM चुनें।",
 						"ok": "${files} संग्रह फ़ाइलें हटा दी गईं।"
 					},
-					"empty": "अभी तक कोई कोल्ड आर्काइव फ़ाइलें नहीं हैं.",
+					"empty": "अभी तक कोई कोल्ड आर्काइव फ़ाइल नहीं है।",
 					"filesTitle": "संग्रहीत फ़ाइलें",
 					"hint": "कोल्ड आर्काइव स्थानीय स्पष्ट टेक्स्ट पोस्ट (महीने से विभाजित फ़ाइलें) की अंतिम स्थिति है। संग्रह को हटाने से DAG नहीं बदलेगा; यदि इतिहास गायब है, तो इसे संघीय पड़ोसियों से लिया जा सकता है।",
 					"title": "भंडारण और शीत संग्रहण"
@@ -1518,16 +1518,16 @@
 				"autoChannelGc": "मूक चैनलों को स्वचालित रूप से साफ़ करें",
 				"autoChannelGcHint": "अधिकतम 2 पृथक द्वीप चैनल जो ≥30 दिनों से शांत हैं और पहुंच योग्य नहीं हैं, उन्हें मूर्त रूप दिए जाने पर हटा दिया जाएगा।",
 				"autoReply": {
-					"frequency": "भूमिका उत्तरों को स्वचालित रूप से ट्रिगर करें (प्रत्येक एन उपयोगकर्ता संदेश के बाद, 0 बंद है)",
+					"frequency": "भूमिका उत्तरों को स्वचालित रूप से ट्रिगर करें (हर N उपयोगकर्ता संदेश के बाद, 0 बंद है)",
 					"frequencyHint": "0 का मतलब बंद है; @उल्लेख अभी भी तुरंत ट्रिगर होंगे",
 					"tokenBucket": "स्वचालित उत्तर दबाव शेड्यूलिंग (टोकन बाल्टी)",
-					"tokenBucketHint": "सक्षम होने के बाद, प्रत्येक वर्ण चैनल द्वारा एक टोकन बकेट बनाए रखता है; बकेट खाली होने पर ऑनमैसेज अस्थायी रूप से ट्रिगर नहीं होता है, जो पीक अवधि के दौरान निरंतर स्क्रीन रिफ्रेश को बाधित कर सकता है।"
+					"tokenBucketHint": "चालू होने पर हर वर्ण चैनल एक टोकन बकेट बनाए रखता है; बकेट खाली होने पर onMessage अस्थायी रूप से ट्रिगर नहीं होता, जिससे पीक अवधि में लगातार संदेशों की बाढ़ रुक सकती है।"
 				},
 				"batterySaver": "कम पावर मोड (संकुचित फेडरेशन कनेक्शन पूल और रिले)",
 				"compactTriggerDepth": "भौतिकीकृत संपीड़न ट्रिगर गहराई",
 				"discoveryBlurb": "डिस्कवरी परिचय (वैकल्पिक)",
 				"discoveryPublic": "इस समूह को फ़ेडरेटेड खोज में उजागर करें",
-				"powOnlyHint": "केवल PoW जुड़ाव नीति के साथ उपलब्ध। चालू करने पर समूह फ़ेडरेटेड खोज में दिखाई देगा, ताकि अन्य लोग इसे ढूंढकर PoW के माध्यम से शामिल होने का अनुरोध कर सकें।",
+				"powOnlyHint": "केवल PoW जुड़ाव नीति के साथ उपलब्ध। चालू करने पर समूह फ़ेडरेटेड खोज में दिखेगा, ताकि दूसरे उसे ढूँढकर PoW से शामिल होने का अनुरोध भेज सकें।",
 				"discoveryTitle": "खोज सूची शीर्षक (वैकल्पिक)",
 				"eventRetentionDepth": "DAG घटना अवधारण गहराई",
 				"eventRetentionMs": "DAG इवेंट अवधारण समय",
@@ -1585,10 +1585,10 @@
 					"membersTitle": "सदस्य सूची",
 					"overviewTitle": "समूह अवलोकन",
 					"overviewHint": "केवल पढ़ने योग्य। शासन अनुमति होने पर आप «सामान्य» में समूह प्रोफ़ाइल और नीतियाँ संपादित कर सकते हैं।",
-					"governanceHint": "डीएजी की समूह-स्तरीय नीति लिखें; व्यवस्थापक या MANAGE_ADMINS अनुमतियाँ आवश्यक हैं.",
+					"governanceHint": "डीएजी में समूह-स्तरीय नीति लिखें; इसके लिए व्यवस्थापक या MANAGE_ADMINS अनुमतियाँ ज़रूरी हैं।",
 					"governanceDenied": "आपके पास समूह प्रशासन सेटिंग्स को संशोधित करने की अनुमति नहीं है।",
-					"rolesDenied": "आपके पास भूमिकाएँ संपादित करने की MANAGE_ROLES अनुमति नहीं है.",
-					"notMember": "अब आप इस समूह के सदस्य नहीं हैं; ग्रुप छोड़ने के बाद इस ग्रुप का डेटा अपने आप क्लियर हो गया है.",
+					"rolesDenied": "आपके पास भूमिकाएँ संपादित करने की MANAGE_ROLES अनुमति नहीं है।",
+					"notMember": "अब आप इस समूह के सदस्य नहीं हैं; समूह छोड़ने के बाद इसका डेटा अपने आप साफ़ हो गया है।",
 					"basicTitle": "समूह शासन",
 					"profileSectionTitle": "समूह प्रोफ़ाइल",
 					"profileSectionHint": "समूह मेटाडेटा में नाम, परिचय और समूह में शामिल होने की विधि लिखी जाएगी।",
@@ -1598,7 +1598,7 @@
 					"mediaSectionTitle": "कॉल और फ़ाइलें",
 					"nameLabel": "समूह नाम",
 					"descriptionLabel": "समूह विवरण",
-					"joinPolicyLabel": "समूह प्रवेश रणनीति",
+					"joinPolicyLabel": "समूह में शामिल होने की नीति",
 					"joinInviteOnly": "केवल आमंत्रित",
 					"joinPow": "पीओडब्ल्यू की आवश्यकता है",
 					"powDifficultyLabel": "पीओडब्ल्यू कठिनाई",
@@ -1609,9 +1609,9 @@
 					"trustedPeersTip": "उच्च-प्रतिष्ठित फ़ेडरेशन पड़ोसियों की संख्या जिन्हें जुड़े रहने के लिए प्राथमिकता दी गई है।",
 					"gossipTtlTip": "संघीय नोड्स की अधिकतम संख्या जिसके माध्यम से संदेश अग्रेषित किया जा सकता है। इसे बढ़ाने से कवरेज बढ़ती है और ट्रैफिक भी बढ़ता है।",
 					"hlcTip": "दूरस्थ नोड की घड़ी को स्थानीय नोड की घड़ी की तुलना में तेज़ होने की अधिकतम समयावधि का उपयोग असामान्य भविष्य की घटनाओं को अस्वीकार करने के लिए किया जाता है।",
-					"sfuTip": "वैकल्पिक बाहरी ऑडियो और वीडियो अग्रेषण सेवा पता। अंतर्निहित पॉइंट-टू-पॉइंट/रिले कॉलिंग का उपयोग करने के लिए खाली छोड़ दें।",
+					"sfuTip": "वैकल्पिक बाहरी ऑडियो-वीडियो रिले सेवा पता। अंतर्निहित पॉइंट-टू-पॉइंट/रिले कॉलिंग के लिए खाली छोड़ें।",
 					"iceTip": "WebRTC को राउटर में प्रवेश करने में सहायता करें; जब सीधा कनेक्शन विफल हो जाता है, तो TURN अपनी ओर से ऑडियो, वीडियो और फ़ेडरेटेड ट्रैफ़िक को अग्रेषित करेगा।",
-					"fileEncryptionTip": "अभिसारी एन्क्रिप्शन डुप्लिकेट को हटा देता है लेकिन इस तथ्य को उजागर करता है कि फ़ाइलें समान हैं; यादृच्छिक कुंजियाँ अधिक निजी होती हैं लेकिन अधिक स्थान लेती हैं।",
+					"fileEncryptionTip": "अभिसारी एन्क्रिप्शन डुप्लिकेट हटाता है लेकिन यह भी उजागर करता है कि फ़ाइलें एक जैसी हैं; यादृच्छिक कुंजियाँ अधिक निजी होती हैं पर ज़्यादा जगह लेती हैं।",
 					"allowDangerousHtml": "विश्वसनीय लेखक संदेश इनलाइन HTML की अनुमति देते हैं",
 					"save": "सहेजें सेटिंग",
 					"loadFailed": "समूह सेटिंग लोड करने में विफल: ${error}",
@@ -1661,7 +1661,7 @@
 						"stateAllow": "अनुमति",
 						"stateDeny": "अस्वीकार",
 						"stateNeutral": "विरासत में",
-						"updateFailed": "चैनल अनुमतियाँ अद्यतन करने में विफल: ${error}",
+						"updateFailed": "चैनल अनुमतियाँ अपडेट नहीं की जा सकीं: ${error}",
 						"updated": "चैनल अनुमतियाँ अपडेट की गईं",
 						"syncedWarning": "इस चैनल की अनुमतियाँ मूल चैनल से सिंक होती हैं; अलग-अलग बदलाव पहले उन्हें अलग कर देंगे।",
 						"syncToDefault": "रूट चैनल की अनुमतियों के साथ सिंक करें",
@@ -1727,7 +1727,7 @@
 					"perm": {
 						"ADD_REACTIONS": "प्रतिक्रिया जोड़ें",
 						"ADMIN": "प्रशासक",
-						"BAN_MEMBERS": "सदस्य पर प्रतिबंध लगाएं",
+						"BAN_MEMBERS": "सदस्य को बैन करें",
 						"BYPASS_RATE_LIMIT": "संदेश दर सीमा को बायपास करें",
 						"CREATE_THREADS": "उपचैनल बनाएं",
 						"INVITE_MEMBERS": "सदस्यों को आमंत्रित करो",
@@ -1774,7 +1774,7 @@
 						"denied": "समूह अनुमतियाँ प्रबंधित करने की अनुमति नहीं है",
 						"hint": "समूह-स्तरीय प्रशासन अनुमतियों (निकालना, प्रतिबंधित करना, भूमिकाएँ प्रबंधित करना, व्यवस्थापक प्रबंधित करना, सदस्यों को आमंत्रित करना) के लिए प्रति भूमिका ओवरराइड सेट करें।",
 						"overridden": "ओवरराइड",
-						"clearOverride": "सभी को विरासत पर रीसेट करें",
+						"clearOverride": "सभी ओवरराइड हटाएँ",
 						"noRoles": "अभी कॉन्फ़िगर करने के लिए कोई भूमिका नहीं है",
 						"updateFailed": "समूह अनुमतियाँ अपडेट करने में विफल: ${error}",
 						"updated": "समूह अनुमतियाँ अपडेट की गईं"
@@ -1787,7 +1787,7 @@
 				"streamGeneratingIdle": "एआई जनित प्लेसहोल्डर निष्क्रिय टाइमआउट (मिलीसेकंड)",
 				"streamingSfu": "स्ट्रीमिंग एसएफयू वेबसॉकेट पता (वैकल्पिक)",
 				"trustedPeers": "पड़ोसी स्लॉट पर भरोसा करें (टॉप-के)",
-				"wantIdsBudget": "सिंगल वांटेडआईडी बजट"
+				"wantIdsBudget": "एकल wantIds बजट"
 			},
 			"feedback": {
 				"dagLine": "[${label}]",
@@ -1825,7 +1825,7 @@
 				"typingMany": "${name} और ${count} अन्य लोग टाइप कर रहे हैं…",
 				"typingTwo": "${name1}, ${name2} प्रवेश कर रहा हूँ…",
 				"unavailable": "दूरस्थ घटक अनुपलब्ध है या RPC को रूट नहीं कर सकता",
-				"unsafe": "यह संदेश किसी दूरस्थ स्थान से आता है और लेखक स्थानीय ट्रस्ट सूची में नहीं है। रिच टेक्स्ट रेंडरिंग अक्षम कर दी गई है."
+				"unsafe": "यह संदेश किसी दूरस्थ स्थान से आता है और लेखक स्थानीय ट्रस्ट सूची में नहीं है। रिच टेक्स्ट रेंडरिंग अक्षम कर दी गई है।"
 			},
 			"create": {
 				"channelFailed": "चैनल बनाएँ विफल",
@@ -1840,7 +1840,7 @@
 					"textContent": "स्ट्रीमिंग पता एक एम्बेड करने योग्य https:// पेज होना चाहिए, या देखने का टोकन प्राप्त करने के लिए समूह सेटिंग्स को पहले कॉन्फ़िगर किया जाना चाहिए और ताज़ा किया जाना चाहिए।"
 				},
 				"noSfu": {
-					"textContent": "स्ट्रीमिंगSfuWss कॉन्फ़िगर नहीं है; व्यवस्थापक समूह सेटिंग में LiveKit/mediasoup देखने का पता भर सकते हैं।"
+					"textContent": "streamingSfuWss कॉन्फ़िगर नहीं है; व्यवस्थापक समूह सेटिंग में LiveKit/mediasoup देखने का पता भर सकते हैं।"
 				},
 				"ok": "मीडिया स्ट्रीम अधिग्रहीत (रोका गया, प्रसारित नहीं)",
 				"test": "मीडिया उपकरणों का परीक्षण करें"
@@ -1891,13 +1891,13 @@
 			"pin": {
 				"action": {
 					"textContent": "शीर्ष पर पिन करें",
-					"title": "इस लेख को डीएजी को लिखें और इसे शीर्ष पर पिन करें"
+					"title": "इस लेख को DAG में लिखें और शीर्ष पर पिन करें।"
 				},
 				"failed": "पिन विफल",
 				"message": "शीर्ष पर पिन करें",
 				"messageLine": "[शीर्ष] ${targetId}",
-				"ok": "रिकॉर्ड किया गया और पिन किया गया",
-				"thisMessage": "इस लेख को डीएजी को लिखें और इसे शीर्ष पर पिन करें"
+				"ok": "शीर्ष पर पिन कर दिया गया",
+				"thisMessage": "इस लेख को DAG में लिखें और शीर्ष पर पिन करें।"
 			},
 			"av": {
 				"mute": "म्यूट करें",
@@ -1911,7 +1911,7 @@
 			"title": "चैट",
 			"redirectToHub": "चैट हब में प्रवेश किया जा रहा है…",
 			"homeTooltip": {
-				"title": "होम पेज पर लौटें",
+				"title": "होम पर लौटें",
 				"tip": "होम पेज पर लौटें"
 			},
 			"charsTooltip": {
@@ -2027,7 +2027,7 @@
 			},
 			"shareGroupOk": "साझा समूह आमंत्रण कार्ड",
 			"inviteJoinButton": "समूह में शामिल",
-			"inviteLinkNeedsRoomSecret": "इस समूह ने अभी तक फ़ेडरेटेड सिंक्रनाइज़ेशन सक्षम नहीं किया है. कृपया साझा करने से पहले आमंत्रण लिंक पुनः जनरेट करें।",
+			"inviteLinkNeedsRoomSecret": "इस समूह ने अभी तक फ़ेडरेटेड सिंक्रनाइज़ेशन सक्षम नहीं किया है। कृपया साझा करने से पहले आमंत्रण लिंक फिर से बनाएँ।",
 			"inviteCardMembers": "${count} सदस्य",
 			"attachmentLoadFailed": "अनुलग्नक लोडिंग विफल रही",
 			"timeToday": "आज ${time}",
@@ -2070,7 +2070,7 @@
 				"aria-label": "स्थिति बदलें"
 			},
 			"aboutSection": "के बारे में",
-			"bioEmpty": "इस उपयोगकर्ता के पास अभी तक कोई प्रोफ़ाइल नहीं है.",
+			"bioEmpty": "इस उपयोगकर्ता के पास अभी तक कोई प्रोफ़ाइल नहीं है।",
 			"banners": {
 				"gshBuffer": "कुंजी घुमाने के बाद ${total} संदेश डिक्रिप्ट होने की प्रतीक्षा कर रहे हैं",
 				"plaintextSidecar": "यह चैनल मांग पर सिंक्रनाइज़ किया जाता है; स्थानीय संदेश साइडकार स्पष्ट पाठ में सामग्री को कैश करता है।",
@@ -2114,7 +2114,7 @@
 				"title": "फ़ेडरेटेड दूरस्थ लेखक"
 			},
 			"trustAuthor": {
-				"textContent": "विश्वास करें",
+				"textContent": "लेखक पर भरोसा करें",
 				"title": "इस लेखक पर भरोसा करें (खतरनाक Markdown/HTML की अनुमति दें)"
 			},
 			"stickerInline": "कँटिया",
@@ -2172,7 +2172,7 @@
 			"dangerZone": "ख़तरे का क्षेत्र",
 			"deleteSessionDescription": "इस वार्तालाप को हटाने से सभी संदेश स्थायी रूप से हट जाएंगे और यह अपरिवर्तनीय है।",
 			"deleteSession": "सत्र हटाएँ",
-			"deleteSessionConfirm": "क्या आप वाकई ${name} वाला सत्र हटाना चाहते हैं? यह ऑपरेशन अपरिवर्तनीय है.",
+			"deleteSessionConfirm": "क्या आप वाकई ${name} वाला सत्र हटाना चाहते हैं? यह कार्रवाई अपरिवर्तनीय है।",
 			"reactionRemovePrompt": "किसका ${emoji} हटाना है?\n${candidates}",
 			"ariaDagTip": {
 				"aria-label": "डीएजी कांटा टिप"
@@ -2193,7 +2193,7 @@
 				"title": "भिन्नता"
 			},
 			"replyInThread": {
-				"title": "चाइल्ड थ्रेड में उत्तर दें"
+				"title": "थ्रेड में उत्तर दें"
 			},
 			"localMaterializedView": "यह वर्तमान में एक स्थानीय भौतिक दृश्य है, और अनुमतियाँ और इतिहास अन्य नोड्स के साथ असंगत हो सकते हैं।",
 			"convergentEncryptWarn": "समूह फ़ाइलें अभिसरण एन्क्रिप्शन का उपयोग करती हैं: यदि हमलावर किसी फ़ाइल का प्लेनटेक्स्ट जानता है, तो वह कुंजी प्राप्त कर सकता है और संबंधित सिफरटेक्स्ट ब्लॉक को डिक्रिप्ट कर सकता है। अत्यधिक संवेदनशील और विशिष्ट निजी दस्तावेज़ों की सुरक्षा के लिए केवल समूह एन्क्रिप्शन पर निर्भर न रहें।",
@@ -2269,7 +2269,7 @@
 						"aria-label": "लिंक हटाएँ"
 					},
 					"url": {
-						"placeholder": "https://… या फ़ॉन्ट://…"
+						"placeholder": "https://… या fount://…"
 					}
 				}
 			},
@@ -2280,14 +2280,14 @@
 				},
 				"editSaved": "प्रोफ़ाइल सहेजा गया",
 				"editQueued": "प्रकाशित, दूसरे नोड द्वारा इसे खींचने की प्रतीक्षा की जा रही है",
-				"noFedIdentity": "कृपया पहले फ़ेडरेशन सेटिंग्स में मूल सक्रियPubKeyHex को कॉन्फ़िगर करें",
+				"noFedIdentity": "कृपया पहले फ़ेडरेशन सेटिंग्स में मूल सक्रिय activePubKeyHex को कॉन्फ़िगर करें",
 				"peerNoIdentity": "दूसरे पक्ष के पास संघीय दर्जा नहीं है और वह संघीय निजी संदेश आरंभ नहीं कर सकता।",
 				"care": "विशेष फ़ॉलो",
 				"careRemove": "विशेष फ़ॉलो रद्द करें",
 				"setAlias": "उपनाम सेट करें",
 				"setAliasPrompt": "\"${name}\" के लिए एक स्थानीय उपनाम सेट करें (साफ करने के लिए खाली छोड़ें):",
 				"dm": {
-					"char": "किसी पात्र के साथ निजी तौर पर चैट करें",
+					"char": "किसी किरदार से निजी चैट करें",
 					"failed": "निजी संदेश खोलने में असमर्थ: ${error}",
 					"user": "निजी संदेश भेजें"
 				},
@@ -2299,7 +2299,7 @@
 			"gshDecryptFailed": "चैनल कुंजी के बिना इस संदेश को डिक्रिप्ट करने में असमर्थ",
 			"reactionFailed": "प्रतिक्रिया कार्रवाई विफल रही",
 			"createModal": {
-				"title": "समूह बनाना",
+				"title": "समूह बनाएँ",
 				"subtitle": "समूह आपके और आपके दोस्तों के लिए एक साथ बातचीत करने के लिए निजी स्थान हैं",
 				"basicSection": "मूल विवरण",
 				"nameLabel": "समूह नाम",
@@ -2316,7 +2316,7 @@
 				"join": {
 					"inviteOnly": "केवल आमंत्रित",
 					"inviteOnlyDescription": "शामिल होने के लिए एक आमंत्रण कोड आवश्यक है",
-					"pow": "कार्य का प्रमाण",
+					"pow": "प्रूफ़ ऑफ़ वर्क",
 					"powDescription": "शामिल होने से पहले आपको PoW चुनौती पूरी करनी होगी",
 					"section": "कौन शामिल हो सकता है"
 				}
@@ -2326,7 +2326,7 @@
 				"subtitle": "संबंधित चैट में शामिल होने के लिए समूह आईडी दर्ज करें",
 				"groupIdLabel": "ग्रुप आईडी",
 				"groupId": {
-					"placeholder": "समूह_1776941580949_xxxx"
+					"placeholder": "group_1776941580949_xxxx"
 				},
 				"inviteLabel": "आमंत्रण कोड (वैकल्पिक)",
 				"invite": {
@@ -2353,7 +2353,7 @@
 				"confirm": "रीपोस्ट",
 				"cancel": "रद्द करें",
 				"success": "अग्रेषित",
-				"failed": "रीपोस्ट विफल"
+				"failed": "फ़ॉरवर्ड विफल"
 			},
 			"deliverySending": "भेजा जा रहा है",
 			"deliverySent": "भेजा",
@@ -2403,13 +2403,13 @@
 			},
 			"unbindFriend": {
 				"main": "अनबाइंड",
-				"confirm": "क्या आप निश्चित रूप से ${name} के साथ निजी चैट को अनबाइंड करना चाहते हैं? बातचीत को वापस समूह सूची में ले जाया जाएगा.",
+				"confirm": "क्या आप निश्चित रूप से ${name} के साथ निजी चैट को अनबाइंड करना चाहते हैं? बातचीत को वापस समूह सूची में ले जाया जाएगा।",
 				"description": "अनबाइंडिंग के बाद, बातचीत बाईं ओर समूह सूची में वापस आ जाएगी और संदेश रिकॉर्ड बनाए रखा जाएगा।",
 				"failed": "अनबाइंडिंग विफल: ${error}",
 				"ok": "अबाध"
 			},
 			"federation": {
-				"loadFailed": "लोडिंग विफल: ${error}",
+				"loadFailed": "लोड विफल: ${error}",
 				"rebindFailed": "फ़ेडरेशन रूम रीबाइंड करने में विफल: ${error}",
 				"subtitle": "क्रॉस-डिवाइस कनेक्शन नियंत्रित करें; अधिकांश मामलों में डिफ़ॉल्ट को छोड़ दें",
 				"title": "फ़ेडरेटेड P2P सेटिंग्स",
@@ -2437,7 +2437,7 @@
 				"eyebrow": "समुदाय का अन्वेषण करें",
 				"join": "समूह में शामिल",
 				"loadFailed": "खोज सूची लोड करने में विफल: ${error}",
-				"noDescription": "समूह स्वामी ने अभी तक प्रोफ़ाइल नहीं भरी है.",
+				"noDescription": "समूह स्वामी ने अभी तक प्रोफ़ाइल नहीं भरी है।",
 				"open": "समूह खोलें",
 				"refresh": "खोज सूची ताज़ा करें",
 				"sidebarHint": "दाईं ओर सार्वजनिक समूहों को ब्राउज़ करें और उनसे जुड़ें",
@@ -2456,7 +2456,7 @@
 			},
 			"stickers": {
 				"empty": "अभी तक कोई स्टिकर नहीं",
-				"loadFailed": "लोडिंग विफल: ${error}",
+				"loadFailed": "लोड विफल: ${error}",
 				"loading": "लोड हो रहा है…",
 				"manage": "स्टिकर प्रबंधित करें →",
 				"marketLink": "इंस्टॉल करने के लिए स्टिकर स्क्वायर पर जाएं",
@@ -2474,7 +2474,7 @@
 				"restartOk": "एक नई निजी चैट खोली गई है",
 				"search": {
 					"placeholder": "स्थानीय भूमिका/कस्टम आईडी/नाम खोजें…",
-					"chat": "एक बातचीत शुरू",
+					"chat": "बातचीत शुरू करें",
 					"dm": "निजी संदेश भेजें",
 					"empty": "कोई ईमेल खाती भूमिका या उपयोगकर्ता नहीं",
 					"localChar": "स्थानीय भूमिका",
@@ -2557,7 +2557,7 @@
 					"updated": "श्रेणी अनुमतियाँ अद्यतन कर दी गई हैं",
 					"syncedWarning": "इस श्रेणी की अनुमतियाँ रूट चैनल से सिंक होती हैं; अलग-अलग बदलाव पहले उन्हें अलग कर देंगे।",
 					"syncToDefault": "रूट चैनल की अनुमतियों के साथ सिंक करें",
-					"synced": "रूट चैनल की अनुमतियों के साथ सिंक हो गई हैं"
+					"synced": "रूट चैनल की अनुमतियों से सिंक है"
 				}
 			},
 			"message": {
@@ -2647,7 +2647,7 @@
 					"noCodecs": "यह ब्राउज़र WebCodecs का समर्थन नहीं करता (Chrome 94+ / Edge 94+ / Firefox 130+ की आवश्यकता है)",
 					"peers": "${count} लोग ऑनलाइन",
 					"preset": {
-						"high": "उच्च गुणवत्ता 1.5 एमबीपीएस",
+						"high": "उच्च गुणवत्ता 1.5 Mbps",
 						"low": "निम्न गुणवत्ता 200kbps",
 						"med": "मध्यम 600kbps",
 						"thumb": "संक्षिप्त रूप में 64kbps"
@@ -2660,9 +2660,9 @@
 				"connectionLost": "कनेक्शन टूट गया, दोबारा कनेक्ट हो रहा है…",
 				"defaultName": "स्ट्रीमिंग मीडिया",
 				"embedHttpsRequired": "स्ट्रीमिंग पता एक एम्बेड करने योग्य https:// पेज होना चाहिए, या देखने का टोकन प्राप्त करने के लिए समूह सेटिंग्स को पहले कॉन्फ़िगर किया जाना चाहिए और ताज़ा किया जाना चाहिए।",
-				"refreshToken": "घड़ी टोकन ताज़ा करें",
+				"refreshToken": "देखने का टोकन ताज़ा करें",
 				"tokenFailed": "देखने का टोकन जारी करने में असमर्थ",
-				"webRtcHint": "कोई बाहरी एसएफयू कॉन्फ़िगर नहीं किया गया है; यह चैनल इन-ग्रुप WebRTC (कोई स्ट्रीमिंगSfuWss आवश्यक नहीं) का उपयोग करेगा।"
+				"webRtcHint": "कोई बाहरी एसएफयू कॉन्फ़िगर नहीं किया गया है; यह चैनल इन-ग्रुप WebRTC (कोई streamingSfuWss आवश्यक नहीं) का उपयोग करेगा।"
 			},
 			"member": {
 				"bar": {
@@ -2687,7 +2687,7 @@
 					"personalBlockConfirm": "अपनी ब्लॉक सूची में ${name} जोड़ें? जो लोग आपका फ़ॉलो करते हैं वे इस संकेत को समझेंगे और उन पर भरोसा कम कर सकते हैं।",
 					"personalBlockSuccess": "पहले से ही ब्लॉकलिस्ट में जोड़ा गया है",
 					"banTitle": "प्रतिबंध सीमा का चयन करें",
-					"banEntity": "प्रतिबंधित इकाइयाँ (128-बिट एंटिटीहैश)",
+					"banEntity": "प्रतिबंधित इकाइयाँ (128-बिट entityHash)",
 					"banNode": "प्रतिबंध नोड (homeNodeHash)"
 				},
 				"countLabel": "${count} सदस्य",
@@ -2738,7 +2738,7 @@
 				"bindCabinet": "एक फाइलिंग कैबिनेट जोड़ें",
 				"delete": "हटाएँ",
 				"deleteConfirm": "क्या आप द्वारा इस फाइल को हटाया जाना सुनिश्चित है?",
-				"deleteFolderConfirm": "क्या आप वाकई इस फ़ोल्डर को हटाना चाहते हैं? फ़ोल्डर में फ़ाइलें स्वचालित रूप से हटाई नहीं जाएंगी.",
+				"deleteFolderConfirm": "क्या आप वाकई यह फ़ोल्डर हटाना चाहते हैं? फ़ोल्डर की फ़ाइलें अपने आप नहीं हटेंगी।",
 				"download": "डाउनलोड करना",
 				"drawerTitle": "समूह फ़ाइल",
 				"empty": "इस निर्देशिका में फिलहाल कोई फ़ाइल नहीं है",
@@ -2750,7 +2750,7 @@
 				"newFolderPrompt": "फ़ोल्डर का नाम",
 				"no": {
 					"cabinets": "वर्तमान भूमिका के लिए कोई फ़ाइल कैबिनेट पहुंच योग्य नहीं है",
-					"channel": "कृपया पहले टेक्स्ट चैनल दर्ज करें जहां आप संदेश भेज सकते हैं",
+					"channel": "कृपया पहले वह टेक्स्ट चैनल खोलें जहाँ आप संदेश भेज सकते हैं",
 					"folders": "अभी तक कोई सबफ़ोल्डर नहीं",
 					"group": "कृपया पहले एक समूह चुनें"
 				},
@@ -2778,20 +2778,20 @@
 					"aliasSaved": "समूह उपनाम अद्यतन किया गया",
 					"leave": {
 						"main": "समूह से बाहर निकलें",
-						"batch": "चयनित समूह से बाहर निकलें (${count})",
+						"batch": "चयनित समूहों से बाहर निकलें (${count})",
 						"batchOk": "${count} समूहों से बाहर निकल गए",
-						"batchPartial": "${failed} / ${total} समूह बाहर निकलने में विफल रहे, सूची ताज़ा कर दी गई है",
+						"batchPartial": "${failed} / ${total} समूह बाहर निकलने में विफल रहे; सूची ताज़ा कर दी गई है",
 						"batchPending": "${count} समूहों को सूची से हटा दिया गया है, पृष्ठभूमि में बाहर निकल रहा है…",
-						"confirm": "क्या आप वाकई समूह \"${name}\" छोड़ना चाहते हैं? अब आप इस समूह में संदेश नहीं देख पाएंगे.",
+						"confirm": "क्या आप वाकई समूह \"${name}\" छोड़ना चाहते हैं? अब आप इस समूह में संदेश नहीं देख पाएंगे।",
 						"confirmBatch": "क्या आप वाकई ${count} चयनित समूहों को छोड़ना चाहते हैं? मशीन अब इन समूहों के लिए डेटा बरकरार नहीं रखेगी।",
 						"ok": "समूह छोड़ दिया"
 					}
 				},
-				"descriptionEmpty": "इस समूह के लिए अभी तक कोई प्रोफ़ाइल नहीं है.",
+				"descriptionEmpty": "इस समूह के लिए अभी तक कोई प्रोफ़ाइल नहीं है।",
 				"emojiTab": {
 					"title": "समूह"
 				},
-				"emojisEmpty": "वर्तमान में कोई समूह इमोटिकॉन्स नहीं हैं. आप उन्हें ग्रुप सेटिंग में अपलोड कर सकते हैं.",
+				"emojisEmpty": "अभी कोई समूह इमोटिकॉन नहीं हैं। आप उन्हें समूह सेटिंग्स में अपलोड कर सकते हैं।",
 				"emojisLoadFailed": "समूह इमोटिकॉन्स लोड करने में विफल",
 				"headerMenu": {
 					"title": "समूह मेनू: सेटिंग्स, निमंत्रण, आदि।"
@@ -2805,7 +2805,7 @@
 					"title": "इस लेखक को ब्लॉक करें"
 				},
 				"authorTitle": "इस लेखक को ब्लॉक करें",
-				"confirm": "इस व्यक्ति को ब्लॉकलिस्ट में जोड़ें? इस समूह का महासंघ इसके रिले को अस्वीकार कर देगा.",
+				"confirm": "इस व्यक्ति को ब्लॉकलिस्ट में जोड़ें? इस समूह का महासंघ इसके रिले को अस्वीकार कर देगा।",
 				"ok": "अवरोधित",
 				"opposingConfirm": "उन शासन जारीकर्ताओं को ब्लॉकलिस्ट में जोड़ें जो वर्तमान चुनाव में नहीं हैं और फेडरेशन रिले के इस समूह को अस्वीकार कर दें। जारी रखना?",
 				"opposingFailed": "चिह्नित करना विफल: ${error}",
@@ -2864,7 +2864,7 @@
 			"menu": {
 				"copy": "कॉपी",
 				"delete": "हटाएँ",
-				"download": "एचटीएमएल डाउनलोड करें",
+				"download": "HTML डाउनलोड करें",
 				"hTML": "एचटीएमएल",
 				"mD": "markdown",
 				"next": "अगला लेख",
@@ -2883,14 +2883,14 @@
 					"composer": {
 						"placeholder": "${name} पर एक संदेश भेजें (भेजने के लिए Ctrl+Enter)"
 					},
-					"empty": "अभी तक कोई संदेश नहीं है, अपनी पहली चैट शुरू करें!",
+					"empty": "अभी कोई संदेश नहीं है, अपनी पहली चैट शुरू करें!",
 					"settings": "चरित्र चैट सेटिंग्स",
 					"start": "${name} से बातचीत शुरू करें",
 					"subtitle": "${name} के साथ सत्र"
 				},
 				"chatsTitle": "${name} के साथ ऐतिहासिक बातचीत",
 				"count": "${count} भूमिकाएँ",
-				"descriptionEmpty": "पात्र ने अभी तक अपना परिचय नहीं दिया है।",
+				"descriptionEmpty": "इस किरदार ने अभी तक अपना परिचय नहीं दिया है।",
 				"intro": "परिचय देना",
 				"streaming": "उत्पन्न हो रहा है…",
 				"tag": "भूमिका",
@@ -2898,7 +2898,7 @@
 				"typing": "प्रवेश कर रहा हूँ…"
 			},
 			"list": {
-				"channelEmpty": "सूची खाली है.",
+				"channelEmpty": "सूची खाली है।",
 				"editorTitle": "सूची आइटम संपादित करें (JSON सरणी)",
 				"itemUntitled": "अनाम",
 				"jsonInvalid": "अमान्य JSON: ${message}",
@@ -2923,8 +2923,8 @@
 				"incomplete": "${missing}/${total} ईवेंट अनसिंक्ड रहते हैं",
 				"noPeers": "कोई फ़ेडरेटेड पड़ोसी उपलब्ध नहीं; ऐतिहासिक संदेश अभी सिंक नहीं हो सकते",
 				"rateLimited": "संघीय सिंक्रनाइज़ेशन गति सीमा जारी है, कृपया बाद में पुनः प्रयास करें।",
-				"truncated": "DAG वेतन वृद्धि पूर्ण नहीं है. आप बाद में पुनः प्रयास कर सकते हैं या सीमा बढ़ा सकते हैं।",
-				"truncatedHint": "डीएजी का इतिहास बहुत लंबा है. आप बाद में पुनः प्रयास कर सकते हैं या सीमा बढ़ा सकते हैं।"
+				"truncated": "DAG वृद्धि पूरी नहीं हुई। आप बाद में पुनः प्रयास कर सकते हैं या सीमा बढ़ा सकते हैं।",
+				"truncatedHint": "DAG का इतिहास बहुत लंबा है। आप बाद में पुनः प्रयास कर सकते हैं या सीमा बढ़ा सकते हैं।"
 			},
 			"load": {
 				"charChatFailed": "संदेश लोड करने में विफल रहा",
@@ -2984,18 +2984,18 @@
 				"rotateRoomSecretOk": "कमरे का पासवर्ड घुमा दिया गया है",
 				"saved": "सहेजा गया",
 				"slash": {
-					"claimLabel": "दावे की ताकत का दावा (0-1)",
-					"needHash": "64-बिट हेक्स पबकीहैश की आवश्यकता है",
+					"claimLabel": "दावे की मज़बूती (0–1)",
+					"needHash": "64-बिट हेक्स pubKeyHash आवश्यक है",
 					"ok": "प्रतिष्ठा_स्लैश डीएजी को लिखा गया",
 					"proof": {
 						"placeholder": "64 हेक्स ईवेंट आईडी"
 					},
-					"proofLabel": "सबूत.इवेंट आईडी (वैकल्पिक)",
-					"submitLabel": "पोस्ट प्रतिष्ठा_स्लैश",
+					"proofLabel": "सबूत.eventId (वैकल्पिक)",
+					"submitLabel": "पोस्ट प्रतिष्ठा_slash",
 					"target": {
 						"placeholder": "सदस्य सार्वजनिक कुंजी हैश"
 					},
-					"targetLabel": "लक्ष्य पबकीहैश(64 हेक्स)",
+					"targetLabel": "लक्ष्य pubKeyHash (64 हेक्स)",
 					"tip": "समूह ईवेंट ग्राफ़ में एक नोड के बारे में एक नकारात्मक प्रतिष्ठा कथन लिखता है। केवल उन प्रशासकों द्वारा उपयोग के लिए जो फ़ेडरेशन प्रोटोकॉल को समझते हैं।",
 					"title": "प्रतिष्ठा दंड",
 					"verifiedLabel": "सत्यापन योग्य (प्रमाण इवेंट आईडी आवश्यक)"
@@ -3010,7 +3010,7 @@
 				}
 			},
 			"no": {
-				"activeChat": "कृपया भाग को खींचने से पहले एक सत्र खोलें",
+				"activeChat": "कृपया पहले एक सत्र खोलें, फिर घटक को खींचकर छोड़ें।",
 				"bookmarks": "अभी तक कोई बुकमार्क नहीं",
 				"channels": "अभी तक कोई बातचीत नहीं हुई",
 				"chars": "अभी तक कोई भूमिकाएँ नहीं हैं, कृपया पहले कुछ स्थापित करें।",
@@ -3047,7 +3047,7 @@
 		},
 		"sidebar": {
 			"settings": {
-				"title": "समूह सेटिंग"
+				"title": "समूह सेटिंग्स"
 			},
 			"noSelection": "कुछ नहीं चुना गया।",
 			"noDescription": "कोई विवरण नहीं।",
@@ -3094,11 +3094,11 @@
 			"dataMgmt": {
 				"title": "डेटा प्रबंधन",
 				"compact": "चेकपॉइंट उत्पन्न करें",
-				"prune": "फसल काटने का इतिहास",
+				"prune": "कतरन इतिहास",
 				"compactSuccess": "चेकप्वाइंट सफलतापूर्वक उत्पन्न हुआ",
 				"compactError": "चेकप्वाइंट निर्माण विफल रहा",
-				"pruneSuccess": "ऐतिहासिक संदेश की कतरन पूरी हुई",
-				"pruneError": "क्रॉप विफल",
+				"pruneSuccess": "इतिहास की कतरन पूरी हुई",
+				"pruneError": "कतरन विफल",
 				"invalidN": "आरक्षित आइटमओं की संख्या अमान्य है (न्यूनतम 10 आइटमएँ)"
 			}
 		},
@@ -3214,22 +3214,22 @@
 			"photo_chat": {
 				"name": "तस्वीरें भी हैं और सच्चाई भी",
 				"description": "आयामी दीवार को तोड़ने के लिए चित्रों का उपयोग करें।",
-				"locked_description": "चैट में एक तस्वीर भेजें."
+				"locked_description": "चैट में एक तस्वीर भेजें।"
 			},
 			"code_greeting": {
 				"name": "कोड के साथ नमस्ते कहें",
-				"description": "\"नमस्ते, fount!\"",
+				"description": "आपने fount के कोड से पहली बार अभिवादन करवाया। `// \"hello fount!\"`",
 				"locked_description": "कोड ब्लॉक चलाकर 'hello fount!' आउटपुट प्राप्त करें।"
 			}
 		},
 		"dragAndDrop": {
-			"invalidPartData": "अमान्य भाग डेटा.",
+			"invalidPartData": "अमान्य घटक डेटा।",
 			"charAdded": "भूमिका ${partName} को चैट में जोड़ा गया है।",
 			"personaSet": "पर्सोना ${partName} को वर्तमान पर्सोना के रूप में सेट किया गया है।",
 			"worldSet": "विश्व ${partName} वर्तमान विश्व पर सेट है।",
-			"pluginAdded": "प्लगइन ${partName} को चैट में जोड़ा गया है।",
-			"unsupportedPartType": "असमर्थित भाग प्रकार: ${partType}.",
-			"errorAddingPart": "भाग ${partName} जोड़ने में त्रुटि: ${error}"
+			"pluginAdded": "प्लगइन ${partName} चैट में जोड़ा गया है।",
+			"unsupportedPartType": "असमर्थित घटक प्रकार: ${partType}।",
+			"errorAddingPart": "घटक ${partName} जोड़ते समय त्रुटि: ${error}"
 		},
 		"home_char_interfaces": {
 			"main": {
@@ -3241,7 +3241,7 @@
 				"title": "चैट"
 			},
 			"frequent": {
-				"title": "अक्सर उपयोग"
+				"title": "अक्सर इस्तेमाल"
 			},
 			"network": {
 				"title": "नेटवर्क"
@@ -3336,7 +3336,7 @@
 				"saveFailed": "प्रोफ़ाइल सहेजने में विफल",
 				"uploadFailed": "अवतार अपलोड करें विफल",
 				"invalidUserData": "उपयोगकर्ता डेटा प्रारूप त्रुटि",
-				"identityRequired": "नोड पहचान अभी तैयार नहीं है, कृपया पृष्ठ ताज़ा करें; यदि यह अभी भी विफल रहता है, तो कृपया नीचे दी गई P2P सेटिंग्स में फ़ेडरेशन कॉन्फ़िगरेशन को सहेजें",
+				"identityRequired": "नोड पहचान अभी तैयार नहीं है, कृपया पृष्ठ ताज़ा करें; फिर भी विफल रहे तो नीचे P2P सेटिंग्स में फ़ेडरेशन कॉन्फ़िगरेशन सहेजें।",
 				"fetchUserFailed": "उपयोगकर्ता विवरण प्राप्त करने में विफल",
 				"operationFailed": "ऑपरेशन विफल: ${error}"
 			},
@@ -3369,7 +3369,7 @@
 				"languagePref": "भाषा प्राथमिकता",
 				"linksCount": "बाहरी लिंक की संख्या",
 				"socialCount": "सोशल लिंकों की संख्या",
-				"themePref": "विषय प्राथमिकता",
+				"themePref": "थीम प्राथमिकता",
 				"userId": "उपयोगकर्ता पहचान"
 			},
 			"owner": {
@@ -3378,7 +3378,7 @@
 				"confirm": {
 					"cancel": "रद्द करें",
 					"cooldown": "मैंने जोखिम पढ़ लिया है(${seconds})",
-					"editBody": "सेट करने के बाद दूसरा पक्ष आपकी सहमति के बिना आपकी ओर से चैट संदेश, सोशल पोस्ट और प्रोफ़ाइल संपादित या हटा सकता है। गलती से या धोखे से मालिक सेट करना = तुरंत सामग्री नियंत्रण सौंपना।",
+					"editBody": "सेट करने के बाद दूसरा पक्ष आपकी सहमति के बिना आपकी ओर से चैट संदेश, सोशल पोस्ट और प्रोफ़ाइल संपादित या हटा सकता है। गलती से या धोखे में मालिक सेट करना = तुरंत सामग्री नियंत्रण सौंप देना।",
 					"first": "मैं जोखिमों को समझता हूं, जारी रखें",
 					"renderBody": "दूसरे पक्ष के चैट संदेश और सोशल पोस्ट आपके ब्राउज़र में पूर्ण Markdown (HTML/स्क्रिप्ट सहित) में रेंडर होंगे। यह उन्हें आपकी सहमति के बिना आपके कंप्यूटर पर कोड चलाने की अनुमति देता है। केवल पूर्ण भरोसे पर आगे बढ़ें।",
 					"second": "अंतिम रूप देने के लिए दोबारा क्लिक करें",
@@ -3429,7 +3429,7 @@
 			},
 			"searchLabel": "स्टिकर पैक खोजें",
 			"emptyPacks": "अभी तक कोई स्टिकर पैक नहीं है",
-			"tagsLabel": "टैग (अल्पविराम से अनलिंक)",
+			"tagsLabel": "टैग (अल्पविराम से अलग किए गए)",
 			"tags": {
 				"placeholder": "उदाहरण के लिए: प्यारा, इमोटिकॉन, जानवर"
 			},
@@ -3445,7 +3445,7 @@
 			"static": "स्थिर",
 			"addTag": "जोड़ें लेबल",
 			"defaultPackName": "डिफ़ॉल्ट इमोटिकॉन सुइट",
-			"defaultPackDescription": "इमोटिकॉन स्टिकर डिफ़ॉल्ट रूप से सिस्टम द्वारा प्रदान किए जाते हैं",
+			"defaultPackDescription": "सिस्टम के डिफ़ॉल्ट स्टिकर",
 			"unnamedPack": "अनाम स्टीकर पैक",
 			"importPackName": "मेरा संग्रह",
 			"importPackDescription": "संदेशों से स्टिकर सहेजे गए",
@@ -3482,7 +3482,7 @@
 				"packOption": {
 					"textContent": "कृपया एक स्टिकर पैक चुनें"
 				},
-				"packRequired": "कृपया एक स्टिकर पैक चुनें"
+				"packRequired": "कृपया स्टिकर पैक चुनें"
 			},
 			"pack": {
 				"description": {
@@ -3592,7 +3592,7 @@
 						"htmlIcon": {
 							"alt": "आइकन: HTML के रूप में कॉपी करें"
 						},
-						"markdown": "मार्कडाउन के रूप में कॉपी करें",
+						"markdown": "Markdown के रूप में कॉपी करें",
 						"markdownIcon": {
 							"alt": "आइकन: मार्कडाउन के रूप में कॉपी करें"
 						},
@@ -3662,7 +3662,7 @@
 	},
 	"easynew": {
 		"title": "त्वरित निर्माण",
-		"description": "पूर्वनिर्धारित या कस्टम टेम्प्लेट का उपयोग करके पात्रों, दुनियाओं और प्लगइन्स जैसे नए स्रोत भागों को तुरंत तैयार करें। आपकी अगली रचना बस कुछ ही क्लिक दूर है।",
+		"description": "पूर्वनिर्धारित या कस्टम टेम्प्लेट से पात्रों, दुनियाओं और प्लगइन्स जैसे नए fount भाग तुरंत बनाएँ। आपकी अगली रचना बस कुछ ही क्लिक दूर है।",
 		"info": {
 			"description": "इन टेम्प्लेट का उपयोग केवल साधारण भागों को जल्दी से बनाने के लिए किया जा सकता है; जटिल भागों को अभी भी मैन्युअल रूप से बनाने की आवश्यकता है।"
 		},
@@ -3677,11 +3677,11 @@
 		"form": {
 			"partName": {
 				"label": "घटक का नाम",
-				"placeholder": "अपने नए भाग को एक नाम दें"
+				"placeholder": "अपने नए घटक को एक नाम दें"
 			},
 			"description": {
 				"label": "विवरण",
-				"placeholder": "संक्षेप में बताएं कि यह भाग किस बारे में है।"
+				"placeholder": "संक्षेप में बताएँ कि यह घटक किस बारे में है।"
 			},
 			"descriptionMarkdown": {
 				"label": "विवरण (मार्कडाउन)",
@@ -3713,7 +3713,7 @@
 				"heading": "विश्व परिभाषा"
 			},
 			"worldPrompt": {
-				"label": "विश्व संकेत",
+				"label": "विश्व प्रॉम्प्ट",
 				"placeholder": "दुनिया के नियमों, पर्यावरण और भूमिका-खेल के लिए किसी भी वैश्विक संदर्भ का वर्णन करता है।"
 			},
 			"worldGreeting": {
@@ -3722,7 +3722,7 @@
 			},
 			"author": {
 				"label": "लेखक",
-				"placeholder": "इस भाग का लेखक कौन है?"
+				"placeholder": "इस घटक के लेखक कौन हैं?"
 			},
 			"version": {
 				"label": "संस्करण",
@@ -3734,11 +3734,11 @@
 			},
 			"homePage": {
 				"label": "मुखपृष्ठ",
-				"placeholder": "भाग के मुखपृष्ठ का URL"
+				"placeholder": "घटक के मुखपृष्ठ का URL"
 			},
 			"issuePage": {
 				"label": "समस्या पृष्ठ",
-				"placeholder": "भाग के समस्या पृष्ठ का URL"
+				"placeholder": "घटक के समस्या पृष्ठ का URL"
 			},
 			"createButton": "घटक बनाएँ",
 			"persona": {
@@ -3762,8 +3762,8 @@
 		"achievements": {
 			"create_part": {
 				"name": "कीमिया कार्यशाला खुली है",
-				"description": "शुरुआत से शुरू करें और अपना पहला घटक बनाएं।",
-				"locked_description": "त्वरित नई सुविधा का उपयोग करके एक भाग बनाएं।"
+				"description": "शुरुआत से अपना पहला घटक बनाएँ।",
+				"locked_description": "त्वरित निर्माण से एक घटक बनाएँ।"
 			}
 		},
 		"home_function_buttons": {
@@ -3779,7 +3779,7 @@
 	},
 	"import": {
 		"title": "आयात करें",
-		"description": "अपने प्रिय पात्रों, दुनियाओं और विन्यासों को फव्वारे के आलिंगन में लाएँ। चाहे फ़ाइल से हो या चिपकाए गए टेक्स्ट से, यह वह जगह है जहां नए तत्व आपकी व्यक्तिगत टेपेस्ट्री में बुने जाते हैं।",
+		"description": "अपने प्रिय पात्रों, दुनियाओं और विन्यासों को fount की गोद में लाएँ। चाहे फ़ाइल से हो या चिपकाए गए टेक्स्ट से, यह वह जगह है जहां नए तत्व आपकी व्यक्तिगत टेपेस्ट्री में बुने जाते हैं।",
 		"tabs": {
 			"tabsLabel": {
 				"aria-label": "आयात प्रकार चयन"
@@ -3823,7 +3823,7 @@
 		},
 		"dragAndDrop": {
 			"fileDropDescription": "फ़ाइलों से घटक स्थापित करें",
-			"textDropDescription": "पाठ से भाग स्थापित करें"
+			"textDropDescription": "पाठ से घटक इंस्टॉल करें"
 		},
 		"home_function_buttons": {
 			"component_related": {
@@ -3837,7 +3837,7 @@
 		},
 		"home_drag_in_handlers": {
 			"handleTextDrop": {
-				"description": "पाठ से भाग स्थापित करें"
+				"description": "पाठ से घटक इंस्टॉल करें"
 			},
 			"handleFileDrop": {
 				"description": "फ़ाइलों से घटक स्थापित करें"
@@ -3848,7 +3848,7 @@
 		"title": "घटक निर्यातक",
 		"pageTitle": "घटक निर्यातक",
 		"pageSubtitle": "अपनी पसंदीदा सामग्री निर्यात करें",
-		"description": "अपनी महत्वपूर्ण कृतियों का निर्यात करें। यह टूल आपके चयनित भागों को सुरक्षित रखने या साझा करने के लिए एक सरल ज़िप फ़ाइल में एकत्रित करता है।",
+		"description": "अपनी fount रचनाओं का निर्यात करें। यह टूल आपके चयनित घटकों को सुरक्षित रखने या साझा करने के लिए एक सरल ज़िप फ़ाइल में एकत्रित करता है।",
 		"steps": {
 			"part": "घटकों का चयन करें",
 			"action": "निर्यात"
@@ -3903,7 +3903,7 @@
 		},
 		"alerts": {
 			"fetchPartTypesFailed": "घटक प्रकार प्राप्त करने में विफल।",
-			"fetchPartsFailed": "घटक सूची प्राप्त करने में विफल।",
+			"fetchPartsFailed": "घटक सूची प्राप्त नहीं हो सकी।",
 			"loadPartDetailsFailed": "घटक विवरण लोड करने में विफल: ${message}",
 			"exportFailed": "निर्यात विफल: ${message}",
 			"shareLinkCopied": "शेयर लिंक को क्लिपबोर्ड पर कॉपी किया गया है!",
@@ -3913,11 +3913,11 @@
 			"share_part": {
 				"name": "अच्छे लोगों का जीवन सुरक्षित होता है",
 				"description": "\"अब, मैं तुम्हें इस अच्छी चीज़ की एक प्रति दूँगा।\"",
-				"locked_description": "विजेट को एक बार शेयर करें."
+				"locked_description": "विजेट को एक बार शेयर करें।"
 			}
 		},
 		"dragAndDrop": {
-			"downloadPartDescription": "भाग डाउनलोड करें"
+			"downloadPartDescription": "घटक डाउनलोड करें"
 		},
 		"home_function_buttons": {
 			"component_related": {
@@ -3931,7 +3931,7 @@
 		},
 		"home_drag_out_generators": {
 			"generateDownloadUrl": {
-				"description": "भाग डाउनलोड करें"
+				"description": "घटक डाउनलोड करें"
 			}
 		},
 		"home_common_interfaces": {
@@ -3977,7 +3977,7 @@
 	"part_config": {
 		"title": "घटक कॉन्फ़िगरेशन",
 		"pageTitle": "घटक कॉन्फ़िगरेशन",
-		"description": "फव्वारे के हृदय में झाँकें। यहां, आप अपने अनुभव को संचालित करने वाले इंजन को ट्यून करते हुए इसके विभिन्न घटकों की सेटिंग्स को समायोजित कर सकते हैं।",
+		"description": "fount के हृदय में झाँकें। यहाँ आप इसके विभिन्न घटकों की सेटिंग्स बदल सकते हैं और अपने अनुभव को चलाने वाले इंजन को ट्यून कर सकते हैं।",
 		"labels": {
 			"part": "घटक चुनें"
 		},
@@ -4008,7 +4008,7 @@
 			"saveConfigSuccess": "कॉन्फ़िगरेशन सहेजा गया",
 			"noPartSelected": "सहेजने के लिए कोई घटक नहीं चुना गया है, कृपया पहले घटक का चयन करें।",
 			"unsavedChanges": "आपके पास बिना सहेजे बदलाव हैं। क्या आप बदलावों को छोड़ना चाहते हैं?",
-			"beforeUnload": "आपके पास बिना सहेजे बदलाव हैं। क्या आप वाकई यह पेज छोड़ना चाहते हैं?"
+			"beforeUnload": "आपके पास बिना सहेजे बदलाव हैं। क्या आप वाकई यह पृष्ठ छोड़ना चाहते हैं?"
 		},
 		"home_function_buttons": {
 			"component_related": {
@@ -4057,7 +4057,7 @@
 			"generator": "जेनरेटर श्रेणी"
 		},
 		"editor": {
-			"disabledIndicator": "कृपया पहले एक जनरेटर चुनें"
+			"disabledIndicator": "कृपया पहले एक जनरेटर चुनें।"
 		},
 		"common_config_interface": {
 			"empty_generator": "इस सेवा स्रोत के लिए लीगेसी जनरेटर को लोड करते समय एक त्रुटि का सामना करना पड़ा और हो सकता है कि उसे अनइंस्टॉल कर दिया गया हो या उसका नाम बदल दिया गया हो।",
@@ -4083,7 +4083,7 @@
 			"copyModelIdTooltip": "मॉडल आईडी कॉपी करने के लिए क्लिक करें",
 			"loadModelsFailed": "मॉडल लोड करने में विफल: ${message}",
 			"modelSearchTitle": "मॉडल कैटलॉग देखें",
-			"modelSearchHint": "परिणाम चुनने पर URL और मॉडल नाम स्वतः भर जाएँगे",
+			"modelSearchHint": "किसी परिणाम पर क्लिक करने से URL और मॉडल नाम अपने आप भर जाएँगे",
 			"promotedProviders": {
 				"title": "fount का प्रचार करने वाले API प्रदाता",
 				"description": "ये प्रदाता fount का प्रचार करते हैं; उनके API का उपयोग भी fount के निरंतर विकास का समर्थन करता है।",
@@ -4140,7 +4140,7 @@
 			}
 		},
 		"confirm": {
-			"unsavedChanges": "आपके पास सहेजे नहीं गए परिवर्तन हैं. क्या आप परिवर्तनों को त्यागना चाहते हैं?",
+			"unsavedChanges": "आपके पास बिना सहेजे बदलाव हैं। क्या आप बदलावों को छोड़ना चाहते हैं?",
 			"deleteFile": "क्या आप वाकई फ़ाइल को हटाना चाहते हैं?",
 			"unsavedChangesBeforeUnload": "आपके पास सहेजे नहीं गए परिवर्तन हैं. क्या आप वाकई यह पेज छोड़ना चाहते हैं?"
 		},
@@ -4149,11 +4149,11 @@
 			"deleteFileFailed": "फ़ाइल हटाने में विफल: ${error}",
 			"addFileFailed": "फ़ाइल जोड़ने में विफल: ${error}",
 			"setDefaultFailed": "डिफ़ॉल्ट सेवा स्रोत सेट करने में विफल: ${error}",
-			"noFileSelectedSave": "सहेजने के लिए कोई फ़ाइल चयनित नहीं है.",
-			"noFileSelectedDelete": "हटाने के लिए कोई फ़ाइल चयनित नहीं.",
+			"noFileSelectedSave": "सहेजने के लिए कोई फ़ाइल चयनित नहीं है।",
+			"noFileSelectedDelete": "हटाने के लिए कोई फ़ाइल चयनित नहीं।",
 			"noGeneratorSelectedSave": "कृपया सहेजने से पहले जनरेटर का चयन करें",
 			"savedAsNewFile": "नए सेवा स्रोत के रूप में सहेजा गया: ${name}",
-			"invalidFileName": "फ़ाइल नाम में निम्नलिखित अक्षर नहीं हो सकते: / \\ : * ? \" < > |",
+			"invalidFileName": "फ़ाइल नाम में ये अक्षर नहीं हो सकते: / \\ : * ? \" < > |",
 			"fetch": {
 				"branchesFailed": "घटक वृक्ष प्राप्त करने में विफल: ${error}",
 				"configTemplateFailed": "कॉन्फ़िगरेशन टेम्पलेट प्राप्त करने में विफल",
@@ -4166,7 +4166,7 @@
 		"achievements": {
 			"set_default_aisource": {
 				"name": "विजय का नियम निर्धारित हो गया है!",
-				"description": "एक डिफ़ॉल्ट AI को मन आपूर्ति स्रोत के रूप में नामित किया गया है।",
+				"description": "एक डिफ़ॉल्ट AI सेवा स्रोत चुना गया है।",
 				"locked_description": "एक बार डिफ़ॉल्ट AI स्रोत सेट करें।"
 			}
 		},
@@ -4241,9 +4241,9 @@
 		},
 		"achievements": {
 			"start_bot": {
-				"name": "टेलीग्राम पर आ रहा हूं",
+				"name": "टेलीग्राम पर आगमन",
 				"description": "अपने चरित्र को टेलीग्राम की दुनिया में बुलाएँ।",
-				"locked_description": "एक बार टेलीग्राम बॉट शुरू करें."
+				"locked_description": "एक बार टेलीग्राम बॉट शुरू करें।"
 			}
 		},
 		"home_function_buttons": {
@@ -4264,7 +4264,7 @@
 	},
 	"discord_bots": {
 		"title": "डिस्कॉर्ड बॉट",
-		"description": "डिस्कोर्ड के हलचल भरे हॉल में अपने प्रमुख साथियों को आवाज़ दें। उनकी उपस्थिति को कॉन्फ़िगर करें, उनके संचालन का प्रबंधन करें, और उन्हें एक समय में एक सर्वर से दुनिया को पाटने दें।",
+		"description": "डिस्कोर्ड के हलचल भरे हॉल में अपने fount साथियों को आवाज़ दें। उनकी उपस्थिति सेट करें, उनके संचालन का प्रबंधन करें, और उन्हें एक समय में एक सर्वर से दुनियाओं को जोड़ने दें।",
 		"cardTitle": "डिस्कॉर्ड बॉट",
 		"botSelectDropdown": {
 			"placeholder": "एक बॉट चुनें"
@@ -4307,15 +4307,15 @@
 			}
 		},
 		"prompts": {
-			"newBotName": "कृपया एक नया बॉट नाम दर्ज करें:"
+			"newBotName": "नए बॉट का नाम दर्ज करें:"
 		},
 		"buttons": {
 			"newBot": "नया",
 			"deleteBot": "हटाएँ"
 		},
 		"alerts": {
-			"configSaved": "कॉन्फ़िगरेशन सफलतापूर्वक सहेज लिया गया है।",
-			"botExists": "\"${botname}\" नाम का बॉट पहले से मौजूद है, कृपया कोई दूसरा नाम इस्तेमाल करें।",
+			"configSaved": "कॉन्फ़िगरेशन सहेजा गया।",
+			"botExists": "\"${botname}\" नाम का बॉट पहले से मौजूद है, कोई दूसरा नाम चुनें।",
 			"unsavedChanges": "आपके पास बिना सहेजे बदलाव हैं। क्या आप बदलावों को छोड़ना चाहते हैं?",
 			"httpError": "HTTP त्रुटि।",
 			"beforeUnload": "आपके पास बिना सहेजे बदलाव हैं। क्या आप वाकई यह पेज छोड़ना चाहते हैं?"
@@ -4363,7 +4363,7 @@
 			"title": "बॉट सेटिंग्स",
 			"labels": {
 				"character": "जुड़ी भूमिका",
-				"apiBaseUrl": "WeChat चैनल API का मूल URL",
+				"apiBaseUrl": "WeChat चैनल API का आधार URL",
 				"botToken": "iLink बॉट टोकन",
 				"config": "कॉन्फ़िगरेशन"
 			},
@@ -4392,15 +4392,15 @@
 			}
 		},
 		"prompts": {
-			"newBotName": "नए बॉट का नाम:"
+			"newBotName": "नए बॉट का नाम दर्ज करें:"
 		},
 		"buttons": {
 			"newBot": "नया",
 			"deleteBot": "हटाएँ"
 		},
 		"alerts": {
-			"configSaved": "सहेजा गया",
-			"botExists": "«${botname}» नाम का बॉट पहले से है। दूसरा नाम चुनें।",
+			"configSaved": "कॉन्फ़िगरेशन सहेजा गया।",
+			"botExists": "\"${botname}\" नाम का बॉट पहले से मौजूद है, कोई दूसरा नाम चुनें।",
 			"unsavedChanges": "बिना सहेजे बदलाव हैं। उन्हें छोड़ें?",
 			"httpError": "HTTP त्रुटि",
 			"beforeUnload": "बिना सहेजे बदलाव हैं। पृष्ठ छोड़ें?"
@@ -4520,7 +4520,7 @@
 				"aria-label": "कीवर्ड या टैग दर्ज करें",
 				"add": "जोड़ें",
 				"empty": "अभी तक कोई अवरोधक शब्द नहीं जोड़ा गया",
-				"hint": "जो पोस्ट मुख्य पाठ, सामग्री चेतावनियों, या लेबल पर आते हैं, उन्हें स्ट्रीम, एक्सप्लोर, खोज और सूचनाओं से छिपा दिया जाएगा। केवल स्थानीय स्तर पर सहेजा गया.",
+				"hint": "जो पोस्ट मुख्य पाठ, सामग्री चेतावनियों या लेबल पर आते हैं, उन्हें स्ट्रीम, एक्सप्लोर, खोज और सूचनाओं से छिपा दिया जाएगा। यह केवल स्थानीय रूप से सहेजा जाता है।",
 				"matchTags": "एक ही समय में टैग का मिलान करें",
 				"remove": {
 					"title": "अवरुद्ध शब्द हटाएँ"
@@ -4539,7 +4539,7 @@
 					"preferences": "सार्वजनिक टैग नामकरण और मर्ज खोज",
 					"preferencesHint": "बंद करने के बाद, मित्र आपके टैग नामकरण और मर्ज स्टेटमेंट नहीं देख पाएंगे, और वे आम सहमति में योगदान नहीं कर पाएंगे।",
 					"reactions": "जनता की पसंद और नापसंद",
-					"reactionsHint": "बंद करने के बाद, पोस्टर को आपकी पसंद/नापसंद नहीं मिलेगी, आपकी प्रतिक्रियाएँ दूसरों की अनुशंसाओं में शामिल नहीं की जाएंगी, और आप पोस्ट को दोबारा फैलाने के लिए प्रचारित नहीं करेंगे।"
+					"reactionsHint": "बंद करने के बाद पोस्टर को आपकी पसंद/नापसंद नहीं मिलेगी, आपकी प्रतिक्रियाएँ दूसरों की अनुशंसाओं में शामिल नहीं होंगी, और आप पोस्ट को दोबारा फैलाने में मदद नहीं करेंगे।"
 				}
 			},
 			"blocklist": {
@@ -4553,7 +4553,7 @@
 			}
 		},
 		"composer": {
-			"placeholder": "आप किस बारे में सोच रहे हैं? मार्कडाउन (फ़ॉउंट बोली) का समर्थन करें, उल्लेख करने के लिए @ दर्ज करें",
+			"placeholder": "क्या सोच रहे हैं? Markdown (fount बोली) समर्थित है, उल्लेख के लिए @ दर्ज करें",
 			"locale": {
 				"aria-label": "सामग्री भाषा"
 			},
@@ -4615,7 +4615,7 @@
 					"textContent": "केवल फ़ॉलोअर्स"
 				},
 				"followers7d": {
-					"title": "फ़ॉलो करने के 7 दिन बाद दिखे",
+					"title": "7 दिन फ़ॉलो करने पर दिखे",
 					"aria-label": "फ़ॉलो करने के 7 दिन बाद दिखे",
 					"label": "फ़ॉलो करने के 7 दिन बाद दिखे",
 					"textContent": "फ़ॉलो करने के 7 दिन बाद दिखे"
@@ -4623,7 +4623,7 @@
 				"followers30d": {
 					"title": "फ़ॉलो करने के 30 दिन बाद दिखे",
 					"aria-label": "फ़ॉलो करने के 30 दिन बाद दिखे",
-					"label": "फ़ॉलो करने के 30 दिन बाद दिखे",
+					"label": "30 दिन तक फ़ॉलो करने पर दिखे",
 					"textContent": "फ़ॉलो करने के 30 दिन बाद दिखे"
 				},
 				"selected": {
@@ -4641,7 +4641,7 @@
 				"allowLabel": "दर्शनीय लोग",
 				"exceptLabel": "लोगों को बाहर करें",
 				"allow": {
-					"placeholder": "दृश्यमान लोगों को इकाई हैश, स्थान या अल्पविराम से अनलिंक किया गया"
+					"placeholder": "दृश्यमान लोगों की entityHash, स्थान या अल्पविराम से अलग"
 				},
 				"except": {
 					"placeholder": "इसे किसे नहीं दिखाना चाहिए (वैकल्पिक)"
@@ -4667,7 +4667,7 @@
 			"audioTranscript": {
 				"placeholder": "ट्रांसक्रिप्ट या नोट्स"
 			},
-			"confirmSpeechRecognition": "क्या आवाज़ पहचान से पोस्ट स्वतः भरें? रिकॉर्डिंग अटैचमेंट रखी जाएगी।",
+			"confirmSpeechRecognition": "क्या वाक् पहचान से पोस्ट स्वतः भरें? रिकॉर्डिंग अटैचमेंट रखी जाएगी।",
 			"speechRecognitionFailed": "आवाज़ पहचान विफल: ${error}"
 		},
 		"feed": {
@@ -4675,10 +4675,10 @@
 				"aria-label": "पोस्ट रीफ़्रेश करें",
 				"title": "पोस्ट रीफ़्रेश करें",
 				"dataset": {
-					"tip": "पोस्ट रीफ़्रेश करें"
+					"tip": "फ़ीड ताज़ा करें"
 				}
 			},
-			"loadFailed": "फ़ीड लोड नहीं हो सकी: ${error}",
+			"loadFailed": "फ़ीड लोड विफल: ${error}",
 			"newPosts": "नई खबर है, देखने के लिए क्लिक करें",
 			"tabsLabel": {
 				"aria-label": "फ़ीड क्रम"
@@ -4750,10 +4750,10 @@
 				"aria-label": "फ़ोल्डर हटाएँ"
 			},
 			"deleteFolderConfirm": "फ़ोल्डर हटाएं? वहां मौजूद पोस्टों को \"अनआर्काइव्ड\" में ले जाया जाएगा।",
-			"searchEmpty": "कोई मिलान वाला संग्रह नहीं",
+			"searchEmpty": "कोई मिलती सहेजी गई सामग्री नहीं",
 			"folderEmpty": "यह फ़ोल्डर खाली है",
 			"emptyHint": "पोस्ट को यहां सहेजने के लिए ब्राउज़ करते समय बुकमार्क पर क्लिक करें",
-			"loadFailed": "सहेजी गईं पोस्ट लोड नहीं हो सकीं: ${error}",
+			"loadFailed": "सहेजी गई पोस्ट लोड नहीं हो सकीं: ${error}",
 			"search": {
 				"placeholder": "पसंदीदा खोजें…"
 			}
@@ -4799,7 +4799,7 @@
 				"name": "एल्बम नाम",
 				"description": "एल्बम विवरण",
 				"deleteLinks": "एल्बम हटाएं (पोस्ट रखें)",
-				"deleteWithPosts": "एल्बम हटाएं और पोस्ट हटाएं",
+				"deleteWithPosts": "एल्बम और पोस्ट हटाएँ",
 				"pickerLabel": "एल्बम में जोड़ें",
 				"defaultName": "डिफ़ॉल्ट एल्बम"
 			},
@@ -4858,11 +4858,11 @@
 			"postEndedStats": "${viewers} द्वारा देखा गया · ${likes} पसंद किया गया · ${duration}",
 			"link": {
 				"invite": "कनेक्शन आमंत्रित करें",
-				"needPeer": "कृपया पीयर एंटिटी हैश: लाइवआईडी भरें",
+				"needPeer": "कृपया पीयर entityHash:liveId भरें",
 				"invited": "ऑनलाइन आमंत्रण भेजा गया है",
 				"linked": "कनेक्टेड",
 				"peer": {
-					"placeholder": "पीयर एंटिटीहैश: लाइवआईडी"
+					"placeholder": "पीयर entityHash:liveId"
 				}
 			},
 			"broadcast": {
@@ -4881,7 +4881,7 @@
 				"media": {
 					"audio": "केवल ऑडियो",
 					"av": "ऑडियो-वीडियो",
-					"video": "केवल वीडियो",
+					"video": "केवल चित्र",
 					"whip": "WHIP पुश स्ट्रीमिंग (जैसे ओबीएस)"
 				}
 			},
@@ -4890,7 +4890,7 @@
 			}
 		},
 		"search": {
-			"placeholder": "अपडेट, उपयोगकर्ता या #विषय खोजें (न्यूनतम 2 शब्द)",
+			"placeholder": "अपडेट, उपयोगकर्ता या #विषय खोजें (न्यूनतम 2 अक्षर)",
 			"aria-label": "पोस्ट, लोग या विषय खोजें",
 			"open": {
 				"aria-label": "खोजें"
@@ -4997,7 +4997,7 @@
 			"repostFailed": "अग्रेषण विफल: ${error}",
 			"replyFailed": "उत्तर विफल: ${error}",
 			"followFailed": "फ़ॉलो विफल: ${error}",
-			"saveFailed": "संग्रह विफल: ${error}",
+			"saveFailed": "सहेजना विफल: ${error}",
 			"blockFailed": "ब्लॉक करने में विफल: ${error}",
 			"hideFailed": "छिपाने में विफल: ${error}",
 			"muteFailed": "म्यूट विफल: ${error}",
@@ -5082,7 +5082,7 @@
 			"loadFailed": "उत्तर लोड नहीं हो सके: ${error}"
 		},
 		"repost": {
-			"placeholder": "रीट्वीट टिप्पणी जोड़ें (वैकल्पिक)…",
+			"placeholder": "रीपोस्ट टिप्पणी जोड़ें (वैकल्पिक)…",
 			"submit": "अग्रेषित करने की पुष्टि करें"
 		},
 		"quote": {
@@ -5123,7 +5123,7 @@
 			"exportedAt": "निर्यात समय",
 			"jumpToSource": "स्रोत पर जाएँ",
 			"sendToSocial": "पोस्ट में कॉपी करें",
-			"copied": "क्लिपबोर्ड पर कॉपी किया गया"
+			"copied": "क्लिपबोर्ड पर कॉपी हो गया"
 		},
 		"sourceNode": {
 			"label": "स्रोत नोड",
@@ -5177,7 +5177,7 @@
 		"showHidden": "छिपा हुया दिखाओ",
 		"name": "नाम",
 		"descriptionField": "विवरण",
-		"attrHidden": "छिपाएँ",
+		"attrHidden": "छिपा हुआ",
 		"attrSystem": "सिस्टम (हटाने के लिए पुष्टि की आवश्यकता है)",
 		"previewUrl": "यूआरएल का पूर्वावलोकन करें",
 		"deletePreviewWithFile": "फ़ाइल हटाते समय पूर्वावलोकन हटाएँ",
@@ -5186,8 +5186,8 @@
 		"unlock": "अनलॉक",
 		"unlockFailed": "अनलॉक विफल: ${error}",
 		"previewFailed": "पूर्वावलोकन जनरेशन विफल: ${error}",
-		"created": "बनाएं: ${stamp}",
-		"modified": "संशोधित करें: ${stamp}",
+		"created": "बनाया गया: ${stamp}",
+		"modified": "संशोधित: ${stamp}",
 		"statusCount": "${count} आइटम, ${selected} चयनित",
 		"renamePrompt": "नया नाम",
 		"visibilityPrompt": "दृश्यता (सार्वजनिक/असूचीबद्ध/फ़ॉलोअर्स/निजी/चयनित)",
@@ -5197,7 +5197,7 @@
 		"confirmDeleteSystem": "चयनित सिस्टम फ़ाइलें शामिल हैं. क्या आप निश्चित रूप से उन्हें हटाना चाहते हैं?",
 		"copied": "कॉपी किया",
 		"cutDone": "काटना",
-		"undo": "रद्द करना",
+		"undo": "पूर्ववत करें",
 		"redo": "फिर से करना",
 		"goUp": "पिछले स्तर पर लौटें",
 		"brokenLink": "लिंक टूटा हुआ है: ${reason}",
@@ -5219,7 +5219,7 @@
 		"title": "ब्राउज़र एकीकरण",
 		"description": "fount और वेब के बीच की दूरी को पाटें। यह पृष्ठ आपके एआई साथियों को आपके ब्राउज़िंग अनुभव में लाते हुए, निर्बाध एकीकरण को सक्षम करने के लिए उपयोगकर्तास्क्रिप्ट प्रदान करता है।",
 		"pageHeader": "ब्राउज़र एकीकरण",
-		"pageDescription": "वेब पेज के साथ बातचीत करने के लिए आपकी फव्वारे की भूमिका के लिए, आपको इस ब्राउज़र एकीकरण स्क्रिप्ट को स्थापित करने की आवश्यकता है। यह चरित्र और ब्राउज़र के बीच एक पुल के रूप में कार्य करता है, जिससे उन्हें पृष्ठ सामग्री देखने और क्रियाएं करने की अनुमति मिलती है।",
+		"pageDescription": "आपकी fount भूमिका वेब पेज के साथ बातचीत कर सके, इसके लिए आपको यह ब्राउज़र एकीकरण स्क्रिप्ट इंस्टॉल करनी होगी। यह भूमिका और ब्राउज़र के बीच एक पुल का काम करती है, जिससे भूमिका पृष्ठ की सामग्री देख और क्रियाएँ कर सकती है।",
 		"install_script_title": "स्थापना स्क्रिप्ट",
 		"install_script_description": "ब्राउज़र एकीकरण स्क्रिप्ट स्थापित करने के लिए नीचे दिए गए बटन पर क्लिक करें। आपको पहले एक यूजरस्क्रिप्ट मैनेजर जैसे कि टैंपरमोनकी स्थापित करना होगा।",
 		"install_button": "स्थापित करें",
@@ -5228,7 +5228,7 @@
 			"aria-label": "ब्राउज़र एकीकरण स्क्रिप्ट यूआरएल"
 		},
 		"what_is_manager": "एक उपयोगकर्ता स्क्रिप्ट प्रबंधक क्या है?",
-		"manager_explanation": "एक उपयोगकर्ता स्क्रिप्ट प्रबंधक एक ब्राउज़र एक्सटेंशन है जो आपको वेब पेजों को संशोधित करने वाली स्क्रिप्ट स्थापित करने और चलाने की अनुमति देता है। फाउंट इंटीग्रेशन स्क्रिप्ट का उपयोग करने के लिए, आपको एक्सटेंशन में से एक की आवश्यकता है।",
+		"manager_explanation": "एक उपयोगकर्ता स्क्रिप्ट प्रबंधक एक ब्राउज़र एक्सटेंशन है जो आपको वेब पेजों को संशोधित करने वाली स्क्रिप्ट स्थापित करने और चलाने की अनुमति देता है। fount इंटीग्रेशन स्क्रिप्ट का उपयोग करने के लिए, आपको इन एक्सटेंशन में से एक चाहिए।",
 		"popular_managers": "लोकप्रिय विकल्प:",
 		"csp_warning": "एकीकरण सुविधा को ठीक से काम करने के लिए आपको CSP को बंद करने के लिए प्लगइन स्थापित करने की आवश्यकता हो सकती है। ${browser} के लिए आप [इस प्लगइन](${link}) का उपयोग कर सकते हैं।",
 		"connected_pages_title": "जुड़ा पृष्ठ",
@@ -5246,7 +5246,7 @@
 		},
 		"autorun": {
 			"title": "स्वचालित रूप से स्क्रिप्ट चलाएं",
-			"description": "जावास्क्रिप्ट स्निपेट्स को प्रबंधित करें जो किसी विशिष्ट वेबसाइट से मेल खाते समय स्वचालित रूप से निष्पादित हो। ये स्क्रिप्ट आपके ब्राउज़िंग अनुभव को बढ़ाने या स्वचालित करने के लिए आपकी एआई भूमिका या प्लग-इन द्वारा प्रदान की जा सकती हैं।",
+			"description": "जावास्क्रिप्ट स्निपेट्स को प्रबंधित करें जो किसी विशिष्ट वेबसाइट से मेल खाते समय स्वचालित रूप से निष्पादित हो। ये स्क्रिप्ट आपके ब्राउज़िंग अनुभव को बढ़ाने या स्वचालित करने के लिए आपकी AI भूमिका या प्लग-इन द्वारा प्रदान की जा सकती हैं।",
 			"form_title": "एक नई स्क्रिप्ट जोड़ें",
 			"comment_label": "टिप्पणियां (वैकल्पिक)",
 			"url_regex_label": "Url नियमित अभिव्यक्ति",
@@ -5279,7 +5279,7 @@
 			"install_script": {
 				"name": "जादू, संचार!",
 				"description": "आपने अपने ब्राउज़र के लिए \"प्लग-इन\" सफलतापूर्वक इंस्टॉल कर लिया है, अब आप और भी बहुत कुछ कर सकते हैं।",
-				"locked_description": "ब्राउज़र एकीकरण स्क्रिप्ट को एक बार इंस्टॉल करें."
+				"locked_description": "ब्राउज़र एकीकरण स्क्रिप्ट को एक बार इंस्टॉल करें।"
 			},
 			"run_js": {
 				"name": "कोड मंत्र",
@@ -5305,14 +5305,14 @@
 	},
 	"browser_integration_script": {
 		"update": {
-			"prompt": "फाउंट ब्राउज़र एकीकरण स्क्रिप्ट का एक नया संस्करण उपलब्ध है। क्या अद्यतन पृष्ठ अब खुला है?"
+			"prompt": "fount ब्राउज़र एकीकरण स्क्रिप्ट का नया संस्करण उपलब्ध है। क्या अद्यतन पृष्ठ अभी खोलें?"
 		},
 		"csp_warning": "fount ब्राउज़र एकीकरण स्क्रिप्ट पता लगाता है कि पृष्ठ पर सीएसपी नीति मौजूद है, जिसके कारण एकीकरण स्क्रिप्ट ठीक से काम नहीं कर सकती है। कृपया सीएसपी को बंद करने के लिए प्लगइन स्थापित करने पर विचार करें।",
 		"hostChange": {
-			"securityWarningTitle": "--- फाउंट सेफ्टी चेतावनी ---",
-			"message": "वर्तमान पृष्ठ (\"${origin}\") आपके फाउंट होस्ट पते को बदलने की कोशिश कर रहा है:\n\n\"${newHost}\"\n\nचेतावनी: इस कार्रवाई को मंजूरी देने से नए होस्ट को आपके ब्राउज़र एकीकरण सुविधाओं को पूरी तरह से नियंत्रित करने की अनुमति मिलेगी, जिससे संवेदनशील जानकारी रिसाव या खाता चोरी हो सकती है।\nअनुमोदन केवल तभी किया जाना चाहिए जब आप सुनिश्चित हों कि यह आपका अपना ऑपरेशन है (उदाहरण के लिए, एक फाउंट सर्वर को माइग्रेट करना)।\n\nक्या आप सुनिश्चित हैं कि आप इस बदलाव की अनुमति देना चाहते हैं?",
-			"uuidMismatchError": "फाउंट सिक्योरिटी एरर: मेजबान ${newHost} की पहचान (UUID) आपके मौजूदा एक से मेल नहीं खाती है। ऑपरेशन रद्द कर दिया गया है।",
-			"verificationError": "फाउंट सुरक्षा त्रुटि: नए होस्ट को सत्यापित करने में असमर्थ \"${newHost}\"। कृपया जांचें कि क्या पता सही है और यदि सेवा चल रही है।"
+			"securityWarningTitle": "--- fount सेफ्टी चेतावनी ---",
+			"message": "वर्तमान पृष्ठ (\"${origin}\") आपके fount होस्ट पता को बदलने की कोशिश कर रहा है:\n\n\"${newHost}\"\n\nचेतावनी: इस कार्रवाई को मंजूरी देने से नए होस्ट को आपके ब्राउज़र एकीकरण सुविधाओं को पूरी तरह से नियंत्रित करने की अनुमति मिलेगी, जिससे संवेदनशील जानकारी रिसाव या खाता चोरी हो सकती है।\nअनुमोदन केवल तभी किया जाना चाहिए जब आप सुनिश्चित हों कि यह आपका अपना ऑपरेशन है (उदाहरण के लिए, एक fount सर्वर को माइग्रेट करना)।\n\nक्या आप सुनिश्चित हैं कि आप इस बदलाव की अनुमति देना चाहते हैं?",
+			"uuidMismatchError": "fount सुरक्षा त्रुटि: होस्ट ${newHost} की पहचान (UUID) आपकी मौजूदा पहचान से मेल नहीं खाती है। ऑपरेशन रद्द कर दिया गया है।",
+			"verificationError": "fount सुरक्षा त्रुटि: नए होस्ट \"${newHost}\" को सत्यापित नहीं किया जा सका। कृपया जाँचें कि पता सही है और सेवा चल रही है।"
 		}
 	},
 	"terminal_assistant": {
@@ -5322,7 +5322,7 @@
 		"initialMessageLink": "और जानने के लिए यहाँ क्लिक करें।",
 		"achievements": {
 			"invoke_shell_assist": {
-				"name": "\"अरे, फव्वारा।\"",
+				"name": "\"अरे, fount।\"",
 				"description": "डार्क टर्मिनल में एआई पार्टनर का नाम पुकारा गया।",
 				"locked_description": "एक बार टर्मिनल सहायता को कॉल करें।"
 			}
@@ -5347,10 +5347,10 @@
 		}
 	},
 	"ide_integration": {
-		"description": "एजेंट क्लाइंट प्रोटोकॉल के माध्यम से समर्थित संपादकों (जैसे जेड, जेटब्रेन, नियोविम) के लिए fount भूमिका को कनेक्ट करें, एपीआई कुंजियों और भूमिकाओं को कॉन्फ़िगर करें, और एआई भागीदारों को विकास वर्कफ़्लो में लाएं।",
+		"description": "एजेंट क्लाइंट प्रोटोकॉल के ज़रिए समर्थित संपादकों (जैसे Zed, JetBrains, Neovim) में fount भूमिका जोड़ें, API कुंजियाँ और भूमिकाएँ कॉन्फ़िगर करें, और AI साथियों को डेवलपमेंट वर्कफ़्लो में लाएँ।",
 		"title": "आईडीई एकीकरण",
 		"heading": "आईडीई एकीकरण",
-		"instruction": "एसीपी-सक्षम संपादकों (जैसे जेड, जेटब्रेन, नियोविम, आदि) में प्रोग्रामिंग में सहायता के लिए fount भूमिकाओं का उपयोग करें।",
+		"instruction": "ACP-सक्षम संपादकों (जैसे Zed, JetBrains, Neovim) में fount भूमिकाओं से प्रोग्रामिंग में सहायता लें।",
 		"charListError": "भूमिका सूची प्राप्त करने में विफल",
 		"copyButton": "कॉपी",
 		"copied": "क्लिपबोर्ड पर कॉपी किया गया",
@@ -5366,7 +5366,7 @@
 		"achievements": {
 			"first_ide_use": {
 				"name": "बाहरी आईडीई में पहली बार fount का उपयोग किया जा रहा है",
-				"description": "पहली बार, जेड, जेटब्रेन, नियोविम और अन्य जैसे एसीपी-सक्षम संपादकों में प्रोग्रामिंग में सहायता के लिए fount भूमिकाओं का उपयोग करें।",
+				"description": "पहली बार ACP-सक्षम संपादकों (जैसे Zed, JetBrains, Neovim) में प्रोग्रामिंग में सहायता के लिए fount भूमिकाओं का उपयोग करें।",
 				"locked_description": "बाहरी आईडीई में fount भूमिका से कनेक्ट करें और एक सत्र पूरा करें।"
 			}
 		},
@@ -5379,7 +5379,7 @@
 		"apiKey": {
 			"copied": "एपीआई कुंजी की प्रतिलिपि बनाई गई",
 			"createError": "एपीआई कुंजी बनाने में विफल: ${message}",
-			"hint": "एसीपी स्क्रिप्ट कनेक्शन fount के लिए उपयोग किया जाता है (एपीआई प्रॉक्सी के समान कुंजी का सेट, उपयोगकर्ता सेटिंग्स में बनाया जा सकता है)।",
+			"hint": "ACP स्क्रिप्ट कनेक्शन fount के लिए उपयोग किया जाता है (एपीआई प्रॉक्सी के समान कुंजी का सेट, उपयोगकर्ता सेटिंग्स में बनाया जा सकता है)।",
 			"input": {
 				"aria-label": "एपीआई कुंजी"
 			},
@@ -5391,14 +5391,14 @@
 			"config": "कृपया एक भूमिका चुनें और पहले एक एपीआई कुंजी तैयार करें",
 			"configHint": "भूमिका आईडी इस पृष्ठ पर भूमिका ड्रॉप-डाउन में दिखाई गई है, और एपीआई कुंजी को उपयोगकर्ता सेटिंग्स में प्रबंधित किया जा सकता है।",
 			"configSample": "कॉन्फ़िगरेशन उदाहरण:",
-			"desc": "fount एसीपी स्क्रिप्ट को कॉन्फ़िगर करने के लिए निम्नलिखित उदाहरण देखें:",
-			"scriptLabel": "एसीपी स्क्रिप्ट यूआरएल",
-			"title": "फव्वारा एसीपी स्क्रिप्ट कॉन्फ़िगर करें"
+			"desc": "fount ACP स्क्रिप्ट को कॉन्फ़िगर करने के लिए निम्नलिखित उदाहरण देखें:",
+			"scriptLabel": "ACP स्क्रिप्ट URL",
+			"title": "fount ACP स्क्रिप्ट कॉन्फ़िगर करें"
 		}
 	},
 	"deskpet": {
 		"title": "डेस्कटॉप पालतू जानवर",
-		"description": "अपने फव्वारे पात्रों को इंटरैक्टिव पालतू जानवरों के रूप में लॉन्च करें जो आपके डेस्कटॉप पर रहते हैं।",
+		"description": "अपने fount पात्रों को इंटरैक्टिव पालतू जानवरों के रूप में शुरू करें जो आपके डेस्कटॉप पर रहते हैं।",
 		"launcherCard": {
 			"title": "पालतू स्टार्टर",
 			"buttons": {
@@ -5413,7 +5413,7 @@
 		},
 		"runningCard": {
 			"title": "दौड़ता हुआ पालतू जानवर",
-			"noPets": "वर्तमान में कोई पालतू जानवर नहीं चल रहा है।",
+			"noPets": "वर्तमान में कोई पालतू नहीं चल रहा है।",
 			"buttons": {
 				"stop": "रोकें"
 			}
@@ -5427,8 +5427,8 @@
 		"achievements": {
 			"start_deskpet": {
 				"name": "आपके डेस्कटॉप का एक नया साथी",
-				"description": "एक जंगली पात्र बाहर निकलता है और आपके डेस्कटॉप पर कब्ज़ा कर लेता है।",
-				"locked_description": "एक डेस्कटॉप पालतू प्रारंभ करें."
+				"description": "एक जंगली किरदार सामने आता है और आपके डेस्कटॉप पर कब्ज़ा कर लेता है।",
+				"locked_description": "एक डेस्कटॉप पालतू प्रारंभ करें।"
 			}
 		},
 		"home_char_interfaces": {
@@ -5500,7 +5500,7 @@
 	},
 	"themeManage": {
 		"title": "थीम प्रबंधन",
-		"description": "वह सौंदर्यबोध चुनें जो आपके मूड या कहानी को प्रतिबिंबित करता हो। थीमों के एक पैलेट से पूर्वावलोकन करें और चुनें, प्रत्येक आपके त्वरित इंटरैक्शन के लिए एक अलग माहौल प्रदान करता है। आपकी दुनिया, आपकी शैली।",
+		"description": "वह सौंदर्यबोध चुनें जो आपके मूड या कहानी से मेल खाता हो। थीम पैलेट से पूर्वावलोकन करके चुनें; हर थीम आपके fount अनुभव के लिए अलग माहौल देती है। आपकी दुनिया, आपकी शैली।",
 		"instruction": "एक थीम चुनें!",
 		"search": {
 			"placeholder": "थीम खोजें...",
@@ -5593,8 +5593,8 @@
 		"achievements": {
 			"change_theme": {
 				"name": "दर्द निवारक दवा में बदलें!",
-				"description": "फव्वारे का लुक नया और मिजाज बिल्कुल नया था।",
-				"locked_description": "एक बार थीम स्विच करें."
+				"description": "fount को नया रूप मिला और मिजाज भी बिल्कुल नया।",
+				"locked_description": "एक बार थीम स्विच करें।"
 			}
 		},
 		"home_function_buttons": {
@@ -5638,7 +5638,7 @@
 		},
 		"savedMessage": "भाषा सेटिंग्स सहेजी गई हैं!",
 		"resetMessage": "भाषा सेटिंग्स रीसेट हो गई हैं!",
-		"fetchLocalesFailed": "उपलब्ध भाषाओं को प्राप्त करने में विफल!",
+		"fetchLocalesFailed": "उपलब्ध भाषाएँ प्राप्त करने में विफल!",
 		"home_function_buttons": {
 			"settings": {
 				"title": "सेटिंग्स",
@@ -5655,9 +5655,9 @@
 		"PageTitle": "उपयोगकर्ता सेटिंग्स",
 		"description": "अपनी fount पहचान का विवरण संभालें। प्रोफ़ाइल प्रबंधित करें, अपनी पहुँच सुरक्षित करें और कनेक्टेड डिवाइस देखें। आपके खाते के लिए एक शांत और सुरक्षित स्थान।",
 		"shell": {
-			"unauthorized": "लॉगिन आवश्यक है.",
+			"unauthorized": "लॉगिन आवश्यक है।",
 			"responseNotJson": "सर्वर ने ऐसी सामग्री लौटाई जिसे पार्स नहीं किया जा सका।",
-			"unexpectedError": "अनुरोध विफल रहा."
+			"unexpectedError": "अनुरोध विफल रहा।"
 		},
 		"errors": {
 			"accountNotFound": "खाता नहीं मिला।"
@@ -5675,7 +5675,7 @@
 				"alt": "कॉपी आइकन"
 			},
 			"copiedAlert": "पथ क्लिपबोर्ड पर कॉपी कर दिया गया है!",
-			"copyPathFailed": "पथ को क्लिपबोर्ड पर कॉपी करने में असमर्थ."
+			"copyPathFailed": "पथ को क्लिपबोर्ड पर कॉपी करने में असमर्थ।"
 		},
 		"changePassword": {
 			"title": "पासवर्ड बदलें",
@@ -5686,7 +5686,7 @@
 			"errorMismatch": "नए पासवर्ड मेल नहीं खाते।",
 			"success": "पासवर्ड सफलतापूर्वक बदल दिया गया है।",
 			"missingFields": "कृपया अपना वर्तमान पासवर्ड और नया पासवर्ड भरें।",
-			"invalidCurrent": "वर्तमान पासवर्ड ग़लत है."
+			"invalidCurrent": "वर्तमान पासवर्ड ग़लत है।"
 		},
 		"renameUser": {
 			"title": "उपयोगकर्ता का नाम बदलें",
@@ -5695,10 +5695,10 @@
 			"confirmMessage": "क्या आप वाकई अपना उपयोगकर्ता नाम बदलना चाहते हैं? इसके लिए आपको फिर से लॉग इन करना होगा।",
 			"success": "उपयोगकर्ता का नाम सफलतापूर्वक \"${newUsername}\" में बदल दिया गया है। अब आप लॉग आउट हो जाएँगे।",
 			"missingParams": "कृपया नया उपयोगकर्ता नाम और पासवर्ड भरें।",
-			"wrongPassword": "पासवर्ड ग़लत है.",
+			"wrongPassword": "पासवर्ड ग़लत है।",
 			"mustDiffer": "नया उपयोक्तानाम वर्तमान उपयोक्तानाम से भिन्न होना चाहिए।",
 			"taken": "यह उपयोगकर्ता नाम पहले ही ले लिया है।",
-			"moveFailed": "उपयोगकर्ता डेटा निर्देशिका का नाम बदलने में विफल: ${detail}। मूल उपयोक्तानाम पुनर्स्थापित कर दिया गया है."
+			"moveFailed": "उपयोगकर्ता डेटा निर्देशिका का नाम बदलने में विफल: ${detail}। मूल उपयोगकर्ता नाम पुनर्स्थापित कर दिया गया है।"
 		},
 		"passkeys": {
 			"title": "सुरक्षा कुंजी और पासकी",
@@ -5714,15 +5714,15 @@
 				"placeholder": "उदाहरण: काम के लिए YubiKey"
 			},
 			"addButton": "सुरक्षा कुंजी जोड़ें",
-			"noneFound": "अभी तक कोई सुरक्षा कुंजी बाध्य नहीं की गई है.",
+			"noneFound": "अभी तक कोई सुरक्षा कुंजी जोड़ी नहीं गई है।",
 			"itemDetails": "जोड़ा गया समय: ${created}",
 			"removeButton": "हटाएँ",
 			"removeConfirm": "क्या आप वाकई इस कुंजी को हटाना चाहते हैं? एक बार हटाए जाने के बाद, आप इससे लॉग इन नहीं कर पाएंगे।",
-			"removeSuccess": "सुरक्षा कुंजी हटा दी गई.",
-			"addSuccess": "सुरक्षा कुंजी जोड़ी गई.",
-			"errorLoadLibrary": "WebAuthn लाइब्रेरी लोड करने में असमर्थ.",
-			"errorCancelled": "जोड़ना रद्द किया गया.",
-			"apiInvalidPassword": "ग़लत पासवर्ड.",
+			"removeSuccess": "सुरक्षा कुंजी हटा दी गई।",
+			"addSuccess": "सुरक्षा कुंजी जोड़ी गई।",
+			"errorLoadLibrary": "WebAuthn लाइब्रेरी लोड करने में असमर्थ।",
+			"errorCancelled": "जोड़ना रद्द किया गया।",
+			"apiInvalidPassword": "ग़लत पासवर्ड।",
 			"apiMissingCredential": "वैध पासकी क्रेडेंशियल गायब हैं।",
 			"apiRemoveParamsRequired": "कृपया वे क्रेडेंशियल और पासवर्ड प्रदान करें जिन्हें आप हटाना चाहते हैं।"
 		},
@@ -5732,8 +5732,8 @@
 			"deviceInfo": "डिवाइस ID: ${deviceId}",
 			"thisDevice": "यह डिवाइस",
 			"deviceDetails": "अंतिम बार ऑनलाइन: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
-			"listNotFound": "डिवाइस सूची नहीं मिली.",
-			"deviceNotFound": "डिवाइस या सत्र नहीं मिला.",
+			"listNotFound": "डिवाइस सूची नहीं मिली।",
+			"deviceNotFound": "डिवाइस या सत्र नहीं मिला।",
 			"refreshButton": {
 				"title": "सूची रीफ़्रेश करें"
 			},
@@ -5745,7 +5745,7 @@
 				"confirm": "क्या आप वाकई इस डिवाइस/सत्र का एक्सेस रद्द करना चाहते हैं?",
 				"missingParams": "कृपया वह डिवाइस और सत्र पासवर्ड प्रदान करें जिसे आप रद्द करना चाहते हैं।",
 				"success": "डिवाइस/सत्र सफलतापूर्वक रद्द कर दिया गया है।",
-				"wrongPassword": "पासवर्ड ग़लत है."
+				"wrongPassword": "पासवर्ड ग़लत है।"
 			}
 		},
 		"apiKeys": {
@@ -5756,10 +5756,10 @@
 			},
 			"createButton": "बनाएं",
 			"noKeysFound": "कोई एपीआई कीज़ नहीं मिली।",
-			"keyDetails": "विवरण: ${description} | में बनाया गया: ${createdAt} | अंतिम उपयोग: ${lastUsed}",
+			"keyDetails": "विवरण: ${description} | बनाया गया: ${createdAt} | अंतिम उपयोग: ${lastUsed}",
 			"neverUsed": "कभी भी इस्तेमाल नहीं किया",
-			"noKeysForUser": "एपीआई कुंजी डेटा नहीं मिला.",
-			"keyNotFound": "एपीआई कुंजी नहीं मिली.",
+			"noKeysForUser": "एपीआई कुंजी डेटा नहीं मिला।",
+			"keyNotFound": "एपीआई कुंजी नहीं मिली।",
 			"verifyMissingApiKey": "कृपया API कुंजी प्रदान करें।",
 			"errorDescriptionRequired": "एक विवरण आवश्यक है।",
 			"createSuccess": "एपीआई कुंजी सफलतापूर्वक बनाई गई थी।",
@@ -5772,10 +5772,10 @@
 			"revoke": {
 				"button": "रद्द करना",
 				"confirm": "क्या आप सुनिश्चित हैं कि आप इस एपीआई कुंजी को रद्द करना चाहते हैं?",
-				"missingJti": "कृपया निरस्त करने की कुंजी निर्दिष्ट करें.",
+				"missingJti": "कृपया निरस्त करने की कुंजी निर्दिष्ट करें।",
 				"missingPassword": "किसी कुंजी को निरस्त करने के लिए पासवर्ड की आवश्यकता होती है।",
 				"success": "एपीआई कुंजी को सफलतापूर्वक रद्द कर दिया गया है।",
-				"wrongPassword": "पासवर्ड ग़लत है."
+				"wrongPassword": "पासवर्ड ग़लत है।"
 			}
 		},
 		"newApiKey": {
@@ -5786,10 +5786,10 @@
 				"title": "नई एपीआई कुंजी कॉपी करें"
 			},
 			"copiedAlert": "एपीआई कुंजी क्लिपबोर्ड पर कॉपी कर दी गई है!",
-			"copyKeyFailed": "कुंजी को क्लिपबोर्ड पर कॉपी करने में असमर्थ."
+			"copyKeyFailed": "कुंजी को क्लिपबोर्ड पर कॉपी करने में असमर्थ।"
 		},
 		"editorCommand": {
-			"title": "बाहरी संपादक आदेश",
+			"title": "बाहरी संपादक कमांड",
 			"description": "बाहरी संपादक में फ़ाइलें खोलने के लिए आदेश और आर्ग्युमेंट टैम्प्लेट सेट करें। फ़ाइल पथ, पंक्ति संख्या और स्तंभ के लिए प्लेसहोल्डर उपलब्ध हैं।",
 			"editorPresetLabel": "संपादक पूर्वनिर्धारित प्रोफ़ाइल",
 			"commandLabel": "आदेश",
@@ -5828,7 +5828,7 @@
 			"usernameMismatch": "दर्ज किया गया उपयोगकर्ता नाम वर्तमान उपयोगकर्ता से मेल नहीं खाता है। हटाने की कार्रवाई रद्द कर दी गई है।",
 			"success": "खाता सफलतापूर्वक हटा दिया गया है। अब आप लॉग आउट हो जाएँगे।",
 			"missingPassword": "अपना पासवर्ड दर्ज करें।",
-			"wrongPassword": "पासवर्ड ग़लत है.",
+			"wrongPassword": "पासवर्ड ग़लत है।",
 			"confirmWarning": "चेतावनी! क्या आप वाकई अपना खाता स्थायी रूप से हटाना चाहते हैं? यह कार्रवाई रद्द नहीं की जा सकती।",
 			"confirmUsernamePrompt": "हटाने की पुष्टि करने के लिए, कृपया अपना उपयोगकर्ता नाम \"${username}\" दर्ज करें:"
 		},
@@ -5867,7 +5867,7 @@
 			"aria-label": "यूआरएल"
 		},
 		"copyButton": "URL कॉपी करें",
-		"copied": "URL क्लिपबोर्ड पर कॉपी कर दिया गया है!",
+		"copied": "URL क्लिपबोर्ड पर कॉपी किया गया!",
 		"home_function_buttons": {
 			"main": {
 				"title": "अन्य डिवाइस पर पहुँचें"
@@ -5917,16 +5917,16 @@
 		}
 	},
 	"subfounts": {
-		"title": "सबफ़ाउट्स - पीयर-टू-पीयर डिवाइस प्रबंधन",
+		"title": "subfount - पीयर-टू-पीयर डिवाइस प्रबंधन",
 		"pageTitle": "Subfounts",
-		"description": "पीयर-टू-पीयर फव्वारा कनेक्शन प्रबंधित करें",
+		"description": "पीयर-टू-पीयर subfount कनेक्शन प्रबंधित करें",
 		"hostConnectionCode": {
 			"title": "होस्ट कनेक्शन कोड",
 			"connectionCodeLabel": "कनेक्शन कोड (पीयर आईडी)",
 			"passwordLabel": "पासवर्ड",
 			"copyButton": "कॉपी",
 			"regenerateButton": "पुनः जेनरेट",
-			"infoMessage": "कनेक्शन स्थापित करने के लिए इन क्रेडेंशियल्स को सब-फ़ाउंट क्लाइंट के साथ साझा करें।",
+			"infoMessage": "कनेक्शन स्थापित करने के लिए इन क्रेडेंशियल्स को subfount क्लाइंट के साथ साझा करें।",
 			"connectionCodeCopied": "कनेक्शन कोड क्लिपबोर्ड पर कॉपी कर दिया गया है",
 			"passwordCopied": "पासवर्ड क्लिपबोर्ड पर कॉपी किया गया",
 			"regenerateSuccess": "कनेक्शन कोड पुनः जनरेट किया गया है"
@@ -5942,12 +5942,12 @@
 			"disabledToast": "बंद: subfount अब नेटवर्क सार्वजनिक हित में शामिल नहीं"
 		},
 		"connectedSubfounts": {
-			"title": "कनेक्टेड सबफ़ाउंट",
-			"noSubfountsConnected": "कोई सबफ़ाउंट कनेक्ट नहीं है",
+			"title": "कनेक्टेड subfount",
+			"noSubfountsConnected": "कोई subfount कनेक्ट नहीं है",
 			"table": {
 				"id": "पहचान",
 				"description": "टिप्पणी",
-				"deviceId": "डिवाइस आईडी",
+				"deviceId": "डिवाइस ID",
 				"connectedAt": "कनेक्शन का समय",
 				"status": "राज्य",
 				"actions": "प्रचालन",
@@ -5961,7 +5961,7 @@
 		},
 		"codeExecution": {
 			"title": "कोड निष्पादन",
-			"description": "चयनित एक्सटेंशन पर जावास्क्रिप्ट कोड निष्पादित करें",
+			"description": "चयनित subfount पर जावास्क्रिप्ट कोड चलाएँ",
 			"selectSubfountLabel": "Subfount चुनें",
 			"hostOption": "होस्ट (आईडी: ${id})",
 			"subfountOption": "एक्सटेंशन ${id}${deviceId}",
@@ -5972,11 +5972,11 @@
 			"noScriptProvided": "कृपया निष्पादित करने के लिए कोड दर्ज करें",
 			"executionSuccess": "कोड निष्पादन सफल",
 			"executionFailed": "कोड निष्पादन विफल: ${message}",
-			"selectSubfount": "कृपया कोड निष्पादित करने के लिए सबफ़ाउंट का चयन करें…"
+			"selectSubfount": "कृपया कोड चलाने के लिए subfount चुनें…"
 		},
 		"installClient": {
-			"title": "सब-फ़ाउंट क्लाइंट डाउनलोड करें",
-			"description": "रिमोट डिवाइस पर चलाने के लिए स्टैंडअलोन सबफ़ाउंट क्लाइंट स्क्रिप्ट डाउनलोड करें।",
+			"title": "subfount क्लाइंट इंस्टॉल करें",
+			"description": "रिमोट डिवाइस पर यह इंस्टॉल स्क्रिप्ट चलाएँ और उसे fount नेटवर्क से जोड़ें।",
 			"tabsLabel": {
 				"aria-label": "ऑपरेटिंग सिस्टम चुनें"
 			},
@@ -5994,7 +5994,7 @@
 			"regenerateConnectionCodeFailed": "कनेक्शन कोड पुन: उत्पन्न करने में विफल: ${message}",
 			"loadSettingsFailed": "सार्वजनिक-हित सेटिंग लोड करने में विफल: ${message}",
 			"saveSettingsFailed": "सार्वजनिक-हित सेटिंग सहेजने में विफल: ${message}",
-			"generalError": "एक त्रुटि उत्पन्न हुई: ${message}"
+			"generalError": "त्रुटि हुई: ${message}"
 		},
 		"home_function_buttons": {
 			"network": {
@@ -6023,7 +6023,7 @@
 			"open_achievements_page": {
 				"name": "ट्रॉफी, मैं आ गया!",
 				"description": "उपलब्धि सूची खोली और डाक टिकट संग्रह यात्रा शुरू करने की तैयारी की।",
-				"locked_description": "उपलब्धियां पृष्ठ खोलें."
+				"locked_description": "उपलब्धियां पृष्ठ खोलें।"
 			},
 			"relock_by_clicking": {
 				"name": "सच में?",
@@ -6042,7 +6042,7 @@
 		"description": "fount के लाइव सर्वर लॉग देखें और ब्राउज़र में JavaScript REPL चलाएँ।",
 		"connectionError": "लॉग सेवा से कनेक्ट नहीं हो सका। कृपया स्थानीय रूप से पहुँचने या लॉग इन करने के बाद पुनः प्रयास करें।",
 		"logs": {
-			"openSourceFailed": "स्रोत कोड फ़ाइल नहीं खोली जा सकी: ${message}",
+			"openSourceFailed": "स्रोत फ़ाइल नहीं खोली जा सकी: ${message}",
 			"toolbar": {
 				"clear": "खाली करें",
 				"filter": {
@@ -6110,9 +6110,9 @@
 		},
 		"update": {
 			"failed": "अद्यतन अनुरोध विफल रहा",
-			"now": "अभी अद्यतन करें और पुनः प्रारंभ करें",
+			"now": "अभी अपडेट करें और पुनः प्रारंभ करें",
 			"restarting": "पुनः प्रारंभ हो रहा है...",
-			"success": "सर्वर पुनः प्रारंभ हो रहा है"
+			"success": "सर्वर पुनः आरंभ हो रहा है"
 		}
 	},
 	"badges_maker": {
@@ -6123,7 +6123,7 @@
 		"original_url": {
 			"placeholder": "उदाहरण के लिए: https://img.shields.io/badge/hello-world-blue"
 		},
-		"new_url_label": "उत्पन्न नया URL",
+		"new_url_label": "बनाया गया URL",
 		"new_url": {
 			"placeholder": "परिवर्तित URL यहां प्रदर्शित किया जाएगा"
 		},
@@ -6231,7 +6231,7 @@
 			},
 			"preview": {
 				"dataset": {
-					"tip": "पूर्व दर्शन"
+					"tip": "पूर्वावलोकन"
 				},
 				"aria-label": "पूर्व दर्शन"
 			},
@@ -6239,14 +6239,14 @@
 		},
 		"pow_captcha": {
 			"initial": "मैं रोबोट नहीं हूं",
-			"verifying": "सत्यापित हो रहा है...",
+			"verifying": "सत्यापन हो रहा है...",
 			"solved": "सत्यापन सफल",
 			"wasm_disabled": "तेजी से सत्यापन के लिए WASM सक्षम करें",
 			"error": "सत्यापन विफल",
 			"errorMessage": "सत्यापन विफल: ${error}"
 		},
 		"breadcrumb": {
-			"clickToNavigate": "${path} पर नेविगेट करने के लिए क्लिक करें"
+			"clickToNavigate": "यहाँ जाने के लिए क्लिक करें: ${path}"
 		},
 		"zxcvbn": {
 			"warnings": {
@@ -6254,7 +6254,7 @@
 				"keyPattern": "एक छोटे कीबोर्ड पैटर्न का अनुमान लगाना आसान है।",
 				"simpleRepeat": "\"एएए\" जैसे दोहराए गए पात्रों को आसानी से अनुमान लगाया जाता है।",
 				"extendedRepeat": "\"ABCABCABC\" जैसे बार-बार चरित्र पैटर्न आसानी से अनुमानित हैं।",
-				"sequences": "\"एबीसी\" जैसे सामान्य चरित्र अनुक्रमों का आसानी से अनुमान लगाया जाता है।",
+				"sequences": "\"abc\" जैसे सामान्य अनुक्रमों का अनुमान आसानी से लग जाता है।",
 				"recentYears": "हाल के वर्षों का अनुमान लगाना आसान है।",
 				"dates": "दिनांक आसानी से अनुमान लगाया जाता है।",
 				"topTen": "यह एक अति उपयोग किया गया पासवर्ड है।",
@@ -6262,13 +6262,13 @@
 				"common": "यह आमतौर पर इस्तेमाल किया जाने वाला पासवर्ड है।",
 				"similarToCommon": "यह आमतौर पर उपयोग किए जाने वाले पासवर्ड के समान है।",
 				"wordByItself": "एक शब्द को आसानी से अनुमान लगाया जाता है।",
-				"namesByThemselves": "एक एकल पहला या अंतिम नाम आसानी से अनुमान लगाया जाता है।",
+				"namesByThemselves": "अकेला नाम या उपनाम आसानी से अनुमान लगाया जा सकता है।",
 				"commonNames": "आम पहले नाम और अंतिम नामों का अनुमान लगाना आसान है।",
 				"userInputs": "पासवर्ड में कोई व्यक्तिगत या पृष्ठ-संबंधित डेटा नहीं होना चाहिए।",
 				"pwned": "आपका पासवर्ड एक इंटरनेट डेटा ब्रीच में उजागर किया गया है।"
 			},
 			"suggestions": {
-				"l33t": "पूर्वानुमानित पत्र प्रतिस्थापन का उपयोग करने से बचें, जैसे कि \"ए\" के बजाय \"@\" का उपयोग करना।",
+				"l33t": "पूर्वानुमेय अक्षर प्रतिस्थापन से बचें, जैसे 'a' के बजाय '@' का उपयोग करना।",
 				"reverseWords": "सामान्य शब्दों की रिवर्स स्पेलिंग का उपयोग करने से बचें।",
 				"allUppercase": "सभी पत्रों के बजाय कुछ को कैपिटल करें।",
 				"capitalization": "केवल पहले अक्षर को ही नहीं, बल्कि अन्य अक्षरों को भी बड़ा लिखें।",
@@ -6472,7 +6472,7 @@
 	},
 	"code": {
 		"title": "Code",
-		"description": "कार्यक्षेत्रों और मशीनों के लिए AI कोडिंग सत्र।",
+		"description": "कार्यक्षेत्रों और मशीनों पर लक्षित AI कोडिंग सत्र।",
 		"sessions": {
 			"new": "नया सत्र",
 			"untitled": "बिना शीर्षक सत्र",
@@ -6508,7 +6508,7 @@
 		"tabs": {
 			"aria-label": "सत्र टैब",
 			"close": "टैब बंद करें",
-			"closeGenerating": "अभी बन रहा टैब बंद नहीं किया जा सकता",
+			"closeGenerating": "बन रहा टैब बंद नहीं किया जा सकता",
 			"rename": "नाम बदलें",
 			"closeMenu": {
 				"aria-label": "टैब क्रियाएँ",
@@ -6562,7 +6562,7 @@
 			}
 		},
 		"aiSource": {
-			"panelTitle": "AI स्रोत प्रदर्शन प्रबंधित करें",
+			"panelTitle": "AI स्रोत की दृश्यता प्रबंधित करें",
 			"charOwn": "किरदार का डिफ़ॉल्ट",
 			"manage": "AI स्रोत प्रबंधित करें…"
 		},
@@ -6657,7 +6657,7 @@
 			}
 		},
 		"error": {
-			"generic": "कुछ गड़बड़ हो गई: ${error}",
+			"generic": "कुछ गलत हो गया: ${error}",
 			"generate": "उत्तर जनरेट करने में विफल",
 			"aborted": "जनरेशन रोक दिया गया",
 			"noChar": "पहले कोई किरदार चुनें"
@@ -6667,7 +6667,7 @@
 		},
 		"power": {
 			"settings": {
-				"button": "कार्य पूर्ण होने के बाद की कार्रवाई सेटिंग",
+				"button": "कार्य पूर्ण होने के बाद की कार्रवाई की सेटिंग",
 				"aria": "कार्य पूर्ण होने के बाद की कार्रवाई सेटिंग",
 				"title": "कार्य पूर्ण होने के बाद स्वचालित कार्रवाई",
 				"hint": "सभी कार्य उत्पन्न हो जाने के बाद, नीचे दिए गए होस्ट पर चुनी गई कार्रवाई चलाई जाएगी।"
@@ -6681,7 +6681,7 @@
 			"armedCount": "कार्य पूर्ण होने के बाद: ${count} होस्ट",
 			"armedAria": "कार्य पूर्ण होने के बाद की कार्रवाई सेटिंग: ${count} होस्ट",
 			"armedToast": "सेट किया गया: सभी कार्य उत्पन्न हो जाने के बाद चुनी गई कार्रवाई चलेगी",
-			"cancelled": "कार्य पूर्ण होने के बाद की कार्रवाई रद्द की गई"
+			"cancelled": "कार्य-पश्चात स्वतः कार्रवाई रद्द की गई"
 		},
 		"home_function_buttons": {
 			"code": {
@@ -6727,7 +6727,7 @@
 			"async": {
 				"list": "अतुल्यकालिक कार्य सूचीबद्ध करें",
 				"await": "अतुल्यकालिक कार्य की प्रतीक्षा करें",
-				"inspect": "अतुल्यकालिक कार्यों का निरीक्षण करें",
+				"inspect": "अतुल्यकालिक कार्य जाँचें",
 				"notice": "पृष्ठभूमि कार्य अधिसूचना",
 				"run": "${kind} पृष्ठभूमि में चलाएँ"
 			}
@@ -6789,7 +6789,7 @@
 		},
 		"home_drag_in_handlers": {
 			"handleMarkdownDrop": {
-				"description": "खींचे गए मार्कडाउन दस्तावेज़ को बनाएं या पूर्वावलोकन करें"
+				"description": "खींचे गए Markdown दस्तावेज़ को बनाएँ या पूर्वावलोकन करें"
 			}
 		},
 		"list": {
@@ -6815,7 +6815,7 @@
 			"sort": {
 				"updatedDesc": "अपडेट (नवीनतम पहले)",
 				"updatedAsc": "अपडेट (पुरानतम पहले)",
-				"createdDesc": "निर्मित (नवीनतम पहले)",
+				"createdDesc": "निर्माण समय (नवीनतम पहले)",
 				"createdAsc": "निर्मित (पुरानतम पहले)",
 				"titleAsc": "शीर्षक (A–Z)",
 				"titleDesc": "शीर्षक (Z–A)"
@@ -6995,7 +6995,7 @@
 			"results": "परिणाम",
 			"noResults": "अभी कोई परिणाम नहीं है।",
 			"notJudged": "मूल्यांकित नहीं",
-			"stats": "कुल ${total} · खाली उत्तर ${empty} · औसत लंबाई ${avgLength} · मूल्यांकित ${judged} · औसत स्कोर ${avgScore}",
+			"stats": "कुल ${total} · खाली जवाब ${empty} · औसत लंबाई ${avgLength} · मूल्यांकित ${judged} · औसत स्कोर ${avgScore}",
 			"import": "JSON आयात करें",
 			"export": "JSON निर्यात करें"
 		},
@@ -7040,7 +7040,7 @@
 		},
 		"subagent": {
 			"title": "उप-एजेंट आंतरिक वार्तालाप",
-			"description": "किसी उप-एजेंट रन की स्थिति, कार्य और पूरा आंतरिक वार्तालाप देखें।",
+			"description": "उप-एजेंट रन की स्थिति, कार्य और पूरा आंतरिक वार्तालाप देखें।",
 			"back": "जनरेशन रिकॉर्ड पर वापस जाएँ",
 			"task": "कार्य",
 			"conversation": "आंतरिक वार्तालाप",

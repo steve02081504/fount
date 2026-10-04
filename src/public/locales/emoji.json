@@ -60,7 +60,7 @@
 			"noInstanceRunning": "🚫🏃‍♂️💨 ❓ ▶️ ⛲",
 			"runPartLog": "▶️ 🧩${partpath} 👤${username}, 📝: ${args}",
 			"invokePartLog": "📞 🧩${partpath} 👤${username}, 📝: ${invokedata}",
-			"invalidCommand": "❓➡️ \"⛲ ▶️ <👤> <🧩📍> <🏷️…>\"",
+			"invalidCommand": "❓➡️ \"fount run <🧩📍> <🏷️…>\"（👤：fount runas <👤> <🧩📍>）",
 			"invalidCommandFormat": "❓➡️📝",
 			"unsupportedCommand": "🚫➡️",
 			"processMessageError": "📨⚙️❌: ${error}",
@@ -146,7 +146,7 @@
 			"replHint": "↩️ ▶️ · ⇧↩️ ↩️"
 		},
 		"test": {
-			"help": "📖：`fount test` [--watch]\n       `fount test` [--all] [--force] [<groups>…]\n       `fount test --update-estimates` [<groups>…]\n       `fount test --kernel` shutdown|reboot\n\n🎯（␣＝📦×N；`,`＝1📦；`/`≡`:`）：\n  📛              📦∞（`shells/chat`）\n  📛:`suite`      📦①\n  📛:`suite`:🔬  🔬／🧪📁\n\n🚫🎯 → prefix↗（`shells`→`shells/chat`,`shells/social`）；🌐 `*` `?` `**`\n\n⭐（⌀ `fount test`）：1📋 ❌/⏳+⏰ ▶️；❌→🔗🚫 only；exit≠0；🚫∞（→ `--all`）\n\n`--watch`      👁️♾️，📭≠🚪（Ctrl+C）；🚫`--all`／`--force`／`--update-estimates`／🎯\n`--all`        📦∞\n`--force`      💥🏃，🚫♻️\n`--update-estimates`  🗄️avg⏱️→ manifest `expected`；🎯OK；🚫🏃🧪\n`--kernel`     shutdown 🛑🧪🧠; reboot 🛑↻; 🚫+other\n\n💡：\n  `fount test`\n  `fount test --watch`\n  `fount test --all`\n  `fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single`\n  `fount test server/live`\n  `fount test shells/chat`\n  `fount test shells/social:frontend`\n  `fount test shells/social:frontend:feed`\n  `fount test shells/chat:pure:channel_archive`\n  `fount test --force shells/social:frontend`\n  `fount test --update-estimates`\n  `fount test --update-estimates shells/chat`\n  `fount test --kernel shutdown`\n  `fount test --kernel reboot`",
+			"help": "📖：`fount test` [--watch]\n       `fount test` [--all] [--force] [<groups>…]\n       `fount test --update-estimates` [<groups>…]\n       `fount test --list` [<groups>…]\n       `fount test --kernel` shutdown|reboot\n\n🎯（␣＝📦×N；`,`＝1📦；`/`≡`:`）：\n  📛              📦∞（`shells/chat`）\n  📛:`suite`      📦①\n  📛:`suite`:🔬  🔬／🧪📁\n\n🚫🎯 → prefix↗（`shells`→`shells/chat`,`shells/social`）；🌐 `*` `?` `**`\n\n⭐（⌀ `fount test`）：1📋 ❌/⏳+⏰ ▶️；❌→🔗🚫 only；exit≠0；🚫∞（→ `--all`）\n\n`--debug`      🚶➡️：1️⃣📦=1️⃣👣，👣➡️🔍🗑️，❗➡️❌\n`--watch`      👁️♾️，📭≠🚪（Ctrl+C）；🚫`--all`／`--force`／`--update-estimates`／🎯\n`--all`        📦∞\n`--force`      💥🏃，🚫♻️\n`--update-estimates`  🗄️avg⏱️→ manifest `expected`；🎯OK；🚫🏃🧪\n`--list`       📋🧪📦（🎯↘️）；🚫🧠▶️，🚫🏃🧪\n`--kernel`     shutdown 🛑🧪🧠; reboot 🛑↻; 🚫+other\n\n💡：\n  `fount test`\n  `fount test --watch`\n  `fount test --all`\n  `fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single`\n  `fount test server/live`\n  `fount test shells/chat`\n  `fount test shells/social:frontend`\n  `fount test shells/social:frontend:feed`\n  `fount test shells/chat:pure:channel_archive`\n  `fount test --force shells/social:frontend`\n  `fount test --update-estimates`\n  `fount test --update-estimates shells/chat`\n  `fount test --kernel shutdown`\n  `fount test --kernel reboot`",
 			"watchNoGroups": "📖：`fount test --watch`（🚫+⚙️）",
 			"updateEstimates": {
 				"incompatible": "📖：`fount test --update-estimates` [<groups>…]（🚫+🚩）",
@@ -451,7 +451,7 @@
 				"noUrl": "❌: 🚫🔗 ➡️ 🔗👮"
 			},
 			"update": {
-				"skippingFountUpdate": "⏭️ ⛲ ⏫",
+				"skippingFountUpdate": "⏭️ ⛲ ⏫ (.noupdate)",
 				"switchingToBranch": "🔀🌿 '${branch}'…",
 				"switchingToRemote": "🔀🌐 '${url}' ➡️🌿 '${branch}'…",
 				"removedNoUpdate": "🗑️ `.noupdate` ➡️ ▶️⏫",
@@ -483,7 +483,7 @@
 			"shortcut": {
 				"desktopShortcutCreated": "🖥️✨ `${path}`",
 				"startMenuShortcutCreated": "🏁✨ `${path}`",
-				"protocolHandlerRegistered": "🔗⛲:// ✅",
+				"protocolHandlerRegistered": "fount:// ✅",
 				"shortcutNotSupported": "⚠️ ${os} 🚫➡️🖥️",
 				"osacompileNotFound": "❌ 'osacompile' ⁉️ 🍎💻💔",
 				"lsregisterFailed": "⚠️ `lsregister` 💥",
@@ -510,8 +510,8 @@
 				"noUpstreamBranch": "⚠️ branch '${branch}' no upstream, using '${remote}'",
 				"dirtyWorkingDirectory": "⚠️ 📁💩",
 				"notInstalled": "❓ 🐙🐱 ➡️ 📥",
-				"notInstalledSkippingPull": "🚫 🐙🐱 ➡️ ⏭️ pull",
-				"repoNotFoundSkippingPull": "❓ repo ➡️ ⏭️ pull",
+				"notInstalledSkippingPull": "🚫 🐙🐱 ➡️ ⏭️ `git pull`",
+				"repoNotFoundSkippingPull": "❓ repo ➡️ ⏭️ `git pull`",
 				"fetchFailed": "❌☁️📥",
 				"fetchFailedSkippingUpdate": "❌🐙🐱📥 ➡️ ⏭️🔄",
 				"remoteRefUnavailable": "❌🔗'${ref}' ➡️ ⏭️🐙🐱🔄",
@@ -523,7 +523,7 @@
 				"isRequired": "🚫🦕 ➡️ 🚫⛲",
 				"installingTermux": "📱🦕📥…",
 				"installFailedFallback": "❌🦕📥 ➡️ 📁📥",
-				"notWorking": "🦕❓➡️ github.com/denoland/deno/issues",
+				"notWorking": "🦕❓➡️ https://github.com/denoland/deno/issues",
 				"upgradeFailed": "⚠️ 🦕⏫❓",
 				"upgradeFailedTermux": "❌🦕⏫ ➡️ 📱📥",
 				"patchMissing": "❌: 🚫👀 🦕🏃‍♂️ 🚫🩹",
@@ -581,10 +581,10 @@
 				"nonInteractiveRequiresForce": "❌ 🔒 💬 ❓ ⛲ `${path}`\n👉 `fount remove --force`",
 				"fountUninstallationComplete": "✅ ⛲ 👋💯",
 				"fountInstallationDirRemoved": "✅ ⛲ 📁 👋",
-				"protocolHandlerRemoved": "✅ 👋 🔗⛲://",
+				"protocolHandlerRemoved": "✅ 👋 fount://",
 				"fountPwshRemovedFromProfile": "✅ 👋 ⛲ @ 💪🐚",
-				"pwshProfileNotFound": "❓ 💪🐚 Profile",
-				"uninstallFountPwshFailed": "❌ 👋 ⛲-💪🐚: ${message}",
+				"pwshProfileNotFound": "❓ 💪🐚 Profile ➡️ ⏭️ 👋 `fount-pwsh`",
+				"uninstallFountPwshFailed": "❌ 👋 `fount-pwsh`: ${message}",
 				"terminalProfileRemoved": "✅ 👋 🪟🖥️",
 				"terminalProfileNotFound": "❓ 🪟🖥️",
 				"desktopShortcutRemoved": "✅ 👋 🖥️",
@@ -597,7 +597,7 @@
 				"uninstalling": {
 					"chrome": "👋 🌐…",
 					"deno": "👋 🦕…",
-					"fountPwsh": "👋 ⛲-💪🐚",
+					"fountPwsh": "👋 `fount-pwsh`",
 					"git": "👋 🐙🐱…",
 					"winget": "👋 winget…"
 				},
@@ -606,14 +606,14 @@
 					"desktopShortcut": "🗑️🖥️🔗…",
 					"fount": {
 						"main": "👋 ⛲…",
-						"fromGitSafeDir": "👋 ⛲ @ 🐙🐱🔒",
+						"fromGitSafeDir": "👋 ⛲ @ `git safe.directory`",
 						"fromPath": "👋 ⛲ @ 🛣️",
 						"installationDir": "👋 ⛲ 📁…",
-						"pwshFromProfile": "👋 ⛲ @ 💪🐚"
+						"pwshFromProfile": "👋 `fount-pwsh` @ 💪🐚"
 					},
 					"installedPwshModules": "👋 pwsh 📦…",
 					"installedSystemPackages": "👋 📦…",
-					"protocolHandler": "👋 🔗⛲://",
+					"protocolHandler": "👋 fount://",
 					"startMenuShortcut": "👋 🏁…",
 					"steamShortcut": "👋 🎮…",
 					"terminalKeybindings": "👋 ⌨️🗺️ 🩹…",
@@ -623,7 +623,7 @@
 					"backgroundRunnerFailed": "❌ 👋 🏃‍♂️💨: ${message}",
 					"denoFailed": "❌ 👋 🦕: ${message}",
 					"moduleFailed": "❌ 👋 ${module}: ${message}",
-					"protocolHandlerFailed": "❌ 👋 🔗⛲://: ${message}"
+					"protocolHandlerFailed": "❌ 👋 fount://: ${message}"
 				}
 			}
 		},
@@ -1506,7 +1506,7 @@
 						"button": "🗑️❄️📦",
 						"confirm": "🗑️${month}⬅️❄️📦 ✅❓🚫↩️",
 						"failed": "🗑️📦❌：${error}",
-						"hint": "🗑️💻❄️📦/*📊；🔥➕🔗📊⚓✅",
+						"hint": "🗑️💻❄️ archive/*.jsonl；🔥➕🔗📊⚓✅",
 						"invalidMonth": "🙏✅📅📋",
 						"ok": "🗑️${files}📦📁"
 					},
@@ -1837,7 +1837,7 @@
 			"stream": {
 				"generationFailed": "🤖⏰❌，⏹️🔄",
 				"noEmbed": {
-					"textContent": "🌊📍🔒🔗embed / ⚙️👥🔄🎫"
+					"textContent": "🌊📍🔒 embed https:// / ⚙️👥🔄🎫"
 				},
 				"noSfu": {
 					"textContent": "🚫⚙️🌊📡🔗；🛡️➡️👥⚙️📺🔧📍"
@@ -2269,7 +2269,7 @@
 						"aria-label": "🗑️🔗"
 					},
 					"url": {
-						"placeholder": "https://… ⛲://…"
+						"placeholder": "https://… fount://…"
 					}
 				}
 			},
@@ -2326,7 +2326,7 @@
 				"subtitle": "📥👥🆔 ➡️💬",
 				"groupIdLabel": "👥🆔",
 				"groupId": {
-					"placeholder": "👥_🔢🔢🔢_xxxx"
+					"placeholder": "group_1776941580949_xxxx"
 				},
 				"inviteLabel": "🎟️（🔘）",
 				"invite": {
@@ -3218,7 +3218,7 @@
 			},
 			"code_greeting": {
 				"name": "👋💻",
-				"description": "💬💧",
+				"description": "💬💧: `// \"hello fount!\"`",
 				"locked_description": "🔒: ▶️ 'hello fount❗'"
 			}
 		},
@@ -4371,7 +4371,7 @@
 				"aria-label": "📝🤖⚙️"
 			},
 			"apiBaseUrlInput": {
-				"placeholder": "⬜️↩️ 🌐🔗"
+				"placeholder": "⬜️↩️ https://ilinkai.weixin.qq.com"
 			},
 			"botTokenInput": {
 				"placeholder": "🔐🎫"
@@ -5538,8 +5538,8 @@
 			"coreColors": "❤️💙💚",
 			"baseBackground": "🔤 & 🖼️",
 			"variables": "🧮",
-			"borderRadius": "📐🔵",
-			"borderWidth": "📐➖",
+			"borderRadius": "📐🔵 (--rounded-box)",
+			"borderWidth": "📐➖ (--border-btn)",
 			"advancedCustomization": "🛠️🔧",
 			"customCSS": "🎨📝 (CSS)",
 			"customMjsScript": "📜 (MJS)",

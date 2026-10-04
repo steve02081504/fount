@@ -4,19 +4,19 @@
 	"tips": {
 		"title": "知っていましたか？",
 		"data": [
-			"前のページに戻るには、任意の fount ページで `esc` キーを使用します。",
-			"「ctrl+s」を使用して設定ページに設定を保存できます。",
-			"チャット ページで「shift」キーを押し続けると、メッセージをすばやく削除できます。",
+			"任意の fount ページで `esc` キーを使うと、前のページに戻れます。",
+			"設定ページでは`ctrl+s`を使用して設定を保存できます。",
+			"チャット ページで`shift`キーを押し続けると、メッセージをすばやく削除できます。",
 			"開発者に伝えなければ、どのような問題が発生したかを開発者は決して知ることができない可能性があります。",
 			"突然奇妙な問題が発生し、開発者がしばらく応答しなかった場合は、`fount init` コマンドを使用して fount をリセットしてみることができます。",
 			"特に奇妙な問題が発生した場合は、コンピュータを再起動してみてください。",
-			"`fount remove` コマンドを使用して fount をアンインストールするほうが、フォルダーを削除するよりも簡単です。",
-			"コマンドラインに`fount cake`と入力すると、無料でおいしいケーキを入手できます。",
+			"fount のアンインストールは `fount remove` コマンドを使うほうが、フォルダーを削除するより簡単です。",
+			"コマンドラインに `fount cake` と入力すると、無料でおいしいケーキがもらえます！",
 			"fount のデータ ファイルはすべて `fount/data` ディレクトリに保存され、いつでもどこでも表示、変更、バックアップすることができます。",
-			"fount の名前はすべて小文字で、「F」ount ではなく「f」ount です。",
+			"fount の名前はすべて小文字で、`F`ount ではなく`f`ount です。",
 			"新しいモデルを使用する前に、エージェントが定期的に操作するすべてのデータをバックアップしてください。新しいモデルが場所によってはパフォーマンスが低下するかどうかはわかりません。",
 			"fount の主な対象者はソフトウェア開発者やロールプレイング愛好家ですが、商業エージェントの建設、医療、軍事、金融、その他の分野でも使用されています。",
-			"fountの内蔵キャラクター ZL-31 の名前には意味がなく、ただの思いつきでした。",
+			"fount の内蔵キャラクター ZL-31 の名前には意味がなく、ただの思いつきでした。",
 			"fount ファイル内の画像はすべて svg 形式で保存され、必要に応じて png または ico にレンダリングされます。 LICENSE 以外にはバイナリ ファイルはありません。",
 			"見つかったコードはすべてコンパイルなしで直接実行でき、表示されるものがそのまま得られます。",
 			"fount にはかつて非常にクールなダイナミックでインタラクティブなページ背景がありましたが、CPU を大量に消費するため、後に削除されました。",
@@ -57,7 +57,7 @@
 		"ipc": {
 			"serverStarted": "IPCサーバーが起動しました。",
 			"instanceRunning": "別のインスタンスが既に実行中です。",
-			"noInstanceRunning": "実行中のインスタンスが検出されませんでした。最初に fount を開始してください。",
+			"noInstanceRunning": "実行中のインスタンスが検出されませんでした。先に fount を起動してください。",
 			"runPartLog": "${partpath} を ${username}、引数: ${args} として実行します。",
 			"invokePartLog": "${partpath} を ${username}、パラメータ: ${invokedata} として呼び出します",
 			"invalidCommand": "無効なコマンドです。「fount run <コンポーネントパス> <パラメーター...>」を使用してください（ユーザー指定は「fount runas <ユーザー名> <コンポーネントパス>」）。",
@@ -87,7 +87,7 @@
 		},
 		"web": {
 			"requestReceived": "リクエストを受信しました：${method} ${url}",
-			"frontendFilesChanged": "フロントエンド ファイル [${path}] が変更されたため、クライアントにリロードするように通知されています。"
+			"frontendFilesChanged": "フロントエンド ファイル [${path}] が変更されたため、クライアントに再読み込みを通知しています。"
 		},
 		"route": {
 			"setLanguagePreference": "ユーザー「${username}」が優先言語を設定しました：${preferredLanguages}"
@@ -146,11 +146,11 @@
 			"replHint": "Enter で実行 · Shift+Enter で改行"
 		},
 		"test": {
-			"help": "使い方: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --list [<groups>...]\n       fount test --kernel shutdown|reboot\n\nセレクタ（グループはスペース区切り、同一グループ内の suite はカンマ区切り。/ と : は同義）:\n  名前              そのグループの全 suite（例: shells/chat）\n  名前:suite        suite を指定\n  名前:suite:項目   サブテストまたはテストファイルを指定\n\n完全一致がない場合はプレフィックスで展開（shells → shells/chat, shells/social）。glob（*, ?, **）も可。\n\nデフォルト（fount test のみ）: 失敗/未完了/ノイズありと期限切れを一括で計画して実行。失敗は依存先のスロットのみブロックし、最後に非ゼロで終了。全量は走らない（全量は --all）。\n\n--watch      監視を継続。キューが空でも終了しない（Ctrl+C で終了）。--all / --force / --update-estimates / セレクタとは併用不可\n--all        範囲内の全 suite\n--force      強制実行（前回結果を再利用しない）\n--update-estimates  現行 DB の平均所要時間から各 manifest の expected を書き戻す。セレクタ任意。テストは実行しない\n--list        テスト スイートを一覧表示します（セレクタで範囲を絞れます）。カーネルは起動せず、テストも実行しません\n--kernel     shutdown はテストカーネルを停止；reboot は停止して再起動；他の引数と併用不可\n\n例:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
+			"help": "使い方: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --list [<groups>...]\n       fount test --kernel shutdown|reboot\n\nセレクタ（グループはスペース区切り、同一グループ内の suite はカンマ区切り。/ と : は同義）:\n  名前              そのグループの全 suite（例: shells/chat）\n  名前:suite        suite を指定\n  名前:suite:項目   サブテストまたはテストファイルを指定\n\n完全一致がない場合はプレフィックスで展開（shells → shells/chat, shells/social）。glob（*, ?, **）も可。\n\nデフォルト（fount test のみ）: 失敗/未完了/ノイズありと期限切れを一括で計画して実行。失敗は依存先のスロットのみブロックし、最後に非ゼロで終了。全量は走らない（全量は --all）。\n\n--debug      ステップ直列: 各 suite を 1 ステップとし、1 ステップごとに残留物を確認し、見つかればエラー終了します\n--watch      監視を継続。キューが空でも終了しない（Ctrl+C で終了）。--all / --force / --update-estimates / セレクタとは併用不可\n--all        範囲内の全 suite\n--force      強制実行（前回結果を再利用しない）\n--update-estimates  現行 DB の平均所要時間から各 manifest の expected を書き戻す。セレクタ任意。テストは実行しない\n--list        テスト スイートを一覧表示します（セレクタで範囲を絞れます）。カーネルは起動せず、テストも実行しません\n--kernel     shutdown はテストカーネルを停止；reboot は停止して再起動；他の引数と併用不可\n\n例:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
 			"watchNoGroups": "使い方: fount test --watch（他のオプションとは併用できません）",
 			"updateEstimates": {
 				"incompatible": "使い方: fount test --update-estimates [<groups>...]（他のフラグとは併用できません）",
-				"summary": "${suitesUpdated} 件の suite の予想時間を更新（manifest ${filesChanged} 件）。ベースラインなしまたは最新のため ${skipped} 件をスキップ"
+				"summary": "予想時間を更新した suite は ${suitesUpdated} 件（manifest ${filesChanged} 件）。ベースラインなしまたは最新のため ${skipped} 件をスキップ"
 			},
 			"list": {
 				"incompatible": "使い方: fount test --list [<groups>...]（他のフラグとは併用できません）",
@@ -176,7 +176,7 @@
 			"serialZeroTests": "[serial] ${path} 登録されたテストは 0 件です",
 			"frontend": {
 				"isolatedRequired": "${shellLabel} フロントエンドテストは test/frontend/run.mjs を介して起動してください（run.mjs が分離ノードを自動起動します）。ローカルの開発インスタンスや実ユーザーのデータでは実行しないでください。",
-				"isolatedUser": "テストは分離ユーザー「${expectedUsername}」で実行する必要があります（現在のセッションは「${username}」）。run.mjs 経由で起動し、本番・開発用の fount を指さないでください。"
+				"isolatedUser": "テストは分離ユーザー「${expectedUsername}」で実行する必要があります（現在のセッションは「${username}」）。run.mjs 経由で起動し、本番用・開発用の fount を指さないでください。"
 			},
 			"queue": {
 				"append": "キュー追加: ${label}（${reason}）残り ≈ ${remaining}",
@@ -224,7 +224,7 @@
 					"idle": "待機中",
 					"unknownCount": "+${count} 不明",
 					"runningCount": "${count} 実行中",
-					"passedCount": "${count} 成功",
+					"passedCount": "${count} 合格",
 					"failedCount": "${count} 失敗",
 					"queuedCount": "${count} 待ち",
 					"reason": "(${reason})",
@@ -249,7 +249,7 @@
 			"manifestMatched": "マニフェストの一致結果: ${ids}",
 			"selectedSuites": "${selected}/${total} 個のテスト スイートが選択されました",
 			"planSlotSummary": "プランスロット: 実実行 ${run}、再利用 ${reuse}、ブロック ${blocked}、スキップ ${skipped}",
-			"noMatchingSuites": "一致するテスト スイートがありません。",
+			"noMatchingSuites": "一致するテスト スイートが見つかりません。",
 			"reportPath": "レポート: ${path}",
 			"reportPathFinal": "\nレポート: ${path}",
 			"statePathFinal": "現在のステータス: ${path}",
@@ -268,16 +268,16 @@
 			"reusedSuite": "\n>>> ${manifestId}:${name} を再利用 (トリガーは変更されず、最後の ${status} が使用されます)",
 			"prunedAbsentState": "存在しないスイートの状態を削除しました：スイート ${suites} 件、サブテスト ${subtests} 件",
 			"noisyOnlyRemain": "まだ ${count} 個のスイートが通過していますが、ノイズが発生しています: ${suites}",
-			"noRealRunPlanned": "今回は実行不要: 再利用 ${reused} 件、ブロック予定 ${blocked} 件、スキップ ${skipped} 件（trigger 不変）",
-			"allReusedHint": "今回は実際にスイートを実行していません。失敗は前回結果の引き継ぎ、ブロックも未解消（関連ファイル不変）です。修正後に再実行するか、fount test --force で強制実行してください。",
+			"noRealRunPlanned": "今回は実行不要: 再利用 ${reused} 件、ブロック予定 ${blocked} 件、スキップ ${skipped} 件（trigger は変更なし）",
+			"allReusedHint": "今回は実際にスイートを実行していません。失敗は前回の結果を引き継いでおり、ブロックも未解消のままです（関連ファイルは未変更）。修正後に再実行するか、`fount test --force` で強制実行してください。",
 			"failuresSaved": "失敗リストを保存: ${path}（スイート ${count} 件）",
 			"failuresCleared": "マニフェスト ${manifestId} はすべて合格し、失敗リストはクリアされました。",
 			"terminated": "タイムアウト終了: ${label} — ${reason}",
-			"sleepDetected": "システムスリープを検出（watchdog 間隔が ${gap} ≥ ${limit} に跳ねた）。${label} を中止し、再実行待ち（実行済み ${elapsed}）",
+			"sleepDetected": "システムスリープを検出（watchdog 間隔が ${gap} ≥ ${limit} に跳ねた）。${label} を中止し、再実行待ち（実行 ${elapsed}）",
 			"sleepRetry": "システムスリープにより中断。${label} を再実行（${attempt} 回目）",
 			"nothingToContinue": "すべて緑で期限切れなし。再実行の必要はありません。",
 			"triggerNoMatch": "トリガーはどのファイルにも一致しませんでした: ${scope} — ${pattern}",
-			"triggerNoMatchSummary": "trigger ${count} 件がリポジトリ内のファイルに一致しません（詳細は report.md）",
+			"triggerNoMatchSummary": "リポジトリ内のどのファイルにも一致しなかった trigger が ${count} 件（詳細は report.md）",
 			"federationCleanupPre": "フェデレーションテストのクリーンアップ (実行前) が失敗しました: ${output}",
 			"federationCleanupPost": "フェデレーションテストのクリーンアップ (実行後) が失敗しました: ${output}",
 			"suiteHeader": "\n=== スイート ${name} ===",
@@ -286,11 +286,11 @@
 			"serialUsage": "使用法:serial.mjs <deno-test-path> [...]",
 			"silentPassedOne": "1 つのテスト ファイルが合格しました。",
 			"silentPassedMany": "${count} 個のテスト ファイルが合格しました。",
-			"ciNoDiffFallback": "CI: diff が検出されませんでした。実行中のフル スイートにフォールバックします。",
+			"ciNoDiffFallback": "CI: diff が検出されなかったため、全スイートを実行します。",
 			"noFrontendPhasesMatched": "FOUNT_TEST_ONLY に一致するフロントエンド テスト フェーズがありません",
 			"denoPanic": {
 				"detected": "Deno クラッシュが検出されました: ${label} (場所 ${signature})",
-				"alreadyReported": "この Deno クラッシュは報告されましたが、スキップされました: ${signature}",
+				"alreadyReported": "この Deno クラッシュは報告済みのためスキップします: ${signature}",
 				"ghUnavailable": "gh が利用不可または未ログイン。Deno クラッシュをローカルのみ記録: ${signature}",
 				"published": "クラッシュの問題が Deno に送信されました: ${url}",
 				"duplicate": "アップストリームで繰り返しクラッシュが発生しました。レポートをスキップします: ${upstream}",
@@ -322,7 +322,7 @@
 				"columnSuite": "スイート",
 				"columnDuration": "所要時間",
 				"continueReasonsLink": "トリガー理由: 詳細は [${path}](${path})",
-				"deadTriggersHint": "次の glob は、リポジトリ内のどのファイルとも一致しません (git 追跡 + 無視されず、追跡されていません)。",
+				"deadTriggersHint": "次の glob は、リポジトリ内のどのファイルとも一致しません。",
 				"durationMs": "${ms} ミリ秒",
 				"durationUnit": {
 					"day": "${n} 日",
@@ -357,7 +357,7 @@
 						"failed": "過去の失敗",
 						"noisy": "過去は合格だがノイズあり"
 					},
-					"missingRecord": "state に記録なし、自動実行",
+					"missingRecord": "state に記録がないため自動実行",
 					"staleContent": "内容変更のため再実行が必要",
 					"skipBecause": "skip_because 再確認",
 					"triggerHashDrift": "指紋ドリフトのトリガー (パスがヒットしない)"
@@ -376,8 +376,8 @@
 					"matchedTriggerSets": "ヒットトリガーセット",
 					"matchedTriggers": "ヒットトリガー",
 					"noise": "ノイズ",
-					"pullDownstream": "ダウンストリーム プル: ${requiredBy} は完璧ではないため、一緒に含まれます",
-					"pullUpstream": "アップストリーム プル: ${requiredBy} の依存関係は緑色ではありません",
+					"pullDownstream": "ダウンストリーム プル: ${requiredBy} が不完全なため、併せて実行します",
+					"pullUpstream": "アップストリーム プル: ${requiredBy} の依存関係が未通過です",
 					"reused": "（再利用）",
 					"rootCause": "根本的な原因",
 					"skipBecause": "issue",
@@ -425,7 +425,7 @@
 			"terminate": {
 				"duration": "${label} を終了: watchdog 基準時間超過（実行 ${elapsed}、基準 ${baseline}、上限 ${limit}）",
 				"durationDefault": "${label} を終了: デフォルト watchdog 上限超過（実行 ${elapsed}、上限 ${limit}）",
-				"idle": "${label} を終了: ${minutes} 分以上 stdout/stderr 出力なし（アイドル ${idleSec} 秒、実行 ${elapsed}）",
+				"idle": "${label} を終了: ${minutes} 分以上 stdout/stderr 出力なし（アイドル ${idleSec} 秒、実行時間 ${elapsed}）",
 				"marker": "[終了理由: ${reason}]",
 				"speculative": "${label} を終了: 投機的依存が未通過のため早期停止をキャンセル",
 				"unknown": "${label} を終了: テストが中断されました"
@@ -502,11 +502,11 @@
 				"backupSavedTo": "ローカルでの変更のバックアップが `${path}` に保存されました。",
 				"updatingFromRemote": "リモート リポジトリから更新しています...",
 				"alreadyUpToDate": "もう最新です。",
-				"localBranchAhead": "ローカル ブランチはリモート ブランチよりも先にあります。アップデートは必要ありません。",
-				"branchesDiverged": "ローカル ブランチとリモート ブランチが分岐されました。強制アップデート中です...",
+				"localBranchAhead": "ローカル ブランチはリモート ブランチより進んでいます。更新は不要です。",
+				"branchesDiverged": "ローカル ブランチとリモート ブランチが分岐しました。強制更新中です...",
 				"unrelatedHistories": "ローカルとリモートのリポジトリに共通の履歴がありません。強制更新中…",
 				"notOnBranch": "ブランチ上にありません。「マスター」に切り替えてください...",
-				"upstreamGoneFallbackMaster": "リモート ブランチ '${branch}' は削除されました。代わりに master を追跡します…",
+				"upstreamGoneFallbackMaster": "リモート ブランチ「${branch}」は削除されました。代わりに master を追跡します…",
 				"noUpstreamBranch": "警告: ブランチ '${branch}' に upstream が設定されていません。'${remote}' を使用します。",
 				"dirtyWorkingDirectory": "警告: 作業ディレクトリにコミットされていない変更があります。更新する前に、変更をステージングまたはコミットしてください。",
 				"notInstalled": "Git がインストールされていないため、インストールしようとしています...",
@@ -516,21 +516,21 @@
 				"fetchFailedSkippingUpdate": "GitHub から更新を取得できませんでした。更新をスキップします。",
 				"remoteRefUnavailable": "リモート参照「${ref}」を利用できません。Git の同期をスキップします。",
 				"installFailedWinget": "Winget のインストールに失敗したため、Git をインストールできません。手動でインストールしてください。",
-				"installFailedManual": "Git をインストールできません。手動でインストールしてください。"
+				"installFailedManual": "Git をインストールできませんでした。手動でインストールしてください。"
 			},
 			"deno": {
 				"missing": "Deno が見つかりません。自動的にインストールされます...",
 				"isRequired": "Deno が見つかりません。Deno なしでは fount を実行できません",
 				"installingTermux": "Termux 用の Deno をインストールしています...",
-				"installFailedFallback": "Deno のインストールが失敗しました。見つかったパス フォルダーに自動的にインストールしようとしています...",
-				"notWorking": "何らかの理由で Deno が動作しない場合は、https://github.com/denoland/deno/issues に参加してサポートを受けることをお勧めします。",
-				"upgradeFailed": "警告: Deno のアップグレードが失敗した可能性があります。エラーがないか確認してください。",
-				"upgradeFailedTermux": "Deno アップグレード コマンドが失敗しました。Deno for Termux を再インストールしようとしています...",
-				"patchMissing": "エラー: パッチ適用前に Deno 実行可能ファイルが見つかりませんでした。パッチを適用できません。",
+				"installFailedFallback": "Deno のインストールに失敗しました。path フォルダーへの自動インストールを試みています...",
+				"notWorking": "何らかの理由で Deno が動作しない場合は、https://github.com/denoland/deno/issues で質問することをおすすめします。",
+				"upgradeFailed": "警告: Deno のアップグレードに失敗した可能性があります。エラーがないか確認してください。",
+				"upgradeFailedTermux": "Deno アップグレード コマンドが失敗しました。Termux 用の Deno を再インストールしようとしています...",
+				"patchMissing": "エラー: パッチ適用に必要な Deno 実行可能ファイルが見つかりませんでした。パッチを適用できません。",
 				"patchUnsupportedArch": "エラー: サポートされていないパッチ アーキテクチャ: ${arch}",
 				"patchFailed": "エラー: `patchelf` を使用して Deno 実行可能ファイルにパッチを適用できませんでした。",
 				"managedUpgrade": "Deno は ${manager} パッケージ マネージャー (パッケージ: ${package}) によって管理されているため、${manager} 経由でアップグレードされます。",
-				"managedUpgradeFailed": "警告: ${manager} 経由での Deno (パッケージ: ${package}) のアップグレードが失敗しました。現在のバージョンを維持します。",
+				"managedUpgradeFailed": "警告: ${manager} 経由で Deno (パッケージ: ${package}) をアップグレードできませんでした。現在のバージョンを維持します。",
 				"pinNotHonored": "警告: Deno は ${manager} パッケージ マネージャーによって管理されているため、.deno-version で指定されたバージョン (${spec}) に準拠できません。パッケージマネージャーのバージョンに合わせてアップグレードされました。"
 			},
 			"tempDir": {
@@ -541,17 +541,17 @@
 				"yn": "[Y/N] ",
 				"required": "続行するには EULA への同意が必要です。`FOUNT_ACCEPT_EULA=1` を設定して再実行するか、対話型ターミナルから実行してください。",
 				"declined": "EULA が拒否されました。fount を削除しています。",
-				"statusServerFailed": "警告：インストール状態サーバーを起動できませんでした。このターミナルで EULA を表示します。"
+				"statusServerFailed": "警告: インストール状態サーバーを起動できませんでした。このターミナルで EULA を表示します。"
 			},
 			"install": {
 				"installingDependencies": "依存関係をインストールしています...",
 				"compilingFavicon": "ファビコンが見つかりません。サーバーを起動して生成しています...",
 				"packageFailed": "エラー: ${package} のインストールに失敗しました。",
 				"browserMissing": "デフォルトのブラウザが検出されません。インストールしようとしています...",
-				"untrustedPartsWarning": "信頼できない fount コンポーネントはシステムにインストールしないでください。コンポーネントは何でもできるからです。",
-				"permissionDeniedAsRoot": "エラー: ディレクトリ '${path}' に書き込めません。 root として実行していますが、アクセスはまだ拒否されています。このフォルダーのセキュリティ権限を確認して修正し、現在のユーザーにフル コントロールを付与してください。",
-				"permissionDeniedNotRoot": "エラー: ディレクトリ '${path}' に書き込めません。フォルダーのセキュリティ権限を修正して現在のユーザーに書き込みアクセスを許可するか、root として fount を実行してください。",
-				"rootWarningAsRoot": "推奨されません: root として fount を実行すると、すべての fount コンポーネントへの完全なシステム アクセスが許可されます。",
+				"untrustedPartsWarning": "信頼できない fount コンポーネントは、何でもできてしまうため、システムにインストールしないでください。",
+				"permissionDeniedAsRoot": "エラー: ディレクトリ '${path}' に書き込めません。root として実行していますが、それでもアクセスが拒否されました。このフォルダーのセキュリティ権限を確認して修正し、現在のユーザーにフル コントロールを付与してください。",
+				"permissionDeniedNotRoot": "エラー: ディレクトリ '${path}' に書き込めません。このフォルダーのセキュリティ権限を修正して現在のユーザーに書き込みアクセスを許可するか、root として fount を実行してください。",
+				"rootWarningAsRoot": "推奨されません: root として fount を実行すると、すべての fount コンポーネントに完全なシステム アクセスが許可されます。",
 				"rootWarningPreferUser": "自分が何をしているのかよくわからない場合は、通常のユーザーとして fount を実行することをお勧めします。",
 				"runnerUpdating": "インストーラーを更新しています…"
 			},
@@ -561,24 +561,24 @@
 				"cleaningOldPwshModules": "古い pwsh モジュールをクリーンアップしています..."
 			},
 			"keepalive": {
-				"initComplete": "再初期化が完了しました。フォントを再起動しようとしています...",
-				"autoInitDisabled": "fount は過去の短期間に複数回再起動されましたが、`.noautoinit` ファイルが存在するため自動再初期化が無効になっています。退出中。",
+				"initComplete": "再初期化が完了しました。fount を再起動しています...",
+				"autoInitDisabled": "fount は過去の短期間に複数回再起動されましたが、`.noautoinit` ファイルが存在するため自動再初期化が無効になっています。終了します。",
 				"restartingTooFast": "fount が短期間に複数回再起動されました。強制再初期化...",
-				"failedToStart": "自動修復を試みた後でも、噴水は短期間起動しません。ログでエラーを確認してください。",
-				"initFailed": "フォントの初期化に失敗しました。退出中。"
+				"failedToStart": "自動修復を試みた後も、fount はしばらく起動に失敗します。ログでエラーを確認してください。",
+				"initFailed": "fount の初期化に失敗しました。終了します。"
 			},
 			"terminalKeybindings": {
 				"registered": "ターミナルのキーバインドパッチを設定しました。",
 				"wtPatchFailed": "Windows Terminal の設定 `${path}` にパッチを適用できません: ${message}",
 				"wtRemoved": "Windows Terminal の設定から fount のキーバインドを削除しました: `${path}`",
-				"editorRemoved": "エディターのターミナルキーバインドから fount の設定を削除しました: `${path}`"
+				"editorRemoved": "エディターのターミナル キーバインドから fount の設定を削除しました: `${path}`"
 			},
 			"remove": {
 				"confirmPrompt": "fount のインストール ディレクトリをディスクから削除しようとしています: `${path}`\nこれが本当に削除するディレクトリであることを確認してください。",
 				"yn": "[Y/N] ",
 				"aborted": "キャンセルされました。何も削除されませんでした。",
 				"externalMountWarning": "警告: fount は外部/共有マウント (`${target}`) 上にあります。\nこのディレクトリはホストまたは仮想マシンに同時に存在する可能性があります。`fount remove` を実行するとそこも一緒に削除されてしまうため、十分に注意してください。",
-				"nonInteractiveRequiresForce": "非対話型環境では削除を確認できません。`fount` (${path}) を確実に削除したい場合は、`fount remove --force` を使用して確認をスキップします。",
+				"nonInteractiveRequiresForce": "非対話型環境では削除を確認できません。`fount`（${path}）を確実に削除したい場合は、`fount remove --force` を使用して確認をスキップします。",
 				"fountUninstallationComplete": "fountのアンインストールが完了しました。",
 				"fountInstallationDirRemoved": "fount のインストール ディレクトリは削除されました。",
 				"protocolHandlerRemoved": "`fount://` プロトコル ハンドラーは削除されました。",
@@ -605,9 +605,9 @@
 					"backgroundRunner": "バックグラウンド プログラムを削除しています...",
 					"desktopShortcut": "デスクトップのショートカットを削除しています...",
 					"fount": {
-						"main": "フォントを削除しています...",
-						"fromGitSafeDir": "gitsafe.directory から fount を削除しています...",
-						"fromPath": "PATH からフォントを削除しています...",
+						"main": "fount を削除しています...",
+						"fromGitSafeDir": "`git safe.directory` から fount を削除しています...",
+						"fromPath": "PATH から fount を削除しています...",
 						"installationDir": "fount インストール ディレクトリを削除しています...",
 						"pwshFromProfile": "PowerShell プロファイルから `fount-pwsh` を削除しています..."
 					},
@@ -697,7 +697,7 @@
 			},
 			"badge": "ここは広告枠",
 			"lede": "本来なら、派手な広告や政治・DEI の宣伝、スポンサー募集、道徳的な説教がここに載るところ——",
-			"punchline": "でも <strong>fount はクール</strong>だから、そんなのなし :D",
+			"punchline": "でも <strong>fount はクール</strong> だから、そんなのなし :D",
 			"nudge": "水分補給して、立ち上がって、遠くを見てみて！",
 			"dismiss": "クール、ありがとう"
 		},
@@ -755,13 +755,13 @@
 			},
 			"aiSources": {
 				"title": "AIソースとの自由な連携",
-				"description": "fountは、比類のない選択肢と柔軟性を提供します。OpenAI、Claude、[Atlas Cloud](${atlasCloudLink})、OpenRouter、NovelAIなど、<i>あらゆる</i>AIソースに接続可能です。コミュニケーションのロジックは、あなたの意のままに、コードの力によって形作られます。"
+				"description": "fountは、比類のない選択肢と柔軟性を提供します。OpenAI、Claude、[Atlas Cloud](${atlasCloudLink})、OpenRouter、NovelAIなど、<i>あらゆる</i>AIソースに接続可能です。コミュニケーションの仕組みは、<i>あなた</i>の望むままに、コードの力によって形作られます。"
 			}
 		}
 	},
 	"protocolhandler": {
 		"title": "fountプロトコルの処理",
-		"description": "このページは、静かかつ効率的に、ユーザーの意図をフォント内でのシームレスな遷移に変換します。それはカーテンの向こうにある静かな魔法だと考えてください。",
+		"description": "このページは、ユーザーの意図を fount 内でのシームレスな遷移へ、静かに効率よく変換します。カーテンの向こうにある静かな魔法だと考えてください。",
 		"processing": "プロトコルを処理中です...",
 		"invalidProtocol": "無効なプロトコルです。",
 		"insufficientParams": "パラメーターが不足しています。",
@@ -774,7 +774,7 @@
 			"back": "戻る",
 			"confirm": {
 				"title": "実行の確認",
-				"message": "${partpath} を実行してもよろしいですか?",
+				"message": "${partpath} を実行してもよろしいですか？",
 				"confirm": "確認する",
 				"cancel": "キャンセル"
 			}
@@ -796,7 +796,7 @@
 	"auth": {
 		"title": "認証",
 		"subtitle": "ユーザーデータはローカルに保存されます。",
-		"description": "ここで自分の存在を定義します。慣れ親しんだ安息の地に戻るときも、物語のための新しい空間を形作るときも、ここが噴水との旅の始まりです。",
+		"description": "ここで自分の存在を定義します。慣れ親しんだ安息の地に戻るときも、物語のための新しい空間を形作るときも、ここが fount との旅の始まりです。",
 		"usernameLabel": "ユーザー名:",
 		"usernameInput": {
 			"placeholder": "ユーザー名を入力してください"
@@ -913,10 +913,10 @@
 			"endButton": "始めましょう！"
 		},
 		"progressMessages": {
-			"mouseMove": "まず、あなたのマウスデバイスを探してください${mouseIcon}。見つけたら、机の上でそれを滑らせてみてください。",
-			"keyboardPress": "キーボード${keyboardIcon}で何かキーを押してみてください。",
-			"mobileTouchMove": "あなたのスマートフォン${phoneIcon}を見つけてください。指を一本使って画面に触れ、そのまま画面上で指を滑らせてみましょう。",
-			"mobileClick": "指を使って、スマートフォン${phoneIcon}の画面を優しく一回叩いて、すぐに離してみてください。これが「タップ」です！"
+			"mouseMove": "マウス${mouseIcon}を手に取ってみてください。<br/>そのあと動かしてみましょう。",
+			"keyboardPress": "キーボード${keyboardIcon}を見つけてください。<br/>指でキーを押してみてください。",
+			"mobileTouchMove": "スマートフォン${phoneIcon}を見つけてください。<br/>任意の指で画面に触れ、そのまま動かしてみましょう。",
+			"mobileClick": "任意の指でスマートフォン${phoneIcon}の画面に触れてみてください。<br/>そのあと指を離します。"
 		},
 		"achievements": {
 			"complete_tutorial": {
@@ -973,7 +973,7 @@
 			}
 		},
 		"emptyList": {
-			"message": "空っぽです...<br/>[新しいパーツを作成](${newpartLink}) するか、[fount の Telegram サーバー](${telegramLink}) に行って楽しんでみてはいかがでしょうか?"
+			"message": "空っぽです...<br/>[新しいパーツを作成](${newpartLink}) するか、[fount の Telegram サーバー](${telegramLink}) に行って楽しんでみてはいかがでしょうか？"
 		},
 		"part_pages": {
 			"default": {
@@ -1149,7 +1149,7 @@
 			"first_login": {
 				"name": "こんにちは、泉さん！",
 				"description": "新しい世界へ初ログイン！",
-				"locked_description": "一度ファウンテンにログインしてください。"
+				"locked_description": "一度 fount にログインしてください。"
 			},
 			"sfw_mode_on": {
 				"name": "親フラ回避！",
@@ -1159,7 +1159,7 @@
 			"sfw_mode_off": {
 				"name": "リミッター解除",
 				"description": "「大人、時代は変わったのです。」",
-				"locked_description": "安全なコンテンツ モードを一度オフにします。"
+				"locked_description": "セーフ コンテンツ モードを一度オフにします。"
 			},
 			"open_function_list": {
 				"name": "ちょっと見せて！",
@@ -1190,10 +1190,10 @@
 	},
 	"chat": {
 		"title": "チャット",
-		"description": "言葉が飛び立ち、物語が展開する場所。 AI 仲間と関わり、物語を形作り、デジタル対話の盛衰に身を委ねましょう。ここで泉の心臓が鼓動します。",
+		"description": "言葉が飛び立ち、物語が展開する場所。AI 仲間と関わり、物語を形作り、デジタル対話の盛衰に身を委ねましょう。ここで泉の心臓が鼓動します。",
 		"new": {
 			"title": "新しいチャット",
-			"description": "まだ書かれていない物語への静かな期待。新しいチャットが始まり、白紙の状態で、選択した仲間との新鮮な対話と展​​開される物語が始まります。"
+			"description": "まだ書かれていない物語への静かな期待。新しいチャットが始まり、白紙の状態で、選択した仲間との新鮮な対話と展開される物語が始まります。"
 		},
 		"typingIndicator": {
 			"isTyping": "${names} が入力中です...",
@@ -1410,8 +1410,8 @@
 				"textContent": "信頼",
 				"title": "この作者を信頼します (危険な HTML を許可します)"
 			},
-			"trustAuthorOk": "この作成者は信頼されており、リッチ テキストを表示します",
-			"listEmpty": "(ナビゲーション項目はまだありません。管理者は API を通じてリスト項目を更新できます)",
+			"trustAuthorOk": "この作成者は信頼済みです。リッチ テキストを表示します",
+			"listEmpty": "（ナビゲーション項目はまだありません。管理者は API を通じて更新できます）",
 			"listChannelReadonly": {
 				"placeholder": "リスト チャンネルではナビゲーション カードのみが表示され、メッセージは送信されません。"
 			},
@@ -1460,7 +1460,7 @@
 			"blockSender": {
 				"title": "送信者をブロックする"
 			},
-			"blockConfirm": "「${sender}」をブロックしてもよろしいですか?",
+			"blockConfirm": "「${sender}」をブロックしてもよろしいですか？",
 			"blockAdded": "ブロックされました",
 			"saveSticker": {
 				"title": "ステッカー/絵文字をお気に入りに保存する"
@@ -1468,7 +1468,7 @@
 			"deleteMessage": {
 				"title": "メッセージを削除する"
 			},
-			"deleteConfirm": "このメッセージを削除しますか?",
+			"deleteConfirm": "このメッセージを削除しますか？",
 			"saveEdit": "保存",
 			"cancelEdit": "キャンセル",
 			"editingMessage": "編集",
@@ -1483,7 +1483,7 @@
 			"shareExternalFailed": "アップロードに失敗しました。ネットワークを確認してください",
 			"ownerSuccession": {
 				"main": "後継者投票を開始する",
-				"autoSignHint": "送信後、マシンは秘密キーを入力せずに、グループの署名シードに自動的に署名します。複数管理者グループでは、管理者の半数以上が同じ投票用紙 (同じ投票 ID と候補者) をローカルで送信する必要があります。",
+				"autoSignHint": "送信すると、本機が秘密キーの入力なしでグループの署名シードに自動署名します。複数管理者グループでは、管理者の半数以上が同じ投票用紙（ballotId と候補者が同じ）を本機で送信する必要があります。",
 				"candidateLabel": "後継公開鍵ハッシュ",
 				"description": "グループの最高の管理権限 (MANAGE_ADMINS) を指定されたメンバーに譲渡します。管理者のみが操作できます。",
 				"needHash": "後継者の公開鍵ハッシュを入力してください",
@@ -1497,7 +1497,7 @@
 			},
 			"settings": {
 				"archive": {
-					"adminOnly": "このマシンには、このグループのコールド アーカイブ データがまだありません。",
+					"adminOnly": "本機には、このグループのコールド アーカイブ データがまだありません。",
 					"colChannel": "チャンネル",
 					"colMonth": "月",
 					"colSize": "サイズ",
@@ -1516,9 +1516,9 @@
 					"title": "ストレージとコールドアーカイブ"
 				},
 				"autoChannelGc": "無音チャンネルを自動的にクリアする",
-				"autoChannelGcHint": "30 日以上沈黙しており、到達できない孤立した島のチャンネルは最大 2 つまで、具体化されると削除されます。",
+				"autoChannelGcHint": "30 日以上沈黙しており到達できない孤立した島のチャンネルは、具体化の際に最大 2 つまで削除されます。",
 				"autoReply": {
-					"frequency": "ロール応答を自動的にトリガーします (N 個のユーザー メッセージごとに、0 はオフになります)",
+					"frequency": "ロールの応答を自動でトリガーします（ユーザー メッセージ N 件ごと、0 で無効）",
 					"frequencyHint": "0はオフを意味します。 @メンションは引き続き即時にトリガーされます",
 					"tokenBucket": "自動返信プレッシャースケジューリング（トークンバケット）",
 					"tokenBucketHint": "有効になった後、各キャラクターはチャンネルごとにトークン バケットを維持します。バケットが空の場合、onMessage は一時的にトリガーされないため、ピーク時の継続的な画面更新が妨げられる可能性があります。"
@@ -1527,7 +1527,7 @@
 				"compactTriggerDepth": "実体化された圧縮トリガーの深さ",
 				"discoveryBlurb": "ディスカバリーの概要 (オプション)",
 				"discoveryPublic": "このグループをフェデレーション検出で公開します",
-				"powOnlyHint": "PoW の参加ポリシーでのみ利用できます。オンにすると、グループがフェデレーション検出に表示され、他の人が見つけて PoW で参加を申請できます。",
+				"powOnlyHint": "PoW 参加ポリシーでのみ有効です。オンにすると、グループがフェデレーション検出に表示され、他の人が見つけて PoW で参加を申請できます。",
 				"discoveryTitle": "ディスカバリーリストのタイトル (オプション)",
 				"eventRetentionDepth": "DAG イベント保持の深さ",
 				"eventRetentionMs": "DAG イベント保持時間",
@@ -1538,7 +1538,7 @@
 					"mode": "ファイル暗号化モード",
 					"modeConvergent": "集中暗号化 (重複を削除可能)",
 					"modeHint": "高プライバシー モードでは、ブロックごとにランダムな contentKey を使用し、ceMode=random とマークします。これにより、平文が推測されるリスクは軽減されますが、ストレージと帯域幅の使用量が増加します。",
-					"modeRandom": "高プライバシー モード (ランダム キー、重複排除なし)"
+					"modeRandom": "高プライバシー モード（ランダム キー、重複排除なし）"
 				},
 				"gossipTtl": "ゴシップ転送 TTL (ホップ数)",
 				"hlcMaxSkew": "HLC 将来オフセット上限 (ミリ秒)",
@@ -1573,7 +1573,7 @@
 					"retention30d": "30日前",
 					"retention90d": "90日前",
 					"retentionForever": "永久保持 (圧縮 DAG イベントのみ)",
-					"retentionHint": "デフォルトでは、表示された履歴は自動的に削除されません。有効にすると、ローカル メッセージのホット キャッシュのみがプルーニングされます。最終メッセージはコールド アーカイブとチェックポイントに保持されます。"
+					"retentionHint": "デフォルトでは、表示された履歴は自動的に削除されません。有効にすると、ローカル メッセージのホット キャッシュのみが削除されます。最終メッセージはコールド アーカイブとチェックポイントに保持されます。"
 				},
 				"page": {
 					"title": "グループ設定",
@@ -1618,23 +1618,23 @@
 					"saveSuccess": "グループ設定が保存されました",
 					"saveFailed": "設定を保存できませんでした: ${error}",
 					"rolesTitle": "役割と権限",
-					"rolesHint": "チェックした権限は、そのロールのメンバー全員にグループ全体で適用されます。一般メンバーがファイルを添付できるようにするには、Everyone の「ファイルをアップロード」を有効にしてください。特定チャンネルのみ制限する場合は、詳細設定の「チャンネル権限」を使います。",
+					"rolesHint": "チェックした権限は、そのロールのメンバー全員にグループ全体で適用されます。一般メンバーがファイルを添付できるようにするには、Everyone の「ファイルをアップロード」を有効にしてください。チャンネル単位で制限する場合のみ、詳細設定の「チャンネル権限」を使用します。",
 					"roleDefault": "デフォルト",
 					"permissionUpdated": "権限が更新されました",
 					"permissionUpdateFailed": "権限の更新に失敗しました: ${error}",
 					"noMembers": "まだメンバーがいません",
 					"memberRoles": "役割：",
 					"ban": "禁止",
-					"banConfirm": "メンバー ${name} を禁止してもよろしいですか?",
+					"banConfirm": "メンバー ${name} を禁止してもよろしいですか？",
 					"banSuccess": "メンバーが出入り禁止になった",
 					"banFailed": "メンバーを禁止できませんでした: ${error}",
 					"bannedTitle": "禁止メンバー",
 					"unban": "ブロックを解除する",
-					"unbanConfirm": "メンバー ${name} のブロックを解除してもよろしいですか?",
+					"unbanConfirm": "メンバー ${name} のブロックを解除してもよろしいですか？",
 					"unbanSuccess": "メンバーのブロックが解除されました",
 					"unbanFailed": "ブロックの解除に失敗しました: ${error}",
-					"gshGenerationRetentionHint": "現在、ファイル マスター キー履歴の最新の 64 世代のみが保持されます。最も古い履歴ファイルは、それを超えると復号化できなくなる可能性があるため、重要なデータは定期的にアーカイブすることをお勧めします。",
-					"gshGenerationNearLimit": "現在、ファイル マスター キーの世代 ${generation} までローテーションされています (最大 ${maxGenerations} 世代)。頻繁なローテーションを続けると、最も古い履歴キーが廃止されます。",
+					"gshGenerationRetentionHint": "ファイル マスター キーの履歴は、現在、最新の 64 世代のみ保持されます。それを超えると最も古い履歴ファイルを復号できなくなる可能性があるため、重要なデータは定期的にアーカイブすることをお勧めします。",
+					"gshGenerationNearLimit": "現在、ファイル マスター キーの世代 ${generation} まで進んでいます（最大 ${maxGenerations} 世代）。頻繁にローテーションを続けると、最も古い履歴キーが廃止されます。",
 					"ownerSuccession": "グループリーダーの継承",
 					"ownerSuccessionOk": "グループリーダーの継承が発効しました",
 					"ownerSuccessionFailed": "グループ リーダーの継承に失敗しました: ${error}",
@@ -1645,7 +1645,7 @@
 						"ok": "デフォルトの絵文字パックを更新しました"
 					},
 					"channelArchive": {
-						"hint": "チャンネル JSON アーカイブをインポートすると、このグループに新しいテキストチャンネルが作成され、履歴が復元されます（再署名が必要。添付はメタデータのみ保持）。",
+						"hint": "チャンネル JSON アーカイブをインポートすると、このグループに新しいテキストチャンネルが作成され、履歴が復元されます。",
 						"import": "チャンネル JSON をインポート",
 						"importFailed": "インポートに失敗しました: ${error}",
 						"importOk": "${count} 件のメッセージをインポートしました。新しいチャンネルを開いています…",
@@ -1653,7 +1653,7 @@
 					},
 					"channelPerms": {
 						"denied": "チャンネル権限のオーバーライドを編集するための MANAGE_CHANNELS 権限がありません。",
-						"hint": "特定チャンネルの例外のみ設定できます。継承＝ロールの権限に従う、許可/拒否＝このチャンネルで強制上書き。全員に添付を許可するには「役割の権限」で Everyone のファイルをアップロードを有効にしてください。",
+						"hint": "特定チャンネルの例外のみ設定できます。継承＝ロールの権限に従う、許可/拒否＝このチャンネルで強制上書き。全員に添付を許可するには「役割の権限」で Everyone の「ファイルをアップロード」を有効にしてください。",
 						"overridden": "上書き済み",
 						"clearOverride": "すべて継承に戻す",
 						"noChannels": "現在、設定するチャンネルがありません",
@@ -1682,7 +1682,7 @@
 							"packPrompt": "絵文字パック ID"
 						},
 						"delete": "絵文字の削除",
-						"deleteConfirm": "この絵文字グループを削除してもよろしいですか?",
+						"deleteConfirm": "この絵文字グループを削除してもよろしいですか？",
 						"deleteFailed": "削除に失敗しました: ${error}",
 						"deleteOk": "絵文字は削除されました",
 						"empty": "グループ式はまだありません",
@@ -1704,7 +1704,7 @@
 						"copyFailed": "コピーに失敗しました",
 						"expires": "有効期限: ${date}",
 						"groupId": "グループID",
-						"hint": "短期間の招待コード (デフォルトは 1 時間) を生成します。相手は「グループに参加」にグループIDと招待コードを入力します。",
+						"hint": "短期間の招待コード（デフォルトは 1 時間）を生成します。相手は「グループに参加」にグループ ID と招待コードを入力します。",
 						"mint": "招待コードを生成する",
 						"title": "招待する"
 					},
@@ -1713,7 +1713,7 @@
 						"failed": "グループの削除に失敗しました: ${error}",
 						"group": "グループの削除",
 						"role": "役割の削除",
-						"roleConfirm": "この役割を削除してもよろしいですか?",
+						"roleConfirm": "この役割を削除してもよろしいですか？",
 						"roleFailed": "ロールの削除に失敗しました: ${error}",
 						"roleSuccess": "役割が削除されました",
 						"success": "グループが削除されました"
@@ -1746,9 +1746,9 @@
 					},
 					"kick": {
 						"main": "追い出す",
-						"confirm": "メンバー ${name} をキックしてもよろしいですか?",
+						"confirm": "メンバー ${name} をキックしてもよろしいですか？",
 						"failed": "メンバーを追い出せませんでした: ${error}",
-						"selfNodeWarning": "警告: このメンバーはあなたと同じノード ID を使用します。追放された場合もグループから削除されます。続行してもよろしいですか?",
+						"selfNodeWarning": "警告: このメンバーはあなたと同じノード ID を使用します。追放された場合もグループから削除されます。続行してもよろしいですか？",
 						"success": "メンバーが追い出された"
 					},
 					"tabs": {
@@ -1787,7 +1787,7 @@
 				"streamGeneratingIdle": "AI が生成したプレースホルダーのアイドル タイムアウト (ミリ秒)",
 				"streamingSfu": "ストリーミング SFU WebSocket アドレス (オプション)",
 				"trustedPeers": "トラストネイバースロット (Top-K)",
-				"wantIdsBudget": "単一の wantID 予算"
+				"wantIdsBudget": "単一の wantIds 予算"
 			},
 			"feedback": {
 				"dagLine": "[${label}]",
@@ -1824,7 +1824,7 @@
 				"typing": "${name} が入力中です...",
 				"typingMany": "${name} さんと ${count} 人が入力中です...",
 				"typingTwo": "${name1}、${name2} 入力中...",
-				"unavailable": "リモート コンポーネントが利用できないか、RPC をルーティングできません",
+				"unavailable": "リモート コンポーネントが利用できないか、RPC をルーティングできません。",
 				"unsafe": "このメッセージは遠隔地から送信されており、作成者はローカルの信頼リストに含まれていません。リッチテキストのレンダリングが無効になっています。"
 			},
 			"create": {
@@ -1837,12 +1837,12 @@
 			"stream": {
 				"generationFailed": "AI の生成がタイムアウトして完了せず、更新が停止されました。",
 				"noEmbed": {
-					"textContent": "ストリーミング アドレスは埋め込み可能な https:// ページである必要があります。または、グループ設定を最初に構成し、表示トークンを取得するために更新する必要があります。"
+					"textContent": "ストリーミング アドレスは埋め込み可能な https:// ページである必要があります。または、先にグループ設定を行い、更新して表示トークンを取得してください。"
 				},
 				"noSfu": {
-					"textContent": "streamSfuWss が構成されていません。管理者は、グループ設定で LiveKit/mediasoup 表示アドレスを入力できます。"
+					"textContent": "streamingSfuWss が構成されていません。管理者は、グループ設定で LiveKit/mediasoup 表示アドレスを入力できます。"
 				},
-				"ok": "メディア ストリームを取得 (停止、ブロードキャストではない)",
+				"ok": "メディア ストリームを取得済み（停止中、未ブロードキャスト）",
 				"test": "メディアデバイスのテスト"
 			},
 			"unpin": {
@@ -1891,13 +1891,13 @@
 			"pin": {
 				"action": {
 					"textContent": "上にピンで留める",
-					"title": "この記事を DAG に書き込み、上部に固定します"
+					"title": "このメッセージを DAG に書き込み、上部に固定します"
 				},
 				"failed": "ピンが失敗しました",
 				"message": "上にピンで留める",
 				"messageLine": "[トップ] ${targetId}",
 				"ok": "記録して固定した",
-				"thisMessage": "この記事を DAG に書き込み、上部に固定します"
+				"thisMessage": "このメッセージを DAG に書き込み、上部に固定します"
 			},
 			"av": {
 				"mute": "ミュート",
@@ -1943,7 +1943,7 @@
 					"careTitle": "特別な懸念: まだニュースはありません",
 					"mentionDescription": "グループチャットで他のメンバーがあなたに@を付けた場合、メッセージがここに表示されます。",
 					"mentionTitle": "まだ誰もあなたのことを言及していません",
-					"messageDescription": "さまざまなグループ チャットやチャンネルからのメッセージの更新情報がここに表示されます。",
+					"messageDescription": "さまざまなグループ チャットやチャンネルからのメッセージがここに表示されます。",
 					"messageTitle": "受信箱が空です",
 					"voteDescription": "参加投票が終了したら、結果はここにまとめられます。",
 					"voteTitle": "終了した投票はありません"
@@ -2038,7 +2038,7 @@
 			"stopGenerateTitle": {
 				"title": "生成を停止する"
 			},
-			"confirmDeleteLong": "このメッセージは長すぎます。削除してもよろしいですか?",
+			"confirmDeleteLong": "このメッセージは長すぎます。削除してもよろしいですか？",
 			"forceReply": "強制応答",
 			"removeChar": "文字を削除する",
 			"newGroupWith": "+ ${name} と新しい会話を作成します",
@@ -2073,7 +2073,7 @@
 			"bioEmpty": "このユーザーにはまだプロフィールがありません。",
 			"banners": {
 				"gshBuffer": "キーのローテーション後に復号化を待機しているメッセージが ${total} 件あります",
-				"plaintextSidecar": "このチャンネルはオンデマンド同期です。ローカルの messages sidecar が平文でキャッシュ表示します。",
+				"plaintextSidecar": "このチャンネルはオンデマンド同期です。ローカルの messages sidecar が内容を平文でキャッシュします。",
 				"quarantine": "時計ずれにより ${count} 件のフェデレーションイベントが隔離中です。システム時刻が正常化すると自動再生されます。",
 				"mailboxPending": "オフライン メールボックスには ${count} 件のメッセージが配信を待機しています。",
 				"syncing": "フェデレーションネイバーと同期中…",
@@ -2089,7 +2089,7 @@
 				"suspectedRemovedLeave": "グループの削除",
 				"shunVerifying": "メンバーシップを検証中：既知のノード ${confirmed}/${total} 個が拒否しました",
 				"fork": {
-					"governance": "アクセス許可レコードにフォークがあり、現在ローカル ビューにあります。",
+					"governance": "権限レコードに分岐があり、現在はローカル ビューです。",
 					"tipLabel": "DAGリーフ",
 					"tipScore": "${short} · 評判 ${score}",
 					"tips": "${count} 個のマージされていないブランチが検出されました。メッセージの順序が矛盾している可能性があります。"
@@ -2115,7 +2115,7 @@
 			},
 			"trustAuthor": {
 				"textContent": "作者を信頼",
-				"title": "この作者を信頼する（危険な Markdown/HTML を許可）"
+				"title": "この作成者を信頼する（危険な Markdown/HTML を許可）"
 			},
 			"stickerInline": "ステッカー",
 			"markdownRenderFailed": "Markdownのレンダリングに失敗しました",
@@ -2155,7 +2155,7 @@
 				"title": "この作者を信頼",
 				"subtitle": "作者: ${author}",
 				"warningTitle": "高リスク操作",
-				"warningBody": "信頼すると、この作者のメッセージはブラウザで完全な Markdown（HTML/スクリプト含む）として描画されます。相手が fount 上で悪意あるコンテンツを送った場合、表示時に本機へ危害が及ぶ可能性があります。明確に認識しリスクを負えるフェデレーションノードのみ信頼してください。",
+				"warningBody": "信頼すると、この作者のメッセージはブラウザで完全な Markdown（HTML/スクリプト含む）として描画されます。相手が fount 上で悪意あるコンテンツを送った場合、表示時に本機へ危害が及ぶ可能性があります。明確に認識し、リスクを負えるフェデレーションノードのみ信頼してください。",
 				"durationLabel": "信頼期間",
 				"duration3h": "3時間",
 				"duration7d": "7日間",
@@ -2241,17 +2241,17 @@
 					"placeholder": "タグを入力して Enter で追加。# で複数まとめて追加できます"
 				},
 				"handle": {
-					"placeholder": "たとえば、steve (2 ～ 32 文字の小文字の英数字。_-)"
+					"placeholder": "たとえば steve（2〜32 文字の小文字英数字・_・-）"
 				},
 				"resetFrom": {
 					"part": "文字部分からリセット",
-					"partConfirm": "現在の情報はロール パーツの情報で上書きされます。本気ですか？",
+					"partConfirm": "現在の情報はロール パーツの情報で上書きされます。よろしいですか？",
 					"partDone": "キャラクターパーツから再構築したプロフィール",
 					"partFailed": "再構築に失敗しました: ${error}"
 				},
 				"banner": {
 					"clear": "バナー生成を再開する",
-					"hint": "画像の URL を入力するか、ファイルをアップロードできます。いつでもテクスチャの生成を再開することもできます",
+					"hint": "画像の URL を入力するか、ファイルをアップロードできます。テクスチャの生成はいつでも再開できます",
 					"label": "バナーの背景",
 					"upload": {
 						"aria-label": "バナーをアップロード"
@@ -2326,13 +2326,13 @@
 				"subtitle": "グループ ID を入力して、対応するチャットに参加します",
 				"groupIdLabel": "グループID",
 				"groupId": {
-					"placeholder": "グループ_1776941580949_xxxx"
+					"placeholder": "group_1776941580949_xxxx"
 				},
 				"inviteLabel": "招待コード（オプション）",
 				"invite": {
 					"placeholder": "グループ所有者によって生成された短期招待コード"
 				},
-				"hint": "グループ ID はグループ所有者によって共有されます。招待ベースのグループは、有効な招待コードを入力する必要があります (設定ページで生成できます)。",
+				"hint": "グループ ID はグループ所有者によって共有されます。招待制のグループでは、有効な招待コードを入力する必要があります（設定ページで生成できます）。",
 				"cancel": "戻る",
 				"submit": "グループに参加する"
 			},
@@ -2388,14 +2388,14 @@
 				"createDescription": "ゼロから始めて友達を招待する",
 				"join": "グループに参加する",
 				"joinDescription": "グループIDを使用する",
-				"subtitle": "新しいグループを作成するか、ID で既存のグループに参加します",
+				"subtitle": "新しいグループを作成するか、ID で既存のグループに参加できます",
 				"title": "グループ"
 			},
 			"membersDigest": {
 				"fetchFailed": "ページごとにメンバーを取得できませんでした",
-				"mismatch": "一貫性のないメンバー ダイジェスト · ${root}",
+				"mismatch": "メンバー ダイジェストが不一致 · ${root}",
 				"ok": "メンバー マークル全会一致 · ${root}",
-				"okPaged": "メンバー マークルのコンセンサス (${pages} ページ) · ${root}",
+				"okPaged": "メンバー マークルが一致 (${pages} ページ) · ${root}",
 				"pagesTitle": {
 					"title": "${expected}\n${pages} ページ"
 				},
@@ -2403,7 +2403,7 @@
 			},
 			"unbindFriend": {
 				"main": "バインドを解除する",
-				"confirm": "${name} とのプライベート チャットのバインドを解除してもよろしいですか?会話はグループ リストに戻ります。",
+				"confirm": "「${name}」とのプライベート チャットのバインドを解除してもよろしいですか？会話はグループ リストに戻ります。",
 				"description": "バインドを解除すると、会話は左側のグループ リストに戻り、メッセージ レコードは保持されます。",
 				"failed": "バインド解除に失敗しました: ${error}",
 				"ok": "束縛されていない"
@@ -2466,14 +2466,14 @@
 				"contextNewChat": "新しいチャット",
 				"count": "${count} 人の友達",
 				"emptyAction": "ロールまたはユーザーを検索する",
-				"emptyDescription": "ローカル ロールまたは他のノードでユーザーを検索し、グループ チャットでメンバー プロフィール カードを開いてプライベート メッセージを開始することもできます。",
+				"emptyDescription": "ローカル ロールまたは他のノードでユーザーを検索できます。グループチャットでメンバー プロフィール カードを開いて、プライベート メッセージを開始することもできます。",
 				"emptyTitle": "新しい会話を開始する",
 				"header": "友達",
 				"restartConfirm": "「${name}」とのプライベート チャットのバインドが解除され、新しい会話が作成されます。本気ですか？",
 				"restartFailed": "新しいプライベート チャットの作成に失敗しました: ${error}",
 				"restartOk": "新しいプライベートチャットが開設されました",
 				"search": {
-					"placeholder": "ローカルの役割/カスタム ID/名前を検索…",
+					"placeholder": "本機のロール / カスタム ID / 名前を検索…",
 					"chat": "会話を始める",
 					"dm": "プライベートメッセージを送信する",
 					"empty": "一致するロールまたはユーザーがありません",
@@ -2659,10 +2659,10 @@
 				},
 				"connectionLost": "接続が切断されました。再接続中…",
 				"defaultName": "ストリーミングメディア",
-				"embedHttpsRequired": "ストリーミング アドレスは埋め込み可能な https:// ページである必要があります。または、グループ設定を最初に構成し、表示トークンを取得するために更新する必要があります。",
+				"embedHttpsRequired": "ストリーミング アドレスは埋め込み可能な https:// ページである必要があります。または、先にグループ設定を行い、更新して表示トークンを取得してください。",
 				"refreshToken": "ウォッチトークンをリフレッシュ",
 				"tokenFailed": "閲覧トークンを発行できません",
-				"webRtcHint": "外部 SFU は構成されていません。このチャンネルはグループ内 WebRTC を使用します (streamingSfuWss は必要ありません)。"
+				"webRtcHint": "外部 SFU は構成されていません。このチャンネルではグループ内 WebRTC を使います (streamingSfuWss は不要です)。"
 			},
 			"member": {
 				"bar": {
@@ -2675,19 +2675,19 @@
 					"careAdded": "すでに特別な懸念事項が追加されています",
 					"careRemoved": "スペシャルケアは解除されました",
 					"setAlias": "エイリアスの設定",
-					"setAliasPrompt": "「${name}」のローカル エイリアスを設定します (クリアするには空白のままにします)。",
+					"setAliasPrompt": "「${name}」のローカル エイリアスを設定します（空白のままにするとクリアされます）。",
 					"aliasSaved": "エイリアスが更新されました",
 					"copyPubKey": "公開鍵ハッシュをコピーする",
 					"copyEntityId": "エンティティIDをコピー",
 					"dm": "プライベートメッセージを送信する",
 					"kick": "キックメンバー",
-					"kickSelfNodeWarning": "警告: このメンバーはあなたと同じノード ID を使用します。追放された場合もグループから削除されます。続行してもよろしいですか?",
+					"kickSelfNodeWarning": "警告: このメンバーはあなたと同じノード ID を使用します。追放された場合もグループから削除されます。続行してもよろしいですか？",
 					"ban": "禁止…",
 					"personalBlock": "個人ブロック",
-					"personalBlockConfirm": "${name} をブロック リストに追加しますか?あなたをフォローしている人はこのシグナルを察知し、彼らに対する信頼が薄れる可能性があります。",
+					"personalBlockConfirm": "「${name}」をブロック リストに追加しますか？あなたをフォローしている人はこのシグナルを察知し、相手への信頼を下げる可能性があります。",
 					"personalBlockSuccess": "すでにブラックリストに追加されています",
 					"banTitle": "禁止範囲を選択してください",
-					"banEntity": "禁止されたエンティティ (128 ビットのエンティティハッシュ)",
+					"banEntity": "禁止されたエンティティ (128 ビットのentityHash)",
 					"banNode": "禁止ノード (homeNodeHash)"
 				},
 				"countLabel": "${count} 人のメンバー",
@@ -2737,7 +2737,7 @@
 			"files": {
 				"bindCabinet": "ファイルキャビネットを追加する",
 				"delete": "削除",
-				"deleteConfirm": "このファイルを削除してもよろしいですか?",
+				"deleteConfirm": "このファイルを削除してもよろしいですか？",
 				"deleteFolderConfirm": "このフォルダを削除してもよろしいですか?フォルダー内のファイルは自動的には削除されません。",
 				"download": "ダウンロード",
 				"drawerTitle": "グループファイル",
@@ -2923,8 +2923,8 @@
 				"incomplete": "${missing}/${total} イベントは同期されていないままです",
 				"noPeers": "フェデレーションネイバーに接続されていないため、履歴メッセージを一時的に同期できません",
 				"rateLimited": "連邦同期速度制限が進行中です。後でもう一度お試しください。",
-				"truncated": "DAG 増分がいっぱいではありません。後でもう一度試すか、制限を増やすことができます。",
-				"truncatedHint": "DAG 履歴が長すぎます。後でもう一度試すか、制限を増やすことができます。"
+				"truncated": "DAG 増分をすべて取得できませんでした。後でもう一度試すか、limit を増やしてください。",
+				"truncatedHint": "DAG 履歴が長すぎます。後でもう一度試すか、limit を増やしてください。"
 			},
 			"load": {
 				"charChatFailed": "メッセージの読み込みに失敗しました",
@@ -2947,32 +2947,32 @@
 				"advancedDescription": "バグ修正、評判管理、手動リンク発行",
 				"advancedTitle": "詳細設定",
 				"batterySaverLabel": "低電力モード",
-				"batterySaverTip": "バックグラウンド接続とネットワーク アクティビティの数を減らすと、メッセージの同期が若干遅くなる可能性があります。",
+				"batterySaverTip": "バックグラウンド接続数とネットワーク アクティビティを減らすと、メッセージの同期が若干遅くなる可能性があります。",
 				"connectionTitle": "接続して発見する",
 				"dm": {
 					"invalidateDescription": "実行後、以前に発行されたすべての友達追加リンクは直ちに無効になり、取り消すことはできません。",
 					"invalidateTitle": "古い紹介リンクを有効期限切れにする",
 					"issueLabel": "DMリンクを発行する",
 					"issued": "DM リンクが署名され、クリップボードにコピーされました",
-					"linkDescription": "デバッグまたは手動による ID 移行に適しています。毎日友達を追加するときにこれらのフィールドに入力する必要はありません。",
-					"linkTip": "ネイティブ ID キーを使用した署名が必要です。秘密キーはこのページのローカル サービスにのみ送信され、他のノードには送信されません。",
+					"linkDescription": "デバッグや手動での ID 移行に適しています。日常的に友達を追加するときは、これらのフィールドへ入力する必要はありません。",
+					"linkTip": "本機の ID キーでの署名が必要です。秘密キーはこのページの本機サービスにのみ送信され、他のノードには送信されません。",
 					"linkTitle": "友達リンクを手動で発行する",
 					"needPubKey": "64 16 進数の公開キーが必要です",
 					"needSecretKey": "64 16 進数の秘密鍵シードが必要",
 					"nodeLabel": "オプションのノード URL",
 					"pubKeyLabel": "公開鍵の 16 進数(64)",
-					"rotateConfirm": "以前に発行された友達追加リンクはすべて直ちに無効になり、復元することはできません。続行してもよろしいですか?",
+					"rotateConfirm": "以前に発行された友達追加リンクはすべて直ちに無効になり、復元することはできません。続行してもよろしいですか？",
 					"rotateLabel": "古いリンクを無効にする",
 					"secretLabel": "秘密鍵シード 16 進数(64)",
 					"urlLabel": "発行済みの友達追加リンク"
 				},
 				"groupRecoveryTip": "招待状が漏洩した場合、または新しいデバイスが履歴を同期できない場合にのみ使用されます。",
 				"groupRecoveryTitle": "グループ接続の修正",
-				"nonceRotated": "nonce が回転されました (${nonce}…)",
+				"nonceRotated": "nonce を更新しました（${nonce}…）",
 				"relayUrlsLabel": "ネットワークリレーアドレス",
 				"relayUrlsTip": "デバイスがインターネット上で相互に検出できるようにします。 1 行に 1 つの wss:// アドレスを入力します。デフォルトのリレーを使用する場合は空白のままにします。",
 				"repEmpty": "(ヌル)",
-				"repTip": "フェデレーション ノードの動作に基づいてネイティブに計算された接続優先スコアは、グループ メンバーの公開評価ではありません。",
+				"repTip": "フェデレーション ノードの動作に基づいて本機で計算された接続優先スコアは、グループ メンバーの公開評価ではありません。",
 				"repTitle": "このグループの主観的な信頼性",
 				"repairJoinSnapshot": "ネイバーにグループのスナップショット修復への参加を要求する",
 				"repairJoinSnapshotFailed": "グループ スナップショットの修復に失敗しました: ${error}",
@@ -2980,7 +2980,7 @@
 				"resetOk": "評判_リセットが書き込まれました",
 				"resetSubmitLabel": "ターゲットの評判をリセットする",
 				"rotateRoomSecret": "グループルームのパスワードを更新する",
-				"rotateRoomSecretConfirm": "ローテーション後は、古いルーム パスワードを使用した招待は接続できなくなります。続行してもよろしいですか?",
+				"rotateRoomSecretConfirm": "ローテーション後は、古いルーム パスワードを使用した招待では接続できなくなります。続行してもよろしいですか？",
 				"rotateRoomSecretOk": "ルームのパスワードが更新されました",
 				"saved": "保存しました",
 				"slash": {
@@ -2996,7 +2996,7 @@
 						"placeholder": "メンバーの公開鍵ハッシュ"
 					},
 					"targetLabel": "ターゲットの pubKeyHash(64 進数)",
-					"tip": "ノードに関する否定的な評判ステートメントをグループ イベント グラフに書き込みます。フェデレーション プロトコルを理解している管理者のみが使用します。",
+					"tip": "ノードに関する否定的な評判声明をグループ イベント グラフに書き込みます。フェデレーション プロトコルを理解している管理者のみが使用します。",
 					"title": "評判ペナルティ",
 					"verifiedLabel": "検証可能 (証明イベント ID が必要)"
 				}
@@ -3209,7 +3209,7 @@
 			"multiplayer_chat": {
 				"name": "WHITE ALBUMの季節",
 				"description": "「どうしてこうなったんだろう…」",
-				"locked_description": "2 人以上のキャラクターが同じチャットで話します。"
+				"locked_description": "2 人以上のキャラクターに同じチャットで発言させましょう。"
 			},
 			"photo_chat": {
 				"name": "証拠写真あり",
@@ -3218,7 +3218,7 @@
 			},
 			"code_greeting": {
 				"name": "コードで挨拶",
-				"description": "「こんにちは、fount！」",
+				"description": "fount の中でコードが最初の挨拶をしました。`// \"hello fount!\"`",
 				"locked_description": "コードブロックを実行して、'hello fount!' と出力する。"
 			}
 		},
@@ -3353,7 +3353,7 @@
 			"federation": {
 				"advanced": "詳細オプション",
 				"batterySaverLabel": "低電力モード",
-				"description": "Nostr リレー URL と省電力モードを設定します。グループのフェデレーション同期は、初めて誰かを招待するか、フェデレーション DM を作成したときに自動で有効になります。",
+				"description": "Nostr リレー URL と省電力モードを設定します。グループのフェデレーション同期は、初めて誰かを招待したとき、またはフェデレーション DM を作成したときに自動で有効になります。",
 				"relayUrlsLabel": "リレーサーバー（1 行に 1 つ。空欄でデフォルト）",
 				"resetDefault": "デフォルト設定に戻す",
 				"resetOk": "デフォルト設定に戻しました",
@@ -3380,16 +3380,16 @@
 					"cooldown": "リスクを確認しました（${seconds}）",
 					"editBody": "設定後、相手はあなたの同意なく、チャットメッセージ・ソーシャル投稿・プロフィールを代わりに編集・削除できます。誤設定や騙されて設定すると、即座にコンテンツの制御を失います。",
 					"first": "リスクを理解したうえで続行",
-					"renderBody": "相手からのチャットメッセージとソーシャル投稿は、ブラウザで完全な Markdown（HTML/スクリプト含む）として描画されます。完全に信頼できる相手の場合のみ続行してください。",
+					"renderBody": "相手からのチャットメッセージとソーシャル投稿は、お使いのブラウザで完全な Markdown（HTML/スクリプトを含む）として描画されます。つまり、あなたの同意なしに相手が任意のコードを実行できる状態になります。完全に信頼できる相手の場合のみ続行してください。",
 					"second": "もう一度クリックして確定",
 					"title": "主人を設定しますか？",
 					"warningTitle": "リスクの高い操作です。よくお読みください"
 				},
-				"description": "設定すると、主人があなたに代わってチャットメッセージ・ソーシャル投稿・プロフィールを編集・削除できます。そのコンテンツは本機で安全でない Markdown（スクリプトを含む場合あり）として描画されます。任意のエンティティハッシュを設定でき、いつでも解除できます。",
+				"description": "設定すると、主人があなたに代わってチャットメッセージ・ソーシャル投稿・プロフィールを編集・削除できます。その内容は本機で安全でない Markdown（スクリプトを含む場合あり）としても描画されます。任意の entityHash を設定でき、いつでも解除できます。",
 				"entityHash": {
 					"placeholder": "主人のエンティティハッシュを入力"
 				},
-				"entityHashLabel": "主人のエンティティハッシュ（128 hex）",
+				"entityHashLabel": "主人の entityHash（128 hex）",
 				"save": "主人を保存",
 				"saveFailed": "保存に失敗しました: ${error}",
 				"saved": "主人を更新しました",
@@ -3398,7 +3398,7 @@
 			}
 		},
 		"entityProfile": {
-			"attributionMismatch": "表示 ID がメッセージの署名者と一致しません (たとえば、インポート履歴がインポーターによって再署名されました)。この表示名を暗号化 ID とはみなさないでください。",
+			"attributionMismatch": "表示 ID がメッセージの署名者と一致しません（たとえば、インポート履歴がインポーターによって再署名されました）。この表示名を暗号学的 ID とみなさないでください。",
 			"attributionMismatchShort": {
 				"title": "署名の帰属の不一致",
 				"aria-label": "署名の帰属の不一致"
@@ -3522,7 +3522,7 @@
 				}
 			},
 			"generating": {
-				"tips": "ロールが応答を生成中です。お待​​ちください...",
+				"tips": "ロールが応答を生成中です。お待ちください...",
 				"stop": {
 					"textContent": "停止",
 					"title": "生成を停止する"
@@ -3662,7 +3662,7 @@
 	},
 	"easynew": {
 		"title": "クイック作成",
-		"description": "事前定義されたテンプレートまたはカスタム テンプレートを使用して、キャラクター、ワールド、プラグインなどの新しいフォント パーツを迅速に構築します。数回クリックするだけで次の作品を作成できます。",
+		"description": "事前定義またはカスタムのテンプレートを使って、キャラクター、ワールド、プラグインなどの新しい fount パーツをすばやく構築します。次の作品はわずか数クリックで作成できます。",
 		"info": {
 			"description": "これらのテンプレートは、単純なコンポーネントを迅速に作成するためにのみ使用できます。複雑なコンポーネントは、依然として手動で作成する必要があります。"
 		},
@@ -3779,7 +3779,7 @@
 	},
 	"import": {
 		"title": "インポート",
-		"description": "あなたの大切なキャラクター、世界、構成をFountに抱かせましょう。ファイルからでも、貼り付けたテキストからでも、ここで新しい要素があなたの個人的なタペストリーに織り込まれます。",
+		"description": "あなたの大切なキャラクター、世界、構成を、fount の抱擁へ招きましょう。ファイルからでも、貼り付けたテキストからでも、ここで新しい要素があなたの個人的なタペストリーに織り込まれます。",
 		"tabs": {
 			"tabsLabel": {
 				"aria-label": "インポート方法の選択"
@@ -3848,7 +3848,7 @@
 		"title": "コンポーネントエクスポーター",
 		"pageTitle": "コンポーネントエクスポーター",
 		"pageSubtitle": "お気に入りのコンテンツをエクスポート",
-		"description": "フォントの作成物をエクスポートします。このツールは、選択したパーツを単純な zip ファイルにまとめて、保管または共有します。",
+		"description": "fount の作成物をエクスポートします。このツールは、選択したパーツを 1 つのシンプルな zip ファイルにまとめて、保管や共有に便利です。",
 		"steps": {
 			"part": "コンポーネントを選択します",
 			"action": "エクスポート"
@@ -4043,7 +4043,7 @@
 		},
 		"needsConfigReminder": "サービスソースを設定した後、通常は、このサービスソースを使用するコンポーネントの設定内の対応するフィールドにサービスソース名を入力する必要があります。",
 		"needsConfigLink": "ウィジェット設定に移動します",
-		"modelRankHint": "どのモデルを使えばいいか分からない？fount 作者のモデルランキングを見てみましょう！",
+		"modelRankHint": "どのモデルを使えばいいか分からない？fount の作者によるモデルランキングを見てみましょう！",
 		"subtypeSelect": {
 			"label": "ジェネレータのサブカテゴリ",
 			"placeholder": "ジェネレータのカテゴリを選択してください"
@@ -4119,11 +4119,11 @@
 				"credentialsRequired": "AWS のデフォルト認証情報チェーンを設定し、JSON に region を記入してください。"
 			},
 			"vertex": {
-				"credentialsRequired": "ADC を設定し、JSON に project と location を記入してください。"
+				"credentialsRequired": "ADC（アプリケーションのデフォルト認証情報）を設定し、JSON に project と location を記入してください。"
 			}
 		},
 		"prompts": {
-			"newFileName": "新しいサービス ソース ファイル名を入力してください (サフィックスは含めないでください)。"
+			"newFileName": "新しいサービス ソース ファイル名を入力してください（サフィックスは含めないでください）。"
 		},
 		"buttons": {
 			"save": "保存",
@@ -4140,9 +4140,9 @@
 			}
 		},
 		"confirm": {
-			"unsavedChanges": "未保存の変更があります。変更を破棄しますか?",
-			"deleteFile": "ファイルを削除してもよろしいですか?",
-			"unsavedChangesBeforeUnload": "未保存の変更があります。このページを離れてもよろしいですか?"
+			"unsavedChanges": "未保存の変更があります。変更を破棄しますか？",
+			"deleteFile": "ファイルを削除してもよろしいですか？",
+			"unsavedChangesBeforeUnload": "未保存の変更があります。このページを離れてもよろしいですか？"
 		},
 		"alerts": {
 			"saveFileFailed": "ファイルの保存に失敗しました: ${error}",
@@ -4181,7 +4181,7 @@
 	},
 	"telegram_bots": {
 		"title": "Telegramボット",
-		"description": "あなたのfountキャラクターがテレグラムの瞬時の波を横断しましょう。デジタル プレゼンスを設定し、会話を管理し、この活気に満ちたメッセージングの世界へのリーチを拡大します。",
+		"description": "あなたの fount キャラクターを Telegram の瞬時の波へ。デジタル プレゼンスを設定し、会話を管理し、この活気に満ちたメッセージングの世界へのリーチを拡大します。",
 		"cardTitle": "Telegramボット管理",
 		"botSelectDropdown": {
 			"placeholder": "ボットを選択"
@@ -4324,7 +4324,7 @@
 			"start_bot": {
 				"name": "Discordに来る",
 				"description": "あなたのキャラクターを Discord の世界に召喚します。",
-				"locked_description": "Discord Botを一度起動します。"
+				"locked_description": "Discord ボットを一度起動します。"
 			}
 		},
 		"home_function_buttons": {
@@ -4345,7 +4345,7 @@
 	},
 	"wechat_bots": {
 		"title": "WeChat ボット",
-		"description": "fount のキャラクターを WeChat ボットとして動かす。ロールを紐づけ、ボットを管理し、WeChat で会話します。",
+		"description": "fount のキャラクターを WeChat ボットとして動かす。ロールを紐づけ、ボットを管理し、WeChat で会話できます。",
 		"cardTitle": "WeChat ボット",
 		"botSelectDropdown": {
 			"placeholder": "ボットを選択"
@@ -4431,7 +4431,7 @@
 			"hint": "下の QR コードを WeChat でスキャンしてログインを完了してください。",
 			"button": "スキャンしてログイン",
 			"scanPrompt": "WeChat で QR コードをスキャン",
-			"waiting": "QR コードを読み込み中…",
+			"waiting": "QR コードを取得中…",
 			"scanned": "スキャン済み — スマホで確認してください",
 			"success": "WeChat に接続しました。設定を保存したので、ボットを起動できます。",
 			"needBot": "一覧からボットを選ぶか、「新規」で作成してください。"
@@ -4641,7 +4641,7 @@
 				"allowLabel": "目に見える人々",
 				"exceptLabel": "人を排除する",
 				"allow": {
-					"placeholder": "表示される人物エンティティハッシュ、スペースまたはカンマ区切り"
+					"placeholder": "表示する相手の entityHash（スペースまたはカンマ区切り）"
 				},
 				"except": {
 					"placeholder": "見せてはいけない人（任意）"
@@ -4862,7 +4862,7 @@
 				"invited": "オンライン招待状が送信されました",
 				"linked": "接続済み",
 				"peer": {
-					"placeholder": "ピアエンティティハッシュ:liveId"
+					"placeholder": "ピア entityHash:liveId"
 				}
 			},
 			"broadcast": {
@@ -4870,7 +4870,7 @@
 				"open": "放送へ行く",
 				"whipUrl": "WIPアドレス",
 				"whipToken": "無記名トークン",
-				"whipWaiting": "WHIP ストリーミング接続を待機中 (OBS などのストリーミング ソフトウェアが使用可能)…",
+				"whipWaiting": "WHIP ストリーミング接続を待機中（OBS などのストリーミング ソフトウェアが使用可能）…",
 				"start": "ライブ配信を開始する",
 				"stop": "生放送をやめる",
 				"started": "生放送が始まりました",
@@ -4890,7 +4890,7 @@
 			}
 		},
 		"search": {
-			"placeholder": "アップデート、ユーザー、または #トピックを検索 (最低 2 単語)",
+			"placeholder": "投稿、ユーザー、または #トピックを検索（2 文字以上）",
 			"aria-label": "投稿・ユーザー・トピックを検索",
 			"open": {
 				"aria-label": "検索"
@@ -5106,7 +5106,7 @@
 			"exploreAccounts": "現在推奨アカウントはありません",
 			"explorePosts": "まだ探索投稿はありません",
 			"likedPosts": "まだ「いいね！」はありません",
-			"noIdentity": "ソーシャルを使用する前に、チャットでフェデレーション ID を構成してください"
+			"noIdentity": "ソーシャルを使用する前に、チャットでフェデレーション ID を構成してください。"
 		},
 		"topic": {
 			"follow": "購読",
@@ -5177,7 +5177,7 @@
 		"showHidden": "見せかけの",
 		"name": "名前",
 		"descriptionField": "説明",
-		"attrHidden": "隠れる",
+		"attrHidden": "非表示",
 		"attrSystem": "システム（削除には確認が必要です）",
 		"previewUrl": "プレビュー URL",
 		"deletePreviewWithFile": "ファイル削除時にプレビューを削除",
@@ -5192,9 +5192,9 @@
 		"renamePrompt": "新しい名前",
 		"visibilityPrompt": "公開/非公開/フォロワー/非公開/選択済み)",
 		"cabinetActionPrompt": "アクション: 名前変更/削除/可視性",
-		"confirmDeleteCabinet": "このファイル キャビネットを削除してもよろしいですか?",
-		"confirmDelete": "選択した項目を削除しますか?",
-		"confirmDeleteSystem": "選択したシステム ファイルが含まれます。削除してもよろしいですか?",
+		"confirmDeleteCabinet": "このファイル キャビネットを削除してもよろしいですか？",
+		"confirmDelete": "選択した項目を削除しますか？",
+		"confirmDeleteSystem": "選択したシステム ファイルが含まれます。削除してもよろしいですか？",
 		"copied": "コピーされました",
 		"cutDone": "カット",
 		"undo": "キャンセル",
@@ -5202,7 +5202,7 @@
 		"goUp": "前のレベルに戻る",
 		"brokenLink": "リンクが壊れています: ${reason}",
 		"noDownload": "ダウンロード可能なコンテンツはありません",
-		"groupDownloadHint": "メッセージと添付をダウンロードします。次のブラウザー リンクからチャンネル ファイルを取得してください。",
+		"groupDownloadHint": "グループファイルは、メッセージの添付または後続のダウンロードリンクから取得してください。",
 		"remoteEntity": "リモートエンティティ",
 		"new": {
 			"cabinet": {
@@ -5217,18 +5217,18 @@
 	},
 	"browser_integration": {
 		"title": "ブラウザの統合",
-		"description": "fountとウェブの間のギャップを埋めます。このページには、シームレスな統合を可能にし、AI コンパニオンをブラウジング エクスペリエンスに組み込むためのユーザー スクリプトが提供されます。",
+		"description": "fount とウェブの間のギャップを埋めます。このページには、シームレスな統合を可能にし、AI コンパニオンをブラウジング エクスペリエンスに組み込むためのユーザー スクリプトが提供されます。",
 		"pageHeader": "ブラウザの統合",
 		"pageDescription": "fountロールがWebページと対話するには、このブラウザ統合スクリプトをインストールする必要があります。キャラクターとブラウザの間のブリッジとして機能し、ページコンテンツを表示してアクションを実行できるようにします。",
 		"install_script_title": "インストールスクリプト",
-		"install_script_description": "下のボタンをクリックして、ブラウザ統合スクリプトをインストールします。最初にTampermonkey のようなユーザースクリプトマネージャーをインストールする必要があります。",
+		"install_script_description": "下のボタンをクリックして、ブラウザ統合スクリプトをインストールします。先に Tampermonkey のようなユーザースクリプトマネージャーをインストールする必要があります。",
 		"install_button": "インストール",
-		"install_from_url_tip": "ブラウザはインストールできませんか？このURLをコピーして、Tampermonkey プラグインのURLからスクリプトをインポートします。",
+		"install_from_url_tip": "ブラウザでインストールできませんか？この URL をコピーして、Tampermonkey プラグインの URL からスクリプトをインポートします。",
 		"script_url_input": {
 			"aria-label": "ブラウザ統合スクリプトの URL"
 		},
 		"what_is_manager": "ユーザースクリプトマネージャーとは何ですか？",
-		"manager_explanation": "ユーザースクリプトマネージャーは、Webページを変更するスクリプトをインストールおよび実行できるブラウザ拡張機能です。 fount Integration Scriptを使用するには、拡張機能の1つが必要です。",
+		"manager_explanation": "ユーザースクリプトマネージャーは、Web ページを変更するスクリプトをインストールして実行できるブラウザ拡張機能です。fount 統合スクリプトを使用するには、拡張機能の 1 つが必要です。",
 		"popular_managers": "人気のある選択肢：",
 		"csp_warning": "統合機能を適切に動作させるためにCSPを無効にするプラグインのインストールが必要になる場合があります。${browser}の場合は[こちらのプラグイン](${link})をご利用いただけます。",
 		"connected_pages_title": "接続されたページ",
@@ -5305,13 +5305,13 @@
 	},
 	"browser_integration_script": {
 		"update": {
-			"prompt": "fount Browser Integration Scriptの新しいバージョンが利用可能です。更新ページは開いていますか？"
+			"prompt": "fount ブラウザ統合スクリプトの新しいバージョンが利用可能です。更新ページを開きますか？"
 		},
 		"csp_warning": "fount Browser Integration Scriptは、CSPポリシーがページに存在することを検出し、統合スクリプトが適切に機能しない可能性があります。 CSPを無効にするためにプラグインをインストールすることを検討してください。",
 		"hostChange": {
 			"securityWarningTitle": "--- fount 安全警告---",
-			"message": "現在のページ（ \"${origin}\"）は、fountホストアドレスを次のように変更しようとしています。\n\n「${newHost}」\n\n警告：このアクションを承認すると、新しいホストがブラウザの統合機能を完全に制御できるようになり、機密情報の漏れやアカウントの盗難につながる可能性があります。\n承認は、これがあなた自身の操作であると確信している場合にのみ行う必要があります（たとえば、fount サーバーの移行）。\n\nこの変更を許可したいですか？",
-			"uuidMismatchError": "fount セキュリティエラー：ホスト${newHost}のID（UUID）は、既存のものと一致しません。操作はキャンセルされました。",
+			"message": "現在のページ（ \"${origin}\"）は、fount ホストアドレスを次のように変更しようとしています。\n\n「${newHost}」\n\n警告：このアクションを承認すると、新しいホストがブラウザの統合機能を完全に制御できるようになり、機密情報の漏えいやアカウントの盗難につながるおそれがあります。\n承認は、これがあなた自身の操作であると確信している場合にのみ行ってください（たとえば、fount サーバーの移行）。\n\nこの変更を許可しますか？",
+			"uuidMismatchError": "fount セキュリティエラー：ホスト ${newHost} の ID（UUID）が既存のものと一致しません。操作はキャンセルされました。",
 			"verificationError": "セキュリティエラーのfount：新しいホスト「${newHost}」を確認できません。住所が正しいかどうか、およびサービスが実行されているかどうかを確認してください。"
 		}
 	},
@@ -5347,7 +5347,7 @@
 		}
 	},
 	"ide_integration": {
-		"description": "エージェント クライアント プロトコルを介してfountロールをサポートされているエディター (Zed、JetBrains、Neovim など) に接続し、API キーとロールを構成して、AI パートナーを開発ワークフローに参加させます。",
+		"description": "エージェント クライアント プロトコルを介して fount ロールを対応エディター（Zed、JetBrains、Neovim など）に接続し、API キーとロールを設定して、AI パートナーを開発ワークフローに参加させます。",
 		"title": "IDE連携",
 		"heading": "IDE連携",
 		"instruction": "fountロールを使用して、ACP 対応エディター (Zed、JetBrains、Neovim など) でのプログラミングを支援します。",
@@ -5379,7 +5379,7 @@
 		"apiKey": {
 			"copied": "APIキーをクリップボードにコピーしました",
 			"createError": "API キーの作成に失敗しました: ${message}",
-			"hint": "ACP スクリプト接続の fountに使用されます (API プロキシと同じキーのセット。ユーザー設定で作成できます)。",
+			"hint": "ACP スクリプトによる fount 接続に使用します（API プロキシと同じキーのセットで、ユーザー設定で作成できます）。",
 			"input": {
 				"aria-label": "APIキー"
 			},
@@ -5454,7 +5454,7 @@
 	},
 	"blog": {
 		"title": "fount エージェント研究所",
-		"description": "fount ワークショップからのエッセイ: エージェント設計についての考察——エージェントとは何か、LLM の得意分野は何か、そして知能を活かすべき場面にだけ活かすシステムをどう構築するか。",
+		"description": "fount ワークショップからのエッセイ: エージェント設計についての考察——エージェントとは何か、LLM は何に向いているのか、そして知能を本当に活かすべき場面にだけ活かすシステムをどう構築するか。",
 		"heading": "fount エージェント研究所",
 		"intro": "fount プロジェクトによるエージェント設計の連載——エージェントとは何か、LLM はどのような役割を担うのか、そしてどの仕事はむしろ普通のプログラムに任せるべきか。順番に読んでも、気の向くままに読み飛ばしても構いません。各記事は他の記事へリンクしています。",
 		"search": {
@@ -5543,7 +5543,7 @@
 			"advancedCustomization": "高度なカスタマイズ",
 			"customCSS": "カスタム CSS (上書き)",
 			"customMjsScript": "カスタム MJS スクリプト (任意)",
-			"mjsSyntaxHint": "[async-eval 構文](${asyncDocLink}) を使用します。 `load()` および `unload()` 関数を含むオブジェクトを返してください。",
+			"mjsSyntaxHint": "[async-eval 構文](${asyncDocLink}) を使用します。`load()` および `unload()` 関数を含むオブジェクトを返してください。",
 			"themeIdRequired": "テーマIDが必要です",
 			"newThemeName": "新しいテーマ名:",
 			"deleteConfirm": "テーマ ${id} を削除してもよろしいですか？",
@@ -5593,7 +5593,7 @@
 		"achievements": {
 			"change_theme": {
 				"name": "イメチェン完了！",
-				"description": "噴水は新しい外観とまったく新しい雰囲気を持っていました。",
+				"description": "fount は新しい装いで、雰囲気もすっかり変わりました。",
 				"locked_description": "テーマを一度切り替えます。"
 			}
 		},
@@ -5611,7 +5611,7 @@
 	"languageSettings": {
 		"title": "言語設定",
 		"pageTitle": "言語設定",
-		"description": "フォント アプリケーションの言語設定を管理します。利用可能な言語オプションを使用してエクスペリエンスをカスタマイズします。",
+		"description": "fount アプリケーションの言語設定を管理します。利用可能な言語オプションでエクスペリエンスをカスタマイズできます。",
 		"pageDescription": "ここで言語の好みを管理します。リスト内の言語は、ブラウザの設定よりも優先されます。",
 		"availableLanguages": "利用可能な言語",
 		"preferredLanguages": "優先言語リスト",
@@ -5698,11 +5698,11 @@
 			"wrongPassword": "パスワードが間違っています。",
 			"mustDiffer": "新しいユーザー名は現在のユーザー名とは異なる必要があります。",
 			"taken": "このユーザー名はすでに使用されています。",
-			"moveFailed": "ユーザー データ ディレクトリの名前を変更できませんでした: ${detail}。元のユーザー名が復元されました。"
+			"moveFailed": "ユーザー データ ディレクトリの名前を変更できませんでした: ${detail}。元のユーザー名に戻しました。"
 		},
 		"passkeys": {
 			"title": "セキュリティキーとパスキー",
-			"description": "バインド後、セキュリティ キーまたはネイティブ パスキーを使用してログインできます。 HTTPS またはローカルホストで使用する必要があります。最初にユーザー設定にキーを追加してください。",
+			"description": "登録すると、セキュリティ キーまたはこのデバイスのパスキーでログインできます。HTTPS または localhost で使用する必要があります。先にユーザー設定でキーを追加してください。",
 			"refreshButton": {
 				"title": "リストを更新する"
 			},
@@ -5714,13 +5714,13 @@
 				"placeholder": "例: 仕事用の YubiKey"
 			},
 			"addButton": "セキュリティキーを追加する",
-			"noneFound": "まだセキュリティ キーがバインドされていません。",
+			"noneFound": "まだセキュリティキーがバインドされていません。",
 			"itemDetails": "追加時間: ${created}",
 			"removeButton": "削除",
 			"removeConfirm": "このキーを削除しますか？削除後は、このキーではログインできなくなります。",
 			"removeSuccess": "セキュリティキーが削除されました。",
 			"addSuccess": "セキュリティキーが追加されました。",
-			"errorLoadLibrary": "WebAuthn ライブラリをロードできません。",
+			"errorLoadLibrary": "WebAuthn 補助ライブラリをロードできません。",
 			"errorCancelled": "追加がキャンセルされました。",
 			"apiInvalidPassword": "パスワードが間違っています。",
 			"apiMissingCredential": "有効なパスキー認証情報がありません。",
@@ -5854,7 +5854,7 @@
 	},
 	"access": {
 		"title": "他のデバイスからfountにアクセス",
-		"description": "単一の画面を超えてfountの範囲を拡張します。ここには、他のデバイスから仲間と接続するためのゲートウェイ (URL や QR コード) があり、ローカル イーサを渡る単純なブリッジとなります。",
+		"description": "単一の画面を超えて fount の範囲を拡張します。ここには、他のデバイスから仲間と接続するためのゲートウェイ (URL や QR コード) があり、ローカル イーサネットをまたぐシンプルな橋となります。",
 		"heading": "他のデバイスからfountにアクセスしますか？",
 		"instruction": {
 			"sameLAN": "デバイスとfountホストが同じローカルネットワーク上にあることを確認してください。",
@@ -5933,13 +5933,13 @@
 		},
 		"infra": {
 			"title": "ネットワーク公益",
-			"description": "接続中の子fountを、fountネットワーク全体を支える公益ノードとして使うかどうかを一括で設定します。オフにしても分機は本機からのリモート実行を受け付けますが、ネットワーク層の支援には参加しません。",
-			"capabilityRelay": "overlay のマルチホップ転送に参加し、直結できないときでも他ノード同士の通信を助けます。",
+			"description": "接続中の子 fount を、fount ネットワーク全体を支える公益ノードとして使うかどうかを一括で設定します。オフにしても子機は本機からのリモート実行を受け付けますが、ネットワーク層の支援には参加しません。",
+			"capabilityRelay": "overlay のマルチホップ転送に参加し、直結できないときでも他のノード同士が通信できるよう支援します。",
 			"capabilityMailbox": "オフライン配信を預かり、相手ノードが復帰してもダイレクトメッセージを受け取れるようにします。",
 			"hostPriority": "オンのときは本機を優先：本機のレピュテーション表で経路を重み付けし、本機を最高優先度に固定します。",
-			"toggleLabel": "分機を公益に参加させる",
-			"enabledToast": "オン：分機がネットワーク公益に参加します（本機優先）",
-			"disabledToast": "オフ：分機はネットワーク公益に参加しません"
+			"toggleLabel": "子機を公益に参加させる",
+			"enabledToast": "オン: 子機がネットワーク公益に参加します（本機優先）",
+			"disabledToast": "オフ: 子機はネットワーク公益に参加しません"
 		},
 		"connectedSubfounts": {
 			"title": "接続されたSubfount",
@@ -5976,7 +5976,7 @@
 		},
 		"installClient": {
 			"title": "サブfountクライアントをダウンロードする",
-			"description": "スタンドアロンのSubfount クライアント スクリプトをダウンロードして、リモート デバイス上で実行します。",
+			"description": "スタンドアロンの Subfount クライアント スクリプトをダウンロードし、リモート デバイス上で実行します。",
 			"tabsLabel": {
 				"aria-label": "オペレーティングシステムを選択"
 			},
@@ -6039,7 +6039,7 @@
 	},
 	"log_viewer": {
 		"title": "ログ",
-		"description": "fount のリアルタイムサーバーログを表示し、ブラウザで JavaScript REPL を実行します。",
+		"description": "fount のサーバーログをリアルタイムで表示し、ブラウザで JavaScript REPL を実行できます。",
 		"connectionError": "ログサービスに接続できません。ローカルでアクセスするかログインしてから再度お試しください。",
 		"logs": {
 			"openSourceFailed": "ソースファイルを開けませんでした: ${message}",
@@ -6067,7 +6067,7 @@
 	},
 	"debug_info": {
 		"title": "デバッグとシステム情報",
-		"description": "fount のインストールに関する詳細なデバッグ情報とシステム情報を取得します。これは、トラブルシューティングやサポート リクエストに非常に役立ちます。",
+		"description": "fount のインストールに関する詳細なデバッグ情報とシステム情報を取得できます。トラブルシューティングやサポートの依頼に非常に役立ちます。",
 		"heading": "デバッグとシステム情報",
 		"copyButton": "レポートのコピー",
 		"versionStatus": {
@@ -6117,7 +6117,7 @@
 	},
 	"badges_maker": {
 		"title": "fount! バッジコンバーター",
-		"description": "プロジェクトにFountのキャラクターのタッチが必要な場合に。 Shields.io バッジを変換して、新しく共鳴するアイデンティティを与えます。",
+		"description": "プロジェクトに fount らしさを添えたいときに。Shields.io バッジを変換し、新たな共鳴するアイデンティティを与えます。",
 		"card_title": "fountバッジリンクコンバーター",
 		"original_url_label": "img.shields.io URLを貼り付けます",
 		"original_url": {
@@ -6441,7 +6441,7 @@
 	"pro_cancel_screen": {
 		"title": "fount pro のサブスクリプションが解約されました",
 		"description": "fount pro のサブスクリプションを解約する方法と、解約理由の記入についてご案内します。",
-		"intro": "ご利用いただきありがとうございました。今後の改善のため、解約された理由を教えていただけますか?",
+		"intro": "ご利用いただきありがとうございました。fount pro をより良くするため、解約された理由を教えていただけますか？",
 		"language_selector": {
 			"button": {
 				"aria-label": "言語を選択"
@@ -6472,7 +6472,7 @@
 	},
 	"code": {
 		"title": "Code",
-		"description": "ワークスペースとマシンを対象とする AI コーディングセッション。",
+		"description": "ワークスペースとマシンを対象とする AI コーディング セッション。",
 		"sessions": {
 			"new": "新規セッション",
 			"untitled": "無題のセッション",
@@ -6794,7 +6794,7 @@
 		},
 		"list": {
 			"new": "新規 gist",
-			"empty": "まだ gist がありません。右上の「新規 gist」から作成してください。",
+			"empty": "まだ gist がありません。右上の「新規 gist」で最初の 1 つを作成してください。",
 			"updatedAt": "更新：",
 			"selectAll": "すべて選択",
 			"noneSelected": "未選択",

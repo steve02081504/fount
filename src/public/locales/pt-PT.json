@@ -2,31 +2,31 @@
 	"lang": "pt-PT",
 	"name": "Português",
 	"tips": {
-		"title": "Você sabia?",
+		"title": "Sabia que…?",
 		"data": [
-			"Use a tecla `esc` em qualquer página do fount para retornar à página anterior.",
-			"Você pode usar `ctrl+s` para salvar a configuração na página de configuração.",
-			"Manter pressionada a tecla `shift` na página de bate-papo pode ajudá-lo a excluir mensagens rapidamente.",
-			"Se você não contar aos desenvolvedores, eles talvez nunca saibam qual problema você encontrou.",
-			"Se de repente você encontrar um problema estranho e o desenvolvedor não responder por um tempo, você pode tentar usar o comando `fount init` para redefinir o fount.",
+			"Use a tecla `esc` em qualquer página do fount para voltar à página anterior.",
+			"Pode usar `ctrl+s` para guardar as definições nas páginas de definições.",
+			"Manter a tecla `shift` pressionada na página de conversa pode ajudá-lo a eliminar mensagens rapidamente.",
+			"Se não contar aos programadores, eles talvez nunca saibam qual foi o problema.",
+			"Se de repente encontrar um problema estranho e o programador não responder durante algum tempo, pode tentar usar o comando `fount init` para reinicializar o fount.",
 			"Se você encontrar um problema particularmente estranho, tente reiniciar o computador.",
 			"Usar o comando `fount remove` para desinstalar o fount é mais limpo do que excluir a pasta.",
-			"Digite `fount cake` na linha de comando para obter um bolo delicioso e grátis!",
-			"Quaisquer arquivos de dados do fount são salvos no diretório `fount/data` e você pode visualizá-los, modificá-los e fazer backup deles a qualquer hora e em qualquer lugar.",
+			"Escreva `fount cake` na linha de comandos para obter um bolo delicioso e grátis!",
+			"Todos os ficheiros de dados do fount são guardados no diretório `fount/data` e pode vê-los, modificá-los e fazer cópias de segurança a qualquer hora e em qualquer lugar.",
 			"O nome do fount está todo em letras minúsculas, é `f`ount, não `F`ount.",
-			"Faça backup de todos os dados nos quais seu agente opera regularmente antes de usar o novo modelo - você nunca sabe se o novo modelo terá um desempenho péssimo em alguns lugares.",
+			"Faça uma cópia de segurança de todos os dados com que o seu agente trabalha regularmente antes de usar o novo modelo — nunca se sabe se o novo modelo terá um desempenho péssimo em alguns sítios.",
 			"O principal público do fount são desenvolvedores de software e entusiastas de RPG, mas também é usado na construção de agentes comerciais, assistência médica, militar, finanças e outras áreas.",
 			"O nome do personagem embutido de fount, ZL-31, não tem significado e foi apenas um golpe no cérebro.",
 			"As imagens nos arquivos do fount são todas armazenadas no formato SVG e renderizadas em PNG ou ico quando necessário. Não há arquivos binários exceto LICENSE.",
-			"Qualquer código no fount pode ser executado diretamente sem compilação, o que você vê é o que obtém.",
+			"Qualquer código no fount pode ser executado diretamente sem compilação: o que vê é o que obtém.",
 			"O fount já teve um fundo de página interativo dinâmico muito legal, mas foi excluído posteriormente porque ocupava muita CPU.",
 			"O fount foi originalmente desenvolvido para um agente NSFW chamado \"GentianAphrodite\".",
 			"Uma das diferenças entre agentes e humanos é que os humanos fazem cocô.",
 			"Os agentes só ficam conscientes no momento em que são chamados, enquanto os humanos ficam conscientes a qualquer hora e em qualquer lugar quando estão acordados.",
-			"Algumas pessoas se apaixonam ou até se casam com seus agentes!",
+			"Há pessoas que se apaixonam ou até casam com os seus agentes!",
 			"A IA é usada para escrever poemas, apaixonar-se e fazer desenhos para as pessoas. Carregar tijolos, varrer o chão e levar o lixo para fora são o que os humanos deveriam fazer.",
 			"Hoje não é o Dia da Mentira.",
-			"Não, você não sabia."
+			"Não, não sabia."
 		]
 	},
 	"fountConsole": {
@@ -60,7 +60,7 @@
 			"noInstanceRunning": "Nenhuma instância em execução foi detectada. Inicie o fount primeiro.",
 			"runPartLog": "Execute ${partpath} como ${username}, argumentos: ${args}",
 			"invokePartLog": "Chame ${partpath} como ${username}, parâmetro: ${invokedata}",
-			"invalidCommand": "Comando inválido. Utilize \"fount run <Nome de utilizador> <Caminho do Componente> <parâmetros...>\".",
+			"invalidCommand": "Comando inválido. Utilize \"fount run <caminho do componente> <parâmetros...>\" (ou \"fount runas <nome de utilizador> <caminho do componente>\" para especificar um utilizador).",
 			"invalidCommandFormat": "Formato de comando inválido.",
 			"unsupportedCommand": "Tipo de comando não suportado.",
 			"processMessageError": "Erro ao processar a mensagem IPC: ${error}",
@@ -146,7 +146,7 @@
 			"replHint": "Enter para executar · Shift+Enter para nova linha"
 		},
 		"test": {
-			"help": "Utilização: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --list [<groups>...]\n       fount test --kernel shutdown|reboot\n\nSeletores (grupos separados por espaços; suites no mesmo grupo por vírgulas; / e : equivalentes):\n  nome              todas as suites do grupo (ex.: shells/chat)\n  nome:suite        uma suite específica\n  nome:suite:item   um subteste ou ficheiro de teste específico\n\nSem correspondência exata, expande por prefixo (shells → shells/chat, shells/social); globs (*, ?, **) também suportados.\n\nPor defeito (fount test simples): planeia falhas/incompletos/ruidosos e obsoletos numa só passagem e executa; as falhas só bloqueiam dependentes — saída não zero no final. Nunca o repositório inteiro — usa --all para isso.\n\n--watch      vigilância contínua; mantém-se ativo mesmo com fila vazia (Ctrl+C para sair); não combina com --all, --force, --update-estimates ou seletores\n--all        todas as suites no âmbito\n--force      execução forçada; não reutiliza resultados anteriores\n--update-estimates  reescreve expected em cada manifest a partir das médias atuais da BD; seletores opcionais; não executa testes\n--list        lista os conjuntos de testes (pode usar seletores para restringir o âmbito); não inicia o kernel nem executa testes\n--kernel     shutdown para o kernel de testes; reboot para e volta a iniciar; não combina com outros argumentos\n\nexemplos:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
+			"help": "Utilização: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --list [<groups>...]\n       fount test --kernel shutdown|reboot\n\nSeletores (grupos separados por espaços; suites no mesmo grupo por vírgulas; / e : equivalentes):\n  nome              todas as suites do grupo (ex.: shells/chat)\n  nome:suite        uma suite específica\n  nome:suite:item   um subteste ou ficheiro de teste específico\n\nSem correspondência exata, expande por prefixo (shells → shells/chat, shells/social); globs (*, ?, **) também suportados.\n\nPor defeito (fount test simples): planeia falhas/incompletos/ruidosos e obsoletos numa só passagem e executa; as falhas só bloqueiam dependentes — saída não zero no final. Nunca o repositório inteiro — usa --all para isso.\n\n--debug      série passo a passo: cada suite é um passo; após cada passo verificam-se resíduos e qualquer resíduo termina com erro\n--watch      vigilância contínua; mantém-se ativo mesmo com fila vazia (Ctrl+C para sair); não combina com --all, --force, --update-estimates ou seletores\n--all        todas as suites no âmbito\n--force      execução forçada; não reutiliza resultados anteriores\n--update-estimates  reescreve expected em cada manifest a partir das médias atuais da BD; seletores opcionais; não executa testes\n--list        lista os conjuntos de testes (pode usar seletores para restringir o âmbito); não inicia o kernel nem executa testes\n--kernel     shutdown para o kernel de testes; reboot para e volta a iniciar; não combina com outros argumentos\n\nexemplos:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
 			"watchNoGroups": "Utilização: fount test --watch (não pode ser usado com outras opções)",
 			"updateEstimates": {
 				"incompatible": "Utilização: fount test --update-estimates [<groups>...] (não pode ser usado com outros interruptores)",
@@ -168,7 +168,7 @@
 			},
 			"skipBecause": {
 				"pass": "Ignorado (issue ainda aberta ou fechada mas período de carência não decorrido): ${label} — ${url}",
-				"fail": "Falhou (issue fechada e período de carência decorrido — acompanhar e atualizar skip_because antes de reverificar): ${label} — ${url}"
+				"fail": "Falhou (issue fechada e período de carência decorrido — acompanhar e atualizar skip_because antes de voltar a verificar): ${label} — ${url}"
 			},
 			"moduleCheck": {
 				"missedReady": "Verificação de módulos: processo terminou sem sinal ready: ${label}"
@@ -179,7 +179,7 @@
 				"isolatedUser": "Os testes devem ser executados com o utilizador isolado \"${expectedUsername}\"; a sessão atual está a correr como \"${username}\". Inicie-os através do run.mjs e não aponte para um fount de produção ou desenvolvimento."
 			},
 			"queue": {
-				"append": "Na fila: ${label} (${reason}) ≈ ${remaining} restantes",
+				"append": "Na fila: ${label} (${reason}) — faltam ≈ ${remaining}",
 				"remove": "Removido da fila: ${label} (${reason}) ≈ ${remaining} restantes"
 			},
 			"display": {
@@ -188,8 +188,8 @@
 				"explicitSelectedCount": "Seleção explícita: ${count}",
 				"reason": "${label}: ${reason}",
 				"remaining": "Total ≈ ${remaining} restantes",
-				"remainingUnknown": "≈ ${remaining} restante no total (${count} com duração desconhecida adicional)",
-				"remainingOnlyUnknown": "≈ ${count} com duração desconhecida restante no total",
+				"remainingUnknown": "≈ ${remaining} restante no total (mais ${count} de duração desconhecida)",
+				"remainingOnlyUnknown": "≈ ${count} de duração desconhecida ainda em falta no total",
 				"queued": {
 					"switch": "count",
 					"default": "Na fila — ${count} à frente",
@@ -272,8 +272,8 @@
 			"allReusedHint": "Nenhum suite é realmente executado desta vez: a falha é o último resultado herdado e o bloqueio não é resolvido (os ficheiros relevantes permanecem inalterados). Repare os ficheiros relevantes e execute novamente ou use fount test --force para forçar uma execução real.",
 			"failuresSaved": "lista de falhas guardada: ${path} (${count} suites)",
 			"failuresCleared": "manifest ${manifestId} tudo aprovado; lista de falhas limpa.",
-			"terminated": "Término do tempo limite: ${label} — ${reason}",
-			"sleepDetected": "Suspensão do sistema detetada (intervalo do watchdog saltou ${gap} ≥ ${limit}); ${label} interrompido e pronto a relançar (já correu ${elapsed})",
+			"terminated": "Tempo limite excedido: ${label} — ${reason}",
+			"sleepDetected": "Suspensão do sistema detetada (o intervalo do watchdog saltou ${gap} ≥ ${limit}); ${label} interrompido para relançar (já correu ${elapsed})",
 			"sleepRetry": "Interrompido pela suspensão do sistema; a relançar ${label} (tentativa ${attempt})",
 			"nothingToContinue": "Tudo verde e sem itens expirados, não há necessidade de executar novamente.",
 			"triggerNoMatch": "trigger não correspondeu a nenhum ficheiro: ${scope} — ${pattern}",
@@ -405,7 +405,7 @@
 			},
 			"state": {
 				"title": "Status do teste de fount",
-				"artifacts": "Diretório atual: `${path}`",
+				"artifacts": "Diretório de estado: `${path}`",
 				"sectionDependencyTree": "Árvore de dependência",
 				"sectionOverview": "Status atual de cada suite",
 				"sectionBlocked": "Suíte bloqueada",
@@ -431,9 +431,9 @@
 				"unknown": "TERMINADO ${label}: teste interrompido"
 			},
 			"unknown": {
-				"fileFilter": "Filtragem de ficheiro de teste desconhecido: ${suite} → ${names}",
+				"fileFilter": "Filtro de ficheiro de teste desconhecido: ${suite} → ${names}",
 				"manifestId": "Id de manifest desconhecido: ${ids}",
-				"subtestFilter": "Filtragem de subteste desconhecido: ${suite} → ${names}",
+				"subtestFilter": "Filtro de subteste desconhecido: ${suite} → ${names}",
 				"suite": "Suite desconhecida: ${name}",
 				"suiteSelector": "Designação de suíte desconhecida: ${ids}"
 			},
@@ -451,9 +451,9 @@
 				"noUrl": "Erro: URL para o manipulador de protocolo não fornecido."
 			},
 			"update": {
-				"skippingFountUpdate": "Como o arquivo `.noupdate` existe, a atualização da fount é ignorada",
-				"switchingToBranch": "Mudando para o ramo «${branch}»…",
-				"switchingToRemote": "Mudando para o ramo predefinido «${branch}» do remoto «${url}»…",
+				"skippingFountUpdate": "Como o ficheiro `.noupdate` existe, a atualização da fount é ignorada",
+				"switchingToBranch": "A mudar para o ramo «${branch}»…",
+				"switchingToRemote": "A mudar para o ramo predefinido «${branch}» do remoto «${url}»…",
 				"removedNoUpdate": "`.noupdate` removido; atualizações automáticas reativadas.",
 				"pinningToCommit": "Fixando ao commit `${ref}` e criando `.noupdate`…",
 				"pinningToPullRequest": "Fixando a pull request #${pr} e criando `.noupdate`…",
@@ -484,10 +484,10 @@
 				"desktopShortcutCreated": "Atalho na área de trabalho criado em `${path}`",
 				"startMenuShortcutCreated": "Atalho do menu Iniciar criado em `${path}`",
 				"protocolHandlerRegistered": "fount:// manipulador de protocolo registrado.",
-				"shortcutNotSupported": "Aviso: Seu sistema operacional (${os}) não suporta a criação de atalhos na área de trabalho.",
-				"osacompileNotFound": "Erro: 'osacompile' não encontrado. Não foi possível criar o aplicativo macOS.",
+				"shortcutNotSupported": "Aviso: o seu sistema operativo (${os}) não suporta a criação de atalhos no ambiente de trabalho.",
+				"osacompileNotFound": "Erro: 'osacompile' não encontrado. Não foi possível criar a aplicação macOS.",
 				"lsregisterFailed": "Aviso: falha ao usar `lsregister` para registar um aplicativo com LaunchServices.",
-				"createDesktopAppFailed": "Erro: Falha ao criar aplicativo de desktop."
+				"createDesktopAppFailed": "Erro: falha ao criar a aplicação de ambiente de trabalho."
 			},
 			"steam": {
 				"registering": "A registar fount como jogo não Steam no Steam…",
@@ -499,19 +499,19 @@
 				"repoNotFound": "O repositório git da fount não foi encontrado. Inicializando um novo...",
 				"fetchingAndResetting": "Buscando do repositório remoto e redefinindo para master...",
 				"localChangesDetected": "Alterações locais detectadas, as diferenças serão salvas antes de serem substituídas.",
-				"backupSavedTo": "Um backup das suas alterações locais foi salvo em: `${path}`",
+				"backupSavedTo": "Um backup das suas alterações locais foi guardado em: `${path}`",
 				"updatingFromRemote": "Atualizando do repositório remoto...",
 				"alreadyUpToDate": "Já é o mais recente.",
 				"localBranchAhead": "A filial local está à frente da filial remota. Não são necessárias atualizações.",
 				"branchesDiverged": "As filiais locais e remotas foram bifurcadas. Atualização forçada em andamento...",
 				"unrelatedHistories": "Os repositórios local e remoto não têm histórico comum. A forçar atualização…",
 				"notOnBranch": "Fora do branch, mude para 'master'...",
-				"upstreamGoneFallbackMaster": "O ramo remoto «${branch}» foi eliminado; a seguir master em alternativa…",
+				"upstreamGoneFallbackMaster": "O ramo remoto «${branch}» foi eliminado; a acompanhar master como alternativa…",
 				"noUpstreamBranch": "Aviso: sem ramo upstream configurado para '${branch}', a usar '${remote}'.",
 				"dirtyWorkingDirectory": "Aviso: o diretório de trabalho não está limpo. Prepare ou confirme suas alterações antes de atualizar.",
 				"notInstalled": "Git não está instalado, tentando instalar...",
-				"notInstalledSkippingPull": "Git não está instalado, pule `git pull`",
-				"repoNotFoundSkippingPull": "Repositório não encontrado, pule `git pull`",
+				"notInstalledSkippingPull": "Git não está instalado; a ignorar `git pull`",
+				"repoNotFoundSkippingPull": "Repositório não encontrado; a ignorar `git pull`",
 				"fetchFailed": "Falha ao obter da 'origem'.",
 				"fetchFailedSkippingUpdate": "Não foi possível obter as atualizações do GitHub; atualização ignorada.",
 				"remoteRefUnavailable": "A referência remota '${ref}' não está disponível; sincronização Git ignorada.",
@@ -523,7 +523,7 @@
 				"isRequired": "Deno não encontrado, a fount não pode ser executada sem Deno",
 				"installingTermux": "Instalando Deno para Termux...",
 				"installFailedFallback": "A instalação do Deno falhou, tentando instalar automaticamente na pasta path da fount...",
-				"notWorking": "Por algum motivo, o Deno não está funcionando, você pode entrar em https://github.com/denoland/deno/issues para obter suporte",
+				"notWorking": "Por algum motivo, o Deno não está a funcionar; pode consultar https://github.com/denoland/deno/issues para obter suporte",
 				"upgradeFailed": "Aviso: a atualização do Deno pode ter falhado. Por favor, verifique se há erros.",
 				"upgradeFailedTermux": "O comando de atualização do Deno falhou, tentando reinstalar o Deno para Termux...",
 				"patchMissing": "Erro: executável Deno não encontrado antes do patch. Não pode ser corrigido.",
@@ -556,13 +556,13 @@
 				"runnerUpdating": "A atualizar o instalador…"
 			},
 			"clean": {
-				"removingCaches": "Removendo cache...",
+				"removingCaches": "A remover cache...",
 				"cleaningDenoCaches": "Limpando o cache do Deno...",
 				"cleaningOldPwshModules": "Limpando módulos pwsh antigos..."
 			},
 			"keepalive": {
 				"initComplete": "Reinicialização concluída. Tentando reiniciar a fount...",
-				"autoInitDisabled": "A fount foi reiniciada várias vezes no último curto período de tempo, mas a reinicialização automática foi desativada devido à presença do arquivo `.noautoinit`. Saindo.",
+				"autoInitDisabled": "A fount foi reiniciada várias vezes nos últimos tempos, mas a reinicialização automática foi desativada devido à presença do ficheiro `.noautoinit`. Saindo.",
 				"restartingTooFast": "A fount foi reiniciada várias vezes em um curto período de tempo. Reinicialização forçada...",
 				"failedToStart": "Mesmo após tentativas de reparo automático, a fount não inicia por um curto período de tempo. Verifique se há erros nos logs.",
 				"initFailed": "Falha na inicialização da fount. Saindo."
@@ -583,12 +583,12 @@
 				"fountInstallationDirRemoved": "O diretório de instalação da fount foi removido.",
 				"protocolHandlerRemoved": "O manipulador de protocolo `fount://` foi removido.",
 				"fountPwshRemovedFromProfile": "fount-pwsh foi removido do perfil do PowerShell.",
-				"pwshProfileNotFound": "Perfil do PowerShell não encontrado, ignorando a remoção do `fount-pwsh` do perfil.",
-				"uninstallFountPwshFailed": "Falha na desinstalação do font-pwsh: ${message}",
+				"pwshProfileNotFound": "Perfil do PowerShell não encontrado; a ignorar a remoção do `fount-pwsh` do perfil.",
+				"uninstallFountPwshFailed": "Falha ao desinstalar o `fount-pwsh`: ${message}",
 				"terminalProfileRemoved": "O diretório Windows Terminal Profile foi removido.",
 				"terminalProfileNotFound": "Diretório de perfil do Terminal do Windows não encontrado.",
-				"desktopShortcutRemoved": "Atalho da área de trabalho removido.",
-				"desktopShortcutNotFound": "Atalho na área de trabalho não encontrado.",
+				"desktopShortcutRemoved": "Atalho do ambiente de trabalho removido.",
+				"desktopShortcutNotFound": "Atalho no ambiente de trabalho não encontrado.",
 				"startMenuShortcutRemoved": "O atalho do menu Iniciar foi removido.",
 				"startMenuShortcutNotFound": "Atalho do menu Iniciar não encontrado.",
 				"steamShortcutRemoved": "fount foi removido da sua biblioteca Steam.",
@@ -602,22 +602,22 @@
 					"winget": "Desinstalando o Winget..."
 				},
 				"removing": {
-					"backgroundRunner": "Removendo programas em segundo plano...",
-					"desktopShortcut": "Removendo atalho da área de trabalho...",
+					"backgroundRunner": "A remover programas em segundo plano...",
+					"desktopShortcut": "A remover atalho da área de trabalho...",
 					"fount": {
-						"main": "Removendo fount...",
-						"fromGitSafeDir": "Removendo fount do `git safe.directory`...",
-						"fromPath": "Removendo fount do PATH...",
-						"installationDir": "Removendo o diretório de instalação da fount...",
-						"pwshFromProfile": "Removendo `fount-pwsh` do perfil do PowerShell..."
+						"main": "A remover fount...",
+						"fromGitSafeDir": "A remover fount do `git safe.directory`...",
+						"fromPath": "A remover fount do PATH...",
+						"installationDir": "A remover o diretório de instalação da fount...",
+						"pwshFromProfile": "A remover `fount-pwsh` do perfil do PowerShell..."
 					},
-					"installedPwshModules": "Removendo o módulo pwsh instalado...",
-					"installedSystemPackages": "Removendo pacotes de sistema instalados...",
-					"protocolHandler": "Removendo o manipulador de protocolo `fount://`...",
-					"startMenuShortcut": "Removendo atalhos do menu Iniciar...",
+					"installedPwshModules": "A remover o módulo pwsh instalado...",
+					"installedSystemPackages": "A remover pacotes de sistema instalados...",
+					"protocolHandler": "A remover o manipulador de protocolo `fount://`...",
+					"startMenuShortcut": "A remover atalhos do menu Iniciar...",
 					"steamShortcut": "A remover fount do Steam…",
 					"terminalKeybindings": "A remover patch de atalhos do terminal...",
-					"terminalProfile": "Removendo o perfil do terminal do Windows..."
+					"terminalProfile": "A remover o perfil do terminal do Windows..."
 				},
 				"remove": {
 					"backgroundRunnerFailed": "Falha ao remover programa em execução em segundo plano: ${message}",
@@ -774,7 +774,7 @@
 			"back": "Voltar",
 			"confirm": {
 				"title": "Confirmar execução",
-				"message": "Tem certeza de que deseja executar ${partpath}?",
+				"message": "Tem a certeza de que deseja executar ${partpath}?",
 				"confirm": "confirmar",
 				"cancel": "Cancelar"
 			}
@@ -796,7 +796,7 @@
 	"auth": {
 		"title": "Autenticação",
 		"subtitle": "Os dados do utilizador são armazenados localmente.",
-		"description": "Aqui você define sua presença. Seja retornando a um refúgio familiar ou criando um novo espaço para suas histórias, é aqui que começa sua jornada com a fount.",
+		"description": "Aqui define a sua presença. Ao regressar a um refúgio familiar ou ao criar um novo espaço para as suas histórias, é aqui que começa a sua jornada com a fount.",
 		"usernameLabel": "Nome de utilizador:",
 		"usernameInput": {
 			"placeholder": "Introduza o nome de utilizador"
@@ -898,7 +898,7 @@
 	},
 	"tutorial": {
 		"title": "Que tal um tutorial?",
-		"description": "Deixe-nos caminhar com você pelo mundo das founts. Este tutorial interativo iluminará o caminho, ajudando você a descobrir a magia que está em sua essência. Sua aventura começa com a compreensão.",
+		"description": "Deixe-nos caminhar consigo pelo mundo das founts. Este tutorial interativo iluminará o caminho e ajudará a descobrir a magia que está na sua essência. A sua aventura começa com a compreensão.",
 		"modal": {
 			"title": "Bem-vindo ao fount!",
 			"instruction": "Gostaria de seguir o tutorial para principiantes?",
@@ -913,10 +913,10 @@
 			"endButton": "Começar!"
 		},
 		"progressMessages": {
-			"mouseMove": "Por favor, localize o seu rato ${mouseIcon}. Agora, use a sua mão para o empurrar pela mesa.",
-			"keyboardPress": "Por favor, prima uma tecla no seu teclado ${keyboardIcon}.",
-			"mobileTouchMove": "Este é o seu telemóvel ${phoneIcon}. Por favor, use um dos seus dedos para tocar no ecrã e deslize-o sem o levantar.",
-			"mobileClick": "Toque no ecrã do seu telemóvel ${phoneIcon} uma vez com o dedo e levante-o. Muito bem!"
+			"mouseMove": "Por favor, localize o seu rato ${mouseIcon}.<br/>Agora, use a sua mão para o empurrar pela mesa.",
+			"keyboardPress": "Por favor, encontre o seu teclado ${keyboardIcon}<br/>e prima uma tecla com um dos seus dedos.",
+			"mobileTouchMove": "Este é o seu telemóvel ${phoneIcon}.<br/>Por favor, use um dos seus dedos para tocar no ecrã e deslize-o sem o levantar.",
+			"mobileClick": "Toque uma vez no ecrã do seu telemóvel ${phoneIcon} com o dedo<br/>e depois levante-o. Muito bem!"
 		},
 		"achievements": {
 			"complete_tutorial": {
@@ -973,7 +973,7 @@
 			}
 		},
 		"emptyList": {
-			"message": "Vazio...<br/>Talvez você possa [criar uma nova parte](${newpartLink}) ou ir ao [servidor de Telegram do fount](${telegramLink}) para se divertir?"
+			"message": "Vazio…<br/>Talvez possa [criar uma nova parte](${newpartLink}) ou ir ao [servidor de Telegram do fount](${telegramLink}) para se divertir?"
 		},
 		"part_pages": {
 			"default": {
@@ -1069,7 +1069,7 @@
 				},
 				"generators/search": {
 					"title": "Gerador de serviço de pesquisa",
-					"subtitle": "No oceano de informações, acenda a luz para você.",
+					"subtitle": "No oceano de informações, acenda a luz por si.",
 					"card": {
 						"defaultCheckbox": {
 							"title": "Definir como gerador de pesquisa padrão"
@@ -1148,11 +1148,11 @@
 		"achievements": {
 			"first_login": {
 				"name": "Olá, fount!",
-				"description": "Rumo ao novo mundo, fazendo login pela primeira vez!",
+				"description": "Rumo ao novo mundo, ao iniciar sessão pela primeira vez!",
 				"locked_description": "Faça login na fount uma vez."
 			},
 			"sfw_mode_on": {
-				"name": "Tem alguém atrás de você!",
+				"name": "Chefe à vista!",
 				"description": "Mude rapidamente para o modo para todas as idades, sou uma criança muito inteligente.",
 				"locked_description": "Ative o modo de conteúdo seguro uma vez."
 			},
@@ -1162,12 +1162,12 @@
 				"locked_description": "Desligue o modo de conteúdo seguro uma vez."
 			},
 			"open_function_list": {
-				"name": "Deixe-me ser saudável!",
-				"description": "“Que coisas boas existem?”",
+				"name": "Deixe-me ver!",
+				"description": "“O que há de bom por aqui?”",
 				"locked_description": "Abra a lista de funções uma vez."
 			},
 			"set_default_persona": {
-				"name": "A decisão é sua!",
+				"name": "Este é o meu verdadeiro eu!",
 				"description": "Defina uma identidade para suas ações neste mundo.",
 				"locked_description": "Defina um perfil padrão."
 			}
@@ -1216,7 +1216,7 @@
 				"title": "Ir para Unicode",
 				"aria-label": "Ir para Unicode"
 			},
-			"discoverPacks": "Explorar packs de emoji →",
+			"discoverPacks": "Explorar pacotes de emoji →",
 			"emptyPack": "Este pacote de emoticons ainda não tem expressões",
 			"addToCollection": "Adicionar aos favoritos",
 			"addedToCollection": "Adicionado aos favoritos",
@@ -1304,14 +1304,14 @@
 				"dirty": "Existem alterações não salvas",
 				"saveFailed": "Falha ao guardar",
 				"saved": "Salvo",
-				"saving": "Salvando…"
+				"saving": "A guardar…"
 			}
 		},
 		"group": {
 			"defaults": {
 				"groupMetaName": "Grupo sem nome",
 				"defaultChannelName": "Abrangente",
-				"dmChatName": "Bater papo",
+				"dmChatName": "Conversa",
 				"dmDmName": "Bate-papo privado",
 				"threadName": "Tópico filho"
 			},
@@ -1463,12 +1463,12 @@
 			"blockConfirm": "Tem a certeza de que deseja bloquear \"${sender}\"?",
 			"blockAdded": "Bloqueado",
 			"saveSticker": {
-				"title": "Guardar sticker/emojis to favourites"
+				"title": "Guardar autocolantes/emojis nos favoritos"
 			},
 			"deleteMessage": {
 				"title": "Eliminar message"
 			},
-			"deleteConfirm": "Eliminar this message?",
+			"deleteConfirm": "Eliminar esta mensagem?",
 			"saveEdit": "Guardar",
 			"cancelEdit": "Cancelar",
 			"editingMessage": "Edição",
@@ -1483,7 +1483,7 @@
 			"shareExternalFailed": "Falha no upload, verifique a rede",
 			"ownerSuccession": {
 				"main": "Iniciar uma votação de sucessão",
-				"autoSignHint": "Após o envio, a máquina assinará automaticamente a semente de assinatura do grupo sem inserir a chave privada. Em um grupo com vários administradores, mais da metade dos administradores devem enviar a mesma cédula (mesmo BallotId e candidato) localmente.",
+				"autoSignHint": "Após o envio, a máquina assinará automaticamente a semente de assinatura do grupo sem inserir a chave privada. Em um grupo com vários administradores, mais da metade dos administradores devem enviar a mesma cédula (mesmo ballotId e candidato) localmente.",
 				"candidateLabel": "Hash de chave pública sucessor",
 				"description": "Transfira a autoridade administrativa mais alta do grupo (MANAGE_ADMINS) para o membro especificado. Somente administradores podem operar.",
 				"needHash": "Preencha o hash da chave pública do sucessor",
@@ -1502,8 +1502,8 @@
 					"colMonth": "Mês",
 					"colSize": "Tamanho",
 					"delete": {
-						"before": "Eliminar this month before",
-						"button": "Eliminar cold archive",
+						"before": "Eliminar os anteriores a este mês",
+						"button": "Eliminar arquivo frio",
 						"confirm": "Tem a certeza de que deseja eliminar todos os ficheiros de arquivo frio anteriores a ${month}? Esta operação é irreversível.",
 						"failed": "Falha ao eliminar o arquivo: ${error}",
 						"hint": "Somente archive/*.jsonl local é eliminado; hotspots e âncoras DAG não são afetados.",
@@ -1512,7 +1512,7 @@
 					},
 					"empty": "Ainda não há arquivos arquivados frios.",
 					"filesTitle": "Ficheiros arquivados",
-					"hint": "O arquivo frio é o estado final da postagem de texto não encriptado local (arquivos divididos por mês). Eliminar o arquivo não alterará o DAG; se o histórico estiver faltando, ele poderá ser obtido dos vizinhos federados.",
+					"hint": "O arquivo frio é o estado final da publicação de texto simples local (ficheiros divididos por mês). Eliminar o arquivo não alterará o DAG; se faltar histórico, poderá ser obtido dos vizinhos federados.",
 					"title": "Armazenamento e arquivamento frio"
 				},
 				"autoChannelGc": "Limpa automaticamente canais silenciosos",
@@ -1521,7 +1521,7 @@
 					"frequency": "Acionar respostas de função automaticamente (após cada N mensagens do utilizador, 0 está desativado)",
 					"frequencyHint": "0 significa desligado; @menções ainda serão acionadas imediatamente",
 					"tokenBucket": "Agendamento automático de pressão de resposta (Token Bucket)",
-					"tokenBucketHint": "Após ser habilitado, cada personagem mantém um token bucket por canal; onMessage não é acionado temporariamente quando o bucket está vazio, o que pode inibir a atualização contínua da ecrã durante períodos de pico."
+					"tokenBucketHint": "Depois de ativado, cada função mantém um token bucket por canal; quando o bucket está vazio, o onMessage não é acionado, o que ajuda a evitar uma enxurrada de mensagens em períodos de pico."
 				},
 				"batterySaver": "Poupança de bateria (pool de federação e relays mais pequenos)",
 				"compactTriggerDepth": "Profundidade do gatilho de compressão materializada",
@@ -1543,7 +1543,7 @@
 				"gossipTtl": "Encaminhamento de fofoca TTL (contagem de saltos)",
 				"hlcMaxSkew": "Limite superior de deslocamento futuro do HLC (milissegundos)",
 				"hotLatest": "Retenção de zona ativa (último número de postagens por canal)",
-				"hotWindowHint": "As postagens da zona ativa são mantidas no ponto de verificação e no cache de mensagens; as postagens restantes são gravadas no arquivo frio mensal após a materialização e, em seguida, recolhidas dos eventos do processo DAG.",
+				"hotWindowHint": "As publicações da zona ativa são mantidas no ponto de verificação e na cache de mensagens; as publicações restantes são gravadas no arquivo frio mensal após a materialização e, em seguida, recolhidas dos eventos do processo DAG.",
 				"ice": {
 					"cred": {
 						"aria-label": "Palavra-passe TURN",
@@ -1585,10 +1585,10 @@
 					"membersTitle": "Lista de membros",
 					"overviewTitle": "Visão geral do grupo",
 					"overviewHint": "Informações somente leitura. Se tiver permissões de governança, poderá editar as informações e políticas do grupo em \"Básico\".",
-					"governanceHint": "Escreva a política de nível de grupo do DAG; permissões de administrador ou MANAGE_ADMINS são necessárias.",
+					"governanceHint": "Escreva a política de nível de grupo do DAG; são necessárias permissões de administrador ou MANAGE_ADMINS.",
 					"governanceDenied": "Pode não tem permissão para modificar as definições de governança do grupo.",
 					"rolesDenied": "Pode não tem permissão MANAGE_ROLES para editar funções.",
-					"notMember": "Pode não é mais membro deste grupo; os dados deste grupo foram apagados automaticamente após sair do grupo.",
+					"notMember": "Já não é membro deste grupo; os dados deste grupo foram apagados automaticamente após sair.",
 					"basicTitle": "Governança do grupo",
 					"profileSectionTitle": "Informações do grupo",
 					"profileSectionHint": "O nome, introdução e método de adesão ao grupo serão escritos nos metadados do grupo.",
@@ -1603,22 +1603,22 @@
 					"joinPow": "PoW necessário",
 					"powDifficultyLabel": "Dificuldade de PoW",
 					"securityAdvancedTitle": "Operações de segurança e proprietário de grupo",
-					"securityAdvancedDescription": "Rotação de chaves e sucessão de líderes de grupo; operações incorretas podem afetar o acesso dos membros",
+					"securityAdvancedDescription": "Rotação de chaves e sucessão do proprietário do grupo; operações incorretas podem bloquear o acesso aos membros",
 					"powDifficultyTip": "Prova de dificuldade de trabalho. Quanto maior o valor, maior será o tempo de cálculo necessário para que estranhos ingressem no grupo público.",
 					"maxDagPayloadTip": "O limite superior de dados que podem ser transportados por um único evento de grupo. Se for muito grande, aumentará a memória de sincronização e a sobrecarga da rede.",
 					"trustedPeersTip": "O número de vizinhos da federação de alta reputação que são priorizados para permanecerem conectados.",
 					"gossipTtlTip": "O número máximo de nós federais através dos quais a mensagem pode ser encaminhada. Aumentá-lo aumenta a cobertura e também aumenta o tráfego.",
 					"hlcTip": "A quantidade máxima de tempo que o relógio do nó remoto pode ser mais rápido que o relógio do nó local, usado para rejeitar eventos futuros anormais.",
 					"sfuTip": "Endereço de serviço de encaminhamento de áudio e vídeo externo opcional. Deixe em branco para usar chamadas ponto a ponto/relé integradas.",
-					"iceTip": "Ajude o WebRTC a penetrar no router; quando a ligação direta Falhou, o TURN encaminhará áudio, vídeo e tráfego federado em seu nome.",
+					"iceTip": "Ajude o WebRTC a penetrar no router; quando a ligação direta falhar, o TURN reencaminhará áudio, vídeo e tráfego federado por si.",
 					"fileEncryptionTip": "A encriptação convergente desduplica, mas expõe o facto de que os ficheiros são iguais; chaves aleatórias são mais privadas, mas ocupam mais espaço.",
-					"allowDangerousHtml": "Mensagens de autores confiáveis ​​permitem HTML embutido",
+					"allowDangerousHtml": "Mensagens de autores confiáveis permitem HTML embutido",
 					"save": "Guardar settings",
 					"loadFailed": "Falha ao load group settings: ${error}",
 					"saveSuccess": "Definições do grupo salvas",
 					"saveFailed": "Falha ao save settings: ${error}",
 					"rolesTitle": "Funções e permissões",
-					"rolesHint": "As permissões assinaladas aplicam-se a todo o grupo para membros com esse papel. Para permitir anexos, active «Carregar ficheiros» em Everyone. Use Permissões do canal, em Avançado, apenas para exceções por canal.",
+					"rolesHint": "As permissões assinaladas aplicam-se a todos os membros com esse papel, em todo o grupo. Para permitir anexos, active «Carregar ficheiros» em Everyone. Use Permissões do canal, em Avançado, apenas para exceções por canal.",
 					"roleDefault": "Padrão",
 					"permissionUpdated": "Permissões atualizadas",
 					"permissionUpdateFailed": "Falha ao update permissions: ${error}",
@@ -1633,7 +1633,7 @@
 					"unbanConfirm": "Tem a certeza de que deseja desbloquear o membro ${name}?",
 					"unbanSuccess": "O membro foi desbloqueado",
 					"unbanFailed": "Falha no desbloqueio: ${error}",
-					"gshGenerationRetentionHint": "Atualmente, apenas as 64 gerações mais recentes do histórico da chave mestra de ficheiros são retidas. Os ficheiros históricos mais antigos podem não ser desencriptados após serem excedidos; recomenda-se arquivar dados importantes regularmente.",
+					"gshGenerationRetentionHint": "Atualmente, apenas as 64 gerações mais recentes do histórico da chave mestra de ficheiros são retidas. Os ficheiros históricos mais antigos podem deixar de poder ser desencriptados quando esse limite for excedido; recomenda-se arquivar dados importantes regularmente.",
 					"gshGenerationNearLimit": "Atualmente rodado para a geração ${generation} de chaves mestras de ficheiro (até ${maxGenerations} gerações). A rotação frequente contínua resultará na retirada das chaves históricas mais antigas.",
 					"ownerSuccession": "Sucessão do líder do grupo",
 					"ownerSuccessionOk": "A sucessão do líder do grupo entrou em vigor",
@@ -1645,7 +1645,7 @@
 						"ok": "Pack predefinido atualizado"
 					},
 					"channelArchive": {
-						"hint": "A importação do arquivo JSON completo do canal criará um novo canal de texto comum neste grupo e restaurará o histórico (assinado novamente por ; os anexos retêm apenas metadados).",
+						"hint": "A importação do arquivo JSON completo do canal criará um novo canal de texto comum neste grupo e restaurará o histórico (assinado novamente por si; os anexos retêm apenas metadados).",
 						"import": "Importar channel JSON",
 						"importFailed": "Importar failed: ${error}",
 						"importOk": "${count} mensagens importadas, abrindo novo canal...",
@@ -1668,7 +1668,7 @@
 						"synced": "Sincronizado com permissões do canal raiz"
 					},
 					"advanced": {
-						"description": "Parâmetros de rede, armazenamento, limite de velocidade e encriptação; mantenha os padrões se não tiver certeza",
+						"description": "Parâmetros de rede, armazenamento, limite de velocidade e encriptação; mantenha os padrões se não tiver a certeza",
 						"hubDescription": "Esses recursos alteram a estrutura de permissão, os dados históricos ou os registros de governança do grupo; ajuste apenas quando claramente necessário.",
 						"hubTitle": "Definições avançadas",
 						"navigationLabel": "Categoria de definições avançadas",
@@ -1686,7 +1686,7 @@
 						"deleteFailed": "Eliminar failed: ${error}",
 						"deleteOk": "O emoticon foi eliminado",
 						"empty": "Ainda sem custom emoji",
-						"hint": "Os membros podem inserir ou enviar esses emoticons no chat; as imagens desinstaladas são extraídas sob demanda por meio de nós federados.",
+						"hint": "Os membros podem inserir ou enviar esses emoticons no chat; as imagens não armazenadas localmente são obtidas a pedido através de nós federados.",
 						"packGroupOption": "Padrão do grupo",
 						"idCopied": "ID do pacote de emojis copiado para a área de transferência",
 						"idCopy": "Copiar",
@@ -1748,7 +1748,7 @@
 						"main": "Expulsar",
 						"confirm": "Tem a certeza de que deseja expulsar o membro ${name}?",
 						"failed": "Falha ao Kick members out: ${error}",
-						"selfNodeWarning": "Aviso: este membro usa a mesma identidade de nó que você. Você também será removido do grupo após ser expulso. Tem a certeza de que deseja continuar?",
+						"selfNodeWarning": "Aviso: este membro usa a mesma identidade de nó que você. Também será removido do grupo após a expulsão. Tem a certeza de que deseja continuar?",
 						"success": "Membro expulso"
 					},
 					"tabs": {
@@ -1766,7 +1766,7 @@
 						"managementTip": "Novas chaves precisam ser redistribuídas aos membros após a rotação. A ação manual só deve ser tomada se suspeitar que uma chave foi comprometida.",
 						"managementTitle": "Gestão de chaves",
 						"rotate": "Rodar chave mestra de ficheiros do grupo",
-						"rotateConfirm": "Tem a certeza de que deseja rodar manualmente a chave mestra destes ficheiros de grupo? Os novos membros precisam de ressincronizar a chave dos ficheiros históricos.",
+						"rotateConfirm": "Tem a certeza de que deseja rodar manualmente a chave mestra dos ficheiros deste grupo? Os novos membros precisam de ressincronizar a chave dos ficheiros históricos.",
 						"rotateFailed": "Falha na rotação de chave: ${error}",
 						"rotateOk": "A chave foi girada"
 					},
@@ -1781,13 +1781,13 @@
 					},
 					"discoverySectionTitle": "Descoberta federada"
 				},
-				"pinContext": "Bairro principal (±N vizinhos)",
+				"pinContext": "Vizinhança no topo (±N vizinhos)",
 				"rtcBudget": "Orçamento de ligação RTC",
 				"rtcJoinRate": "RTC adicionou limite por minuto",
 				"streamGeneratingIdle": "Tempo limite de inatividade do espaço reservado gerado pela IA (milissegundos)",
 				"streamingSfu": "Endereço SFU WebSocket de streaming (opcional)",
 				"trustedPeers": "Slot vizinho confiável (Top-K)",
-				"wantIdsBudget": "Orçamento único de WantIds"
+				"wantIdsBudget": "Orçamento único de wantIds"
 			},
 			"feedback": {
 				"dagLine": "[${label}]",
@@ -1822,7 +1822,7 @@
 			"remote": {
 				"nodeTimeout": "O nó remoto não está respondendo. Tente novamente mais tarde.",
 				"typing": "${name} está digitando...",
-				"typingMany": "${name} e ${count} outros estão digitando…",
+				"typingMany": "${name} e mais ${count} pessoas estão a escrever…",
 				"typingTwo": "${name1}, ${name2} Entrando...",
 				"unavailable": "O componente remoto não está disponível ou não pode rotear o RPC",
 				"unsafe": "Esta mensagem vem de um local remoto e o autor não está na lista de confiança local. A renderização de rich text foi desativada."
@@ -1908,7 +1908,7 @@
 			}
 		},
 		"hub": {
-			"title": "Bater papo",
+			"title": "Conversa",
 			"redirectToHub": "Entrando no Chat Hub…",
 			"homeTooltip": {
 				"title": "Voltar a home",
@@ -1942,7 +1942,7 @@
 					"careDescription": "Quando novas mensagens forem enviadas de membros de seu interesse, poderá vê-las aqui o mais rápido possível.",
 					"careTitle": "Preocupação especial: ainda não há notícias",
 					"mentionDescription": "Quando outros membros @ no chat em grupo, as mensagens serão exibidas aqui.",
-					"mentionTitle": "Ainda sem one has mentioned you",
+					"mentionTitle": "Ainda ninguém te mencionou",
 					"messageDescription": "Atualizações de mensagens de vários chats em grupo e canais aparecerão aqui.",
 					"messageTitle": "A caixa de entrada está vazia",
 					"voteDescription": "Assim que as pesquisas participantes forem encerradas, os resultados serão resumidos aqui.",
@@ -1991,7 +1991,7 @@
 				"title": "Marcador"
 			},
 			"search": {
-				"placeholder": "Pesquisar for messages…",
+				"placeholder": "Pesquisar mensagens…",
 				"aria-label": "Pesquisar mensagens",
 				"noResults": "Nenhum resultado",
 				"failed": "Falha em Search",
@@ -2038,7 +2038,7 @@
 			"stopGenerateTitle": {
 				"title": "Pare de gerar"
 			},
-			"confirmDeleteLong": "Esta mensagem é muito longa. Tem a certeza de que deseja excluí-lo?",
+			"confirmDeleteLong": "Esta mensagem é muito longa. Tem a certeza de que a deseja eliminar?",
 			"forceReply": "Forçar resposta",
 			"removeChar": "Remover role",
 			"newGroupWith": "+ Crie uma nova conversa com ${name}",
@@ -2073,10 +2073,10 @@
 			"bioEmpty": "Este utilizador ainda não possui um perfil.",
 			"banners": {
 				"gshBuffer": "Existem ${total} mensagens aguardando para serem desencriptadas após a rotação da chave",
-				"plaintextSidecar": "Este canal é sincronizado sob demanda; o sidecar de mensagens locais armazena em cache o conteúdo em texto não encriptado.",
+				"plaintextSidecar": "Este canal é sincronizado a pedido; o sidecar messages local armazena em cache o conteúdo em texto não encriptado.",
 				"quarantine": "Existem ${count} eventos da federação armazenados temporariamente na área de quarentena devido ao desvio do relógio e serão reproduzidos automaticamente após a restauração da hora do sistema.",
 				"mailboxPending": "Há ${count} mensagens aguardando para serem entregues na caixa de correio off-line.",
-				"syncing": "Sincronizando com vizinhos federais…",
+				"syncing": "A sincronizar com vizinhos federais…",
 				"archiveCoverageIncomplete": "Alguns dos arquivos frios dos meses ainda não foram sincronizados pela federação.",
 				"archiveSyncButton": "Arquivamento síncrono",
 				"applyBranch": "Aplicar ramo de governação",
@@ -2197,7 +2197,7 @@
 			},
 			"localMaterializedView": "Atualmente é uma visão materializada local e as permissões e o histórico podem ser inconsistentes com outros nós.",
 			"convergentEncryptWarn": "Os ficheiros de grupo usam encriptação convergente: se o invasor conhecer o texto simples de um ficheiro, ele poderá derivar a chave e desencriptar o bloco de texto cifrado correspondente. Não confie apenas na encriptação de grupo para proteção de documentos altamente confidenciais e exclusivamente privados.",
-			"reputationSlashAlert": "A reputação do membro ${target}… é lembrada da dedução.",
+			"reputationSlashAlert": "A reputação do membro ${target}… sofre uma dedução.",
 			"profileEdit": {
 				"close": {
 					"aria-label": "Fechar"
@@ -2241,7 +2241,7 @@
 					"placeholder": "Escreva uma etiqueta e prima Enter para a adicionar; use # para adicionar várias de uma vez"
 				},
 				"handle": {
-					"placeholder": "Por exemplo Steve (2–32 caracteres alfanuméricos minúsculos._-)"
+					"placeholder": "Por exemplo steve (2–32 caracteres alfanuméricos minúsculos._-)"
 				},
 				"resetFrom": {
 					"part": "Redefinir da parte do personagem",
@@ -2263,13 +2263,13 @@
 				"link": {
 					"add": "Adicionar link",
 					"name": {
-						"placeholder": "Mostrar text"
+						"placeholder": "Mostrar texto"
 					},
 					"remove": {
 						"aria-label": "Remover link"
 					},
 					"url": {
-						"placeholder": "Https://… ou fount://…"
+						"placeholder": "https://… ou fount://…"
 					}
 				}
 			},
@@ -2278,12 +2278,12 @@
 				"close": {
 					"title": "Fechar cartão de dados"
 				},
-				"editSaved": "Dados salvos",
+				"editSaved": "Perfil guardado",
 				"editQueued": "Publicado, aguardando que o outro nó o extraia",
 				"noFedIdentity": "Configure primeiro o activePubKeyHex nativo nas definições da federação",
 				"peerNoIdentity": "A outra parte não tem status federal e não pode iniciar uma mensagem privada federal.",
 				"care": "Preocupação especial",
-				"careRemove": "Remover from close friends",
+				"careRemove": "Remover dos amigos próximos",
 				"setAlias": "Definir alias",
 				"setAliasPrompt": "Defina um alias local para \"${name}\" (deixe em branco para limpar):",
 				"dm": {
@@ -2326,7 +2326,7 @@
 				"subtitle": "Digite o ID do grupo para entrar no chat correspondente",
 				"groupIdLabel": "ID do grupo",
 				"groupId": {
-					"placeholder": "Grupo_1776941580949_xxxx"
+					"placeholder": "group_1776941580949_xxxx"
 				},
 				"inviteLabel": "Código de convite (opcional)",
 				"invite": {
@@ -2341,7 +2341,7 @@
 			"createGroup": "Criar New group",
 			"contentWarning": "Aviso de conteúdo",
 			"sensitiveMedia": "Mídia sensível",
-			"revealContent": "Mostrar content",
+			"revealContent": "Mostrar conteúdo",
 			"revealMedia": "Mostrar media",
 			"copyShareLink": "Copiar ligação de partilha",
 			"forward": "Avançar",
@@ -2374,7 +2374,7 @@
 				"saveFailed": "Guardar failed: ${error}"
 			},
 			"altImage": {
-				"placeholder": "Adicionar a description to the image…",
+				"placeholder": "Adicionar uma descrição à imagem…",
 				"label": "Descrição da imagem (alt)"
 			},
 			"editedLabel": "(editado)",
@@ -2392,18 +2392,18 @@
 				"title": "Grupo"
 			},
 			"membersDigest": {
-				"fetchFailed": "Falha ao pull members by page",
+				"fetchFailed": "Falha ao carregar os membros por página",
 				"mismatch": "Resumo de membros inconsistente · ${root}",
 				"ok": "Membro Merkle unânime · ${root}",
 				"okPaged": "Consenso do membro Merkle (${pages} páginas) · ${root}",
 				"pagesTitle": {
 					"title": "${expected}\n${pages} páginas"
 				},
-				"pending": "Verifique o resumo do membro…"
+				"pending": "A verificar o resumo dos membros…"
 			},
 			"unbindFriend": {
 				"main": "Desvincular",
-				"confirm": "Tem a certeza de que deseja desvincular o bate-papo privado com ${name}? A conversa será movida de volta para a lista de grupos.",
+				"confirm": "Tem a certeza de que deseja desvincular a conversa privada com ${name}? A conversa será movida de volta para a lista de grupos.",
 				"description": "Após a desvinculação, a conversa retornará à lista de grupos à esquerda e os registros das mensagens serão retidos.",
 				"failed": "Falha na desvinculação: ${error}",
 				"ok": "Não consolidado"
@@ -2432,7 +2432,7 @@
 			},
 			"discovery": {
 				"description": "Navegue por grupos públicos da rede da federação, escolha uma comunidade de interesse e participe.",
-				"empty": "Atualmente não existe nenhum grupo recomendado; depois de ativar a sincronização da federação, a lista de descoberta será sincronizada dos vizinhos.",
+				"empty": "Atualmente não existe nenhum grupo recomendado; depois de ativar a sincronização da federação, a lista de descoberta será sincronizada a partir dos vizinhos.",
 				"emptyTitle": "Ainda sem public groups found",
 				"eyebrow": "Explorar a comunidade",
 				"join": "Junte-se ao grupo",
@@ -2466,14 +2466,14 @@
 				"contextNewChat": "Novo bate-papo",
 				"count": "${count} amigos",
 				"emptyAction": "Pesquisar for a role or user",
-				"emptyDescription": "Pesquisar for users on the local role or other nodes, and you can also open the member profile card in the group chat to initiate a DM.",
+				"emptyDescription": "Procure utilizadores no papel local ou noutros nós; também pode abrir o cartão de perfil do membro no chat do grupo para iniciar uma mensagem privada.",
 				"emptyTitle": "Inicie uma nova conversa",
 				"header": "Amigos",
-				"restartConfirm": "O chat privado com \"${name}\" será desvinculado e uma nova conversa será criada. Tem a certeza?",
+				"restartConfirm": "A conversa privada com \"${name}\" será desvinculada e uma nova conversa será criada. Tem a certeza?",
 				"restartFailed": "Falha ao create a new private chat: ${error}",
 				"restartOk": "Um novo chat privado foi aberto",
 				"search": {
-					"placeholder": "Pesquisar local characters, handles or names…",
+					"placeholder": "Pesquisar personagens, identificadores ou nomes locais…",
 					"chat": "Inicie uma conversa",
 					"dm": "Enviar mensagem privada",
 					"empty": "Nenhuma função ou utilizador correspondente",
@@ -2533,7 +2533,7 @@
 				"context": {
 					"createIn": "Crie um canal nesta categoria",
 					"delete": "Eliminar categoria",
-					"deleteConfirm": "Tem a certeza de que deseja eliminar a categoria \"${name}\"? Os canais no seu interior voltarão a Sem categoria.",
+					"deleteConfirm": "Tem a certeza de que deseja eliminar a categoria \"${name}\"? Os canais dentro dela voltarão a Sem categoria.",
 					"deleteOk": "Categoria eliminada",
 					"perms": "Permissões da categoria",
 					"rename": "Renomear categoria",
@@ -2542,8 +2542,8 @@
 				},
 				"reorder": {
 					"after": "Mover «${source}» para depois de «${target}»?",
-					"before": "Mover «${source}» para antes de «${target}»?",
-					"into": "Mover «${source}» para dentro de «${target}»?",
+					"before": "Mover \"${source}\" para antes de \"${target}\"?",
+					"into": "Mover \"${source}\" para dentro de \"${target}\"?",
 					"toRoot": "Mover «${source}» para a raiz?"
 				},
 				"name": "Nome da categoria",
@@ -2634,7 +2634,7 @@
 				"collapse": "Recolher pasta",
 				"default": "Pasta",
 				"dissolve": "Dispensar pasta",
-				"expand": "Mostrar more folder",
+				"expand": "Mostrar mais pastas",
 				"rename": "Renomear pasta",
 				"renamePrompt": "Renomeie a pasta \"${name}\" para:"
 			},
@@ -2676,15 +2676,15 @@
 					"careRemoved": "Cuidados especiais cancelados",
 					"setAlias": "Definir alias",
 					"setAliasPrompt": "Defina um alias local para \"${name}\" (deixe em branco para limpar):",
-					"aliasSaved": "Alias ​​atualizado",
+					"aliasSaved": "Alias atualizado",
 					"copyPubKey": "Copiar hash de chave pública",
 					"copyEntityId": "Copiar ID da entidade",
 					"dm": "Enviar mensagem privada",
 					"kick": "Expulsar membro",
-					"kickSelfNodeWarning": "Aviso: este membro usa a mesma identidade de nó que você. Você também será removido do grupo após ser expulso. Tem a certeza de que deseja continuar?",
+					"kickSelfNodeWarning": "Aviso: este membro usa a mesma identidade de nó que você. Também será removido do grupo após a expulsão. Tem a certeza de que deseja continuar?",
 					"ban": "Proibir…",
 					"personalBlock": "Bloqueio pessoal",
-					"personalBlockConfirm": "Adicionar ${name} to your block list? People who follow you will pick up on this signal and may have less trust in them.",
+					"personalBlockConfirm": "Adicionar ${name} à sua lista de bloqueio? Quem o segue verá este sinal e pode passar a confiar menos nesta pessoa.",
 					"personalBlockSuccess": "Já adicionado à lista negra",
 					"banTitle": "Selecione o intervalo de banimento",
 					"banEntity": "Entidades banidas (entityHash de 128 bits)",
@@ -2701,7 +2701,7 @@
 				"composer": {
 					"placeholder": "Responder no subtópico…"
 				},
-				"createFailed": "Falha ao create thread, please try again later",
+				"createFailed": "Falha ao criar o subtópico; tente novamente mais tarde",
 				"created": "O tópico filho foi criado",
 				"drawer": {
 					"aria-label": "Tópico filho"
@@ -2746,7 +2746,7 @@
 				"listTitle": "Documento",
 				"loadFailed": "Falha ao load Group files: ${error}",
 				"loading": "A carregar ficheiros do grupo…",
-				"newFolder": "Criar new folder",
+				"newFolder": "Criar nova pasta",
 				"newFolderPrompt": "Nome da pasta",
 				"no": {
 					"cabinets": "Não há armários acessíveis para a personagem atual",
@@ -2775,14 +2775,14 @@
 					"noChars": "Nenhuma função disponível",
 					"setAlias": "Definir alias do grupo",
 					"setAliasPrompt": "Defina um alias local para \"${name}\" (deixe em branco para limpar):",
-					"aliasSaved": "Alias ​​do grupo atualizado",
+					"aliasSaved": "Alias do grupo atualizado",
 					"leave": {
 						"main": "Sair do grupo",
 						"batch": "Sair do grupo selecionado (${count})",
 						"batchOk": "Saiu de ${count} grupos",
 						"batchPartial": "Os grupos ${failed} / ${total} não conseguiram sair, a lista foi atualizada",
 						"batchPending": "${count} grupos foram removidos da lista, saindo em segundo plano...",
-						"confirm": "Tem a certeza de que deseja sair do grupo \"${name}\"? Pode não poderá mais visualizar mensagens neste grupo.",
+						"confirm": "Tem a certeza de que deseja sair do grupo \"${name}\"? Deixará de poder ver as mensagens deste grupo.",
 						"confirmBatch": "Tem a certeza de que deseja sair dos ${count} grupos selecionados? A máquina não reterá mais dados desses grupos.",
 						"ok": "Saiu do grupo"
 					}
@@ -2805,9 +2805,9 @@
 					"title": "Bloquear este autor"
 				},
 				"authorTitle": "Bloquear este autor",
-				"confirm": "Adicionar this person to the blacklist? The federation of this group will reject its relay.",
+				"confirm": "Adicionar esta pessoa à lista de bloqueio? A federação deste grupo vai rejeitar o seu relay.",
 				"ok": "Bloqueado",
-				"opposingConfirm": "Adicionar the governance issuers who are not on the current election to the Block list and deny this group of federation relays. continue?",
+				"opposingConfirm": "Adicionar os emitentes de governança que não estão na eleição atual à lista de bloqueio e rejeitar os relays de federação deste grupo. Continuar?",
 				"opposingFailed": "Falha na marcação: ${error}",
 				"opposingOk": "${count} assuntos marcados como inacessíveis"
 			},
@@ -2931,7 +2931,7 @@
 				"groupFailed": "Falha ao load group: ${error}",
 				"listFailed": "Falha ao load group list: ${error}",
 				"messagesFailed": "Falha ao load messages: ${error}",
-				"more": "A carregar notícias mais antigas…"
+				"more": "A carregar mensagens mais antigas…"
 			},
 			"send": {
 				"main": "Enviar",
@@ -2954,7 +2954,7 @@
 					"invalidateTitle": "Deixe os links de referência antigos expirarem",
 					"issueLabel": "Emitir link DM",
 					"issued": "Link DM assinado e copiado para a área de transferência",
-					"linkDescription": "Adequado para depuração ou migração manual de identidade; não há necessidade de preencher esses campos ao adicionar amigos diariamente.",
+					"linkDescription": "Adequado para depuração ou migração manual de identidade; no dia a dia, não é necessário preencher estes campos ao adicionar amigos.",
 					"linkTip": "Requer assinatura usando chave de identidade nativa. A chave privada é enviada apenas ao serviço local nesta página e não será enviada para outros nós.",
 					"linkTitle": "Emitir manualmente um link de amigo",
 					"needPubKey": "Requer chave pública hexadecimal de 64",
@@ -2968,9 +2968,9 @@
 				},
 				"groupRecoveryTip": "Usado apenas se o convite vazar ou se o novo dispositivo não conseguir sincronizar o histórico.",
 				"groupRecoveryTitle": "Correção de ligação de grupo",
-				"nonceRotated": "Nonce girado (${nonce}…)",
+				"nonceRotated": "Nonce renovado (${nonce}…)",
 				"relayUrlsLabel": "Endereço de retransmissão de rede",
-				"relayUrlsTip": "Ajude os dispositivos a se descobrirem na Internet. Preencha um endereço wss:// por linha; deixe em branco para usar o relé padrão.",
+				"relayUrlsTip": "Ajude os dispositivos a descobrirem-se na Internet. Preencha um endereço wss:// por linha; deixe em branco para usar o relay predefinido.",
 				"repEmpty": "(nulo)",
 				"repTip": "As pontuações de preferência de ligação calculadas nativamente com base no comportamento do nó federado não são classificações públicas dos membros do grupo.",
 				"repTitle": "Credibilidade subjetiva deste grupo",
@@ -2980,11 +2980,11 @@
 				"resetOk": "Reputação_reset foi escrito",
 				"resetSubmitLabel": "Redefinir a reputação do alvo",
 				"rotateRoomSecret": "Alternar palavra-passe da sala de grupo",
-				"rotateRoomSecretConfirm": "Após o rodízio, os convites que utilizam a palavra-passe antiga da sala não poderão ser conectados. Tem a certeza de que deseja continuar?",
+				"rotateRoomSecretConfirm": "Após a rotação, os convites que utilizam a palavra-passe antiga da sala já não poderão ser ligados. Tem a certeza de que deseja continuar?",
 				"rotateRoomSecretOk": "A palavra-passe da sala foi rotacionada",
 				"saved": "Guardados",
 				"slash": {
-					"claimLabel": "Reivindicação de força de reivindicação (0–1)",
+					"claimLabel": "Força de reivindicação claim (0–1)",
 					"needHash": "Requer pubKeyHash hexadecimal de 64 bits",
 					"ok": "reputação_slash escrito para DAG",
 					"proof": {
@@ -3014,7 +3014,7 @@
 				"bookmarks": "Ainda sem bookmarks",
 				"channels": "Ainda sem channels",
 				"chars": "Ainda não há funções, instale algumas primeiro.",
-				"description": "Ainda sem description",
+				"description": "Ainda sem descrição",
 				"friends": "Ainda sem private chats",
 				"groups": "Ainda sem groups",
 				"members": "Ainda sem members",
@@ -3224,7 +3224,7 @@
 			},
 			"code_greeting": {
 				"name": "Diga olá com código",
-				"description": "\"Olá, fount!\"",
+				"description": "Fez o código do fount dar a sua primeira saudação. `// \"hello fount!\"`",
 				"locked_description": "Ao executar o bloco de código, 'hello fount!' é gerado com sucesso."
 			}
 		},
@@ -3244,7 +3244,7 @@
 		},
 		"home_function_buttons": {
 			"chatHub": {
-				"title": "Bater papo"
+				"title": "Conversa"
 			},
 			"frequent": {
 				"title": "Frequentes"
@@ -3388,7 +3388,7 @@
 					"first": "Compreendo os riscos, continuar",
 					"renderBody": "As mensagens de chat e publicações sociais da outra parte serão renderizadas no seu navegador como Markdown completo (incluindo HTML/scripts). Isto permite que a outra parte execute código arbitrário no seu dispositivo sem novo consentimento. Continue apenas se confiar plenamente na outra pessoa.",
 					"second": "Clique novamente para confirmar definitivamente",
-					"title": "Confirmar definição do dono?",
+					"title": "Confirmar a definição de dono?",
 					"warningTitle": "Operação de alto risco — leia com atenção"
 				},
 				"description": "Após a configuração, o dono pode editar ou eliminar as suas mensagens de chat, publicações sociais e perfil em seu nome; o conteúdo também será renderizado localmente como Markdown inseguro (pode conter scripts). Pode indicar qualquer hash de entidade e limpá-lo a qualquer momento.",
@@ -3661,7 +3661,7 @@
 		"sourceNode": {
 			"label": "Nó de origem",
 			"block": "Bloquear",
-			"blockConfirm": "Bloquear o nó de origem ${node}? Os resultados da federação provenientes dele serão filtrados.",
+			"blockConfirm": "Bloquear o nó de origem ${node}? Os resultados federados provenientes dele serão filtrados.",
 			"blocked": "Nó de origem bloqueado",
 			"blockFailed": "Falha ao bloquear o nó de origem: ${error}"
 		}
@@ -3670,7 +3670,7 @@
 		"title": "Criação Rápida",
 		"description": "Crie rapidamente novas partes de founts, como personagens, mundos e plug-ins, usando modelos predefinidos ou personalizados. Sua próxima criação está a apenas alguns cliques de distância.",
 		"info": {
-			"description": "Estes modelos só podem ser usados para criar rapidamente componentes simples; componentes complexos ainda precisam de ser criadas manualmente."
+			"description": "Estes modelos só podem ser usados para criar rapidamente componentes simples; componentes complexos ainda precisam de ser criados manualmente."
 		},
 		"cardTitle": "Criar um novo componente a partir de um modelo",
 		"templateSelect": {
@@ -3948,9 +3948,9 @@
 	},
 	"uninstall": {
 		"title": "Desinstalar",
-		"description": "Caso você decida se separar, este espaço permite uma despedida graciosa. Confirme a remoção dos componentes ou a própria fount. Os caminhos divergem, mas as memórias podem permanecer.",
+		"description": "Se decidir separar-se, este espaço permite uma despedida graciosa. Confirme a remoção dos componentes ou da própria fount. Os caminhos divergem, mas as memórias podem permanecer.",
 		"titleWithName": "Desinstalar ${type}/${name}",
-		"confirmMessage": "Tem a certeza que pretende desinstalar ${type}: ${name}?",
+		"confirmMessage": "Tem a certeza de que pretende desinstalar ${type}: ${name}?",
 		"invalidParamsTitle": "Parâmetros Inválidos",
 		"infoMessage": {
 			"icon": {
@@ -3983,7 +3983,7 @@
 	"part_config": {
 		"title": "Configuração de Componente",
 		"pageTitle": "Configuração de Componente",
-		"description": "Olhe para o coração da fount. Aqui você pode ajustar as configurações de seus diversos componentes, ajustando o motor que impulsiona sua experiência.",
+		"description": "Veja o coração da fount. Aqui pode ajustar as definições dos seus diversos componentes, afinando o motor que impulsiona a sua experiência.",
 		"labels": {
 			"part": "Selecionar Componente"
 		},
@@ -4034,7 +4034,7 @@
 	},
 	"serviceSource_manager": {
 		"title": "Gerenciamento de fount de serviço",
-		"description": "Aqui, você conduzirá uma sinfonia de sons de inteligência artificial. Adicione, esculpe ou silencie founts para dar vida às suas companheiras de origem - uma dança sutil de código e imaginação.",
+		"description": "Aqui pode conduzir uma sinfonia de sons de inteligência artificial. Adicione, esculpa ou silencie founts para dar vida às suas companheiras de origem — uma dança subtil de código e imaginação.",
 		"fileList": {
 			"title": "Lista de founts de serviço",
 			"empty": "Ainda não há founts de serviço",
@@ -4049,7 +4049,7 @@
 		},
 		"needsConfigReminder": "Depois que a fonte de serviço for configurada, geralmente será necessário preencher o nome da fonte de serviço no campo correspondente na configuração do componente que usa essa fonte de serviço.",
 		"needsConfigLink": "Vá para a configuração do widget",
-		"modelRankHint": "Não sabe qual modelo usar? Dê uma olhada na classificação de modelos feita pelo autor do fount!",
+		"modelRankHint": "Não sabe qual modelo usar? Dê uma vista de olhos à classificação de modelos feita pelo autor do fount!",
 		"subtypeSelect": {
 			"label": "Subcategoria Gerador",
 			"placeholder": "Selecione uma categoria de gerador"
@@ -4079,7 +4079,7 @@
 				"waiting": "A aguardar autorização…",
 				"failed": "Falha no início de sessão: ${message}",
 				"deviceCode": "Abra ${uri} e introduza o código ${code}",
-				"credentialsRequired": "Os campos necessários dependem do fornecedor selecionado (region / project / location / account_id / gateway_id / API key; Azure OpenAI Responses: AZURE_OPENAI_API_KEY e endpoint). As credenciais também podem vir do ambiente."
+				"credentialsRequired": "Preencha os campos JSON necessários (region / project / location / account_id / gateway_id / API key; Azure OpenAI Responses: AZURE_OPENAI_API_KEY e endpoint). As credenciais também podem vir das variáveis de ambiente locais."
 			},
 			"selectModel": "Selecionar um modelo…",
 			"reasoningEffort": "Esforço de raciocínio",
@@ -4103,7 +4103,7 @@
 			"providerLabel": "Fornecedor: ${provider}",
 			"providerDocLink": "[Ver documentação do fornecedor](${url})",
 			"modelSearch": {
-				"placeholder": "Pesquisar model name, manufacturer, capabilities..."
+				"placeholder": "Pesquisar nome do modelo, fabricante, capacidades..."
 			},
 			"meta": {
 				"cachePrice": "Cache leitura/escrita: ${read} / ${write}",
@@ -4146,9 +4146,9 @@
 			}
 		},
 		"confirm": {
-			"unsavedChanges": "Você tem alterações não salvas. Deseja descartar as alterações?",
-			"deleteFile": "Tem certeza de que deseja excluir o arquivo?",
-			"unsavedChangesBeforeUnload": "Você tem alterações não salvas. Tem certeza de que deseja sair desta página?"
+			"unsavedChanges": "Tem alterações não guardadas. Descartá-las?",
+			"deleteFile": "Tem a certeza de que quer eliminar o ficheiro?",
+			"unsavedChangesBeforeUnload": "Tem alterações não guardadas. Tem a certeza de que deseja sair desta página?"
 		},
 		"alerts": {
 			"saveFileFailed": "Falha ao salvar arquivo: ${error}",
@@ -4159,7 +4159,7 @@
 			"noFileSelectedDelete": "Nenhum arquivo selecionado para exclusão.",
 			"noGeneratorSelectedSave": "Selecione o gerador antes de salvar",
 			"savedAsNewFile": "Guardado como nova fonte de serviço: ${name}",
-			"invalidFileName": "O nome do arquivo não pode conter os seguintes caracteres: / \\ : * ? \" < > |",
+			"invalidFileName": "O nome do ficheiro não pode conter os seguintes caracteres: / \\ : * ? \" < > |",
 			"fetch": {
 				"branchesFailed": "Falha ao obter a árvore de componentes: ${error}",
 				"configTemplateFailed": "Falha ao obter o modelo de configuração",
@@ -4178,7 +4178,7 @@
 		},
 		"home_function_buttons": {
 			"manage": {
-				"title": "Gerenciar fount de serviço"
+				"title": "Gerir fount de serviço"
 			},
 			"frequent": {
 				"title": "Frequentes"
@@ -4438,7 +4438,7 @@
 			"button": "Ler código para entrar",
 			"scanPrompt": "Abra o WeChat e leia o código QR",
 			"waiting": "A carregar código QR…",
-			"scanned": "Lido — confirme no telemóvel",
+			"scanned": "Lido — confirme no telemóvel…",
 			"success": "WeChat ligado. Definições guardadas — pode iniciar o bot.",
 			"needBot": "Escolha primeiro um bot na lista ou crie um com «Novo»."
 		}
@@ -4559,7 +4559,7 @@
 			}
 		},
 		"composer": {
-			"placeholder": "O que está pensando? Suporte Markdown (dialeto fount), digite @ para mencionar",
+			"placeholder": "Em que está a pensar? Suporta Markdown (dialeto fount); escreva @ para mencionar",
 			"locale": {
 				"aria-label": "Linguagem do conteúdo"
 			},
@@ -4647,7 +4647,7 @@
 				"allowLabel": "Pessoas visíveis",
 				"exceptLabel": "Eliminar pessoas",
 				"allow": {
-					"placeholder": "Entidade de pessoas visíveisHash, separado por espaço ou vírgula"
+					"placeholder": "Pessoas visíveis entityHash, separadas por espaço ou vírgula"
 				},
 				"except": {
 					"placeholder": "Quem não deve mostrar (opcional)"
@@ -4693,10 +4693,10 @@
 			"tabForYou": "Recomendar",
 			"repostedBy": "${author} retuitado",
 			"decryptFailed": "Não foi possível desencriptar esta postagem",
-			"revealContent": "Mostrar content",
+			"revealContent": "Mostrar conteúdo",
 			"sensitiveMedia": "Mídia sensível",
-			"showMore": "Mostrar more",
-			"showLess": "Mostrar less",
+			"showMore": "Mostrar mais",
+			"showLess": "Mostrar menos",
 			"replayDivider": "Terminada a leitura, navegue novamente",
 			"trending": {
 				"title": "Tópicos quentes",
@@ -4732,11 +4732,11 @@
 			"all": "Tudo",
 			"unfiled": "Não arquivado",
 			"createFolder": {
-				"title": "Criar new folder",
-				"aria-label": "Criar new folder"
+				"title": "Criar nova pasta",
+				"aria-label": "Criar nova pasta"
 			},
 			"createFolderPrompt": "Nome da pasta",
-			"pickFolderTitle": "Guardar to…",
+			"pickFolderTitle": "Guardar em…",
 			"folderSelect": {
 				"aria-label": "Pasta favorita"
 			},
@@ -4761,7 +4761,7 @@
 			"emptyHint": "Clique no marcador ao navegar pelas notícias para salvá-las aqui",
 			"loadFailed": "Não foi possível carregar as publicações guardadas: ${error}",
 			"search": {
-				"placeholder": "Pesquisar favourites…"
+				"placeholder": "Pesquisar guardados…"
 			}
 		},
 		"drafts": {
@@ -4786,7 +4786,7 @@
 				"aria-label": "Definições sociais"
 			},
 			"mediaOnly": "[mídia]",
-			"hideFromExplore": "Ocultar account from explore page",
+			"hideFromExplore": "Ocultar a conta da página de exploração",
 			"tabsLabel": {
 				"aria-label": "Partição de dados"
 			},
@@ -4805,7 +4805,7 @@
 				"name": "Nome do álbum",
 				"description": "Descrição do álbum",
 				"deleteLinks": "Eliminar album (keep posts)",
-				"deleteWithPosts": "Eliminar album and delete post",
+				"deleteWithPosts": "Eliminar o álbum e as publicações",
 				"pickerLabel": "Adicionar album",
 				"defaultName": "Álbum padrão"
 			},
@@ -4829,7 +4829,7 @@
 				"aria-label": "Vídeos curtos"
 			},
 			"empty": "Ainda sem short video",
-			"emptyHint": "Não há postagens com vídeos nas seguintes pessoas ou praças públicas. Tente postar uma atualização em vídeo?",
+			"emptyHint": "Não há publicações com vídeos das pessoas que segue nem das praças públicas. Que tal publicar um vídeo?",
 			"loadFailed": "Não foi possível carregar os vídeos curtos: ${error}",
 			"compose": "Vá postar um vídeo",
 			"back": {
@@ -4861,14 +4861,14 @@
 			"danmakuSend": "Enviar",
 			"postWatch": "Entre na transmissão ao vivo",
 			"postEnded": "A transmissão ao vivo terminou",
-			"postEndedStats": "Visto por ${viewers} · ${likes} Curtido · ${duration}",
+			"postEndedStats": "Visto por ${viewers} · ${likes} Gostos · ${duration}",
 			"link": {
 				"invite": "Convidar ligação",
-				"needPeer": "Por favor preencha o par entidadeHash:liveId",
+				"needPeer": "Por favor, preencha o par entityHash:liveId",
 				"invited": "O convite on-line foi enviado",
 				"linked": "Conectado",
 				"peer": {
-					"placeholder": "Entidade peerHash:liveId"
+					"placeholder": "Par entityHash:liveId"
 				}
 			},
 			"broadcast": {
@@ -4876,7 +4876,7 @@
 				"open": "Ir para a transmissão",
 				"whipUrl": "Endereço WHIP",
 				"whipToken": "Token do Portador",
-				"whipWaiting": "Aguardando ligação de streaming WHIP (software de streaming como OBS pode ser usado)…",
+				"whipWaiting": "À espera de uma ligação de streaming WHIP (pode ser usado software de streaming como o OBS)…",
 				"start": "Iniciar transmissão ao vivo",
 				"stop": "Interromper a transmissão ao vivo",
 				"started": "A transmissão ao vivo começou",
@@ -4896,7 +4896,7 @@
 			}
 		},
 		"search": {
-			"placeholder": "Pesquisar publicações, utilizadores ou #tópicos (mínimo 2 palavras)",
+			"placeholder": "Pesquisar publicações, utilizadores ou #tópicos (mínimo 2 caracteres)",
 			"aria-label": "Pesquisar publicações, pessoas ou tópicos",
 			"open": {
 				"aria-label": "Procurar"
@@ -4984,12 +4984,12 @@
 			"follow": "Focar em",
 			"following": "Focar em",
 			"care": "Preocupação especial",
-			"careRemove": "Remover from close friends",
+			"careRemove": "Remover dos amigos próximos",
 			"careAdded": "Já adicionei preocupação especial",
 			"careRemoved": "Cuidados especiais cancelados",
 			"setAlias": "Definir alias",
 			"setAliasPrompt": "Defina o alias local (deixe em branco para limpar):",
-			"aliasSaved": "Alias ​​atualizado",
+			"aliasSaved": "Alias atualizado",
 			"replies": "Comentário",
 			"copyLink": "Copiar link",
 			"downloadHtml": "Descarregar HTML",
@@ -5052,11 +5052,11 @@
 			"suggested": "Recomendo atenção"
 		},
 		"groupRef": {
-			"linking": "Conectar grupo de bate-papo",
+			"linking": "Associar grupo do Chat",
 			"clear": "Desassociar",
-			"pick": "Conectar grupo/canal de bate-papo…",
+			"pick": "Associar grupo/canal do Chat…",
 			"select": {
-				"aria-label": "Conecte-se a um grupo ou canal de bate-papo"
+				"aria-label": "Associar a um grupo ou canal do Chat"
 			}
 		},
 		"inbox": {
@@ -5107,7 +5107,7 @@
 			"following": "Ainda não estou seguindo ninguém",
 			"followers": "Ainda sem Followerss",
 			"notifications": "Ainda sem notification",
-			"saved": "Ainda sem favourites",
+			"saved": "Ainda sem favoritos",
 			"drafts": "Ainda sem draft",
 			"exploreAccounts": "Atualmente não há contas recomendadas",
 			"explorePosts": "Ainda não há postagens de exploração",
@@ -5183,24 +5183,24 @@
 		"showHidden": "Mostrar hidden",
 		"name": "Nome",
 		"descriptionField": "Descrever",
-		"attrHidden": "Esconder",
+		"attrHidden": "Oculto",
 		"attrSystem": "Sistema (a exclusão requer confirmação)",
 		"previewUrl": "URL de visualização",
-		"deletePreviewWithFile": "Eliminar preview when deleting file",
+		"deletePreviewWithFile": "Eliminar a pré-visualização ao eliminar o ficheiro",
 		"folderPassword": "Palavra-passe da pasta (deixe em branco para desativar encriptação)",
 		"unlockFolder": "Desbloquear pasta encriptada",
 		"unlock": "Desbloquear",
 		"unlockFailed": "Falha no desbloqueio: ${error}",
 		"previewFailed": "Falha na geração da visualização: ${error}",
-		"created": "Criar: ${stamp}",
-		"modified": "Modificar: ${stamp}",
+		"created": "Criado: ${stamp}",
+		"modified": "Modificado: ${stamp}",
 		"statusCount": "${count} itens, ${selected} selecionados",
 		"renamePrompt": "Novo nome",
 		"visibilityPrompt": "Visibilidade (público/não listado/seguidores/privado/selecionado)",
 		"cabinetActionPrompt": "Ação: renomear/eliminar/visibilidade",
 		"confirmDeleteCabinet": "Tem a certeza de que pretende eliminar este armário?",
-		"confirmDelete": "Confirmar para eliminar os itens selecionados?",
-		"confirmDeleteSystem": "Os ficheiros de sistema selecionados estão incluídos. Tem a certeza de que os deseja eliminar?",
+		"confirmDelete": "Confirmar a eliminação dos itens selecionados?",
+		"confirmDeleteSystem": "A seleção inclui ficheiros de sistema. Tem a certeza de que os quer eliminar?",
 		"copied": "Copiado",
 		"cutDone": "Cortar",
 		"undo": "Cancelar",
@@ -5216,7 +5216,7 @@
 				"aria-label": "Novo armário"
 			},
 			"cabinetPrompt": "Nome do novo armário",
-			"folder": "Criar new folder",
+			"folder": "Criar nova pasta",
 			"folderPrompt": "Novo nome de pasta",
 			"window": "Abrir nova janelaLocalização atual"
 		}
@@ -5225,16 +5225,16 @@
 		"title": "Integração do navegador",
 		"description": "Preencha a lacuna entre a fount e a web. Esta página fornece o script do usuário para permitir uma integração perfeita, trazendo seus companheiros de IA para sua experiência de navegação.",
 		"pageHeader": "Integração do navegador",
-		"pageDescription": "Para que sua função de fount interaja com a página da web, você precisa instalar este script de integração do navegador. Ele atua como uma ponte entre o personagem e o navegador, permitindo que eles visualizem o conteúdo da página e executem ações.",
+		"pageDescription": "Para que a sua função de fount interaja com a página web, precisa de instalar este script de integração do navegador. Ele atua como uma ponte entre as personagens e o navegador, permitindo-lhes ver o conteúdo da página e executar ações.",
 		"install_script_title": "Script de instalação",
-		"install_script_description": "Clique no botão abaixo para instalar o script de integração do navegador. Você deve primeiro instalar um gestor de scripts de utilizador como o Tampermonkey.",
+		"install_script_description": "Clique no botão abaixo para instalar o script de integração do navegador. Deve primeiro instalar um gestor de scripts de utilizador como o Tampermonkey.",
 		"install_button": "Instalar",
-		"install_from_url_tip": "Seu navegador não permite que você o instale? Copie este URL e importe o script do URL no plugin Tampermonkey.",
+		"install_from_url_tip": "O seu navegador não permite instalá-lo? Copie este URL e importe o script do URL no plugin Tampermonkey.",
 		"script_url_input": {
 			"aria-label": "URL do script de integração do navegador"
 		},
 		"what_is_manager": "O que é um gestor de scripts de utilizador?",
-		"manager_explanation": "Um gestor de scripts de utilizador é uma extensão do navegador que permite instalar e executar scripts que modificam as páginas da Web. Para usar o script de integração fount, você precisa de uma das extensões.",
+		"manager_explanation": "Um gestor de scripts de utilizador é uma extensão do navegador que permite instalar e executar scripts que modificam as páginas web. Para usar o script de integração da fount, precisa de uma dessas extensões.",
 		"popular_managers": "Escolhas populares:",
 		"csp_warning": "Pode ser necessário instalar o plugin para desativar o CSP para que a função de integração funcione corretamente. Para o ${browser}, pode utilizar [este plugin](${link}).",
 		"connected_pages_title": "Página conectada",
@@ -5261,12 +5261,12 @@
 			"list_title": "Scripts configurados",
 			"view_script_button": "Veja o script",
 			"delete_button": "excluir",
-			"confirm_delete": "Tem certeza de que deseja excluir este script? Esta operação não pode ser cancelada.",
-			"add_success": "O script automático em execução foi adicionado com sucesso!",
+			"confirm_delete": "Tem a certeza de que quer eliminar este script? Esta operação não pode ser cancelada.",
+			"add_success": "O script de execução automática foi adicionado com sucesso!",
 			"delete_success": "O script foi excluído com sucesso.",
 			"no_scripts": {
 				"title": "Nenhum script automático em execução",
-				"description": "Você ainda não configurou nenhum script. Por favor, use o formulário acima para adicionar o primeiro."
+				"description": "Ainda não configurou nenhum script. Use o formulário acima para adicionar o primeiro."
 			},
 			"table": {
 				"comment": "Comentários",
@@ -5284,7 +5284,7 @@
 		"achievements": {
 			"install_script": {
 				"name": "Magia, infunda!",
-				"description": "Você instalou com sucesso o \"plug-in\" para o seu navegador, agora você pode fazer mais.",
+				"description": "Instalou com sucesso o \"plug-in\" para o seu navegador; agora pode fazer mais.",
 				"locked_description": "Instale o script de integração do navegador uma vez."
 			},
 			"run_js": {
@@ -5316,7 +5316,7 @@
 		"csp_warning": "O script de integração do navegador da fount detecta que a política do CSP existe na página, o que pode fazer com que o script de integração não funcione corretamente. Por favor, considere instalar o plug-in para fechar o CSP.",
 		"hostChange": {
 			"securityWarningTitle": "--- Aviso de segurança da fount ---",
-			"message": "A página atual (\"${origin}\") está tentando alterar seu endereço de host para:\n\n\"${newHost}\"\n\nAVISO: A aprovação desta ação permitirá que o novo host controla totalmente seus recursos de integração do navegador, o que pode levar a vazamentos sensíveis de informações ou roubo de contas.\nA aprovação só deve ser feita se você tiver certeza de que esta é sua própria operação (por exemplo, migrando um servidor fount).\n\nTem certeza de que deseja permitir essa alteração?",
+			"message": "A página atual (\"${origin}\") está a tentar alterar o seu endereço de host para:\n\n\"${newHost}\"\n\nAVISO: A aprovação desta ação permitirá que o novo host controle totalmente os seus recursos de integração do navegador, o que pode levar a vazamentos sensíveis de informações ou roubo de contas.\nA aprovação só deve ser feita se tiver a certeza de que esta é a sua própria operação (por exemplo, ao migrar um servidor fount).\n\nTem a certeza de que deseja permitir esta alteração?",
 			"uuidMismatchError": "Erro de segurança da fount: a identidade (UUID) do host ${newHost} não corresponde à sua existente. A operação foi cancelada.",
 			"verificationError": "Erro de segurança da fount: Não é possível verificar o novo host \"${newHost}\". Verifique se o endereço está correto e se o serviço estiver em execução."
 		}
@@ -5324,7 +5324,7 @@
 	"terminal_assistant": {
 		"title": "Assistente de Terminal",
 		"description": "Além da interface gráfica, um espaço para comando direto. Interaja com o núcleo da fount através do assistente de terminal, onde o texto tece sua própria magia poderosa.",
-		"initialMessage": "O fount suporta a implementação das suas personagens favoritas no seu terminal para o ajudar na programação!",
+		"initialMessage": "O fount suporta colocar as suas personagens favoritas no seu terminal para o ajudar a programar!",
 		"initialMessageLink": "Clique aqui para saber mais.",
 		"achievements": {
 			"invoke_shell_assist": {
@@ -5404,7 +5404,7 @@
 	},
 	"deskpet": {
 		"title": "Animais de estimação de mesa",
-		"description": "Lance seus personagens originais como animais de estimação interativos que vivem em sua área de trabalho.",
+		"description": "Lance os seus personagens do fount como animais de estimação interativos que vivem na sua área de trabalho.",
 		"launcherCard": {
 			"title": "iniciante para animais de estimação",
 			"buttons": {
@@ -5450,7 +5450,7 @@
 						"title": "Animais de estimação de mesa",
 						"sub_items": {
 							"main": {
-								"title": "Gerenciar animais de estimação na área de trabalho"
+								"title": "Gerir animais de estimação na área de trabalho"
 							}
 						}
 					}
@@ -5642,7 +5642,7 @@
 			"aria-label": "Excluir este idioma",
 			"alt": "Ícone de eliminar"
 		},
-		"savedMessage": "As configurações de idioma são salvas!",
+		"savedMessage": "As configurações de idioma foram guardadas!",
 		"resetMessage": "As configurações de idioma foram redefinidas!",
 		"fetchLocalesFailed": "Falha ao obter os idiomas disponíveis!",
 		"home_function_buttons": {
@@ -5748,7 +5748,7 @@
 			},
 			"revoke": {
 				"button": "Revogar",
-				"confirm": "Tem a certeza que quer revogar o acesso para este dispositivo/sessão?",
+				"confirm": "Tem a certeza de que quer revogar o acesso a este dispositivo/sessão?",
 				"missingParams": "Indique o dispositivo ou sessão a revogar e a palavra-passe.",
 				"success": "Dispositivo/Sessão revogado com sucesso.",
 				"wrongPassword": "A palavra-passe está incorreta."
@@ -5824,7 +5824,7 @@
 			"title": "Terminar sessão",
 			"description": "Isto irá terminar a sessão da sua conta no dispositivo atual.",
 			"buttonText": "Terminar sessão",
-			"confirmMessage": "Tem a certeza que quer terminar a sessão?",
+			"confirmMessage": "Tem a certeza de que quer terminar a sessão?",
 			"successMessage": "Sessão terminada com sucesso. A redirecionar para a página de início de sessão..."
 		},
 		"deleteAccount": {
@@ -5835,7 +5835,7 @@
 			"success": "Conta eliminada com sucesso. Agora a sua sessão será terminada.",
 			"missingPassword": "Introduza a palavra-passe.",
 			"wrongPassword": "A palavra-passe está incorreta.",
-			"confirmWarning": "Atenção! Tem a certeza que quer eliminar permanentemente a sua conta? Esta ação não pode ser revertida.",
+			"confirmWarning": "Atenção! Tem a certeza de que quer eliminar permanentemente a sua conta? Esta ação não pode ser revertida.",
 			"confirmUsernamePrompt": "Para confirmar a eliminação, introduza o seu nome de utilizador \"${username}\":"
 		},
 		"passwordConfirm": {
@@ -5860,7 +5860,7 @@
 	},
 	"access": {
 		"title": "Aceder ao fount noutros dispositivos",
-		"description": "Estenda o alcance da fount além de uma única tela. Aqui está o gateway – um URL, um código QR – para se conectar com seus companheiros de outros dispositivos, uma ponte simples através do éter local.",
+		"description": "Estenda o alcance da fount para além de um único ecrã. Aqui está o gateway – um URL, um código QR – para se ligar aos seus companheiros de outros dispositivos, uma ponte simples através do éter local.",
 		"heading": "Quer aceder ao fount noutros dispositivos?",
 		"instruction": {
 			"sameLAN": "Certifique-se de que o dispositivo e o anfitrião do fount estão na mesma rede local.",
@@ -5925,7 +5925,7 @@
 	"subfounts": {
 		"title": "subfounts - gerenciamento de dispositivos ponto a ponto",
 		"pageTitle": "subfounts",
-		"description": "Gerenciar conexões fount ponto a ponto",
+		"description": "Gerir conexões fount ponto a ponto",
 		"hostConnectionCode": {
 			"title": "Código de conexão do host",
 			"connectionCodeLabel": "Código de conexão (ID de peer)",
@@ -5978,7 +5978,7 @@
 			"noScriptProvided": "Por favor insira o código a ser executado",
 			"executionSuccess": "Execução de código bem-sucedida",
 			"executionFailed": "Falha na execução do código: ${message}",
-			"selectSubfount": "Selecione a subfonte para executar o código..."
+			"selectSubfount": "Selecione a subfount para executar o código..."
 		},
 		"installClient": {
 			"title": "Baixar cliente de sub-fount",
@@ -6033,7 +6033,7 @@
 			},
 			"relock_by_clicking": {
 				"name": "A sério?",
-				"description": "Ao clicar repetidamente em uma conquista desbloqueada, você a bloqueia novamente. Por que?",
+				"description": "Ao clicar repetidamente numa conquista desbloqueada, volta a bloqueá-la. Porquê?",
 				"locked_description": "? ? ?"
 			}
 		},
@@ -6144,13 +6144,13 @@
 	},
 	"404": {
 		"title": "Página não encontrada",
-		"description": "O caminho que você procurava se dissolveu em névoa. Foi um passo em falso, uma mudança esquecida? Permita-nos guiá-lo de volta à costa ou talvez fazer uma pausa para um jogo em meio ao vazio silencioso.",
+		"description": "O caminho que procurava dissolveu-se na névoa. Foi um passo em falso, uma mudança esquecida? Permita-nos guiá-lo de volta à costa ou, quem sabe, fazer uma pausa para um jogo em meio ao vazio silencioso.",
 		"pageNotFoundText": "Ups! Parece que acedeu a uma página que não existe.",
 		"homepageButton": "Voltar à Página Inicial"
 	},
 	"directoryListing": {
 		"title": "índice de diretório",
-		"description": "Navegue e explore os arquivos e pastas na área de trabalho do fount.",
+		"description": "Navegue e explore os ficheiros e pastas no ambiente de trabalho do fount.",
 		"indexOf": "Índice: ${path}",
 		"name": "nome",
 		"mimeType": "Tipo MIME",
@@ -6271,23 +6271,23 @@
 				"namesByThemselves": "Um único primeiro ou sobrenome é facilmente adivinhado.",
 				"commonNames": "Os nomes e sobrenomes comuns são fáceis de adivinhar.",
 				"userInputs": "A senha não deve conter dados pessoais ou relacionados à página.",
-				"pwned": "Sua senha foi exposta em uma violação de dados da Internet."
+				"pwned": "Esta palavra-passe apareceu numa violação de dados e não deve ser usada."
 			},
 			"suggestions": {
 				"l33t": "Evite usar substituições de letras previsíveis, como o uso de \"@\" em vez de \"A\".",
 				"reverseWords": "Evite usar ortografia reversa de palavras comuns.",
 				"allUppercase": "Capitalize alguns em vez de todas as letras.",
 				"capitalization": "Mais do que capitalizar a carta inicial.",
-				"dates": "Evite usar datas e anos relacionados a você.",
+				"dates": "Evite usar datas e anos associados a si.",
 				"recentYears": "Evite usar os anos mais recentes.",
-				"associatedYears": "Evite usar anos relacionados a você.",
+				"associatedYears": "Evite usar anos associados a si.",
 				"sequences": "Evite seqüências de caracteres comuns.",
 				"repeated": "Evite palavras e personagens repetitivos.",
 				"longerKeyboardPattern": "Use o modo de teclado mais longo e altere as direções de entrada várias vezes.",
 				"anotherWord": "Adicione mais palavras incomuns.",
 				"useWords": "Use várias palavras, mas evite frases comuns.",
-				"noNeed": "Você não precisa usar símbolos, números ou letras maiúsculas para criar senhas fortes.",
-				"pwned": "Se você usar essa senha em outro lugar, é aconselhado a fazer alterações."
+				"noNeed": "Não precisa de usar símbolos, números ou letras maiúsculas para criar palavras-passe fortes.",
+				"pwned": "Se usar essa palavra-passe noutro lugar, é aconselhável alterá-la."
 			},
 			"timeEstimation": {
 				"ltSecond": "Menos de um segundo",
@@ -6447,7 +6447,7 @@
 	"pro_cancel_screen": {
 		"title": "A sua subscrição fount pro foi cancelada",
 		"description": "Saiba como cancelar a sua subscrição fount pro e partilhe o motivo do cancelamento.",
-		"intro": "Lamentamos vê-lo partir. Para nos ajudar a melhorar o fount pro, poderia dizer-nos por que cancelou a subscrição?",
+		"intro": "Lamentamos vê-lo partir. Para nos ajudar a melhorar o fount pro, poderia dizer-nos por que razão cancelou a subscrição?",
 		"language_selector": {
 			"button": {
 				"aria-label": "Selecione o idioma"
@@ -6495,7 +6495,7 @@
 			"none": "Nenhuma área de trabalho selecionada",
 			"overviewEmpty": "Ainda sem conversas",
 			"search": {
-				"placeholder": "Pesquisar áreas de trabalho…",
+				"placeholder": "Pesquisar espaços de trabalho…",
 				"aria-label": "Pesquisar áreas de trabalho"
 			}
 		},
@@ -6504,9 +6504,9 @@
 			"title": "Áreas de trabalho e conversas",
 			"workspacesTitle": "Áreas de trabalho",
 			"sessionsTitle": "Conversas",
-			"emptyWorkspaces": "Ainda não há áreas de trabalho. Clique em \"Explorar…\" para adicionar uma.",
+			"emptyWorkspaces": "Ainda não há espaços de trabalho. Clique em \"Explorar…\" para adicionar um.",
 			"search": {
-				"placeholder": "Pesquisar áreas de trabalho ou conversas…",
+				"placeholder": "Pesquisar espaços de trabalho ou conversas…",
 				"aria-label": "Pesquisar áreas de trabalho ou conversas"
 			},
 			"noMatch": "Nenhum resultado"
@@ -6844,7 +6844,7 @@
 				"source": "Filtrar por fonte"
 			},
 			"clearSearch": "Limpar pesquisa",
-			"emptyHint": "Você também pode arrastar o arquivo Markdown para esta página",
+			"emptyHint": "Também pode arrastar o ficheiro Markdown para esta página",
 			"loading": "A carregar…"
 		},
 		"source": {
@@ -6866,7 +6866,7 @@
 			"delete": "Eliminar",
 			"empty": "Este gist está vazio",
 			"dropRerender": "Re-renderizado com o Markdown largado",
-			"downgradeConfirm": "Mudar para «Desprotegido» permite que scripts HTML sejam executados na pré-visualização, o que representa um risco de XSS. Mudar na mesma?",
+			"downgradeConfirm": "Mudar para «Desprotegido» permite que scripts HTML sejam executados na pré-visualização, o que representa um risco de XSS. Continuar mesmo assim?",
 			"shareCopied": "Ligação de partilha copiada para a área de transferência",
 			"deleteConfirm": "Eliminar este gist? Esta ação é irreversível.",
 			"notFound": "Gist não encontrado — pode ter sido eliminado."

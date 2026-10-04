@@ -10,13 +10,13 @@
 			"若不告匠人以疾，恐其終不知君所遇之患。",
 			"若忽遇怪狀且匠人未覆，可試 `fount init` 令以重置 fount。",
 			"若遇怪力亂神之狀，不妨重啟乾坤。",
-			"以 `fount remove` 令卸 fount，勝於刪其卷宗。",
+			"以 `fount remove` 卸 fount，勝於刪其卷宗。",
 			"於敕令行以此 `fount cake` 輸之，可得甘味！",
 			"fount 之簿牒皆存於 `fount/data`，君可隨時觀、改、備之。",
 			"fount 之名皆小寫，乃 `f`ount，非 `F`ount 也。",
 			"新模未用前，當備傀儡常易之據——新模之性，或有大謬之處，未可知也。",
-			"fount 之眾，多為程式匠人與演繹好者，然商賈、醫、軍、貨殖亦有用之。",
-			"fount 內置 ZL-31 者，其名無義，偶得之耳。",
+			"fount 之眾，多為程式匠人與好扮演者，然商賈、醫、軍、貨殖亦有用之。",
+			"fount 內置傀儡 ZL-31，其名無義，偶得之耳。",
 			"fount 文牘之圖皆 SVG，需時方化 PNG 或 ICO。除 LICENSE 外無二進制檔。",
 			"fount 之碼無需編譯，即行即見，所得即所見。",
 			"昔 fount 有動態背景，甚炫，然耗算力過甚，遂刪。",
@@ -41,7 +41,7 @@
 			},
 			"mdns": {
 				"description": "靈犀一點，應念而生",
-				"failed": "域名宣告不成：${error}",
+				"failed": "mDNS 域名宣告不成：${error}",
 				"bonjourFailed": "Bonjour服務建置不成：${error}"
 			},
 			"localUrl": "欲攜他器同游，可循此徑：${url}",
@@ -60,7 +60,7 @@
 			"noInstanceRunning": "未察運行之體，宜先啟 fount。",
 			"runPartLog": "以 ${username} 之名行 ${partpath}，其參曰：${args}",
 			"invokePartLog": "以 ${username} 之名召 ${partpath}，其數曰：${invokedata}",
-			"invalidCommand": "令式有誤，當循此法：\"fount run <名> <件徑> <參...>\"",
+			"invalidCommand": "令式有誤，當循此法：\"fount run <件徑> <參...>\"（或以 fount runas <名> <件徑> 指人）",
 			"invalidCommandFormat": "令式不合",
 			"unsupportedCommand": "此令未識，難以從命",
 			"processMessageError": "處內令有失：${error}",
@@ -146,7 +146,7 @@
 			"replHint": "Enter 行 · Shift+Enter 換行"
 		},
 		"test": {
-			"help": "用法：fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --list [<groups>...]\n       fount test --kernel shutdown|reboot\n\n擇器（空格分多組；逗號分同組多 suite；/ 與 : 同）：\n  名稱              該組諸 suite（如 shells/chat）\n  名稱:suite        指定 suite\n  名稱:suite:子項   指定子測或測試檔\n\n無精配則按前綴展（shells → shells/chat、shells/social），glob（*、?、**）亦可。\n\n預設（裸 fount test）一次規畫失利／未竟／含噪與過期項並行之；失利惟阻其依賴之槽，收口統一非零。非全量，全量用 --all。\n\n--watch      持續監視，隊空亦不退出（Ctrl+C 止）；不可同帶 --all / --force / --update-estimates 或擇器\n--all        範圍內諸 suite\n--force      強制重跑，不沿上次果\n--update-estimates  按現庫均耗回寫諸 manifest 之 expected；可帶擇器；不跑測\n--list        列諸測試套件（可帶擇器縮小範圍）；不啓測試核，不跑測\n--kernel     shutdown 止測試核；reboot 止而復起；不得並用他參\n\n例：\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
+			"help": "用法：fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --list [<groups>...]\n       fount test --kernel shutdown|reboot\n\n擇器（空格分多組；逗號分同組多 suite；/ 與 : 同）：\n  名稱              該組諸 suite（如 shells/chat）\n  名稱:suite        指定 suite\n  名稱:suite:子項   指定子測或測試檔\n\n無精配則按前綴展（shells → shells/chat、shells/social），glob（*、?、**）亦可。\n\n預設（裸 fount test）一次規畫失利／未竟／含噪與過期項並行之；失利惟阻其依賴之槽，收口統一非零。非全量，全量用 --all。\n\n--debug      逐步而序：每套為一步，步畢察其遺，有則報錯而退\n--watch      持續監視，隊空亦不退出（Ctrl+C 止）；不可同帶 --all / --force / --update-estimates 或擇器\n--all        範圍內諸 suite\n--force      強制重跑，不沿上次果\n--update-estimates  按現庫均耗回寫諸 manifest 之 expected；可帶擇器；不跑測\n--list        列諸測試套件（可帶擇器縮小範圍）；不啓測試核，不跑測\n--kernel     shutdown 止測試核；reboot 止而復起；不得並用他參\n\n例：\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
 			"watchNoGroups": "用法：fount test --watch（不可同用他參）",
 			"updateEstimates": {
 				"incompatible": "用法：fount test --update-estimates [<groups>...]（不可同用他開關）",
@@ -298,8 +298,8 @@
 			},
 			"nodeWorker": {
 				"dataPathRequired": "測試節點 worker：缺少 --data-path",
-				"portRequired": "測試節點 worker：缺少 --port（請通過 launch.mjs 啟動）",
-				"keyRequired": "測試節點 worker：缺少 --key（請通過 launch.mjs 啟動）",
+				"portRequired": "測試節點 worker：缺少 --port（宜自 launch.mjs 啟之）",
+				"keyRequired": "測試節點 worker：缺少 --key（宜自 launch.mjs 啟之）",
 				"userRequired": "測試節點 worker：缺少 --user",
 				"error": "測試節點 worker 出錯：${error}"
 			},
@@ -447,7 +447,7 @@
 			},
 			"protocol": {
 				"description": "URL:fount 協議",
-				"registerFailed": "失之交臂，難啟 fount 規儀：${message}",
+				"registerFailed": "未克註 `fount://` 規儀：${message}",
 				"noUrl": "誤：未供規儀引路之 URL。"
 			},
 			"update": {
@@ -455,7 +455,7 @@
 				"switchingToBranch": "正轉至分支「${branch}」…",
 				"switchingToRemote": "正轉至遠端「${url}」之默認分支「${branch}」…",
 				"removedNoUpdate": "已刪 `.noupdate` 檔，自動更新復行。",
-				"pinningToCommit": "正固定於提交「${ref}」，並立 `.noupdate` 檔…",
+				"pinningToCommit": "正固定於提交 `${ref}`，並立 `.noupdate` 檔…",
 				"pinningToPullRequest": "正固定於拉取請求 #${pr}，並立 `.noupdate` 檔…",
 				"createdNoUpdate": "已立 `.noupdate` 檔，自動更新暫止。",
 				"unknownTarget": "未能辨識「${target}」：非已知分支、提交或拉取請求。"
@@ -493,7 +493,7 @@
 				"registering": "正將 fount 註冊為 Steam 非 Steam 之戲…",
 				"registered": "fount 已入 Steam 戲庫。若 Steam 方運行，需重啟方見效。",
 				"failed": "Steam 註冊未遂：${message}",
-				"exeFailed": "fount.exe 未能生，已略 Steam 註冊。"
+				"exeFailed": "fount.exe 未能生成，已略 Steam 註冊。"
 			},
 			"git": {
 				"repoNotFound": "fount 之 git 倉庫未覓得，今新創之...",
@@ -522,7 +522,7 @@
 				"missing": "Deno 未覓得，自行置之...",
 				"isRequired": "Deno 未覓得，無之則 fount 不可運行",
 				"installingTermux": "正為 Termux 置 Deno...",
-				"installFailedFallback": "Deno 置未遂，嘗試置至 fount 之 path 徑錄...",
+				"installFailedFallback": "Deno 置未遂，嘗試置於 fount 之 path 目錄...",
 				"notWorking": "未知何故 Deno 不動，可往 https://github.com/denoland/deno/issues 求助",
 				"upgradeFailed": "警：Deno 之晉級或已敗，請察其誤",
 				"upgradeFailedTermux": "Deno 晉級之命未遂，嘗試為 Termux 重裝...",
@@ -534,10 +534,10 @@
 				"pinNotHonored": "警：Deno 既由 ${manager} 套件司所掌，不克從 .deno-version 所定之版（${spec}），遂依套件司之版晉級。"
 			},
 			"tempDir": {
-				"blocked": "錯：權宜之所（臨時目錄），不可驅使 fount。\n\nfount 既與主機血脈相連（深耦），必勒銘於 PATH 及樞機之內。若棲於權宜之所，一旦系統蕩滌，則 fount 及其所勒之印難以盡除。\n\n請遷 fount 至常駐之所而後啟之。若僅為試手，則大功告成之際，切記親手行 fount remove 以除其跡。"
+				"blocked": "錯：權宜之所（臨時目錄），不可驅使 `fount`。\n\nfount 既與主機血脈相連（深耦），必勒銘於 `PATH`，並繫諸鉤於系統。若棲於權宜之所，一旦系統蕩滌，則 `fount` 及其所繫之鉤難以盡除。\n\n請遷 `fount` 至常駐之所而後啟之。若僅為試手，則大功告成之際，切記親手行 `fount remove` 以除其跡。"
 			},
 			"eula": {
-				"prompt": "汝肯願承 fount 終端用戶許可之約（EULA）乎？",
+				"prompt": "君肯承 fount 終端用戶許可之約（EULA）乎？",
 				"yn": "[Y/N] ",
 				"required": "須先承此約方可續行。設 `FOUNT_ACCEPT_EULA=1` 後重試，或於交互終端行之。",
 				"declined": "已拒此約，正除 fount。",
@@ -548,7 +548,7 @@
 				"compilingFavicon": "網頁徽圖無存，正啟伺服以編之...",
 				"packageFailed": "誤：${package} 置未遂。",
 				"browserMissing": "未獲預設瀏覽器，試置之...",
-				"untrustedPartsWarning": "勿在系統置任何不受信之 fount 部件，其能行萬事",
+				"untrustedPartsWarning": "勿在系統置任何不受信之 fount 部件，彼無所不為",
 				"permissionDeniedAsRoot": "錯：未可寫入 fount 目錄 '${path}'。雖以 root 行之，然仍拒訪——宜檢修此目錄之安全權限，為當前客授予完全控制之權。",
 				"permissionDeniedNotRoot": "錯：未可寫入 fount 目錄 '${path}'。宜修正此目錄之安全權限，以授當前客寫入之權，或以 root 身份運行 fount。",
 				"rootWarningAsRoot": "不宜：以 root 身份運行 fount，將授予其所有部件完全之系統權限",
@@ -562,7 +562,7 @@
 			},
 			"keepalive": {
 				"initComplete": "重新初始化訖，嘗試重啟 fount...",
-				"autoInitDisabled": "fount 近時已重啟數次，然因有 `.noautoinit` 檔，自行重啟已禁用。退出",
+				"autoInitDisabled": "fount 近時已重啟數次，然因有 `.noautoinit` 檔，自行重新初始化已禁用。退出",
 				"restartingTooFast": "fount 短時內重啟過頻，強行重新初始化...",
 				"failedToStart": "縱自行修繕，fount 仍短時內啟動未遂，請察日誌之誤",
 				"initFailed": "fount 初始化未遂，退出"
@@ -574,10 +574,10 @@
 				"editorRemoved": "已自編輯器終端按鍵對應移除 fount 設定：`${path}`"
 			},
 			"remove": {
-				"confirmPrompt": "將自磁碟刪除 fount 安裝目錄：`${path}`\n請確以此即應刪之目錄。",
+				"confirmPrompt": "將自磁碟刪除 fount 安裝目錄：`${path}`\n請確認此即應刪之目錄。",
 				"yn": "[Y/N] ",
 				"aborted": "已作罷，未刪何物。",
-				"externalMountWarning": "告：fount 居於外置/共享掛載（`${target}`）之上！\n此目錄或同時見於宿主機或虛擬機中，`fount remove` 將一併刪之，慎之。",
+				"externalMountWarning": "警：fount 居於外置/共享掛載（`${target}`）之上！\n此目錄或同時見於宿主機或虛擬機中，`fount remove` 將一併刪之，慎之。",
 				"nonInteractiveRequiresForce": "非交互之境，不能確認刪除。若確欲移除 `fount`（${path}），可加 `fount remove --force` 以略過確認。",
 				"fountUninstallationComplete": "fount 已拔",
 				"fountInstallationDirRemoved": "fount 置目錄已移除",
@@ -743,19 +743,19 @@
 		"features": {
 			"seamlessChat": {
 				"title": "雲程萬里，晤言無間",
-				"description": "始於案前清談，繼於掌中晤言，行止無礙。fount 令君言談相續，身在何方，皆可與化身相伴。Windows、macOS、Linux、Android，無不咸宜。"
+				"description": "始於案前清談，繼於掌中晤言，行止無礙。fount 令君言談相續，身在何方，皆可與化身相伴。Windows、macOS、Linux、Android，無不適宜。"
 			},
 			"customUi": {
 				"title": "儀態萬方，隨心所化",
-				"description": "三十餘種風貌，任君擇選，亦可自成一家。fount 乃君之畫卷。書君之意，隨君之好，成君之境。"
+				"description": "三十餘種風貌，任君自擇，亦可自成一家。fount 乃君之畫卷。書君之意，隨君之好，成君之境。"
 			},
 			"expressiveChat": {
 				"title": "意通神會，身臨其境",
-				"description": "fount 盡用織紋之妙，化身得以富文、圖像乃至互動之法表情達意。可與眾多化身共聚一堂，動靜皆宜，相談甚歡。"
+				"description": "fount 盡用 HTML 之妙，化身得以富文、圖像乃至互動之法表情達意。可與眾多化身共聚一堂，動靜皆宜，相談甚歡。"
 			},
 			"aiSources": {
 				"title": "海納百川，有容乃大",
-				"description": "fount 供無雙之選，無窮之變。可接<i>任意</i>智源——OpenAI、Claude、[Atlas Cloud](${atlasCloudLink})、OpenRouter、NovelAI 等。通靈之法，皆由君之符碼之力隨心塑造。"
+				"description": "fount 供無雙之選，無窮之變。可接<i>任意</i>智源——OpenAI、Claude、[Atlas Cloud](${atlasCloudLink})、OpenRouter、NovelAI 等。通靈之法，皆由<i>君</i>之符碼之力隨心塑造。"
 			}
 		}
 	},
@@ -1317,7 +1317,7 @@
 			},
 			"auditLog": {
 				"title": "群審計日誌",
-				"hint": "示當前採納治理分支上之成員、角色、分苑與 moderation 事件；唯掌事可見。",
+				"hint": "示現行治理分支之成員、角色、分苑與 moderation 事件；唯掌事可見。",
 				"filterLabel": "事件類型",
 				"refresh": "重覽",
 				"filterAll": "全部類型",
@@ -1411,7 +1411,7 @@
 				"title": "信任此作者（聽許危險織文）"
 			},
 			"trustAuthorOk": "已信任此作者並敷彩富文本",
-			"listEmpty": "（暫無導航條目，掌事可過 API 更 list-items）",
+			"listEmpty": "（暫無導航條目，掌事可經 API 更 list-items）",
 			"listChannelReadonly": {
 				"placeholder": "名錄分苑僅展示導航卡片，不發札"
 			},
@@ -1506,8 +1506,8 @@
 						"button": "刪冷歸檔",
 						"confirm": "定欲毀 ${month} 之前凡冷歸檔文卷？此舉不可復。",
 						"failed": "刪歸檔未遂：${error}",
-						"hint": "僅刪本地 archive/*.jsonl；熱區與 脈絡錨點不受影響。",
-						"invalidMonth": "請擇合法的 YYYY-MM 月份。",
+						"hint": "僅刪本地 archive/*.jsonl；熱區與脈絡錨點不受影響。",
+						"invalidMonth": "請擇合式之 YYYY-MM 月份。",
 						"ok": "已刪 ${files} 個歸檔文牘。"
 					},
 					"empty": "尚無冷歸檔文牘。",
@@ -1518,8 +1518,8 @@
 				"autoChannelGc": "自行清理沉寂分苑",
 				"autoChannelGcHint": "物化時至多刪二沉寂逾三十日且不可達之孤島分苑。",
 				"autoReply": {
-					"frequency": "自行觸發角色回復（每 N 條客傳書後，0 為闔）",
-					"frequencyHint": "0 則闔；@提及 仍即刻觸發",
+					"frequency": "自行觸發角色回復（每 N 條客札後，0 為闔）",
+					"frequencyHint": "0 為闔；@提及仍即刻觸發",
 					"tokenBucket": "自行回復壓力調度（Token Bucket）",
 					"tokenBucketHint": "開啟後，每具化身按分苑維護令符桶；桶空時暫不觸發 onMessage，可抑制高峯期連續刷屏。"
 				},
@@ -1537,7 +1537,7 @@
 				"fileCe": {
 					"mode": "文牘加密模式",
 					"modeConvergent": "收斂加密（可去建）",
-					"modeHint": "高隱私模式將為各分塊用隨機 contentKey，並標記 ceMode=random；可降明文可猜之險，惟增庫藏與帶寬之耗。",
+					"modeHint": "高隱私模式使各分塊用隨機 contentKey，並標記 ceMode=random；可降明文可猜之險，惟增庫藏與流量之耗。",
 					"modeRandom": "高隱私模式（隨機符鑰，不去建）"
 				},
 				"gossipTtl": "Gossip 傳遞 TTL（跳數）",
@@ -1618,7 +1618,7 @@
 					"saveSuccess": "群組樞機已存",
 					"saveFailed": "存樞機未遂: ${error}",
 					"rolesTitle": "角色與權限",
-					"rolesHint": "勾選權限後，對該角色全體成員於全群生效。凡人傳附件，請為 Everyone 勾「上傳檔案」。某頻道須單獨限制者，再至高階設定之「頻道權限」。",
+					"rolesHint": "勾選權限後，對該角色全體成員於全群生效。凡人傳附件，請為 Everyone 勾「傳文牘」。某分苑須單獨限制者，再至高階設定之「分苑權限」。",
 					"roleDefault": "常制",
 					"permissionUpdated": "權限已更",
 					"permissionUpdateFailed": "更權限未遂: ${error}",
@@ -1633,7 +1633,7 @@
 					"unbanConfirm": "定欲解封 ${name} ？",
 					"unbanSuccess": "成員已解封",
 					"unbanFailed": "解封未遂：${error}",
-					"gshGenerationRetentionHint": "當前僅保留最近 64 代文牘主符鑰歷史。超出後最早歷史文牘可能難以解密，建議定期歸檔重要簿牒。",
+					"gshGenerationRetentionHint": "文牘主符鑰僅存最近 64 代。逾此則最早之文牘恐難解密，宜定期歸檔重要簿牒。",
 					"gshGenerationNearLimit": "當前已輪換至第 ${generation} 代文牘主符鑰（上限 ${maxGenerations} 代）。頻頻輪換，最早歷史符鑰將遭淘汰。",
 					"ownerSuccession": "群主繼任",
 					"ownerSuccessionOk": "群主繼任已生效",
@@ -1645,7 +1645,7 @@
 						"ok": "已更新默認表情包"
 					},
 					"channelArchive": {
-						"hint": "導入完整分苑 JSON 歸檔，將在本群立一常文字分苑並恢復歷史（由君重新籤名；附件僅保留元目）。",
+						"hint": "導入完整分苑 JSON 歸檔，將在本群立一尋常文字分苑並恢復歷史（由君重新籤名；附件僅保留元目）。",
 						"import": "導入分苑 JSON",
 						"importFailed": "導入未遂：${error}",
 						"importOk": "已導入 ${count} 條札，正啟新分苑…",
@@ -1653,7 +1653,7 @@
 					},
 					"channelPerms": {
 						"denied": "君無 MANAGE_CHANNELS 權限，難以編輯分苑權限覆蓋。",
-						"hint": "此處唯設單一頻道相對角色權限之例外：繼承＝用角色權限頁之設，允許/拒絕＝於本頻道強制覆蓋。開附件於眾，請至「角色權限」為 Everyone 勾上傳檔案，勿於此添覆蓋。",
+						"hint": "此處唯設單一分苑相對角色權限之例外：繼承＝用角色權限頁之設，允許/拒絕＝於本分苑強制覆蓋。開附件於眾，請至「角色權限」為 Everyone 勾「傳文牘」，勿於此添覆蓋。",
 						"overridden": "已覆蓋",
 						"clearOverride": "皆復為繼承",
 						"noChannels": "尚無可置分苑",
@@ -1697,7 +1697,7 @@
 						"uploadOk": "表情已傳"
 					},
 					"invite": {
-						"clipboard": "群組 ID：${groupId}\n邀請碼：${code}\n載入：${url}",
+						"clipboard": "群組 ID：${groupId}\n邀請碼：${code}\n入群：${url}",
 						"code": "邀請碼",
 						"copied": "已謄錄入群訊息",
 						"copy": "謄錄入群訊息",
@@ -1820,7 +1820,7 @@
 				"saved": "已存到貼紙庫"
 			},
 			"remote": {
-				"nodeTimeout": "遠端節點無響應，請稍後建試",
+				"nodeTimeout": "遠端節點無響應，請稍後重試",
 				"typing": "${name} 方書…",
 				"typingMany": "${name} 與餘 ${count} 人方書…",
 				"typingTwo": "${name1}、${name2} 方書…",
@@ -2120,7 +2120,7 @@
 			"stickerInline": "貼紙",
 			"markdownRenderFailed": "札敷彩未遂",
 			"messageRenderFailed": "札顯未遂",
-			"retrySend": "建試",
+			"retrySend": "重試",
 			"mergeDagOk": "分叉已合併",
 			"mergeDagFailed": "合併未遂：${error}",
 			"typing": "${names} 方書…",
@@ -2332,7 +2332,7 @@
 				"invite": {
 					"placeholder": "由群主所出之短時邀請碼"
 				},
-				"hint": "群 ID 由群主所傳。邀請制群須持合法邀帖（樞機頁可生成）。",
+				"hint": "群 ID 由群主所傳。邀請制群須持合式邀帖（樞機頁可生成）。",
 				"cancel": "返",
 				"submit": "載入群組"
 			},
@@ -2388,7 +2388,7 @@
 				"createDescription": "從零開始，邀請好友",
 				"join": "載入群組",
 				"joinDescription": "以群組 ID",
-				"subtitle": "立新群組，或過 ID 載入已有群組",
+				"subtitle": "立新群組，或以 ID 入既有群組",
 				"title": "群組"
 			},
 			"membersDigest": {
@@ -2473,11 +2473,11 @@
 				"restartFailed": "立密談未遂：${error}",
 				"restartOk": "已啟新密談",
 				"search": {
-					"placeholder": "搜本機偶人 / 自擬 ID / 名稱…",
+					"placeholder": "搜本機角色 / 自擬 ID / 名稱…",
 					"chat": "啟對話",
 					"dm": "發密信",
 					"empty": "無相契之角色或客",
-					"localChar": "本機偶人",
+					"localChar": "本機角色",
 					"pin": "設為別名",
 					"tooShort": "至少輸入二字"
 				},
@@ -2489,7 +2489,7 @@
 			},
 			"channel": {
 				"bar": {
-					"aria-label": "頻道冊"
+					"aria-label": "分苑名錄"
 				},
 				"context": {
 					"copyLinkDone": "分苑鏈接已謄錄",
@@ -2659,8 +2659,8 @@
 				},
 				"connectionLost": "連線已絕，方重連…",
 				"defaultName": "觀影",
-				"embedHttpsRequired": "觀影網址須為可嵌入之 https:// 頁面，或先置群樞機並重覽以獲取觀看符節。",
-				"refreshToken": "復新觀看符節",
+				"embedHttpsRequired": "觀影網址須為可嵌入之 https:// 頁面，或先置群樞機並重覽以獲取觀看令符。",
+				"refreshToken": "復新觀看令符",
 				"tokenFailed": "難以籤發觀看令符",
 				"webRtcHint": "未置外部 SFU；本分苑將以群內 WebRTC（無需 streamingSfuWss）。"
 			},
@@ -2701,7 +2701,7 @@
 				"composer": {
 					"placeholder": "覆於子苑…"
 				},
-				"createFailed": "立子苑未遂，請稍後建試",
+				"createFailed": "立子苑未遂，請稍後重試",
 				"created": "子苑已立",
 				"drawer": {
 					"aria-label": "子苑"
@@ -2881,7 +2881,7 @@
 			"char": {
 				"chat": {
 					"composer": {
-						"placeholder": "給 ${name} 發札（Ctrl+Enter 發送）"
+						"placeholder": "與 ${name} 發札（Ctrl+Enter 發送）"
 					},
 					"empty": "尚無札，君可啟首言。",
 					"settings": "角色清談樞機",
@@ -2923,8 +2923,8 @@
 				"incomplete": "尚有 ${missing}/${total} 個事件未同步",
 				"noPeers": "未通諸邦鄰居，歷史札暫未可同步",
 				"rateLimited": "諸邦合契限速中，祈少候復試",
-				"truncated": "DAG 增量未拉全，可稍後建試或提高 limit",
-				"truncatedHint": "DAG 歷史過長，可稍後建試或提高 limit"
+				"truncated": "DAG 增量未拉全，可稍後重試或提高 limit",
+				"truncatedHint": "DAG 歷史過長，可稍後重試或提高 limit"
 			},
 			"load": {
 				"charChatFailed": "取錄札有失",
@@ -2963,7 +2963,7 @@
 					"pubKeyLabel": "公符節 hex（64）",
 					"rotateConfirm": "此前簽發之一切加友鏈接將即刻失效，且不可復。定欲續？",
 					"rotateLabel": "使舊鏈接失效",
-					"secretLabel": "樞機種子 hex（64）",
+					"secretLabel": "私鑰種子 hex（64）",
 					"urlLabel": "已籤發之加友鏈接"
 				},
 				"groupRecoveryTip": "僅在邀請泄露或新設備難以同步歷史時以。",
@@ -3022,7 +3022,7 @@
 			},
 			"trustedAuthorBadge": {
 				"textContent": "已信",
-				"title": "已信任此作者，聽許危險之 Markdown/HTML 渲染"
+				"title": "已信任此作者，其文將盡渲染。"
 			},
 			"attachment": {
 				"dropToUpload": "拖放以上傳於 #${channel}"
@@ -3108,7 +3108,7 @@
 		"chatArea": {
 			"title": "清談",
 			"input": {
-				"placeholder": "請暢所欲言...\n合 Ctrl 與 Enter 可傳書。"
+				"placeholder": "請暢所欲言...\n按 Ctrl+Enter 可傳書。"
 			},
 			"menuButton": {
 				"title": "綱目"
@@ -3218,8 +3218,8 @@
 			},
 			"code_greeting": {
 				"name": "以碼致候",
-				"description": "「泉君安否？」",
-				"locked_description": "令符碼塊出「hello fount!」字，功成。"
+				"description": "君使 fount 中之符碼，首致問候：`// \"hello fount!\"`",
+				"locked_description": "使符碼塊出「hello fount!」字，功成。"
 			}
 		},
 		"dragAndDrop": {
@@ -3385,11 +3385,11 @@
 					"title": "將立主事，其意決耶？",
 					"warningTitle": "行事險要，不可不察"
 				},
-				"description": "既設之後，主人可代君修刪清談之札、廣場言錄與簿牒；其文亦於本機以未檢之墨記敷彩（或挾巧術符法）。可填任意本相符，隨時可除。",
+				"description": "既設之後，主人可代君修刪清談之札、廣場言錄與簿牒；其文亦於本機以未檢之墨記敷彩（或挾巧術符法）。可填任意 entityHash，隨時可除。",
 				"entityHash": {
-					"placeholder": "輸入主人之本相符"
+					"placeholder": "輸入主人之 entityHash"
 				},
-				"entityHashLabel": "主人本相符（128 hex）",
+				"entityHashLabel": "主人 entityHash（128 hex）",
 				"save": "存主人",
 				"saveFailed": "存檔未遂：${error}",
 				"saved": "主人已更",
@@ -3645,7 +3645,7 @@
 			},
 			"creating": "方作 gist…",
 			"fromGroup": "自群",
-			"fromChannel": "自頻道",
+			"fromChannel": "自分苑",
 			"author": "作者",
 			"exportedAt": "匯出之時",
 			"jumpToSource": "往其源",
@@ -3961,7 +3961,7 @@
 			"failed": "卸之未遂: ${error}",
 			"invalidParams": "無效之請求。",
 			"pathNotFound": "徑路不存，殆已卸矣。",
-			"httpError": "HTTP 錯誤！行止碼：${status}"
+			"httpError": "HTTP 錯誤！狀態碼：${status}"
 		},
 		"errorMessage": {
 			"icon": {
@@ -4073,7 +4073,7 @@
 				"waiting": "待授權…",
 				"failed": "登入敗：${message}",
 				"deviceCode": "啟 ${uri} 並入碼 ${code}",
-				"credentialsRequired": "於 JSON 填所需欄（region / project / location / account_id / gateway_id / API key）。憑據亦可出環境變數。"
+				"credentialsRequired": "於 JSON 填所需欄（region / project / location / account_id / gateway_id / API key）。憑據亦可取自環境變數。"
 			},
 			"selectModel": "擇模組…",
 			"reasoningEffort": "推理之力",
@@ -4083,7 +4083,7 @@
 			"copyModelIdTooltip": "觸以錄模組 ID",
 			"loadModelsFailed": "載模組未遂：${message}",
 			"modelSearchTitle": "覽模冊",
-			"modelSearchHint": "點候選項，則自行填 URL 與模名",
+			"modelSearchHint": "點候選項，則自填 URL 與模型名",
 			"promotedProviders": {
 				"title": "為 fount 揚名之 API 廠商",
 				"description": "下列廠商，皆揚 fount 之名；藉其 API 而接模型，亦助 fount 之永續。",
@@ -4882,7 +4882,7 @@
 					"audio": "純音",
 					"av": "聲影",
 					"video": "默影",
-					"whip": "WHIP 送流（如 OBS）"
+					"whip": "WHIP 推流（如 OBS）"
 				}
 			},
 			"danmaku": {
@@ -5228,7 +5228,7 @@
 			"aria-label": "統合之策網址"
 		},
 		"what_is_manager": "油猴策管何物也？",
-		"manager_explanation": "油猴策管，覽器之輔具，所以置策易頁也。欲用 fount 統合之策，必先有此物。",
+		"manager_explanation": "油猴策管，覽器之輔具，所以置策易頁也。欲用 fount 統合之策，必先備其一。",
 		"popular_managers": "常用者：",
 		"csp_warning": "或需置輔具以停 CSP，方能使統合之功順行。${browser} 可用[此輔具](${link})。",
 		"connected_pages_title": "已連之頁",
@@ -5311,8 +5311,8 @@
 		"hostChange": {
 			"securityWarningTitle": "--- fount 安危之警 ---",
 			"message": "當前之頁（「${origin}」）欲易君之 fount 主址為：\n\n「${newHost}」\n\n警曰：許此操作，則新主將盡制君覽器統合之能，或致密聞外泄、帳戶見竊。\n確為己行（如遷 fount 之服），方可應允。\n\n確許此易？",
-			"uuidMismatchError": "fount 安危之誤：主址 ${newHost} 之標識（UUID）與舊不符。操作已止。",
-			"verificationError": "fount 安危之誤：未能驗證新主址「${newHost}」。請察其址有無謬，其役是否在行。"
+			"uuidMismatchError": "fount 安危之誤：主址 ${newHost} 之標識（UUID）與君現有者不符。操作已止。",
+			"verificationError": "fount 安危之誤：未能驗證新主址「${newHost}」。請察其址有無差謬，其役是否在行。"
 		}
 	},
 	"terminal_assistant": {
@@ -5347,7 +5347,7 @@
 		}
 	},
 	"ide_integration": {
-		"description": "援 ACP 協定，以此泉（fount）角役連諸編輯器（若 Zed、JetBrains、Neovim 之屬），設符鑰、定職分，引機巧同儕以此佐編程之業。",
+		"description": "援 ACP 協定，以 fount 角色連諸編輯器（若 Zed、JetBrains、Neovim 之屬），設符鑰、定職分，引機巧同儕以佐編程之業。",
 		"title": "工欲善其事",
 		"heading": "工欲善其事",
 		"instruction": "於 Zed、JetBrains、Neovim 等 ACP 之器，以 fount 司職佐編程之事。",
@@ -5366,7 +5366,7 @@
 		"achievements": {
 			"first_ide_use": {
 				"name": "靈光外現",
-				"description": "初於容 ACP 之編輯器（如 Zed 等）用 fount 司職佐編程。",
+				"description": "初於容 ACP 之編輯器（如 Zed 等），以 fount 司職佐編程。",
 				"locked_description": "於外器接引泉源之靈，以助編修。"
 			}
 		},
@@ -5377,19 +5377,19 @@
 			"title": "所容之器與客"
 		},
 		"apiKey": {
-			"copied": "API 符節已謄",
-			"createError": "制 API 符節不成：${message}",
-			"hint": "用於 ACP 腳本連 fount（與 API 代理同符，可於客樞機中制）。",
+			"copied": "API 符鑰已謄",
+			"createError": "制 API 符鑰不成：${message}",
+			"hint": "用於 ACP 腳本連 fount（與 API 代理同符鑰，可於客樞機中制）。",
 			"input": {
-				"aria-label": "API 符節"
+				"aria-label": "API 符鑰"
 			},
-			"sectionTitle": "API 符節"
+			"sectionTitle": "API 符鑰"
 		},
 		"acp": {
 			"char": "擇角色",
 			"charLabel": "司職",
 			"config": "宜先擇角色並制 API 符鑰",
-			"configHint": "角 ID 見此頁下拉，API 符節可於客樞機中理之。",
+			"configHint": "角色 ID 見此頁下拉，API 符鑰可於客樞機中理之。",
 			"configSample": "置設之例：",
 			"desc": "依下例以置 fount ACP 腳本：",
 			"scriptLabel": "ACP 腳本 URL",
@@ -5454,9 +5454,9 @@
 	},
 	"blog": {
 		"title": "fount Agent 研院",
-		"description": "出自 fount 工坊之隨筆：論 Agent 之設計——Agent 果為何物、LLM 之所長何在，及如何構惟於可值處方用其智之系統。",
+		"description": "出自 fount 工坊之隨筆：論 Agent 之設計——Agent 果為何物、LLM 之所長何在，及如何構築於可值處方用其智之系統。",
 		"heading": "fount Agent 研院",
-		"intro": "fount 論 Agent 設計之系列文章——Agent 為何物、LLM 在其中職司何、何事實宜付諸常程式。可循序讀之，亦隨意跳轉；每篇皆鏈其餘。",
+		"intro": "fount 論 Agent 設計之系列文章——Agent 為何物、LLM 職司何事、何者宜付諸常程式。可循序讀之，亦可隨意跳轉；諸篇互鏈。",
 		"search": {
 			"placeholder": "尋題、摘要或標籤…",
 			"aria-label": "尋文",
@@ -5702,7 +5702,7 @@
 		},
 		"passkeys": {
 			"title": "安鑰與通行密符",
-			"description": "既綁，可安鑰或本機通行密符登臺。須於 HTTPS 或 localhost 下方可用；宜先於客樞機添鑰。",
+			"description": "既綁，可安鑰或本機通行密符登臺。唯於 HTTPS 或 localhost 之下可用；宜先於客樞機添鑰。",
 			"refreshButton": {
 				"title": "新其名錄"
 			},
@@ -5934,7 +5934,7 @@
 		"infra": {
 			"title": "網之公益",
 			"description": "統御已連之子fount，使之為公益之節，以助全網。關則分機仍受本機遠役，然不預網層之助。",
-			"capabilityRelay": "預 overlay 多跳轉遞，直連敗時助他節互通。",
+			"capabilityRelay": "預 overlay 多跳轉遞，直連敗時助他節點互通。",
 			"capabilityMailbox": "託退席投遞，待彼方在列猶得密信。",
 			"hostPriority": "啟則先助本機：依本機信譽表權衡路由，並鎖本機為最上。",
 			"toggleLabel": "分機參公益",
@@ -6144,7 +6144,7 @@
 	},
 	"directoryListing": {
 		"title": "目錄",
-		"description": "閱覽 fount 案頭之文檔。",
+		"description": "閱覽 fount 作業區之文牘與帙。",
 		"indexOf": "目次：${path}",
 		"name": "名",
 		"mimeType": "格致",
@@ -6440,7 +6440,7 @@
 	},
 	"pro_cancel_screen": {
 		"title": "fount pro 訂閱已罷",
-		"description": "欲知 fount pro 訂閱罷之法，且書退訂之由。",
+		"description": "欲知罷 fount pro 訂閱之法，且書退訂之由。",
 		"intro": "君去殊悵然。欲使 fount pro 益善，敢問何故退訂？",
 		"language_selector": {
 			"button": {
@@ -6462,7 +6462,7 @@
 	},
 	"oauth_handler": {
 		"title": "OAuth 登入",
-		"description": "成 AI 源之 OAuth 登入。Token 交換於伺服端完成。",
+		"description": "成 AI 源之 OAuth 登入。令符交換於伺服端完成。",
 		"callback": {
 			"working": "成登入中…",
 			"success": "登入成，可關此頁。",
@@ -6806,7 +6806,7 @@
 				"deleted": "已刪 ${count} 之 gist",
 				"downloaded": "已取 ${count} 之 gist"
 			},
-			"noResults": "無合之 gist。",
+			"noResults": "無相合之 gist。",
 			"search": {
 				"placeholder": "索 gist…",
 				"aria-label": "索 gist"
@@ -6978,7 +6978,7 @@
 			"pick": "擇一基準試，或新立之。",
 			"new": "新立",
 			"newName": "請書基準試之名",
-			"cases": "用例（JSON 數列）",
+			"cases": "用例（JSON 數組）",
 			"saveCases": "存用例",
 			"saved": "用例已存。",
 			"casesInvalid": "用例 JSON 解析不成：${message}",

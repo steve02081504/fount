@@ -72,12 +72,12 @@
 			"partPathRequired": "Please provide a component path."
 		},
 		"partManager": {
-			"partInited": "Component ${partpath} has been initialized",
+			"partInited": "Component ${partpath} has been initialised",
 			"partLoaded": "Component ${partpath} has been loaded",
 			"git": {
 				"updating": "Updating from remote repository...",
 				"upToDate": "Already up-to-date.",
-				"localAhead": "Local branch is ahead of remote branch. No update needed.",
+				"localAhead": "The local branch is ahead of the remote branch. No updates required.",
 				"noUpstream": "No upstream branch configured for branch '${currentBranch}', skipping update check.",
 				"dirtyWorkingDirectory": "Working directory is not clean. Please stash or commit your changes before updating.",
 				"uncommittedBackedUpTo": "Uncommitted changes were backed up to: ${path}",
@@ -146,7 +146,7 @@
 			"replHint": "Enter to run · Shift+Enter for a new line"
 		},
 		"test": {
-			"help": "usage: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --list [<groups>...]\n       fount test --kernel shutdown|reboot\n\nSelectors (space-separated groups; comma-separated suites within a group; / and : are equivalent):\n  name              all suites in that group (e.g. shells/chat)\n  name:suite        a specific suite\n  name:suite:item   a specific subtest or test file\n\nWith no exact match, expands by prefix (shells → shells/chat, shells/social); globs (*, ?, **) also supported.\n\nDefault (bare fount test): plans failures/incomplete and stale items in one pass and runs them; failures only block their dependents — non-zero exit at the end. Never full-repo — use --all for that.\n\n--watch      keep watching; stays up even when the queue is empty (Ctrl+C to quit); cannot combine with --all, --force, --update-estimates, or selectors\n--all        all suites in scope\n--force      force a real run; do not reuse last results\n--update-estimates  rewrite each manifest's expected duration from current DB averages; optional selectors; does not run tests\n--list        list test suites (optional selectors to narrow scope); does not start the kernel or run tests\n--kernel     shutdown stops the test kernel; reboot stops then starts it; cannot combine with other arguments\n\nexamples:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
+			"help": "usage: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --list [<groups>...]\n       fount test --kernel shutdown|reboot\n\nSelectors (space-separated groups; comma-separated suites within a group; / and : are equivalent):\n  name              all suites in that group (e.g. shells/chat)\n  name:suite        a specific suite\n  name:suite:item   a specific subtest or test file\n\nWith no exact match, expands by prefix (shells → shells/chat, shells/social); globs (*, ?, **) also supported.\n\nDefault (bare fount test): plans failures/incomplete and stale items in one pass and runs them; failures only block their dependents — non-zero exit at the end. Never full-repo — use --all for that.\n\n--debug      step-serial: each suite is one step; leftovers are checked after every step and any hit exits with an error\n--watch      keep watching; stays up even when the queue is empty (Ctrl+C to quit); cannot combine with --all, --force, --update-estimates, or selectors\n--all        all suites in scope\n--force      force a real run; do not reuse last results\n--update-estimates  rewrite each manifest's expected duration from current DB averages; optional selectors; does not run tests\n--list        list test suites (optional selectors to narrow scope); does not start the kernel or run tests\n--kernel     shutdown stops the test kernel; reboot stops then starts it; cannot combine with other arguments\n\nexamples:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
 			"watchNoGroups": "usage: fount test --watch (cannot be used with any other options)",
 			"updateEstimates": {
 				"incompatible": "usage: fount test --update-estimates [<groups>...] (cannot be used with any other flags)",
@@ -192,7 +192,7 @@
 				"remainingOnlyUnknown": "${count} with unknown duration left overall",
 				"queued": {
 					"switch": "count",
-					"default": "Waiting in queue — ${count} ahead",
+					"default": "Waiting in queue — ${count} ahead of you",
 					"cases": {
 						"0": "Waiting in queue"
 					}
@@ -293,7 +293,7 @@
 				"alreadyReported": "Deno crash already reported — skipping: ${signature}",
 				"ghUnavailable": "gh unavailable or not logged in — logged locally only: ${signature}",
 				"published": "Submitted Deno crash issue: ${url}",
-				"duplicate": "Upstream duplicate crash exists — skipping: ${upstream}",
+				"duplicate": "Already reported upstream — skipping: ${upstream}",
 				"publishFailed": "Failed to publish Deno crash issue: ${signature}"
 			},
 			"nodeWorker": {
@@ -503,7 +503,7 @@
 				"updatingFromRemote": "Updating from remote repository...",
 				"alreadyUpToDate": "Already the latest.",
 				"localBranchAhead": "The local branch is ahead of the remote branch. No updates required.",
-				"branchesDiverged": "The local and remote branches have been forked. Forced update in progress...",
+				"branchesDiverged": "The local and remote branches have diverged. Forced update in progress…",
 				"unrelatedHistories": "Local and remote repositories have no shared history. Forcing update…",
 				"notOnBranch": "Not on the branch, switch to 'master'...",
 				"upstreamGoneFallbackMaster": "Remote branch '${branch}' has been deleted; tracking master instead…",
@@ -511,7 +511,7 @@
 				"dirtyWorkingDirectory": "Warning: The working directory is not clean. Please stage or commit your changes before updating.",
 				"notInstalled": "Git is not installed, trying to install...",
 				"notInstalledSkippingPull": "Git is not installed, skip `git pull`",
-				"repoNotFoundSkippingPull": "Repository not found, skip `git pull`",
+				"repoNotFoundSkippingPull": "Repository not found, skipping `git pull`",
 				"fetchFailed": "Failed to get from 'origin'.",
 				"fetchFailedSkippingUpdate": "Could not fetch updates from GitHub; update skipped.",
 				"remoteRefUnavailable": "Remote ref '${ref}' unavailable; Git sync skipped.",
@@ -534,7 +534,7 @@
 				"pinNotHonored": "Warning: Deno is managed by the ${manager} package manager, so the version (${spec}) specified in .deno-version cannot be honoured. It was upgraded to the package manager’s version instead."
 			},
 			"tempDir": {
-				"blocked": "Error: cannot run `fount` in temporary directory\n\nFount will be deeply coupled with the system and register the `PATH` command and multiple system hooks in `fount`. If running in a temporary directory, after the system clears the temporary files, you will not be able to execute `fount remove` to remove fount and its hooks.\n\nPlease move fount to a non-temporary directory before running. If you only want to test briefly, please manually execute `fount remove` after the test is completed."
+				"blocked": "Error: cannot run `fount` in temporary directory\n\nfount will be deeply coupled with the system and register the `PATH` command and multiple system hooks in `fount`. If running in a temporary directory, after the system clears the temporary files, you will not be able to execute `fount remove` to remove fount and its hooks.\n\nPlease move fount to a non-temporary directory before running. If you only want to test briefly, please manually execute `fount remove` after the test is completed."
 			},
 			"eula": {
 				"prompt": "Do you accept the fount End-User Licence Agreement (EULA)?",
@@ -561,11 +561,11 @@
 				"cleaningOldPwshModules": "Cleaning up old pwsh modules..."
 			},
 			"keepalive": {
-				"initComplete": "Reinitialization completed. Trying to restart fount...",
-				"autoInitDisabled": "fount has been restarted multiple times in the last short period of time, but automatic reinitialization has been disabled due to the presence of the `.noautoinit` file. Exiting.",
-				"restartingTooFast": "fount has been restarted multiple times in a short period of time. Forced reinitialization...",
+				"initComplete": "Reinitialisation completed. Trying to restart fount...",
+				"autoInitDisabled": "fount has been restarted several times recently, but automatic reinitialisation has been disabled because the `.noautoinit` file is present. Exiting.",
+				"restartingTooFast": "fount has been restarted multiple times in a short period of time. Forced reinitialisation...",
 				"failedToStart": "Even after automatic repair attempts, the fount fails to start for a short period of time. Please check the logs for errors.",
-				"initFailed": "fount initialization failed. Exiting."
+				"initFailed": "fount initialisation failed. Exiting."
 			},
 			"terminalKeybindings": {
 				"registered": "Terminal keybinding patch configured.",
@@ -709,7 +709,7 @@
 			"language": {
 				"aria-label": "Agreement language"
 			},
-			"loading": "Loading the agreement…",
+			"loading": "Loading the licence agreement…",
 			"load_failed": "Failed to load the agreement."
 		},
 		"footer": {
@@ -755,7 +755,7 @@
 			},
 			"aiSources": {
 				"title": "Unbound AI source integration",
-				"description": "fount offers unparalleled choice and flexibility. Connect to <i>any</i> AI sources—OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), OpenRouter, NovelAI, etc. Communication logic will be shaped by the power of code according to your wishes."
+				"description": "fount offers unparalleled choice and flexibility. Connect to <i>any</i> AI sources—OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), OpenRouter, NovelAI, etc. Communication logic will be shaped by the power of code according to <i>your</i> wishes."
 			}
 		}
 	},
@@ -861,7 +861,7 @@
 		"webauthn": {
 			"loginButton": "Sign in with security key / Passkey",
 			"apiSessionExpired": "Passkey login session has expired, please try again.",
-			"apiUnknownPasskey": "The Passkey is not recognized, please use a bound key.",
+			"apiUnknownPasskey": "The Passkey is not recognised, please use a bound key.",
 			"apiPasskeyVerificationFailed": "Passkey verification failed, please try again.",
 			"removeUserNotFound": "User or credential data not found.",
 			"removeInvalidPassword": "Wrong password.",
@@ -943,7 +943,7 @@
 	},
 	"home": {
 		"title": "Home",
-		"description": "The heart of your fount experience. Here, manage the denizens of your imagination—characters, worlds, and personas. Your stories begin and branch from this central nexus.",
+		"description": "This is where your fount experience begins. Characters, worlds and personas — everything your imagination holds is here. This is where every story starts.",
 		"sidebarTitle": "Details",
 		"closeSidebar": "Close sidebar",
 		"itemDescription": "Select an item to view details.",
@@ -1400,7 +1400,7 @@
 			"mergeDagTipsFailed": "Merge fork failed",
 			"channelsTitle": "Channels",
 			"members": "Members",
-			"membersHint": "The member list is synchronized by Viewpoint (placeholder)",
+			"membersHint": "The member list is synchronised by Viewpoint (placeholder)",
 			"loadError": "Failed to load group",
 			"messagesLoadFailed": "Failed to load messages",
 			"sendFailed": "Failed to send",
@@ -1504,7 +1504,7 @@
 					"delete": {
 						"before": "Delete this month before",
 						"button": "Delete cold archive",
-						"confirm": "Are you sure you want to delete all cold archive files older than ${month}? This operation is irreversible.",
+						"confirm": "Are you sure you want to delete all cold archive files older than ${month}? This cannot be undone.",
 						"failed": "Failed to delete archive: ${error}",
 						"hint": "Only local archive/*.jsonl is deleted; hotspots and DAG anchors are not affected.",
 						"invalidMonth": "Please select a valid month YYYY-MM.",
@@ -1516,7 +1516,7 @@
 					"title": "Storage and cold archiving"
 				},
 				"autoChannelGc": "Automatically clear silent channels",
-				"autoChannelGcHint": "At most 2 isolated island channels that have been silent for ≥30 days and are unreachable will be deleted when materialized.",
+				"autoChannelGcHint": "At most 2 isolated channels that have been silent for ≥30 days and are unreachable will be deleted on materialisation.",
 				"autoReply": {
 					"frequency": "Automatically trigger role replies (after every N user messages, 0 is off)",
 					"frequencyHint": "0 means off; @mentions will still trigger immediately",
@@ -1524,7 +1524,7 @@
 					"tokenBucketHint": "Each role gets a per-channel token bucket; when empty, onMessage is skipped to curb peak-time spam."
 				},
 				"batterySaver": "Battery saver (smaller federation pool and relays)",
-				"compactTriggerDepth": "Materialized compression trigger depth",
+				"compactTriggerDepth": "Materialised compression trigger depth",
 				"discoveryBlurb": "Discovery blurb (optional)",
 				"discoveryPublic": "Expose this group in federated discovery",
 				"powOnlyHint": "Only available with the PoW join policy. When enabled, the group appears in federated discovery so others can find it and request to join via PoW.",
@@ -1533,17 +1533,17 @@
 				"eventRetentionMs": "DAG event retention time",
 				"explorePeers": "Explore neighbor slots",
 				"fedPartition": "Number of federated divisions",
-				"fedTuningHint": "Write DAG group settings; after modification, it is recommended to rebind the federation room.",
+				"fedTuningHint": "Write DAG group settings; rebind the federation room after editing.",
 				"fileCe": {
 					"mode": "File encryption mode",
 					"modeConvergent": "Convergent encryption (deduplication)",
-					"modeHint": "High privacy mode uses random contentKey for each block and marks ceMode=random; this reduces the risk of plaintext being guessable, but increases storage and bandwidth usage.",
+					"modeHint": "High privacy mode uses a random contentKey for each block and sets ceMode=random; this reduces the risk of plaintext being guessable, but increases storage and bandwidth usage.",
 					"modeRandom": "High privacy (random keys, no dedup)"
 				},
 				"gossipTtl": "Gossip TTL (hops)",
 				"hlcMaxSkew": "HLC max future skew (ms)",
 				"hotLatest": "Hot zone retention (latest number of posts per channel)",
-				"hotWindowHint": "Hot zone posts are kept in the checkpoint and messages cache; the remaining posts are written to the monthly cold archive after materialization, and then collapsed from the DAG process events.",
+				"hotWindowHint": "Hot zone posts are kept in the checkpoint and messages cache; the remaining posts are written to the monthly cold archive after materialisation, and then folded out of the DAG's process events.",
 				"ice": {
 					"cred": {
 						"aria-label": "TURN password",
@@ -1579,7 +1579,7 @@
 					"title": "Group settings",
 					"description": "Manage group identity, members, permissions, and shared tools.",
 					"kicker": "Group settings",
-					"subtitle": "Manage group information, members and common functions. Low-frequency permissions, storage, and auditing tools are centralized in advanced settings.",
+					"subtitle": "Manage group information, members and common functions. Low-frequency permissions, storage, and auditing tools are centralised in advanced settings.",
 					"navigationLabel": "Group settings classification",
 					"activeEmojiPackLabel": "Pack being edited",
 					"membersTitle": "Member list",
@@ -1588,7 +1588,7 @@
 					"governanceHint": "Write group-level DAG policy; requires admin or MANAGE_ADMINS.",
 					"governanceDenied": "You do not have permission to modify group governance settings.",
 					"rolesDenied": "You do not have MANAGE_ROLES permission to edit roles.",
-					"notMember": "You are no longer a member of this group; the data of this group has been automatically cleared after leaving the group.",
+					"notMember": "You are no longer a member of this group; this group's data has been automatically cleared after you left.",
 					"basicTitle": "Group governance",
 					"profileSectionTitle": "Group info",
 					"profileSectionHint": "The name, introduction and method of joining the group will be written into the group metadata.",
@@ -1606,7 +1606,7 @@
 					"securityAdvancedDescription": "Key rotation and owner succession — mistakes can lock members out",
 					"powDifficultyTip": "Proof of work difficulty. The higher the value, the longer the calculation time required for strangers to join the public group.",
 					"maxDagPayloadTip": "The upper limit of data allowed to be carried by a single group event. If it is too large, it will increase synchronisation memory and network overhead.",
-					"trustedPeersTip": "The number of high-reputation federation neighbors that are prioritized to stay connected.",
+					"trustedPeersTip": "The number of high-reputation federation neighbors that are prioritised to stay connected.",
 					"gossipTtlTip": "The maximum number of federated nodes through which the message can be forwarded. Increasing it increases coverage and also increases traffic.",
 					"hlcTip": "The maximum amount of time that the remote node's clock is allowed to be faster than the local node's clock, used to reject abnormal future events.",
 					"sfuTip": "Optional external AV relay address. Leave blank for built-in P2P/relay calling.",
@@ -1686,7 +1686,7 @@
 						"deleteFailed": "Delete failed: ${error}",
 						"deleteOk": "Emoji has been deleted",
 						"empty": "No custom emoji yet",
-						"hint": "Members can insert or send these emojis in chat; uninstalled images are pulled on demand through federated nodes.",
+						"hint": "Members can insert or send these emojis in chat; images that are not cached locally are pulled on demand through federated nodes.",
 						"packGroupOption": "Group default pack",
 						"idCopied": "Emoji pack ID copied to clipboard",
 						"idCopy": "Copy",
@@ -1766,7 +1766,7 @@
 						"managementTip": "New keys need to be redistributed to members after rotation. Manual action should only be taken if you suspect a key has been compromised.",
 						"managementTitle": "Key management",
 						"rotate": "Rotate group file master key",
-						"rotateConfirm": "Are you sure you want to manually rotate the master key of this Group files? New members need to resynchronize the history file key.",
+						"rotateConfirm": "Are you sure you want to manually rotate the master key for this group's files? New members need to resynchronise the history file key.",
 						"rotateFailed": "Key rotation failed: ${error}",
 						"rotateOk": "Key has been rotated"
 					},
@@ -1781,7 +1781,7 @@
 					},
 					"discoverySectionTitle": "Federated discovery"
 				},
-				"pinContext": "Top neighborhood (±N neighbors)",
+				"pinContext": "Pinned neighbourhood (±N neighbours)",
 				"rtcBudget": "RTC connection budget",
 				"rtcJoinRate": "RTC added limit per minute",
 				"streamGeneratingIdle": "AI generated placeholder idle timeout (milliseconds)",
@@ -2073,11 +2073,11 @@
 			"bioEmpty": "This user does not have a profile yet.",
 			"banners": {
 				"gshBuffer": "There are ${total} messages waiting to be decrypted after key rotation",
-				"plaintextSidecar": "This channel is synchronized on demand; the local messages sidecar caches content in clear text.",
+				"plaintextSidecar": "This channel is synchronised on demand; the local messages sidecar caches content in clear text.",
 				"quarantine": "There are ${count} federation events temporarily stored in the quarantine area due to clock deviation, and will be automatically replayed after the system time is restored.",
 				"mailboxPending": "There are ${count} messages waiting to be delivered in the offline mailbox.",
 				"syncing": "Syncing with federation peers…",
-				"archiveCoverageIncomplete": "Some of the months' cold archives have not yet been synchronized from the federation.",
+				"archiveCoverageIncomplete": "Some of the months' cold archives have not yet been synchronised from the federation.",
 				"archiveSyncButton": "Sync archives",
 				"applyBranch": "Apply governance branch",
 				"autoBranch": "Auto-select by reputation",
@@ -2183,7 +2183,7 @@
 			"serverBar": {
 				"aria-label": "Groups and navigation"
 			},
-			"operationFailed": "Operation failed: ${error}",
+			"operationFailed": "Action failed: ${error}",
 			"warmCharCacheFailed": "Couldn't warm up the character cache: ${error}",
 			"shareGroupFailed": "Failed to share group link: ${error}",
 			"replyInline": {
@@ -2195,7 +2195,7 @@
 			"replyInThread": {
 				"title": "Reply in thread"
 			},
-			"localMaterializedView": "It is currently a local materialized view, and the permissions and history may be inconsistent with other nodes.",
+			"localMaterializedView": "It is currently a local materialised view, and the permissions and history may be inconsistent with other nodes.",
 			"convergentEncryptWarn": "Group files use convergent encryption: if an attacker knows the plaintext of a file, they can derive the key and decrypt the corresponding ciphertext block. Do not rely solely on group encryption for protection of highly sensitive and uniquely private documents.",
 			"reputationSlashAlert": "The reputation of member ${target}… is reminded of the deduction.",
 			"profileEdit": {
@@ -2221,7 +2221,7 @@
 				},
 				"linksLabel": "Link",
 				"handleLabel": "Custom ID",
-				"handleHint": "Can be searched by other nodes in the network; uniqueness is not guaranteed, and conflicts will be disambiguated according to the trust list.",
+				"handleHint": "Can be searched by other nodes in the network; it is not guaranteed to be unique, and conflicts will be disambiguated according to the trust list.",
 				"newLocale": {
 					"placeholder": "New language code, such as en-UK"
 				},
@@ -2368,7 +2368,7 @@
 				"title": "Translation settings",
 				"textContent": "Translation settings",
 				"autoTranslate": "Automatically translate foreign language messages",
-				"hint": "When turned on, messages with different languages ​​and interfaces will automatically request translations.",
+				"hint": "When turned on, messages with different languages and interfaces will automatically request translations.",
 				"save": "Save",
 				"saved": "Translation settings saved",
 				"saveFailed": "Save failed: ${error}"
@@ -2399,11 +2399,11 @@
 				"pagesTitle": {
 					"title": "${expected}\n${pages} pages"
 				},
-				"pending": "View member summary…"
+				"pending": "Checking the member digest…"
 			},
 			"unbindFriend": {
 				"main": "Unbind",
-				"confirm": "Are you sure to unbind the private chat with ${name}? The conversation will be moved back to the group list.",
+				"confirm": "Are you sure you want to unbind the private chat with ${name}? The conversation will be moved back to the group list.",
 				"description": "After unbinding, the conversation will return to the group list on the left and message records will be retained.",
 				"failed": "Unbinding failed: ${error}",
 				"ok": "Unbound"
@@ -2432,7 +2432,7 @@
 			},
 			"discovery": {
 				"description": "Browse public groups from the federation network, pick a community of interest and join.",
-				"empty": "There is currently no For youed group; after turning on federation synchronisation, the discovery list will be synchronized from neighbors.",
+				"empty": "No recommended groups yet; once federation syncing is on, the discovery list syncs from neighbours.",
 				"emptyTitle": "No public groups found yet",
 				"eyebrow": "Explore the community",
 				"join": "Join group",
@@ -2456,7 +2456,7 @@
 			},
 			"stickers": {
 				"empty": "No stickers yet",
-				"loadFailed": "Couldn't load stickers: ${error}",
+				"loadFailed": "Couldn't load: ${error}",
 				"loading": "Loading…",
 				"manage": "Manage stickers →",
 				"marketLink": "Go to the sticker gallery to install packs",
@@ -2473,7 +2473,7 @@
 				"restartFailed": "Failed to create a new private chat: ${error}",
 				"restartOk": "A new private chat has been opened",
 				"search": {
-					"placeholder": "Search local characters, handles or names…",
+					"placeholder": "Search local characters, custom IDs or names…",
 					"chat": "Start a conversation",
 					"dm": "Send DM",
 					"empty": "No matching role or user",
@@ -2574,7 +2574,7 @@
 					"edit": {
 						"title": "Edit message"
 					},
-					"failed": "Operation failed: ${error}",
+					"failed": "Action failed: ${error}",
 					"noPermission": "You don't have permission to perform this action.",
 					"feedbackDown": {
 						"title": "Dislike"
@@ -2676,7 +2676,7 @@
 					"careRemoved": "Removed from close friends",
 					"setAlias": "Set alias",
 					"setAliasPrompt": "Set a local alias for \"${name}\" (leave blank to clear):",
-					"aliasSaved": "Alias ​​updated",
+					"aliasSaved": "Alias updated",
 					"copyPubKey": "Copy public key hash",
 					"copyEntityId": "Copy entity ID",
 					"dm": "Send DM",
@@ -2745,7 +2745,7 @@
 				"foldersTitle": "Folders",
 				"listTitle": "Files",
 				"loadFailed": "Failed to load Group files: ${error}",
-				"loading": "Loading Group filess...",
+				"loading": "Loading Group files...",
 				"newFolder": "Create new folder",
 				"newFolderPrompt": "Folder name",
 				"no": {
@@ -2807,7 +2807,7 @@
 				"authorTitle": "Block this author",
 				"confirm": "Add this person to the blacklist? The federation of this group will reject its relay.",
 				"ok": "Blocked",
-				"opposingConfirm": "Add the governance issuers who are not on the current election to the Block list and deny this group of federation relays. continue?",
+				"opposingConfirm": "Add the governance issuers who are not on the current election to the Block list and deny this group's federation relays. Continue?",
 				"opposingFailed": "Marking failed: ${error}",
 				"opposingOk": "${count} subjects marked as unreachable"
 			},
@@ -2954,7 +2954,7 @@
 					"invalidateTitle": "Let old referral links expire",
 					"issueLabel": "Issue DM link",
 					"issued": "DM link signed and copied to clipboard",
-					"linkDescription": "Suitable for debugging or manual identity migration; there is no need to fill in these fields when adding friends on a daily basis.",
+					"linkDescription": "Suitable for debugging or manual identity migration; there is no need to fill in these fields when adding friends day to day.",
 					"linkTip": "Requires signing using local identity key. The private key is only submitted to the local service on this page and will not be sent to other nodes.",
 					"linkTitle": "Manually issue a friend link",
 					"needPubKey": "Requires 64 hex public key",
@@ -3218,7 +3218,7 @@
 			},
 			"code_greeting": {
 				"name": "Say hello with code",
-				"description": "\"Hello, fount!\"",
+				"description": "You made the code in fount greet for the first time. `// \"hello fount!\"`",
 				"locked_description": "By executing the code block, 'hello fount!' is successfully output."
 			}
 		},
@@ -3338,7 +3338,7 @@
 				"invalidUserData": "Invalid user data",
 				"identityRequired": "Node identity is not ready yet — refresh the page. If it still fails, save your federation settings in P2P below.",
 				"fetchUserFailed": "Couldn't fetch user info",
-				"operationFailed": "Operation failed: ${error}"
+				"operationFailed": "Action failed: ${error}"
 			},
 			"success": {
 				"saved": "Profile saved",
@@ -3664,7 +3664,7 @@
 		"title": "Quick Create",
 		"description": "Quickly scaffold new fount parts like characters, worlds, and plugins using predefined or custom templates. Your next creation is just a few clicks away.",
 		"info": {
-			"description": "These templates can only be used to quickly build simple components; complex components still need to be created manually."
+			"description": "Templates are for quickly building simple components; more involved creations still need your own hands."
 		},
 		"cardTitle": "Create a new component from a template",
 		"templateSelect": {
@@ -3957,11 +3957,11 @@
 			"back": "Back"
 		},
 		"alerts": {
-			"success": "${type}: ${name} uninstalled successfully",
+			"success": "${type}: ${name} uninstalled.",
 			"failed": "Uninstall failed: ${error}",
 			"invalidParams": "Invalid request parameters",
 			"pathNotFound": "Path not found; the component may have already been uninstalled.",
-			"httpError": "HTTP Error! Status code: ${status}"
+			"httpError": "HTTP error! Status code: ${status}"
 		},
 		"errorMessage": {
 			"icon": {
@@ -4007,7 +4007,7 @@
 			"saveConfigFailed": "Failed to save component configuration: ${message}",
 			"saveConfigSuccess": "Configuration saved",
 			"noPartSelected": "No component is selected to save, please select the component first.",
-			"unsavedChanges": "You have unsaved changes. Do you want to discard changes?",
+			"unsavedChanges": "You have unsaved changes. Discard them?",
 			"beforeUnload": "You have unsaved changes. Are you sure you want to leave?"
 		},
 		"home_function_buttons": {
@@ -4140,7 +4140,7 @@
 			}
 		},
 		"confirm": {
-			"unsavedChanges": "You have unsaved changes. Do you want to discard the changes?",
+			"unsavedChanges": "You have unsaved changes. Discard them?",
 			"deleteFile": "Are you sure you want to delete the file?",
 			"unsavedChangesBeforeUnload": "You have unsaved changes. Are you sure you want to leave this page?"
 		},
@@ -4231,8 +4231,8 @@
 			"deleteBot": "Delete"
 		},
 		"alerts": {
-			"configSaved": "Configuration has been saved successfully!",
-			"botExists": "A bot named \"${botname}\" already exists. Please use a different name.",
+			"configSaved": "Configuration saved.",
+			"botExists": "A bot named \"${botname}\" already exists. Please use another name.",
 			"unsavedChanges": "You have unsaved changes. Are you sure you want to discard these changes?",
 			"confirmDeleteBot": "Are you sure you want to delete the bot \"${botname}\"? This action cannot be undone.",
 			"invalidJsonConfig": "Invalid JSON configuration: ${error}",
@@ -4316,7 +4316,7 @@
 		"alerts": {
 			"configSaved": "Configuration saved successfully",
 			"botExists": "A bot named \"${botname}\" already exists. Please use another name.",
-			"unsavedChanges": "You have unsaved changes. Do you want to discard these changes?",
+			"unsavedChanges": "You have unsaved changes. Discard them?",
 			"httpError": "HTTP Error",
 			"beforeUnload": "You have unsaved changes. Are you sure you want to leave?"
 		},
@@ -4345,7 +4345,7 @@
 	},
 	"wechat_bots": {
 		"title": "WeChat Bot",
-		"description": "Run your fount character as a WeChat bot—bind a role, manage bots, and chat in WeChat.",
+		"description": "Run your fount character as a WeChat bot — bind a role, manage bots and keep the companion chat going where you already are.",
 		"cardTitle": "WeChat Bot",
 		"botSelectDropdown": {
 			"placeholder": "Choose a bot"
@@ -4392,7 +4392,7 @@
 			}
 		},
 		"prompts": {
-			"newBotName": "Enter a name for the new bot:"
+			"newBotName": "Please enter a new Bot name:"
 		},
 		"buttons": {
 			"newBot": "New",
@@ -4400,7 +4400,7 @@
 		},
 		"alerts": {
 			"configSaved": "Settings saved",
-			"botExists": "A bot named \"${botname}\" already exists. Choose another name.",
+			"botExists": "A bot named \"${botname}\" already exists. Please use another name.",
 			"unsavedChanges": "You have unsaved changes. Discard them?",
 			"httpError": "HTTP error",
 			"beforeUnload": "You have unsaved changes. Leave this page anyway?"
@@ -4431,8 +4431,8 @@
 			"hint": "Scan the QR code below with WeChat to finish signing in.",
 			"button": "Scan to sign in",
 			"scanPrompt": "Open WeChat and scan the QR code",
-			"waiting": "Loading QR code…",
-			"scanned": "Scanned—confirm on your phone",
+			"waiting": "Fetching QR code…",
+			"scanned": "Scanned — confirm on your phone",
 			"success": "WeChat linked. Settings saved—you can start the bot now.",
 			"needBot": "Select a bot from the list first, or tap New to create one."
 		}
@@ -4440,7 +4440,7 @@
 	"social": {
 		"title": "Square",
 		"description": "P2P open social posts, following and file sharing",
-		"bootstrapFailed": "Social interface initialization failed: ${error}",
+		"bootstrapFailed": "Social interface initialisation failed: ${error}",
 		"connectNodeFailed": "Couldn't connect to node: ${error}",
 		"dwellFailed": "Couldn't update taste data from watch time: ${error}",
 		"readProgress": {
@@ -4512,7 +4512,7 @@
 			"tasteHint": "Adjust the privacy boundaries and label naming of \"Recommended for You\".",
 			"autoTranslateTitle": "automatic translation",
 			"autoTranslateHint": "When turned on, foreign language posts will automatically request translation and can be switched to the original text.",
-			"autoTranslateEnable": "Automatically translate posts in languages ​​other than your own",
+			"autoTranslateEnable": "Automatically translate posts in languages other than your own",
 			"safetyTitle": "Security and shielding",
 			"safetyHint": "Manage blocked and hidden lists.",
 			"mutedKeywords": {
@@ -4539,7 +4539,7 @@
 					"preferences": "Public tag naming and merge discovery",
 					"preferencesHint": "When off, friends won't see your tag names or merge proposals, and can't contribute to consensus.",
 					"reactions": "Share likes and dislikes",
-					"reactionsHint": "After closing, the poster will not receive your likes/dislikes, your reactions will not be included in others' For youations, and you will no longer promote the post to spread again."
+					"reactionsHint": "After closing, the poster will not receive your likes/dislikes, your reactions will not be included in others' recommendations, and you will no longer push the post to spread further."
 				}
 			},
 			"blocklist": {
@@ -4553,7 +4553,7 @@
 			}
 		},
 		"composer": {
-			"placeholder": "What are you thinking about? Support Markdown (fount dialect), enter @ to mention",
+			"placeholder": "What are you thinking about? Use Markdown (fount dialect); type @ to mention",
 			"locale": {
 				"aria-label": "Content language"
 			},
@@ -4823,7 +4823,7 @@
 				"aria-label": "short video"
 			},
 			"empty": "No short video yet",
-			"emptyHint": "There are no posts with videos in the following people or public squares. Try posting a video update?",
+			"emptyHint": "None of the people you follow, or the public squares, have a video post yet. Why not post a video update?",
 			"loadFailed": "Couldn't load short videos: ${error}",
 			"compose": "Go post a video",
 			"back": {
@@ -4890,7 +4890,7 @@
 			}
 		},
 		"search": {
-			"placeholder": "Search for posts, users or #topics (minimum 2 words)",
+			"placeholder": "Search for posts, users or #topics (at least 2 characters)",
 			"aria-label": "Search posts, people or topics",
 			"open": {
 				"aria-label": "Search"
@@ -4983,7 +4983,7 @@
 			"careRemoved": "Removed from close friends",
 			"setAlias": "Set alias",
 			"setAliasPrompt": "Set local alias (leave blank to clear):",
-			"aliasSaved": "Alias ​​updated",
+			"aliasSaved": "Alias updated",
 			"replies": "Comment",
 			"copyLink": "Copy link",
 			"downloadHtml": "Download HTML",
@@ -5103,7 +5103,7 @@
 			"notifications": "No notification yet",
 			"saved": "No favourites yet",
 			"drafts": "No draft yet",
-			"exploreAccounts": "There are currently no For youed accounts",
+			"exploreAccounts": "There are currently no recommended accounts",
 			"explorePosts": "There are no exploration posts yet",
 			"likedPosts": "No likes yet",
 			"noIdentity": "Please configure federated identity in Chat before using Social"
@@ -5145,7 +5145,7 @@
 		},
 		"openCabinets": "Open file cabinet list",
 		"closeCabinets": "Close",
-		"bootstrapFailed": "File cabinet initialization failed: ${error}",
+		"bootstrapFailed": "File cabinet initialisation failed: ${error}",
 		"home_function_buttons": {
 			"main": {
 				"title": "Cabinet"
@@ -5194,7 +5194,7 @@
 		"cabinetActionPrompt": "Action: rename/delete/visibility",
 		"confirmDeleteCabinet": "Are you sure you want to delete this file cabinet?",
 		"confirmDelete": "Confirm to delete selected items?",
-		"confirmDeleteSystem": "The selected system files are included. Are you sure to delete them?",
+		"confirmDeleteSystem": "The selection includes system files. Are you sure you want to delete them?",
 		"copied": "Copied",
 		"cutDone": "Cut",
 		"undo": "Undo",
@@ -5202,7 +5202,7 @@
 		"goUp": "Go up",
 		"brokenLink": "Link is broken: ${reason}",
 		"noDownload": "No downloadable content",
-		"groupDownloadHint": "Please obtain Group filess through message attachments or subsequent download links.",
+		"groupDownloadHint": "Please obtain Group files through message attachments or subsequent download links.",
 		"remoteEntity": "remote entity",
 		"new": {
 			"cabinet": {
@@ -5223,7 +5223,7 @@
 		"install_script_title": "Installation script",
 		"install_script_description": "Click the button below to install the browser integration script. You must first install a userscript manager.",
 		"install_button": "Install",
-		"install_from_url_tip": "Does your browser not allow you to install it? Copy this URL and import the script from the url in the Tampermonkey plugin.",
+		"install_from_url_tip": "Does your browser not allow you to install it? Copy this URL and import the script from the URL in the Tampermonkey plugin.",
 		"script_url_input": {
 			"aria-label": "Browser integration script URL"
 		},
@@ -5255,8 +5255,8 @@
 			"list_title": "Configured scripts",
 			"view_script_button": "View the script",
 			"delete_button": "delete",
-			"confirm_delete": "Are you sure you want to delete this script? This operation cannot be cancelled.",
-			"add_success": "The automatic running script has been added successfully!",
+			"confirm_delete": "Are you sure you want to delete this script? This cannot be undone.",
+			"add_success": "The autorun script was added successfully.",
 			"delete_success": "The script has been deleted successfully.",
 			"no_scripts": {
 				"title": "No automatic script running",
@@ -5288,7 +5288,7 @@
 			},
 			"star_fount": {
 				"name": "open source star",
-				"description": "Star the fount on GitHub, thank you for your support!",
+				"description": "Star fount on GitHub — thank you for your support!",
 				"locked_description": "Visit fount's GitHub repository and light the star."
 			}
 		},
@@ -5305,7 +5305,7 @@
 	},
 	"browser_integration_script": {
 		"update": {
-			"prompt": "A new version of the fount browser integration script is available. Is the update page now open?"
+			"prompt": "A new version of the fount browser integration script is available. Open the update page now?"
 		},
 		"csp_warning": "The fount browser integration script detects that the CSP policy exists on the page, which may cause the integration script to not work properly. Please consider installing the plugin to close the CSP.",
 		"hostChange": {
@@ -5323,7 +5323,7 @@
 		"achievements": {
 			"invoke_shell_assist": {
 				"name": "\"Hey, fount.\"",
-				"description": "In the dark terminal, the name of the AI ​​partner was called.",
+				"description": "In the dark terminal, the name of the AI partner was called.",
 				"locked_description": "Call terminal assistance once."
 			}
 		},
@@ -5427,7 +5427,7 @@
 		"achievements": {
 			"start_deskpet": {
 				"name": "A Wild Companion Appears!",
-				"description": "It's dangerous to go alone! Take this.",
+				"description": "A wild character appeared! It has taken over your desktop.",
 				"locked_description": "Start a desktop pet."
 			}
 		},
@@ -5534,13 +5534,13 @@
 			"saveApplyButton": "Save and apply",
 			"themeName": "Theme name (ID)",
 			"autoPaletteTitle": "Auto-generated Palette",
-			"autoPaletteInstruction": "Click on a color above to automatically fill primary/secondary/accent/neutral colors.",
-			"coreColors": "Core colors",
+			"autoPaletteInstruction": "Click on a colour above to automatically fill primary/secondary/accent/neutral colours.",
+			"coreColors": "Core colours",
 			"baseBackground": "Basics and Background",
 			"variables": "Variables",
 			"borderRadius": "Border radius (--rounded-box)",
 			"borderWidth": "Border width (--border-btn)",
-			"advancedCustomization": "Advanced customization",
+			"advancedCustomization": "Advanced customisation",
 			"customCSS": "Custom CSS (override)",
 			"customMjsScript": "Custom MJS script (optional)",
 			"mjsSyntaxHint": "Use [async-eval syntax](${asyncDocLink}). Returns an object containing the `load()` and `unload()` functions.",
@@ -5612,7 +5612,7 @@
 		"title": "Language settings",
 		"pageTitle": "Language Settings",
 		"description": "Manage your language preferences for the fount application. Customise your experience with the available language options.",
-		"pageDescription": "Manage your language preferences here. The languages ​​in the list will take precedence over the browser settings in order.",
+		"pageDescription": "Manage your language preferences here. The languages in the list will take precedence over the browser settings in order.",
 		"availableLanguages": "Available Languages",
 		"preferredLanguages": "Priority Language List",
 		"resetButton": "Reset",
@@ -5882,7 +5882,7 @@
 	},
 	"proxy": {
 		"title": "API Proxy",
-		"description": "For developers and integrators, this page unveils the fount API proxy—your connection for weaving fount's capabilities into other applications.",
+		"description": "For developers and integrators, this page introduces the fount API proxy — your way to weave fount's capabilities into other applications.",
 		"heading": "API Proxy Gateway",
 		"instruction": "Generate and manage your API keys on this page to integrate fount with other applications.",
 		"endpointSectionTitle": "API Endpoint",
@@ -5895,7 +5895,7 @@
 		"generateApiKeyButton": "Generate New Key",
 		"copyApiKeyButton": "Copy",
 		"queryStringSectionTitle": "Can't set APIKey in request header? (Insecure)",
-		"queryStringWarning": "Use this alternative method when your application does not support sending the API key in the request header (Authorization header). Please note: Placing the API key directly in the URL poses a security risk as it may be logged in server logs or browser history.",
+		"queryStringWarning": "Use this alternative method when your application does not support sending the API key in the request header (Authorisation header). Please note: Placing the API key directly in the URL poses a security risk as it may be logged in server logs or browser history.",
 		"copyQueryStringUrlButton": "URL with API Key (Query String)",
 		"home_function_buttons": {
 			"other": {
@@ -6149,7 +6149,7 @@
 		"name": "Name",
 		"mimeType": "MIME type",
 		"size": "Size",
-		"parentLink": "↑ Previous level ../"
+		"parentLink": "↑ Parent directory"
 	},
 	"util": {
 		"folderBrowser": {
@@ -6534,7 +6534,7 @@
 		"char": {
 			"switch": "Switch character",
 			"settings": "Character settings",
-			"goodAgent": "How to write a good agent?",
+			"goodAgent": "Writing a good agent",
 			"none": "No character selected",
 			"recommend": {
 				"main": "Recommended character ${charname} is not installed. Install it?",
