@@ -12,7 +12,7 @@ import { allowNoise } from 'fount/scripts/test/core/allowNoise.mjs'
 
 import { runReplyHandlers } from '../../../../shells/chat/src/reply/handlerPipeline.mjs'
 import { fileOperationsReplyHandlers } from '../../handler.mjs'
-import { applyEol, applyReplacement, detectTextStyle, normalizeTagBody, renderLineDiff, restoreBom, similarityRatio, stripBom, toLf } from '../../src/edit_safety.mjs'
+import { applyEol, applyReplacement, buildFileEditSummary, detectTextStyle, normalizeTagBody, renderLineDiff, restoreBom, similarityRatio, stripBom, toLf } from '../../src/edit_safety.mjs'
 
 /**
  * 通过回复管线运行文件操作 handler。
@@ -315,6 +315,32 @@ Deno.test('handler blocks drastic override unless force', async () => {
 		const forced = createHandlerArgs(root)
 		await runFileOps('<override-file path="f.txt" force="true">omega</override-file>', forced.args)
 		assertEquals(await fs.readFile(path.join(root, 'f.txt'), 'utf8'), 'omega\n')
+		assert(logText(forced.logs).includes('变更摘要（行级 diff）'), 'successful override should expose a diff for the code shell preview')
+		const edit = forced.logs.at(-1).extension?.pluginData?.['file-operations']?.edit
+		assertEquals(edit?.path, 'f.txt', 'the change card reads the structured edit, not the localized log text')
+		assertEquals(edit.added, 1)
+		assertEquals(edit.removed, 4)
+		assert(edit.diff.includes('- alpha') && edit.diff.includes('+ omega'), 'the edit carries the display diff')
+	}
+	finally {
+		await fs.rm(root, { recursive: true, force: true })
+	}
+})
+
+Deno.test('handler records a structured edit only for writes that land', async () => {
+	const root = await tempDir()
+	try {
+		await fs.writeFile(path.join(root, 'f.txt'), 'alpha\nbeta\ngamma\n', 'utf8')
+		const edited = createHandlerArgs(root)
+		await runFileOps('<replace-file><file path="f.txt"><replacement><search>beta</search><replace>BETA</replace></replacement></file></replace-file>', edited.args)
+		assertEquals(await fs.readFile(path.join(root, 'f.txt'), 'utf8'), 'alpha\nBETA\ngamma\n')
+		const edit = edited.logs.at(-1).extension?.pluginData?.['file-operations']?.edit
+		assertEquals(edit?.path, 'f.txt')
+		assertEquals([edit.added, edit.removed], [1, 1])
+
+		const untouched = createHandlerArgs(root)
+		await runFileOps('<replace-file><file path="f.txt"><replacement><search>absent</search><replace>x</replace></replacement></file></replace-file>', untouched.args)
+		assertEquals(untouched.logs.at(-1).extension?.pluginData?.['file-operations']?.edit, undefined, 'a no-op edit must not appear in the change card')
 	}
 	finally {
 		await fs.rm(root, { recursive: true, force: true })
@@ -333,4 +359,13 @@ Deno.test('handler override creates new files and leaves no temp residue', async
 	finally {
 		await fs.rm(root, { recursive: true, force: true })
 	}
+})
+
+Deno.test('edit summary counts all changes even when its preview is truncated', () => {
+	const oldText = Array.from({ length: 100 }, (_, i) => `old ${i}`).join('\n')
+	const newText = Array.from({ length: 120 }, (_, i) => `new ${i}`).join('\n')
+	const edit = buildFileEditSummary('large.txt', oldText, newText)
+	assertEquals([edit.added, edit.removed], [120, 100])
+	assert(edit.diff.includes('未显示'))
+	assertEquals(buildFileEditSummary('same.txt', 'same', 'same'), { path: 'same.txt', diff: '', added: 0, removed: 0 })
 })

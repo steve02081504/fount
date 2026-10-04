@@ -382,8 +382,16 @@ export function renderLineDiff(oldText, newText, { context = 3, maxLines = 80 } 
 	const a = toLf(oldText).split('\n')
 	const b = toLf(newText).split('\n')
 	if (a.join('\n') === b.join('\n')) return ''
-	const ops = computeLineOps(a, b)
+	return renderLineOps(computeLineOps(a, b), { context, maxLines })
+}
 
+/**
+ * 渲染已经计算的行差异，摘要与预览共用一次计算。
+ * @param {Array<{type: string, text: string}>} ops - Line operations.
+ * @param {{context?: number, maxLines?: number}} [options] - Preview limits.
+ * @returns {string} Display diff.
+ */
+function renderLineOps(ops, { context = 3, maxLines = 80 } = {}) {
 	const keep = new Array(ops.length).fill(false)
 	for (let i = 0; i < ops.length; i++)
 		if (ops[i].type !== 'equal')
@@ -408,4 +416,22 @@ export function renderLineDiff(oldText, newText, { context = 3, maxLines = 80 } 
 	const shown = omitted ? out.slice(0, maxLines) : out
 	if (omitted) shown.push(`…（${omitted} 行未显示）`)
 	return shown.join('\n')
+}
+
+/**
+ * 生成一次文本编辑的摘要（供展示层画变更卡片，不必从本地化正文里反解）。
+ * 写入 `extension.pluginData['file-operations'].edit`，读取方见 `shells/code/public/src/changeSummary.mjs`。
+ * @param {string} filepath - 文件路径（相对工作目录或绝对路径）。
+ * @param {string} oldText - 编辑前文本（LF）。
+ * @param {string} newText - 编辑后文本（LF）。
+ * @returns {{path: string, diff: string, added: number, removed: number}} 编辑摘要。
+ */
+export function buildFileEditSummary(filepath, oldText, newText) {
+	const ops = oldText === newText ? [] : computeLineOps(toLf(oldText).split('\n'), toLf(newText).split('\n'))
+	return {
+		path: String(filepath),
+		diff: renderLineOps(ops),
+		added: ops.filter(op => op.type === 'add').length,
+		removed: ops.filter(op => op.type === 'del').length,
+	}
 }

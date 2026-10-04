@@ -8,7 +8,7 @@ import { defaultDisplay } from '../../shells/chat/src/reply/display.mjs'
 import { getChatI18n, inferCodeLanguageFromPath, renderMarkdownCodeBlock } from '../../shells/chat/src/streaming/index.mjs'
 
 import { collectLoadedHashes, collectUpwardContext, formatUpwardContext, hashContent, mergePluginData, PLUGIN_DATA_KEY, resolveEffectiveLog } from './src/context_files.mjs'
-import { applyEol, applyReplacement, detectTextStyle, normalizeTagBody, renderLineDiff, restoreBom, similarityRatio, stripBom, toLf } from './src/edit_safety.mjs'
+import { applyEol, applyReplacement, buildFileEditSummary, detectTextStyle, normalizeTagBody, renderLineDiff, restoreBom, similarityRatio, stripBom, toLf } from './src/edit_safety.mjs'
 import { formatReadWindowNotice, isProbablyTextBuffer, parseReadWindow, windowText } from './src/read_window.mjs'
 import { runRipgrep } from './src/search.mjs'
 import { createArgsExecutorResolver, executionTargetOf, listMachines, resolveLocalPath, resolveTarget } from './src/target.mjs'
@@ -209,14 +209,14 @@ function pendingDisplay(render) {
 
 /**
  * 追加文件工具结果日志：agent 层存执行结果，人类展示层存「调用卡片 + 结果」（与 code-execution 一致）。
- * 注入上下文的哈希与被查看文件元数据写入 `extension.pluginData['file-operations']`，由 shell 通用持久化。
+ * 注入上下文的哈希、被查看文件元数据与成功写入的行级 diff 摘要写入 `extension.pluginData['file-operations']`，由 shell 通用持久化。
  * @param {object} args - 请求上下文。
  * @param {string} call - 工具调用文本。
  * @param {string} resultText - agent 层执行结果。
- * @param {{name?: string, files?: object[], loadedContextHashes?: string[], viewedFiles?: {resolved: string, machine: string}[], executionTarget?: {machine: string, workdir: string|null}}} [options] - 工具名（供人类侧区分读写/搜索）、结果附件、本次注入的上下文哈希与被查看文件的 realpath（附目标机器标识，供跨机去重）、该次执行的机器与工作目录快照（供后续按产出目标预读诊断）。
+ * @param {{name?: string, files?: object[], loadedContextHashes?: string[], viewedFiles?: {resolved: string, machine: string}[], executionTarget?: {machine: string, workdir: string|null}, edit?: {path: string, diff: string, added: number, removed: number}}} [options] - 工具名（供人类侧区分读写/搜索）、结果附件、本次注入的上下文哈希与被查看文件的 realpath（附目标机器标识，供跨机去重）、该次执行的机器与工作目录快照（供后续按产出目标预读诊断）、成功写入的编辑摘要（供展示层画变更卡片）。
  * @returns {void}
  */
-function addFileToolLog(args, call, resultText, { name = 'file-operations', files = [], loadedContextHashes, viewedFiles, executionTarget } = {}) {
+function addFileToolLog(args, call, resultText, { name = 'file-operations', files = [], loadedContextHashes, viewedFiles, executionTarget, edit } = {}) {
 	/** @type {object} */
 	const extension = {}
 	if (executionTarget) extension.executionTarget = executionTarget
@@ -224,6 +224,7 @@ function addFileToolLog(args, call, resultText, { name = 'file-operations', file
 		mergePluginData(extension, PLUGIN_DATA_KEY, { contextHashes: loadedContextHashes })
 	if (Array.isArray(viewedFiles) && viewedFiles.length)
 		mergePluginData(extension, PLUGIN_DATA_KEY, { view: { files: viewedFiles } })
+	if (edit) mergePluginData(extension, PLUGIN_DATA_KEY, { edit })
 	args.AddLongTimeLog({
 		name,
 		role: 'tool',
@@ -598,6 +599,8 @@ export const replaceFileReplyHandler = defineReplyHandler({
 
 			const finalContent = restoreBom(applyEol(modifiedContent, style.eol), style.bom)
 			const changed = originalContent !== finalContent
+			/** 写入成功后才带编辑摘要：写失败的条目不该出现在变更卡片里。 @type {object|undefined} */
+			let edit
 			let system_content = ''
 			if (changed) {
 				system_content = `文件 ${inlineCode(filepath)} 内容已修改，应用了 ${replacements.length} 项替换`
@@ -618,6 +621,7 @@ export const replaceFileReplyHandler = defineReplyHandler({
 				system_content += `\n变更摘要（行级 diff）：\n${renderMarkdownCodeBlock(diff || '（无可见变更）', { lang: 'diff' })}\n若和你的预期不一致，请先用 <view-file> 确认当前内容与版本，再重新 <replace-file> 修正。`
 				try {
 					await executor.writeTextFile(filepath, finalContent)
+					edit = buildFileEditSummary(filepath, lfOriginal, modifiedContent)
 				}
 				catch (err) {
 					anyFailure = true
@@ -626,7 +630,7 @@ export const replaceFileReplyHandler = defineReplyHandler({
 			}
 			else if (!failed_replaces.length) system_content += '所有替换规则均未匹配到内容或未导致文件变化。'
 
-			addFileToolLog(args, logContent, system_content, { name: 'file-operations.replace-file', executionTarget: executionTargetOf(target) })
+			addFileToolLog(args, logContent, system_content, { name: 'file-operations.replace-file', executionTarget: executionTargetOf(target), edit })
 		}
 		return { regen: true, ...anyFailure ? { failed: true } : {} }
 	},
@@ -670,7 +674,8 @@ export const overrideFileReplyHandler = defineReplyHandler({
 				await executor.writeTextFile(filepath, restoreBom(applyEol(toLf(newText), style.eol), style.bom))
 			}
 			else await executor.writeTextFile(filepath, newText)
-			addFileToolLog(args, logContent, `文件 ${inlineCode(filepath)} 已写入`, { name: 'file-operations.override-file', executionTarget: executionTargetOf(target) })
+			const edit = buildFileEditSummary(filepath, existing == null ? '' : toLf(stripBom(existing)), toLf(newText))
+			addFileToolLog(args, logContent, `文件 ${inlineCode(filepath)} 已写入${edit.diff ? `\n\n变更摘要（行级 diff）：\n${renderMarkdownCodeBlock(edit.diff, { lang: 'diff' })}` : ''}`, { name: 'file-operations.override-file', executionTarget: executionTargetOf(target), edit })
 		}
 		catch (err) {
 			addFileToolLog(args, logContent, `写入文件失败：${inlineCode(filepath)}\n${renderMarkdownCodeBlock(err.stack || String(err))}\n`, { name: 'file-operations.override-file', executionTarget: executionTargetOf(target) })
