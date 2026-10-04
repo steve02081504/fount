@@ -6189,8 +6189,8 @@
 			"loadFailed": "Tải ảnh thất bại",
 			"mosaic": "Che pixel",
 			"redo": "Làm lại",
-			"undo": "Hoàn tác",
-			"reset": "Đặt lại"
+			"reset": "Đặt lại",
+			"undo": "Hoàn tác"
 		},
 		"common": {
 			"cancel": "Hủy bỏ",
@@ -6582,13 +6582,13 @@
 					"aria-label": "Chỉnh sửa",
 					"title": "Chỉnh sửa"
 				},
-				"downloadHtml": {
-					"title": "Tải xuống HTML",
-					"aria-label": "Tải xuống HTML"
-				},
 				"saveGist": {
-					"title": "Lưu vào gist",
-					"aria-label": "Lưu vào gist"
+					"aria-label": "Lưu vào gist",
+					"title": "Lưu vào gist"
+				},
+				"downloadHtml": {
+					"aria-label": "Tải xuống HTML",
+					"title": "Tải xuống HTML"
 				}
 			},
 			"copied": "Đã sao chép vào bộ nhớ tạm",
@@ -6630,31 +6630,31 @@
 				"aria-label": "Thêm tệp đính kèm",
 				"title": "Thêm tệp đính kèm"
 			},
-			"failed": "Đọc tệp đính kèm ${name} thất bại",
-			"reading": "Đang đọc…",
 			"remove": {
 				"aria-label": "Gỡ tệp đính kèm",
 				"title": "Gỡ tệp đính kèm"
 			},
-			"tooLargeTotal": "Tổng dung lượng tệp đính kèm vượt quá giới hạn ${limit}",
 			"drop": "Thả để đính kèm",
 			"tooLarge": "Tệp đính kèm ${name} vượt quá giới hạn 10 MB",
-			"description": {
-				"placeholder": "Thêm mô tả…",
-				"aria-label": "Mô tả tệp đính kèm"
-			},
-			"download": {
-				"title": "Tải xuống tệp đính kèm",
-				"aria-label": "Tải xuống tệp đính kèm"
-			},
 			"edit": {
-				"title": "Chỉnh sửa ảnh",
-				"aria-label": "Chỉnh sửa ảnh"
+				"aria-label": "Chỉnh sửa ảnh",
+				"title": "Chỉnh sửa ảnh"
 			},
 			"preview": {
-				"title": "Xem trước tệp đính kèm",
-				"aria-label": "Xem trước tệp đính kèm"
-			}
+				"aria-label": "Xem trước tệp đính kèm",
+				"title": "Xem trước tệp đính kèm"
+			},
+			"download": {
+				"aria-label": "Tải xuống tệp đính kèm",
+				"title": "Tải xuống tệp đính kèm"
+			},
+			"description": {
+				"aria-label": "Mô tả tệp đính kèm",
+				"placeholder": "Thêm mô tả…"
+			},
+			"tooLargeTotal": "Tổng dung lượng tệp đính kèm vượt quá giới hạn ${limit}",
+			"reading": "Đang đọc…",
+			"failed": "Đọc tệp đính kèm ${name} thất bại"
 		},
 		"error": {
 			"generic": "Đã xảy ra lỗi: ${error}",

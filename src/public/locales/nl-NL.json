@@ -6194,9 +6194,9 @@
 			"image": "Bewerken",
 			"loadFailed": "De afbeelding kon niet worden geladen",
 			"mosaic": "Verpixelen",
-			"undo": "Ongedaan maken",
+			"redo": "Opnieuw",
 			"reset": "Resetten",
-			"redo": "Opnieuw"
+			"undo": "Ongedaan maken"
 		},
 		"common": {
 			"cancel": "Annuleren",
@@ -6588,13 +6588,13 @@
 					"aria-label": "Bewerken",
 					"title": "Bewerken"
 				},
-				"downloadHtml": {
-					"title": "HTML downloaden",
-					"aria-label": "HTML downloaden"
-				},
 				"saveGist": {
-					"title": "Opslaan naar gist",
-					"aria-label": "Opslaan naar gist"
+					"aria-label": "Opslaan naar gist",
+					"title": "Opslaan naar gist"
+				},
+				"downloadHtml": {
+					"aria-label": "HTML downloaden",
+					"title": "HTML downloaden"
 				}
 			},
 			"copied": "Gekopieerd naar het klembord",
@@ -6636,31 +6636,31 @@
 				"aria-label": "Bijlage toevoegen",
 				"title": "Bijlage toevoegen"
 			},
-			"failed": "Bijlage ${name} kon niet worden gelezen",
-			"reading": "Bezig met lezen…",
 			"remove": {
 				"aria-label": "Bijlage verwijderen",
 				"title": "Bijlage verwijderen"
 			},
-			"tooLargeTotal": "Bijlagen overschrijden de totale limiet van ${limit}",
 			"drop": "Loslaten om toe te voegen",
 			"tooLarge": "Bijlage ${name} overschrijdt de limiet van 10 MB",
-			"description": {
-				"placeholder": "Voeg een beschrijving toe…",
-				"aria-label": "Bijlagebeschrijving"
-			},
-			"download": {
-				"title": "Bijlage downloaden",
-				"aria-label": "Bijlage downloaden"
-			},
 			"edit": {
-				"title": "Afbeelding bewerken",
-				"aria-label": "Afbeelding bewerken"
+				"aria-label": "Afbeelding bewerken",
+				"title": "Afbeelding bewerken"
 			},
 			"preview": {
-				"title": "Bijlage bekijken",
-				"aria-label": "Bijlage bekijken"
-			}
+				"aria-label": "Bijlage bekijken",
+				"title": "Bijlage bekijken"
+			},
+			"download": {
+				"aria-label": "Bijlage downloaden",
+				"title": "Bijlage downloaden"
+			},
+			"description": {
+				"aria-label": "Bijlagebeschrijving",
+				"placeholder": "Voeg een beschrijving toe…"
+			},
+			"tooLargeTotal": "Bijlagen overschrijden de totale limiet van ${limit}",
+			"reading": "Bezig met lezen…",
+			"failed": "Bijlage ${name} kon niet worden gelezen"
 		},
 		"error": {
 			"generic": "Er is iets misgegaan: ${error}",

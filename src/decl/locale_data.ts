@@ -6734,6 +6734,28 @@ export type LocaleData = {
 				'aria-label': string
 			}
 		}
+		explorer: {
+			title: string
+			toggle: {
+				'aria-label': string
+			}
+			refresh: {
+				'aria-label': string
+			}
+			noWorkspace: string
+			loadFailed: string
+			loading: string
+			empty: string
+			save: string
+			changes: string
+			unsaved: string
+			externalChange: string
+			lines: string
+			discardConfirm: string
+			editorLabel: string
+			editedFiles: string
+			noDiff: string
+		}
 	}
 	gist: {
 		title: string
@@ -7060,6 +7082,59 @@ export type LocaleData = {
 			preview: string
 			unavailable: string
 			truncated: string
+		}
+	}
+	captcha: {
+		title: string
+		description: string
+		help: {
+			button: {
+				'aria-label': string
+			}
+			title: string
+			text: string
+		}
+		install: {
+			title: string
+			termux: string
+			paste: string
+			finish: string
+			platforms: {
+				android: string
+				windows: string
+				mac: string
+				linux: string
+				unknown: string
+			}
+		}
+		command: {
+			copy: string
+			copied: string
+			manualCopy: string
+		}
+		status: {
+			checking: string
+			invalid: string
+			expired: string
+			success: string
+			failed: string
+			connecting: string
+			missing: string
+		}
+	}
+	'invitation-required': {
+		title: string
+		description: string
+		getLink: string
+		submit: string
+		waiting: string
+		success: string
+		error: string
+		link: {
+			label: string
+			input: {
+				placeholder: string
+			}
 		}
 	}
 }
@@ -7394,6 +7469,8 @@ export type LocaleKeyParams = {
 	'code.char.recommend.main': { charname: string | number }
 	'code.composer.modeSwitched': { mode: string | number }
 	'code.error.generic': { error: string | number }
+	'code.explorer.discardConfirm': { path: string | number }
+	'code.explorer.editedFiles': { count: string | number }
 	'code.power.armedAria': { count: string | number }
 	'code.power.armedCount': { count: string | number }
 	'code.sessions.deleteConfirm': { title: string | number }

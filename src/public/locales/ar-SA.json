@@ -6199,8 +6199,8 @@
 			"loadFailed": "تعذّر تحميل الصورة",
 			"mosaic": "تمويه",
 			"redo": "إعادة",
-			"undo": "تراجع",
-			"reset": "إعادة الضبط"
+			"reset": "إعادة الضبط",
+			"undo": "تراجع"
 		},
 		"common": {
 			"cancel": "إلغاء",
@@ -6592,13 +6592,13 @@
 					"aria-label": "تعديل",
 					"title": "تعديل"
 				},
-				"downloadHtml": {
-					"title": "تنزيل HTML",
-					"aria-label": "تنزيل HTML"
-				},
 				"saveGist": {
-					"title": "حفظ في gist",
-					"aria-label": "حفظ في gist"
+					"aria-label": "حفظ في gist",
+					"title": "حفظ في gist"
+				},
+				"downloadHtml": {
+					"aria-label": "تنزيل HTML",
+					"title": "تنزيل HTML"
 				}
 			},
 			"copied": "تم النسخ إلى الحافظة",
@@ -6640,31 +6640,31 @@
 				"aria-label": "إضافة مرفق",
 				"title": "إضافة مرفق"
 			},
-			"failed": "تعذّرت قراءة المرفق ${name}",
-			"reading": "جارٍ القراءة…",
 			"remove": {
 				"aria-label": "إزالة المرفق",
 				"title": "إزالة المرفق"
 			},
-			"tooLargeTotal": "يتجاوز حجم المرفقات الحد الإجمالي ${limit}",
 			"drop": "أفلت للإرفاق",
 			"tooLarge": "يتجاوز المرفق ${name} حد 10 ميجابايت",
-			"description": {
-				"placeholder": "أضف وصفًا…",
-				"aria-label": "وصف المرفق"
-			},
-			"download": {
-				"title": "تنزيل المرفق",
-				"aria-label": "تنزيل المرفق"
-			},
 			"edit": {
-				"title": "تعديل الصورة",
-				"aria-label": "تعديل الصورة"
+				"aria-label": "تعديل الصورة",
+				"title": "تعديل الصورة"
 			},
 			"preview": {
-				"title": "معاينة المرفق",
-				"aria-label": "معاينة المرفق"
-			}
+				"aria-label": "معاينة المرفق",
+				"title": "معاينة المرفق"
+			},
+			"download": {
+				"aria-label": "تنزيل المرفق",
+				"title": "تنزيل المرفق"
+			},
+			"description": {
+				"aria-label": "وصف المرفق",
+				"placeholder": "أضف وصفًا…"
+			},
+			"tooLargeTotal": "يتجاوز حجم المرفقات الحد الإجمالي ${limit}",
+			"reading": "جارٍ القراءة…",
+			"failed": "تعذّرت قراءة المرفق ${name}"
 		},
 		"error": {
 			"generic": "حدث خطأ ما: ${error}",

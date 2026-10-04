@@ -6195,8 +6195,8 @@
 			"loadFailed": "Falha ao carregar a imagem",
 			"mosaic": "Pixelizar",
 			"redo": "Refazer",
-			"undo": "Desfazer",
-			"reset": "Reiniciar"
+			"reset": "Reiniciar",
+			"undo": "Desfazer"
 		},
 		"common": {
 			"cancel": "Cancelar",
@@ -6588,13 +6588,13 @@
 					"aria-label": "Editar",
 					"title": "Editar"
 				},
-				"downloadHtml": {
-					"title": "Descarregar HTML",
-					"aria-label": "Descarregar HTML"
-				},
 				"saveGist": {
-					"title": "Guardar no gist",
-					"aria-label": "Guardar no gist"
+					"aria-label": "Guardar no gist",
+					"title": "Guardar no gist"
+				},
+				"downloadHtml": {
+					"aria-label": "Descarregar HTML",
+					"title": "Descarregar HTML"
 				}
 			},
 			"copied": "Copiado para a área de transferência",
@@ -6636,31 +6636,31 @@
 				"aria-label": "Adicionar anexo",
 				"title": "Adicionar anexo"
 			},
-			"failed": "Falha ao ler o anexo ${name}",
-			"reading": "A ler…",
 			"remove": {
 				"aria-label": "Remover anexo",
 				"title": "Remover anexo"
 			},
-			"tooLargeTotal": "Os anexos excedem o limite total de ${limit}",
 			"drop": "Largue para anexar",
 			"tooLarge": "O anexo ${name} excede o limite de 10 MB",
-			"description": {
-				"placeholder": "Adicione uma descrição…",
-				"aria-label": "Descrição do anexo"
-			},
-			"download": {
-				"title": "Descarregar anexo",
-				"aria-label": "Descarregar anexo"
-			},
 			"edit": {
-				"title": "Editar imagem",
-				"aria-label": "Editar imagem"
+				"aria-label": "Editar imagem",
+				"title": "Editar imagem"
 			},
 			"preview": {
-				"title": "Pré-visualizar anexo",
-				"aria-label": "Pré-visualizar anexo"
-			}
+				"aria-label": "Pré-visualizar anexo",
+				"title": "Pré-visualizar anexo"
+			},
+			"download": {
+				"aria-label": "Descarregar anexo",
+				"title": "Descarregar anexo"
+			},
+			"description": {
+				"aria-label": "Descrição do anexo",
+				"placeholder": "Adicione uma descrição…"
+			},
+			"tooLargeTotal": "Os anexos excedem o limite total de ${limit}",
+			"reading": "A ler…",
+			"failed": "Falha ao ler o anexo ${name}"
 		},
 		"error": {
 			"generic": "Algo correu mal: ${error}",

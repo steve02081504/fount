@@ -6189,8 +6189,8 @@
 			"loadFailed": "Das Bild konnte nicht geladen werden",
 			"mosaic": "Verpixeln",
 			"redo": "Wiederholen",
-			"undo": "Rückgängig",
-			"reset": "Zurücksetzen"
+			"reset": "Zurücksetzen",
+			"undo": "Rückgängig"
 		},
 		"common": {
 			"cancel": "Abbrechen",
@@ -6582,13 +6582,13 @@
 					"aria-label": "Bearbeiten",
 					"title": "Bearbeiten"
 				},
-				"downloadHtml": {
-					"title": "HTML herunterladen",
-					"aria-label": "HTML herunterladen"
-				},
 				"saveGist": {
-					"title": "In gist speichern",
-					"aria-label": "In gist speichern"
+					"aria-label": "In gist speichern",
+					"title": "In gist speichern"
+				},
+				"downloadHtml": {
+					"aria-label": "HTML herunterladen",
+					"title": "HTML herunterladen"
 				}
 			},
 			"copied": "In die Zwischenablage kopiert",
@@ -6630,31 +6630,31 @@
 				"aria-label": "Anhang hinzufügen",
 				"title": "Anhang hinzufügen"
 			},
-			"failed": "Anhang ${name} konnte nicht gelesen werden",
-			"reading": "Wird gelesen…",
 			"remove": {
 				"aria-label": "Anhang entfernen",
 				"title": "Anhang entfernen"
 			},
-			"tooLargeTotal": "Anhänge überschreiten das Gesamtlimit von ${limit}",
 			"drop": "Loslassen zum Anhängen",
 			"tooLarge": "Anhang ${name} überschreitet das 10-MB-Limit",
-			"description": {
-				"placeholder": "Beschreibung hinzufügen…",
-				"aria-label": "Anhangsbeschreibung"
-			},
-			"download": {
-				"title": "Anhang herunterladen",
-				"aria-label": "Anhang herunterladen"
-			},
 			"edit": {
-				"title": "Bild bearbeiten",
-				"aria-label": "Bild bearbeiten"
+				"aria-label": "Bild bearbeiten",
+				"title": "Bild bearbeiten"
 			},
 			"preview": {
-				"title": "Anhang in der Vorschau anzeigen",
-				"aria-label": "Anhang in der Vorschau anzeigen"
-			}
+				"aria-label": "Anhang in der Vorschau anzeigen",
+				"title": "Anhang in der Vorschau anzeigen"
+			},
+			"download": {
+				"aria-label": "Anhang herunterladen",
+				"title": "Anhang herunterladen"
+			},
+			"description": {
+				"aria-label": "Anhangsbeschreibung",
+				"placeholder": "Beschreibung hinzufügen…"
+			},
+			"tooLargeTotal": "Anhänge überschreiten das Gesamtlimit von ${limit}",
+			"reading": "Wird gelesen…",
+			"failed": "Anhang ${name} konnte nicht gelesen werden"
 		},
 		"error": {
 			"generic": "Etwas ist schiefgelaufen: ${error}",

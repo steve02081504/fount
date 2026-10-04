@@ -2,7 +2,6 @@
 	"lang": "zh-TW",
 	"name": "繁體中文",
 	"tips": {
-		"data[22]": "不，你不知道。",
 		"title": "你知道嗎？",
 		"data": [
 			"在任意 fount 頁面中使用 `esc` 鍵可以返回上一頁。",
@@ -6190,8 +6189,8 @@
 			"loadFailed": "圖片載入失敗",
 			"mosaic": "打碼",
 			"redo": "重做",
-			"undo": "撤銷",
-			"reset": "重設"
+			"reset": "重設",
+			"undo": "撤銷"
 		},
 		"common": {
 			"cancel": "取消",
@@ -6583,13 +6582,13 @@
 					"aria-label": "編輯",
 					"title": "編輯"
 				},
-				"downloadHtml": {
-					"title": "下載 HTML",
-					"aria-label": "下載 HTML"
-				},
 				"saveGist": {
-					"title": "儲存到 gist",
-					"aria-label": "儲存到 gist"
+					"aria-label": "儲存到 gist",
+					"title": "儲存到 gist"
+				},
+				"downloadHtml": {
+					"aria-label": "下載 HTML",
+					"title": "下載 HTML"
 				}
 			},
 			"copied": "已複製到剪貼簿",
@@ -6631,31 +6630,31 @@
 				"aria-label": "新增附件",
 				"title": "新增附件"
 			},
-			"failed": "讀取附件 ${name} 失敗",
-			"reading": "正在讀取…",
 			"remove": {
 				"aria-label": "移除附件",
 				"title": "移除附件"
 			},
-			"tooLargeTotal": "附件總大小超過 ${limit} 限制",
 			"drop": "放開以新增附件",
 			"tooLarge": "附件 ${name} 超過 10MB 限制",
-			"description": {
-				"placeholder": "新增說明…",
-				"aria-label": "附件說明"
-			},
-			"download": {
-				"title": "下載附件",
-				"aria-label": "下載附件"
-			},
 			"edit": {
-				"title": "編輯圖片",
-				"aria-label": "編輯圖片"
+				"aria-label": "編輯圖片",
+				"title": "編輯圖片"
 			},
 			"preview": {
-				"title": "預覽附件",
-				"aria-label": "預覽附件"
-			}
+				"aria-label": "預覽附件",
+				"title": "預覽附件"
+			},
+			"download": {
+				"aria-label": "下載附件",
+				"title": "下載附件"
+			},
+			"description": {
+				"aria-label": "附件說明",
+				"placeholder": "新增說明…"
+			},
+			"tooLargeTotal": "附件總大小超過 ${limit} 限制",
+			"reading": "正在讀取…",
+			"failed": "讀取附件 ${name} 失敗"
 		},
 		"error": {
 			"generic": "發生錯誤：${error}",
