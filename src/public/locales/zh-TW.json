@@ -6788,6 +6788,28 @@
 			"reconnect": {
 				"aria-label": "重新連線"
 			}
+		},
+		"explorer": {
+			"title": "檔案總管",
+			"toggle": {
+				"aria-label": "切換檔案總管"
+			},
+			"refresh": {
+				"aria-label": "重新整理檔案樹"
+			},
+			"noWorkspace": "選擇工作區以瀏覽檔案",
+			"loadFailed": "無法讀取目錄",
+			"loading": "正在讀取檔案…",
+			"empty": "選擇要編輯的檔案",
+			"save": "儲存",
+			"changes": "變更",
+			"unsaved": "未儲存的變更",
+			"externalChange": "檔案已在外部變更；請先解決衝突再儲存",
+			"lines": "${count} 行",
+			"discardConfirm": "檔案「${path}」有未儲存的變更。確定關閉並捨棄嗎？",
+			"editorLabel": "檔案編輯器",
+			"editedFiles": "已編輯 ${count} 個檔案",
+			"noDiff": "這次操作沒有記錄逐行差異"
 		}
 	},
 	"gist": {
@@ -7115,6 +7137,59 @@
 			"preview": "預覽文字檔",
 			"unavailable": "附件無法取得",
 			"truncated": "預覽已截斷，請下載完整檔案查看。"
+		}
+	},
+	"captcha": {
+		"title": "確認您的身分",
+		"description": "某個 fount 節點想確認您是人類或自主 agent。",
+		"help": {
+			"button": {
+				"aria-label": "為什麼我會看到這個？"
+			},
+			"title": "為什麼我會看到這個？",
+			"text": "這通常是為了確認您不是廣告指令碼。如果您不需要繼續操作，關閉此頁面即可。"
+		},
+		"install": {
+			"title": "請依下列步驟繼續",
+			"termux": "下載 Termux（F-Droid）",
+			"paste": "2. 點選「複製指令」，把指令貼到剛開啟的視窗，然後按 Enter。",
+			"finish": "3. 等待安裝完成。請保持該視窗開啟並回到本頁，驗證會自動繼續。",
+			"platforms": {
+				"android": "1. 安裝並開啟 Termux。",
+				"windows": "1. 同時按下鍵盤上的 Win 和 R 鍵，開啟「執行」視窗。",
+				"mac": "1. 同時按下 Command（⌘）和空白鍵，搜尋「終端機」並開啟。",
+				"linux": "1. 開啟應用程式選單，找到並開啟「終端機」。",
+				"unknown": "這台裝置目前沒有可用的操作步驟。請在 Windows、Mac、Linux 電腦或 Android 手機上開啟此連結。"
+			}
+		},
+		"command": {
+			"copy": "複製指令",
+			"copied": "已複製，請貼上",
+			"manualCopy": "已選取，請手動複製"
+		},
+		"status": {
+			"checking": "正在準備驗證，請稍候…",
+			"invalid": "這個連結無法使用。請回到剛才的頁面，重新開始驗證。",
+			"expired": "這個連結已過期。請回到剛才的頁面，重新開始驗證。",
+			"success": "驗證通過！請回到剛才的頁面繼續操作。",
+			"failed": "驗證未完成。請回到剛才的頁面，重新開始驗證。",
+			"connecting": "正在連線，請保持視窗開啟。連線成功後會自動完成驗證。",
+			"missing": "請依下方步驟啟動驗證工具。完成後，本頁會自動繼續。"
+		}
+	},
+	"invitation-required": {
+		"title": "fount 是需要邀請才能使用的軟體",
+		"description": "為了確保社群優質可靠，fount 只接納由現有使用者邀請的新使用者。",
+		"getLink": "向身邊任何已經在使用 fount 的人，索取私聊邀請連結！",
+		"submit": "使用邀請連結",
+		"waiting": "邀請已送出，請等待對方確認。確認後會自動進入 fount。",
+		"success": "邀請已確認，正在進入 fount…",
+		"error": "目前無法使用這個邀請，請檢查連結或聯絡邀請您的人。",
+		"link": {
+			"label": "收到邀請連結了嗎？貼到這裡",
+			"input": {
+				"placeholder": "在這裡貼上對方傳給您的完整連結"
+			}
 		}
 	}
 }

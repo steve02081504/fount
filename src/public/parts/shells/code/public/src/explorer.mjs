@@ -356,7 +356,7 @@ function paintEditor(tab) {
 			return span
 		}))
 	
-	status.textContent = buffer.external ? geti18n('code.explorer.externalChange') : `${count} ${geti18n('code.explorer.lines')}`
+	status.textContent = buffer.external ? geti18n('code.explorer.externalChange') : geti18n('code.explorer.lines', { count })
 }
 
 /** 使用乐观并发控制保存当前文件。 @returns {Promise<void>} Completion. */

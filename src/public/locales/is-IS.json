@@ -6788,6 +6788,34 @@
 			"reconnect": {
 				"aria-label": "Tengjast aftur"
 			}
+		},
+		"explorer": {
+			"title": "Vinnusvæðislisti",
+			"toggle": {
+				"aria-label": "Sýna eða fela vinnusvæðislistann"
+			},
+			"refresh": {
+				"aria-label": "Endurhlaða skráatrénu"
+			},
+			"noWorkspace": "Veldu vinnusvæði til að skoða skrár",
+			"loadFailed": "Gat ekki lesið möppuna",
+			"loading": "Hleð skrá…",
+			"empty": "Veldu skrá til að breyta",
+			"save": "Vista",
+			"changes": "Breytingar",
+			"unsaved": "Óvistaðar breytingar",
+			"externalChange": "Skránni var breytt utan ritilsins; leystu áreksturinn áður en þú vistar",
+			"lines": {
+				"switch": "count",
+				"default": "${count} línur",
+				"cases": {
+					"1": "1 lína"
+				}
+			},
+			"discardConfirm": "„${path}“ er með óvistaðar breytingar. Loka og henda þeim?",
+			"editorLabel": "Skráaritill",
+			"editedFiles": "Breytti ${count} skrám",
+			"noDiff": "Enginn línubundinn diff var skráður fyrir þessa breytingu"
 		}
 	},
 	"gist": {
@@ -7115,6 +7143,59 @@
 			"preview": "Skoða textaskrá",
 			"unavailable": "Viðhengi ekki tiltækt",
 			"truncated": "Sýnishorn stytt. Sæktu alla skrána til að sjá restina."
+		}
+	},
+	"captcha": {
+		"title": "Staðfestu hver þú ert",
+		"description": "fount-hnútur vill staðfesta að þú sért manneskja eða sjálfstæður agent.",
+		"help": {
+			"button": {
+				"aria-label": "Af hverju sé ég þetta?"
+			},
+			"title": "Af hverju sé ég þetta?",
+			"text": "Þessi staðfesting er yfirleitt til að ganga úr skugga um að þú sért ekki auglýsingaskripta. Ef þú þarft ekki að halda áfram geturðu einfaldlega lokað þessari síðu."
+		},
+		"install": {
+			"title": "Fylgdu þessum skrefum til að halda áfram",
+			"termux": "Sækja Termux (F-Droid)",
+			"paste": "2. Ýttu á „Afrita skipun“, límdu skipunina í gluggann sem opnaðist og ýttu á Enter.",
+			"finish": "3. Bíddu eftir að uppsetningunni ljúki. Hafðu gluggann opinn og komdu aftur hingað; staðfestingin heldur sjálf áfram.",
+			"platforms": {
+				"android": "1. Settu upp Termux og opnaðu það.",
+				"windows": "1. Ýttu á Windows-hnappinn og R samtímis til að opna „Keyra“-gluggann.",
+				"mac": "1. Ýttu á Command (⌘) og bil samtímis, leitaðu að „Terminal“ og opnaðu það.",
+				"linux": "1. Opnaðu forritavalmyndina, finndu „Terminal“ og opnaðu það.",
+				"unknown": "Engin skref eru í boði fyrir þetta tæki. Opnaðu þennan hlekk á Windows-, Mac- eða Linux-tölvu, eða Android-síma."
+			}
+		},
+		"command": {
+			"copy": "Afrita skipun",
+			"copied": "Afritað. Límdu núna",
+			"manualCopy": "Valið. Afritaðu handvirkt"
+		},
+		"status": {
+			"checking": "Undirbý staðfestinguna. Bíddu aðeins…",
+			"invalid": "Ekki er hægt að nota þennan hlekk. Farðu aftur á fyrri síðu og byrjaðu staðfestinguna upp á nýtt.",
+			"expired": "Þessi hlekkur er útrunninn. Farðu aftur á fyrri síðu og byrjaðu staðfestinguna upp á nýtt.",
+			"success": "Staðfesting tókst! Farðu aftur á fyrri síðu til að halda áfram.",
+			"failed": "Ekki tókst að ljúka staðfestingunni. Farðu aftur á fyrri síðu og byrjaðu upp á nýtt.",
+			"connecting": "Tengist. Hafðu gluggann opinn; staðfestingunni lýkur sjálfkrafa þegar tengingin er komin.",
+			"missing": "Fylgdu skrefunum hér fyrir neðan til að ræsa staðfestingartólið. Síðan heldur áfram sjálfkrafa að því loknu."
+		}
+	},
+	"invitation-required": {
+		"title": "fount er aðeins notað að fengnu boði",
+		"description": "Til að halda samfélaginu áreiðanlegu tekur fount aðeins við nýjum notendum sem núverandi notendur bjóða.",
+		"getLink": "Biddu einhvern sem notar fount nú þegar um boðshlekk í einkaspjalli!",
+		"submit": "Nota boðshlekk",
+		"waiting": "Boðið er sent. Bíddu eftir að hin aðilan samþykki það; eftir það opnast fount sjálfkrafa.",
+		"success": "Boðið er samþykkt. fount er að opnast…",
+		"error": "Ekki er hægt að nota þetta boð núna. Athugaðu hlekkinn eða hafðu samband við þann sem bauð þér.",
+		"link": {
+			"label": "Ertu með boðshlekk? Límdu hann hér",
+			"input": {
+				"placeholder": "Límdu hér fullan hlekkinn sem þér var sendur"
+			}
 		}
 	}
 }

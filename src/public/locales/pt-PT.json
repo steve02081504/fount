@@ -6794,6 +6794,34 @@
 			"reconnect": {
 				"aria-label": "Reconectar"
 			}
+		},
+		"explorer": {
+			"title": "Explorador",
+			"toggle": {
+				"aria-label": "Mostrar ou ocultar o explorador"
+			},
+			"refresh": {
+				"aria-label": "Atualizar a árvore de ficheiros"
+			},
+			"noWorkspace": "Escolha um espaço de trabalho para explorar ficheiros",
+			"loadFailed": "Não foi possível ler o diretório",
+			"loading": "A carregar o ficheiro…",
+			"empty": "Escolha um ficheiro para editar",
+			"save": "Guardar",
+			"changes": "Alterações",
+			"unsaved": "Alterações por guardar",
+			"externalChange": "O ficheiro foi alterado fora do editor; resolva o conflito antes de guardar",
+			"lines": {
+				"switch": "count",
+				"default": "${count} linhas",
+				"cases": {
+					"1": "1 linha"
+				}
+			},
+			"discardConfirm": "«${path}» tem alterações por guardar. Fechar e descartá-las?",
+			"editorLabel": "Editor de ficheiros",
+			"editedFiles": "${count} ficheiros editados",
+			"noDiff": "Esta edição não tem um diff por linhas registado"
 		}
 	},
 	"gist": {
@@ -7121,6 +7149,59 @@
 			"preview": "Pré-visualizar ficheiro de texto",
 			"unavailable": "Anexo indisponível",
 			"truncated": "Pré-visualização truncada. Transfira o ficheiro completo para ver o resto."
+		}
+	},
+	"captcha": {
+		"title": "Confirme a sua identidade",
+		"description": "Um nó fount quer confirmar que é uma pessoa ou um agente autónomo.",
+		"help": {
+			"button": {
+				"aria-label": "Porque estou a ver isto?"
+			},
+			"title": "Porque estou a ver isto?",
+			"text": "Isto serve normalmente para confirmar que não é um script publicitário. Se não precisar de continuar, basta fechar esta página."
+		},
+		"install": {
+			"title": "Siga estes passos para continuar",
+			"termux": "Transferir o Termux (F-Droid)",
+			"paste": "2. Clique em «Copiar comando», cole o comando na janela que se abriu e prima Enter.",
+			"finish": "3. Aguarde o fim da instalação. Mantenha essa janela aberta e volte aqui; a verificação continua automaticamente.",
+			"platforms": {
+				"android": "1. Instale e abra o Termux.",
+				"windows": "1. Prima a tecla Windows e R em conjunto para abrir a janela «Executar».",
+				"mac": "1. Prima Command (⌘) e a barra de espaços em conjunto, procure «Terminal» e abra-o.",
+				"linux": "1. Abra o menu de aplicações, procure «Terminal» e abra-o.",
+				"unknown": "Não há passos disponíveis para este dispositivo. Abra esta ligação num computador Windows, Mac ou Linux, ou num telemóvel Android."
+			}
+		},
+		"command": {
+			"copy": "Copiar comando",
+			"copied": "Copiado. Cole agora",
+			"manualCopy": "Selecionado. Copie manualmente"
+		},
+		"status": {
+			"checking": "A preparar a verificação. Aguarde um momento…",
+			"invalid": "Esta ligação não pode ser usada. Volte à página anterior e comece a verificação de novo.",
+			"expired": "Esta ligação expirou. Volte à página anterior e comece a verificação de novo.",
+			"success": "Verificação concluída! Volte à página anterior para continuar.",
+			"failed": "A verificação não ficou concluída. Volte à página anterior e comece de novo.",
+			"connecting": "A ligar. Mantenha a janela aberta; a verificação termina sozinha assim que a ligação estiver feita.",
+			"missing": "Siga os passos abaixo para iniciar a ferramenta de verificação. Depois, esta página continua automaticamente."
+		}
+	},
+	"invitation-required": {
+		"title": "O fount só se usa por convite",
+		"description": "Para manter a nossa comunidade fiável, o fount só aceita novos utilizadores convidados por utilizadores existentes.",
+		"getLink": "Peça a alguém que já use o fount uma ligação de convite para a conversa privada!",
+		"submit": "Usar ligação de convite",
+		"waiting": "Convite enviado. Aguarde a confirmação da outra pessoa; depois, o fount abre automaticamente.",
+		"success": "Convite confirmado. A abrir o fount…",
+		"error": "Este convite não pode ser usado neste momento. Verifique a ligação ou contacte quem o convidou.",
+		"link": {
+			"label": "Recebeu uma ligação de convite? Cole-a aqui",
+			"input": {
+				"placeholder": "Cole aqui a ligação completa que lhe foi enviada"
+			}
 		}
 	}
 }

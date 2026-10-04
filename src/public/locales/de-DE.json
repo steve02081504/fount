@@ -6788,6 +6788,34 @@
 			"reconnect": {
 				"aria-label": "Erneut verbinden"
 			}
+		},
+		"explorer": {
+			"title": "Explorer",
+			"toggle": {
+				"aria-label": "Explorer ein- oder ausblenden"
+			},
+			"refresh": {
+				"aria-label": "Dateibaum aktualisieren"
+			},
+			"noWorkspace": "Wählen Sie einen Arbeitsbereich, um Dateien zu durchsuchen",
+			"loadFailed": "Verzeichnis konnte nicht gelesen werden",
+			"loading": "Datei wird geladen…",
+			"empty": "Wählen Sie eine Datei zum Bearbeiten",
+			"save": "Speichern",
+			"changes": "Änderungen",
+			"unsaved": "Nicht gespeicherte Änderungen",
+			"externalChange": "Datei wurde extern geändert; lösen Sie den Konflikt vor dem Speichern",
+			"lines": {
+				"switch": "count",
+				"default": "${count} Zeilen",
+				"cases": {
+					"1": "1 Zeile"
+				}
+			},
+			"discardConfirm": "„${path}“ hat nicht gespeicherte Änderungen. Schließen und verwerfen?",
+			"editorLabel": "Dateieditor",
+			"editedFiles": "${count} Dateien bearbeitet",
+			"noDiff": "Für diese Bearbeitung wurde kein zeilenweiser Diff aufgezeichnet"
 		}
 	},
 	"gist": {
@@ -7115,6 +7143,59 @@
 			"preview": "Textdatei ansehen",
 			"unavailable": "Anhang nicht verfügbar",
 			"truncated": "Vorschau gekürzt. Lade die vollständige Datei herunter, um den Rest zu sehen."
+		}
+	},
+	"captcha": {
+		"title": "Identität bestätigen",
+		"description": "Ein fount-Knoten möchte bestätigen, dass Sie ein Mensch oder ein autonomer Agent sind.",
+		"help": {
+			"button": {
+				"aria-label": "Warum sehe ich das?"
+			},
+			"title": "Warum sehe ich das?",
+			"text": "Damit wird in der Regel nur geprüft, dass Sie kein Werbeskript sind. Wenn Sie nicht fortfahren möchten, können Sie diese Seite einfach schließen."
+		},
+		"install": {
+			"title": "Folgen Sie diesen Schritten, um fortzufahren",
+			"termux": "Termux herunterladen (F-Droid)",
+			"paste": "2. Wählen Sie „Befehl kopieren“, fügen Sie den Befehl in das geöffnete Fenster ein und drücken Sie die Eingabetaste.",
+			"finish": "3. Warten Sie, bis die Installation abgeschlossen ist. Lassen Sie das Fenster geöffnet und kehren Sie hierher zurück; die Prüfung läuft automatisch weiter.",
+			"platforms": {
+				"android": "1. Installieren und öffnen Sie Termux.",
+				"windows": "1. Drücken Sie die Windows-Taste und R gleichzeitig, um das Fenster „Ausführen“ zu öffnen.",
+				"mac": "1. Drücken Sie Command (⌘) und Leertaste gleichzeitig, suchen Sie nach „Terminal“ und öffnen Sie es.",
+				"linux": "1. Öffnen Sie das Anwendungsmenü und wählen Sie dort das Terminal.",
+				"unknown": "Für dieses Gerät sind keine Schritte verfügbar. Öffnen Sie diesen Link auf einem Windows-, Mac- oder Linux-Rechner oder auf einem Android-Telefon."
+			}
+		},
+		"command": {
+			"copy": "Befehl kopieren",
+			"copied": "Kopiert. Jetzt einfügen",
+			"manualCopy": "Ausgewählt. Bitte manuell kopieren"
+		},
+		"status": {
+			"checking": "Prüfung wird vorbereitet. Bitte warten…",
+			"invalid": "Dieser Link ist nicht verwendbar. Kehren Sie zur vorherigen Seite zurück und starten Sie die Prüfung erneut.",
+			"expired": "Dieser Link ist abgelaufen. Kehren Sie zur vorherigen Seite zurück und starten Sie die Prüfung erneut.",
+			"success": "Prüfung bestanden! Kehren Sie zur vorherigen Seite zurück, um fortzufahren.",
+			"failed": "Die Prüfung konnte nicht abgeschlossen werden. Kehren Sie zur vorherigen Seite zurück und starten Sie erneut.",
+			"connecting": "Verbindung wird hergestellt. Lassen Sie das Fenster geöffnet; die Prüfung endet automatisch, sobald die Verbindung steht.",
+			"missing": "Folgen Sie den Schritten unten, um das Prüfwerkzeug zu starten. Danach läuft diese Seite automatisch weiter."
+		}
+	},
+	"invitation-required": {
+		"title": "fount ist nur mit Einladung nutzbar",
+		"description": "Damit unsere Community vertrauenswürdig bleibt, nimmt fount nur neue Nutzer auf, die von bestehenden Nutzern eingeladen wurden.",
+		"getLink": "Bitten Sie jemanden, der fount bereits nutzt, um einen Einladungslink für den privaten Chat!",
+		"submit": "Einladungslink verwenden",
+		"waiting": "Einladung gesendet. Warten Sie auf die Bestätigung der anderen Person; danach öffnet sich fount automatisch.",
+		"success": "Einladung bestätigt. fount wird geöffnet…",
+		"error": "Diese Einladung ist gerade nicht verwendbar. Prüfen Sie den Link oder wenden Sie sich an die Person, die Sie eingeladen hat.",
+		"link": {
+			"label": "Sie haben einen Einladungslink? Fügen Sie ihn hier ein",
+			"input": {
+				"placeholder": "Fügen Sie hier den vollständigen Link ein, den Sie erhalten haben"
+			}
 		}
 	}
 }

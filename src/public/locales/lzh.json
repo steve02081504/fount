@@ -6790,26 +6790,26 @@
 			}
 		},
 		"explorer": {
-			"title": "资源管理器",
+			"title": "資源管理器",
 			"toggle": {
-				"aria-label": "切换资源管理器"
+				"aria-label": "隱顯資源管理器"
 			},
 			"refresh": {
-				"aria-label": "刷新文件树"
+				"aria-label": "更新文牘樹"
 			},
-			"noWorkspace": "选择工作区以浏览文件",
-			"loadFailed": "无法读取目录",
-			"loading": "正在读取文件…",
-			"empty": "选择文件以编辑",
-			"save": "保存",
-			"changes": "更改",
-			"unsaved": "未保存的更改",
-			"externalChange": "文件已在外部修改；请先处理冲突",
-			"lines": "行",
-			"discardConfirm": "文件「${path}」有未保存的更改。确定关闭并丢弃吗？",
-			"editorLabel": "文件编辑器",
-			"editedFiles": "已编辑 ${count} 个文件",
-			"noDiff": "此操作没有记录行级 diff"
+			"noWorkspace": "擇作業區以覽文牘",
+			"loadFailed": "目錄不可讀",
+			"loading": "方讀文牘…",
+			"empty": "擇文牘以編輯",
+			"save": "存檔",
+			"changes": "變更",
+			"unsaved": "未存之變更",
+			"externalChange": "文牘已為外所改，請先解其爭",
+			"lines": "${count} 行",
+			"discardConfirm": "文牘「${path}」有未存之變更，定欲閉而棄之乎？",
+			"editorLabel": "文牘編輯器",
+			"editedFiles": "已編輯 ${count} 文牘",
+			"noDiff": "此改未錄逐行之 diff"
 		}
 	},
 	"gist": {
@@ -7140,55 +7140,55 @@
 		}
 	},
 	"captcha": {
-		"title": "确认您的身份",
-		"description": "某个 fount 节点想确认您是人类或自主 agent。",
+		"title": "請驗其身",
+		"description": "有 fount 節點欲驗君為人或自主 agent。",
 		"help": {
 			"button": {
-				"aria-label": "为什么我会看到这个？"
+				"aria-label": "何故見此？"
 			},
-			"title": "为什么我会看到这个？",
-			"text": "这通常是为了确认您不是广告脚本。如果您不需要继续操作，关闭此页面即可。"
+			"title": "何故見此？",
+			"text": "此多為辨君非廣告之腳本。若無須續行，閉此頁可也。"
 		},
 		"install": {
-			"title": "按下面的步骤继续",
-			"termux": "下载 Termux（F-Droid）",
-			"paste": "2. 点击“复制命令”，将命令粘贴到刚打开的窗口，然后按回车键。",
-			"finish": "3. 等待安装完成。请保持窗口打开，回到本页，验证会自动继续。",
+			"title": "請按左列之序",
+			"termux": "取 Termux（F-Droid）",
+			"paste": "2. 按「複製命令」，貼於新啟之窗，然後按 Enter。",
+			"finish": "3. 待裝畢。留其窗開，還至此頁，驗將自續。",
 			"platforms": {
-				"android": "1. 安装并打开 Termux。",
-				"windows": "1. 同时按下键盘上的 Win 和 R 键，打开“运行”窗口。",
-				"mac": "1. 同时按下 Command（⌘）和空格键，搜索“终端”，然后打开它。",
-				"linux": "1. 打开应用菜单，找到并打开“终端”。",
-				"unknown": "这台设备暂时没有可用的操作步骤。请在 Windows、Mac、Linux 电脑或 Android 手机上打开此链接。"
+				"android": "1. 裝並啟 Termux。",
+				"windows": "1. 同按鍵盤之 Win 與 R，啟「執行」之窗。",
+				"mac": "1. 同按 Command（⌘）與空格，尋「終端」而啟之。",
+				"linux": "1. 啟應用之選單，尋「終端」而啟之。",
+				"unknown": "此器暫無可行之序。請於 Windows、Mac、Linux 電腦或 Android 手機開此連結。"
 			}
 		},
 		"command": {
-			"copy": "复制命令",
-			"copied": "已复制，请粘贴",
-			"manualCopy": "已选中，请手动复制"
+			"copy": "複製命令",
+			"copied": "已錄，請貼之",
+			"manualCopy": "已擇，請手錄之"
 		},
 		"status": {
-			"checking": "正在准备验证，请稍等…",
-			"invalid": "这个链接无法使用。请回到刚才的页面，重新开始验证。",
-			"expired": "这个链接已过期。请回到刚才的页面，重新开始验证。",
-			"success": "验证通过！请回到刚才的页面继续操作。",
-			"failed": "验证未完成。请回到刚才的页面，重新开始验证。",
-			"connecting": "正在连接，请保持窗口打开。连接成功后会自动完成验证。",
-			"missing": "请按下方步骤启动验证工具。完成后，本页会自动继续。"
+			"checking": "方備驗，請稍待…",
+			"invalid": "此連結不可用。請返前頁，重啟其驗。",
+			"expired": "此連結已逾期。請返前頁，重啟其驗。",
+			"success": "驗已過！請返前頁續行。",
+			"failed": "驗未竟。請返前頁，重啟其驗。",
+			"connecting": "方連之，請留窗開。連成則驗自畢。",
+			"missing": "請按下方之序啟驗具。畢後本頁自續。"
 		}
 	},
 	"invitation-required": {
-		"title": "fount 是一个需要邀请的软件",
-		"description": "为确保我们的社区优质可靠，fount 只接纳被现有用户邀请的新用户。",
-		"getLink": "联系您身边任何已经在使用 fount 的人，向他们索要私聊邀请链接！",
-		"submit": "使用邀请链接",
-		"waiting": "邀请已发送，请等待对方确认。确认后会自动进入 fount。",
-		"success": "邀请已确认，正在进入 fount…",
-		"error": "暂时无法使用这个邀请，请检查网络链接或联系邀请您的人。",
+		"title": "fount 乃需邀之軟件",
+		"description": "為保社群之良，fount 只納見邀於現有用戶之新用戶。",
+		"getLink": "請向左右已用 fount 者，索私談之邀連結！",
+		"submit": "用邀連結",
+		"waiting": "邀已發，請待彼方之確認。確認後自入 fount。",
+		"success": "邀已確認，方入 fount…",
+		"error": "此邀暫不可用，請察其連結或問邀君之人。",
 		"link": {
-			"label": "收到邀请链接了吗？粘贴到这里",
+			"label": "得邀連結乎？貼之於此",
 			"input": {
-				"placeholder": "在这里粘贴对方发给您的完整链接"
+				"placeholder": "貼彼所發之全文連結於此"
 			}
 		}
 	}

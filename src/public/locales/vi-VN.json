@@ -6788,6 +6788,28 @@
 			"reconnect": {
 				"aria-label": "Kết nối lại"
 			}
+		},
+		"explorer": {
+			"title": "Trình duyệt tệp",
+			"toggle": {
+				"aria-label": "Hiện hoặc ẩn trình duyệt tệp"
+			},
+			"refresh": {
+				"aria-label": "Làm mới cây thư mục"
+			},
+			"noWorkspace": "Chọn không gian làm việc để duyệt tệp",
+			"loadFailed": "Không đọc được thư mục",
+			"loading": "Đang đọc tệp…",
+			"empty": "Chọn một tệp để chỉnh sửa",
+			"save": "Lưu",
+			"changes": "Thay đổi",
+			"unsaved": "Thay đổi chưa lưu",
+			"externalChange": "Tệp đã bị sửa từ bên ngoài; hãy xử lý xung đột trước khi lưu",
+			"lines": "${count} dòng",
+			"discardConfirm": "Tệp \"${path}\" có thay đổi chưa lưu. Đóng lại và bỏ các thay đổi đó?",
+			"editorLabel": "Trình chỉnh sửa tệp",
+			"editedFiles": "Đã sửa ${count} tệp",
+			"noDiff": "Lần sửa này không ghi lại diff theo dòng"
 		}
 	},
 	"gist": {
@@ -7115,6 +7137,59 @@
 			"preview": "Xem trước tệp văn bản",
 			"unavailable": "Tệp đính kèm không khả dụng",
 			"truncated": "Bản xem trước đã bị cắt. Tải tệp đầy đủ để xem phần còn lại."
+		}
+	},
+	"captcha": {
+		"title": "Xác nhận danh tính của bạn",
+		"description": "Một nút fount muốn xác nhận bạn là người hay một agent tự chủ.",
+		"help": {
+			"button": {
+				"aria-label": "Vì sao tôi thấy trang này?"
+			},
+			"title": "Vì sao tôi thấy trang này?",
+			"text": "Việc này thường chỉ để xác nhận bạn không phải script quảng cáo. Nếu không cần tiếp tục, bạn chỉ cần đóng trang này."
+		},
+		"install": {
+			"title": "Làm theo các bước sau để tiếp tục",
+			"termux": "Tải Termux (F-Droid)",
+			"paste": "2. Nhấn \"Sao chép lệnh\", dán lệnh vào cửa sổ vừa mở rồi nhấn Enter.",
+			"finish": "3. Chờ quá trình cài đặt kết thúc. Giữ cửa sổ đó mở và quay lại trang này; quá trình xác minh sẽ tự tiếp tục.",
+			"platforms": {
+				"android": "1. Cài đặt và mở Termux.",
+				"windows": "1. Nhấn đồng thời phím Windows và phím R để mở cửa sổ \"Run\".",
+				"mac": "1. Nhấn đồng thời Command (⌘) và phím cách, tìm \"Terminal\" rồi mở.",
+				"linux": "1. Mở menu ứng dụng, tìm \"Terminal\" rồi mở.",
+				"unknown": "Thiết bị này không có các bước hướng dẫn. Hãy mở liên kết này trên máy tính Windows, Mac hoặc Linux, hay trên điện thoại Android."
+			}
+		},
+		"command": {
+			"copy": "Sao chép lệnh",
+			"copied": "Đã sao chép. Hãy dán ngay",
+			"manualCopy": "Đã chọn. Hãy sao chép thủ công"
+		},
+		"status": {
+			"checking": "Đang chuẩn bị xác minh. Vui lòng đợi…",
+			"invalid": "Liên kết này không dùng được. Hãy quay lại trang trước và bắt đầu xác minh lại.",
+			"expired": "Liên kết này đã hết hạn. Hãy quay lại trang trước và bắt đầu xác minh lại.",
+			"success": "Đã xác minh xong! Hãy quay lại trang trước để tiếp tục.",
+			"failed": "Quá trình xác minh chưa hoàn tất. Hãy quay lại trang trước và làm lại.",
+			"connecting": "Đang kết nối. Hãy giữ cửa sổ mở; quá trình xác minh sẽ tự kết thúc khi kết nối thành công.",
+			"missing": "Làm theo các bước bên dưới để khởi động công cụ xác minh. Sau đó trang này sẽ tự tiếp tục."
+		}
+	},
+	"invitation-required": {
+		"title": "fount chỉ dùng được khi có lời mời",
+		"description": "Để cộng đồng luôn đáng tin cậy, fount chỉ tiếp nhận người dùng mới được người dùng hiện có mời.",
+		"getLink": "Hãy hỏi bất kỳ ai đang dùng fount để xin liên kết mời vào trò chuyện riêng!",
+		"submit": "Dùng liên kết mời",
+		"waiting": "Đã gửi lời mời. Hãy chờ người kia xác nhận; sau đó fount sẽ tự mở.",
+		"success": "Đã xác nhận lời mời. Đang mở fount…",
+		"error": "Hiện chưa dùng được lời mời này. Hãy kiểm tra liên kết hoặc liên hệ người đã mời bạn.",
+		"link": {
+			"label": "Bạn có liên kết mời? Dán vào đây",
+			"input": {
+				"placeholder": "Dán liên kết đầy đủ mà người kia đã gửi cho bạn"
+			}
 		}
 	}
 }

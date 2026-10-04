@@ -6794,6 +6794,34 @@
 			"reconnect": {
 				"aria-label": "Opnieuw verbinden"
 			}
+		},
+		"explorer": {
+			"title": "Verkenner",
+			"toggle": {
+				"aria-label": "Verkenner tonen of verbergen"
+			},
+			"refresh": {
+				"aria-label": "Bestandsboom vernieuwen"
+			},
+			"noWorkspace": "Kies een werkruimte om bestanden te bekijken",
+			"loadFailed": "Map kon niet worden gelezen",
+			"loading": "Bestand wordt geladen…",
+			"empty": "Kies een bestand om te bewerken",
+			"save": "Opslaan",
+			"changes": "Wijzigingen",
+			"unsaved": "Niet-opgeslagen wijzigingen",
+			"externalChange": "Het bestand is buiten de editor gewijzigd; los het conflict op voordat je opslaat",
+			"lines": {
+				"switch": "count",
+				"default": "${count} regels",
+				"cases": {
+					"1": "1 regel"
+				}
+			},
+			"discardConfirm": "\"${path}\" heeft niet-opgeslagen wijzigingen. Sluiten en weggooien?",
+			"editorLabel": "Bestandseditor",
+			"editedFiles": "${count} bestanden bewerkt",
+			"noDiff": "Voor deze bewerking is geen diff per regel vastgelegd"
 		}
 	},
 	"gist": {
@@ -7121,6 +7149,59 @@
 			"preview": "Tekstbestand bekijken",
 			"unavailable": "Bijlage niet beschikbaar",
 			"truncated": "Voorbeeld ingekort. Download het volledige bestand om de rest te zien."
+		}
+	},
+	"captcha": {
+		"title": "Bevestig je identiteit",
+		"description": "Een fount-knooppunt wil bevestigen dat je een mens of een autonome agent bent.",
+		"help": {
+			"button": {
+				"aria-label": "Waarom zie ik dit?"
+			},
+			"title": "Waarom zie ik dit?",
+			"text": "Hiermee wordt meestal gecontroleerd dat je geen advertentiescript bent. Als je niet verder hoeft, kun je deze pagina gewoon sluiten."
+		},
+		"install": {
+			"title": "Volg deze stappen om verder te gaan",
+			"termux": "Termux downloaden (F-Droid)",
+			"paste": "2. Klik op \"Opdracht kopiëren\", plak de opdracht in het venster dat je hebt geopend en druk op Enter.",
+			"finish": "3. Wacht tot de installatie klaar is. Laat dat venster openstaan en kom hier terug; de controle gaat vanzelf verder.",
+			"platforms": {
+				"android": "1. Installeer Termux en open het.",
+				"windows": "1. Druk tegelijk op de Windows-toets en R om het venster \"Uitvoeren\" te openen.",
+				"mac": "1. Druk tegelijk op Command (⌘) en de spatiebalk, zoek \"Terminal\" en open het.",
+				"linux": "1. Open het toepassingenmenu en zoek en open \"Terminal\".",
+				"unknown": "Voor dit apparaat zijn geen stappen beschikbaar. Open deze link op een Windows-, Mac- of Linux-computer of op een Android-telefoon."
+			}
+		},
+		"command": {
+			"copy": "Opdracht kopiëren",
+			"copied": "Gekopieerd. Plak het nu",
+			"manualCopy": "Geselecteerd. Kopieer het handmatig"
+		},
+		"status": {
+			"checking": "De controle wordt voorbereid. Even geduld…",
+			"invalid": "Deze link kan niet worden gebruikt. Ga terug naar de vorige pagina en start de controle opnieuw.",
+			"expired": "Deze link is verlopen. Ga terug naar de vorige pagina en start de controle opnieuw.",
+			"success": "Controle geslaagd! Ga terug naar de vorige pagina om verder te gaan.",
+			"failed": "De controle is niet afgerond. Ga terug naar de vorige pagina en begin opnieuw.",
+			"connecting": "Bezig met verbinden. Laat het venster openstaan; de controle wordt vanzelf afgerond zodra de verbinding er is.",
+			"missing": "Volg de stappen hieronder om het controleprogramma te starten. Daarna gaat deze pagina vanzelf verder."
+		}
+	},
+	"invitation-required": {
+		"title": "fount werkt alleen op uitnodiging",
+		"description": "Om onze community betrouwbaar te houden, verwelkomt fount alleen nieuwe gebruikers die door bestaande gebruikers zijn uitgenodigd.",
+		"getLink": "Vraag iemand die fount al gebruikt om een uitnodigingslink voor de privéchat!",
+		"submit": "Uitnodigingslink gebruiken",
+		"waiting": "Uitnodiging verstuurd. Wacht tot de ander hem accepteert; daarna opent fount vanzelf.",
+		"success": "Uitnodiging geaccepteerd. fount wordt geopend…",
+		"error": "Deze uitnodiging kan nu niet worden gebruikt. Controleer de link of neem contact op met degene die je heeft uitgenodigd.",
+		"link": {
+			"label": "Heb je een uitnodigingslink? Plak hem hier",
+			"input": {
+				"placeholder": "Plak hier de volledige link die je hebt ontvangen"
+			}
 		}
 	}
 }

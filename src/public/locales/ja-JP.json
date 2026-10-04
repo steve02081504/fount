@@ -6805,7 +6805,7 @@
 			"changes": "変更",
 			"unsaved": "未保存の変更",
 			"externalChange": "ファイルが外部で変更されました。競合を解決してください",
-			"lines": "行",
+			"lines": "${count} 行",
 			"discardConfirm": "「${path}」の未保存の変更を破棄して閉じますか？",
 			"editorLabel": "ファイルエディター",
 			"editedFiles": "${count} 個のファイルを編集",

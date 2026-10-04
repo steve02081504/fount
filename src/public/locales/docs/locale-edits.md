@@ -70,6 +70,14 @@ A part's own `locales.json` carries `info.<locale>` blocks (`name` / `avatar` / 
 
 Never "fix" a red run by leaving the key out or by keeping the previous copy: a missing key is invisible to every check, and this workflow pushes with `GITHUB_TOKEN`, so its commit does not re-trigger Run Tests. That combination is how 14 locales silently lost their `chat.group.settings.page.worlds`, `captcha`, `code.explorer` and `invitation-required` blocks (PR #246's circuit-break path returned without writing anything). Fill the copy, or leave the `null` for the next run to retry.
 
+## Targets Google cannot translate
+
+A locale whose code has no Google target silently lands on its **base** language: `lzh` is not a Google code, so `get_compatible_code('lzh')` returns `zh` and every new key is written as **Simplified Chinese** — no `null`, no warning, checks green. `emoji` is the one target with an explicit branch (it copies the source); everything else unsupported copies a real language. Landed that way once already: the batch that added `code.explorer` / `captcha` / `invitation-required` shipped all 49 leaves byte-identical to zh-CN in `lzh`, and the same defect reached `emoji.json` (fixed in `83a1c67c`) and the world-settings block (fixed in `20bd269b`). When a sync touches a locale with no Google target, diff it against its base language and rewrite the new leaves by hand; `checks:i18n_copy` cannot see this class.
+
+## A `${count}` in the source fixes the word order everywhere
+
+`zh-CN` owns the placeholder set ([i18n_keys](../../scripts/checks/AGENTS.md) `placeholder_mismatch`), so a locale cannot introduce `${count}` to reach its own word order. Where the source string is a bare unit (`code.explorer.lines` = `行`) and the code renders `` `${count} ${geti18n(…)}` ``, a language that inflects the noun after the numeral has no shape that reads right on `1` — fix the call site to pass the count in, not the locale.
+
 ## Native-quality review loop
 
 Machine-checkable residue is enforced by `fount test checks:i18n_copy` — null / empty leaves, product name written `font`, a space inside a compound, a lost newline or edge-whitespace frame, punctuation jammed against the wrong side, zero-width junk, doubled spaces, and letters from a writing system the locale does not use. Fix the copy, never the check, and add a rule there when a new class shows up.

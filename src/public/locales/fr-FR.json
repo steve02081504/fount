@@ -6794,6 +6794,34 @@
 			"reconnect": {
 				"aria-label": "Reconnecter"
 			}
+		},
+		"explorer": {
+			"title": "Explorateur",
+			"toggle": {
+				"aria-label": "Afficher ou masquer l’explorateur"
+			},
+			"refresh": {
+				"aria-label": "Actualiser l’arborescence des fichiers"
+			},
+			"noWorkspace": "Choisissez un espace de travail pour parcourir les fichiers",
+			"loadFailed": "Impossible de lire le dossier",
+			"loading": "Chargement du fichier…",
+			"empty": "Choisissez un fichier à modifier",
+			"save": "Enregistrer",
+			"changes": "Modifications",
+			"unsaved": "Modifications non enregistrées",
+			"externalChange": "Le fichier a été modifié à l’extérieur ; résolvez le conflit avant d’enregistrer",
+			"lines": {
+				"switch": "count",
+				"default": "${count} lignes",
+				"cases": {
+					"1": "1 ligne"
+				}
+			},
+			"discardConfirm": "« ${path} » comporte des modifications non enregistrées. Fermer et les abandonner ?",
+			"editorLabel": "Éditeur de fichiers",
+			"editedFiles": "${count} fichiers modifiés",
+			"noDiff": "Aucun diff ligne à ligne n’a été enregistré pour cette modification"
 		}
 	},
 	"gist": {
@@ -7121,6 +7149,59 @@
 			"preview": "Aperçu du fichier texte",
 			"unavailable": "Pièce jointe indisponible",
 			"truncated": "Aperçu tronqué. Téléchargez le fichier complet pour voir la suite."
+		}
+	},
+	"captcha": {
+		"title": "Confirmez votre identité",
+		"description": "Un nœud fount souhaite vérifier que vous êtes un humain ou un agent autonome.",
+		"help": {
+			"button": {
+				"aria-label": "Pourquoi ce message ?"
+			},
+			"title": "Pourquoi ce message ?",
+			"text": "Cette vérification sert en général à écarter les scripts publicitaires. Si vous n’avez pas besoin de continuer, vous pouvez fermer cette page."
+		},
+		"install": {
+			"title": "Suivez ces étapes pour continuer",
+			"termux": "Télécharger Termux (F-Droid)",
+			"paste": "2. Cliquez sur « Copier la commande », collez-la dans la fenêtre qui vient de s’ouvrir, puis appuyez sur Entrée.",
+			"finish": "3. Attendez la fin de l’installation. Laissez cette fenêtre ouverte et revenez ici : la vérification reprendra toute seule.",
+			"platforms": {
+				"android": "1. Installez Termux et ouvrez-le.",
+				"windows": "1. Appuyez en même temps sur la touche Windows et sur R pour ouvrir la fenêtre « Exécuter ».",
+				"mac": "1. Appuyez en même temps sur Command (⌘) et sur la barre d’espace, cherchez « Terminal », puis ouvrez-le.",
+				"linux": "1. Ouvrez le menu des applications, puis cherchez « Terminal » et lancez-le.",
+				"unknown": "Aucune étape n’est disponible pour cet appareil. Ouvrez ce lien sur un ordinateur Windows, Mac ou Linux, ou sur un téléphone Android."
+			}
+		},
+		"command": {
+			"copy": "Copier la commande",
+			"copied": "Copié. Collez-la maintenant",
+			"manualCopy": "Sélectionné. Copiez-la manuellement"
+		},
+		"status": {
+			"checking": "Préparation de la vérification. Veuillez patienter…",
+			"invalid": "Ce lien ne peut pas être utilisé. Revenez à la page précédente et relancez la vérification.",
+			"expired": "Ce lien a expiré. Revenez à la page précédente et relancez la vérification.",
+			"success": "Vérification réussie ! Revenez à la page précédente pour continuer.",
+			"failed": "La vérification n’a pas abouti. Revenez à la page précédente et recommencez.",
+			"connecting": "Connexion en cours. Gardez la fenêtre ouverte : la vérification se terminera automatiquement une fois connectée.",
+			"missing": "Suivez les étapes ci-dessous pour lancer l’outil de vérification. Cette page continuera ensuite toute seule."
+		}
+	},
+	"invitation-required": {
+		"title": "fount s’utilise uniquement sur invitation",
+		"description": "Pour que notre communauté reste digne de confiance, fount n’accueille que les nouveaux utilisateurs invités par des utilisateurs existants.",
+		"getLink": "Demandez à une personne qui utilise déjà fount un lien d’invitation pour la messagerie privée !",
+		"submit": "Utiliser le lien d’invitation",
+		"waiting": "Invitation envoyée. Attendez que l’autre personne l’accepte : fount s’ouvrira ensuite tout seul.",
+		"success": "Invitation acceptée. Ouverture de fount…",
+		"error": "Cette invitation est inutilisable pour le moment. Vérifiez le lien ou contactez la personne qui vous a invité.",
+		"link": {
+			"label": "Vous avez un lien d’invitation ? Collez-le ici",
+			"input": {
+				"placeholder": "Collez ici le lien complet qui vous a été envoyé"
+			}
 		}
 	}
 }

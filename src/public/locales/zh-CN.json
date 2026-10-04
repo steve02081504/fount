@@ -6805,7 +6805,7 @@
 			"changes": "更改",
 			"unsaved": "未保存的更改",
 			"externalChange": "文件已在外部修改；请先处理冲突",
-			"lines": "行",
+			"lines": "${count} 行",
 			"discardConfirm": "文件「${path}」有未保存的更改。确定关闭并丢弃吗？",
 			"editorLabel": "文件编辑器",
 			"editedFiles": "已编辑 ${count} 个文件",

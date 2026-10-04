@@ -7491,6 +7491,7 @@ export type LocaleKeyParams = {
 	'code.error.generic': { error: string | number }
 	'code.explorer.discardConfirm': { path: string | number }
 	'code.explorer.editedFiles': { count: string | number }
+	'code.explorer.lines': { count: string | number }
 	'code.power.armedAria': { count: string | number }
 	'code.power.armedCount': { count: string | number }
 	'code.sessions.deleteConfirm': { title: string | number }

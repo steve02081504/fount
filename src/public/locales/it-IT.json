@@ -6794,6 +6794,34 @@
 			"reconnect": {
 				"aria-label": "Riconnetti"
 			}
+		},
+		"explorer": {
+			"title": "Esplora file",
+			"toggle": {
+				"aria-label": "Mostra o nascondi Esplora file"
+			},
+			"refresh": {
+				"aria-label": "Aggiorna l'albero dei file"
+			},
+			"noWorkspace": "Scegli un'area di lavoro per sfogliare i file",
+			"loadFailed": "Impossibile leggere la cartella",
+			"loading": "Caricamento del file…",
+			"empty": "Scegli un file da modificare",
+			"save": "Salva",
+			"changes": "Modifiche",
+			"unsaved": "Modifiche non salvate",
+			"externalChange": "Il file è stato modificato dall'esterno; risolvi il conflitto prima di salvare",
+			"lines": {
+				"switch": "count",
+				"default": "${count} righe",
+				"cases": {
+					"1": "1 riga"
+				}
+			},
+			"discardConfirm": "«${path}» ha modifiche non salvate. Chiudere e scartarle?",
+			"editorLabel": "Editor di file",
+			"editedFiles": "Hai modificato ${count} file",
+			"noDiff": "Per questa modifica non è stata registrata alcuna differenza per righe"
 		}
 	},
 	"gist": {
@@ -7121,6 +7149,59 @@
 			"preview": "Anteprima file di testo",
 			"unavailable": "Allegato non disponibile",
 			"truncated": "Anteprima troncata. Scarica il file completo per vedere il resto."
+		}
+	},
+	"captcha": {
+		"title": "Conferma la tua identità",
+		"description": "Un nodo fount vuole verificare che tu sia una persona o un agente autonomo.",
+		"help": {
+			"button": {
+				"aria-label": "Perché vedo questa schermata?"
+			},
+			"title": "Perché vedo questa schermata?",
+			"text": "Di solito serve a verificare che tu non sia uno script pubblicitario. Se non devi proseguire, puoi chiudere questa pagina."
+		},
+		"install": {
+			"title": "Segui questi passaggi per continuare",
+			"termux": "Scaricare Termux (F-Droid)",
+			"paste": "2. Fai clic su «Copia comando», incolla il comando nella finestra appena aperta e premi Invio.",
+			"finish": "3. Attendi la fine dell'installazione. Lascia aperta quella finestra e torna qui; la verifica proseguirà da sola.",
+			"platforms": {
+				"android": "1. Installa e apri Termux.",
+				"windows": "1. Premi insieme il tasto Windows e R per aprire la finestra «Esegui».",
+				"mac": "1. Premi insieme Command (⌘) e la barra spaziatrice, cerca «Terminal» e aprilo.",
+				"linux": "1. Apri il menu delle applicazioni, cerca «Terminale» e aprilo.",
+				"unknown": "Per questo dispositivo non ci sono passaggi disponibili. Apri questo link su un computer Windows, Mac o Linux, oppure su un telefono Android."
+			}
+		},
+		"command": {
+			"copy": "Copia comando",
+			"copied": "Copiato. Incollalo ora",
+			"manualCopy": "Selezionato. Copialo manualmente"
+		},
+		"status": {
+			"checking": "Preparazione della verifica. Attendi…",
+			"invalid": "Questo link non è utilizzabile. Torna alla pagina precedente e avvia di nuovo la verifica.",
+			"expired": "Questo link è scaduto. Torna alla pagina precedente e avvia di nuovo la verifica.",
+			"success": "Verifica superata! Torna alla pagina precedente per continuare.",
+			"failed": "La verifica non è stata completata. Torna alla pagina precedente e ricomincia.",
+			"connecting": "Connessione in corso. Lascia aperta la finestra; la verifica si concluderà da sola appena connessa.",
+			"missing": "Segui i passaggi qui sotto per avviare lo strumento di verifica. Poi questa pagina proseguirà da sola."
+		}
+	},
+	"invitation-required": {
+		"title": "fount si usa solo su invito",
+		"description": "Per mantenere affidabile la nostra community, fount accoglie solo i nuovi utenti invitati da utenti già presenti.",
+		"getLink": "Chiedi a chi usa già fount un link d'invito per la chat privata!",
+		"submit": "Usa il link d'invito",
+		"waiting": "Invito inviato. Attendi la conferma dell'altra persona; poi fount si aprirà da solo.",
+		"success": "Invito accettato. Apertura di fount…",
+		"error": "Questo invito al momento non è utilizzabile. Controlla il link o contatta chi ti ha invitato.",
+		"link": {
+			"label": "Hai un link d'invito? Incollalo qui",
+			"input": {
+				"placeholder": "Incolla qui il link completo che ti è stato inviato"
+			}
 		}
 	}
 }
