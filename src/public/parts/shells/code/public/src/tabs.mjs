@@ -10,7 +10,7 @@ import { svgInliner } from '/scripts/lib/svgInliner.mjs'
 
 import * as api from './endpoints.mjs'
 import { activateFileTab, forgetFileTab, isFileDirty } from './explorer.mjs'
-import { iconElement, icons } from './icons.mjs'
+import { fileIcon, iconElement, icons } from './icons.mjs'
 import { activateTab, deleteSessionPermanently } from './session.mjs'
 import { flushSession, registerPersistenceHooks } from './sessionPersistence.mjs'
 import { activeTab, elements, getRuntime, isGenerating, store, TAB_SAVE_DEBOUNCE, tabKeyOf } from './store.mjs'
@@ -220,7 +220,7 @@ export function renderTabs() {
 		if (tab.type === 'file') {
 			const icon = document.createElement('span')
 			icon.className = 'code-tab-avatar code-tab-avatar-draft'
-			icon.appendChild(iconElement(icons.edit, { size: 12 }))
+			icon.appendChild(iconElement(fileIcon(tab.id), { size: 12 }))
 			main.appendChild(icon)
 		}
 		else if (tab.type === 'draft') {

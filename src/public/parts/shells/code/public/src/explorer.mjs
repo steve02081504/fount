@@ -1,8 +1,10 @@
 /** 工作区文件树与文件标签；文件和代理会话共用标签栏。 */
 import { geti18n } from '/scripts/i18n/index.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
+import { svgInliner } from '/scripts/lib/svgInliner.mjs'
 
 import * as api from './endpoints.mjs'
+import { fileIcon, iconElement } from './icons.mjs'
 import { selectWorkspace } from './pills.mjs'
 import { activeTab, getRuntime, richInput, store, tabKeyOf } from './store.mjs'
 import { renderTabs, saveTabPrefs, syncCodeUrl } from './tabs.mjs'
@@ -246,13 +248,7 @@ async function paintDirectory(workspace, path, container, depth, revision) {
 		const arrow = document.createElement('span')
 		arrow.className = 'code-tree-chevron'
 		arrow.textContent = entry.isDirectory ? expanded.get(workspace.id)?.has(entry.path) ? '⌄' : '›' : ''
-		const icon = document.createElement('img')
-		icon.className = 'text-icon'
-		icon.width = 15
-		icon.height = 15
-		icon.alt = ''
-		icon.setAttribute('aria-hidden', 'true')
-		icon.src = `https://api.iconify.design/mdi/${entry.isDirectory ? 'folder-outline' : 'file-outline'}.svg`
+		const icon = iconElement(fileIcon(entry.name, entry.isDirectory), { size: 15 })
 		const name = document.createElement('span')
 		name.className = 'code-tree-name'
 		name.setAttribute('user-content', '')
@@ -276,6 +272,7 @@ async function paintDirectory(workspace, path, container, depth, revision) {
 		else row.addEventListener('click', () => void openFileTab(workspace, entry.path))
 		return wrap
 	}))
+	void svgInliner(container)
 }
 
 /**

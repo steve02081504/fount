@@ -1,15 +1,28 @@
 /**
  * code shell 图标：Iconify CDN URL 与图标元素（交由 svgInliner 内联后随主题着色）。
  */
+import { getIcon } from 'https://esm.sh/material-file-icons'
+
 const ICONIFY_CDN = 'https://api.iconify.design'
 
 /**
- * 构建 Iconify CDN SVG URL。
- * @param {string} icon - 图标集 / 图标 id（如 `mdi/close`）。
- * @returns {string} 绝对 URL。
+ * @param {string} path - File name or path.
+ * @param {boolean} directory - Directory flag.
+ * @returns {string} Iconify icon ID or packaged SVG data URL.
+ */
+export function fileIcon(path, directory = false) {
+	if (directory) return 'mdi/folder-outline'
+	const name = path.split(/[\\/]/).pop()
+	return `data:image/svg+xml,${encodeURIComponent(getIcon(name).svg)}`
+}
+
+/**
+ * 构建图标 URI：Iconify CDN URL，数据 URL 原样透传。
+ * @param {string} icon - 图标集 / 图标 id（如 `mdi/close`）或数据 URL。
+ * @returns {string} 可直接赋给 `img.src` 的 URI。
  */
 function iconifyUrl(icon) {
-	return `${ICONIFY_CDN}/${icon}.svg`
+	return icon.startsWith('data:image/svg+xml,') ? icon : `${ICONIFY_CDN}/${icon}.svg`
 }
 
 /**
