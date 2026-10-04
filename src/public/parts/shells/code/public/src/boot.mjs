@@ -11,11 +11,12 @@ import { handleAsyncTaskEvent } from './asynctasks.mjs'
 import { handleRunSettled } from './completion.mjs'
 import { updateComposerPlaceholder, wireComposerEvents } from './composer.mjs'
 import * as api from './endpoints.mjs'
+import { initExplorer, refreshOpenFiles, rerenderExplorer } from './explorer.mjs'
 import { registerFountUserApi } from './fountUser.mjs'
 import { handleRunStartedEvent, handleSessionEntryEvent, onRuntimeStatusChange, setRunSettledHandler } from './generation.mjs'
 import { ensureHistory } from './history.mjs'
 import { openHomePicker, refreshHomePicker } from './home.mjs'
-import { backToBottom, updateEmptyMode } from './messages.mjs'
+import { backToBottom, refreshChangeSummary, updateEmptyMode } from './messages.mjs'
 import {
 	applyWorkspaceCharConfig,
 	loadShellOptions,
@@ -44,7 +45,7 @@ import { activateTab, refreshAllSessions } from './session.mjs'
 import { elements, getPref, initComposer, markBootCompleted, setPref, store, tabKeyOf } from './store.mjs'
 import { handleSubAgentEvent } from './subagents.mjs'
 import { onSendButtonClick, submitMessage, updateSendButton } from './submission.mjs'
-import { createDraftTab, loadTabPrefs, renderTabs, startNewSession } from './tabs.mjs'
+import { activateViewTab, createDraftTab, loadTabPrefs, renderTabs, startNewSession } from './tabs.mjs'
 
 /**
  * 尽力让本页获得焦点并闪烁标题提示用户（浏览器对非用户手势的 `window.focus` 有策略限制）。
@@ -108,8 +109,10 @@ function rerenderDynamicText() {
 	updateSendButton()
 	updateComposerPlaceholder()
 	updateEmptyMode()
+	refreshChangeSummary()
 	renderCharRecommendation()
 	renderPowerButton()
+	rerenderExplorer()
 	backToBottom.setAttribute('aria-label', geti18n('code.messages.backToBottom'))
 }
 
@@ -139,6 +142,7 @@ export async function boot() {
 	onServerEvent('code-session-entry', handleSessionEntryEvent)
 	onServerEvent('code-run-started', handleRunStartedEvent)
 	onServerEvent('code-run-settled', handleRunSettled)
+	onServerEvent('code-run-settled', () => { void refreshOpenFiles() })
 	onServerEvent('code-open', handleExternalOpen)
 	// 运行终态统一交给 completion；状态变更刷新发送/停止按钮
 	setRunSettledHandler(payload => { void handleRunSettled(payload) })
@@ -177,7 +181,7 @@ export async function boot() {
 	await loadTabPrefs()
 	store.tabs = store.tabs.filter(tab =>
 		(tab.workspaceId === '' || store.workspaces.some(w => w.id === tab.workspaceId))
-		&& (tab.type === 'draft' || store.allSessions.some(s => s.id === tab.id && s.workspaceId === tab.workspaceId)))
+		&& (tab.type === 'draft' || tab.type === 'file' || store.allSessions.some(s => s.id === tab.id && s.workspaceId === tab.workspaceId)))
 	let initialTab = store.tabs.find(tab => tabKeyOf(tab) === store.activeTabKey) || store.tabs[0] || null
 	// ?session= 直达会话：命中已开标签则聚焦，否则新建会话标签（从磁盘加载）
 	if (urlSession) {
@@ -197,12 +201,13 @@ export async function boot() {
 		store.workspace = store.workspaces.find(w => w.id === initialTab.workspaceId) || store.workspace
 	store.activeTabKey = tabKeyOf(initialTab)
 	renderTabs()
-	await activateTab(initialTab)
+	await activateViewTab(initialTab)
+	initExplorer()
 	rerenderDynamicText()
 	void ensureHistory(store.shellMode ? 'shell' : 'message')
 	if (store.workspace && urlPrompt) await applyWorkspaceCharConfig()
 	else if (store.workspace) void applyWorkspaceCharConfig()
-	elements.composerInput.focus()
+	if (initialTab.type !== 'file') elements.composerInput.focus()
 	if (urlPrompt) await submitMessage({ content: urlPrompt })
 	// 全部启动步骤（标签恢复、动态文案重渲染、初始化聚焦）结束，通知测试桥页面已就绪。
 	markBootCompleted()

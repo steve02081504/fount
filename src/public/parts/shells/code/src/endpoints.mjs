@@ -49,17 +49,7 @@ import { startWorkspaceSearchIndex } from './search_index.mjs'
 import { deleteSession, listSessions, loadSession, saveSession, touchSession } from './sessions.mjs'
 import { registerCodeShutdown } from './shutdown.mjs'
 import { readWorkspaceConfig } from './workspace_config.mjs'
-
-/**
- * 从请求参数解析目标工作区（machine 字符串化，"0" = 本机）。
- * @param {{machine?: string|number, workdir?: string, workspace?: string}} source - 请求数据。
- * @returns {{machine: string, path: string}} 目标工作区。
- */
-function parseWorkdir(source) {
-	const machine = String(source?.machine ?? '0')
-	const path = String(source?.workdir ?? source?.workspace ?? '')
-	return { machine, path }
-}
+import { parseWorkdir, setWorkspaceFileEndpoints, workspaceRelativePath } from './workspace_files.mjs'
 
 /**
  * 读取保存的工作区列表（shell data）。
@@ -359,7 +349,8 @@ function getTabs(username) {
  */
 function sanitizeTab(tab) {
 	if (!tab || typeof tab !== 'object') return null
-	if (!['draft', 'session'].includes(tab.type)) return null
+	if (!['draft', 'session', 'file'].includes(tab.type)) return null
+	if (tab.type === 'file') return sanitizeFileTab(tab)
 	if (typeof tab.id !== 'string' || !/^[\w-]{1,64}$/.test(tab.id)) return null
 	return {
 		type: tab.type,
@@ -367,6 +358,19 @@ function sanitizeTab(tab) {
 		workspaceId: String(tab.workspaceId || ''),
 		...typeof tab.draft === 'string' ? { draft: tab.draft } : {},
 	}
+}
+
+/**
+ * @param {object} tab - Persisted file tab.
+ * @returns {object|null} Sanitized tab or null.
+ */
+function sanitizeFileTab(tab) {
+	try {
+		const id = workspaceRelativePath(tab.id)
+		if (id.length > 512) return null
+		return { type: 'file', id, workspaceId: String(tab.workspaceId || '') }
+	}
+	catch { return null }
 }
 
 /**
@@ -765,6 +769,8 @@ export function setEndpoints(router) {
 		sessions.sort((a, b) => String(b.updated).localeCompare(String(a.updated)))
 		res.json({ sessions })
 	})
+
+	setWorkspaceFileEndpoints(router)
 
 	// 文件搜索（@ 文件补全）
 	router.get('/api/parts/shells\\:code/files/search', authenticate, async (req, res) => {

@@ -3,12 +3,13 @@
  */
 import { bindDismissOnDocumentInteraction } from '/scripts/components/contextMenuDismiss.mjs'
 import { positionContextMenu } from '/scripts/components/positionContextMenu.mjs'
-import { promptText } from '/scripts/features/promptDialog.mjs'
+import { confirmAction, promptText } from '/scripts/features/promptDialog.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
 import { geti18n, setElementI18n } from '/scripts/i18n/index.mjs'
 import { svgInliner } from '/scripts/lib/svgInliner.mjs'
 
 import * as api from './endpoints.mjs'
+import { activateFileTab, forgetFileTab, isFileDirty } from './explorer.mjs'
 import { iconElement, icons } from './icons.mjs'
 import { activateTab, deleteSessionPermanently } from './session.mjs'
 import { flushSession, registerPersistenceHooks } from './sessionPersistence.mjs'
@@ -30,7 +31,7 @@ const pageId = crypto.randomUUID()
 export async function loadTabPrefs() {
 	try {
 		const data = await api.getTabs()
-		store.tabs = Array.isArray(data.tabs) ? data.tabs.filter(tab => tab?.id && (tab.type === 'draft' || tab.type === 'session')) : []
+		store.tabs = Array.isArray(data.tabs) ? data.tabs.filter(tab => tab?.id && (tab.type === 'draft' || tab.type === 'session' || tab.type === 'file')) : []
 		store.activeTabKey = String(data.activeTab || '')
 	}
 	catch {
@@ -87,7 +88,7 @@ async function applyRemoteTabs({ tabs, activeTab: remoteActive } = {}) {
 	for (const tab of store.tabs) {
 		const key = tabKeyOf(tab)
 		const runtime = getRuntime(key)
-		if (runtime && runtime.status !== 'idle') busyLocal.set(key, tab)
+		if ((runtime && runtime.status !== 'idle') || isFileDirty(tab)) busyLocal.set(key, tab)
 	}
 	const merged = tabs.slice()
 	const mergedKeys = new Set(merged.map(tabKeyOf))
@@ -107,7 +108,7 @@ async function applyRemoteTabs({ tabs, activeTab: remoteActive } = {}) {
 	if (store.activeTabKey) {
 		const nextTab = store.tabs.find(tab => tabKeyOf(tab) === store.activeTabKey)
 		store.activeTabKey = ''
-		await activateTab(nextTab)
+		await activateViewTab(nextTab)
 	}
 	else {
 		store.session = null
@@ -133,11 +134,21 @@ export function createDraftTab(workspaceId) {
 }
 
 /**
+ * 激活会话或文件标签。
+ * @param {object} tab - Requested tab.
+ * @returns {Promise<void>} Activation completion.
+ */
+export function activateViewTab(tab) {
+	return tab?.type === 'file' ? activateFileTab(tab) : activateTab(tab)
+}
+
+/**
  * 标签页标题信息：chrome（草稿 / 未命名）走 `data-i18n` 自动重译，会话标题为用户/数据文本。
  * @param {object} tab - 标签页。
  * @returns {{ text: string, i18nKey: string|null }} 标题文本与（chrome 时的）i18n 键。
  */
 function tabTitleInfo(tab) {
+	if (tab.type === 'file') return { text: tab.id.split(/[/\\]/).pop() || tab.id, i18nKey: null }
 	if (tab.type === 'draft') return { text: geti18n('code.sessions.new'), i18nKey: 'code.sessions.new' }
 	const cached = getRuntime(tabKeyOf(tab))?.session
 	const summary = store.allSessions.find(session => session.id === tab.id && session.workspaceId === tab.workspaceId)
@@ -206,7 +217,13 @@ export function renderTabs() {
 		const main = document.createElement('button')
 		main.type = 'button'
 		main.className = 'code-tab-main'
-		if (tab.type === 'draft') {
+		if (tab.type === 'file') {
+			const icon = document.createElement('span')
+			icon.className = 'code-tab-avatar code-tab-avatar-draft'
+			icon.appendChild(iconElement(icons.edit, { size: 12 }))
+			main.appendChild(icon)
+		}
+		else if (tab.type === 'draft') {
 			const icon = document.createElement('span')
 			icon.className = 'code-tab-avatar code-tab-avatar-draft'
 			icon.appendChild(iconElement(icons.edit, { size: 12 }))
@@ -247,7 +264,7 @@ export function renderTabs() {
 			badge.setAttribute('aria-hidden', 'true')
 			main.appendChild(badge)
 		}
-		main.addEventListener('click', () => void activateTab(tab))
+		main.addEventListener('click', () => void activateViewTab(tab))
 		main.addEventListener('auxclick', event => {
 			if (event.button === 1) {
 				event.preventDefault()
@@ -291,6 +308,8 @@ function hideTabContextMenu() {
 async function closeTabs(targets) {
 	const keys = new Set(targets.map(tabKeyOf))
 	if (!keys.size) return
+	const dirtyFile = targets.find(isFileDirty)
+	if (dirtyFile && !await confirmAction('code.explorer.discardConfirm', { path: dirtyFile.id })) return
 	let skipped = false
 	for (const key of [...keys])
 		if (isGenerating(key)) {
@@ -306,14 +325,14 @@ async function closeTabs(targets) {
 	const activeRemoved = keys.has(store.activeTabKey)
 	const activeIndex = store.tabs.findIndex(tab => tabKeyOf(tab) === store.activeTabKey)
 	store.tabs = store.tabs.filter(tab => !keys.has(tabKeyOf(tab)))
-	for (const key of keys) store.runtimes.delete(key)
+	for (const tab of targets) if (keys.has(tabKeyOf(tab))) { store.runtimes.delete(tabKeyOf(tab)); if (tab.type === 'file') forgetFileTab(tab) }
 	renderTabs()
 	saveTabPrefs()
 	if (activeRemoved) {
 		store.activeTabKey = ''
 		store.session = null
 		const next = store.tabs[Math.min(activeIndex, store.tabs.length - 1)] || null
-		if (next) await activateTab(next)
+		if (next) await activateViewTab(next)
 		else await startNewSession()
 	}
 	if (skipped) showToastI18n('info', 'code.tabs.closeGenerating')
@@ -325,7 +344,7 @@ async function closeTabs(targets) {
  * @returns {Promise<void>} 完成。
  */
 async function closeOtherTabs(tab) {
-	if (tabKeyOf(tab) !== store.activeTabKey) await activateTab(tab)
+	if (tabKeyOf(tab) !== store.activeTabKey) await activateViewTab(tab)
 	await closeTabs(store.tabs.filter(item => tabKeyOf(item) !== tabKeyOf(tab)))
 }
 
@@ -462,6 +481,7 @@ export function showTabContextMenu(event, tab) {
  */
 export async function closeTab(tab, { discard = false } = {}) {
 	const key = tabKeyOf(tab)
+	if (!discard && isFileDirty(tab) && !await confirmAction('code.explorer.discardConfirm', { path: tab.id })) return
 	if (isGenerating(key)) {
 		showToastI18n('info', 'code.tabs.closeGenerating')
 		return
@@ -471,7 +491,7 @@ export async function closeTab(tab, { discard = false } = {}) {
 	if (key === store.activeTabKey) {
 		const index = store.tabs.indexOf(tab)
 		const next = store.tabs[index + 1] || store.tabs[index - 1]
-		if (next) await activateTab(next)
+		if (next) await activateViewTab(next)
 		else {
 			if (store.session && runtime) runtime.session = store.session
 			store.session = null
@@ -481,6 +501,7 @@ export async function closeTab(tab, { discard = false } = {}) {
 	if (!discard) await flushSession(key)
 	store.tabs = store.tabs.filter(item => tabKeyOf(item) !== key)
 	store.runtimes.delete(key)
+	if (tab.type === 'file') forgetFileTab(tab)
 	renderTabs()
 	saveTabPrefs()
 	if (!store.activeTabKey || !activeTab()) await startNewSession()

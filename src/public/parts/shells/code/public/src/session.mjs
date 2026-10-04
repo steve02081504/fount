@@ -6,6 +6,7 @@ import { confirmAction } from '/scripts/features/promptDialog.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
 
 import * as api from './endpoints.mjs'
+import { showConversationView } from './explorer.mjs'
 import { recoverGeneration } from './generation.mjs'
 import { renderMessages } from './messages.mjs'
 import { renderAiSourcePillLabel, renderModePillLabel, selectWorkspace, updateCharMenu } from './pills.mjs'
@@ -182,6 +183,7 @@ export async function activateTab(tab) {
 	store.session = session
 	store.lastConversationWorkspaceId = store.workspace?.id
 	store.activeTabKey = key
+	showConversationView()
 	store.tabUnread.delete(key)
 	store.charname = session.charname || store.charname
 	store.aiSource = session.ai_source ?? ''

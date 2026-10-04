@@ -6771,6 +6771,28 @@
 			"reconnect": {
 				"aria-label": "重新连接"
 			}
+		},
+		"explorer": {
+			"title": "资源管理器",
+			"toggle": {
+				"aria-label": "切换资源管理器"
+			},
+			"refresh": {
+				"aria-label": "刷新文件树"
+			},
+			"noWorkspace": "选择工作区以浏览文件",
+			"loadFailed": "无法读取目录",
+			"loading": "正在读取文件…",
+			"empty": "选择文件以编辑",
+			"save": "保存",
+			"changes": "更改",
+			"unsaved": "未保存的更改",
+			"externalChange": "文件已在外部修改；请先处理冲突",
+			"lines": "行",
+			"discardConfirm": "文件「${path}」有未保存的更改。确定关闭并丢弃吗？",
+			"editorLabel": "文件编辑器",
+			"editedFiles": "已编辑 ${count} 个文件",
+			"noDiff": "此操作没有记录行级 diff"
 		}
 	},
 	"gist": {

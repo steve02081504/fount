@@ -15,7 +15,7 @@ AI 编码会话 shell：与任意角色就工作区对话，在本机或已连�
 - `GET /machines/:id/shells` → `{ shells: string[], default: string }`（default 为目标机器默认 shell，远程信息不可得时为空）
 - `GET /machines/:id/browse?path=&workspace=` → `{ path, roots, entries: [{ name, path, isDirectory, isFile }], quickAccess: [{ name, path, isDirectory }] }`；不带 path 返回根（Windows 盘符 / `/`）；`workspace` 为当前工作区路径，根视图时附带快速访问（工作区兄弟目录 + 工作区下含 `.git` 的子目录 + 常用编辑器项目：VS Code/Cursor/Windsurf/Trae 等 fork + JetBrains 家族 Android Studio/IntelliJ IDEA/PyCharm 等 + Notepad++）
 - `GET /workspaces` / `POST /workspaces {name?, machine, path}` / `PUT /workspaces/:id {name}` / `DELETE /workspaces/:id` → 保存的工作区 CRUD
-- `GET /tabs` → `{ tabs: [{ type: draft|session, id, workspaceId, draft? }], activeTab }`（打开的标签页列表与各标签未发送草稿）
+- `GET /tabs` → `{ tabs: [{ type: draft|session|file, id, workspaceId, draft? }], activeTab }`（打开的标签页列表与各标签未发送草稿；file 标签的 id 是工作区相对文件路径）
 - `PUT /tabs {tabs, activeTab}` → 保存标签页列表与活动标签（id 须匹配 `[A-Za-z0-9_-]{1,64}`）
 - `POST /open-claim {nonce}` → `{ claimed, workspaceId?, prompt? }`：认领一次外部开对话请求（后端 `code-open` 事件携带 nonce，首个认领页面得到 `claimed: true` 及其工作区/提示词，其余为 false）；供 `fount run code --prompt` 在已有页面开新对话时页面认领用
 - `GET /history?machine&workdir&kind=shell|message&shell=` → `{ own: string[], native: string[] }`（own 为自有历史追加序；native 为原生 shell 历史 newest-first，仅 kind=shell）
@@ -24,6 +24,9 @@ AI 编码会话 shell：与任意角色就工作区对话，在本机或已连�
 - `GET /sessions/all` → `{ sessions: [{ id, title, charname, updated, workspaceId, workspaceName }] }`（跨工作区聚合，按 updated 降序）
 - `GET /files/search?machine&workdir&q=` → `{ files: string[] }`（文件名子串匹配，跳过 node_modules/.git 等）
 - `GET /file?machine&workdir&path=` → `{ content, context }`（content 为文件文本，context 为向上收集的 AGENTS.md/触发文档文本）
+- `GET /workspace/directory?machine&workdir&path=` → `{ path, entries: [{ name, path, isDirectory, isFile }] }`（工作区相对目录树，`path` 为空表示根；条目路径均为工作区相对路径）
+- `GET /workspace/file?machine&workdir&path=` → `{ path, content, version }`（读取工作区相对 UTF-8 文本文件；version 是 SHA-256 内容版本；拒绝越界路径、符号链接逃逸、二进制/无效 UTF-8 文件及超过 1 MiB 的文件）
+- `PUT /workspace/file { machine, workdir, path, content, version }` → `{ path, content, version }`（用读取时的 version 乐观并发保存现有文本文件；版本过期返回 409 和当前 version，内容超过 1 MiB 返回 413）
 - `GET /profiles?machine&workdir=` → `{ profiles: [{ name, source: builtin|global|workspace, description }], commands: [{ name, source, description, params, template }] }`
 - `POST /commands/render {machine, workdir, name, argv}` → `{ content }`（渲染命令模板；缺必填参数 400）
 - `GET /aisources` → `{ sources: string[], defaults: string[], hidden: string[] }`

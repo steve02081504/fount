@@ -2,6 +2,7 @@
 /**
  * code shell HTTP 端点集成测试：机器/浏览/工作区/会话/命令/文件/执行/AI 源。
  */
+import { Buffer } from 'node:buffer'
 import fs from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
@@ -348,6 +349,63 @@ Deno.test({
 		assert(read.context.includes('AGENTS.md'))
 	}
 	finally {
+		await fs.rm(root, { recursive: true, force: true })
+		await stopNode(node)
+	}
+})
+
+Deno.test({
+	name: 'workspace file tree and editor APIs enforce versions, size, text and path boundaries',
+	sanitizeOps: false,
+	sanitizeResources: false,
+}, async () => {
+	const node = await launchCodeNode()
+	const root = await makeWorkspace(node)
+	const outside = await fs.mkdtemp(path.join(os.tmpdir(), 'fount_code_http_outside_'))
+	try {
+		await fs.mkdir(path.join(root, 'src'))
+		await fs.writeFile(path.join(root, 'src', 'hello.txt'), 'first text', 'utf8')
+		await fs.writeFile(path.join(root, 'binary.bin'), Buffer.from([0, 255, 1]))
+		const query = `machine=0&workdir=${encodeURIComponent(root)}`
+		const directory = await (await codeFetch(node, 'GET', `/workspace/directory?${query}`)).json()
+		assert(directory.entries.some(entry => entry.name === 'src' && entry.isDirectory))
+		const nested = await (await codeFetch(node, 'GET', `/workspace/directory?${query}&path=src`)).json()
+		assertEquals(nested.entries.find(entry => entry.name === 'hello.txt')?.path, 'src/hello.txt')
+
+		const read = await codeFetch(node, 'GET', `/workspace/file?${query}&path=${encodeURIComponent('src/hello.txt')}`)
+		const opened = await read.json()
+		assertEquals(opened.content, 'first text')
+		assertEquals(opened.version.length, 64)
+		const saved = await codeFetch(node, 'PUT', '/workspace/file', { machine: '0', workdir: root, path: opened.path, content: 'edited text', version: opened.version })
+		const savedBody = await saved.json()
+		assertEquals(savedBody.content, 'edited text')
+		assertEquals(await fs.readFile(path.join(root, 'src', 'hello.txt'), 'utf8'), 'edited text')
+		const conflict = await codeFetch(node, 'PUT', '/workspace/file', { machine: '0', workdir: root, path: opened.path, content: 'stale text', version: opened.version })
+		assertEquals(conflict.status, 409)
+		assert((await conflict.json()).version, 'conflict includes the current version')
+
+		const binary = await codeFetch(node, 'GET', `/workspace/file?${query}&path=binary.bin`)
+		assertEquals(binary.status, 415)
+		const tooLarge = await codeFetch(node, 'PUT', '/workspace/file', { machine: '0', workdir: root, path: 'src/hello.txt', content: 'x'.repeat(1024 * 1024 + 1), version: savedBody.version })
+		assertEquals(tooLarge.status, 413)
+		for (const badPath of ['../outside.txt', 'C:/outside.txt', '/outside.txt']) {
+			const invalid = await codeFetch(node, 'GET', `/workspace/file?${query}&path=${encodeURIComponent(badPath)}`)
+			assertEquals(invalid.status, 400)
+		}
+
+		await fs.writeFile(path.join(outside, 'secret.txt'), 'secret', 'utf8')
+		try {
+			await fs.symlink(outside, path.join(root, 'escape'), 'junction')
+			const escaped = await codeFetch(node, 'GET', `/workspace/file?${query}&path=${encodeURIComponent('escape/secret.txt')}`)
+			assertEquals(escaped.status, 403)
+		}
+		catch (error) {
+			// Symlink creation can be unavailable under restricted Windows accounts.
+			if (error?.code !== 'EPERM' && error?.code !== 'EACCES') throw error
+		}
+	}
+	finally {
+		await fs.rm(outside, { recursive: true, force: true })
 		await fs.rm(root, { recursive: true, force: true })
 		await stopNode(node)
 	}

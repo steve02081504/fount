@@ -421,6 +421,7 @@ export async function selectWorkspace(id, { fromTabSwitch = false } = {}) {
 		runtime.session = store.session
 	}
 	store.workspace = workspace
+	window.dispatchEvent(new Event('code-workspace-change'))
 	// 记录使用时间（本地即时更新 + 后端持久化），供工作区下拉按常用程度排序
 	workspace.lastUsedAt = new Date().toISOString()
 	void api.useWorkspace(id).catch(() => { })

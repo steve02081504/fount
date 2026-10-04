@@ -133,6 +133,15 @@
 					]
 				},
 				{
+					"name": "explorer",
+					"expected": "55s",
+					"triggers": [
+						"src/public/parts/shells/code/test/frontend/explorer.spec.mjs",
+						"src/public/parts/shells/code/public/**",
+						"src/public/parts/shells/code/src/{endpoints,workspace_files}.mjs"
+					]
+				},
+				{
 					"name": "messages",
 					"expected": "3m",
 					"triggers": [

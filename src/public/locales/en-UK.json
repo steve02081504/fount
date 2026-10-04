@@ -6771,6 +6771,28 @@
 			"reconnect": {
 				"aria-label": "Reconnect"
 			}
+		},
+		"explorer": {
+			"title": "Explorer",
+			"toggle": {
+				"aria-label": "Toggle Explorer"
+			},
+			"refresh": {
+				"aria-label": "Refresh file tree"
+			},
+			"noWorkspace": "Select a workspace to browse files",
+			"loadFailed": "Could not load directory",
+			"loading": "Loading file…",
+			"empty": "Select a file to edit",
+			"save": "Save",
+			"changes": "Changes",
+			"unsaved": "Unsaved changes",
+			"externalChange": "File changed externally; resolve the conflict before saving",
+			"lines": "lines",
+			"discardConfirm": "Discard unsaved changes in “${path}” and close it?",
+			"editorLabel": "File editor",
+			"editedFiles": "Edited ${count} files",
+			"noDiff": "No line diff was recorded for this edit"
 		}
 	},
 	"gist": {

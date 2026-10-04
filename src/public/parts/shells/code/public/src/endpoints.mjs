@@ -194,6 +194,38 @@ export async function readFile(target, path) {
 }
 
 /**
+ * 列出工作区相对目录。
+ * @param {{machine: string, workdir: string}} target - 工作区目标。
+ * @param {string} [path] - 工作区相对目录，空串表示根目录。
+ * @returns {Promise<{path: string, entries: Array<{name: string, path: string, isDirectory: boolean, isFile: boolean}>}>} 目录内容。
+ */
+export async function listWorkspaceDirectory(target, path = '') {
+	return requestJson(`${API_BASE}/workspace/directory?machine=${encodeURIComponent(target.machine)}&workdir=${encodeURIComponent(target.workdir)}&path=${encodeURIComponent(path)}`)
+}
+
+/**
+ * 读取可编辑的工作区 UTF-8 文本文件。
+ * @param {{machine: string, workdir: string}} target - 工作区目标。
+ * @param {string} path - 工作区相对文件路径。
+ * @returns {Promise<{path: string, content: string, version: string}>} 文本与 SHA-256 乐观并发版本。
+ */
+export async function readWorkspaceFile(target, path) {
+	return requestJson(`${API_BASE}/workspace/file?machine=${encodeURIComponent(target.machine)}&workdir=${encodeURIComponent(target.workdir)}&path=${encodeURIComponent(path)}`)
+}
+
+/**
+ * 以乐观并发版本保存工作区 UTF-8 文本文件。
+ * @param {{machine: string, workdir: string}} target - 工作区目标。
+ * @param {string} path - 工作区相对文件路径。
+ * @param {string} content - 新文本内容。
+ * @param {string} version - 上次读取/保存返回的版本；冲突时服务端返回 409。
+ * @returns {Promise<{path: string, content: string, version: string}>} 保存后的内容与新版本。
+ */
+export async function writeWorkspaceFile(target, path, content, version) {
+	return sendJson(`${API_BASE}/workspace/file`, { ...target, path, content, version }, 'PUT')
+}
+
+/**
  * 列出合并后的 profiles 与 commands。
  * @param {{machine: string, workdir: string}} target - 目标。
  * @returns {Promise<{profiles: Array<{name: string, source: string, description: string}>, commands: Array<object>}>} 合并列表。

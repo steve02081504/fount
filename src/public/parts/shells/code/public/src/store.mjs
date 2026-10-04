@@ -142,6 +142,7 @@ export function target() {
  */
 export function tabKeyOf(tab) {
 	if (!tab) return ''
+	if (tab.type === 'file') return `f:${tab.workspaceId || ''}:${tab.id}`
 	return `t:${tab.workspaceId || ''}:${tab.id}`
 }
 

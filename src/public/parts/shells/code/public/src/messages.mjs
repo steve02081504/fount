@@ -12,6 +12,7 @@ import { compactToolSummary, summarizeToolCall } from '/parts/shells:chat/shared
 
 import { asyncStateLabel, asyncTaskCardElement } from './asynctasks.mjs'
 import { renderAttachmentStrip, renderMessageAttachments } from './attachments.mjs'
+import { createChangeSummary, isFileEditEntry } from './changeSummary.mjs'
 import { iconElement, icons } from './icons.mjs'
 import { repairOrphanedReplyFence } from './replyMarkdown.mjs'
 import { updateRunCards } from './runCards.mjs'
@@ -900,18 +901,31 @@ export function renderMessages() {
 	renderAttachmentStrip()
 	updateEmptyMode()
 	const entries = (store.session?.entries || []).filter(isEntryVisible)
+	const changeSummary = createChangeSummary(entries)
+	if (changeSummary) changeSummary.open = elements.messages.querySelector('.code-change-summary')?.open ?? true
 	if (!entries.length) {
-		elements.messages.replaceChildren(backToBottom)
+		elements.messages.replaceChildren(...changeSummary ? [changeSummary] : [], backToBottom)
 		updateBackToBottom()
 		updateScrollShadow()
 		return
 	}
-	elements.messages.replaceChildren(...entries.map((entry, index) => renderEntryBubble(entry, { isLast: index === entries.length - 1 })), backToBottom)
+	elements.messages.replaceChildren(...entries.map((entry, index) => renderEntryBubble(entry, { isLast: index === entries.length - 1 })), ...changeSummary ? [changeSummary] : [], backToBottom)
 	scrollMessagesBottom()
 	updateBackToBottom()
 	updateScrollShadow()
 	updateRegenButtons()
 	updateRunCards()
+}
+
+/** Repaint only the localized changes card after a language switch. @returns {void} */
+export function refreshChangeSummary() {
+	const previous = elements.messages.querySelector('.code-change-summary')
+	if (!previous) return
+	const next = createChangeSummary(store.session?.entries || [])
+	if (next) {
+		next.open = previous.open
+		previous.replaceWith(next)
+	}
 }
 
 /**
@@ -924,6 +938,16 @@ export function appendEntryBubble(entry, { before = backToBottom } = {}) {
 	if (!isEntryVisible(entry)) return null
 	const bubble = renderEntryBubble(entry, { isLast: true })
 	elements.messages.insertBefore(bubble, before || backToBottom)
+	// 文件改动日志只影响变更卡片；给个廉价的前置判断，别让每一条消息都重建整张卡片
+	if (isFileEditEntry(entry)) {
+		const previous = elements.messages.querySelector('.code-change-summary')
+		const card = createChangeSummary(store.session?.entries || [])
+		if (card) {
+			card.open = previous?.open ?? true
+			if (previous) previous.replaceWith(card)
+			else elements.messages.insertBefore(card, backToBottom)
+		}
+	}
 	updateEmptyMode()
 	// 用户自己发出的消息总要看见：恢复贴底
 	if (entry.role === 'user') scrollMessagesBottom()

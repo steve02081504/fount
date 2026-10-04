@@ -12,6 +12,7 @@ export const phases = [
 			'sessions.spec.mjs',
 			'folder_browser.spec.mjs',
 			'tabs.spec.mjs',
+			'explorer.spec.mjs',
 			'messages.spec.mjs',
 			'gist_mention.spec.mjs',
 			'power_actions.spec.mjs',
