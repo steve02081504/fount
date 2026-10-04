@@ -3,6 +3,8 @@
  */
 import { getAllDefaultParts, getAnyDefaultPart, loadPart } from '../../../../../../../server/parts_loader.mjs'
 
+import { loadWorldFields } from './timeSliceParts.mjs'
+
 /**
  * 创建带默认人格、世界与插件的新聊天元数据。
  * @param {string} username 聊天所有者
@@ -16,9 +18,7 @@ export async function createNewChatMetadata(username) {
 	if (metadata.LastTimeSlice.player_id)
 		metadata.LastTimeSlice.player = await loadPart(username, 'personas/' + metadata.LastTimeSlice.player_id)
 
-	metadata.LastTimeSlice.world_id = getAnyDefaultPart(username, 'worlds')
-	if (metadata.LastTimeSlice.world_id)
-		metadata.LastTimeSlice.world = await loadPart(username, 'worlds/' + metadata.LastTimeSlice.world_id)
+	Object.assign(metadata.LastTimeSlice, await loadWorldFields(username, getAnyDefaultPart(username, 'worlds')))
 
 	metadata.LastTimeSlice.plugins = Object.fromEntries(await Promise.all(
 		getAllDefaultParts(username, 'plugins').map(async plugin => [

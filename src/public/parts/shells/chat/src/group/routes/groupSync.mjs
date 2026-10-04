@@ -257,6 +257,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		if (active) {
 			const session = await getMaterializedSession(username, groupId)
 			meta.charPartNames = Object.keys(session.chars || {})
+			meta.worldBindings = { world: session.world || null, channelWorlds: session.channelWorlds || {} }
 			meta.groupPermissions = state.groupPermissions || {}
 		}
 		if (active && canInChannel(state, member, PERMISSIONS.MANAGE_ROLES, null)) {

@@ -114,6 +114,21 @@ Deno.test('world distribution: local 本机执行 + 未装回退 BUILTIN + hoste
 		assertEquals(localWorldHookState.promptCalls, 0)
 	})
 
+	await t.step('removed world: runtime and viewer fall back while binding remains editable', async () => {
+		const { buildTimeSliceFromSession } = await import('../../src/chat/session/runtime.mjs')
+		const { bindWorld } = await import('../../src/chat/session/partConfig.mjs')
+		const missing = 'removed_world_regression'
+		await appendSessionWorldBind(NODE_A, groupId, missing)
+		const { session } = await stateOf(NODE_A, groupId)
+		const slice = await buildTimeSliceFromSession(session, NODE_A, groupId, channelId)
+		assertEquals(slice.world, BUILTIN_WORLD)
+		assertEquals(slice.world_id, undefined)
+		assertEquals(await resolveWorld(groupId, channelId, NODE_A), BUILTIN_WORLD)
+		assertEquals(session.world.worldname, missing)
+		await bindWorld(groupId, null, null, NODE_A)
+		assertEquals((await stateOf(NODE_A, groupId)).session.world, null)
+	})
+
 	await t.step('hosted 回归：未声明 distribution 的 world 折叠为 hosted', async () => {
 		await appendSessionWorldBind(NODE_A, groupId, HOSTED_WORLD)
 

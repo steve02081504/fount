@@ -60,10 +60,11 @@ export function registerGroupsRuntimeRoutes(router) {
 	})
 
 	router.put(`${GROUPS_PREFIX}/:groupId/world`, authenticate, async (req, res) => {
-		const { params: { groupId }, body: { worldname, channelId: requestedChannelId } } = req
+		const { params: { groupId }, body: { worldname, channelId: requestedChannelId, scope } } = req
 		const { username } = getUserByReq(req)
-		const channelId = await resolveGroupChannel(groupId, optionalChannelId(requestedChannelId), username)
-		if (!channelId) throw httpError(400, 'no channel available for world binding')
+		if (scope != null && scope !== 'group' && scope !== 'channel') throw httpError(400, 'invalid world binding scope')
+		const channelId = scope === 'group' ? null : await resolveGroupChannel(groupId, optionalChannelId(requestedChannelId), username)
+		if (scope !== 'group' && !channelId) throw httpError(400, 'no channel available for world binding')
 		const { client } = await chatClientFromReq(req)
 		await (await client.group(groupId)).session.bindWorld(channelId, worldname)
 		res.status(200).json({})

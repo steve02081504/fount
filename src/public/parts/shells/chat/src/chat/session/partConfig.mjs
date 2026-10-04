@@ -24,6 +24,7 @@ import {
 	appendAgentMemberKick,
 	appendAgentReplyFrequencySet,
 	appendSessionChannelWorldBind,
+	appendSessionWorldBind,
 	appendSessionPersonaSet,
 	getMaterializedSession,
 	sessionHasChar,
@@ -121,38 +122,41 @@ export async function setPersona(groupId, personaname, replicaUsername) {
 }
 
 /**
- * 设置指定频道的世界书，并可能插入世界问候消息。
+ * 设置群默认或频道世界，并可能插入世界问候消息。
  * @param {string} groupId 群组 ID（同 groupId）
- * @param {string} channelId 频道 ID
- * @param {string | null} worldname 世界名；空则清除该频道世界
+ * @param {string | null} channelId 频道 ID；null 设置群默认世界
+ * @param {string | null} worldname 世界名；空则清除绑定（频道恢复继承）
  * @param {string} [replicaUsername] replica 所有者
  * @returns {Promise<chatLogEntry_t | null>} 问候条目或 null
  */
 export async function bindWorld(groupId, channelId, worldname, replicaUsername) {
-	channelId = channelId ?? 'default'
 	const { username } = await resolveReplica(groupId, replicaUsername)
-	if (!worldname)
-		await appendSessionChannelWorldBind(username, groupId, channelId, null)
+	if (channelId == null)
+		await appendSessionWorldBind(username, groupId, worldname || null)
 	else
-		await appendSessionChannelWorldBind(username, groupId, channelId, worldname)
+		await appendSessionChannelWorldBind(username, groupId, channelId, worldname || null)
 
 	const chatMetadata = await rebuildGroupRuntime(groupId, username)
 	broadcastGroupEvent(groupId, { type: 'world_set', payload: { channelId, worldname } })
 
+	// 群默认世界绑定时按默认频道发作问候；频道自带覆盖时新绑定不生效，也就没有问候。
 	if (!worldname) return null
+	channelId = channelId ?? await getDefaultChannelId(username, groupId)
+	if (!channelId) return null
+	if (await getSessionWorldName(groupId, channelId, username) !== worldname) return null
 
 	// LastTimeSlice.world 只反映默认频道；问候必须按 channelId 解析
 	const world = await resolveWorld(groupId, channelId, username)
-	chatMetadata.LastTimeSlice.world = world
-	chatMetadata.LastTimeSlice.world_id = worldname
-
 	const timeSlice = chatMetadata.LastTimeSlice.copy()
+	timeSlice.world = world
+	timeSlice.world_id = worldname
 	/** @type {string | null} */
 	let greetingType = null
 	if (world.interfaces.chat.GetGreeting && !chatMetadata.chatLog.length)
 		greetingType = 'world_single'
 	else if (world.interfaces.chat.GetGroupGreeting && chatMetadata.chatLog.length)
 		greetingType = 'world_group'
+	if (!greetingType) return null
 
 	try {
 		const request = await getChatRequest(groupId, undefined, channelId, { replicaUsername: username })

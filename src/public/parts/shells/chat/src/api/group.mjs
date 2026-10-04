@@ -317,7 +317,7 @@ export function createGroup(apiContext, groupId, projection) {
 					await setPersona(groupId, personaname, apiContext.username)
 				},
 				/**
-				 * @param {string} channelId 频道
+				 * @param {string | null} channelId 频道；null 设置群默认世界
 				 * @param {string | null} worldname 世界
 				 * @returns {Promise<object | null>} 绑定后的世界配置
 				 */

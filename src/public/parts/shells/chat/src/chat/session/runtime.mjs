@@ -14,7 +14,7 @@ import { registerGroupReplicaForUser } from '../ws/groupWsRooms.mjs'
 
 import { getMaterializedSession } from './dagSession.mjs'
 import { chatMetadata_t, timeSlice_t } from './models.mjs'
-import { loadPlayerForReplica, loadPluginsForReplica } from './timeSliceParts.mjs'
+import { loadPlayerForReplica, loadPluginsForReplica, loadWorldFields } from './timeSliceParts.mjs'
 import { groupMetadatas } from './wsLifecycle.mjs'
 
 /**
@@ -73,8 +73,7 @@ export async function buildTimeSliceFromSession(session, replicaUsername, groupI
 		|| session?.world
 	if (worldBind?.worldname && worldBind.homeNodeHash === localNode) {
 		const owner = worldBind.ownerUsername || replicaUsername
-		slice.world = await loadPart(owner, `worlds/${worldBind.worldname}`)
-		slice.world_id = worldBind.worldname
+		Object.assign(slice, await loadWorldFields(owner, worldBind.worldname))
 	}
 
 	Object.assign(slice, await loadPlayerForReplica(replicaUsername, session?.personas))
