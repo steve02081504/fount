@@ -15,7 +15,7 @@
 	"suites": [
 		{
 			"name": "integration",
-			"expected": "41s",
+			"expected": "2m6s",
 			"trigger": [
 				"pluginCore",
 				"testFramework"
