@@ -26,6 +26,7 @@
 				"src/scripts/net_listen.mjs",
 				"src/scripts/systray_protocol.mjs",
 				"src/scripts/part_paths.mjs",
+				"src/scripts/markdown_ansi.mjs",
 				"src/public/pages/scripts/lib/partPaths.mjs",
 				"src/public/pages/scripts/endpoints/registries.mjs"
 			]
