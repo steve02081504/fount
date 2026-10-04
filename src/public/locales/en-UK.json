@@ -7159,5 +7159,20 @@
 			"connecting": "Connecting. Keep the window open. The check will finish automatically once connected.",
 			"missing": "Follow the steps below to start the tool. This page will then continue automatically."
 		}
+	},
+	"invitation-required": {
+		"title": "fount requires an invitation",
+		"description": "To keep our community trustworthy, fount welcomes new users invited by existing users.",
+		"getLink": "Ask someone you know who already uses fount for a private chat invitation link!",
+		"submit": "Use invitation link",
+		"waiting": "Invitation sent. Please wait for the other person to accept. fount will open automatically afterwards.",
+		"success": "Invitation accepted. Opening fount…",
+		"error": "This invitation could not be used. Check the link or contact the person who invited you.",
+		"link": {
+			"label": "Have an invitation link? Paste it here",
+			"input": {
+				"placeholder": "Paste the complete link they sent you"
+			}
+		}
 	}
 }

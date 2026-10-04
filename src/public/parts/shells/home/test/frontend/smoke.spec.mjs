@@ -5,8 +5,31 @@ import { deriveTitleFromMarkdown } from 'fount/public/parts/shells/gist/public/s
 
 import { test, expect } from './fixtures.mjs'
 
+/**
+ * 测试旧的 Home 功能前，按正式邀请 API 启用测试节点。
+ * @param {string} baseUrl 测试节点地址
+ * @param {string} apiKey 测试 API 密钥
+ * @returns {Promise<void>} 完成启用
+ */
+async function acceptSelfInvitation(baseUrl, apiKey) {
+	const response = await fetch(`${baseUrl}/api/parts/shells:home/invitation/self?fount-apikey=${encodeURIComponent(apiKey)}`, { method: 'POST' })
+	if (!response.ok) throw new Error(`invite self failed: ${response.status}`)
+}
+
 test.describe('Home shell smoke', () => {
-	test('home page boots with filter and part list', async ({ page, baseUrl }) => {
+	test('new node enters invitation page before Home', async ({ page, baseUrl }) => {
+		await page.goto(`${baseUrl}/parts/shells:home/`, { waitUntil: 'domcontentloaded' })
+		await page.waitForURL(/invitation-required\//)
+		await expect(page.locator('#invitation-link')).toBeVisible()
+		for (const key of ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'])
+			await page.keyboard.press(key)
+		await page.waitForURL(/parts\/shells:home\/?(?:\?|$)/)
+		const ping = await page.evaluate(async () => (await fetch('/api/ping')).json())
+		expect(ping.invitedByNodeHash).toBe(ping.nodeHash)
+	})
+
+	test('home page boots with filter and part list', async ({ page, baseUrl, apiKey }) => {
+		await acceptSelfInvitation(baseUrl, apiKey)
 		await page.goto(`${baseUrl}/parts/shells:home/`, { waitUntil: 'domcontentloaded' })
 		await expect(page.locator('#filter-input')).toBeVisible({ timeout: 30_000 })
 		await expect(page.locator('main')).toBeVisible()
@@ -19,7 +42,8 @@ test.describe('Home shell smoke', () => {
 		await expect(page.locator('#function-buttons-container')).toBeAttached()
 	})
 
-	test('dropping a markdown file creates a gist and navigates to its view page', async ({ page, baseUrl }) => {
+	test('dropping a markdown file creates a gist and navigates to its view page', async ({ page, baseUrl, apiKey }) => {
+		await acceptSelfInvitation(baseUrl, apiKey)
 		const errors = []
 		page.on('pageerror', err => errors.push(`pageerror: ${err.message}`))
 		const markdown = '# 拖放标题\n\n正文'

@@ -11,7 +11,7 @@ import { HEX_ID_64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 import { bytesToHex } from '../shared/digest.mjs'
 import { formatDmRunUri } from '../shared/runUri.mjs'
 
-import { putFederationSettings } from './endpoints/federationSettings.mjs'
+import { getFederationSettings, putFederationSettings } from './endpoints/federationSettings.mjs'
 import { dmLinkSignableBytes } from '/parts/shells:chat/shared/dmLinkSignature.mjs'
 import { sign } from './lib/signer.mjs'
 
@@ -92,7 +92,8 @@ export async function rotateDmLinkAndSync(options = {}) {
 export async function createDmLinkAndSync(options) {
 	const nonce = options.nonce || getDmLinkNonce()
 	const signFn = options.signFn || sign
-	const url = await createDmLink({ ...options, nonce, signFn })
+	const { nodeHash } = await getFederationSettings()
+	const url = await createDmLink({ ...options, nonce, signFn, nodeHash })
 	await syncDmIntroNonceToNode(nonce)
 	return url
 }
@@ -105,10 +106,11 @@ export async function createDmLinkAndSync(options) {
  * @param {Uint8Array|ArrayBuffer} options.secretKey32 私钥种子 32 字节
  * @param {(signableBytes: Uint8Array, secretKey: Uint8Array) => Promise<Uint8Array>} options.signFn 默认 `./lib/signer.mjs` 的 `sign`
  * @param {string} [options.nodeUrl] 可选
+ * @param {string} [options.nodeHash] 邀请节点身份
  * @param {string} [options.nonce] 不传则用 `getDmLinkNonce()`
  * @returns {Promise<string>} canonical run URI
  */
-export async function createDmLink({ pubKeyHex, secretKey32, signFn, nodeUrl, nonce }) {
+export async function createDmLink({ pubKeyHex, secretKey32, signFn, nodeUrl, nodeHash, nonce }) {
 	if (!HEX_ID_64.test(pubKeyHex)) throw new Error('invalid pubKeyHex')
 
 	const nonceBase64Url = nonce || getDmLinkNonce()
@@ -119,5 +121,5 @@ export async function createDmLink({ pubKeyHex, secretKey32, signFn, nodeUrl, no
 	if (!(signatureBytes instanceof Uint8Array) || signatureBytes.length !== 64) throw new Error('invalid signature length')
 
 	const introSignatureHex = bytesToHex(signatureBytes)
-	return formatDmRunUri({ pubKeyHex, nonceBase64Url, introSignatureHex, nodeUrl })
+	return formatDmRunUri({ pubKeyHex, nonceBase64Url, introSignatureHex, nodeUrl, nodeHash })
 }

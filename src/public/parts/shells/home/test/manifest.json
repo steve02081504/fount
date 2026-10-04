@@ -7,7 +7,8 @@
 			"src/public/pages/scripts/test/**",
 			"src/public/pages/scripts/features/template.mjs",
 			"src/public/pages/base.mjs",
-			"src/scripts/ms.mjs"
+			"src/scripts/ms.mjs",
+			"src/public/pages/invitation-required/**"
 		]
 	},
 	"suites": [

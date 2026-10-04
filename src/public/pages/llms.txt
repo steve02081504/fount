@@ -25,7 +25,7 @@ fount 是一个 AI Agent 框架，本文档描述 Web 服务器提供的基础 A
 
 ### GET /api/ping
 - 认证：本地 IP 或任意认证方式
-- 用途：存活检测。返回 client_name、ver、uuid、is_local_ip、hosturl_in_local_ip 等。
+- 用途：存活检测。返回 client_name、ver、uuid、is_local_ip、hosturl_in_local_ip、nodeHash、has_fount_network_link、invited、invitedByNodeHash 等。
 
 ### GET /api/getlocaledata
 - 查询：preferred（可选，逗号分隔语言代码）

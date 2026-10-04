@@ -12,6 +12,7 @@ import { login, loginWithApiKey, register, logout, authenticate, getUserByReq, g
 import { webauthnLoginBegin, webauthnLoginComplete } from '../auth/webauthn.mjs'
 import { currentGitBranch, currentGitCommit } from '../autoupdate.mjs'
 import { __dirname } from '../base.mjs'
+import { hasFountNetworkLink, invitationStatus } from '../invitation.mjs'
 import { processIPCCommand } from '../ipc_server/index.mjs'
 import { handleNoCors } from '../no_cors.mjs'
 import {
@@ -133,6 +134,8 @@ export function registerEndpoints(router) {
 		return res.status(200).json({
 			message: 'pong',
 			client_name: 'fount',
+			has_fount_network_link: hasFountNetworkLink(),
+			...invitationStatus(),
 			ver,
 			branch,
 			uuid: config.uuid,

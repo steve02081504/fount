@@ -2,7 +2,7 @@
  * 主页 shell 的客户端逻辑。
  */
 
-import { getUserSetting } from '../../../scripts/endpoints/base.mjs'
+import { getUserSetting, ping } from '../../../scripts/endpoints/base.mjs'
 import { unlockAchievement, getAllDefaultParts } from '../../../scripts/endpoints/parts.mjs'
 import { showToast } from '../../../scripts/features/toast.mjs'
 import { applyUrlParamsTransferStrategy } from '../../../scripts/host/urlDataTransfer.mjs'
@@ -79,6 +79,11 @@ async function syncSettingsToGitHubPages() {
 export async function initializeApp() {
 	applyTheme()
 	await initTranslations('home')
+	const status = await ping()
+	if (status.invited === false) {
+		window.location.replace('/invitation-required/')
+		return
+	}
 
 	const urlParams = new URLSearchParams(window.location.search)
 	const query = urlParams.get('search')

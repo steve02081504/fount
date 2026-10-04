@@ -17,15 +17,17 @@ function buildRunUri(subcommand, segments) {
  * @param {string} options.nonceBase64Url nonce
  * @param {string} options.introSignatureHex 签名
  * @param {string} [options.nodeUrl] 可选节点 URL
+ * @param {string} [options.nodeHash] 可选邀请节点身份
  * @returns {string} DM run URI
  */
-export function formatDmRunUri({ pubKeyHex, nonceBase64Url, introSignatureHex, nodeUrl }) {
+export function formatDmRunUri({ pubKeyHex, nonceBase64Url, introSignatureHex, nodeUrl, nodeHash }) {
 	const segments = [
 		encodeURIComponent(pubKeyHex),
 		encodeURIComponent(nonceBase64Url),
 		encodeURIComponent(introSignatureHex),
 	]
-	if (nodeUrl) segments.push(encodeURIComponent(nodeUrl))
+	if (nodeUrl || nodeHash) segments.push(encodeURIComponent(nodeUrl || ''))
+	if (nodeHash) segments.push(encodeURIComponent(nodeHash))
 	return buildRunUri('dm', segments)
 }
 
@@ -114,13 +116,13 @@ export function parseChatRunUri(raw) {
 
 /**
  * @param {string} raw URI
- * @returns {{ pubKeyHex: string, nonce: string, introSignatureHex: string, nodeUrl?: string } | null} DM 载荷
+ * @returns {{ pubKeyHex: string, nonce: string, introSignatureHex: string, nodeUrl?: string, nodeHash?: string } | null} DM 载荷
  */
 export function parseDmRunUri(raw) {
 	const parsed = parseChatRunUri(raw)
 	if (!parsed || parsed.subcommand !== 'dm') return null
-	const [pubKeyHex, nonce, introSignatureHex, nodeUrl] = parsed.args
-	return { pubKeyHex, nonce, introSignatureHex, nodeUrl }
+	const [pubKeyHex, nonce, introSignatureHex, nodeUrl, nodeHash] = parsed.args
+	return { pubKeyHex, nonce, introSignatureHex, nodeUrl, nodeHash }
 }
 
 /**

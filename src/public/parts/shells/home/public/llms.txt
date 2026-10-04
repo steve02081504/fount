@@ -9,6 +9,9 @@
 ### GET /parts/shells:home/
 - 用途：主首页 / 仪表盘。
 
+### GET /invitation-required/
+- 用途：邀请节点通过好友私聊链接加入 fount 网络。现有节点未设置邀请字段时视为已启用。
+
 ---
 
 ## API
@@ -16,3 +19,15 @@
 ### GET /api/parts/shells:home/gethomeregistry
 - 认证：需要
 - 用途：首页注册表（`home_function_buttons`、`home_drag_in_handlers`、`home_drag_out_generators`、`home_interfaces` 等聚合结果），用于渲染首页。底层泛型聚合见 `GET /api/registries/:name`。
+
+### GET /api/parts/shells:home/invitation
+- 认证：需要
+- 用途：查询邀请进度。邀请者加入私聊后返回 `invited: true` 和 `invitedByNodeHash`。
+
+### POST /api/parts/shells:home/invitation
+- 认证：需要；JSON `{ "link": "fount://run/shells:chat/dm;…" }`
+- 用途：验证好友私聊邀请，连接邀请节点并建立私聊；之后通过 GET 查询远端加入状态。
+
+### POST /api/parts/shells:home/invitation/self
+- 认证：需要
+- 用途：将本节点登记为自己的邀请节点。

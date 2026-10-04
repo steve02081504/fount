@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="description" content="向正在使用 fount 的人索要私聊邀请链接，加入 fount。" />
+	<meta property="og:title" content="fount 是一个需要邀请的软件" />
+	<meta property="og:description" content="向正在使用 fount 的人索要私聊邀请链接，加入 fount。" />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="https://steve02081504.github.io/fount/" />
+	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b" />
+	<title data-i18n="invitation-required.title"></title>
+	<link rel="icon" href="/favicon.ico" />
+	<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+	<script blocking="render" type="module" src="/preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<script type="module" src="/base.mjs"></script>
+</head>
+<body>
+	<main class="min-h-screen flex items-center justify-center p-4">
+		<section class="card bg-base-200 w-full max-w-2xl">
+			<div class="card-body gap-6 text-lg leading-relaxed">
+				<h1 class="card-title text-3xl" data-i18n="invitation-required.title"></h1>
+				<p data-i18n="invitation-required.description"></p>
+				<p data-i18n="invitation-required.getLink"></p>
+				<form id="invitation-form" class="flex flex-col gap-3">
+					<label for="invitation-link" data-i18n="invitation-required.link.label"></label>
+					<textarea id="invitation-link" class="textarea textarea-bordered w-full min-h-28" required data-i18n="invitation-required.link.input"></textarea>
+					<button id="invitation-submit" class="btn btn-primary min-h-12 self-start" type="submit" data-i18n="invitation-required.submit"></button>
+				</form>
+				<p id="invitation-status" role="status" aria-live="polite"></p>
+			</div>
+		</section>
+	</main>
+	<script type="module" src="./index.mjs"></script>
+</body>
+</html>

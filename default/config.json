@@ -1,4 +1,5 @@
 {
+	"invitedByNodeHash": null,
 	"port": 8931,
 	"prelaunch": {
 		"heapSize": 0
