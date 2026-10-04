@@ -1779,7 +1779,24 @@
 						"updateFailed": "👥🔐🔄❌：${error}",
 						"updated": "👥🔐🔄✅"
 					},
-					"discoverySectionTitle": "🌐🔍"
+					"discoverySectionTitle": "🌐🔍",
+					"worlds": {
+						"title": "世界",
+						"description": "群默认世界适用于未单独绑定世界的频道。频道可覆盖默认值，清除覆盖后恢复继承。此配置仅影响本机聊天会话。",
+						"groupDefault": "群默认世界",
+						"builtin": "内置世界（无附加设定）",
+						"inherit": "继承群默认世界",
+						"channel": "频道",
+						"override": "频道世界",
+						"saveGroup": "保存群默认世界",
+						"saveChannel": "保存频道世界",
+						"usingOverride": "当前生效：${name}（频道独立绑定）",
+						"usingInherited": "当前生效：${name}（继承群默认）",
+						"usingBuiltin": "当前生效：内置世界（无附加设定）",
+						"unavailable": "本机未安装世界「${name}」。本机执行时使用内置世界；远端绑定仍由对应节点提供。可选择其他世界，或清除绑定。",
+						"noChannels": "暂无频道，仍可设置群默认世界",
+						"channelSettings": "世界设置"
+					}
 				},
 				"pinContext": "📌±N📨",
 				"rtcBudget": "📞🔗💰",

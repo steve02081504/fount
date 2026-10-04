@@ -1742,6 +1742,23 @@ export type LocaleData = {
 						updated: string
 					}
 					discoverySectionTitle: string
+					worlds: {
+						title: string
+						description: string
+						groupDefault: string
+						builtin: string
+						inherit: string
+						channel: string
+						override: string
+						saveGroup: string
+						saveChannel: string
+						usingOverride: string
+						usingInherited: string
+						usingBuiltin: string
+						unavailable: string
+						noChannels: string
+						channelSettings: string
+					}
 				}
 				pinContext: string
 				rtcBudget: string
@@ -7307,6 +7324,9 @@ export type LocaleKeyParams = {
 	'chat.group.settings.page.saveFailed': { error: string | number }
 	'chat.group.settings.page.unbanConfirm': { name: string | number }
 	'chat.group.settings.page.unbanFailed': { error: string | number }
+	'chat.group.settings.page.worlds.unavailable': { name: string | number }
+	'chat.group.settings.page.worlds.usingInherited': { name: string | number }
+	'chat.group.settings.page.worlds.usingOverride': { name: string | number }
 	'chat.group.sticker.prefixLine': { label: string | number }
 	'chat.group.unpin.messageLine': { targetId: string | number }
 	'chat.group.vote.blockHeading': { prefix: string | number; question: string | number }
