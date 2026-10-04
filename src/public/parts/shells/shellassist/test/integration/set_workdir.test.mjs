@@ -6,7 +6,7 @@
 import { writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
-import { assertEquals } from 'jsr:@std/assert'
+import { assertEquals, assertRejects } from 'jsr:@std/assert'
 
 import { createTestServerBoot, ensureSharedTestDataDir } from 'fount/scripts/test/node/boot.mjs'
 
@@ -19,6 +19,74 @@ const ensureServer = createTestServerBoot({
 	minP2pNode: false,
 	p2p: false,
 	loadParts: ['shells/shellassist'],
+})
+
+Deno.test('shellassist factory preserves character extensions and awaits result hooks without leaking request state', async () => {
+	await ensureServer()
+	const { GetDefaultShellAssistInterface } = await import('../../src/default_interface/main.mjs')
+	const requestExtension = { source_purpose: 'shell-assist' }
+	const observed = []
+	const requests = []
+	let reply = { content: 'ok', extension: { recommend_command: 'echo 42' } }
+	const char = {
+		info: { 'zh-CN': { name: 'Factory Char' } },
+		interfaces: { chat: {
+			/**
+			 * @param {object} request 回复请求。
+			 * @returns {Promise<object | null>} 回复。
+			 */
+			GetReply: async request => {
+				assertEquals(request.extension.source_purpose, 'shell-assist')
+				assertEquals(request.username, username)
+				assertEquals(request.char_id, 'factory-char')
+				requests.push(request)
+				request.extension.source_purpose = 'changed-by-char'
+				return reply
+			},
+		} },
+	}
+	const assist = GetDefaultShellAssistInterface(char, username, 'factory-char', {
+		requestExtension,
+		/**
+		 * @param {object} args 终端请求。
+		 * @param {object | null} result 回复。
+		 * @returns {Promise<void>} 统计完成。
+		 */
+		onResult: async (args, result) => {
+			await Promise.resolve()
+			observed.push([args.command_now, result])
+		},
+	})
+	const data = { username: 'untrusted-override', UserCharname: 'User', shellhistory: [], shelltype: 'bash', pwd: '/', command_now: 'echo 42', rejected_commands: [] }
+	const first = await assist.Assist(data)
+	assertEquals(first.recommend_command, 'echo 42', '支持只返回 extension 的角色')
+	assertEquals(observed, [['echo 42', reply]])
+	assertEquals(requestExtension, { source_purpose: 'shell-assist' })
+	reply = null
+	assertEquals(await assist.Assist(data), undefined)
+	assertEquals(observed[1], ['echo 42', null], '无回复时仍记录用户活动')
+	assertEquals(requests[0].chat_id === requests[1].chat_id, false)
+	/**
+	 * 模拟生成异常。
+	 * @returns {Promise<never>} 拒绝生成。
+	 */
+	char.interfaces.chat.GetReply = async () => { throw new Error('generation failed') }
+	await assertRejects(() => assist.Assist(data), Error, 'generation failed')
+	assertEquals(observed.length, 2, '生成异常时不调用结果钩子')
+})
+
+Deno.test('shellassist recommendation handler exposes commands to IPC and removes tags from display', async () => {
+	await ensureServer()
+	const { recommendCommandReplyHandler } = await import('../../src/default_interface/recommend_command.mjs')
+	const { runReplyHandlers } = await import('../../../chat/src/reply/handlerPipeline.mjs')
+	const result = { content: 'Try this:\n<recommend_command>echo 42</recommend_command>', extension: {}, files: [], logContextBefore: [] }
+	await runReplyHandlers(result, {
+		Charname: 'Tester', CharUid: 'char', UserUid: 'user', char_id: 'tester', locales: [],
+		supported_functions: { markdown: true }, prompt_struct: { chat_log: [] }, extension: {},
+	}, [recommendCommandReplyHandler])
+	assertEquals(result.recommend_command, 'echo 42')
+	assertEquals(result.extension.recommend_command, 'echo 42')
+	assertEquals(result.content_for_show.includes('<recommend_command>'), false)
 })
 
 Deno.test('shellassist 单次 IPC 返回 ANSI 显示文本并保留原始内容', async () => {

@@ -14,9 +14,12 @@ import { GetShellWorld } from './world.mjs'
  * @param {import('../../../../../../../src/decl/charAPI.ts').CharAPI_t} char_API - 角色 API。
  * @param {string} username - 用户名。
  * @param {string} char_name - 角色名称。
+ * @param {object} [options] - 角色自定义选项。
+ * @param {Record<string, unknown>} [options.requestExtension] - 合并到每次 GetReply 请求的 extension（每次浅拷贝）。
+ * @param {(args: object, reply: object | null | undefined) => void | Promise<void>} [options.onResult] GetReply 完成后调用，包含无回复结果；异常则不调用。用于角色统计等副作用，不改变回复。
  * @returns {object} - ShellAssist 接口。
  */
-export function GetDefaultShellAssistInterface(char_API, username, char_name) {
+export function GetDefaultShellAssistInterface(char_API, username, char_name, { requestExtension = {}, onResult } = {}) {
 	if (!char_API?.interfaces?.chat?.GetReply)
 		throw new Error('charAPI.interfaces.chat.GetReply is required for ShellAssistInterface.')
 	/**
@@ -142,12 +145,14 @@ ${args.screen}
 			chat_summary: '',
 			chat_scoped_char_memory,
 			workdir: chat_scoped_char_memory.workdir ?? {},
-			chat_log
+			chat_log,
+			extension: { ...requestExtension },
 		})
+		await onResult?.(args, AIsuggestion)
 		if (!AIsuggestion) return
 		return {
 			name: Charname,
-			recommend_command: AIsuggestion.recommend_command,
+			recommend_command: AIsuggestion.recommend_command ?? AIsuggestion.extension?.recommend_command,
 			content: AIsuggestion.content,
 			content_for_show: AIsuggestion.content_for_show,
 			chat_scoped_char_memory,

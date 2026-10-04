@@ -2,7 +2,7 @@ import { defineReplyHandler } from '../../../chat/src/reply/defineReplyHandler.m
 import { defineReplyPreviews } from '../../../chat/src/streaming/index.mjs'
 
 /**
- * `<recommend_command>`：提取推荐命令到 extension 并从正文移除标签。
+ * `<recommend_command>`：提取推荐命令（顶层字段供 shellassist 返回，extension 供 `chat_log` 复用）并从正文移除标签。
  * @type {import('../../../../../../../src/decl/pluginAPI.ts').ReplyHandler_t}
  */
 export const recommendCommandReplyHandler = defineReplyHandler({
@@ -17,7 +17,7 @@ export const recommendCommandReplyHandler = defineReplyHandler({
 	handle: async (reply, args, call) => {
 		const command = call.body.trim()
 		if (!command) return {}
-		reply.extension.recommend_command = command
+		reply.extension.recommend_command = reply.recommend_command = command
 		return { content: reply.content.replace(call.raw, '\n').trim() }
 	},
 })
