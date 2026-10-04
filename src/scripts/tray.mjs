@@ -13,6 +13,7 @@ import { hosturl, restartor, setDefaultStuff } from '../server/server.mjs'
 
 import { printTerminalImage } from './logo.mjs'
 import { openTerminal } from './open_terminal.mjs'
+import { adaptSysTrayProtocol } from './systray_protocol.mjs'
 
 /**
  * 获取图标的 base64 编码。
@@ -50,7 +51,7 @@ export async function createTray() {
 		const iconPath = __dirname + (os.platform() === 'win32' ? '/src/public/pages/favicon.ico' : '/src/public/pages/favicon.png')
 		const base64Icon = await getBase64Icon(iconPath)
 
-		const SysTray = (await import('npm:systray').catch(_ => 0))?.default?.default //??????
+		const SysTray = adaptSysTrayProtocol((await import('npm:systray')).default.default)
 		// systray2 不好用，Windows下图标会时不时消失，尝试过了，详见 7ef383c550663d9f1df051854df925e94e04025f
 
 		systray = new SysTray({

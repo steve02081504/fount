@@ -24,6 +24,7 @@
 				"src/server/web_server/log_service/logs.mjs",
 				"src/server/web_server/preload_list.mjs",
 				"src/scripts/net_listen.mjs",
+				"src/scripts/systray_protocol.mjs",
 				"src/scripts/part_paths.mjs",
 				"src/public/pages/scripts/lib/partPaths.mjs",
 				"src/public/pages/scripts/endpoints/registries.mjs"
@@ -67,6 +68,8 @@
 				"src/server/read_progress.mjs",
 				"src/server/web_server/**",
 				"src/scripts/ms.mjs",
+				"src/scripts/tray.mjs",
+				"src/scripts/systray_protocol.mjs",
 				"src/scripts/WsAbleRouter.mjs",
 				"src/scripts/sentrytunnel.mjs",
 				"src/scripts/sentry_state.mjs"
