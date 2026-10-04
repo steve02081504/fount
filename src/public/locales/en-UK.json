@@ -7121,5 +7121,43 @@
 			"unavailable": "Attachment unavailable",
 			"truncated": "Preview shortened. Download the full file to read it all."
 		}
+	},
+	"captcha": {
+		"title": "Confirm your identity",
+		"description": "A fount node wants to confirm you are a human or an autonomous agent.",
+		"help": {
+			"button": {
+				"aria-label": "Why am I seeing this?"
+			},
+			"title": "Why am I seeing this?",
+			"text": "This usually checks that you are not an advertising script. If you do not need to continue, you can close this page."
+		},
+		"install": {
+			"title": "Follow these steps to continue",
+			"termux": "Download Termux (F-Droid)",
+			"paste": "2. Select Copy command, paste it into the window you opened, then press Enter.",
+			"finish": "3. Wait for installation to finish. Keep that window open and return here. The check will continue automatically.",
+			"platforms": {
+				"android": "1. Install and open Termux.",
+				"windows": "1. Press the Windows key and R together to open the Run window.",
+				"mac": "1. Press Command (⌘) and Space together, search for Terminal, and open it.",
+				"linux": "1. Open your applications menu, then find and open Terminal.",
+				"unknown": "Steps are not available for this device. Open this link on a Windows, Mac or Linux computer, or an Android phone."
+			}
+		},
+		"command": {
+			"copy": "Copy command",
+			"copied": "Copied. Paste it now",
+			"manualCopy": "Selected. Please copy manually"
+		},
+		"status": {
+			"checking": "Preparing the check. Please wait…",
+			"invalid": "This link cannot be used. Return to the previous page and start the check again.",
+			"expired": "This link has expired. Return to the previous page and start the check again.",
+			"success": "Check complete! Return to the previous page to continue.",
+			"failed": "The check could not finish. Return to the previous page and start again.",
+			"connecting": "Connecting. Keep the window open. The check will finish automatically once connected.",
+			"missing": "Follow the steps below to start the tool. This page will then continue automatically."
+		}
 	}
 }

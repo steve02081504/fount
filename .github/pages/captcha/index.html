@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="robots" content="noindex,nofollow" />
+	<meta property="og:title" content="确认您的身份" />
+	<meta property="og:url" content="https://steve02081504.github.io/fount/captcha/" />
+	<meta property="og:type" content="website" />
+	<meta property="og:description" content="fount 节点想确认您是人类或自主 agent。" />
+	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b" />
+	<meta name="description" content="fount 节点想确认您是人类或自主 agent。" />
+	<link rel="icon" type="image/svg+xml" href="https://steve02081504.github.io/fount/imgs/icon.svg" />
+	<title>确认您的身份</title>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/themes.css" rel="stylesheet" crossorigin="anonymous" />
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="../base.css" />
+	<link rel="stylesheet" href="./index.css" />
+	<script type="module" src="./index.mjs"></script>
+</head>
+
+<body class="min-h-screen bg-base-200 text-base-content">
+	<main class="verify-shell">
+        <section class="card bg-base-100">
+            <div class="card-body gap-6">
+                <div class="heading-row">
+                    <h1 class="text-3xl font-semibold" data-i18n="captcha.title"></h1>
+                    <div class="help-bubble">
+                        <button id="why-button" class="btn btn-square btn-outline" type="button" aria-expanded="false" aria-controls="why-tip" data-i18n="captcha.help.button">?</button>
+                        <div id="why-tip" class="help-tip" role="tooltip">
+                            <p class="font-semibold" data-i18n="captcha.help.title"></p>
+                            <p data-i18n="captcha.help.text"></p>
+                        </div>
+                    </div>
+                </div>
+                <p data-i18n="captcha.description"></p>
+                <div id="status" class="alert" role="status" aria-live="polite">
+                    <span class="loading loading-spinner" aria-hidden="true"></span>
+                    <span id="status-text" data-i18n="captcha.status.checking"></span>
+                </div>
+                <section id="install-help" class="hidden border border-base-300 rounded-box p-4">
+                    <h2 class="text-xl font-semibold" data-i18n="captcha.install.title"></h2>
+                    <div id="android-help" class="hidden mt-4">
+                        <p data-i18n="captcha.install.platforms.android"></p>
+                        <a class="link link-primary" href="https://f-droid.org/packages/com.termux/" target="_blank" rel="noreferrer" data-i18n="captcha.install.termux"></a>
+                    </div>
+                    <p id="windows-help" class="hidden mt-4" data-i18n="captcha.install.platforms.windows"></p>
+                    <div id="unix-help" class="hidden mt-4"><p id="unix-instruction"></p></div>
+                    <div id="command-steps">
+                        <p class="mt-4" data-i18n="captcha.install.paste"></p>
+                        <div class="command-box mt-3">
+                            <button id="copy-command" class="btn btn-primary min-h-12" type="button" data-i18n="captcha.command.copy"></button>
+                            <pre><code id="install-command" user-content></code></pre>
+                        </div>
+                        <p class="mt-4" data-i18n="captcha.install.finish"></p>
+                    </div>
+                </section>
+            </div>
+        </section>
+	</main>
+</body>
+
+</html>
