@@ -6815,7 +6815,13 @@
 			"discardConfirm": "„${path}“ hat nicht gespeicherte Änderungen. Schließen und verwerfen?",
 			"editorLabel": "Dateieditor",
 			"editedFiles": "${count} Dateien bearbeitet",
-			"noDiff": "Für diese Bearbeitung wurde kein zeilenweiser Diff aufgezeichnet"
+			"noDiff": "Für diese Bearbeitung wurde kein zeilenweiser Diff aufgezeichnet",
+			"connection": {
+				"connecting": null,
+				"connected": null,
+				"disconnected": null,
+				"unavailable": null
+			}
 		}
 	},
 	"gist": {

@@ -6823,7 +6823,13 @@
 			"discardConfirm": "В файле «${path}» есть несохранённые изменения. Закрыть и отменить их?",
 			"editorLabel": "Редактор файлов",
 			"editedFiles": "Изменено файлов: ${count}",
-			"noDiff": "Для этого изменения построчный diff не записан"
+			"noDiff": "Для этого изменения построчный diff не записан",
+			"connection": {
+				"connecting": null,
+				"connected": null,
+				"disconnected": null,
+				"unavailable": null
+			}
 		}
 	},
 	"gist": {

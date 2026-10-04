@@ -6772,6 +6772,12 @@ export type LocaleData = {
 			editorLabel: string
 			editedFiles: string
 			noDiff: string
+			connection: {
+				connecting: string
+				connected: string
+				disconnected: string
+				unavailable: string
+			}
 		}
 	}
 	gist: {

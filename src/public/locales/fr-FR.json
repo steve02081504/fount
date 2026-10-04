@@ -6821,7 +6821,13 @@
 			"discardConfirm": "« ${path} » comporte des modifications non enregistrées. Fermer et les abandonner ?",
 			"editorLabel": "Éditeur de fichiers",
 			"editedFiles": "${count} fichiers modifiés",
-			"noDiff": "Aucun diff ligne à ligne n’a été enregistré pour cette modification"
+			"noDiff": "Aucun diff ligne à ligne n’a été enregistré pour cette modification",
+			"connection": {
+				"connecting": null,
+				"connected": null,
+				"disconnected": null,
+				"unavailable": null
+			}
 		}
 	},
 	"gist": {

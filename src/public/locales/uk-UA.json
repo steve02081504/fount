@@ -6815,7 +6815,13 @@
 			"discardConfirm": "У файлі «${path}» є незбережені зміни. Закрити й відкинути їх?",
 			"editorLabel": "Редактор файлів",
 			"editedFiles": "Змінено файлів: ${count}",
-			"noDiff": "Для цієї правки порядковий diff не записано"
+			"noDiff": "Для цієї правки порядковий diff не записано",
+			"connection": {
+				"connecting": null,
+				"connected": null,
+				"disconnected": null,
+				"unavailable": null
+			}
 		}
 	},
 	"gist": {

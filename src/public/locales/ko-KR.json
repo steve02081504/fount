@@ -6809,7 +6809,13 @@
 			"discardConfirm": "'${path}' 파일에 저장되지 않은 변경 사항이 있습니다. 닫고 변경 사항을 버리시겠습니까?",
 			"editorLabel": "파일 편집기",
 			"editedFiles": "파일 ${count}개를 편집했습니다",
-			"noDiff": "이 편집에는 줄 단위 diff가 기록되지 않았습니다"
+			"noDiff": "이 편집에는 줄 단위 diff가 기록되지 않았습니다",
+			"connection": {
+				"connecting": null,
+				"connected": null,
+				"disconnected": null,
+				"unavailable": null
+			}
 		}
 	},
 	"gist": {

@@ -6815,7 +6815,13 @@
 			"discardConfirm": "„${path}“ er með óvistaðar breytingar. Loka og henda þeim?",
 			"editorLabel": "Skráaritill",
 			"editedFiles": "Breytti ${count} skrám",
-			"noDiff": "Enginn línubundinn diff var skráður fyrir þessa breytingu"
+			"noDiff": "Enginn línubundinn diff var skráður fyrir þessa breytingu",
+			"connection": {
+				"connecting": null,
+				"connected": null,
+				"disconnected": null,
+				"unavailable": null
+			}
 		}
 	},
 	"gist": {

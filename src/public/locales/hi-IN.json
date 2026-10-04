@@ -6815,7 +6815,13 @@
 			"discardConfirm": "फ़ाइल «${path}» में सहेजे नहीं गए बदलाव हैं। इसे बंद करके बदलाव छोड़ दें?",
 			"editorLabel": "फ़ाइल संपादक",
 			"editedFiles": "${count} फ़ाइलें संपादित की गईं",
-			"noDiff": "इस बदलाव का कोई पंक्ति-वार diff दर्ज नहीं है"
+			"noDiff": "इस बदलाव का कोई पंक्ति-वार diff दर्ज नहीं है",
+			"connection": {
+				"connecting": null,
+				"connected": null,
+				"disconnected": null,
+				"unavailable": null
+			}
 		}
 	},
 	"gist": {

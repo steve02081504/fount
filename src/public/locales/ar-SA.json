@@ -6825,7 +6825,13 @@
 			"discardConfirm": "هل تريد إغلاق الملف «${path}» وتجاهل التغييرات غير المحفوظة؟",
 			"editorLabel": "محرّر الملفات",
 			"editedFiles": "تم تعديل ${count} من الملفات",
-			"noDiff": "لم يُسجَّل أي فرق على مستوى الأسطر لهذا التعديل"
+			"noDiff": "لم يُسجَّل أي فرق على مستوى الأسطر لهذا التعديل",
+			"connection": {
+				"connecting": null,
+				"connected": null,
+				"disconnected": null,
+				"unavailable": null
+			}
 		}
 	},
 	"gist": {

@@ -6821,7 +6821,13 @@
 			"discardConfirm": "«${path}» ha modifiche non salvate. Chiudere e scartarle?",
 			"editorLabel": "Editor di file",
 			"editedFiles": "Hai modificato ${count} file",
-			"noDiff": "Per questa modifica non è stata registrata alcuna differenza per righe"
+			"noDiff": "Per questa modifica non è stata registrata alcuna differenza per righe",
+			"connection": {
+				"connecting": null,
+				"connected": null,
+				"disconnected": null,
+				"unavailable": null
+			}
 		}
 	},
 	"gist": {

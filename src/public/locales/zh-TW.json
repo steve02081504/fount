@@ -6809,7 +6809,13 @@
 			"discardConfirm": "檔案「${path}」有未儲存的變更。確定關閉並捨棄嗎？",
 			"editorLabel": "檔案編輯器",
 			"editedFiles": "已編輯 ${count} 個檔案",
-			"noDiff": "這次操作沒有記錄逐行差異"
+			"noDiff": "這次操作沒有記錄逐行差異",
+			"connection": {
+				"connecting": null,
+				"connected": null,
+				"disconnected": null,
+				"unavailable": null
+			}
 		}
 	},
 	"gist": {

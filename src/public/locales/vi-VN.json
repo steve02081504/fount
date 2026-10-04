@@ -6809,7 +6809,13 @@
 			"discardConfirm": "Tệp \"${path}\" có thay đổi chưa lưu. Đóng lại và bỏ các thay đổi đó?",
 			"editorLabel": "Trình chỉnh sửa tệp",
 			"editedFiles": "Đã sửa ${count} tệp",
-			"noDiff": "Lần sửa này không ghi lại diff theo dòng"
+			"noDiff": "Lần sửa này không ghi lại diff theo dòng",
+			"connection": {
+				"connecting": null,
+				"connected": null,
+				"disconnected": null,
+				"unavailable": null
+			}
 		}
 	},
 	"gist": {
