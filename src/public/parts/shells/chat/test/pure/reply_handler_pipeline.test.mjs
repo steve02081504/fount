@@ -560,12 +560,13 @@ Deno.test('tool summaries retain per-call status and targets in parallel batches
 Deno.test('sequential tool summaries identify edited files without replacement contents', async () => {
 	const args = makeArgs()
 	const result = makeResult('<replace-file><file path="src/a.mjs"><replacement><search>SECRET</search><replace>other</replace></replacement></file><file path="src/b.mjs"></file></replace-file>')
-	const handler = defineReplyHandler({ tag: 'replace-file', display: emptyDisplay, /**
-	 * 模拟失败的文件编辑。
-	 * @param {object} reply 回复对象。
-	 * @param {object} context 请求上下文。
-	 * @returns {Promise<object>} 结果。
-	 */
+	const handler = defineReplyHandler({ tag: 'replace-file', display: emptyDisplay,
+		/**
+		 * 模拟失败的文件编辑。
+		 * @param {object} reply 回复对象。
+		 * @param {object} context 请求上下文。
+		 * @returns {Promise<object>} 结果。
+		 */
 		handle: async (reply, context) => {
 			context.AddLongTimeLog({ role: 'tool', content: 'not found' })
 			return { regen: true, failed: true }

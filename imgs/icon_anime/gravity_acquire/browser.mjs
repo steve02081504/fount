@@ -63,14 +63,8 @@ const xyz = (vector) => {
  * @returns {Promise<(() => void) | null>} stop；不可用则 null
  */
 const startGravitySensor = async (onSample, signal) => {
-	const GravitySensorCtor = /**
-	 * @type {undefined | (new (opts?: { frequency?: number }) => {
-		x: number, y: number, z: number,
-		start: () => void, stop: () => void,
-		addEventListener: (type: string, fn: (ev: Event) => void) => void,
-		removeEventListener: (type: string, fn: (ev: Event) => void) => void,
-	})}
-	*/ globalThis.GravitySensor
+	/** @type {undefined | (new (options?: { frequency?: number }) => { x: number, y: number, z: number, start: () => void, stop: () => void, addEventListener: (type: string, handler: (event: Event) => void) => void, removeEventListener: (type: string, handler: (event: Event) => void) => void })} */
+	const GravitySensorCtor = globalThis.GravitySensor
 	if (typeof GravitySensorCtor !== 'function') return null
 	if (signal?.aborted) return null
 	if (!await ensureAccelerometerPermission()) return null
@@ -80,8 +74,8 @@ const startGravitySensor = async (onSample, signal) => {
 		return await new Promise((resolve) => {
 			let settled = false
 			/**
-			 * 卸监听并停传感器。
-			 * @returns {void}
+				* 卸监听并停传感器。
+				* @returns {void}
 			 */
 			const detach = () => {
 				signal?.removeEventListener('abort', onAbort)
@@ -93,8 +87,8 @@ const startGravitySensor = async (onSample, signal) => {
 				catch { /* already stopped */ }
 			}
 			/**
-			 * 会话 abort：清理并 resolve null。
-			 * @returns {void}
+				* 会话 abort：清理并 resolve null。
+				* @returns {void}
 			 */
 			const onAbort = () => {
 				if (settled) return
@@ -103,8 +97,8 @@ const startGravitySensor = async (onSample, signal) => {
 				resolve(null)
 			}
 			/**
-			 * 持续 reading：推送样本；首次成功时 resolve 清理函数。
-			 * @returns {void}
+				* 持续 reading：推送样本；首次成功时 resolve 清理函数。
+				* @returns {void}
 			 */
 			const onReading = () => {
 				const axes = xyz(sensor)
@@ -122,8 +116,8 @@ const startGravitySensor = async (onSample, signal) => {
 				})
 			}
 			/**
-			 * 启动失败：卸监听并 resolve null，交给 DeviceMotion 回落。
-			 * @returns {void}
+				* 启动失败：卸监听并 resolve null，交给 DeviceMotion 回落。
+				* @returns {void}
 			 */
 			const onError = () => {
 				if (settled) return
@@ -162,8 +156,8 @@ const startDeviceMotion = async (onSample) => {
 	if (!await ensureDeviceMotionPermission()) return null
 	const iosAxes = typeof /** @type {{ requestPermission?: unknown }} */ globalThis.DeviceMotionEvent.requestPermission === 'function'
 	/**
-	 * @param {DeviceMotionEvent} event 运动事件
-	 * @returns {void}
+		* @param {DeviceMotionEvent} event 运动事件
+		* @returns {void}
 	 */
 	const onMotion = (event) => {
 		const axes = xyz(event.accelerationIncludingGravity)

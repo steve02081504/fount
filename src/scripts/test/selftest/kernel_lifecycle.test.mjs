@@ -1414,10 +1414,14 @@ Deno.test('watch idle fires an automatic --all run after the idle window', async
 })
 
 Deno.test('ensure leaves a foreign HTTP health listener running without spawning', async () => {
-	const server = Deno.serve({ hostname: '127.0.0.1', port: 0, /**
-	 * 测试监听启动时保持静默。
-	 */
-		onListen: () => { } }, () => Response.json({ foreign: true }))
+	const server = Deno.serve({
+		hostname: '127.0.0.1',
+		port: 0,
+		/**
+		 * 测试监听启动时保持静默。
+		 */
+		onListen: () => { }
+	}, () => Response.json({ foreign: true }))
 	let spawned = 0
 	try {
 		await assertRejects(() => ensureTestKernel({

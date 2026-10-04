@@ -126,13 +126,13 @@ function skipTemplateLiteral(text, start, pos) {
 }
 
 /**
- * 从源码文本中提取 JSDoc 块（含起止行号）。
+ * 从源码文本中提取 JSDoc 块（含起止行号与行内前缀）。
  * 匹配任意位置的 `/**`（含行内对象字面量前的注释），并跳过字符串/模板/普通注释内的伪 JSDoc。
  * @param {string} text 源码
- * @returns {{ text: string, startLine: number, endLine: number }[]} 块列表
+ * @returns {{ text: string, startLine: number, endLine: number, linePrefix: string }[]} 块列表
  */
 export function extractJsdocBlocks(text) {
-	/** @type {{ text: string, startLine: number, endLine: number }[]} */
+	/** @type {{ text: string, startLine: number, endLine: number, linePrefix: string }[]} */
 	const blocks = []
 	const jsdocStartPattern = /\/\*\*/g
 	let match
@@ -147,7 +147,8 @@ export function extractJsdocBlocks(text) {
 		const blockText = text.slice(start, end + 2)
 		const startLine = text.slice(0, start).split(/\r?\n/).length
 		const endLine = text.slice(0, end + 2).split(/\r?\n/).length
-		blocks.push({ text: blockText, startLine, endLine })
+		const lineStart = text.lastIndexOf('\n', start - 1) + 1
+		blocks.push({ text: blockText, startLine, endLine, linePrefix: text.slice(lineStart, start) })
 		jsdocStartPattern.lastIndex = end + 2
 	}
 	return blocks
@@ -233,6 +234,48 @@ export function hasInlineJsdocClosing(block) {
 }
 
 /**
+ * 多行 JSDoc 是否挤在源码光标之后（`/**` 前还有代码），也就是注释形如
+ * `createClient({ /**` / `const handler = { /**` 这种「徽章」写法。
+ * 多行块必须让 `/**` 独占一行。单行块（含行内 `@type` 断言）不受约束。
+ * @param {string} block JSDoc 块全文
+ * @param {string} linePrefix 块起点之前、同一源码行上的内容
+ * @returns {boolean} 多行且同一行已有代码则为 true
+ */
+export function isMidLineJsdocOpening(block, linePrefix) {
+	if (!block.startsWith('/**')) return false
+	if (!/\r?\n/.test(block)) return false
+	return linePrefix.trim() !== ''
+}
+
+/**
+ * 多行 JSDoc 是否已按「字面量展开」排版。
+ * 规则：开标记必须独占一行（其前只有空白），且开标记之前同一行上不能还留着未闭合的 `(` / `{`
+ * （`createClient({ /**` 这种就是字面量没展开）。
+ * 行首自成一行的普通声明与行内单行块（含 `@type` 断言）不受约束。
+ * @param {string} block JSDoc 块全文
+ * @param {string} linePrefix 开标记之前的同一行内容
+ * @returns {boolean} 未按字面量展开排版则为 true
+ */
+export function hasUnsplitJsdocLiteral(block, linePrefix) {
+	if (!block.startsWith('/**')) return false
+	if (!/\r?\n/.test(block)) return false
+	if (linePrefix.trim() !== '') return true
+	return /[([{]\s*$/.test(linePrefix)
+}
+
+/**
+ * 多行 JSDoc 是否把成员挤在收尾标记同一行（收尾标记后还有代码）。
+ * @param {string} block JSDoc 块全文
+ * @param {string} lineSuffix 收尾标记之后、同一行上的内容
+ * @returns {boolean} 收尾行上还有成员则为 true
+ */
+export function hasJsdocMemberOnClosingLine(block, lineSuffix) {
+	if (!block.startsWith('/**') || !block.endsWith('*/')) return false
+	if (!/\r?\n/.test(block)) return false
+	return !/^\s*[)\]}]*[,\s]*$/.test(lineSuffix.trimStart().replace(/^[)\]}]+/, ''))
+}
+
+/**
  * @typedef {{ path: string, line: number, summary: string, missingSummary: boolean }} JsdocNoEnglishIssue
  */
 
@@ -242,6 +285,14 @@ export function hasInlineJsdocClosing(block) {
 
 /**
  * @typedef {{ path: string, line: number }} JsdocClosingIssue
+ */
+
+/**
+ * @typedef {{ path: string, line: number }} JsdocMidLineIssue
+ */
+
+/**
+ * @typedef {{ path: string, line: number }} JsdocLiteralIssue
  */
 
 /**
@@ -347,6 +398,77 @@ export async function scanJsdocClosing(repoRoot, options = {}) {
 	for (const relativePath of files) {
 		const text = await readFile(join(repoRoot, relativePath), 'utf8')
 		issues.push(...scanFileJsdocClosing(relativePath, text))
+	}
+	const hitFiles = [...new Set(issues.map(issue => issue.path))].sort()
+	return { files: hitFiles, issues }
+}
+
+/**
+ * 扫描单文件中「多行 JSDoc 挤在代码之后」的块。
+ * @param {string} relativePath 相对仓库根
+ * @param {string} text 文件内容
+ * @returns {JsdocMidLineIssue[]} 命中列表
+ */
+export function scanFileJsdocMidLine(relativePath, text) {
+	/** @type {JsdocMidLineIssue[]} */
+	const issues = []
+	for (const { text: block, startLine, linePrefix } of extractJsdocBlocks(text))
+		if (isMidLineJsdocOpening(block, linePrefix))
+			issues.push({ path: relativePath, line: startLine })
+	return issues
+}
+
+/**
+ * 扫描仓库中匹配后缀文件的「多行 JSDoc 挤在代码之后」问题。
+ * @param {string} repoRoot 仓库根
+ * @param {{ under?: string, suffixes?: string[] }} [options] 选项
+ * @returns {Promise<{ files: string[], issues: JsdocMidLineIssue[] }>} 命中文件路径与问题列表
+ */
+export async function scanJsdocMidLine(repoRoot, options = {}) {
+	const suffixes = options.suffixes ?? JSDOC_SCAN_SUFFIXES
+	const files = await listRepoFiles(repoRoot, suffixes, { under: options.under })
+	/** @type {JsdocMidLineIssue[]} */
+	const issues = []
+	for (const relativePath of files) {
+		const text = await readFile(join(repoRoot, relativePath), 'utf8')
+		issues.push(...scanFileJsdocMidLine(relativePath, text))
+	}
+	const hitFiles = [...new Set(issues.map(issue => issue.path))].sort()
+	return { files: hitFiles, issues }
+}
+
+/**
+ * 扫描单文件中「含多行 JSDoc 的字面量未展开」的块（含把成员挤在收尾标记行上的情况）。
+ * @param {string} relativePath 相对仓库根
+ * @param {string} text 文件内容
+ * @returns {JsdocLiteralIssue[]} 命中列表
+ */
+export function scanFileJsdocLiteral(relativePath, text) {
+	const lines = text.split(/\r?\n/)
+	/** @type {JsdocLiteralIssue[]} */
+	const issues = []
+	for (const { text: block, startLine, endLine, linePrefix } of extractJsdocBlocks(text)) {
+		const closingLine = lines[endLine - 1] ?? ''
+		if (hasUnsplitJsdocLiteral(block, linePrefix) || hasJsdocMemberOnClosingLine(block, closingLine.slice(closingLine.lastIndexOf('*/') + 2)))
+			issues.push({ path: relativePath, line: startLine })
+	}
+	return issues
+}
+
+/**
+ * 扫描仓库中匹配后缀文件的「含多行 JSDoc 的字面量未展开」问题。
+ * @param {string} repoRoot 仓库根
+ * @param {{ under?: string, suffixes?: string[] }} [options] 选项
+ * @returns {Promise<{ files: string[], issues: JsdocLiteralIssue[] }>} 命中文件路径与问题列表
+ */
+export async function scanJsdocLiteral(repoRoot, options = {}) {
+	const suffixes = options.suffixes ?? JSDOC_SCAN_SUFFIXES
+	const files = await listRepoFiles(repoRoot, suffixes, { under: options.under })
+	/** @type {JsdocLiteralIssue[]} */
+	const issues = []
+	for (const relativePath of files) {
+		const text = await readFile(join(repoRoot, relativePath), 'utf8')
+		issues.push(...scanFileJsdocLiteral(relativePath, text))
 	}
 	const hitFiles = [...new Set(issues.map(issue => issue.path))].sort()
 	return { files: hitFiles, issues }

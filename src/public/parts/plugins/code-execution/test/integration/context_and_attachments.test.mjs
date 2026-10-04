@@ -14,20 +14,28 @@ import { getCodeExecutionReplyHandlers } from '../../handler.mjs'
  */
 function fixture() {
 	const logs = []
-	return { logs, args: { char_id: 'test-char', username: 'test-user', Charname: 'Test', chat_log: [], plugins: {}, chat_scoped_char_memory: {}, supported_functions: {}, /**
-	 *
-	 * @param {object} entry Collected tool log.
-	 * @returns {number} Number of logs.
-	 */
+	return { logs, args: {
+		char_id: 'test-char',
+		username: 'test-user',
+		Charname: 'Test',
+		chat_log: [],
+		plugins: {},
+		chat_scoped_char_memory: {},
+		supported_functions: {},
+		/**
+		 * @param {object} entry Collected tool log.
+		 * @returns {number} Number of logs.
+		 */
 		AddLongTimeLog: entry => logs.push(entry) } }
 }
 
 Deno.test('inline-js shares workspace and plugin contexts with subsequent run-js', async () => {
 	const { args, logs } = fixture()
-	args.plugins.context = { interfaces: { code_execution: { /**
-	 * 提供一个插件上下文。
-	 * @returns {Promise<object>} Context variables.
-	 */
+	args.plugins.context = { interfaces: { code_execution: {
+		/**
+		 * 提供一个插件上下文。
+		 * @returns {Promise<object>} Context variables.
+		 */
 		GetJSCodeContext: async () => ({ supplied: 17 }) } } }
 	const first = { content: '<inline-js>workspace.answer = supplied; workspace.answer</inline-js>' }
 	await runReplyHandlers(first, args, getCodeExecutionReplyHandlers())
@@ -44,12 +52,13 @@ Deno.test('inline-js shares workspace and plugin contexts with subsequent run-js
 Deno.test('wait-screen records the selected monitor attachment and rejects invalid waits', async () => {
 	const { args, logs } = fixture()
 	let selected
-	const handlers = getCodeExecutionReplyHandlers({ /**
-	 *
-	 * @param {number} monitor Selected monitor.
-	 * @returns {Promise<string>} PNG base64.
-	 */
-		capture: async monitor => { selected = monitor; return Buffer.from('image').toString('base64') } })
+	const handlers = getCodeExecutionReplyHandlers({
+		/**
+		 * @param {number} monitor Selected monitor.
+		 * @returns {Promise<string>} PNG base64.
+		 */
+		capture: async monitor => { selected = monitor; return Buffer.from('image').toString('base64') }
+	})
 	await runReplyHandlers({ content: '<wait-screen seconds="0" monitor="2"/>' }, args, handlers)
 	assertEquals(selected, 2)
 	assertEquals(logs.find(entry => entry.name === 'code-execution.wait-screen').files[0].buffer.toString(), 'image')
@@ -68,11 +77,13 @@ Deno.test('attachment normalization detects content MIME, preserves descriptions
 	const normalized = await toFileObj({ name: 'wrong.txt', buffer: png, description: 'screen' })
 	assertEquals(normalized.mime_type, 'image/png')
 	assertEquals(normalized.description, 'screen')
-	const downloaded = await toFileObj('https://example.com/download', { /**
-	 * 伪造的 HTTP 下载。
-	 * @returns {Promise<Response>} Attachment response.
-	 */
-		fetchImpl: async () => new Response('hello', { headers: { 'content-type': 'application/octet-stream', 'content-disposition': 'attachment; filename*=UTF-8\'\'report.json' } }) })
+	const downloaded = await toFileObj('https://example.com/download', {
+		/**
+		 * 伪造的 HTTP 下载。
+		 * @returns {Promise<Response>} Attachment response.
+		 */
+		fetchImpl: async () => new Response('hello', { headers: { 'content-type': 'application/octet-stream', 'content-disposition': 'attachment; filename*=UTF-8\'\'report.json' } })
+	})
 	assertEquals(downloaded.name, 'report.json')
 	assertEquals(downloaded.mime_type, 'application/json')
 	assertEquals(downloaded.buffer.toString(), 'hello')

@@ -78,11 +78,11 @@ Deno.test('web search resolves role-specific source instead of the user default'
 	const logs = []
 	const handler = createWebSearchReplyHandler({ getSearchSource: getDefaultSource })
 	await handler.handle({}, {
-		char: { interfaces: { plugins: { /**
-		 *
-		 * @param {object} context 请求服务上下文。
-		 * @returns {Promise<object>} 角色覆盖的搜索源。
-		 */
+		char: { interfaces: { plugins: {
+			/**
+			 * @param {object} context 请求服务上下文。
+			 * @returns {Promise<object>} 角色覆盖的搜索源。
+			 */
 			GetServiceSource: async context => {
 				assertEquals(context.pluginName, 'web-search')
 				assertEquals(context.serviceType, 'search')

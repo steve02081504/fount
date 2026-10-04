@@ -41,10 +41,11 @@ Deno.test('QR preload decodes multiple real codes and preloads their URL metadat
 		 */
 		fetchMetadata: async address => { fetched.push(address); return 'title: QR page' },
 	}
-	const args = { char_id: 'test', chat_log: logs, /**
-	 * @param {object} entry New entry.
-	 * @returns {number} Log count.
-	 */
+	const args = { char_id: 'test', chat_log: logs,
+		/**
+		 * @param {object} entry New entry.
+		 * @returns {number} Log count.
+		 */
 		AddLongTimeLog: entry => logs.push(entry) }
 	await preloadMentionedUrls(args, options)
 	assertEquals(fetched, [url])
@@ -52,9 +53,10 @@ Deno.test('QR preload decodes multiple real codes and preloads their URL metadat
 	assertStringIncludes(logs[2].content, 'title: QR page')
 	assertStringIncludes(logs[1].content_for_show, '```')
 	logs.push({ role: 'user', content: url, files: [{ name: 'renamed.png', mime_type: 'image/png', buffer: image }] })
-	await preloadMentionedUrls({ ...args, extension: {} }, { ...options, /**
-	 * @returns {Promise<string[]>} Must not decode the same image again.
-	 */
+	await preloadMentionedUrls({ ...args, extension: {} }, { ...options,
+		/**
+		 * @returns {Promise<string[]>} Must not decode the same image again.
+		 */
 		decodeQr: async () => { throw new Error('duplicate decode') } })
 	assertEquals(fetched, [url])
 	assertEquals(logs.filter(entry => entry.name === 'web-browse.qrcode').length, 1)
@@ -78,10 +80,11 @@ Deno.test('QR preload saves empty and failed results without blocking other imag
 		 */
 		fetchMetadata: async () => { throw new Error('plain text must not trigger fetch') },
 	}
-	const args = { chat_log: logs, /**
-	 * @param {object} entry New entry.
-	 * @returns {number} Log count.
-	 */
+	const args = { chat_log: logs,
+		/**
+		 * @param {object} entry New entry.
+		 * @returns {number} Log count.
+		 */
 		AddLongTimeLog: entry => logs.push(entry) }
 	await preloadMentionedUrls(args, options)
 	assertEquals(decodes, 3)
@@ -106,10 +109,11 @@ Deno.test('QR links beyond the metadata limit continue in a later generation', a
 		 */
 		fetchMetadata: async url => { fetched.push(url); return 'title: page' },
 	}
-	const args = { chat_log: logs, /**
-	 * @param {object} entry New entry.
-	 * @returns {number} Log count.
-	 */
+	const args = { chat_log: logs,
+		/**
+		 * @param {object} entry New entry.
+		 * @returns {number} Log count.
+		 */
 		AddLongTimeLog: entry => logs.push(entry) }
 	await preloadMentionedUrls(args, options)
 	assertEquals(fetched.length, 5)

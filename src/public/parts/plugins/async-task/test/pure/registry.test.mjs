@@ -468,11 +468,11 @@ Deno.test('deliverNotification omits executionTarget for tasks without one', asy
 Deno.test('consumed async completion still emits the producer event exactly once', async () => {
 	resetAsyncTaskState()
 	const events = []
-	const eventContext = { extension: {}, char: { interfaces: { plugins: { /**
-	 *
-	 * @param {object} event Host customization payload.
-	 * @returns {unknown} Fixture outcome.
-	 */
+	const eventContext = { extension: {}, char: { interfaces: { plugins: {
+		/**
+		 * @param {object} event Host customization payload.
+		 * @returns {unknown} Fixture outcome.
+		 */
 		OnEvent: event => events.push(event) } } } }
 	const taskOwner = owner({ generationId: 'event-generation' })
 	const task = registerTask({ kind: 'js', owner: taskOwner, eventContext, meta: { pluginName: 'code-execution', tool: 'code-execution.run-js' }, run: resolveWith('done') })

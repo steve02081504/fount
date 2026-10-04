@@ -176,10 +176,10 @@ test('emoji picker keeps DOM bounded across 500 packs and a large pack', async (
 				kind: 'pack', packId: `test-${index}`, emojiId: String(emojiIndex), name: `Emoji ${emojiIndex}`,
 			})),
 		}))
-		renderContinuousPicker(host, sections, { /**
-		 *
-		 * @param {string} token Selected emoji token.
-		 */
+		renderContinuousPicker(host, sections, {
+			/**
+				* @param {string} token Selected emoji token.
+			 */
 			onInsert: token => { host.dataset.selected = token } })
 	})
 	const rail = page.locator('.emoji-rail')

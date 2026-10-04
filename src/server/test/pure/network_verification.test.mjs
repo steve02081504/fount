@@ -10,25 +10,25 @@ const C = 'c'.repeat(64)
 
 test('network verification needs authenticated claim and requester receipt', async () => {
 	let b
-	const a = createNetworkVerificationService({ nodeHash: A, /**
-	 *
-	 * @param {string} peer target
-	 * @param {string} action operation
-	 * @param {object} payload message
-	 * @returns {Promise<boolean>} delivery
-	 */
+	const a = createNetworkVerificationService({ nodeHash: A,
+		/**
+		 * @param {string} peer target
+		 * @param {string} action operation
+		 * @param {object} payload message
+		 * @returns {Promise<boolean>} delivery
+		 */
 		send: async (peer, action, payload) => {
 			assert.equal(peer, B)
 			await b.receive(action, payload, A)
 			return true
 		} })
-	b = createNetworkVerificationService({ nodeHash: B, /**
-	 *
-	 * @param {string} peer target
-	 * @param {string} action operation
-	 * @param {object} payload message
-	 * @returns {Promise<boolean>} delivery
-	 */
+	b = createNetworkVerificationService({ nodeHash: B,
+		/**
+		 * @param {string} peer target
+		 * @param {string} action operation
+		 * @param {object} payload message
+		 * @returns {Promise<boolean>} delivery
+		 */
 		send: async (peer, action, payload) => {
 			assert.equal(peer, A)
 			await a.receive(action, payload, B)

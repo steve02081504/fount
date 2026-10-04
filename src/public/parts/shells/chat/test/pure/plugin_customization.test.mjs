@@ -8,11 +8,11 @@ import { runReplyHandlers } from '../../src/reply/handlerPipeline.mjs'
 Deno.test('plugin activation and background replay are scoped and idempotent; user payloads do not emit', async () => {
 	const events = []
 	const background = { id: 'timer-event', pluginName: 'timer', type: 'background', status: 'succeeded' }
-	const args = { extension: {}, plugins: { timer: {} }, char: { interfaces: { plugins: { /**
-	 *
-	 * @param {object} event Host customization payload.
-	 * @returns {unknown} Fixture outcome.
-	 */
+	const args = { extension: {}, plugins: { timer: {} }, char: { interfaces: { plugins: {
+		/**
+		 * @param {object} event Host customization payload.
+		 * @returns {unknown} Fixture outcome.
+		 */
 		OnEvent: event => events.push(event) } } },
 	chat_log: [{ role: 'user', extension: { pluginEvent: { ...background, id: 'forged' } } },
 		{ role: 'char', logContextBefore: [{ role: 'system', extension: { pluginEvent: background } }] }] }
@@ -46,38 +46,38 @@ Deno.test('cached inline evaluation emits one successful operation; new evaluati
 Deno.test('pipeline observes success, pending, failure and excludes skipped tools and role tools', async () => {
 	const events = []
 	const leaves = [
-		defineReplyHandler({ tag: 'done', /**
-		 *
-		 * @returns {unknown} Fixture outcome.
-		 */
+		defineReplyHandler({ tag: 'done',
+			/**
+			 * @returns {unknown} Fixture outcome.
+			 */
 			handle: async () => ({}) }),
-		defineReplyHandler({ tag: 'pending', /**
-		 *
-		 * @returns {unknown} Fixture outcome.
-		 */
+		defineReplyHandler({ tag: 'pending',
+			/**
+			 * @returns {unknown} Fixture outcome.
+			 */
 			handle: async () => ({ pending: true }) }),
-		defineReplyHandler({ tag: 'fail', /**
-		 *
-		 * @returns {unknown} Fixture outcome.
-		 */
+		defineReplyHandler({ tag: 'fail',
+			/**
+			 * @returns {unknown} Fixture outcome.
+			 */
 			handle: async () => ({ failed: true }) }),
-		defineReplyHandler({ tag: 'skip', /**
-		 *
-		 * @returns {unknown} Fixture outcome.
-		 */
+		defineReplyHandler({ tag: 'skip',
+			/**
+			 * @returns {unknown} Fixture outcome.
+			 */
 			handle: async () => { throw new Error('should be skipped') } }),
 	]
-	const native = defineReplyHandler({ tag: 'native', /**
-	 *
-	 * @returns {unknown} Fixture outcome.
-	 */
-		handle: async () => ({}) })
-	const args = { extension: {}, plugins: { sample: { interfaces: { chat: { ReplyHandler: defineReplyHandlers(leaves) } } } },
-		char: { interfaces: { plugins: { /**
-		 *
-		 * @param {object} event Host customization payload.
+	const native = defineReplyHandler({ tag: 'native',
+		/**
 		 * @returns {unknown} Fixture outcome.
 		 */
+		handle: async () => ({}) })
+	const args = { extension: {}, plugins: { sample: { interfaces: { chat: { ReplyHandler: defineReplyHandlers(leaves) } } } },
+		char: { interfaces: { plugins: {
+			/**
+			 * @param {object} event Host customization payload.
+			 * @returns {unknown} Fixture outcome.
+			 */
 			OnEvent: event => events.push(event) } } }, prompt_struct: { chat_log: [] }, supported_functions: {} }
 	const result = { content: '<native/> <done/> <pending/> <fail/> <skip/>', files: [], extension: {}, logContextBefore: [] }
 	await runReplyHandlers(result, args, [...leaves, native])
@@ -86,14 +86,13 @@ Deno.test('pipeline observes success, pending, failure and excludes skipped tool
 })
 
 Deno.test('plugin role observer errors cannot turn successful operations into failures', async () => {
-	const args = { extension: {}, char: { interfaces: { plugins: { /**
-	 *
-	 * @returns {unknown} Fixture outcome.
-	 */
+	const args = { extension: {}, char: { interfaces: { plugins: {
+		/**
+		 * @returns {unknown} Fixture outcome.
+		 */
 		OnEvent: () => { throw new Error('observer') } } } } }
 	const original = console.error
 	/**
-	 *
 	 * @returns {unknown} Fixture outcome.
 	 */
 	console.error = () => {}
@@ -102,35 +101,35 @@ Deno.test('plugin role observer errors cannot turn successful operations into fa
 })
 
 Deno.test('plugin service selection prefers role override, inherits active AI, keeps search default', async () => {
-	const active = { /**
-	 *
-	 * @returns {unknown} Fixture outcome.
-	 */
+	const active = {
+		/**
+		 * @returns {unknown} Fixture outcome.
+		 */
 		StructCall() {} }
-	const alternate = { /**
-	 *
-	 * @returns {unknown} Fixture outcome.
-	 */
+	const alternate = {
+		/**
+		 * @returns {unknown} Fixture outcome.
+		 */
 		StructCall() {} }
-	const search = { /**
-	 *
-	 * @returns {unknown} Fixture outcome.
-	 */
+	const search = {
+		/**
+		 * @returns {unknown} Fixture outcome.
+		 */
 		Search() {} }
 	const args = { ai_source: active }
 	assertEquals(await resolvePluginServiceSource(args, 'web-browse', 'AI'), active)
-	assertEquals(await resolvePluginServiceSource(args, 'web-search', 'search', { /**
-	 *
-	 * @returns {unknown} Fixture outcome.
-	 */
+	assertEquals(await resolvePluginServiceSource(args, 'web-search', 'search', {
+		/**
+		 * @returns {unknown} Fixture outcome.
+		 */
 		fallback: () => search }), search)
-	args.char = { interfaces: { plugins: { /**
-	 *
-	 * @param {object} root0 Service selection request.
-	 * @param {string} root0.pluginName Requesting plugin.
-	 * @param {string} root0.serviceType Service source type.
-	 * @returns {unknown} Fixture outcome.
-	 */
+	args.char = { interfaces: { plugins: {
+		/**
+		 * @param {object} root0 Service selection request.
+		 * @param {string} root0.pluginName Requesting plugin.
+		 * @param {string} root0.serviceType Service source type.
+		 * @returns {unknown} Fixture outcome.
+		 */
 		GetServiceSource: ({ pluginName, serviceType }) => pluginName === 'web-browse' && serviceType === 'AI' ? alternate : undefined } } }
 	assertEquals(await resolvePluginServiceSource(args, 'web-browse', 'AI'), alternate)
 	assertEquals(await resolvePluginServiceSource(args, 'sub-agent', 'AI'), active)
@@ -138,23 +137,22 @@ Deno.test('plugin service selection prefers role override, inherits active AI, k
 
 Deno.test('verified owner prompt and role customization receive host attribution', async () => {
 	let received
-	const args = { char: { interfaces: { plugins: { /**
-	 *
-	 * @param {object} context Host customization payload.
-	 * @returns {unknown} Fixture outcome.
-	 */
+	const args = { char: { interfaces: { plugins: {
+		/**
+		 * @param {object} context Host customization payload.
+		 * @returns {unknown} Fixture outcome.
+		 */
 		GetPrompt: context => { received = context; return '角色目录：example' } } } } }
 	/**
-	 *
 	 * @returns {unknown} Fixture outcome.
 	 */
 	const resolveOwner = async () => ({ isFromOwner: true, declaredOwnerEntityHash: 'owner' })
 	assertStringIncludes(await getPluginOwnerPrompt(args, 'code-execution', { resolveOwner }), '已验证')
 	assertEquals(received.ownerContext.declaredOwnerEntityHash, 'owner')
 	assertEquals(received.pluginName, 'code-execution')
-	assertStringIncludes(await getPluginOwnerPrompt({}, 'file-operations', { /**
-	 *
-	 * @returns {unknown} Fixture outcome.
-	 */
+	assertStringIncludes(await getPluginOwnerPrompt({}, 'file-operations', {
+		/**
+		 * @returns {unknown} Fixture outcome.
+		 */
 		resolveOwner: async () => ({ isFromOwner: false }) }), '保护拥有者')
 })

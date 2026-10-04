@@ -9,13 +9,17 @@ import {
 	extractJsdocBlocks,
 	hasInlineJsdocClosing,
 	hasInlineJsdocOpening,
+	hasJsdocMemberOnClosingLine,
+	hasUnsplitJsdocLiteral,
 	isEnglishJsdocSummary,
 	isTagOnlyJsdoc,
 	jsdocSummaryLines,
 	scanFileJsdocClosing,
+	scanFileJsdocLiteral,
 	scanFileJsdocNoEnglish,
 	scanFileJsdocOpening,
 	scanJsdocClosing,
+	scanJsdocLiteral,
 	scanJsdocNoEnglish,
 	scanJsdocOpening,
 } from '../jsdoc_no_english.mjs'
@@ -49,6 +53,13 @@ Deno.test('extractJsdocBlocks: line numbers', () => {
 	assertEquals(blocks.length, 2)
 	assertEquals(blocks[0].startLine, 1)
 	assertEquals(blocks[1].startLine, 3)
+})
+
+Deno.test('extractJsdocBlocks: records the mid-line prefix before /**', () => {
+	const blocks = extractJsdocBlocks('const client = create({ /**\n * 摘要\n */\nsend: () => {} })\n')
+	assertEquals(blocks.length, 1)
+	assertEquals(blocks[0].startLine, 1)
+	assertEquals(blocks[0].linePrefix, 'const client = create({ ')
 })
 
 Deno.test('extractJsdocBlocks: ignores JSDoc text inside template literals', () => {
@@ -185,5 +196,59 @@ Deno.test('icon_anime: multi-line JSDoc closes with */ alone on the last line', 
 	if (issues.length) {
 		const sample = issues.slice(0, 8).map(i => `${i.path}:${i.line}`).join('\n')
 		assert(false, `Inline JSDoc closing in icon_anime (${issues.length}):\n${sample}`)
+	}
+})
+
+Deno.test('hasUnsplitJsdocLiteral: opening marker must own its line', () => {
+	// 行首（含缩进）：正常声明与已展开的字面量。
+	assertEquals(hasUnsplitJsdocLiteral('/**\n * 摘要\n */', ''), false)
+	assertEquals(hasUnsplitJsdocLiteral('/**\n * 摘要\n */', '\t'), false)
+	assertEquals(hasUnsplitJsdocLiteral('/**\n * 摘要\n */', '\t\t'), false)
+	// 开标记前有代码：徽章写法。
+	assertEquals(hasUnsplitJsdocLiteral('/**\n * 摘要\n */', 'const client = create({ '), true)
+	// 单行块（含行内 @type 断言）不受约束。
+	assertEquals(hasUnsplitJsdocLiteral('/** @type {number} */', 'const x = '), false)
+})
+
+Deno.test('hasJsdocMemberOnClosingLine: no member may share the closing marker line', () => {
+	assertEquals(hasJsdocMemberOnClosingLine('/**\n * 摘要\n */', ''), false)
+	assertEquals(hasJsdocMemberOnClosingLine('/**\n * 摘要\n */', ' } }'), false)
+	assertEquals(hasJsdocMemberOnClosingLine('/**\n * 摘要\n */', ' onClose: reason => handler }'), true)
+})
+
+Deno.test('scanFileJsdocLiteral: flags unexpanded literals, ignores proper blocks', () => {
+	const flagged = scanFileJsdocLiteral('foo.mjs', 'const client = createCallbackSessionClient({ /**\n * 处理会话回调。\n */\n\tsend: () => {} })\n')
+	assertEquals(flagged.length, 1)
+	assertEquals(flagged[0].line, 1)
+
+	const expanded = scanFileJsdocLiteral('foo.mjs', 'const client = createCallbackSessionClient({\n\t/**\n\t * 处理会话回调。\n\t */\n\tsend: () => {},\n})\n')
+	assertEquals(expanded.length, 0)
+
+	const memberOnClosingLine = scanFileJsdocLiteral('foo.mjs', 'const client = create({\n\t/**\n\t * 处理会话回调。\n\t */ send: () => {}, onClose: () => {} })\n')
+	assertEquals(memberOnClosingLine.length, 1)
+
+	const plainDeclaration = scanFileJsdocLiteral('foo.mjs', '/**\n * 处理会话回调。\n */\nexport function send() {}\n')
+	assertEquals(plainDeclaration.length, 0)
+
+	const inlineTypeCast = scanFileJsdocLiteral('foo.mjs', 'const x = /** @type {number} */ value\n')
+	assertEquals(inlineTypeCast.length, 0)
+
+	const inTemplate = scanFileJsdocLiteral('foo.mjs', 'const s = `\nconst a = { /**\n * 伪摘要\n */\n}\n`\n')
+	assertEquals(inTemplate.length, 0)
+})
+
+Deno.test('repo: multi-line JSDoc literals are expanded', async () => {
+	const { issues } = await scanJsdocLiteral(REPO_ROOT)
+	if (issues.length) {
+		const sample = issues.slice(0, 12).map(i => `${i.path}:${i.line}`).join('\n')
+		assert(false, `Multi-line JSDoc inside unexpanded literal (${issues.length}):\n${sample}`)
+	}
+})
+
+Deno.test('icon_anime: multi-line JSDoc literals are expanded', async () => {
+	const { issues } = await scanJsdocLiteral(REPO_ROOT, { under: 'imgs/icon_anime' })
+	if (issues.length) {
+		const sample = issues.slice(0, 8).map(i => `${i.path}:${i.line}`).join('\n')
+		assert(false, `Multi-line JSDoc inside unexpanded literal in icon_anime (${issues.length}):\n${sample}`)
 	}
 })

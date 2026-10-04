@@ -55,18 +55,18 @@ Deno.test('formatWebBrowseResult appends the question when present', () => {
 Deno.test('web browse defaults to AI summary with isolated context, raw mode bypasses AI', async () => {
 	const logs = []
 	const prompts = []
-	const source = { /**
-	 *
-	 * @param {object} prompt 临时提示。
-	 * @param {object} options 生成选项。
-	 * @returns {Promise<void>} 完成。
-	 */
+	const source = {
+		/**
+		 * @param {object} prompt 临时提示。
+		 * @param {object} options 生成选项。
+		 * @returns {Promise<void>} 完成。
+		 */
 		StructCall: async (prompt, options) => { prompts.push(prompt); options.base_result.content = 'AI summary' } }
-	const handler = createWebBrowseReplyHandler({ fetchMarkdown: fetchReturning('full page'), /**
-	 *
-	 * @param {object} args 请求。
-	 * @returns {Promise<object>} 服务源。
-	 */
+	const handler = createWebBrowseReplyHandler({ fetchMarkdown: fetchReturning('full page'),
+		/**
+		 * @param {object} args 请求。
+		 * @returns {Promise<object>} 服务源。
+		 */
 		resolveSource: async args => args.ai_source })
 	const args = { ai_source: source, chat_log: [{ role: 'user', content: 'PRIVATE HISTORY' }], AddLongTimeLog: collectLog(logs) }
 	await handler.handle({}, args, { params: parseParams(handler.pattern.params, {}), inner: '<url>https://example.com</url><question>why?</question>' })
@@ -84,10 +84,10 @@ Deno.test('URL preload persists metadata, normalizes fragments and is idempotent
 	assertEquals(extractUrls('[page](https://example.com/a#x) https://example.com/a#y, file:///a'), ['https://example.com/a'])
 	const logs = [{ role: 'user', content: 'See https://example.com/a#x' }]
 	let fetches = 0
-	const options = { /**
-	 *
-	 * @returns {Promise<string>} 元信息。
-	 */
+	const options = {
+		/**
+		 * @returns {Promise<string>} 元信息。
+		 */
 		fetchMetadata: async () => { fetches++; return '<unsafe> title' } }
 	const args = { char_id: 'test', chat_log: logs, AddLongTimeLog: collectLog(logs) }
 	await preloadMentionedUrls(args, options)
@@ -102,10 +102,11 @@ Deno.test('URL preload persists metadata, normalizes fragments and is idempotent
 
 Deno.test('URL preload bounds each request and records failures without retrying them', async () => {
 	const logs = [{ role: 'user', content: Array.from({ length: 9 }, (_, index) => `https://example.com/${index}`).join(' ') }]
-	const options = { /**
-	 * 始终失败的元信息抓取。
-	 * @returns {Promise<string>} 从不返回。
-	 */
+	const options = {
+		/**
+		 * 始终失败的元信息抓取。
+		 * @returns {Promise<string>} 从不返回。
+		 */
 		fetchMetadata: async () => { throw new Error('offline') } }
 	const args = { chat_log: logs, AddLongTimeLog: collectLog(logs) }
 	await preloadMentionedUrls(args, options)

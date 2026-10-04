@@ -80,12 +80,13 @@ export async function resolveNativePath(value, base = null) {
 		const { execShellWithTimeout } = await import('../../../../../scripts/shell_guard.mjs').catch(async () => {
 			// Serialized remote eval has no module-relative URL; use the target's exec package.
 			const { execFile } = await import('npm:@steve02081504/exec')
-			return { /**
+			return {
+				/**
 				 * 在远程目标上执行只读注册表探测。
 				 * @param {string} shell Shell identifier.
-			 * @param {string} code PowerShell source.
-			 * @returns {Promise<object>} Captured output.
-			 */
+				 * @param {string} code PowerShell source.
+				 * @returns {Promise<object>} Captured output.
+				 */
 				execShellWithTimeout: async (shell, code) => ({ result: await execFile(shell === 'powershell' ? 'powershell.exe' : shell, ['-NoProfile', '-NonInteractive', '-Command', code], { no_ansi_terminal_sequences: true }) }) }
 		})
 		const code = '$r=Get-ItemProperty -LiteralPath \'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Lxss\' -ErrorAction Stop; (Get-ItemProperty -LiteralPath (\'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Lxss\\\'+$r.DefaultDistribution) -ErrorAction Stop).DistributionName'
