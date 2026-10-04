@@ -14,6 +14,7 @@ import { createFountEntityStore } from '../../public/parts/shells/chat/src/entit
 
 import { registerP2PInboundHandlers } from './inbound_handlers.mjs'
 import { pickPrimaryReplica } from './user_notify.mjs'
+import { attachNetworkVerification } from './verification.mjs'
 
 /** @type {ReturnType<typeof createPeerHealthTracker> | null} 节点级邻居健康追踪器。 */
 let peerHealthTracker = null
@@ -35,6 +36,7 @@ export async function initP2PServer({ dataPath, signaling }) {
 	await mkdir(nodeDir, { recursive: true })
 	const entityStore = createFountEntityStore()
 	initNode({ nodeDir, entityStore })
+	attachNetworkVerification()
 	peerHealthTracker = createPeerHealthTracker(getLinkRegistry())
 	if (signaling) setSignalingRuntimeConfig(signaling)
 	registerTrustGraphProvider('default', createDefaultTrustGraphProvider())
