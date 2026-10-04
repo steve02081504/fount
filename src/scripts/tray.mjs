@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 import os from 'node:os'
+import path from 'node:path'
 import process from 'node:process'
 
 import { on_shutdown } from 'npm:on-shutdown'
@@ -32,9 +33,13 @@ async function getBase64Icon(iconPath) {
 }
 
 let systray
+let restartTimer
+let shuttingDown = false
 
 on_shutdown(() => {
-	systray?.kill?.()
+	shuttingDown = true
+	clearTimeout(restartTimer)
+	systray?.kill?.(false)
 	systray = null
 })
 
@@ -44,9 +49,11 @@ on_shutdown(() => {
  */
 export async function createTray() {
 	if (in_container) return
+	if (shuttingDown) return
 	try {
+		clearTimeout(restartTimer)
 		const terminalWorks = process.stdout.writable
-		if (systray) systray.kill()
+		if (systray) systray.kill(false)
 		systray = null
 		const iconPath = __dirname + (os.platform() === 'win32' ? '/src/public/pages/favicon.ico' : '/src/public/pages/favicon.png')
 		const base64Icon = await getBase64Icon(iconPath)
@@ -105,7 +112,20 @@ export async function createTray() {
 				].filter(Boolean)
 			},
 			debug: false,
-			copyDir: false
+			// Windows 会按可执行文件的完整性级别启动子进程；沙箱写入的
+			// node_modules 可能带 Low 标签，无法写入普通级别的托盘 DLL 缓存。
+			copyDir: os.platform() === 'win32'
+				? path.join(os.tmpdir(), 'fount', 'bin', 'systray')
+				: false
+		})
+
+		const currentTray = systray
+		currentTray.onError(error => console.errorI18n('fountConsole.tray.createTrayFailed', { error }))
+		currentTray.onExit(() => {
+			if (shuttingDown || systray !== currentTray) return
+			systray = null
+			restartTimer = setTimeout(() => { void createTray() }, 1000)
+			restartTimer.unref?.()
 		})
 
 		systray.onClick(async action => {
