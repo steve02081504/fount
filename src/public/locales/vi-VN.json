@@ -6811,10 +6811,10 @@
 			"editedFiles": "Đã sửa ${count} tệp",
 			"noDiff": "Lần sửa này không ghi lại diff theo dòng",
 			"connection": {
-				"connecting": null,
-				"connected": null,
-				"disconnected": null,
-				"unavailable": null
+				"connecting": "Đang kết nối với tính năng tự động cập nhật của không gian làm việc…",
+				"connected": "Đã kết nối tính năng tự động cập nhật của không gian làm việc",
+				"disconnected": "Kết nối tới không gian làm việc đã bị ngắt; đang kết nối lại. Nội dung hiển thị có thể đã cũ.",
+				"unavailable": "Không gian làm việc này không dùng được tính năng tự động cập nhật. Hãy kiểm tra không gian làm việc và các thư mục đã đăng ký theo dõi."
 			}
 		}
 	},

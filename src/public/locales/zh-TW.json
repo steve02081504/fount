@@ -6811,10 +6811,10 @@
 			"editedFiles": "已編輯 ${count} 個檔案",
 			"noDiff": "這次操作沒有記錄逐行差異",
 			"connection": {
-				"connecting": null,
-				"connected": null,
-				"disconnected": null,
-				"unavailable": null
+				"connecting": "正在連線工作區自動更新…",
+				"connected": "工作區自動更新已連線",
+				"disconnected": "工作區連線已中斷，正在重新連線；目前顯示的內容可能已過期",
+				"unavailable": "此工作區的自動更新無法使用，請檢查工作區與訂閱目錄"
 			}
 		}
 	},

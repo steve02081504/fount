@@ -6811,10 +6811,10 @@
 			"editedFiles": "✏️ ${count} 📄",
 			"noDiff": "📄➖➖",
 			"connection": {
-				"connecting": "正在连接工作区自动更新…",
-				"connected": "工作区自动更新已连接",
-				"disconnected": "工作区连接已断开，正在重连；当前显示内容可能已过期",
-				"unavailable": "此工作区的自动更新不可用，请检查工作区和订阅目录"
+				"connecting": "🔌⏳…",
+				"connected": "🔌✅",
+				"disconnected": "🔌❌🔄⚠️",
+				"unavailable": "🚫🔄📁"
 			}
 		}
 	},

@@ -6811,10 +6811,10 @@
 			"editedFiles": "已編輯 ${count} 文牘",
 			"noDiff": "此改未錄逐行之 diff",
 			"connection": {
-				"connecting": "正在连接工作区自动更新…",
-				"connected": "工作区自动更新已连接",
-				"disconnected": "工作区连接已断开，正在重连；当前显示内容可能已过期",
-				"unavailable": "此工作区的自动更新不可用，请检查工作区和订阅目录"
+				"connecting": "方連作業區之自動更新…",
+				"connected": "作業區之自動更新已連",
+				"disconnected": "作業區之連已斷，方重連；所示或已陳",
+				"unavailable": "作業區之自動更新不可用，請察作業區與所訂之目錄"
 			}
 		}
 	},

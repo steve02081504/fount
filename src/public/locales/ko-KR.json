@@ -6811,10 +6811,10 @@
 			"editedFiles": "파일 ${count}개를 편집했습니다",
 			"noDiff": "이 편집에는 줄 단위 diff가 기록되지 않았습니다",
 			"connection": {
-				"connecting": null,
-				"connected": null,
-				"disconnected": null,
-				"unavailable": null
+				"connecting": "워크스페이스 자동 업데이트에 연결하는 중…",
+				"connected": "워크스페이스 자동 업데이트에 연결되었습니다",
+				"disconnected": "워크스페이스 연결이 끊어졌습니다. 다시 연결하는 중이며, 표시된 내용이 오래되었을 수 있습니다.",
+				"unavailable": "이 워크스페이스의 자동 업데이트를 사용할 수 없습니다. 워크스페이스와 구독한 디렉터리를 확인하세요."
 			}
 		}
 	},

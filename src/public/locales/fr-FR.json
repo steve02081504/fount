@@ -6823,10 +6823,10 @@
 			"editedFiles": "${count} fichiers modifiés",
 			"noDiff": "Aucun diff ligne à ligne n’a été enregistré pour cette modification",
 			"connection": {
-				"connecting": null,
-				"connected": null,
-				"disconnected": null,
-				"unavailable": null
+				"connecting": "Connexion à la mise à jour automatique de l’espace de travail…",
+				"connected": "Mise à jour automatique de l’espace de travail connectée",
+				"disconnected": "Connexion à l’espace de travail perdue, reconnexion en cours ; le contenu affiché peut être obsolète.",
+				"unavailable": "La mise à jour automatique de cet espace de travail n’est pas disponible. Vérifiez l’espace de travail et les répertoires abonnés."
 			}
 		}
 	},

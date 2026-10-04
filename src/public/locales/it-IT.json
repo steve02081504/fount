@@ -6823,10 +6823,10 @@
 			"editedFiles": "Hai modificato ${count} file",
 			"noDiff": "Per questa modifica non è stata registrata alcuna differenza per righe",
 			"connection": {
-				"connecting": null,
-				"connected": null,
-				"disconnected": null,
-				"unavailable": null
+				"connecting": "Connessione all’aggiornamento automatico dell’area di lavoro…",
+				"connected": "Aggiornamento automatico dell’area di lavoro connesso",
+				"disconnected": "Connessione all’area di lavoro interrotta; riconnessione in corso. Il contenuto mostrato potrebbe non essere aggiornato.",
+				"unavailable": "L’aggiornamento automatico di quest’area di lavoro non è disponibile. Controlla l’area di lavoro e le cartelle sottoscritte."
 			}
 		}
 	},

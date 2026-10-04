@@ -6817,10 +6817,10 @@
 			"editedFiles": "Breytti ${count} skrám",
 			"noDiff": "Enginn línubundinn diff var skráður fyrir þessa breytingu",
 			"connection": {
-				"connecting": null,
-				"connected": null,
-				"disconnected": null,
-				"unavailable": null
+				"connecting": "Tengist við sjálfvirkar uppfærslur vinnusvæðisins…",
+				"connected": "Sjálfvirkar uppfærslur vinnusvæðisins eru tengdar",
+				"disconnected": "Tenging við vinnusvæðið rofnaði; verið er að endurtengja. Efnið sem birtist gæti verið úrelt.",
+				"unavailable": "Sjálfvirkar uppfærslur þessa vinnusvæðis eru ekki í boði. Athugaðu vinnusvæðið og áskriftarmöppurnar."
 			}
 		}
 	},
