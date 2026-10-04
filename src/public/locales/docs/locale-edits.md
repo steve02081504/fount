@@ -64,6 +64,12 @@ A part's own `locales.json` carries `info.<locale>` blocks (`name` / `avatar` / 
 - **Never commit a `null` leaf.** A failed translation is written as `null` for the next run, and `null` renders as an empty plugin name for that user — `fount test checks:info` fails a part `locales.json` that still has one.
 - **The bolded name is the locale's own name.** Give the plugin a name in the locale's language and repeat that exact string inside `**…**` in `description_markdown`; a translated `name` sitting next to an English bolded name (or the reverse) is sync residue, not a deliberate brand choice.
 
+## A failed sync leaves `null`, never silence
+
+`update-locales.py` writes a same-shape `null` skeleton for every key it could not translate — including the case where Google is unreachable and the run circuit-breaks — and reports every gap at the end of the run (log summary per language, `::warning::` annotations, `GITHUB_STEP_SUMMARY`). `null` in a locale file is therefore a greppable retry marker, and `checks:i18n_copy` (rule `null`) turns it red.
+
+Never "fix" a red run by leaving the key out or by keeping the previous copy: a missing key is invisible to every check, and this workflow pushes with `GITHUB_TOKEN`, so its commit does not re-trigger Run Tests. That combination is how 14 locales silently lost their `chat.group.settings.page.worlds`, `captcha`, `code.explorer` and `invitation-required` blocks (PR #246's circuit-break path returned without writing anything). Fill the copy, or leave the `null` for the next run to retry.
+
 ## Native-quality review loop
 
 Machine-checkable residue is enforced by `fount test checks:i18n_copy` — null / empty leaves, product name written `font`, a space inside a compound, a lost newline or edge-whitespace frame, punctuation jammed against the wrong side, zero-width junk, doubled spaces, and letters from a writing system the locale does not use. Fix the copy, never the check, and add a rule there when a new class shows up.

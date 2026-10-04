@@ -33,6 +33,10 @@ jobs:
           ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
           repository: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name || github.repository }}
       - name: run script to update locale files
+        # 翻译失败或被熔断时，脚本会给每个缺失键写 null 骨架，并在 job summary / ::warning:: 里
+        # 逐语言列出未翻译键——这是「哪里没翻译」的唯一现场。别把这里的报告删成静默 exit 0：
+        # 本步骤用 GITHUB_TOKEN 推提交，而 GITHUB_TOKEN 触发的 push 不会重启 Run Tests 之类的
+        # workflow，所以漏翻的 null 不会自动让谁变红（PR #246 起，master 上曾整批缺键而无人知晓）。
         run: |
           pip install deep_translator json5 pathspec
           python ./.esh/commands/update-locales.py

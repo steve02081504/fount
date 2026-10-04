@@ -115,6 +115,97 @@ def note_translation_failure():
 		return _translation_aborted
 
 
+# --- 未翻译键的痕迹与报告 ---
+# 熔断（连续失败）只负责停止后续 API 调用，绝不等于「放弃记录」。
+# 历史教训（PR #246 / commit 4a985618 引入）：「已熔断时调用方勿写入，保持现状」把失败路径写成
+# 直接 return False，于是 Google 翻译不可用时整轮同步连一个 null 都没留下，脚本照旧 exit 0、
+# CI 照旧提交——master 上 14 种语言的 chat.group.settings.page.worlds 块就这样凭空消失，
+# 既没人知道缺了哪些键，也没人被告知这次同步其实没翻完。
+# 规矩：凡「本该翻译却失败 / 被熔断」的键，都必须写入与源同构的 null 骨架（下次运行照 contains_null
+# 重试）并记入 untranslated_report；null 就是仓库里可 grep 的缺口清单，收尾的汇总、GitHub job
+# summary 与 ::warning:: 注解负责把它顶到人眼前。改这里之前先想清楚：静默跳过是禁止项。
+untranslated_report: list[tuple[str, str]] = []
+
+
+def empty_translation_shape(value):
+	"""
+	与源值同构的空值骨架：字符串叶子 → None，其余结构保留（switch 名与 cases 键原样留下，
+	免得 null 骨架在类型检查里变成「结构不匹配」而不是「未翻译」）。
+	"""
+	if isinstance(value, str):
+		return None
+	if isinstance(value, (OrderedDict, dict)):
+		shape = OrderedDict()
+		for key, child in value.items():
+			shape[key] = child if key == "switch" and isinstance(child, str) else empty_translation_shape(child)
+		return shape
+	if isinstance(value, list):
+		return [empty_translation_shape(item) for item in value]
+	return value
+
+
+def note_untranslated(target_lang, key_path):
+	"""登记一处「本该翻译却没翻出来」的键路径。"""
+	with _TRANSLATION_LOCK:
+		untranslated_report.append((target_lang, key_path))
+
+
+def record_untranslated(target_dict, key, source_value, target_lang, source_lang_for_trans, current_path, reason):
+	"""
+	翻译失败 / 熔断时给缺失键留下 null 骨架并记账，返回是否写入。
+	已有内容（含仅部分 null 的列表）一律保留：那里已经有 null 痕迹，覆写只会丢掉有效译文。
+	"""
+	if target_dict.get(key) is not None:
+		note_untranslated(target_lang, current_path)
+		return False
+	shape = empty_translation_shape(source_value)
+	if target_dict.get(key) == shape:
+		return False
+	target_dict[key] = shape
+	print(f"  + 写入 null 骨架（{reason}，下次运行重试）: 键 '{current_path}' ({source_lang_for_trans} → {target_lang})。")
+	note_untranslated(target_lang, current_path)
+	return True
+
+
+def report_untranslated_keys():
+	"""
+	汇总本次运行留下的未翻译键：日志逐语言列出，GitHub Actions 下追加 job summary 并打注解。
+	没有缺口时静默；有缺口时这里就是「哪里没翻译」的唯一入口。
+	"""
+	with _TRANSLATION_LOCK:
+		entries = sorted(set(untranslated_report))
+	if not entries:
+		return
+
+	by_lang = OrderedDict()
+	for target_lang, key_path in entries:
+		by_lang.setdefault(target_lang, []).append(key_path)
+
+	print(f"\n!!! 未翻译键汇总：{len(entries)} 处，涉及 {len(by_lang)} 种语言（各目标文件已写入 null 骨架，下次运行重试）")
+	in_actions = os.environ.get("GITHUB_ACTIONS") == "true"
+	for target_lang, key_paths in by_lang.items():
+		preview = ", ".join(key_paths[:5]) + ("…" if len(key_paths) > 5 else "")
+		print(f"  - {target_lang}: {len(key_paths)} 处（{preview}）")
+		if in_actions:
+			# GitHub 注解受数量限制，按语言汇总一行即可，明细在 job summary 里
+			print(f"::warning::未翻译 {len(key_paths)} 处（{target_lang}）：{preview}")
+
+	summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
+	if not summary_path:
+		return
+	try:
+		with open(summary_path, "a", encoding="utf-8", newline="\n") as summary:
+			summary.write(f"## 本地化同步：未翻译键 {len(entries)} 处\n\n各目标文件已写入 `null` 骨架（下次运行重试）。\n\n")
+			for target_lang, key_paths in by_lang.items():
+				summary.write(f"### {target_lang}（{len(key_paths)} 处）\n\n")
+				for key_path in key_paths:
+					summary.write(f"- `{key_path}`\n")
+				summary.write("\n")
+		print(f"  - 未翻译明细已写入 job summary: {summary_path}")
+	except Exception as e:
+		print(f"  ! 写入 job summary 失败: {e}")
+
+
 def run_per_lang(fn, items):
 	"""对每个语言项执行 fn；CI 中一语言一线程，本地串行。"""
 	items = list(items)
@@ -444,7 +535,7 @@ def translate_text(text: str, source_lang: str, target_lang: str) -> str | None:
 	Translates text using GoogleTranslator with compatibility checks and retry logic.
 	Aligns placeholders after successful translation.
 	Returns: 译文；Google 不支持的语言回退原文；API 失败返回 None。
-	已熔断时抛 TranslationAborted（调用方勿写入，保持现状）。
+	已熔断时抛 TranslationAborted：调用方不得静默跳过，须用 record_untranslated 留下 null 骨架与报告（见其上方注释）。
 	"""
 	if is_translation_aborted():
 		raise TranslationAborted()
@@ -577,20 +668,21 @@ def handle_missing_key_translation(target_dict, source_dict, key, target_lang, s
 	"""
 	翻译并写入缺失（或不合法 null）的键。
 	翻译失败时写入 null（下次运行会重试）；空串是合法值，照常写入。
+	熔断同样必须留 null 骨架（record_untranslated），不许静默跳过——否则「哪里没翻译」无从查起。
 	Returns True if a change was made, False otherwise.
 	"""
-	if is_translation_aborted():
-		return False
-
 	source_value_direct = source_dict[key]
 	if source_value_direct is None:
 		print(f"  - 跳过: 键 '{current_path}' 在源语言 {source_lang_for_trans} 中也为 null。")
 		return False
 
+	if is_translation_aborted():
+		return record_untranslated(target_dict, key, source_value_direct, target_lang, source_lang_for_trans, current_path, "已熔断")
+
 	try:
 		translated_val = translate_value(copy.deepcopy(source_value_direct), source_lang_for_trans, target_lang)
 	except TranslationAborted:
-		return False
+		return record_untranslated(target_dict, key, source_value_direct, target_lang, source_lang_for_trans, current_path, "已熔断")
 
 	if key in target_dict and target_dict[key] == translated_val:
 		return False
@@ -598,6 +690,7 @@ def handle_missing_key_translation(target_dict, source_dict, key, target_lang, s
 	target_dict[key] = translated_val
 	if translated_val is None or contains_null(translated_val):
 		print(f"  + 写入 null（翻译失败，下次重试）: 键 '{current_path}' ({source_lang_for_trans} → {target_lang})。")
+		note_untranslated(target_lang, current_path)
 	else:
 		print(f"  + 添加并翻译: 键 '{current_path}' 从 {source_lang_for_trans} 到 {target_lang}。")
 	return True
@@ -693,11 +786,11 @@ def _is_locale_keyed_block(block):
 	return any(k in REFERENCE_LANG_CODES or k == "emoji" for k in block.keys())
 
 
-def sync_localized_block(block_data, available_lang_codes):
+def sync_localized_block(block_data, available_lang_codes, path_prefix=""):
 	"""
 	同步按语言分组的通用块（如 greeting、groupGreeting、noAISourceFeedback）。
 	结构为 { "zh-CN": value, "en-UK": value, "emoji": value, ... }，value 可为 str、list 或 dict。
-	缺失或值为 null 的 locale 会从参考语言翻译补充（失败仍写 null，下次重试）；空串合法不重翻。
+	缺失或值为 null 的 locale 会从参考语言翻译补充（失败或熔断仍写 null 骨架，下次重试）；空串合法不重翻。
 	emoji 作为目标时直接复制不翻译。
 	"""
 	source_lang = None
@@ -718,6 +811,8 @@ def sync_localized_block(block_data, available_lang_codes):
 
 	def fill_lang(target_lang):
 		if is_translation_aborted():
+			# 熔断也要把缺口标成 null，别让整块的缺失无声无息（见 untranslated_report 上方的教训注释）
+			record_untranslated(block_data, target_lang, source_val, target_lang, source_lang, path_prefix or target_lang, "已熔断")
 			return target_lang, block_data.get(target_lang)
 		print(f"      + 为 '{target_lang}' 补充内容 (基于 '{source_lang}')")
 		if target_lang == "emoji":
@@ -725,9 +820,11 @@ def sync_localized_block(block_data, available_lang_codes):
 		try:
 			translated = translate_value(copy.deepcopy(source_val), source_lang, target_lang)
 		except TranslationAborted:
+			record_untranslated(block_data, target_lang, source_val, target_lang, source_lang, path_prefix or target_lang, "已熔断")
 			return target_lang, block_data.get(target_lang)
 		if translated is None or contains_null(translated):
 			print(f"        - 翻译失败，写入 null（下次重试）: {source_lang} → {target_lang}")
+			note_untranslated(target_lang, path_prefix or target_lang)
 		return target_lang, translated
 
 	filled = run_per_lang(fill_lang, missing_langs)
@@ -747,7 +844,7 @@ def sync_localized_block(block_data, available_lang_codes):
 	return changed
 
 
-def sync_info_content(info_data, available_lang_codes):
+def sync_info_content(info_data, available_lang_codes, path_prefix=""):
 	"""
 	同步 locales.json 内 info 块的内容。
 	结构通常为: { "en-UK": {...}, "zh-CN": {...}, "emoji": {...}, ... }
@@ -809,16 +906,20 @@ def sync_info_content(info_data, available_lang_codes):
 			if key in target_obj and not contains_null(target_obj[key]):
 				continue
 			if key in TRANSLATABLE_INFO_FIELDS:
-				if is_translation_aborted():
-					break
+				current_path = f"{path_prefix or 'info'}.{target_lang}.{key}"
 				print(f"      + 翻译缺失/null 字段 '{key}': {source_lang} -> {target_lang}")
 				try:
 					translated = translate_value(copy.deepcopy(val), source_lang, target_lang)
 				except TranslationAborted:
-					break
+					# 熔断不打断补齐：剩下的字段同样要留 null 痕迹（见 untranslated_report 上方的教训注释）
+					if record_untranslated(target_obj, key, val, target_lang, source_lang, current_path, "已熔断"):
+						lang_changed = True
+					continue
 				if key in target_obj and target_obj[key] == translated:
 					continue
 				target_obj[key] = translated  # 失败则为 null，下次重试
+				if translated is None or contains_null(translated):
+					note_untranslated(target_lang, current_path)
 				lang_changed = True
 			else:
 				target_obj[key] = copy.deepcopy(val)
@@ -883,17 +984,18 @@ def process_locales_json_files(fount_dir, gitignore_spec, available_lang_codes):
 
 				content_has_logical_changes = False
 				has_any_locale_block = False
+				rel_file = os.path.relpath(filepath, fount_dir)
 
 				for top_key, top_value in list(data.items()):
 					if not isinstance(top_value, (dict, OrderedDict)):
 						continue
 					if top_key == "info":
 						has_any_locale_block = True
-						if sync_info_content(top_value, available_lang_codes):
+						if sync_info_content(top_value, available_lang_codes, f"{rel_file}:{top_key}"):
 							content_has_logical_changes = True
 					elif _is_locale_keyed_block(top_value):
 						has_any_locale_block = True
-						if sync_localized_block(top_value, available_lang_codes):
+						if sync_localized_block(top_value, available_lang_codes, f"{rel_file}:{top_key}"):
 							content_has_logical_changes = True
 
 				if has_any_locale_block:
@@ -1175,7 +1277,11 @@ def get_string_values_for_key_path(all_data_files, languages_map, key_path):
 
 
 def retranslate_for_placeholder_mismatch(lang_code, key_path, lang_file_data, source_text, source_lang_code, reason: str) -> bool:
-	"""占位符无法机械修复时才整段重翻。"""
+	"""
+	占位符无法机械修复时才整段重翻。
+	熔断/失败时保留原文本：这里的问题是「占位符对不齐」，不是「键没有译文」，
+	抹成 null 会丢掉已翻译的正文（缺口痕迹该由 record_untranslated 负责的地方去负责）。
+	"""
 	if is_translation_aborted():
 		return False
 	print(f"    - 重新翻译: 键 '{key_path}' 在 '{lang_code}'. 原因: {reason}.")
@@ -1185,6 +1291,8 @@ def retranslate_for_placeholder_mismatch(lang_code, key_path, lang_file_data, so
 	try:
 		translated = translate_text(source_text, source_lang_code, lang_code)
 	except TranslationAborted:
+		# 熔断可能并发发生在上面那次检查之后；这里保留原文本，别让整轮同步炸掉
+		print("      - 翻译已中止，保留原文本。")
 		return False
 	if translated is not None:
 		return update_translation_at_path_in_data(lang_file_data, key_path, translated)
@@ -1381,9 +1489,6 @@ def run_synchronization_loop(all_data, languages, ref_path):
 	print(f"\n--- 开始同步内容和结构 (locales)，模式: {mode}，参考: {ref_lang} ---")
 
 	for synchronization_iteration in range(1, MAX_SYNC_ITERATIONS + 1):
-		if is_translation_aborted():
-			print("\n翻译已中止，结束内容同步循环。")
-			break
 		print(f"\n--- 同步迭代轮次 {synchronization_iteration}/{MAX_SYNC_ITERATIONS} ---")
 
 		def sync_one(other_path):
@@ -1396,7 +1501,9 @@ def run_synchronization_loop(all_data, languages, ref_path):
 		changes_in_iter = any(run_per_lang(sync_one, other_paths))
 
 		if is_translation_aborted():
-			print("\n翻译已中止，结束内容同步循环。")
+			# 熔断不能变成「这一轮什么都不做」：上面这轮已经把每个缺失键标成 null 骨架并记账，
+			# 所以这里才敢收尾（见 record_untranslated 上方的教训注释）。
+			print("\n翻译已中止：本轮只留下未翻译键的 null 骨架，结束内容同步循环。")
 			break
 		if not changes_in_iter:
 			print("\n内容同步完成，本轮无更改。")
@@ -1745,8 +1852,51 @@ def self_test_normalize_applicator() -> int:
 		print("plain string leaf should stay string", file=sys.stderr)
 		return 1
 
-	print(json.dumps({"ok": True, "aria-label": val_a["aria-label"], "switch": True}, ensure_ascii=False))
+	# 回归：熔断后缺失键必须留下 null 骨架，不得静默跳过（见 note_untranslated 上方的教训注释）
+	if not _assert_aborted_keys_leave_null_trace():
+		return 1
+
+	print(json.dumps({"ok": True, "aria-label": val_a["aria-label"], "switch": True, "null_trace": True}, ensure_ascii=False))
 	return 0
+
+
+def _assert_aborted_keys_leave_null_trace() -> bool:
+	"""熔断（连续失败熔断）时缺失键仍须写 null 骨架并记账：整轮同步不得一个痕迹都不留。"""
+	import io
+	from contextlib import redirect_stdout
+
+	global _translation_aborted
+	saved_aborted = _translation_aborted
+	_translation_aborted = True
+	try:
+		target = OrderedDict()
+		source = OrderedDict([("worlds", OrderedDict([("inherit", "继承群默认世界"), ("count", 2)]))])
+		recorded_before = len(untranslated_report)
+		with redirect_stdout(io.StringIO()):
+			changed = handle_missing_key_translation(target, source, "worlds", "de-DE", "zh-CN", "demo.worlds")
+		if not changed or target.get("worlds") != OrderedDict([("inherit", None), ("count", 2)]):
+			print(f"aborted sync must still write a null skeleton: changed={changed} target={target!r}", file=sys.stderr)
+			return False
+		if not any(lang == "de-DE" and path == "demo.worlds" for lang, path in untranslated_report[recorded_before:]):
+			print(f"aborted sync must report the untranslated key: {untranslated_report!r}", file=sys.stderr)
+			return False
+		# 已有可用译文不得被 null 骨架覆盖
+		kept = OrderedDict([("worlds", "Bestehende Übersetzung")])
+		with redirect_stdout(io.StringIO()):
+			handle_missing_key_translation(kept, source, "worlds", "de-DE", "zh-CN", "demo.worlds")
+		if kept["worlds"] != "Bestehende Übersetzung":
+			print(f"existing translation must survive an aborted sync: {kept!r}", file=sys.stderr)
+			return False
+		# locales.json 的按语言块同样不得静默留空
+		block = OrderedDict([("zh-CN", "世界"), ("en-UK", "World")])
+		with redirect_stdout(io.StringIO()):
+			sync_localized_block(block, ["zh-CN", "en-UK", "de-DE"])
+		if block.get("de-DE", "missing") is not None:
+			print(f"aborted block sync must mark the missing locale with null: {block!r}", file=sys.stderr)
+			return False
+	finally:
+		_translation_aborted = saved_aborted
+	return True
 
 
 # --- 主逻辑 (重构后) ---
@@ -1787,6 +1937,9 @@ def main():
 	generate_locale_data_ts(all_data[ref_path], ts_decl_path)
 
 	generate_list_csv(all_data)
+
+	# 缺口清单必须在退出前报出来：熔断时它是「这次同步没翻完」的唯一现场
+	report_untranslated_keys()
 
 	print("\n脚本执行完毕。" + ("（翻译中途熔断）" if is_translation_aborted() else ""))
 
