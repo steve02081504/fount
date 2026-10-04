@@ -9,6 +9,57 @@ import {
 } from './fixtures.mjs'
 
 test.describe('Chat secondary pages', () => {
+	test('world settings preserve missing bindings and clear group/channel scopes independently', async ({ page, baseUrl, apiKey }) => {
+		const { groupId, channelId } = await openFreshGroupChannel(page, baseUrl, apiKey)
+		await page.evaluate(async ({ groupId, channelId }) => {
+			const { setGroupWorld } = await import('/parts/shells:chat/src/endpoints/groupCore.mjs')
+			await setGroupWorld(groupId, 'removed_group_world', null, 'group')
+			await setGroupWorld(groupId, 'removed_channel_world', channelId)
+		}, { groupId, channelId })
+		await openGroupSettingsPage(page, baseUrl, groupId)
+		await page.locator('#nav-worlds').click()
+		const host = page.locator('#group-worlds-container')
+		await host.locator('[data-world-channel]').selectOption(channelId)
+		// 已卸载的世界仍以绑定名出现，并提示本机会回退内置世界。
+		await expect(host.locator('[data-world-group]')).toHaveValue('removed_group_world')
+		await expect(host.locator('[data-world-override]')).toHaveValue('removed_channel_world')
+		await expect(host.locator('[data-world-status]')).toBeVisible()
+		await expect(host.locator('[data-world-effective]')).toContainText('removed_channel_world')
+
+		// 清除频道覆盖后回落到群默认世界。
+		await host.locator('[data-world-override]').selectOption('')
+		await host.locator('[data-world-save-channel]').click()
+		await expect(host.locator('[data-world-override]')).toHaveValue('')
+		await expect(host.locator('[data-world-effective]')).toContainText('removed_group_world')
+
+		// 清除群默认世界；频道绑定保持独立。
+		await host.locator('[data-world-group]').selectOption('')
+		await host.locator('[data-world-save-group]').click()
+		await expect(host.locator('[data-world-effective]')).toContainText('内置世界')
+		const bindings = await page.evaluate(async groupId => {
+			const { getGroupState } = await import('/parts/shells:chat/src/endpoints/groupCore.mjs')
+			const { worldBindings } = await getGroupState(groupId)
+			return { world: worldBindings.world, channelWorldNames: Object.keys(worldBindings.channelWorlds) }
+		}, groupId)
+		expect(bindings.world).toBeNull()
+		expect(bindings.channelWorldNames).toEqual([])
+
+		// 空绑定在重载后仍是空绑定，且频道仍可打开。
+		await page.goto(
+			`${baseUrl}/parts/shells:chat/settings/#settings:${encodeURIComponent(groupId)}:worlds`,
+			{ waitUntil: 'domcontentloaded' },
+		)
+		await expect(page.locator('body[data-settings-loaded="1"]')).toBeVisible({ timeout: 60_000 })
+		await host.locator('[data-world-channel]').selectOption(channelId)
+		await expect(host.locator('[data-world-group]')).toHaveValue('')
+		await expect(host.locator('[data-world-override]')).toHaveValue('')
+		const messages = await page.evaluate(async ({ groupId, channelId }) => {
+			const { getChannelViewLog } = await import('/parts/shells:chat/src/endpoints/groupChannel.mjs')
+			return getChannelViewLog(groupId, channelId)
+		}, { groupId, channelId })
+		expect(messages).toBeTruthy()
+	})
+
 	test('channel context menu exports JSON archive', async ({ page, baseUrl, apiKey }) => {
 		const { groupId, channelId } = await openFreshGroupChannel(page, baseUrl, apiKey)
 		await sendMessageViaComposer(page, groupId, channelId, `archive-export ${Date.now()}`)
@@ -72,8 +123,8 @@ test.describe('Chat secondary pages', () => {
 	test('settings permissions and emojis sections load', async ({ page, baseUrl, apiKey }) => {
 		const { groupId } = await openFreshGroupChannel(page, baseUrl, apiKey)
 		await openGroupSettingsPage(page, baseUrl, groupId)
-		// 群主/ADMIN 可见全部 8 项：general/members/permissions/group-perms/emojis/channel-perms/storage/audit
-		await expect(page.locator('.settings-nav-item:not(.hidden)')).toHaveCount(8)
+		// 群主/ADMIN 可见全部 9 项：general/worlds/members/permissions/group-perms/emojis/channel-perms/storage/audit
+		await expect(page.locator('.settings-nav-item:not(.hidden)')).toHaveCount(9)
 		await expect(page.locator('.settings-nav-item[data-section="general"]')).toHaveAttribute('aria-selected', 'true')
 
 		await page.locator('.settings-nav-item[data-section="permissions"]').click()

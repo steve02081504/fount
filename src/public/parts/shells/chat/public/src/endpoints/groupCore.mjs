@@ -270,10 +270,11 @@ export async function setGroupPersona(groupId, personaname) {
  * @param {string} groupId 群 ID
  * @param {string|null} worldname world 名；空串/`null` 清除
  * @param {string | null} [channelId] 频道 ID；缺省时后端回退默认/首个可打开频道
+ * @param {'group' | 'channel'} [scope] 群默认或频道绑定
  * @returns {Promise<any>} 响应
  */
-export async function setGroupWorld(groupId, worldname, channelId) {
-	const json = { worldname }
+export async function setGroupWorld(groupId, worldname, channelId, scope = 'channel') {
+	const json = { worldname, scope }
 	if (channelId) json.channelId = channelId
 	return groupFetch(groupPath(groupId, 'world'), {
 		method: 'PUT',

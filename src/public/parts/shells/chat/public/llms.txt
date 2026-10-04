@@ -238,6 +238,8 @@ chat shell 提供联邦群组与 DM、Hub 主壳、实体身份与 EVFS 文件�
 | PUT | `G/:groupId/char/:charname/frequency` | 角色发言频率 |
 | POST / DELETE | `G/:groupId/plugin` · `G/:groupId/plugin/:pluginname` | 加 / 移除插件（插件名单是节点本地 `local_plugins.json`，不入 DAG） |
 
+`PUT /api/parts/shells:chat/groups/:groupId/world` 接受 `{ worldname, channelId?, scope? }`：`scope: "group"` 设置群默认世界（不需要频道）；`scope: "channel"` 或省略时设置频道世界，省略 channelId 回退默认/首个可打开频道。worldname 为 null 清除对应绑定，清除频道绑定后继承群默认世界。`GET …/state` 的 meta.worldBindings 返回 `{ world, channelWorlds }` 原始本机绑定。已卸载的本机世界回退内置世界，原绑定保留以便恢复或清除。
+
 会话绑定的真源是 DAG 事件（`session_char_bind` / `session_world_bind` / `session_persona_set` / `session_char_frequency_set` 等），物化为 `state.session`；上面的 HTTP 路由都是往 DAG 追加事件的薄封装。未绑定 world / persona 时 shell 用内置极小实现。
 
 ---

@@ -1027,7 +1027,14 @@
 					"name": "secondaryPages",
 					"expected": "2m52s",
 					"triggers": [
-						"src/public/parts/shells/chat/test/frontend/secondaryPages.spec.mjs"
+						"src/public/parts/shells/chat/test/frontend/secondaryPages.spec.mjs",
+						"src/public/parts/shells/chat/public/src/worldSettings.mjs",
+						"src/public/parts/shells/chat/public/src/groupSettings/**",
+						"src/public/parts/shells/chat/public/settings/**",
+						"src/public/parts/shells/chat/public/src/templates/group/settings/**",
+						"src/public/parts/shells/chat/public/hub/{chatConfig,channelContextMenu}.mjs",
+						"src/public/parts/shells/chat/public/hub/stream/worldView.mjs",
+						"src/public/parts/shells/chat/public/src/templates/hub/{config,nav}/**"
 					]
 				},
 				{

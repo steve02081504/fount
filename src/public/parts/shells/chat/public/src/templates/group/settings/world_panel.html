@@ -1,0 +1,20 @@
+<section class="card card-border bg-base-100 p-4 space-y-4">
+	<div>
+		<h2 class="font-semibold" data-i18n="chat.group.settings.page.worlds.title"></h2>
+		<p class="text-sm opacity-60" data-i18n="chat.group.settings.page.worlds.description"></p>
+	</div>
+	<div class="space-y-2">
+		<label class="label" for="${prefix}-group"><span class="label-text" data-i18n="chat.group.settings.page.worlds.groupDefault"></span></label>
+		<select id="${prefix}-group" data-world-group user-content class="select select-bordered w-full"></select>
+		<button type="button" data-world-save-group class="btn btn-sm btn-primary" data-i18n="chat.group.settings.page.worlds.saveGroup"></button>
+	</div>
+	<div class="space-y-2 border-t border-base-300 pt-4">
+		<label class="label" for="${prefix}-channel"><span class="label-text" data-i18n="chat.group.settings.page.worlds.channel"></span></label>
+		<select id="${prefix}-channel" data-world-channel user-content class="select select-bordered w-full"></select>
+		<label class="label" for="${prefix}-override"><span class="label-text" data-i18n="chat.group.settings.page.worlds.override"></span></label>
+		<select id="${prefix}-override" data-world-override user-content class="select select-bordered w-full"></select>
+		<p class="text-sm opacity-60" data-world-effective user-content aria-live="polite"></p>
+		<p class="alert alert-warning text-sm hidden" data-world-status user-content role="status"></p>
+		<button type="button" data-world-save-channel class="btn btn-sm btn-primary" data-i18n="chat.group.settings.page.worlds.saveChannel"></button>
+	</div>
+</section>

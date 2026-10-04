@@ -9,10 +9,7 @@ ${phase === 'loading' ? `
 	<select id="character-chat-persona" class="select select-bordered select-sm w-full">${personaOptions}</select>
 </div>
 ${canEditWorldPlugins ? `
-<div class="character-chat-field">
-	<label data-i18n="chat.sidebar.world.title"></label>
-	<select id="character-chat-world" class="select select-bordered select-sm w-full">${worldOptions}</select>
-</div>
+<div data-chat-worlds></div>
 <div class="character-chat-field">
 	<label data-i18n="chat.sidebar.pluginList.title"></label>
 	<div id="character-chat-plugins-active" class="character-chat-plugin-tags">${

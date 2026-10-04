@@ -1779,7 +1779,24 @@
 						"updateFailed": "グループ権限の更新に失敗しました: ${error}",
 						"updated": "グループ権限を更新しました"
 					},
-					"discoverySectionTitle": "フェデレーション検出"
+					"discoverySectionTitle": "フェデレーション検出",
+					"worlds": {
+						"title": "ワールド",
+						"description": "個別のワールド設定がないチャンネルにはグループの既定値が適用されます。個別設定を解除すると既定値を継承します。この設定はこのノードのチャットセッションにのみ適用されます。",
+						"groupDefault": "グループの既定ワールド",
+						"builtin": "内蔵ワールド（追加設定なし）",
+						"inherit": "グループの既定値を継承",
+						"channel": "チャンネル",
+						"override": "チャンネルのワールド",
+						"saveGroup": "グループの既定値を保存",
+						"saveChannel": "チャンネルのワールドを保存",
+						"usingOverride": "現在の適用設定：${name}（チャンネルの個別設定）",
+						"usingInherited": "現在の適用設定：${name}（グループから継承）",
+						"usingBuiltin": "現在の適用設定：内蔵ワールド（追加設定なし）",
+						"unavailable": "ワールド「${name}」はこのノードにインストールされていません。ローカル実行では内蔵ワールドを使用します。リモートの設定は該当ノードが提供します。別のワールドを選択するか設定を解除してください。",
+						"noChannels": "チャンネルがなくてもグループの既定値は設定できます",
+						"channelSettings": "ワールド設定"
+					}
 				},
 				"pinContext": "最上位近傍 (±N 近傍)",
 				"rtcBudget": "RTC 接続の予算",

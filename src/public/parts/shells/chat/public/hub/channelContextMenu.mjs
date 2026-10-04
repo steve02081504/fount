@@ -90,6 +90,11 @@ export async function showChannelContextMenu(event, channelId) {
 
 	const closeOnce = bindDismissOnDocumentInteraction(dismissChannelContextMenu)
 
+	menu.querySelector('.channel-menu-world')?.addEventListener('click', () => {
+		closeOnce()
+		window.open(`/parts/shells:chat/settings/?channelId=${encodeURIComponent(channelId)}#settings:${encodeURIComponent(groupId)}:worlds`, '_blank', 'noopener')
+	})
+
 	menu.querySelector('.channel-menu-notify')?.addEventListener('click', () => {
 		closeOnce()
 		void openChannelNotifyPrefsDialog(groupId, channelId)

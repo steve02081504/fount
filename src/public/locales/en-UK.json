@@ -1779,7 +1779,24 @@
 						"updateFailed": "Failed to update group permissions: ${error}",
 						"updated": "Group permissions updated"
 					},
-					"discoverySectionTitle": "Federated discovery"
+					"discoverySectionTitle": "Federated discovery",
+					"worlds": {
+						"title": "Worlds",
+						"description": "The group default applies to channels without their own world binding. A channel can override it; clearing the override restores inheritance. These settings affect chat sessions on this node only.",
+						"groupDefault": "Group default world",
+						"builtin": "Built-in world (no extra context)",
+						"inherit": "Inherit group default",
+						"channel": "Channel",
+						"override": "Channel world",
+						"saveGroup": "Save group default",
+						"saveChannel": "Save channel world",
+						"usingOverride": "Currently active: ${name} (channel override)",
+						"usingInherited": "Currently active: ${name} (inherited from group)",
+						"usingBuiltin": "Currently active: built-in world (no extra context)",
+						"unavailable": "World \"${name}\" is not installed on this node. Local execution uses the built-in world; remote bindings are still provided by their node. Choose another world or clear the binding.",
+						"noChannels": "No channels yet; you can still set the group default",
+						"channelSettings": "World settings"
+					}
 				},
 				"pinContext": "Pinned neighbourhood (±N neighbours)",
 				"rtcBudget": "RTC connection budget",

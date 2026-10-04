@@ -32,6 +32,7 @@
 		<div class="grid grid-cols-1 items-start gap-6 md:grid-cols-[14rem_minmax(0,1fr)] lg:gap-8">
 			<nav class="settings-nav flex flex-row items-center gap-1 overflow-x-auto rounded-box border border-base-300 bg-base-200 p-2 shadow-sm md:sticky md:top-4 md:flex-col md:items-stretch md:overflow-visible scrollbar-none" role="tablist" aria-orientation="vertical" data-i18n-aria-label="chat.group.settings.page.navigationLabel">
 				<button type="button" role="tab" class="settings-nav-item tab-active" id="nav-general" data-section="general" aria-controls="panel-general" aria-selected="true" tabindex="0" data-i18n="chat.group.settings.page.tabs.general"></button>
+				<button type="button" role="tab" class="settings-nav-item hidden" id="nav-worlds" data-section="worlds" aria-controls="panel-worlds" aria-selected="false" tabindex="-1" data-i18n="chat.group.settings.page.worlds.title"></button>
 				<button type="button" role="tab" class="settings-nav-item hidden" id="nav-members" data-section="members" aria-controls="panel-members" aria-selected="false" tabindex="-1" data-i18n="chat.group.settings.page.tabs.members"></button>
 				<button type="button" role="tab" class="settings-nav-item hidden" id="nav-permissions" data-section="permissions" aria-controls="panel-permissions" aria-selected="false" tabindex="-1" data-i18n="chat.group.settings.page.tabs.permissions"></button>
 				<button type="button" role="tab" class="settings-nav-item hidden" id="nav-group-perms" data-section="group-perms" aria-controls="panel-group-perms" aria-selected="false" tabindex="-1" data-i18n="chat.group.settings.page.tabs.groupPermissions"></button>
@@ -57,6 +58,10 @@
 							<div id="members-list" class="space-y-2"></div>
 						</div>
 					</div>
+				</div>
+
+				<div id="panel-worlds" class="settings-panel hidden" role="tabpanel" aria-labelledby="nav-worlds" hidden>
+					<div id="group-worlds-container"></div>
 				</div>
 
 				<div id="panel-emojis" class="settings-panel hidden" role="tabpanel" aria-labelledby="nav-emojis" hidden>

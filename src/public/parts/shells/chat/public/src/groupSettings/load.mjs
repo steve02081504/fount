@@ -2,6 +2,7 @@ import { activateSection } from '../../settings/nav.mjs'
 import { initAuditLogPanel } from '../auditLogPanel.mjs'
 import { getGroupState } from '../endpoints/groupCore.mjs'
 import { resolveViewerSettingsCapabilities } from '../groupViewerPermissions.mjs'
+import { mountWorldSettings } from '../worldSettings.mjs'
 
 
 import { renderArchiveStoragePanel } from './archiveTab.mjs'
@@ -30,6 +31,10 @@ export async function loadGroupSettings(context, groupId) {
 	const section = parseSettingsSectionFromHash()
 	if (section) activateSection(section, { scroll: false })
 	await renderGroupSettings(context)
+	if (context.settingsCaps.isMember)
+		await mountWorldSettings(document.getElementById('group-worlds-container'), groupId, {
+			state, channelId: new URLSearchParams(window.location.search).get('channelId'),
+		})
 	await renderArchiveStoragePanel(context)
 	await renderPermissionSettings(context)
 	await renderGroupPermissionsPanel(context)
@@ -45,6 +50,7 @@ export async function updateSettingsTabsVisibility(context) {
 
 	const sectionVisibility = {
 		general: true,
+		worlds: context.settingsCaps.isMember,
 		members: context.settingsCaps.isMember,
 		emojis: context.settingsCaps.isMember,
 		permissions: context.settingsCaps.canManageRoles,

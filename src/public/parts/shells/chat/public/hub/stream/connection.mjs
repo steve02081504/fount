@@ -16,6 +16,7 @@ import { handleProfileUpdateWire } from './handlers/profileUpdate.mjs'
 import { handleVolatileStreamWire } from './handlers/streamChunk.mjs'
 import { attachGroupWebSocketErrorHandlers } from './outbound.mjs'
 import { resetVolatileStreamState } from './volatileSlots.mjs'
+import { handleWorldSetWire } from './worldView.mjs'
 
 const RECONNECT_BASE_MS = 1000
 const RECONNECT_MAX_MS = 30_000
@@ -101,6 +102,7 @@ function handleGroupHubWireMessage(wireMessage, channelId) {
 	if (!wireMessage?.type) return
 	if (handleProfileUpdateWire(wireMessage)) return
 	if (handleChannelMessageWire(wireMessage, channelId)) return
+	if (handleWorldSetWire(wireMessage)) return
 	handleDagEventWire(wireMessage, channelId)
 }
 

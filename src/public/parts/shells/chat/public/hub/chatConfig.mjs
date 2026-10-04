@@ -16,9 +16,9 @@ import {
 	removeGroupPlugin,
 	setGroupCharFrequency,
 	setGroupPersona,
-	setGroupWorld,
 } from '../src/endpoints/groupCore.mjs'
 import { mountTemplate, renderTemplateAsHtmlString } from '../src/templates.mjs'
+import { mountWorldSettings } from '../src/worldSettings.mjs'
 
 import { showOverlayNotice } from './core/overlayModal.mjs'
 import { store } from './core/state.mjs'
@@ -60,9 +60,8 @@ export async function mountChatConfigPanel(groupId, channelId = null, options = 
 	await mountTemplate(host, 'hub/config/panel_host', { phase: 'loading' })
 
 	try {
-		const [initial, worlds, personas, allPlugins, activePlugins] = await Promise.all([
+		const [initial, personas, allPlugins, activePlugins] = await Promise.all([
 			getGroupChatConfig(groupId),
-			getPartList('worlds').catch(() => []),
 			getPartList('personas').catch(() => []),
 			getPartList('plugins').catch(() => []),
 			listGroupPlugins(groupId),
@@ -75,7 +74,6 @@ export async function mountChatConfigPanel(groupId, channelId = null, options = 
 			freqMap: initial?.frequency_data || {},
 			canEditWorldPlugins,
 			personaOptions: await buildSelectOptions(personas, initial?.personaname || ''),
-			worldOptions: await buildSelectOptions(worlds, initial?.worldname || ''),
 			availablePlugins: allPlugins.filter(p => !activePlugins.includes(p)),
 		})
 
@@ -99,15 +97,8 @@ export async function mountChatConfigPanel(groupId, channelId = null, options = 
 		})
 
 		if (canEditWorldPlugins) {
-			document.getElementById('character-chat-world')?.addEventListener('change', async (changeEvent) => {
-				const v = changeEvent.target.value || null
-				try {
-					await setGroupWorld(groupId, v, channelId)
-					showOverlayNotice('success', '', 'chat.hub.config.saved')
-				}
-				catch (error) {
-					handleError('chat.hub.config.saveFailed')(error)
-				}
+			await mountWorldSettings(host.querySelector('[data-chat-worlds]'), groupId, {
+				channelId,
 			})
 
 			document.getElementById('character-chat-plugin-add-button')?.addEventListener('click', async () => {
