@@ -77,6 +77,29 @@ export function localesMissingProvider(block) {
 }
 
 /**
+ * 递归收集 JSON 里的 null 叶子路径（`a.b[0].c` 形式）。
+ * @param {unknown} node JSON 节点
+ * @param {string} prefix 路径前缀
+ * @param {string[]} out 收集表
+ * @returns {string[]} null 叶子路径
+ */
+export function collectNullPaths(node, prefix = '', out = []) {
+	if (node === null) {
+		out.push(prefix || '(root)')
+		return out
+	}
+	if (Array.isArray(node)) {
+		node.forEach((item, index) => collectNullPaths(item, `${prefix}[${index}]`, out))
+		return out
+	}
+	if (node && typeof node === 'object')
+		for (const [key, value] of Object.entries(node))
+			collectNullPaths(value, prefix ? `${prefix}.${key}` : key, out)
+
+	return out
+}
+
+/**
  * @param {string} url 候选 URL
  * @returns {boolean} 是否 http(s)
  */
@@ -191,6 +214,17 @@ export function scanLocalesData(relPath, data) {
 	}
 
 	const root = /** @type {Record<string, unknown>} */ data
+
+	// update-locales.py 翻译失败时会把字段留成 null 等下次重试；提交进仓库的 null 就是漏翻的空名/空简介
+	const nullPaths = collectNullPaths(data)
+	if (nullPaths.length) {
+		const shown = nullPaths.slice(0, 8).join(', ')
+		issues.push({
+			path: relPath,
+			message: `含 ${nullPaths.length} 处 null 叶子（本地化同步失败残留）: ${shown}${nullPaths.length > 8 ? ', …' : ''}`,
+		})
+	}
+
 	const info = /** @type {Record<string, unknown>} */ root.info
 	if (info && typeof info === 'object' && !Array.isArray(info)) {
 		const withProvider = localesWithInfoProvider(/** @type {Record<string, unknown>} */ info)

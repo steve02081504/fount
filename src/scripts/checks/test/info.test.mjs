@@ -6,6 +6,7 @@ import { assertEquals, assert } from 'https://deno.land/std/assert/mod.ts'
 
 import { REPO_ROOT } from '../../test/core/repo_root.mjs'
 import {
+	collectNullPaths,
 	hasEmojiLocaleWarning,
 	localesMissingProvider,
 	localesWithInfoProvider,
@@ -53,6 +54,21 @@ Deno.test('scanLocalesData flags info.provider and product_info gaps', () => {
 	assert(issues.some(i => i.message.includes('info 残留 provider')))
 	assert(issues.some(i => i.message.includes('product_info 缺少 provider')))
 	assertEquals(emojiMissingAvatar, true)
+})
+
+Deno.test('scanLocalesData flags null leaves left by a failed locale sync', () => {
+	const { issues } = scanLocalesData('x/locales.json', {
+		info: {
+			'en-UK': { name: 'A', avatar: 'https://example.com/a.svg' },
+			'de-DE': { name: null, avatar: 'https://example.com/a.svg', tags: ['a', null] },
+		},
+	})
+	const nullIssue = issues.find(issue => issue.message.includes('null 叶子'))
+	assert(nullIssue, '应当报告 null 叶子')
+	assert(nullIssue.message.includes('de-DE.name'), nullIssue.message)
+	assert(nullIssue.message.includes('de-DE.tags[1]'), nullIssue.message)
+	assertEquals(collectNullPaths({ a: { b: [1, null] } }), ['a.b[1]'])
+	assertEquals(collectNullPaths({ ok: 1 }), [])
 })
 
 Deno.test('scanAchievementsData collects icon urls', () => {
