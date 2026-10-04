@@ -15,7 +15,7 @@ import { messagesToText } from '../../shared/promptText.mjs'
 import { getConversation, getSubAgent, sendSubAgentMessage } from '../endpoints.mjs'
 import { attachmentList } from '../lib/attachments.mjs'
 import { CACHE_GOOD_RATIO } from '../lib/cacheBadge.mjs'
-import { formatTime } from '../lib/format.mjs'
+import { formatCachePercent, formatTime } from '../lib/format.mjs'
 import { messageBody } from '../lib/messageBody.mjs'
 import { appendMetaChips } from '../lib/metaChip.mjs'
 import { requestNavigate } from '../lib/navigationEvents.mjs'
@@ -193,7 +193,7 @@ function renderReplay(units, metrics, onChange) {
 	}))
 	const total = metrics.reduce((sum, metric) => sum + metric.total, 0)
 	const reused = metrics.reduce((sum, metric) => sum + metric.reused, 0)
-	summary.textContent = total ? geti18n('agent_studio.conversation.cache.summary', { rate: Math.round(reused / total * 100) }) : geti18n('agent_studio.conversation.cache.missing')
+	summary.textContent = total ? geti18n('agent_studio.conversation.cache.summary', { rate: formatCachePercent(reused / total) }) : geti18n('agent_studio.conversation.cache.missing')
 	paintCacheChart(chart, units, metrics)
 	renderLowRates(document.getElementById('conversationLowRates'), units, metrics, entry => {
 		slider.value = String(entry.index + 1)
@@ -235,7 +235,7 @@ function renderLowRates(container, units, metrics, onJump) {
 		round.textContent = geti18n('agent_studio.conversation.roundIndex', { index: entry.unit.round })
 		const value = document.createElement('span')
 		value.className = `badge ${entry.rate >= CACHE_GOOD_RATIO ? 'badge-success' : 'badge-error'}`
-		value.textContent = geti18n('agent_studio.conversation.cache.rate', { rate: Math.round(entry.rate * 100) })
+		value.textContent = geti18n('agent_studio.conversation.cache.rate', { rate: formatCachePercent(entry.rate) })
 		button.append(round, value)
 		button.addEventListener('click', () => onJump(entry))
 		item.append(button)
@@ -472,7 +472,7 @@ function renderTranscript(events, items, units, metrics, count) {
 		label.textContent = `${geti18n('agent_studio.conversation.roundIndex', { index: round })} · ${request?.model || generation.model || generation.charname || generation.charId || generation.id}`
 		const badge = document.createElement('span')
 		badge.className = `badge ${rate == null ? 'badge-neutral' : rate >= CACHE_GOOD_RATIO ? 'badge-success' : 'badge-error'}`
-		badge.textContent = rate == null ? geti18n('agent_studio.conversation.cache.noRate') : geti18n('agent_studio.conversation.cache.rate', { rate: Math.round(rate * 100) })
+		badge.textContent = rate == null ? geti18n('agent_studio.conversation.cache.noRate') : geti18n('agent_studio.conversation.cache.rate', { rate: formatCachePercent(rate) })
 		badge.title = geti18n('agent_studio.conversation.cache.hint')
 		head.append(label, badge)
 		if (reuse?.boundary) head.append(buildJumpButton(prompt))

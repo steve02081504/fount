@@ -5,6 +5,7 @@
  * 【关联】lib/conversationItem.mjs、lib/generationItem.mjs、views/dashboard.mjs。
  */
 import { geti18n } from '/scripts/i18n/index.mjs'
+import { formatCachePercent } from './format.mjs'
 
 /** 缓存复用率的合格阈值。 */
 export const CACHE_GOOD_RATIO = 0.6
@@ -18,7 +19,7 @@ export function createCacheBadge(rate) {
 	if (typeof rate !== 'number' || !Number.isFinite(rate)) return null
 	const badge = document.createElement('span')
 	badge.className = `badge badge-sm ${rate >= CACHE_GOOD_RATIO ? 'badge-success' : 'badge-error'}`
-	badge.textContent = geti18n('agent_studio.conversation.cache.lowest', { rate: Math.round(rate * 100) })
+	badge.textContent = geti18n('agent_studio.conversation.cache.lowest', { rate: formatCachePercent(rate) })
 	badge.title = geti18n('agent_studio.conversation.cache.hint')
 	return badge
 }

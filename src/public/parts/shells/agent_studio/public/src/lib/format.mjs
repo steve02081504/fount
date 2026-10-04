@@ -9,6 +9,15 @@
 export const DAY_MS = 24 * 60 * 60 * 1000
 
 /**
+ * 把缓存复用比例转换为百分比，保留最多三位小数并省略末尾零。
+ * @param {number} rate 缓存复用比例
+ * @returns {string} 百分比数值（不含百分号）
+ */
+export function formatCachePercent(rate) {
+	return String(Number((rate * 100).toFixed(3)))
+}
+
+/**
  * 把毫秒转换为天数（保留两位小数）。
  * @param {number} ms 毫秒
  * @returns {number} 天数
