@@ -1779,7 +1779,24 @@
 						"updateFailed": "Cập nhật quyền của nhóm không thành công: ${error}",
 						"updated": "Đã cập nhật quyền của nhóm"
 					},
-					"discoverySectionTitle": "Khám phá liên kết"
+					"discoverySectionTitle": "Khám phá liên kết",
+					"worlds": {
+						"title": "Thế giới",
+						"description": "Thế giới mặc định của nhóm áp dụng cho các kênh chưa gắn thế giới riêng. Kênh có thể ghi đè giá trị mặc định; xóa ghi đè sẽ khôi phục kế thừa. Cấu hình này chỉ ảnh hưởng đến phiên trò chuyện trên nút này.",
+						"groupDefault": "Thế giới mặc định của nhóm",
+						"builtin": "Thế giới tích hợp (không có bối cảnh bổ sung)",
+						"inherit": "Kế thừa từ nhóm",
+						"channel": "Kênh",
+						"override": "Thế giới của kênh",
+						"saveGroup": "Lưu thế giới mặc định của nhóm",
+						"saveChannel": "Lưu thế giới của kênh",
+						"usingOverride": "Đang áp dụng: ${name} (đặt riêng cho kênh)",
+						"usingInherited": "Đang áp dụng: ${name} (kế thừa từ nhóm)",
+						"usingBuiltin": "Đang áp dụng: thế giới tích hợp (không có bối cảnh bổ sung)",
+						"unavailable": "Thế giới “${name}” chưa được cài trên nút này. Khi chạy cục bộ sẽ dùng thế giới tích hợp; liên kết từ xa vẫn do nút tương ứng cung cấp. Hãy chọn thế giới khác hoặc xóa liên kết.",
+						"noChannels": "Chưa có kênh nào; vẫn có thể đặt thế giới mặc định của nhóm",
+						"channelSettings": "Cài đặt thế giới"
+					}
 				},
 				"pinContext": "Ngữ cảnh quanh tin ghim (±N tin lân cận)",
 				"rtcBudget": "Ngân sách kết nối RTC",

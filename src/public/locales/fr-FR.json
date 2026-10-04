@@ -1779,7 +1779,24 @@
 						"updateFailed": "Échec de la mise à jour des autorisations de groupe : ${error}",
 						"updated": "Autorisations de groupe mises à jour"
 					},
-					"discoverySectionTitle": "Découverte fédérée"
+					"discoverySectionTitle": "Découverte fédérée",
+					"worlds": {
+						"title": "Mondes",
+						"description": "Le monde par défaut du groupe s’applique aux canaux sans monde propre. Un canal peut le remplacer ; retirer ce remplacement rétablit l’héritage. Ce réglage ne concerne que les sessions de chat de ce nœud.",
+						"groupDefault": "Monde par défaut du groupe",
+						"builtin": "Monde intégré (sans contexte supplémentaire)",
+						"inherit": "Hériter du groupe",
+						"channel": "Canal",
+						"override": "Monde du canal",
+						"saveGroup": "Enregistrer le monde par défaut du groupe",
+						"saveChannel": "Enregistrer le monde du canal",
+						"usingOverride": "Actif : ${name} (défini sur le canal)",
+						"usingInherited": "Actif : ${name} (hérité du groupe)",
+						"usingBuiltin": "Actif : monde intégré (sans contexte supplémentaire)",
+						"unavailable": "Le monde « ${name} » n’est pas installé sur ce nœud. L’exécution locale utilise le monde intégré ; les liaisons distantes restent fournies par leur nœud. Choisissez un autre monde ou supprimez la liaison.",
+						"noChannels": "Aucun canal pour l’instant ; le monde par défaut du groupe reste configurable",
+						"channelSettings": "Réglages du monde"
+					}
 				},
 				"pinContext": "Quartier supérieur (±N voisins)",
 				"rtcBudget": "Budget connexion RTC",

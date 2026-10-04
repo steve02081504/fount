@@ -1779,7 +1779,24 @@
 						"updateFailed": "群組權限更新失敗：${error}",
 						"updated": "群組權限已更新"
 					},
-					"discoverySectionTitle": "聯邦發現"
+					"discoverySectionTitle": "聯邦發現",
+					"worlds": {
+						"title": "世界",
+						"description": "群組預設世界適用於未個別綁定世界的頻道。頻道可覆寫預設值，清除覆寫後即恢復繼承。本設定僅影響本機的聊天工作階段。",
+						"groupDefault": "群組預設世界",
+						"builtin": "內建世界（無附加設定）",
+						"inherit": "繼承群組預設世界",
+						"channel": "頻道",
+						"override": "頻道世界",
+						"saveGroup": "儲存群組預設世界",
+						"saveChannel": "儲存頻道世界",
+						"usingOverride": "目前生效：${name}（頻道個別綁定）",
+						"usingInherited": "目前生效：${name}（繼承群組預設）",
+						"usingBuiltin": "目前生效：內建世界（無附加設定）",
+						"unavailable": "本機未安裝世界「${name}」。本機執行時會改用內建世界；遠端綁定仍由對應節點提供。可改選其他世界，或清除綁定。",
+						"noChannels": "尚無頻道，仍可設定群組預設世界",
+						"channelSettings": "世界設定"
+					}
 				},
 				"pinContext": "置頂鄰域（±N 鄰帖）",
 				"rtcBudget": "RTC 連線預算",

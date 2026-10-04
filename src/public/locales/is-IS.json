@@ -1779,7 +1779,24 @@
 						"updateFailed": "Mistókst að uppfæra hópheimildir: ${error}",
 						"updated": "Hópheimildir hafa verið uppfærðar"
 					},
-					"discoverySectionTitle": "Sambandsuppgötvun"
+					"discoverySectionTitle": "Sambandsuppgötvun",
+					"worlds": {
+						"title": "Heimarnir",
+						"description": "Sjálfgefinn heimur hópsins gildir fyrir rásir sem hafa engan eigin heim. Rás getur yfirskrifað hann; sé yfirskriftinni eytt tekur erfðin við á ný. Þessi stilling hefur aðeins áhrif á spjalllotur á þessum hnút.",
+						"groupDefault": "Sjálfgefinn heimur hópsins",
+						"builtin": "Innbyggður heimur (án viðbótarsamhengis)",
+						"inherit": "Erfa frá hópnum",
+						"channel": "Rás",
+						"override": "Heimur rásar",
+						"saveGroup": "Vista sjálfgefinn heim hópsins",
+						"saveChannel": "Vista heim rásar",
+						"usingOverride": "Í gildi: ${name} (skilgreint á rásinni)",
+						"usingInherited": "Í gildi: ${name} (erft frá hópnum)",
+						"usingBuiltin": "Í gildi: innbyggður heimur (án viðbótarsamhengis)",
+						"unavailable": "Heimurinn „${name}“ er ekki uppsettur á þessum hnút. Staðbundin keyrsla notar innbyggða heiminn; fjartengingar eru áfram veittar af sínum hnút. Veldu annan heim eða fjarlægðu tenginguna.",
+						"noChannels": "Engar rásir ennþá; samt er hægt að stilla sjálfgefinn heim hópsins",
+						"channelSettings": "Stillingar heims"
+					}
 				},
 				"pinContext": "Efsta hverfi (±N nágrannar)",
 				"rtcBudget": "RTC tengingarFramvinda",

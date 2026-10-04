@@ -1779,7 +1779,24 @@
 						"updateFailed": "Bijwerken van groepsmachtigingen is mislukt: ${error}",
 						"updated": "Groepsmachtigingen bijgewerkt"
 					},
-					"discoverySectionTitle": "Federatieve detectie"
+					"discoverySectionTitle": "Federatieve detectie",
+					"worlds": {
+						"title": "Werelden",
+						"description": "De standaardwereld van de groep geldt voor kanalen zonder eigen wereld. Een kanaal kan die overschrijven; het wissen van de overschrijving herstelt de overerving. Deze instelling geldt alleen voor chatsessies op dit knooppunt.",
+						"groupDefault": "Standaardwereld van de groep",
+						"builtin": "Ingebouwde wereld (zonder extra context)",
+						"inherit": "Overnemen van de groep",
+						"channel": "Kanaal",
+						"override": "Kanaalwereld",
+						"saveGroup": "Groepsstandaard opslaan",
+						"saveChannel": "Kanaalwereld opslaan",
+						"usingOverride": "Nu actief: ${name} (ingesteld op het kanaal)",
+						"usingInherited": "Nu actief: ${name} (overgenomen van de groep)",
+						"usingBuiltin": "Nu actief: ingebouwde wereld (zonder extra context)",
+						"unavailable": "De wereld ‘${name}’ is niet op dit knooppunt geïnstalleerd. Bij lokaal gebruik wordt de ingebouwde wereld gebruikt; externe koppelingen blijven door hun eigen knooppunt verzorgd. Kies een andere wereld of wis de koppeling.",
+						"noChannels": "Nog geen kanalen; de groepsstandaard is alsnog in te stellen",
+						"channelSettings": "Wereldinstellingen"
+					}
 				},
 				"pinContext": "Buurberichten in de context (±N buren)",
 				"rtcBudget": "RTC-aansluitbudget",

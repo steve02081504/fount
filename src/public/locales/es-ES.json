@@ -1779,7 +1779,24 @@
 						"updateFailed": "No se pudieron actualizar los permisos de grupo: ${error}",
 						"updated": "Permisos de grupo actualizados"
 					},
-					"discoverySectionTitle": "Descubrimiento federado"
+					"discoverySectionTitle": "Descubrimiento federado",
+					"worlds": {
+						"title": "Mundos",
+						"description": "El mundo predeterminado del grupo se aplica a los canales que no tienen un mundo propio. Un canal puede sobrescribirlo; al quitar la sobrescritura vuelve a heredar el valor del grupo. Esta configuración solo afecta a las sesiones de chat de este nodo.",
+						"groupDefault": "Mundo predeterminado del grupo",
+						"builtin": "Mundo integrado (sin contexto adicional)",
+						"inherit": "Heredar del grupo",
+						"channel": "Canal",
+						"override": "Mundo del canal",
+						"saveGroup": "Guardar el mundo predeterminado del grupo",
+						"saveChannel": "Guardar el mundo del canal",
+						"usingOverride": "En uso: ${name} (definido en el canal)",
+						"usingInherited": "En uso: ${name} (heredado del grupo)",
+						"usingBuiltin": "En uso: mundo integrado (sin contexto adicional)",
+						"unavailable": "El mundo «${name}» no está instalado en este nodo. La ejecución local usa el mundo integrado; las vinculaciones remotas siguen a cargo de su nodo. Elige otro mundo o quita la vinculación.",
+						"noChannels": "Aún no hay canales; puedes configurar igualmente el predeterminado del grupo",
+						"channelSettings": "Ajustes del mundo"
+					}
 				},
 				"pinContext": "Barrio superior (±N vecinos)",
 				"rtcBudget": "Presupuesto de conexión RTC",

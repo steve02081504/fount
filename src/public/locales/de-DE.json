@@ -1779,7 +1779,24 @@
 						"updateFailed": "Aktualisierung der Gruppenberechtigungen fehlgeschlagen: ${error}",
 						"updated": "Gruppenberechtigungen aktualisiert"
 					},
-					"discoverySectionTitle": "Verbundentdeckung"
+					"discoverySectionTitle": "Verbundentdeckung",
+					"worlds": {
+						"title": "Welten",
+						"description": "Die Standardwelt der Gruppe gilt für Kanäle ohne eigene Weltbindung. Ein Kanal kann sie überschreiben; wird die Überschreibung entfernt, gilt wieder die geerbte Welt. Diese Einstellung betrifft nur Chat-Sitzungen auf diesem Knoten.",
+						"groupDefault": "Standardwelt der Gruppe",
+						"builtin": "Eingebaute Welt (ohne zusätzlichen Kontext)",
+						"inherit": "Von der Gruppe erben",
+						"channel": "Kanal",
+						"override": "Kanalwelt",
+						"saveGroup": "Gruppenstandard speichern",
+						"saveChannel": "Kanalwelt speichern",
+						"usingOverride": "Aktuell aktiv: ${name} (kanaleigene Überschreibung)",
+						"usingInherited": "Aktuell aktiv: ${name} (von der Gruppe geerbt)",
+						"usingBuiltin": "Aktuell aktiv: eingebaute Welt (ohne zusätzlichen Kontext)",
+						"unavailable": "Die Welt „${name}“ ist auf diesem Knoten nicht installiert. Die lokale Ausführung nutzt die eingebaute Welt; Remote-Bindungen liefert weiterhin der jeweilige Knoten. Wählen Sie eine andere Welt oder entfernen Sie die Bindung.",
+						"noChannels": "Noch keine Kanäle; der Gruppenstandard lässt sich trotzdem festlegen",
+						"channelSettings": "Welteinstellungen"
+					}
 				},
 				"pinContext": "Top-Nachbarschaft (±N Nachbarn)",
 				"rtcBudget": "RTC-Verbindungsbudget",

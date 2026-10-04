@@ -1779,7 +1779,24 @@
 						"updateFailed": "그룹 권한 업데이트에 실패했습니다: ${error}",
 						"updated": "그룹 권한이 업데이트되었습니다."
 					},
-					"discoverySectionTitle": "연합 검색"
+					"discoverySectionTitle": "연합 검색",
+					"worlds": {
+						"title": "월드",
+						"description": "그룹 기본 월드는 자체 월드가 없는 채널에 적용됩니다. 채널에서 이를 재정의할 수 있으며, 재정의를 지우면 상속으로 돌아갑니다. 이 설정은 이 노드의 채팅 세션에만 적용됩니다.",
+						"groupDefault": "그룹 기본 월드",
+						"builtin": "내장 월드(추가 설정 없음)",
+						"inherit": "그룹 기본값 상속",
+						"channel": "채널",
+						"override": "채널 월드",
+						"saveGroup": "그룹 기본 월드 저장",
+						"saveChannel": "채널 월드 저장",
+						"usingOverride": "현재 적용: ${name}(채널 개별 설정)",
+						"usingInherited": "현재 적용: ${name}(그룹에서 상속)",
+						"usingBuiltin": "현재 적용: 내장 월드(추가 설정 없음)",
+						"unavailable": "월드 “${name}”이(가) 이 노드에 설치되어 있지 않습니다. 로컬 실행에는 내장 월드가 쓰이고, 원격 바인딩은 해당 노드가 계속 제공합니다. 다른 월드를 고르거나 바인딩을 지우세요.",
+						"noChannels": "아직 채널이 없어도 그룹 기본 월드는 설정할 수 있습니다",
+						"channelSettings": "월드 설정"
+					}
 				},
 				"pinContext": "상위 이웃(±N 이웃)",
 				"rtcBudget": "RTC 연결 예산",
