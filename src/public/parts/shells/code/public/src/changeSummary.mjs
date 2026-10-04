@@ -61,7 +61,8 @@ function showDiffPreview(anchor, edit) {
 		return span
 	}))
 	preview.append(heading, body)
-	document.body.appendChild(preview)
+	const landmark = document.querySelector('main') || document.body
+	landmark.appendChild(preview)
 	const rect = anchor.getBoundingClientRect()
 	preview.style.left = `${Math.max(8, Math.min(rect.left, innerWidth - preview.offsetWidth - 8))}px`
 	preview.style.top = `${Math.max(8, Math.min(rect.bottom + 4, innerHeight - preview.offsetHeight - 8))}px`
