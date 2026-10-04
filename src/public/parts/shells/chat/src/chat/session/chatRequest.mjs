@@ -16,6 +16,7 @@ import { getPartInfo } from '../../../../../../../scripts/locale.mjs'
 import { getUserByUsername } from '../../../../../../../server/auth/index.mjs'
 import { resolveDeclaredOwnerEntityHash } from '../../entity/master.mjs'
 import { ensureLocalAgentEntityHash } from '../../entity/member.mjs'
+import { getProfile } from '../../entity/profile.mjs'
 import { resolveActiveMemberKeyForLocalUser } from '../../group/access.mjs'
 import { readChannelMessagesForUser } from '../../group/queries.mjs'
 import {
@@ -29,6 +30,7 @@ import { hydrateLogContextFromSidecar, sidecarChannelForEntry } from '../lib/con
 import { getOperatorEntityHash } from '../lib/replica.mjs'
 import { isGreetingEntry } from '../logEntryTypes.mjs'
 
+import { BUILTIN_PERSONA } from './builtinParts.mjs'
 import {
 	aggregateChannelActivity,
 	ownerUsernameForMember,
@@ -71,7 +73,10 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 	const playerPart = timeSlice.player
 	const userinfo = await getPartInfo(playerPart, partLocales) || {}
 	const charinfo = charPart ? await getPartInfo(charPart, partLocales) || {} : {}
-	const UserCharname = userinfo.name || timeSlice.player_id || replicaUsername
+	const UserUid = await getOperatorEntityHash(replicaUsername)
+	const operatorProfile = await getProfile(UserUid, replicaUsername, { locales: partLocales })
+	const UserCharname = (playerPart !== BUILTIN_PERSONA && userinfo.name)
+		|| operatorProfile.name || replicaUsername
 
 	const { state } = await getState(replicaUsername, groupId)
 	const member_roles = await resolveViewerRoles(state, { charname, replicaUsername, groupId })
@@ -169,7 +174,6 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 		.sort((a, b) => b[1] - a[1])
 		.map(([locale]) => locale), ...localhostLocales])]
 
-	const UserUid = await getOperatorEntityHash(replicaUsername)
 	const memberId = charname
 		? await ensureLocalAgentEntityHash(replicaUsername, charname)
 		: UserUid
