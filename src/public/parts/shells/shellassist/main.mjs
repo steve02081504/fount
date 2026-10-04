@@ -56,8 +56,14 @@ export default {
 					chat_scoped_char_memory: data.chat_scoped_char_memories?.[data.charname] || {},
 					chat_scoped_char_memories: undefined
 				})
+				if (!result) return result
+				const { renderMarkdownAnsi } = await import('../../../../scripts/markdown_ansi.mjs')
 				return {
 					...result,
+					content_for_show: renderMarkdownAnsi(result.content_for_show ?? result.content ?? '', {
+						width: data.terminal_width,
+						ansi: data.ansi,
+					}),
 					chat_scoped_char_memories: {
 						...data.chat_scoped_char_memories,
 						[data.charname]: result.chat_scoped_char_memory

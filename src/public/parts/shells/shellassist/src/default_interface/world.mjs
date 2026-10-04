@@ -31,7 +31,7 @@ export function GetShellWorld(shelltype) {
 						text: [
 							{
 								content: `\
-你现在被内嵌于${args.UserCharname}的${shelltype}终端中，其不支持markdown语法或html。
+你现在被内嵌于${args.UserCharname}的${shelltype}终端中，其能渲染markdown（表格、列表、代码块、强调等），但不支持html与图片。
 在这里你的回复应当如同使用手机或电脑的人类一般
 在shell环境中：
 - 禁止动作、神态、环境描写，模仿聊天软件内的方式。

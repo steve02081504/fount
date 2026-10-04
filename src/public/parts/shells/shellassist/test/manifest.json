@@ -5,6 +5,8 @@
 			"src/scripts/test/{deno/serial.mjs,node/boot.mjs}"
 		],
 		"shellBackend": [
+			"src/server/ipc_server/**",
+			"src/scripts/markdown_ansi.mjs",
 			"src/public/parts/shells/shellassist/src/**",
 			"src/public/parts/shells/shellassist/{main.mjs,fount.json,locales.json}",
 			"src/scripts/test/shellLoadProbe.mjs"

@@ -114,8 +114,9 @@ ${args.screen}
 		})
 		const Charname = (await getPartInfo(char_API, localhostLocales)).name
 		const AIsuggestion = await char_API.interfaces.chat.GetReply({
+			username,
 			supported_functions: {
-				markdown: false,
+				markdown: true,
 				mathjax: false,
 				html: false,
 				unsafe_html: false,
