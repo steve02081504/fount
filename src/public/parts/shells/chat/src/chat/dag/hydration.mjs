@@ -306,7 +306,7 @@ async function buildChatLogEntryFromDagMessage(
 	const content = line.content || {}
 	const entry = new chatLogEntry_t()
 	const entryId = chatExtensionOf(content)?.entryId
-	entry.id = entryId || crypto.randomUUID()
+	entry.id = entryId || line.eventId
 
 	const resolvedShow = resolveDagMessageText(content, decryptUnavailableText, contentRefPlaceholder, contentRefMismatchText) ?? ''
 	const decryptUnavailableFallback = line.decryptView ? decryptUnavailableText : ''

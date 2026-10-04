@@ -8,6 +8,36 @@ import { createCharBoot, createIntegrationBoot } from '../harness.mjs'
 
 const CHAR_FIXTURE = 'on_message_yes'
 
+Deno.test('chat request uses operator profile and preserves message identity across tool rounds', async () => {
+	const username = `cc-round-${crypto.randomUUID().slice(0, 8)}`
+	const { ensureServer } = createCharBoot({ username, chars: CHAR_FIXTURE })
+	await ensureServer()
+	const { getChatClient } = await import('../../src/api/client/index.mjs')
+	const { getChatRequest } = await import('../../src/chat/session/chatRequest.mjs')
+	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
+	const { injectRoundEntries } = await import('../../src/reply/roundContext.mjs')
+	const client = await getChatClient(username)
+	await client.updateProfile({ localized: { 'zh-CN': { name: 'Operator display name' }, 'en-US': { name: 'Operator display name' } } })
+	const group = await client.createGroup({ name: 'round identity' })
+	await group.session.addChar(CHAR_FIXTURE, { deferGreeting: true })
+	await group.session.setCharReplyFrequency(CHAR_FIXTURE, 0)
+	await group.session.setPersona(null)
+	const channelId = await getDefaultChannelId(username, group.id)
+	const channel = await group.channel(channelId)
+	await channel.send('list my desktop')
+	const request = await getChatRequest(group.id, CHAR_FIXTURE, channelId, { replicaUsername: username })
+	assertEquals(request.UserCharname, 'Operator display name')
+	const prompt = { chat_log: [...request.chat_log, { id: 'tool-result', role: 'tool', content: 'desktop listing' }] }
+	const original = prompt.chat_log.find(entry => entry.content === 'list my desktop')
+	assert(original?.id)
+	await injectRoundEntries(request, prompt)
+	assertEquals(prompt.chat_log.filter(entry => entry.content === 'list my desktop').length, 1)
+	assertEquals((await request.Update()).chat_log.find(entry => entry.content === 'list my desktop').id, original.id)
+	await channel.send('list my desktop')
+	await injectRoundEntries(request, prompt)
+	assertEquals(prompt.chat_log.filter(entry => entry.content === 'list my desktop').length, 2)
+})
+
 Deno.test('agent ChatClient channel.send attributes char in view-log', async () => {
 	const username = `cc-send-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createCharBoot({ username, chars: CHAR_FIXTURE })
