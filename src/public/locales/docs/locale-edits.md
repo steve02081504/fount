@@ -57,6 +57,13 @@ Rail uses the object key (`title` / `aria-label`); section header uses `` `${key
 
 Frontend: `data-i18n` on the key; put the icon in `innerHTML` / children — object locales only set `title` / `aria-label`, they do not wipe markup. Do **not** add `textContent`/`innerHTML` to icon-button locales.
 
+## Part `locales.json` info blocks
+
+A part's own `locales.json` carries `info.<locale>` blocks (`name` / `avatar` / `description` / `description_markdown` / `version` / `author` / `home_page` / `tags`); `update-locales.py` translates them like any other locale file. Two rules a reviewer has to hold:
+
+- **Never commit a `null` leaf.** A failed translation is written as `null` for the next run, and `null` renders as an empty plugin name for that user — `fount test checks:info` fails a part `locales.json` that still has one.
+- **The bolded name is the locale's own name.** Give the plugin a name in the locale's language and repeat that exact string inside `**…**` in `description_markdown`; a translated `name` sitting next to an English bolded name (or the reverse) is sync residue, not a deliberate brand choice.
+
 ## Native-quality review loop
 
 Machine-checkable residue is enforced by `fount test checks:i18n_copy` — null / empty leaves, product name written `font`, a space inside a compound, a lost newline or edge-whitespace frame, punctuation jammed against the wrong side, zero-width junk, doubled spaces, and letters from a writing system the locale does not use. Fix the copy, never the check, and add a rule there when a new class shows up.
