@@ -57,7 +57,7 @@ def dump_locale(tree):
 	return json.dumps(tree, ensure_ascii=False, indent="\t") + "\n"
 
 
-PROMPT_TEMPLATE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "locale_copy_review_prompt.md")
+PROMPT_TEMPLATE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "src", "public", "locales", "docs", "locale_copy_review_prompt.md")
 LANGUAGE_NAMES = {
 	"ar-SA": "Arabic", "de-DE": "German", "en-UK": "British English", "es-ES": "Spanish (Spain)",
 	"fr-FR": "French", "hi-IN": "Hindi", "is-IS": "Icelandic", "it-IT": "Italian", "ja-JP": "Japanese",

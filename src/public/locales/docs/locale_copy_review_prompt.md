@@ -85,7 +85,7 @@ When done, reply with: rows reviewed, values changed, and five examples as key -
 
 **ko-KR** — Follow the file's speech level consistently; button labels use the file's convention. Check spacing carefully (no space before a colon), fix particle errors and translationese. Prefer native words over Sino-Korean where a Korean UI would.
 
-**zh-TW** — Taiwan conventions: Traditional glyphs and Taiwan vocabulary (網路, 設定, 資料, 螢幕, 專案, 預設, 支援, 貼文, 帳號, 登入, 登出). Never leave a Simplified-only glyph or a Simplified wording. Prefer full-width punctuation matching the file, and never simply copy zh-CN wording.
+**zh-TW** — Taiwan conventions: Traditional glyphs and the Taiwan vocabulary the locale file itself uses (its own terms for network, settings, data, screen, project, default, support, post, account, log in and log out — never a Mainland term). Never leave a Simplified-only glyph or a Simplified wording. Prefer full-width punctuation matching the file, and never simply copy zh-CN wording.
 
 **ja-JP** — Natural Japanese UI conventions: follow the file's politeness level and punctuation; unify katakana loanword forms across the file; avoid literal Chinese-influenced kanji compounds and prefer kana where a native UI would.
 

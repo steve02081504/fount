@@ -192,7 +192,7 @@
 			],
 			"triggers": [
 				".esh/commands/locale_copy_sample.py",
-				".esh/commands/locale_copy_review_prompt.md"
+				"src/public/locales/docs/locale_copy_review_prompt.md"
 			]
 		},
 		{
