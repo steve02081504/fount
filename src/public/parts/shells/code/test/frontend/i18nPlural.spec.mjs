@@ -28,8 +28,9 @@ const LOCALE_FORMS = [
 	{ locale: 'de-DE', cases: [[1, '1 Zeile'], [3, '3 Zeilen']] },
 	{ locale: 'ru-RU', cases: [[1, '1 строка'], [3, '3 строк'], [11, '11 строк'], [21, '21 строка']] },
 	{ locale: 'uk-UA', cases: [[1, '1 рядок'], [3, '3 рядків'], [11, '11 рядків'], [22, '22 рядків']] },
-	{ locale: 'ar-SA', cases: [[1, 'سطر واحد'], [3, '3 أسطر']] },
+	{ locale: 'ar-SA', cases: [[1, '1 سطر'], [3, '3 أسطر']] },
 	{ locale: 'is-IS', cases: [[1, '1 lína'], [3, '3 línur']] },
+	{ locale: 'emoji', cases: [[1, '📄 1 🔢'], [3, '📄 3 🔢']] },
 ]
 
 test('the editor line count picks the language\'s own number form through the i18n switch', async ({ modulePage }) => {

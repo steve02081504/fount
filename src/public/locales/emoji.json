@@ -6805,7 +6805,7 @@
 			"changes": "✏️",
 			"unsaved": "✏️❗",
 			"externalChange": "📄🌍🔄⚠️",
-			"lines": "${count} 🔢",
+			"lines": "📄 ${count} 🔢",
 			"discardConfirm": "📄💾❗ 🗑️❓ ${path}",
 			"editorLabel": "📝✏️",
 			"editedFiles": "✏️ ${count} 📄",
