@@ -6815,7 +6815,7 @@
 				"switch": "count",
 				"default": "${count} regels",
 				"cases": {
-					"1": "1 regel"
+					"1": "${count} regel"
 				}
 			},
 			"discardConfirm": "\"${path}\" heeft niet-opgeslagen wijzigingen. Sluiten en weggooien?",

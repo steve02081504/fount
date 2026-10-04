@@ -6809,7 +6809,7 @@
 				"switch": "count",
 				"default": "${count} línur",
 				"cases": {
-					"1": "1 lína"
+					"1": "${count} lína"
 				}
 			},
 			"discardConfirm": "„${path}“ er með óvistaðar breytingar. Loka og henda þeim?",

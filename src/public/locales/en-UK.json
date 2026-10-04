@@ -6809,7 +6809,7 @@
 				"switch": "count",
 				"default": "${count} lines",
 				"cases": {
-					"count === 1": "1 line"
+					"count === 1": "${count} line"
 				}
 			},
 			"discardConfirm": "Discard unsaved changes in “${path}” and close it?",

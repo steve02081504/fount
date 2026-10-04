@@ -26,6 +26,7 @@ export const phases = [
 			'stream_render.spec.mjs',
 			'session_runtime.spec.mjs',
 			'attachments.spec.mjs',
+			'i18nPlural.spec.mjs',
 		],
 	},
 ]

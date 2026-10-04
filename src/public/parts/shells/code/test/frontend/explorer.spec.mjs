@@ -18,6 +18,8 @@ test('file tree opens a file tab, previews changes, saves, and returns to the ag
 		await expect(page.locator('#tab-strip .code-tab')).toHaveCount(2)
 		await expect(page.locator('#code-editor')).toBeVisible()
 		await expect(page.locator('#code-editor-input')).toHaveValue('first\nsecond\n')
+		// 行数由 i18n 文案自己插值（`${count} 行`）：尾随换行也算一行
+		await expect(page.locator('#code-editor-status')).toHaveText('3 行')
 		await page.locator('#code-editor-input').fill('first\nchanged\n')
 		await expect(page.locator('#code-editor-summary')).toContainText('+1')
 		await expect(page.locator('#code-editor-summary')).toContainText('−1')

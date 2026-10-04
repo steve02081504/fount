@@ -6815,7 +6815,7 @@
 				"switch": "count",
 				"default": "${count} lignes",
 				"cases": {
-					"1": "1 ligne"
+					"1": "${count} ligne"
 				}
 			},
 			"discardConfirm": "« ${path} » comporte des modifications non enregistrées. Fermer et les abandonner ?",

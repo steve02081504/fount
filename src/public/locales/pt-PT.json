@@ -6815,7 +6815,7 @@
 				"switch": "count",
 				"default": "${count} linhas",
 				"cases": {
-					"1": "1 linha"
+					"1": "${count} linha"
 				}
 			},
 			"discardConfirm": "«${path}» tem alterações por guardar. Fechar e descartá-las?",

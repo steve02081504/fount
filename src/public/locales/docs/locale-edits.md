@@ -74,9 +74,19 @@ Never "fix" a red run by leaving the key out or by keeping the previous copy: a 
 
 A locale whose code has no Google target silently lands on its **base** language: `lzh` is not a Google code, so `get_compatible_code('lzh')` returns `zh` and every new key is written as **Simplified Chinese** — no `null`, no warning, checks green. `emoji` is the one target with an explicit branch (it copies the source); everything else unsupported copies a real language. Landed that way once already: the batch that added `code.explorer` / `captcha` / `invitation-required` shipped all 49 leaves byte-identical to zh-CN in `lzh`, and the same defect reached `emoji.json` (fixed in `83a1c67c`) and the world-settings block (fixed in `20bd269b`). When a sync touches a locale with no Google target, diff it against its base language and rewrite the new leaves by hand; `checks:i18n_copy` cannot see this class.
 
-## A `${count}` in the source fixes the word order everywhere
+## Counts belong in the source leaf, not glued on by the caller
 
-`zh-CN` owns the placeholder set ([i18n_keys](../../scripts/checks/AGENTS.md) `placeholder_mismatch`), so a locale cannot introduce `${count}` to reach its own word order. Where the source string is a bare unit (`code.explorer.lines` = `行`) and the code renders `` `${count} ${geti18n(…)}` ``, a language that inflects the noun after the numeral has no shape that reads right on `1` — fix the call site to pass the count in, not the locale.
+`zh-CN` owns the placeholder set ([i18n_keys](../../scripts/checks/AGENTS.md) `placeholder_mismatch`), so no locale can introduce `${count}` on its own to reach its own word order. A source leaf that is a bare unit while the caller renders `` `${count} ${geti18n(…)}` `` therefore leaves every inflecting language no shape that reads right on `1` — `code.explorer.lines` shipped as `行` and the editor status printed `1 строк`. Put the count in the source leaf (`${count} 行`) and pass it from the call site (`geti18n('code.explorer.lines', { count })`); then a language that needs number forms writes a switch leaf beside the plain-string locales, which `i18n_keys` accepts as the same leaf kind:
+
+```json
+"lines": {
+	"switch": "count",
+	"default": "${count} строк",
+	"cases": { "count % 10 === 1 && count % 100 !== 11": "${count} строка" }
+}
+```
+
+`cases` keys are matched exactly first, then each key is evaluated as a JS expression in the params scope and must return strictly `true` ([switch_value.mjs](../../pages/scripts/i18n/switch_value.mjs)), so a plural rule is a condition rather than an enumeration. After a leaf gains a placeholder, regenerate `src/decl/locale_data.ts` with `.esh/commands/update-locales.py`'s `generate_locale_data_ts` (the declaration is a function of the reference locale) — the new `params` type is what keeps a call site from forgetting the count. `emoji.json` needs the `${count}` too: the placeholder check compares every locale against `zh-CN`.
 
 ## Native-quality review loop
 

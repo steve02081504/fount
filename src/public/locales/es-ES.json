@@ -6815,7 +6815,7 @@
 				"switch": "count",
 				"default": "${count} líneas",
 				"cases": {
-					"1": "1 línea"
+					"1": "${count} línea"
 				}
 			},
 			"discardConfirm": "«${path}» tiene cambios sin guardar. ¿Cerrarlo y descartarlos?",

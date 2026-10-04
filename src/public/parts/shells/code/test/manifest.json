@@ -253,6 +253,15 @@
 						"src/public/parts/shells/code/test/frontend/attachments.spec.mjs",
 						"src/public/parts/shells/code/public/**"
 					]
+				},
+				{
+					"name": "i18n_plural",
+					"expected": "20s",
+					"triggers": [
+						"src/public/parts/shells/code/test/frontend/i18nPlural.spec.mjs",
+						"src/public/parts/shells/code/test/frontend/phases.mjs",
+						"src/public/parts/shells/code/public/**"
+					]
 				}
 			],
 			"run": [
