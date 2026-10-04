@@ -11,12 +11,14 @@ import {
 	getReputationExportAllowlist,
 	setReputationExportAllowlist,
 } from 'npm:@steve02081504/fount-p2p'
+import { on_shutdown } from 'npm:on-shutdown'
 
 import { KILL_GRACE_MS, SHELL_DEFAULT_TIMEOUT_MS } from '../../../../../scripts/shell_guard.mjs'
 import { events } from '../../../../../server/events.mjs'
 import { loadPart } from '../../../../../server/parts_loader.mjs'
 import { loadShellData, saveShellData } from '../../../../../server/setting_loader.mjs'
 
+import { createCallbackSessionClient } from './callback_sessions.mjs'
 import { createScopedLinkRoom } from './link_room.mjs'
 
 const SETTINGS_KEY = 'settings'
@@ -218,6 +220,7 @@ class RemoteSubfountExecutor extends SubfountExecutor {
 			const start = Date.now()
 			const entry = {
 				resolve, reject, start,
+				peerId: this.peerId,
 				pid: null,
 				timedOut: false,
 				requestTimer: null,
@@ -261,7 +264,7 @@ class RemoteSubfountExecutor extends SubfountExecutor {
 						}, KILL_GRACE_MS)
 					}
 					else {
-						// 未拿到 pid（旧客户端或未及回传）：放弃等待，如实告知远端可能仍在运行。
+						// 进程编号尚未回传：放弃等待，如实告知远端可能仍在运行。
 						this.manager.clearPending(requestId)
 						resolve({ code: null, signal: null, stdout: '', stderr: '', stdall: '', timedOut: true, killed: false, noPid: true, elapsedMs: Date.now() - start })
 					}
@@ -317,6 +320,17 @@ class UserSubfountManager {
 		 * @type {Map<string, Array<Function>>}
 		 */
 		this.actions = new Map()
+		this.callbackSessions = createCallbackSessionClient({
+			/**
+			 * 处理会话回调。
+			 * @param {object} message 会话控制消息。
+			 * @param {string} peerId 已认证来源设备。
+			 * @returns {any} 操作结果。
+			 */
+			send: (message, peerId) => this.room.sendToPeer(peerId, 'callback_session', message).then(sent => {
+				if (!sent) throw new Error('Subfount link unavailable')
+			}),
+		})
 		/**
 		 * 向分机推送 infra 策略
 		 * @type {((payload: { infra: boolean }, peerId?: string) => Promise<void>) | null}
@@ -370,6 +384,7 @@ class UserSubfountManager {
 	async initRoom() {
 		try {
 			if (this.room) {
+				this.callbackSessions.dispose()
 				this.revokeAllReputationExports()
 				this.authenticatedPeers.clear()
 				void this.room.leave()
@@ -387,7 +402,7 @@ class UserSubfountManager {
 			await this.room.start()
 			this.repSyncDispose = attachReputationSyncWire()
 
-			const actionNames = ['authenticate', 'device_info', 'response', 'run_code', 'callback', 'shell_exec', 'shell_spawned', 'kill', 'infra']
+			const actionNames = ['authenticate', 'device_info', 'response', 'run_code', 'callback', 'callback_session', 'callback_session_event', 'shell_exec', 'shell_spawned', 'kill', 'infra']
 			for (const name of actionNames)
 				this.actions.set(name, this.room.makeAction(name))
 
@@ -401,6 +416,11 @@ class UserSubfountManager {
 
 			// 处理对等端离开
 			this.room.onPeerLeave((peerId) => {
+				this.callbackSessions.disconnect(peerId)
+				for (const [id, pending] of this.pendingRequests) if (pending.peerId === peerId) {
+					this.clearPending(id)
+					pending.reject(new Error('Subfount disconnected'))
+				}
 				this.authenticatedPeers.delete(peerId)
 				revokeReputationExportFrom(peerId)
 				const subfount = this.getSubfountByRemotePeerId(peerId)
@@ -463,7 +483,7 @@ class UserSubfountManager {
 			const handleResponse = (data, peerId) => {
 				if (!this.authenticatedPeers.has(peerId) || !data.requestId) return
 				const pending = this.pendingRequests.get(data.requestId)
-				if (pending) {
+				if (pending && pending.peerId === peerId) {
 					this.clearPending(data.requestId)
 					if (data.isError) {
 						const error = new Error(data.payload?.error || data.payload || 'Unknown error')
@@ -485,7 +505,7 @@ class UserSubfountManager {
 			const handleShellSpawned = (data, peerId) => {
 				if (!this.authenticatedPeers.has(peerId) || !data?.requestId) return
 				const pending = this.pendingRequests.get(data.requestId)
-				if (pending) pending.pid = data.pid ?? null
+				if (pending?.peerId === peerId) pending.pid = data.pid ?? null
 			}
 
 			// 处理响应和 shell 执行消息
@@ -498,6 +518,9 @@ class UserSubfountManager {
 			getCallback((data, peerId) => {
 				if (!this.authenticatedPeers.has(peerId)) return
 				this.handleCallback(data)
+			})
+			this.actions.get('callback_session_event')[1]((frame, peerId) => {
+				if (this.authenticatedPeers.has(peerId)) this.callbackSessions.receive(frame, peerId)
 			})
 
 		}
@@ -597,6 +620,7 @@ class UserSubfountManager {
 	 * @param {string|null} deviceId - 设备 ID（可选）。
 	 */
 	updateSubfountConnection(subfount, peerId, deviceId = null) {
+		if (subfount.peerId && subfount.peerId !== peerId) this.callbackSessions.disconnect(subfount.peerId)
 		subfount.peerId = peerId
 		subfount.isConnected = true
 		if (deviceId) subfount.deviceId = deviceId
@@ -800,11 +824,14 @@ class UserSubfountManager {
 // Map<username, UserSubfountManager>
 const userManagers = new Map()
 
+on_shutdown(() => { for (const manager of userManagers.values()) manager.callbackSessions.dispose() })
+
 // 清理事件处理程序
 events.on('BeforeUserDeleted', ({ username }) => {
 	const manager = userManagers.get(username)
 	if (manager) {
 		manager.revokeAllReputationExports()
+		manager.callbackSessions.dispose()
 		manager.authenticatedPeers.clear()
 		if (manager.room)
 			void manager.room.leave()
@@ -842,6 +869,7 @@ export function getUserManager(username, hostPeerId = null) {
 	// 如果传入了 hostPeerId 且与现有不符，直接清理旧的
 	if (hostPeerId && existing && existing.hostPeerId !== hostPeerId) {
 		existing.revokeAllReputationExports()
+		existing.callbackSessions.dispose()
 		existing.authenticatedPeers.clear()
 		if (existing.room)
 			void existing.room.leave()
@@ -902,6 +930,21 @@ export async function executeCodeOnSubfount(username, subfountId, script, callba
 		payload: { script, callbackInfo },
 		requestTimeoutMs: hostOptions.requestTimeoutMs,
 	})
+}
+
+/**
+ * 在已认证分机上开启长期回调会话，初始化结束后事件与租约继续独立存活。
+ * @param {string} username 用户名。
+ * @param {number} subfountId 分机 ID。
+ * @param {string} script 初始化代码，注入 callbackSession（emit、signal、onDispose、close）。
+ * @param {object} [options] onEvent、onClose、signal。
+ * @returns {{id: string, ready: Promise<any>, dispose: () => void}} 立即可取消的会话句柄。
+ */
+export function openCallbackSessionOnSubfount(username, subfountId, script, options = {}) {
+	const manager = userManagers.get(username)
+	const subfount = manager?.getSubfount(subfountId)
+	if (!subfount?.isConnected || !subfount.peerId) throw Object.assign(new Error('Subfount disconnected'), { reason: 'disconnected' })
+	return manager.callbackSessions.open(subfount.peerId, script, options)
 }
 
 /**
