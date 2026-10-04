@@ -130,22 +130,25 @@ Deno.test({
 	const host = await launchNode({
 		username: 'subfounts-remote-host',
 		apiKey,
-		loadParts: ['shells/subfounts'],
+		loadParts: ['shells/subfounts', 'shells/code'],
 		p2p: true,
 		captureOutput: true,
 	})
 
 	const clientRoot = await Deno.makeTempDir({ prefix: 'fount_subfount_client_' })
 	const clientNodeDir = join(clientRoot, 'node')
+	const remoteWorkspace = join(clientRoot, 'workspace')
 	const readyFile = join(clientRoot, 'ready.txt')
 	const infoFile = join(clientRoot, 'client_info.json')
 	const stageFile = join(clientRoot, 'stage.txt')
 	await mkdir(clientNodeDir, { recursive: true })
+	await mkdir(remoteWorkspace, { recursive: true })
 
 	/** @type {import('node:child_process').ChildProcess | null} */
 	let client = null
 	/** @type {string} */
 	let clientOutput = ''
+	let watchSocket
 	try {
 		assert(host.p2pRelayUrl, 'host launchNode must expose p2pRelayUrl')
 
@@ -217,6 +220,46 @@ Deno.test({
 		const execBody = JSON.parse(execRaw)
 		assertEquals(execBody.result?.result, 42)
 
+		// 远程自动更新：浏览器 WS → 主机通用会话 → 独立分机文件监听 → 回传事件。
+		const frames = []
+		watchSocket = new WebSocket(`${host.baseUrl.replace(/^http/, 'ws')}/ws/parts/shells:code/workspace/watch?fount-apikey=${encodeURIComponent(host.apiKey)}`)
+		/**
+		 * 处理测试会话消息。
+		 * @param {MessageEvent} event 回调参数。
+		 * @returns {any} 操作结果。
+		 */
+		watchSocket.onmessage = event => frames.push(JSON.parse(event.data))
+		await waitFor(10000, async () => watchSocket.readyState === WebSocket.OPEN)
+		watchSocket.send(JSON.stringify({ machine: String(remote.id), workdir: remoteWorkspace, paths: [''] }))
+		await waitFor(15000, async () => frames.some(frame => frame.type === 'ready'))
+		const write = await subfountFetch(host, 'POST', '/execute', {
+			subfountId: remote.id,
+			script: `const fs = await import('node:fs/promises'); await fs.writeFile(${JSON.stringify(join(remoteWorkspace, 'remote-note.txt'))}, 'changed'); return true`,
+		})
+		assertEquals(write.status, 200)
+		await write.arrayBuffer()
+		await waitFor(10000, async () => frames.some(frame => frame.type === 'change'))
+		watchSocket.close()
+		await waitFor(10000, async () => {
+			const removed = await subfountFetch(host, 'POST', '/execute', {
+				subfountId: remote.id,
+				script: `const fs = await import('node:fs/promises'); try { await fs.rm(${JSON.stringify(remoteWorkspace)}, { recursive: true, force: true }); return true } catch { return false }`,
+			})
+			return (await removed.json()).result?.result === true
+		})
+		await mkdir(remoteWorkspace, { recursive: true })
+		const resumedFrames = []
+		watchSocket = new WebSocket(`${host.baseUrl.replace(/^http/, 'ws')}/ws/parts/shells:code/workspace/watch?fount-apikey=${encodeURIComponent(host.apiKey)}`)
+		/**
+		 * 收集重新订阅的远程工作区帧。
+		 * @param {MessageEvent} event 服务端消息。
+		 * @returns {number} 已收集的帧数。
+		 */
+		watchSocket.onmessage = event => resumedFrames.push(JSON.parse(event.data))
+		await waitFor(10000, async () => watchSocket.readyState === WebSocket.OPEN)
+		watchSocket.send(JSON.stringify({ machine: String(remote.id), workdir: remoteWorkspace, paths: [''] }))
+		await waitFor(15000, async () => resumedFrames.some(frame => frame.type === 'ready'))
+
 		// A second RPC must be able to cancel an in-flight run_code on the same peer.
 		const executionId = crypto.randomUUID()
 		const remoteShell = Deno.build.os === 'windows' ? 'powershell' : 'sh'
@@ -247,8 +290,13 @@ Deno.test({
 			}).then(response => response.arrayBuffer())
 			await running
 		}
+		await stopClient(client)
+		client = null
+		await waitFor(40000, async () => resumedFrames.some(frame => frame.type === 'disconnected'))
+		assert(resumedFrames.some(frame => ['disconnected', 'cancelled', 'heartbeat-timeout'].includes(frame.reason)))
 	}
 	finally {
+		watchSocket?.close()
 		if (client) {
 			if (client.exitCode != null && client.exitCode !== 0)
 				console.error(`subfount client exited ${client.exitCode}\n${clientOutput}`)

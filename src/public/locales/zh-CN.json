@@ -6809,7 +6809,13 @@
 			"discardConfirm": "文件「${path}」有未保存的更改。确定关闭并丢弃吗？",
 			"editorLabel": "文件编辑器",
 			"editedFiles": "已编辑 ${count} 个文件",
-			"noDiff": "此操作没有记录行级 diff"
+			"noDiff": "此操作没有记录行级 diff",
+			"connection": {
+				"connecting": "正在连接工作区自动更新…",
+				"connected": "工作区自动更新已连接",
+				"disconnected": "工作区连接已断开，正在重连；当前显示内容可能已过期",
+				"unavailable": "此工作区的自动更新不可用，请检查工作区和订阅目录"
+			}
 		}
 	},
 	"gist": {

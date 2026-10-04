@@ -34,6 +34,8 @@ import { ensureLinkToNode, getLink, getLinkRegistry } from 'npm:@steve02081504/f
 import { initTestP2pNode } from 'fount/scripts/test/node/p2p_node.mjs'
 import { testSignalingFromRelayUrls } from 'fount/scripts/test/node/p2p_signaling.mjs'
 
+import { openLocalCallbackSession } from '../../../src/local_callback_session.mjs'
+
 const relayUrl = process.env.FOUNT_TEST_P2P_RELAY_URL?.trim()
 const hostPeerId = process.env.FOUNT_TEST_SUBFOUNT_HOST_PEER_ID?.trim()
 const hostNodeHashHint = process.env.FOUNT_TEST_SUBFOUNT_HOST_NODE_HASH?.trim()
@@ -86,6 +88,7 @@ let hostLinkId = null
 let infraEnabled = true
 /** @type {Record<string, Function>} */
 const actions = {}
+const callbackSessions = new Map()
 
 /**
  * @param {{ infra?: boolean } | null | undefined} data 策略载荷
@@ -171,6 +174,8 @@ const [sendAuth, getAuth] = room.makeAction('authenticate')
 const [, getRunCode] = room.makeAction('run_code')
 const [sendResponse] = room.makeAction('response')
 const [, getInfra] = room.makeAction('infra')
+const [, getCallbackSession] = room.makeAction('callback_session')
+const [sendCallbackSessionEvent] = room.makeAction('callback_session_event')
 actions.sendResponse = sendResponse
 actions.sendAuth = sendAuth
 
@@ -198,6 +203,40 @@ getRunCode((message, peerId) => {
 	void handleRunCode(message, peerId)
 })
 
+// 协议对端 fixture：复用本地生产者接口，在独立进程监听真实文件；分机租约引擎另有原生测试。
+getCallbackSession((message, peerId) => {
+	if (!authenticated || peerId !== hostLinkId) return
+	const existing = callbackSessions.get(message.id)
+	if (message.op === 'cancel') { existing?.dispose(); return }
+	if (message.op === 'renew') {
+		void sendCallbackSessionEvent({ id: message.id, type: existing ? 'heartbeat' : 'end', reason: 'session-missing' }, peerId)
+		return
+	}
+	if (message.op !== 'open' || existing) return
+	let seq = 0
+	const handle = openLocalCallbackSession(async (script, context) => {
+		const { async_eval } = await import('npm:@steve02081504/async-eval')
+		const result = await async_eval(script, context)
+		if (result.error) throw result.error
+		return result.result
+	}, message.script, {
+		/**
+		* 处理测试会话消息。
+		* @param {any} data 回调参数。
+		* @returns {any} 操作结果。
+		*/
+		onEvent: data => { void sendCallbackSessionEvent({ id: message.id, type: 'event', seq: ++seq, data }, peerId) },
+		/**
+		* 处理测试会话消息。
+		* @param {string} reason 回调参数。
+		* @returns {any} 操作结果。
+		*/
+		onClose: reason => { callbackSessions.delete(message.id); void sendCallbackSessionEvent({ id: message.id, type: 'end', reason }, peerId) },
+	})
+	callbackSessions.set(message.id, handle)
+	void handle.ready.then(result => sendCallbackSessionEvent({ id: message.id, type: 'ready', result }, peerId)).catch(() => {})
+})
+
 room.onPeerJoin((peerId) => {
 	void markStage(`peer-join:${peerId}`)
 	if (!authenticated && sendAuth && hostLinkId == null) {
@@ -207,5 +246,6 @@ room.onPeerJoin((peerId) => {
 })
 
 process.on('SIGTERM', () => {
+	for (const handle of callbackSessions.values()) handle.dispose()
 	void room?.leave().finally(() => process.exit(0))
 })

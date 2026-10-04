@@ -138,7 +138,9 @@
 					"triggers": [
 						"src/public/parts/shells/code/test/frontend/explorer.spec.mjs",
 						"src/public/parts/shells/code/public/**",
-						"src/public/parts/shells/code/src/{endpoints,workspace_files}.mjs"
+						"src/public/parts/shells/code/src/{endpoints,workspace_files,workspace_watch}.mjs",
+						"src/public/parts/plugins/file-operations/src/target.mjs",
+						"src/public/parts/shells/subfounts/src/**"
 					]
 				},
 				{

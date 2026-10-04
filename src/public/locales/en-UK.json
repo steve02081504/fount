@@ -6815,7 +6815,13 @@
 			"discardConfirm": "Discard unsaved changes in “${path}” and close it?",
 			"editorLabel": "File editor",
 			"editedFiles": "Edited ${count} files",
-			"noDiff": "No line diff was recorded for this edit"
+			"noDiff": "No line diff was recorded for this edit",
+			"connection": {
+				"connecting": "Connecting to workspace updates…",
+				"connected": "Workspace updates connected",
+				"disconnected": "Workspace disconnected. Reconnecting; displayed files may be out of date.",
+				"unavailable": "Automatic updates are unavailable. Check the workspace and subscribed directories."
+			}
 		}
 	},
 	"gist": {

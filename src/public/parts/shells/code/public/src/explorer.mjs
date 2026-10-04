@@ -10,6 +10,7 @@ import { renderTabs, saveTabPrefs, syncCodeUrl } from './tabs.mjs'
 const tree = document.getElementById('code-explorer-tree')
 const sidebar = document.getElementById('code-explorer')
 const workspaceLabel = document.getElementById('code-explorer-workspace')
+const connectionStatus = document.getElementById('code-explorer-connection')
 const editor = document.getElementById('code-editor')
 const input = document.getElementById('code-editor-input')
 const lines = document.getElementById('code-editor-lines')
@@ -31,6 +32,42 @@ const directoryCache = new Map()
 let treeRevision = 0
 let fileRevision = 0
 let diffVisible = false
+/** 当前的工作区变化订阅（key 标识工作区与监听目录集合）。 @type {{key: string, stop: (() => void)|null}|null} */
+let watchSubscription = null
+let watchState = 'connecting'
+let refreshPending = false
+let refreshing = false
+
+/** 绘制工作区的自动刷新连接状态；断线时保留已有树与编辑内容。 */
+function paintWatchState() {
+	const key = `code.explorer.connection.${watchState}`
+	connectionStatus.hidden = watchState === 'connected' || !watchSubscription?.stop
+	connectionStatus.dataset.i18n = key
+	connectionStatus.textContent = geti18n(key)
+}
+
+/**
+ * 让自动更新范围跟上界面：已展开目录加上已打开文件所在目录。
+ * @param {object} workspace - 目标工作区。
+ * @returns {string[]} 排序后的工作区相对目录。
+ */
+function watchedDirectories(workspace) {
+	const openFileDirs = store.tabs
+		.filter(tab => tab.type === 'file' && tab.workspaceId === workspace.id)
+		.map(tab => tab.id.includes('/') ? tab.id.slice(0, tab.id.lastIndexOf('/')) : '')
+	return [...new Set(['', ...expanded.get(workspace.id) || [], ...openFileDirs])].sort()
+}
+
+/** 合并连续通知，避免网络较慢时多次刷新互相覆盖。 */
+async function scheduleWatchRefresh() {
+	refreshPending = true
+	if (refreshing) return
+	refreshing = true
+	try {
+		while (refreshPending) { refreshPending = false; await refreshOpenFiles() }
+	}
+	finally { refreshing = false }
+}
 
 /**
  * @param {object|null} [tab] - Active or requested tab.
@@ -83,6 +120,8 @@ function setSidebarVisible(visible) {
 
 /** 翻译和工作区状态就绪后初始化控件一次。 @returns {void} */
 export function initExplorer() {
+	window.addEventListener('pagehide', () => { watchSubscription?.stop?.(); watchSubscription = null })
+	window.addEventListener('pageshow', event => { if (event.persisted) void refreshExplorer({ clear: true }) })
 	setSidebarVisible(localStorage.getItem('code.explorer.visible') !== 'false' && matchMedia('(min-width: 851px)').matches)
 	window.addEventListener('code-workspace-change', () => void refreshExplorer({ workspaceOverride: store.workspace }))
 	toggle.addEventListener('click', () => setSidebarVisible(sidebar.hidden))
@@ -123,6 +162,24 @@ export function initExplorer() {
  */
 export async function refreshExplorer({ clear = false, workspaceOverride = null } = {}) {
 	const workspace = workspaceOverride || workspaceFor()
+	// 监听范围 = 已展开目录 + 已打开文件的父目录；范围或工作区变化时重订阅
+	const target = workspace && { machine: String(workspace.machine ?? '0'), workdir: workspace.path }
+	const directories = workspace ? watchedDirectories(workspace) : []
+	const watchKey = [target?.machine, target?.workdir, ...directories].join('\0')
+	if (watchSubscription?.key !== watchKey) {
+		watchSubscription?.stop?.()
+		watchState = 'connecting'
+		watchSubscription = { key: watchKey, stop: null }
+		if (workspace) watchSubscription.stop = api.watchWorkspace(target, directories, () => {
+			if (watchSubscription?.key === watchKey) void scheduleWatchRefresh()
+		}, state => {
+			if (watchSubscription?.key !== watchKey) return
+			// 重连期间维持断线提示，直到新订阅 ready。
+			if (state !== 'connecting' || watchState !== 'disconnected') watchState = state
+			paintWatchState()
+		})
+		paintWatchState()
+	}
 	const revision = ++treeRevision
 	workspaceLabel.textContent = workspace?.name || workspace?.path || geti18n('code.workspaces.none')
 	if (!workspace) {
@@ -135,6 +192,7 @@ export async function refreshExplorer({ clear = false, workspaceOverride = null 
 
 /** 页面语言改变后重画编辑器与文件树的本地化文案。 @returns {void} */
 export function rerenderExplorer() {
+	paintWatchState()
 	const tab = activeTab()
 	if (tab?.type === 'file') paintEditor(tab)
 	void refreshExplorer()
@@ -170,7 +228,8 @@ async function paintDirectory(workspace, path, container, depth, revision) {
 		}
 		catch (error) {
 			if (revision === treeRevision) container.replaceChildren(note('code.explorer.loadFailed'))
-			console.error('code explorer: directory failed', error)
+			// 404 表示目录被外部删除或移动：树上的提示行已经说明了状态，再报 console.error 只会污染页面诊断
+			if (error?.http_code !== 404) console.error('code explorer: directory failed', error)
 			return
 		}
 	
@@ -210,6 +269,7 @@ async function paintDirectory(workspace, path, container, depth, revision) {
 				else { paths.add(entry.path); void paintDirectory(workspace, entry.path, children, depth + 1, treeRevision) }
 				row.setAttribute('aria-expanded', String(paths.has(entry.path)))
 				arrow.textContent = paths.has(entry.path) ? '⌄' : '›'
+				void refreshExplorer()
 			})
 			wrap.appendChild(children)
 		}
@@ -393,10 +453,11 @@ export async function refreshOpenFiles() {
 	await Promise.all(store.tabs.filter(tab => tab.type === 'file').map(async tab => {
 		const key = tabKeyOf(tab)
 		const buffer = buffers.get(key)
-		if (!buffer) return
+		if (!buffer || buffer.saving) return
 		try {
+			const version = buffer.version
 			const result = await api.readWorkspaceFile(fileTarget(tab), tab.id)
-			if (result.version === buffer.version) return
+			if (buffer.saving || buffer.version !== version || result.version === buffer.version) return
 			if (buffer.content !== buffer.base) buffer.external = true
 			else { buffer.content = result.content; buffer.base = result.content; buffer.version = result.version }
 			if (store.activeTabKey === key) paintEditor(tab)

@@ -6,6 +6,8 @@ import { httpError } from '../../../../../scripts/http_error.mjs'
 import { authenticate, getUserByReq } from '../../../../../server/auth/index.mjs'
 import { createTargetExecutor } from '../../../plugins/file-operations/src/target.mjs'
 
+import { workspaceWatchScript } from './workspace_watch.mjs'
+
 /**
  * 从请求参数解析目标工作区（machine 字符串化，"0" = 本机）。
  * @param {{machine?: string|number, workdir?: string, workspace?: string}} source - 请求数据。
@@ -108,11 +110,75 @@ function workspaceFileVersion(bytes) {
 }
 
 /**
- * 注册工作区文件树及编辑器读写端点。
+ * 注册工作区文件树、编辑器读写端点及文件变化订阅。
  * @param {import('npm:express').Router} router - Shell router.
  * @returns {void} No return value.
  */
 export function setWorkspaceFileEndpoints(router) {
+	// 工作区文件变化订阅：前端提交要监听的目录，服务端只报告「有变化」，由前端重新读取
+	router.ws('/ws/parts/shells\\:code/workspace/watch', authenticate, (ws, req) => {
+		const { username } = getUserByReq(req)
+		let subscription
+		let closed = false, subscribed = false
+		/**
+		 * 发送一帧（连接已关闭时忽略）。
+		 * @param {string} type - 帧类型。
+		 * @param {string} reason 结束原因。
+		 * @returns {void}
+		 */
+		const send = (type, reason) => { if (!closed && ws.readyState === 1) ws.send(JSON.stringify({ type, reason })) }
+		let lastPong = Date.now()
+		ws.on('pong', () => { lastPong = Date.now() })
+		const heartbeat = setInterval(() => {
+			if (Date.now() - lastPong > 30000) { ws.terminate(); return }
+			if (ws.readyState === 1) { ws.ping(); send('heartbeat') }
+		}, 10000)
+		ws.on('close', () => {
+			closed = true
+			clearInterval(heartbeat)
+			subscription?.dispose()
+		})
+		ws.on('message', async raw => {
+			if (subscribed) return
+			subscribed = true
+			try {
+				const data = JSON.parse(String(raw))
+				const target = parseWorkdir(data)
+				if (!target.path || !Array.isArray(data.paths) || data.paths.length > 128) throw httpError(400, 'Invalid workspace watch request')
+				const paths = data.paths.map(path => workspaceRelativePath(path, { allowEmpty: true }))
+				const executor = createTargetExecutor(username, { machine: target.machine, workdir: target.path })
+				subscription = executor.openCallbackSession(workspaceWatchScript({ workdir: target.path, paths }), {
+					/**
+					 * 处理会话回调。
+					 * @param {object} frame 会话事件帧。
+					 * @returns {any} 操作结果。
+					 */
+					onEvent: frame => { if (frame?.type === 'change') send('change') },
+					/**
+					 * 处理会话回调。
+					 * @param {string} reason 结束原因。
+					 * @returns {any} 操作结果。
+					 */
+					onClose: reason => {
+						if (closed) return
+						const permanent = /setup-error: (Invalid workspace-relative|Path escapes workspace|Too many watched|Workspace unavailable|Workspace watch unavailable)/.test(reason)
+						send(permanent ? 'unavailable' : 'disconnected', reason)
+						ws.close(permanent ? 1008 : 1013, 'Workspace subscription interrupted')
+					},
+				})
+				await subscription.ready
+				if (closed) { subscription.dispose(); return }
+				send('ready')
+			}
+			catch (error) {
+				if (closed || ws.readyState !== 1) return
+				const permanent = error.http_code === 400 || error instanceof SyntaxError
+				send(permanent ? 'unavailable' : 'disconnected', error.reason || 'setup-error')
+				ws.close(permanent ? 1008 : 1013, 'Workspace watch unavailable')
+			}
+		})
+	})
+
 	// 工作区文件树（仅返回工作区相对路径；嵌套目录按需加载）
 	router.get('/api/parts/shells\\:code/workspace/directory', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)

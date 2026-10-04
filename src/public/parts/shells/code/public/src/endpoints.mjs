@@ -14,7 +14,8 @@ async function requestJson(url, options) {
 	const response = await fetch(url, options)
 	if (!response.ok) {
 		const text = await response.text().catch(() => '')
-		throw new Error(`${response.status} ${response.statusText}${text ? `: ${text}` : ''}`)
+		// 与后端 `httpError` 一致地带上状态码，调用方才能区分「不存在」和真正的失败
+		throw Object.assign(new Error(`${response.status} ${response.statusText}${text ? `: ${text}` : ''}`), { http_code: response.status })
 	}
 	return response.json()
 }
@@ -384,4 +385,47 @@ export async function getSubAgents(chatId) {
  */
 export async function getAsyncTasks(chatId) {
 	return requestJson(`${API_BASE}/async-tasks?chatId=${encodeURIComponent(chatId)}`)
+}
+
+/**
+ * 订阅目标工作区变化；断线后重建订阅，ready 时全量刷新以补齐漏掉的变化。
+ * @param {{machine: string, workdir: string}} target - 工作区目标。
+ * @param {string[]} paths - 工作区相对目录列表（含根目录 `''`）。
+ * @param {() => void} onChange - 服务端报告变化时的刷新回调。
+ * @param {(state: string) => void} [onState] 连接、断线或不支持状态。
+ * @returns {(() => void)|null} 取消订阅；工作区不支持监听时为 null。
+ */
+export function watchWorkspace(target, paths, onChange, onState = () => {}) {
+	let socket, retry, watchdog, lastFrame = Date.now(), stopped = false
+	/** 建立（或重建）订阅连接。 @returns {void} */
+	const connect = () => {
+		if (stopped) return
+		onState('connecting')
+		lastFrame = Date.now()
+		const current = new WebSocket(`${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}/ws/parts/shells:code/workspace/watch`)
+		socket = current
+		watchdog = setInterval(() => { if (Date.now() - lastFrame > 30000) current.close() }, 5000)
+		/** @returns {void} 认证通过后提交订阅范围。 */
+		current.onopen = () => current.send(JSON.stringify({ ...target, paths }))
+		/** @param {MessageEvent} event - 服务端帧。 */
+		current.onmessage = event => {
+			let frame
+			try { frame = JSON.parse(event.data) } catch { return }
+			lastFrame = Date.now()
+			if (frame.type === 'ready') onState('connected')
+			if (frame.type === 'disconnected') onState('disconnected')
+			if (frame.type === 'unavailable') onState('unavailable')
+			if (frame.type === 'change' || frame.type === 'ready') onChange()
+		}
+		// 1008 = 服务端判定该工作区不可监听，重连没有意义
+		/** @param {CloseEvent} event - 关闭原因。 */
+		current.onclose = event => {
+			clearInterval(watchdog)
+			if (stopped || current !== socket) return
+			onState(event.code === 1008 ? 'unavailable' : 'disconnected')
+			if (event.code !== 1008) retry = setTimeout(connect, 1500)
+		}
+	}
+	connect()
+	return () => { stopped = true; clearTimeout(retry); clearInterval(watchdog); socket?.close() }
 }

@@ -17,7 +17,8 @@ import { available, shell_exec_map } from 'npm:@steve02081504/exec'
 
 import { execShellWithTimeout, KILL_GRACE_MS, SHELL_DEFAULT_TIMEOUT_MS } from '../../../../../scripts/shell_guard.mjs'
 import { parseAttrs } from '../../../shells/chat/src/tags/index.mjs'
-import { executeCodeOnSubfount, executeShellOnSubfount, getAllSubfounts } from '../../../shells/subfounts/src/api.mjs'
+import { executeCodeOnSubfount, executeShellOnSubfount, getAllSubfounts, openCallbackSessionOnSubfount } from '../../../shells/subfounts/src/api.mjs'
+import { openLocalCallbackSession } from '../../../shells/subfounts/src/local_callback_session.mjs'
 
 import { remoteJsStreamScript, remoteShellStopScript, remoteShellStreamScript, withRemoteStreamSink } from './remote_stream.mjs'
 import { findWindowsBash, mapWindowsPath, resolveNativePath } from './windows_paths.mjs'
@@ -60,6 +61,7 @@ function withWriteLock(key, fn) {
 /**
  * 统一目标执行器。
  * @typedef {object} targetExecutor_t
+ * @property {(script: string, options?: import('../../../shells/subfounts/src/callback_sessions.mjs').CallbackSessionOptions) => import('../../../shells/subfounts/src/callback_sessions.mjs').CallbackSessionHandle} openCallbackSession - 长期回调会话；初始化注入 callbackSession，支持事件、取消和资源释放。
  * @property {(shell: string|null, code: string, options?: {timeoutMs?: number|null, onOutput?: (stream: 'stdout'|'stderr', data: string) => void, callbackPartpath?: string, onSpawn?: Function, onStop?: (stop: () => Promise<void>) => void}) => Promise<any>} execShell - 执行 shell（shell 为 null 时按目标机器默认 shell）；`options.timeoutMs` 覆盖默认超时（null 表示不限时），结果附 `timedOut` / `elapsedMs`。本机 `onOutput` 直接流式回调；远程需同时给 `callbackPartpath`（主机侧实现 `interfaces.subfount.RemoteCallBack` 的 part）以经回调通道流式回显。`onSpawn` 收到本机进程（供终止），`onStop` 收到「请求终止该次执行」的异步函数（本机传进程、远程登记取消标记）。
  * @property {(codeOrFn: string|Function, ...args: any[]) => Promise<any>} execJs - 执行 JS（返回 EvalResult.result）；函数经参数注入序列化，字符串原样执行。
  * @property {(code: string, timeoutMs: number|null, streamOptions?: {onOutput?: (stream: 'stdout'|'stderr', data: string) => void, callbackPartpath?: string}) => Promise<any>} [execJsWithTimeout] - 远程执行 JS 并放宽请求超时（仅远程执行器实现）；给 `onOutput` + `callbackPartpath` 时流式回显 console 输出。
@@ -237,6 +239,17 @@ function createLocalExecutor(target) {
 	 */
 	const abs = p => resolveNativePath(p, cwd)
 	return {
+		/**
+		 * 处理会话回调。
+		 * @param {string} script 初始化脚本。
+		 * @param {object} options 事件回调与取消选项。
+		 * @returns {any} 操作结果。
+		 */
+		openCallbackSession: (script, options) => openLocalCallbackSession(async (code, context) => {
+			const result = await async_eval(code, context)
+			if (result.error) throw result.error
+			return result.result
+		}, script, options),
 		/**
 		 * 执行 shell 命令（shell 为 null 时用 exec 默认 shell），支持超时杀进程树。
 		 * @param {string|null} shell - shell 名。
@@ -447,6 +460,13 @@ function createRemoteExecutor(username, target) {
 		))
 	}
 	return {
+		/**
+		 * 处理会话回调。
+		 * @param {string} script 初始化脚本。
+		 * @param {object} options 事件回调与取消选项。
+		 * @returns {any} 操作结果。
+		 */
+		openCallbackSession: (script, options) => openCallbackSessionOnSubfount(username, machine, script, options),
 		/**
 		 * 执行 shell 命令（shell 为 null 时由目标机器 exec 决定默认），超时由主机经 pid + kill 控制。
 		 * 传入 `onOutput` + `callbackPartpath` 时经回调通道流式回显（分机侧自行超时杀进程树）。
