@@ -34,6 +34,36 @@ export function commonPrefixLength(a, b) {
 }
 
 /**
+ * 将实际出站快照的公共前缀映射到展示正文；无法定位的正文不宣称复用。
+ * @param {object} current 本轮请求
+ * @param {object} previous 上轮请求
+ * @param {string[]} blocks 展示正文
+ * @returns {number[] | null} 各正文的复用长度，无快照时返回 null
+ */
+export function snapshotReuseLengths(current, previous, blocks) {
+	if (typeof current?.snapshot !== 'string' || typeof previous?.snapshot !== 'string') return null
+	const prefix = commonPrefixLength(current.snapshot, comparableText(previous))
+	let cursor = 0
+	return blocks.map(text => {
+		if (!text) return 0
+		const encoded = JSON.stringify(text).slice(1, -1)
+		const start = current.snapshot.indexOf(encoded, cursor)
+		if (start < 0) return 0
+		cursor = start + encoded.length
+		const available = Math.max(0, prefix - start)
+		if (available >= encoded.length) return text.length
+		let length = 0
+		let offset = 0
+		for (const character of text) {
+			offset += JSON.stringify(character).slice(1, -1).length
+			if (offset > available) break
+			length += character.length
+		}
+		return length
+	})
+}
+
+/**
  * JSON 快照末尾的容器闭合符不会是下一轮追加消息的前缀。
  * @param {object} request 请求
  * @returns {string} 可比较的前缀

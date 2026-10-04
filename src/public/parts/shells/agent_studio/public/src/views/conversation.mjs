@@ -10,7 +10,7 @@ import { onServerEvent } from '/scripts/endpoints/server_events.mjs'
 
 import { replayDialogue } from '../../shared/dialogueReplay.mjs'
 import { generationRoundSpan } from '../../shared/generationChain.mjs'
-import { commonPrefixLength, estimatePromptCache } from '../../shared/promptCache.mjs'
+import { commonPrefixLength, estimatePromptCache, snapshotReuseLengths } from '../../shared/promptCache.mjs'
 import { messagesToText } from '../../shared/promptText.mjs'
 import { getConversation, getSubAgent, sendSubAgentMessage } from '../endpoints.mjs'
 import { attachmentList } from '../lib/attachments.mjs'
@@ -428,6 +428,9 @@ function computeReuse(request, previous) {
 		if (index < blocks.length - 1) remaining -= 1
 	}
 	while (reusedLengths.length < blocks.length) reusedLengths.push(0)
+	const snapshotLengths = snapshotReuseLengths(request, previous, blocks.map(block => block.text))
+	if (snapshotLengths)
+		for (const [index, length] of snapshotLengths.entries()) reusedLengths[index] = Math.min(reusedLengths[index], length)
 	const changed = reusedLengths.findIndex((length, index) => length < blocks[index].text.length)
 	return { reusedLengths, boundary: changed < 0 ? null : { kind: blocks[changed].kind, index: blocks[changed].index } }
 }

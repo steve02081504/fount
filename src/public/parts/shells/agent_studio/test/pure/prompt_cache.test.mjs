@@ -1,7 +1,26 @@
 /* global Deno */
 import { assertEquals } from 'jsr:@std/assert'
 
-import { commonPrefixLength, estimateGenerationCache, estimatePromptCache, serializeRequest } from '../../public/shared/promptCache.mjs'
+import { commonPrefixLength, estimateGenerationCache, estimatePromptCache, serializeRequest, snapshotReuseLengths } from '../../public/shared/promptCache.mjs'
+
+Deno.test('reuse highlighting respects outbound message order rather than unchanged display text', () => {
+	const previous = { snapshot: JSON.stringify({ input: [{ role: 'system', content: 'stable instruction' }, { role: 'user', content: 'hello' }] }) }
+	const current = { snapshot: JSON.stringify({ input: [{ role: 'assistant', content: 'reply' }, { role: 'system', content: 'stable instruction' }, { role: 'user', content: 'hello' }] }) }
+	assertEquals(snapshotReuseLengths(current, previous, ['stable instruction', 'hello']), [0, 0])
+	assertEquals(snapshotReuseLengths({}, {}, ['stable instruction']), null)
+})
+
+Deno.test('snapshot highlighting maps JSON escapes back to partial visible characters', () => {
+	const previous = { snapshot: JSON.stringify({ content: 'line\n"你好😀old' }) }
+	const current = { snapshot: JSON.stringify({ content: 'line\n"你好😀new' }) }
+	assertEquals(snapshotReuseLengths(current, previous, ['line\n"你好😀new']), ['line\n"你好😀'.length])
+})
+
+Deno.test('snapshot highlighting preserves a fully reused prompt when messages are appended', () => {
+	const previous = { snapshot: JSON.stringify({ input: [{ content: 'instruction' }, { content: 'hello' }] }) }
+	const current = { snapshot: JSON.stringify({ input: [{ content: 'instruction' }, { content: 'hello' }, { content: 'reply' }] }) }
+	assertEquals(snapshotReuseLengths(current, previous, ['instruction', 'hello', 'reply']), [11, 5, 0])
+})
 
 Deno.test('estimates contiguous prompt reuse across generations without claiming usage for expired snapshots', () => {
 	const rates = estimatePromptCache([
