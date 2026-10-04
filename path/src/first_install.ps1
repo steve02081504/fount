@@ -41,17 +41,7 @@
 		Write-TaskbarProgressClear
 
 		# 隐藏文件设置和desktop.ini生效
-		if ((Test-Path "$FOUNT_DIR/.git") -and (-not (Test-Path "$FOUNT_DIR/.git/desktop.ini"))) {
-			Copy-Item "$FOUNT_DIR/default/git_desktop.ini" "$FOUNT_DIR/.git/desktop.ini" -Force
-		}
-		New-InstallerDir # For data/desktop.ini
-		if (-not (Test-Path "$FOUNT_DIR/data/desktop.ini")) {
-			Copy-Item "$FOUNT_DIR/default/default_desktop.ini" "$FOUNT_DIR/data/desktop.ini" -Force -ErrorAction SilentlyContinue
-		}
-		if (-not (Test-Path "$FOUNT_DIR/node_modules/desktop.ini")) {
-			Copy-Item "$FOUNT_DIR/default/node_modules_desktop.ini" "$FOUNT_DIR/node_modules/desktop.ini" -Force -ErrorAction SilentlyContinue
-		}
-		Set-FountFileAttributes
+		Initialize-FountDesktopIni
 
 		# 生成 桌面快捷方式 和 Start Menu 快捷方式
 		New-FountShortcut
