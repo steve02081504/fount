@@ -1,7 +1,7 @@
 ﻿# PowerShell 参数补全脚本，用于 fount 的 'proxy' shell。
 #
 # 使用方法:
-#   fount run <username> shells/proxy
+#   fount runas <username> shells/proxy
 #
 # 此命令无需额外参数。
 #

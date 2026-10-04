@@ -1,7 +1,7 @@
 ﻿# PowerShell 参数补全脚本，用于 fount 的 'wechatbot' shell。
 #
 # 使用方法:
-#   fount run <username> shells/wechatbot <action> [args...]
+#   fount runas <username> shells/wechatbot <action> [args...]
 #
 # 支持的 Action:
 #   - list: 列出所有已配置的 WeChat Bot。
@@ -44,25 +44,24 @@ function Get-BotList([string]$Username) {
 }
 
 try {
-	$commandElements = $CommandAst.CommandElements
-	$wechatBotIndex = $runIndex + 3
+	$wechatBotIndex = $runIndex + $(if ($CommandAst.CommandElements[$runIndex].Value -eq 'runas') { 2 } else { 1 })
 
 	$actions = @("list", "create", "delete", "config", "get-config", "get-template", "start", "stop")
 
-	switch ($commandElements.Count - ($wechatBotIndex + 1)) {
+	switch ($Argindex - ($wechatBotIndex + 1)) {
 		0 {
 			$actions | Where-Object { $_.StartsWith($WordToComplete) }
 			break
 		}
 		1 {
-			$action = $commandElements[$wechatBotIndex + 1].Value
+			$action = $CommandAst.CommandElements[$wechatBotIndex + 1].Value
 			switch ($action) {
 				{ $_ -in "delete", "config", "get-config", "start", "stop" } {
 					Get-BotList -Username $Username | Where-Object { $_.StartsWith($WordToComplete) }
 					break
 				}
 				"get-template" {
-					Get-FountPartList -parttype chars -Username $Username | Where-Object { $_.StartsWith($WordToComplete) }
+					Get-FountPartList -PartPath chars -Username $Username | Where-Object { $_.StartsWith($WordToComplete) }
 					break
 				}
 			}

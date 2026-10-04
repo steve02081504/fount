@@ -1,7 +1,7 @@
 ﻿# PowerShell 参数补全脚本，用于 fount 的 'discordbot' shell。
 #
 # 使用方法:
-#   fount run <username> shells/discordbot <action> [args...]
+#   fount runas <username> shells/discordbot <action> [args...]
 #
 # 支持的 Action:
 #   - list: 列出所有已配置的 Discord Bot。
@@ -47,15 +47,14 @@ function Get-BotList([string]$Username) {
 }
 
 try {
-	# 从命令 AST 中提取 'run <username> shells/discordbot' 之后的参数。
-	$commandElements = $CommandAst.CommandElements
-	$discordBotIndex = $runIndex + 3
+	# 从命令 AST 中提取 'runas <username> shells/discordbot' 之后的参数。
+	$discordBotIndex = $runIndex + $(if ($CommandAst.CommandElements[$runIndex].Value -eq 'runas') { 2 } else { 1 })
 
 	# 定义所有可用的操作命令。
 	$actions = @("list", "create", "delete", "config", "get-config", "get-template", "start", "stop")
 
 	# 根据当前正在输入的参数位置 (相对于 shell 名称) 提供不同的补全建议。
-	switch ($commandElements.Count - ($discordBotIndex + 1)) {
+	switch ($Argindex - ($discordBotIndex + 1)) {
 		0 {
 			# 位置 0: 补全第一个参数 (操作命令)。
 			$actions | Where-Object { $_.StartsWith($WordToComplete) }
@@ -63,7 +62,7 @@ try {
 		}
 		1 {
 			# 位置 1: 根据前一个参数 (action) 补全第二个参数。
-			$action = $commandElements[$discordBotIndex + 1].Value
+			$action = $CommandAst.CommandElements[$discordBotIndex + 1].Value
 			switch ($action) {
 				{ $_ -in "delete", "config", "get-config", "start", "stop" } {
 					# 对于这些操作，第二个参数是已存在的bot名称。
@@ -72,7 +71,7 @@ try {
 				}
 				"get-template" {
 					# 对于 'get-template'，第二个参数是角色名称。
-					Get-FountPartList -parttype chars -Username $Username | Where-Object { $_.StartsWith($WordToComplete) }
+					Get-FountPartList -PartPath chars -Username $Username | Where-Object { $_.StartsWith($WordToComplete) }
 					break
 				}
 				# 'list' 命令没有第二个参数。

@@ -1,7 +1,7 @@
 ﻿# PowerShell 参数补全脚本，用于 fount 的 'config' shell。
 #
 # 使用方法:
-#   fount run <username> shells/config <action> <partpath> [data]
+#   fount runas <username> shells/config <action> <partpath> [data]
 #
 # 支持的 Action:
 #   - get <partpath>: 获取指定部件的配置。
@@ -23,36 +23,12 @@ param(
 	[int]$Argindex
 )
 
-# 辅助函数：补全 partpath
-function Complete-PartPath([string]$WordToComplete, [string]$Username) {
-	# 如果输入为空，返回所有根类型
-	if ([string]::IsNullOrWhiteSpace($WordToComplete)) {
-		return Get-FountParts
-	}
-
-	# 如果输入包含斜杠，说明已经输入了部分路径
-	if ($WordToComplete -match '^([^/]+)/(.*)$') {
-		$rootType = $matches[1]
-		$remaining = $matches[2]
-
-		# 获取该根类型下的所有部件
-		$partList = Get-FountPartList -parttype $rootType -Username $Username
-		# 构建完整的 partpath 并过滤
-		return $partList | Where-Object { "$rootType/$_" -like "$WordToComplete*" } | ForEach-Object { "$rootType/$_" }
-	}
-	else {
-		# 只输入了根类型的一部分，补全根类型
-		return Get-FountParts | Where-Object { $_.StartsWith($WordToComplete) }
-	}
-}
-
 try {
-	# 从命令 AST 中提取出 'run <username> shells/config' 之后的用户输入参数。
-	$commandElements = $CommandAst.CommandElements
-	$shellIndex = $runIndex + 3
+	# 从命令 AST 中提取出 'runas <username> shells/config' 之后的用户输入参数。
+	$shellIndex = $runIndex + $(if ($CommandAst.CommandElements[$runIndex].Value -eq 'runas') { 2 } else { 1 })
 
 	# 根据当前正在输入的参数位置 (相对于 shell 名称) 提供不同的补全建议。
-	switch ($commandElements.Count - ($shellIndex + 1)) {
+	switch ($Argindex - ($shellIndex + 1)) {
 		0 {
 			# 位置 0: 补全操作命令 (action)。
 			@("get", "set") | Where-Object { $_.StartsWith($WordToComplete) }
@@ -60,7 +36,7 @@ try {
 		}
 		1 {
 			# 位置 1: 补全部件路径 (partpath)。
-			Complete-PartPath -WordToComplete $WordToComplete -Username $Username
+			Get-FountPartPathCompletion -Username $Username -WordToComplete $WordToComplete
 			break
 		}
 		# 位置 2 (set 命令的 data 参数) 不进行补全，因为它通常是复杂的、用户自定义的 JSON 字符串。

@@ -1,7 +1,7 @@
 ﻿# PowerShell 参数补全脚本，用于 fount 的 'preload' shell。
 #
 # 使用方法:
-#   fount run <username> shells/preload <partpath>
+#   fount runas <username> shells/preload <partpath>
 #
 # 作用:
 #   提前加载一个部件到内存中，以便后续更快地访问。
@@ -22,28 +22,15 @@ param(
 	[int]$Argindex
 )
 
-function Complete-PartPath([string]$WordToComplete, [string]$Username) {
-	if ([string]::IsNullOrWhiteSpace($WordToComplete)) { return Get-FountParts }
-	if ($WordToComplete -match '^([^/]+)/(.*)$') {
-		$rootType = $matches[1]
-		$partList = Get-FountPartList -parttype $rootType -Username $Username
-		return $partList | Where-Object { "$rootType/$_" -like "$WordToComplete*" } | ForEach-Object { "$rootType/$_" }
-	}
-	else {
-		return Get-FountParts | Where-Object { $_.StartsWith($WordToComplete) }
-	}
-}
-
 try {
-	# 从命令 AST 中提取 'run <username> shells/preload' 之后的参数。
-	$commandElements = $CommandAst.CommandElements
-	$preloadIndex = $runIndex + 3 # 'preload' 命令的索引
+	# 从命令 AST 中提取 'runas <username> shells/preload' 之后的参数。
+	$preloadIndex = $runIndex + $(if ($CommandAst.CommandElements[$runIndex].Value -eq 'runas') { 2 } else { 1 }) # 'preload' 命令的索引
 
 	# 根据当前正在输入的参数位置 (相对于 shell 名称) 提供不同的补全建议。
-	switch ($commandElements.Count - ($preloadIndex + 1)) {
+	switch ($Argindex - ($preloadIndex + 1)) {
 		0 {
 			# 位置 0: 补全部件路径 (partpath)。
-			Complete-PartPath -WordToComplete $WordToComplete -Username $Username
+			Get-FountPartPathCompletion -Username $Username -WordToComplete $WordToComplete
 			break
 		}
 	}

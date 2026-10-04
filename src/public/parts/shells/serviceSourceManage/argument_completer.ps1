@@ -1,7 +1,7 @@
 ﻿# PowerShell 参数补全脚本，用于 fount 的 'serviceSourceManage' shell。
 #
 # 使用方法:
-#   fount run <username> shells/serviceSourceManage <action> [sourceName]
+#   fount runas <username> shells/serviceSourceManage <action> [sourceName]
 #
 # 支持的 Action:
 #   - list: 列出所有可用的 AI 源。
@@ -28,13 +28,11 @@ param(
 )
 
 try {
-	# 从命令 AST 中提取出 'run <username> shells/serviceSourceManage' 之后的用户输入参数。
-	$commandElements = $CommandAst.CommandElements
-	# 'serviceSourceManage' 这个 shell 名称本身位于 'run' 之后的第3个位置 (索引+3)。
-	$shellIndex = $runIndex + 3
+	# 从命令 AST 中提取出 'runas <username> shells/serviceSourceManage' 之后的用户输入参数。
+	$shellIndex = $runIndex + $(if ($CommandAst.CommandElements[$runIndex].Value -eq 'runas') { 2 } else { 1 })
 
 	# 根据当前正在输入的参数位置 (相对于 shell 名称) 提供不同的补全建议。
-	switch ($commandElements.Count - ($shellIndex + 1)) {
+	switch ($Argindex - ($shellIndex + 1)) {
 		0 {
 			# 位置 0: 补全操作命令 (action)。
 			# 这是 'serviceSourceManage' 后的第一个参数。
@@ -43,11 +41,11 @@ try {
 		}
 		1 {
 			# 位置 1: 补全第二个参数 (通常是 sourceName)。
-			$action = $commandElements[$shellIndex + 1].Value
+			$action = $CommandAst.CommandElements[$shellIndex + 1].Value
 			switch ($action) {
 				{ $_ -in "delete", "get", "set", "set-default" } {
 					# 对于这些需要指定已存在源的命令，调用 fount 的内部函数来获取 AI 源列表，并进行补全。
-					Get-FountPartList -parttype "serviceSources/AI" -Username $Username | Where-Object { $_.StartsWith($WordToComplete) }
+					Get-FountPartList -PartPath "serviceSources/AI" -Username $Username | Where-Object { $_.StartsWith($WordToComplete) }
 					break
 				}
 				# "list" 命令没有参数，因此不提供补全。

@@ -1,7 +1,7 @@
 ﻿# PowerShell 参数补全脚本，用于 fount 的 'easynew' shell。
 #
 # 使用方法:
-#   fount run <username> shells/easynew <action> [args...]
+#   fount runas <username> shells/easynew <action> [args...]
 #
 # 支持的 Action:
 #   - list-templates: 列出所有可用的部件模板。
@@ -51,12 +51,11 @@ function Get-EasyNewTemplateList([string]$Username) {
 }
 
 try {
-	# 从命令 AST 中提取 'run <username> shells/easynew' 之后的参数。
-	$commandElements = $CommandAst.CommandElements
-	$shellIndex = $runIndex + 3
+	# 从命令 AST 中提取 'runas <username> shells/easynew' 之后的参数。
+	$shellIndex = $runIndex + $(if ($CommandAst.CommandElements[$runIndex].Value -eq 'runas') { 2 } else { 1 })
 
 	# 根据当前正在输入的参数位置 (相对于 shell 名称) 提供不同的补全建议。
-	switch ($commandElements.Count - ($shellIndex + 1)) {
+	switch ($Argindex - ($shellIndex + 1)) {
 		0 {
 			# 位置 0: 补全操作命令 (action)。
 			@("list-templates", "create") | Where-Object { $_.StartsWith($WordToComplete) }
@@ -64,7 +63,7 @@ try {
 		}
 		1 {
 			# 位置 1: 补全 'create' 命令的第二个参数 (templateName)。
-			$action = $commandElements[$shellIndex + 1].Value
+			$action = $CommandAst.CommandElements[$shellIndex + 1].Value
 			if ($action -eq "create") {
 				Get-EasyNewTemplateList -Username $Username | Where-Object { $_.StartsWith($WordToComplete) }
 			}

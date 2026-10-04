@@ -1,7 +1,7 @@
 ﻿# PowerShell 参数补全脚本，用于 fount 的 'userSettings' shell。
 #
 # 使用方法:
-#   fount run <username> shells/userSettings <action> [args...]
+#   fount runas <username> shells/userSettings <action> [args...]
 #
 # 支持的 Action:
 #   - get-stats: 获取用户统计信息。
@@ -31,12 +31,11 @@ param(
 )
 
 try {
-	# 从命令 AST 中提取 'run <username> shells/userSettings' 之后的参数。
-	$commandElements = $CommandAst.CommandElements
-	$shellIndex = $runIndex + 3
+	# 从命令 AST 中提取 'runas <username> shells/userSettings' 之后的参数。
+	$shellIndex = $runIndex + $(if ($CommandAst.CommandElements[$runIndex].Value -eq 'runas') { 2 } else { 1 })
 
 	# 根据当前正在输入的参数位置 (相对于 shell 名称) 提供不同的补全建议。
-	switch ($commandElements.Count - ($shellIndex + 1)) {
+	switch ($Argindex - ($shellIndex + 1)) {
 		0 {
 			# 位置 0: 补全第一个参数 (操作命令)。
 			@("get-stats", "change-password", "list-devices", "revoke-device", "rename-user", "delete-account", "get-editor-command", "set-editor-command", "open-editor") | Where-Object { $_.StartsWith($WordToComplete) }

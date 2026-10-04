@@ -1,7 +1,7 @@
 ﻿# PowerShell 参数补全脚本，用于 fount 的 'export' shell。
 #
 # 使用方法:
-#   fount run <username> shells/export <partpath> [withData] [outputPath]
+#   fount runas <username> shells/export <partpath> [withData] [outputPath]
 #
 # 参数:
 #   <partpath>:   要导出的部件路径 (例如: chars/my-char, worlds/my-world)。
@@ -24,39 +24,15 @@ param(
 	[int]$Argindex
 )
 
-# 辅助函数：补全 partpath
-function Complete-PartPath([string]$WordToComplete, [string]$Username) {
-	# 如果输入为空，返回所有根类型
-	if ([string]::IsNullOrWhiteSpace($WordToComplete)) {
-		return Get-FountParts
-	}
-
-	# 如果输入包含斜杠，说明已经输入了部分路径
-	if ($WordToComplete -match '^([^/]+)/(.*)$') {
-		$rootType = $matches[1]
-		$remaining = $matches[2]
-
-		# 获取该根类型下的所有部件
-		$partList = Get-FountPartList -parttype $rootType -Username $Username
-		# 构建完整的 partpath 并过滤
-		return $partList | Where-Object { "$rootType/$_" -like "$WordToComplete*" } | ForEach-Object { "$rootType/$_" }
-	}
-	else {
-		# 只输入了根类型的一部分，补全根类型
-		return Get-FountParts | Where-Object { $_.StartsWith($WordToComplete) }
-	}
-}
-
 try {
-	# 从命令 AST 中提取 'run <username> shells/export' 之后的参数。
-	$commandElements = $CommandAst.CommandElements
-	$shellIndex = $runIndex + 3
+	# 从命令 AST 中提取 'runas <username> shells/export' 之后的参数。
+	$shellIndex = $runIndex + $(if ($CommandAst.CommandElements[$runIndex].Value -eq 'runas') { 2 } else { 1 })
 
 	# 根据当前正在输入的参数位置 (相对于 shell 名称) 提供不同的补全建议。
-	switch ($commandElements.Count - ($shellIndex + 1)) {
+	switch ($Argindex - ($shellIndex + 1)) {
 		0 {
 			# 位置 0: 补全部件路径 (partpath)。
-			Complete-PartPath -WordToComplete $WordToComplete -Username $Username
+			Get-FountPartPathCompletion -Username $Username -WordToComplete $WordToComplete
 			break
 		}
 		1 {

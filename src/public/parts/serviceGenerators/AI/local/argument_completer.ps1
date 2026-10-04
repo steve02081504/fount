@@ -1,7 +1,7 @@
 ﻿# PowerShell 参数补全脚本，用于 fount 的 'serviceGenerators/AI/local' 生成器。
 #
 # 使用方法:
-#   fount run <username> serviceGenerators/AI/local <action> [args...]
+#   fount runas <username> serviceGenerators/AI/local <action> [args...]
 #
 # 支持的 Action:
 #   - install <uri|path> [source-name]
@@ -33,11 +33,10 @@ param(
 )
 
 try {
-	# 从命令 AST 中提取 'run <username> serviceGenerators/AI/local' 之后的参数。
-	$commandElements = $CommandAst.CommandElements
-	$localIndex = $runIndex + 3 # part 自身参数的起始索引
+	# 从命令 AST 中提取 'runas <username> serviceGenerators/AI/local' 之后的参数。
+	$localIndex = $runIndex + $(if ($CommandAst.CommandElements[$runIndex].Value -eq 'runas') { 2 } else { 1 }) # part 自身参数的起始索引
 
-	switch ($commandElements.Count - ($localIndex + 1)) {
+	switch ($Argindex - ($localIndex + 1)) {
 		0 {
 			# 位置 0: 补全 action 名称。
 			@('install', 'create-from-path') | Where-Object { $_.StartsWith($WordToComplete) }
@@ -45,7 +44,7 @@ try {
 		}
 		1 {
 			# 位置 1: 补全 action 的第一个参数。
-			$action = $commandElements[$localIndex + 1].Value
+			$action = $CommandAst.CommandElements[$localIndex + 1].Value
 
 			switch ($action) {
 				'install' {

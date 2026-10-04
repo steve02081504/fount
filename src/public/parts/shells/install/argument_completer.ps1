@@ -1,7 +1,7 @@
 ﻿# PowerShell 参数补全脚本，用于 fount 的 'install' shell。
 #
 # 使用方法:
-#   fount run <username> shells/install <action> [args...]
+#   fount runas <username> shells/install <action> [args...]
 #
 # 支持的 Action:
 #   - install <path/url/text>: 从文件、URL或文本安装一个部件。
@@ -24,12 +24,11 @@ param(
 )
 
 try {
-	# 从命令 AST 中提取 'run <username> shells/install' 之后的参数。
-	$commandElements = $CommandAst.CommandElements
-	$installIndex = $runIndex + 3 # 'install' 命令的索引
+	# 从命令 AST 中提取 'runas <username> shells/install' 之后的参数。
+	$installIndex = $runIndex + $(if ($CommandAst.CommandElements[$runIndex].Value -eq 'runas') { 2 } else { 1 }) # 'install' 命令的索引
 
 	# 根据当前正在输入的参数位置 (相对于 shell 名称) 提供不同的补全建议。
-	switch ($commandElements.Count - ($installIndex + 1)) {
+	switch ($Argindex - ($installIndex + 1)) {
 		0 {
 			# 位置 0: 补全第一个参数 (操作命令): "install" 或 "uninstall"。
 			@("install", "uninstall") | Where-Object { $_.StartsWith($WordToComplete) }
@@ -37,7 +36,7 @@ try {
 		}
 		1 {
 			# 位置 1: 补全 install/uninstall 命令的第一个参数。
-			$command = $commandElements[$installIndex + 1].Value
+			$command = $CommandAst.CommandElements[$installIndex + 1].Value
 
 			switch ($command) {
 				"install" {
@@ -50,7 +49,7 @@ try {
 				}
 				"uninstall" {
 					# 为 "uninstall" 命令补全部件路径 (partpath)。
-					Get-FountParts | Where-Object { $_.StartsWith($WordToComplete) }
+					Get-FountPartPathCompletion -Username $Username -WordToComplete $WordToComplete
 					break
 				}
 			}

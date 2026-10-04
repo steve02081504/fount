@@ -1,7 +1,7 @@
 ﻿# PowerShell 参数补全脚本，用于 fount 的 'shellassist' shell。
 #
 # 使用方法:
-#   fount run <username> shells/shellassist <charName>
+#   fount runas <username> shells/shellassist <charName>
 #
 # fount 自动提供的参数:
 #   $Username:       执行命令的当前用户名。
@@ -20,15 +20,14 @@ param(
 )
 
 try {
-	# 从命令 AST 中提取 'run <username> shells/shellassist' 之后的参数。
-	$commandElements = $CommandAst.CommandElements
-	$shellIndex = $runIndex + 3
+	# 从命令 AST 中提取 'runas <username> shells/shellassist' 之后的参数。
+	$shellIndex = $runIndex + $(if ($CommandAst.CommandElements[$runIndex].Value -eq 'runas') { 2 } else { 1 })
 
 	# 根据当前正在输入的参数位置 (相对于 shell 名称) 提供不同的补全建议。
-	switch ($commandElements.Count - ($shellIndex + 1)) {
+	switch ($Argindex - ($shellIndex + 1)) {
 		0 {
 			# 位置 0: 补全角色名称 (charName)。
-			Get-FountPartList -parttype chars -Username $Username | Where-Object { $_.StartsWith($WordToComplete) }
+			Get-FountPartList -PartPath chars -Username $Username | Where-Object { $_.StartsWith($WordToComplete) }
 			break
 		}
 	}

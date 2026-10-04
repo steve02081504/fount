@@ -1,7 +1,7 @@
 ﻿# PowerShell 参数补全脚本，用于 fount 的 'chat' shell。
 #
 # 使用方法:
-#   fount run <username> shells/chat <command> [args...]
+#   fount runas <username> shells/chat <command> [args...]
 #
 # 支持的 Command 及参数:
 #   - dm <introPubKeyHex> <nonce> <sig>: §16 消费 DM 深链（返回 groupId JSON）
@@ -60,7 +60,7 @@ function Get-CharListFromGroup([string]$Username, [string]$GroupId) {
 
 try {
 	$commandElements = $CommandAst.CommandElements
-	$groupIndex = $runIndex + 3
+	$groupIndex = $runIndex + $(if ($CommandAst.CommandElements[$runIndex].Value -eq 'runas') { 2 } else { 1 })
 
 	$groupCommands = @(
 		"dm", "join",
@@ -69,7 +69,7 @@ try {
 		"set-char-frequency", "trigger-reply"
 	)
 
-	switch ($commandElements.Count - ($groupIndex + 1)) {
+	switch ($Argindex - ($groupIndex + 1)) {
 		0 {
 			$groupCommands | Where-Object { $_.StartsWith($WordToComplete) }
 			break
@@ -79,7 +79,7 @@ try {
 
 			switch ($command) {
 				"start" {
-					Get-FountPartList -parttype chars -Username $Username | Where-Object { $_.StartsWith($WordToComplete) }
+					Get-FountPartList -PartPath chars -Username $Username | Where-Object { $_.StartsWith($WordToComplete) }
 					break
 				}
 				"join" {
