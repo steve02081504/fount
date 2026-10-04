@@ -76,7 +76,7 @@ A locale whose code has no Google target silently lands on its **base** language
 
 ## Counts belong in the source leaf, not glued on by the caller
 
-`zh-CN` owns the placeholder set ([i18n_keys](../../scripts/checks/AGENTS.md) `placeholder_mismatch`), so no locale can introduce `${count}` on its own to reach its own word order. A source leaf that is a bare unit while the caller renders `` `${count} ${geti18n(…)}` `` therefore leaves every inflecting language no shape that reads right on `1` — `code.explorer.lines` shipped as `行` and the editor status printed `1 строк`. Put the count in the source leaf (`${count} 行`) and pass it from the call site (`geti18n('code.explorer.lines', { count })`); then a language that needs number forms writes a switch leaf beside the plain-string locales, which `i18n_keys` accepts as the same leaf kind:
+`zh-CN` owns the placeholder set ([i18n_keys](../../../scripts/checks/AGENTS.md) `placeholder_mismatch`), so no locale can introduce `${count}` on its own to reach its own word order. A source leaf that is a bare counting unit while the caller renders `` `${count} ${geti18n(…)}` `` therefore leaves every inflecting language no shape that reads right on `1` — `code.explorer.lines` shipped as the unit alone and the editor status printed `1 строк`. Let the source leaf carry the count placeholder instead of gluing the number on at the call site, and pass that count from the call site (`geti18n('code.explorer.lines', { count })`); then a language that needs number forms writes a switch leaf beside the plain-string locales, which `i18n_keys` accepts as the same leaf kind:
 
 ```json
 "lines": {
