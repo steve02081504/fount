@@ -2,6 +2,7 @@ import { Chalk } from 'npm:chalk'
 import { highlight, supportsLanguage } from 'npm:cli-highlight'
 import { markedTerminal } from 'npm:marked-terminal@^7'
 import { Marked } from 'npm:marked@^13'
+import stripAnsi from 'npm:strip-ansi'
 
 /**
  * 为远端终端渲染 Markdown；颜色由客户端决定，而非后台服务器的 TTY。
@@ -11,7 +12,7 @@ import { Marked } from 'npm:marked@^13'
  */
 export function renderMarkdownAnsi(markdown, { width = 80, ansi = true } = {}) {
 	width = Number.isFinite(width) ? Math.max(20, Math.min(500, Math.floor(width))) : 80
-	// chalk level 0 让所有样式退化为无着色文本，因此不需要再剥一遍 ANSI 序列。
+	// chalk level 0 关闭主题着色；表格依赖仍可能输出 ANSI 复位序列。
 	const chalk = new Chalk({ level: ansi ? 1 : 0 })
 	const parser = new Marked(markedTerminal({
 		width,
@@ -39,7 +40,7 @@ export function renderMarkdownAnsi(markdown, { width = 80, ansi = true } = {}) {
 			language = language?.split(/\s/)[0]
 			let text = code
 			try {
-				if (!language || supportsLanguage(language)) text = highlight(code, { language, ignoreIllegals: true, theme: {
+				if (language && supportsLanguage(language)) text = highlight(code, { language, ignoreIllegals: true, theme: {
 					keyword: chalk.blue, built_in: chalk.cyan, type: chalk.cyan,
 					literal: chalk.blue, number: chalk.green, string: chalk.red,
 					comment: chalk.gray, title: chalk.yellow, attr: chalk.cyan,
@@ -54,5 +55,6 @@ export function renderMarkdownAnsi(markdown, { width = 80, ansi = true } = {}) {
 			return '\n' + text.split('\n').map(line => '  ' + line).join('\n') + '\n\n'
 		},
 	} })
-	return parser.parse(markdown)
+	const result = parser.parse(markdown)
+	return ansi ? result : stripAnsi(result)
 }
