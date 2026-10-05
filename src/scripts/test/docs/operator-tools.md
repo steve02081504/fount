@@ -4,13 +4,18 @@ Deep detail for `fount test` operator diagnostics. The day-to-day guide is [../A
 
 ## Performance bench (`tools/bench/`)
 
-Five standalone scripts break down `fount test` / launcher wall time:
+Seven standalone scripts. Five break down `fount test` / launcher wall time:
 
 - `kernel_startup.mjs` — spawn→healthy with an in-kernel phase split (init/link, graph eval, catalog load, bind)
 - `kernel_link.mjs` — Deno init+link vs graph eval vs kernel logic, plus `deno cache` cost
 - `test_cycle.mjs` — per-suite child spawn/read/rm overhead via the real `buildSuiteInvocation`/`runCommand`
 - `viewer_cycle.mjs` — WS connect→hello→accepted→close round trips
 - `cli_startup.mjs` — launcher floor (`fount nop`) and `fount eval "1"` echo vs `deno eval` / `pwsh` / `powershell.exe` interpreter startup; the `fount eval` row is measured only when a server answers `data/config.json`'s port (`/api/ping`), otherwise it is skipped with a note. Use it when changing the path prelude, the runner, or `cmd_eval`.
+
+Two measure product tool handlers instead, with the same `--iterations` / `--output` CLI (JSON to stdout by default; each resets its own in-memory state and verifies correctness after timing):
+
+- `file_tools.mjs` — file-operations reply handlers (`glob` / dense `grep` / files-only `grep` / `view-file` / `replace-file` / `override-file`) plus the `renderLineDiff` / `buildFileEditSummary` helpers at 10k–50k lines; details and reusable conclusions: [docs/file_tools.md](../tools/bench/docs/file_tools.md)
+- `runtime_tools.mjs` — real `run-js`, shell startup, three separate vs one batched shell call, 16k shell output, and `runSubAgent` sync/async over 1 and 3 rounds against an injected deterministic fake AI; details: [docs/runtime_tools.md](../tools/bench/docs/runtime_tools.md)
 
 The kernel records env-gated phases to `FOUNT_TEST_BENCH_PHASES_FILE` (`onPhase` callback through `startTestKernel`/`TestKernel.start`); tools spawn on `TEST_PORT_BASE+20000` and shut down each iteration. Run from the repo root:
 
