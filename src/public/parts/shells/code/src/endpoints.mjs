@@ -10,7 +10,7 @@ import { memoizePromise } from '../../../../../scripts/memo.mjs'
 import { ms } from '../../../../../scripts/ms.mjs'
 import { onSystemWake } from '../../../../../scripts/sleep_watch.mjs'
 import { isStopping } from '../../../../../scripts/stopping.mjs'
-import { authenticate, getUserByReq } from '../../../../../server/auth/index.mjs'
+import { authenticate, getUserByReq, getUserDictionary } from '../../../../../server/auth/index.mjs'
 import { EndJob, StartJob } from '../../../../../server/jobs.mjs'
 import { getAllDefaultParts, getPartList } from '../../../../../server/parts_loader.mjs'
 import { loadShellData, saveShellData, assignShellData } from '../../../../../server/setting_loader.mjs'
@@ -27,6 +27,7 @@ import {
 	resolveCommandArgs,
 	searchWorkspaceFiles,
 } from './context.mjs'
+import { readEditorExtensions } from './editor_extensions.mjs'
 import { collectEditorSources } from './editor_sources.mjs'
 import { pickEntryExtension } from './entry_extension.mjs'
 import { appendOwnHistory, getHistory } from './history.mjs'
@@ -561,6 +562,10 @@ export function setEndpoints(router) {
 		session.entries = (session.entries || []).filter(entry => !entry.is_generating)
 		await startCodeRun(username, { type: 'trigger', session, machine, workdir, ai_source, profile }, null)
 	})
+	router.get('/api/parts/shells\\:code/editor/extensions', authenticate, async (req, res) => {
+		res.json(await readEditorExtensions(getUserDictionary(getUserByReq(req).username)))
+	})
+
 	// 机器列表（含本机与已连接 subfount）
 	router.get('/api/parts/shells\\:code/machines', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)

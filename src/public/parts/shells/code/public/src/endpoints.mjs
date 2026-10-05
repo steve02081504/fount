@@ -473,3 +473,6 @@ export function watchWorkspace(target, paths, onChange, onState = () => {}) {
 	connect()
 	return () => { stopped = true; clearTimeout(retry); clearInterval(watchdog); socket?.close() }
 }
+
+/** @returns {Promise<{languages: object[]}>} 用户安装的编辑器贡献集。 */
+export function getEditorExtensions() { return requestJson(`${API_BASE}/editor/extensions`) }

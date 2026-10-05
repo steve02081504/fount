@@ -79,3 +79,5 @@ AI 编码会话 shell：与任意角色就工作区对话，在本机或已连�
 - `fount run code [--prompt <text>] [--workspace <path>]`（`runas <user> code` 同理）：以 `--workspace`（缺省 CLI cwd）为工作区打开 code 页面。带 `--prompt` 时：若已有 code 页在线则其在目标工作区新开对话、聚焦并立即发送该提示词；无页面在线则打开带 `?prompt=` 的新页面（同样立即发送）。
 
 WebSocket /ws/parts/shells:code/workspace/watch：本机及远程工作区文件变化订阅，需要登录。连接后发送 {machine:"分机编号，0 为本机",workdir:"目标机器上的工作区绝对路径",paths:["","src"]}，paths 为工作区相对目录，最多 128 项。服务端发送 {type:"ready"}、{type:"change"}，收到后重新读取目录及文件；{type:"heartbeat"} 表示连接存活；{type:"disconnected",reason} 表示订阅中断，可重新连接并在 ready 后重新读取；{type:"unavailable",reason} 表示订阅参数或工作区无效，修正后重新订阅。断开连接释放监听。
+
+编辑器扩展：GET /api/parts/shells:code/editor/extensions 读取当前登录用户目录下 .fount/editor.json（version: 1、languages 数组），返回 {languages: [{id, extensions, aliases, configuration, grammar, formatter}]}；grammar 为解析后的 TextMate JSON，formatter 为浏览器 ES 模块源码。资源路径相对 .fount，不能越界，每个文件上限 2 MiB。未安装时 languages 为空数组。
