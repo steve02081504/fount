@@ -24,9 +24,10 @@ AI 编码会话 shell：与任意角色就工作区对话，在本机或已连�
 - `GET /sessions/all` → `{ sessions: [{ id, title, charname, updated, workspaceId, workspaceName }] }`（跨工作区聚合，按 updated 降序）
 - `GET /files/search?machine&workdir&q=` → `{ files: string[] }`（文件名子串匹配，跳过 node_modules/.git 等）
 - `GET /file?machine&workdir&path=` → `{ content, context }`（content 为文件文本，context 为向上收集的 AGENTS.md/触发文档文本）
-- `GET /workspace/directory?machine&workdir&path=` → `{ path, entries: [{ name, path, isDirectory, isFile }] }`（工作区相对目录树，`path` 为空表示根；条目路径均为工作区相对路径）
-- `GET /workspace/file?machine&workdir&path=` → `{ path, content, version }`（读取工作区相对 UTF-8 文本文件；version 是 SHA-256 内容版本；拒绝越界路径、符号链接逃逸、二进制/无效 UTF-8 文件及超过 1 MiB 的文件）
-- `PUT /workspace/file { machine, workdir, path, content, version }` → `{ path, content, version }`（用读取时的 version 乐观并发保存现有文本文件；版本过期返回 409 和当前 version，内容超过 1 MiB 返回 413）
+- `GET /workspace/directory?machine&workdir&path=&offset=&limit=` → `{ path, total, nextOffset, entries: [{ name, path, isDirectory, isFile }] }`（工作区相对目录分页，`path` 为空表示根；默认首 2000 项，`limit` 最大 2000；条目路径均为工作区相对路径）
+- `GET /workspace/file?machine&workdir&path=` → `{ path, content, version }`（读取工作区相对 UTF-8 文本文件；version 是 SHA-256 内容版本；拒绝越界路径、符号链接逃逸、二进制/无效 UTF-8 文件及超过 16 MiB 的文件）
+- `GET /workspace/file?machine&workdir&path=&offset=&limit=&version=` → `{ path, offset, totalSize, version, data }`（字节分块读取，`limit` 最大 256 KiB；首块省略 version 并返回快照版本，后续块必须携带该版本；快照在 30 秒后或缓存淘汰后返回 409；进程缓存上限 32 MiB/256 个文件；前端需流式解码 UTF-8）
+- `PUT /workspace/file { machine, workdir, path, content, version }` → `{ path, content, version }`（用读取时的 version 乐观并发保存现有文本文件；版本过期返回 409 和当前 version，内容超过 16 MiB 返回 413）
 - `GET /profiles?machine&workdir=` → `{ profiles: [{ name, source: builtin|global|workspace, description }], commands: [{ name, source, description, params, template }] }`
 - `POST /commands/render {machine, workdir, name, argv}` → `{ content }`（渲染命令模板；缺必填参数 400）
 - `GET /aisources` → `{ sources: string[], defaults: string[], hidden: string[] }`

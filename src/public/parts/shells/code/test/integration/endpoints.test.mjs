@@ -365,17 +365,46 @@ Deno.test({
 	try {
 		await fs.mkdir(path.join(root, 'src'))
 		await fs.writeFile(path.join(root, 'src', 'hello.txt'), 'first text', 'utf8')
+		const chunkText = `${'a'.repeat(256 * 1024 - 1)}界${'tail'.repeat(100)}`
+		await fs.writeFile(path.join(root, 'src', 'chunked.txt'), chunkText, 'utf8')
 		await fs.writeFile(path.join(root, 'binary.bin'), Buffer.from([0, 255, 1]))
 		const query = `machine=0&workdir=${encodeURIComponent(root)}`
 		const directory = await (await codeFetch(node, 'GET', `/workspace/directory?${query}`)).json()
 		assert(directory.entries.some(entry => entry.name === 'src' && entry.isDirectory))
 		const nested = await (await codeFetch(node, 'GET', `/workspace/directory?${query}&path=src`)).json()
 		assertEquals(nested.entries.find(entry => entry.name === 'hello.txt')?.path, 'src/hello.txt')
+		const directoryPage1 = await (await codeFetch(node, 'GET', `/workspace/directory?${query}&path=src&offset=0&limit=1`)).json()
+		const directoryPage2 = await (await codeFetch(node, 'GET', `/workspace/directory?${query}&path=src&offset=${directoryPage1.nextOffset}&limit=1`)).json()
+		assert(directoryPage1.total >= 2)
+		assertEquals(directoryPage1.entries.length + directoryPage2.entries.length, directoryPage1.total)
+		assertEquals(directoryPage2.nextOffset, null)
 
 		const read = await codeFetch(node, 'GET', `/workspace/file?${query}&path=${encodeURIComponent('src/hello.txt')}`)
 		const opened = await read.json()
 		assertEquals(opened.content, 'first text')
 		assertEquals(opened.version.length, 64)
+		const chunkPath = encodeURIComponent('src/chunked.txt')
+		const firstChunk = await (await codeFetch(node, 'GET', `/workspace/file?${query}&path=${chunkPath}&offset=0&limit=262144`)).json()
+		assertEquals(firstChunk.totalSize, Buffer.byteLength(chunkText))
+		assertEquals(firstChunk.offset, 0)
+		const firstBytes = Buffer.from(firstChunk.data, 'base64')
+		assertEquals(firstBytes.length, 262144)
+		// The first block ends in the middle of a three-byte UTF-8 character. Snapshot version keeps later reads stable.
+		await fs.writeFile(path.join(root, 'src', 'chunked.txt'), 'changed on disk', 'utf8')
+		const secondChunk = await (await codeFetch(node, 'GET', `/workspace/file?${query}&path=${chunkPath}&offset=262144&limit=262144&version=${firstChunk.version}`)).json()
+		const assembled = Buffer.concat([firstBytes, Buffer.from(secondChunk.data, 'base64')])
+		assertEquals(new TextDecoder('utf-8', { fatal: true }).decode(assembled), chunkText)
+		const staleChunk = await codeFetch(node, 'GET', `/workspace/file?${query}&path=${chunkPath}&offset=0&limit=262144&version=${'0'.repeat(64)}`)
+		assertEquals(staleChunk.status, 409)
+		for (const [badRange, expectedStatus] of [
+			['offset=-1', 400], ['limit=0', 400], [`limit=${256 * 1024 + 1}`, 400],
+			[`offset=${Buffer.byteLength(chunkText) + 1}`, 416],
+		]) {
+			const invalid = await codeFetch(node, 'GET', `/workspace/file?${query}&path=${chunkPath}&${badRange}`)
+			assertEquals(invalid.status, expectedStatus, `chunked read should reject ${badRange}`)
+		}
+		const chunkedBinary = await codeFetch(node, 'GET', `/workspace/file?${query}&path=binary.bin&offset=0&limit=1`)
+		assertEquals(chunkedBinary.status, 415)
 		const saved = await codeFetch(node, 'PUT', '/workspace/file', { machine: '0', workdir: root, path: opened.path, content: 'edited text', version: opened.version })
 		const savedBody = await saved.json()
 		assertEquals(savedBody.content, 'edited text')
@@ -386,7 +415,7 @@ Deno.test({
 
 		const binary = await codeFetch(node, 'GET', `/workspace/file?${query}&path=binary.bin`)
 		assertEquals(binary.status, 415)
-		const tooLarge = await codeFetch(node, 'PUT', '/workspace/file', { machine: '0', workdir: root, path: 'src/hello.txt', content: 'x'.repeat(1024 * 1024 + 1), version: savedBody.version })
+		const tooLarge = await codeFetch(node, 'PUT', '/workspace/file', { machine: '0', workdir: root, path: 'src/hello.txt', content: 'x'.repeat(16 * 1024 * 1024 + 1), version: savedBody.version })
 		assertEquals(tooLarge.status, 413)
 		for (const badPath of ['../outside.txt', 'C:/outside.txt', '/outside.txt']) {
 			const invalid = await codeFetch(node, 'GET', `/workspace/file?${query}&path=${encodeURIComponent(badPath)}`)

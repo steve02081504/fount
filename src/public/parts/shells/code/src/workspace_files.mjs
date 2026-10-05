@@ -20,7 +20,75 @@ export function parseWorkdir(source) {
 }
 
 /** 工作区编辑器大小上限，保护远程 RPC 负载和浏览器内存。 */
-const WORKSPACE_EDITOR_MAX_BYTES = 1024 * 1024
+const WORKSPACE_EDITOR_MAX_BYTES = 16 * 1024 * 1024
+const WORKSPACE_FILE_CHUNK_MAX_BYTES = 256 * 1024
+const WORKSPACE_FILE_SNAPSHOTS_MAX_BYTES = 32 * 1024 * 1024
+const WORKSPACE_FILE_SNAPSHOTS_MAX_ENTRIES = 256
+const WORKSPACE_FILE_SNAPSHOT_TTL_MS = 30_000
+/** @type {Map<string, {bytes: Buffer, version: string, expiresAt: number}>} */
+const workspaceFileSnapshots = new Map()
+let workspaceFileSnapshotsBytes = 0
+
+/**
+ * 清理过期快照，并按最近使用顺序腾出缓存空间。
+ * @param {number} requiredBytes - 新快照所需字节数。
+ * @returns {void} No return value.
+ */
+function makeWorkspaceFileSnapshotRoom(requiredBytes) {
+	const now = Date.now()
+	workspaceFileSnapshots.forEach((snapshot, key) => {
+		if (snapshot.expiresAt <= now) {
+			workspaceFileSnapshots.delete(key)
+			workspaceFileSnapshotsBytes -= snapshot.bytes.length
+		}
+	})
+	while (workspaceFileSnapshotsBytes + requiredBytes > WORKSPACE_FILE_SNAPSHOTS_MAX_BYTES || workspaceFileSnapshots.size >= WORKSPACE_FILE_SNAPSHOTS_MAX_ENTRIES) {
+		const oldestKey = workspaceFileSnapshots.keys().next().value
+		if (oldestKey === undefined) break
+		const oldest = workspaceFileSnapshots.get(oldestKey)
+		workspaceFileSnapshots.delete(oldestKey)
+		workspaceFileSnapshotsBytes -= oldest.bytes.length
+	}
+}
+
+/**
+ * 保存一份短期一致性快照。
+ * @param {string} key - 用户与规范路径键。
+ * @param {Buffer} bytes - 文件字节。
+ * @param {string} version - 内容哈希。
+ * @returns {void} No return value.
+ */
+function cacheWorkspaceFileSnapshot(key, bytes, version) {
+	if (bytes.length > WORKSPACE_FILE_SNAPSHOTS_MAX_BYTES) return
+	const previous = workspaceFileSnapshots.get(key)
+	if (previous) workspaceFileSnapshotsBytes -= previous.bytes.length
+	workspaceFileSnapshots.delete(key)
+	makeWorkspaceFileSnapshotRoom(bytes.length)
+	workspaceFileSnapshots.set(key, { bytes, version, expiresAt: Date.now() + WORKSPACE_FILE_SNAPSHOT_TTL_MS })
+	workspaceFileSnapshotsBytes += bytes.length
+}
+
+/**
+ * 取出有效快照、刷新其闲置期限并更新 LRU 顺序。
+ * @param {string} key - 用户与规范路径键。
+ * @param {string} version - 请求版本。
+ * @returns {Buffer|null} 匹配快照。
+ */
+function getWorkspaceFileSnapshot(key, version) {
+	const snapshot = workspaceFileSnapshots.get(key)
+	if (!snapshot) return null
+	if (snapshot.expiresAt <= Date.now()) {
+		workspaceFileSnapshots.delete(key)
+		workspaceFileSnapshotsBytes -= snapshot.bytes.length
+		return null
+	}
+	if (snapshot.version !== version) return null
+	// 分块读取是多次请求，期限按闲置时间算，否则大文件会在传输中途过期。
+	snapshot.expiresAt = Date.now() + WORKSPACE_FILE_SNAPSHOT_TTL_MS
+	workspaceFileSnapshots.delete(key)
+	workspaceFileSnapshots.set(key, snapshot)
+	return snapshot.bytes
+}
 
 /** 在当前进程内串行执行编辑器保存的读取、比较和写入。 @type {Map<string, Promise<void>>} */
 const workspaceFileWrites = new Map()
@@ -185,10 +253,17 @@ export function setWorkspaceFileEndpoints(router) {
 		const workTarget = parseWorkdir(req.query)
 		const relative = workspaceRelativePath(req.query.path, { allowEmpty: true })
 		const { executor } = await resolveWorkspaceFile(username, workTarget, relative || '.')
-		const entries = await executor.listDir(relative || '.')
+		const offset = Number(req.query.offset ?? 0)
+		const limit = Number(req.query.limit ?? 2000)
+		if (!Number.isSafeInteger(offset) || offset < 0 || !Number.isSafeInteger(limit) || limit < 1 || limit > 2000)
+			throw httpError(400, 'Invalid workspace directory page.')
+		const allEntries = await executor.listDir(relative || '.')
+		const entries = allEntries.slice(offset, offset + limit)
 		res.json({
 			path: relative,
-			entries: entries.slice(0, 2000).map(entry => ({
+			total: allEntries.length,
+			nextOffset: offset + entries.length < allEntries.length ? offset + entries.length : null,
+			entries: entries.map(entry => ({
 				name: entry.name,
 				path: relative ? `${relative}/${entry.name}` : entry.name,
 				isDirectory: Boolean(entry.isDirectory),
@@ -197,7 +272,7 @@ export function setWorkspaceFileEndpoints(router) {
 		})
 	})
 
-	// 读取编辑器文本与内容哈希版本；限制大小并拒绝二进制/无效 UTF-8。
+	// 读取编辑器文本；offset/limit 启用字节分块模式，由短期快照维持多次请求间的一致性。
 	router.get('/api/parts/shells\\:code/workspace/file', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		const workTarget = parseWorkdir(req.query)
@@ -205,9 +280,37 @@ export function setWorkspaceFileEndpoints(router) {
 		const { executor, absolute } = await resolveWorkspaceFile(username, workTarget, relative)
 		const stat = await executor.statEntry(absolute)
 		if (!stat?.isFile) throw httpError(404, 'Workspace file not found.')
-		if (stat.size > WORKSPACE_EDITOR_MAX_BYTES) throw httpError(413, 'File exceeds the 1 MiB editor limit.')
+		const chunked = req.query.offset !== undefined || req.query.limit !== undefined || req.query.version !== undefined
+		if (chunked) {
+			const offset = Number(req.query.offset ?? 0)
+			const limit = Number(req.query.limit ?? WORKSPACE_FILE_CHUNK_MAX_BYTES)
+			if (!Number.isSafeInteger(offset) || offset < 0 || !Number.isSafeInteger(limit) || limit < 1 || limit > WORKSPACE_FILE_CHUNK_MAX_BYTES)
+				throw httpError(400, 'Invalid workspace file chunk range.')
+			if (!req.query.version && stat.size > WORKSPACE_EDITOR_MAX_BYTES) throw httpError(413, 'File exceeds the 16 MiB editor limit.')
+			const snapshotKey = `${username}\0${workTarget.machine}\0${absolute}`
+			let version = String(req.query.version || '')
+			let bytes = version ? getWorkspaceFileSnapshot(snapshotKey, version) : null
+			if (version && !bytes) throw httpError(409, 'File snapshot expired or version is stale.')
+			if (!version) {
+				bytes = await executor.readFileBuffer(absolute)
+				if (bytes.length > WORKSPACE_EDITOR_MAX_BYTES) throw httpError(413, 'File exceeds the 16 MiB editor limit.')
+				let content
+				try { content = new TextDecoder('utf-8', { fatal: true }).decode(bytes) }
+				catch { throw httpError(415, 'Binary or invalid UTF-8 files cannot be edited.') }
+				if (content.includes('\0')) throw httpError(415, 'Binary files cannot be edited.')
+				version = workspaceFileVersion(bytes)
+				cacheWorkspaceFileSnapshot(snapshotKey, bytes, version)
+			}
+			if (offset > bytes.length) throw httpError(416, 'Workspace file chunk offset is past end of file.')
+			res.json({
+				path: relative, offset, totalSize: bytes.length, version,
+				data: bytes.subarray(offset, Math.min(offset + limit, bytes.length)).toString('base64'),
+			})
+			return
+		}
+		if (stat.size > WORKSPACE_EDITOR_MAX_BYTES) throw httpError(413, 'File exceeds the 16 MiB editor limit.')
 		const bytes = await executor.readFileBuffer(absolute)
-		if (bytes.length > WORKSPACE_EDITOR_MAX_BYTES) throw httpError(413, 'File exceeds the 1 MiB editor limit.')
+		if (bytes.length > WORKSPACE_EDITOR_MAX_BYTES) throw httpError(413, 'File exceeds the 16 MiB editor limit.')
 		let content
 		try { content = new TextDecoder('utf-8', { fatal: true }).decode(bytes) }
 		catch { throw httpError(415, 'Binary or invalid UTF-8 files cannot be edited.') }
@@ -224,14 +327,14 @@ export function setWorkspaceFileEndpoints(router) {
 		const version = String(req.body?.version || '')
 		if (typeof content !== 'string') throw httpError(400, 'content must be a string.')
 		const bytes = Buffer.from(content, 'utf8')
-		if (bytes.length > WORKSPACE_EDITOR_MAX_BYTES) throw httpError(413, 'File exceeds the 1 MiB editor limit.')
+		if (bytes.length > WORKSPACE_EDITOR_MAX_BYTES) throw httpError(413, 'File exceeds the 16 MiB editor limit.')
 		if (!/^[a-f0-9]{64}$/.test(version)) throw httpError(400, 'A valid file version is required.')
 		const { executor, absolute } = await resolveWorkspaceFile(username, workTarget, relative)
 		const lockKey = `${username}\0${workTarget.machine}\0${absolute}`
 		const result = await withWorkspaceFileWriteLock(lockKey, async () => {
 			const stat = await executor.statEntry(absolute)
 			if (!stat?.isFile) throw httpError(404, 'Workspace file not found.')
-			if (stat.size > WORKSPACE_EDITOR_MAX_BYTES) throw httpError(413, 'File exceeds the 1 MiB editor limit.')
+			if (stat.size > WORKSPACE_EDITOR_MAX_BYTES) throw httpError(413, 'File exceeds the 16 MiB editor limit.')
 			const current = await executor.readFileBuffer(absolute)
 			if (workspaceFileVersion(current) !== version) throw httpError(409, 'File changed since it was opened.', { json: { version: workspaceFileVersion(current) } })
 			// Recheck the canonical path immediately before writing, including symlinked parent directories.

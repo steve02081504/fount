@@ -198,10 +198,12 @@ export async function readFile(target, path) {
  * 列出工作区相对目录。
  * @param {{machine: string, workdir: string}} target - 工作区目标。
  * @param {string} [path] - 工作区相对目录，空串表示根目录。
- * @returns {Promise<{path: string, entries: Array<{name: string, path: string, isDirectory: boolean, isFile: boolean}>}>} 目录内容。
+ * @param {{offset?: number, limit?: number, signal?: AbortSignal}} [options] - 分页范围与取消信号。
+ * @returns {Promise<{path: string, total: number, nextOffset: number|null, entries: Array<{name: string, path: string, isDirectory: boolean, isFile: boolean}>}>} 目录页。
  */
-export async function listWorkspaceDirectory(target, path = '') {
-	return requestJson(`${API_BASE}/workspace/directory?machine=${encodeURIComponent(target.machine)}&workdir=${encodeURIComponent(target.workdir)}&path=${encodeURIComponent(path)}`)
+export async function listWorkspaceDirectory(target, path = '', { offset = 0, limit = 2000, signal } = {}) {
+	const params = new URLSearchParams({ machine: target.machine, workdir: target.workdir, path, offset: String(offset), limit: String(limit) })
+	return requestJson(`${API_BASE}/workspace/directory?${params}`, { signal })
 }
 
 /**
@@ -212,6 +214,48 @@ export async function listWorkspaceDirectory(target, path = '') {
  */
 export async function readWorkspaceFile(target, path) {
 	return requestJson(`${API_BASE}/workspace/file?machine=${encodeURIComponent(target.machine)}&workdir=${encodeURIComponent(target.workdir)}&path=${encodeURIComponent(path)}`)
+}
+
+/**
+ * 分块读取工作区 UTF-8 文件，避免单次大 JSON 响应；各块使用同一 SHA-256 快照版本。
+ * @param {{machine: string, workdir: string}} target - 工作区目标。
+ * @param {string} path - 工作区相对文件路径。
+ * @param {{signal?: AbortSignal, onProgress?: (loaded: number, total: number) => void}} [options] - 取消与进度回调。
+ * @returns {Promise<{path: string, content: string, version: string}>} 完整文本与版本。
+ */
+export async function readWorkspaceFileChunks(target, path, { signal, onProgress } = {}) {
+	const chunkSize = 256 * 1024
+	const decoder = new TextDecoder('utf-8', { fatal: true })
+	let offset = 0, version, totalSize, content = ''
+	while (true) {
+		if (signal?.aborted) throw new DOMException('The operation was aborted.', 'AbortError')
+		const params = new URLSearchParams({
+			machine: target.machine,
+			workdir: target.workdir,
+			path,
+			offset: String(offset),
+			limit: String(chunkSize),
+		})
+		if (version) params.set('version', version)
+		const chunk = await requestJson(`${API_BASE}/workspace/file?${params}`, { signal })
+		if (signal?.aborted) throw new DOMException('The operation was aborted.', 'AbortError')
+		if (chunk.offset !== offset || !Number.isSafeInteger(chunk.totalSize) || typeof chunk.version !== 'string' || typeof chunk.data !== 'string')
+			throw new Error('Invalid workspace file chunk response.')
+		if (version && (chunk.version !== version || chunk.totalSize !== totalSize)) throw new Error('Workspace file changed during chunked read.')
+		version ??= chunk.version
+		totalSize ??= chunk.totalSize
+		const binary = atob(chunk.data)
+		const bytes = new Uint8Array(binary.length)
+		for (let index = 0; index < binary.length; index++) bytes[index] = binary.charCodeAt(index)
+		if (bytes.length > chunkSize || offset + bytes.length > totalSize || (offset < totalSize && bytes.length === 0))
+			throw new Error('Invalid workspace file chunk length.')
+		content += decoder.decode(bytes, { stream: offset + bytes.length < totalSize })
+		offset += bytes.length
+		onProgress?.(offset, totalSize)
+		if (offset >= totalSize) break
+	}
+	content += decoder.decode()
+	return { path, content, version }
 }
 
 /**
