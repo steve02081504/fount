@@ -223,6 +223,7 @@
 				"dashboard": {
 					"idle": "Idle",
 					"unknownCount": "+${count} unknown",
+					"remainingCount": null,
 					"runningCount": "Running: ${count}",
 					"passedCount": "Passed: ${count}",
 					"failedCount": "Failed: ${count}",

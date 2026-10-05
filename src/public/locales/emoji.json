@@ -223,6 +223,7 @@
 				"dashboard": {
 					"idle": "😴",
 					"unknownCount": "+${count} ❓",
+					"remainingCount": "剩余 ${count} 项",
 					"runningCount": "▶️ ${count}",
 					"passedCount": "✅ ${count}",
 					"failedCount": "❌ ${count}",

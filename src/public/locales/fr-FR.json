@@ -223,6 +223,7 @@
 				"dashboard": {
 					"idle": "inactif",
 					"unknownCount": "+${count} inconnu",
+					"remainingCount": null,
 					"runningCount": "En cours : ${count}",
 					"passedCount": "Réussis : ${count}",
 					"failedCount": "Échecs : ${count}",

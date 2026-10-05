@@ -223,6 +223,7 @@
 				"dashboard": {
 					"idle": "待機中",
 					"unknownCount": "+${count} 不明",
+					"remainingCount": null,
 					"runningCount": "${count} 実行中",
 					"passedCount": "${count} 合格",
 					"failedCount": "${count} 失敗",

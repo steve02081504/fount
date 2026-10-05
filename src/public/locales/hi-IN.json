@@ -223,6 +223,7 @@
 				"dashboard": {
 					"idle": "निष्क्रिय",
 					"unknownCount": "+${count} अज्ञात",
+					"remainingCount": null,
 					"runningCount": "${count} चल रहे हैं",
 					"passedCount": "${count} पास हुए",
 					"failedCount": "${count} विफल",

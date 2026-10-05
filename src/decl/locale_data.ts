@@ -200,6 +200,7 @@ export type LocaleData = {
 				dashboard: {
 					idle: string
 					unknownCount: string
+					remainingCount: string
 					runningCount: string
 					passedCount: string
 					failedCount: string
@@ -7610,6 +7611,7 @@ export type LocaleKeyParams = {
 	'fountConsole.test.display.dashboard.queueRemove': { label: string | number; reason: string | number }
 	'fountConsole.test.display.dashboard.queuedCount': { count: string | number }
 	'fountConsole.test.display.dashboard.reason': { reason: string | number }
+	'fountConsole.test.display.dashboard.remainingCount': { count: string | number }
 	'fountConsole.test.display.dashboard.runningCount': { count: string | number }
 	'fountConsole.test.display.dashboard.unknownCount': { count: string | number }
 	'fountConsole.test.display.eta': { expected: string | number; remaining: string | number }

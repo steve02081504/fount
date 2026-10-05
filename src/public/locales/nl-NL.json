@@ -223,6 +223,7 @@
 				"dashboard": {
 					"idle": "inactief",
 					"unknownCount": "+${count} onbekend",
+					"remainingCount": null,
 					"runningCount": "In uitvoering: ${count}",
 					"passedCount": "Geslaagd: ${count}",
 					"failedCount": "Mislukt: ${count}",

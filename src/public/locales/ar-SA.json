@@ -223,6 +223,7 @@
 				"dashboard": {
 					"idle": "خامل",
 					"unknownCount": "+${count} غير معروف",
+					"remainingCount": null,
 					"runningCount": "قيد التشغيل: ${count}",
 					"passedCount": "ناجح: ${count}",
 					"failedCount": "فشل: ${count}",
