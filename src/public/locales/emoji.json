@@ -6816,7 +6816,7 @@
 				"disconnected": "🔌❌🔄⚠️",
 				"unavailable": "🚫🔄📁"
 			},
-			"cursor": "第 ${line} 行，第 ${column} 列"
+			"cursor": "📍${line}:${column}"
 		}
 	},
 	"gist": {
