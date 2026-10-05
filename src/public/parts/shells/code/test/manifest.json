@@ -31,13 +31,14 @@
 			"src/public/parts/shells/gist/public/src/standaloneDocument.mjs",
 			"src/public/parts/shells/gist/public/src/endpoints.mjs",
 			"src/public/parts/shells/code/test/frontend/**",
-			"src/public/pages/scripts/test/**"
+			"src/public/pages/scripts/test/**",
+			"src/public/pages/scripts/components/code{Syntax,EditorLocale}.mjs"
 		]
 	},
 	"suites": [
 		{
 			"name": "pure",
-			"expected": "1m5s",
+			"expected": "9s",
 			"trigger": [
 				"pureCore",
 				"testFramework"
@@ -55,7 +56,7 @@
 		},
 		{
 			"name": "integration",
-			"expected": "13m55s",
+			"expected": "6m12s",
 			"dependsOn": [
 				"server:live"
 			],
