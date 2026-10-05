@@ -369,3 +369,20 @@ Deno.test('edit summary counts all changes even when its preview is truncated', 
 	assert(edit.diff.includes('未显示'))
 	assertEquals(buildFileEditSummary('same.txt', 'same', 'same'), { path: 'same.txt', diff: '', added: 0, removed: 0 })
 })
+
+Deno.test('large edit previews retain exact omitted counts and capped output', () => {
+	const oldText = Array.from({ length: 50000 }, (_, i) => `old ${i}`).join('\n')
+	const newText = Array.from({ length: 50000 }, (_, i) => `new ${i}`).join('\n')
+	const edit = buildFileEditSummary('large.txt', oldText, newText)
+	assertEquals([edit.added, edit.removed], [50000, 50000])
+	assertEquals(edit.diff.split('\n').length, 81)
+	assertEquals(edit.diff.split('\n').at(-1), '…（99921 行未显示）')
+	assertEquals(renderLineDiff('a\nb', 'a\nB', { maxLines: 0 }), '…（4 行未显示）')
+})
+
+Deno.test('diff context intervals preserve overlapping and separated hunks', () => {
+	const oldText = Array.from({ length: 15 }, (_, i) => String(i)).join('\n')
+	const newText = oldText.split('\n').map((line, i) => [2, 3, 12].includes(i) ? `new ${line}` : line).join('\n')
+	assertEquals(renderLineDiff(oldText, newText, { context: 1 }),
+		'@@ 2 @@\n  1\n- 2\n- 3\n+ new 2\n+ new 3\n  4\n@@ 12 @@\n  11\n- 12\n+ new 12\n  13')
+})

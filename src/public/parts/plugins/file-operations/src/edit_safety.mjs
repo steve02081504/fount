@@ -386,33 +386,45 @@ export function renderLineDiff(oldText, newText, { context = 3, maxLines = 80 } 
 }
 
 /**
- * 渲染已经计算的行差异，摘要与预览共用一次计算。
- * @param {Array<{type: string, text: string}>} ops - Line operations.
- * @param {{context?: number, maxLines?: number}} [options] - Preview limits.
- * @returns {string} Display diff.
+ * 渲染已经计算好的行差异，让摘要与预览共用同一次计算。
+ * @param {lineOp_t[]} ops - 行级操作。
+ * @param {{context?: number, maxLines?: number}} [options] - 预览上限。
+ * @returns {string} 展示用差异。
  */
 function renderLineOps(ops, { context = 3, maxLines = 80 } = {}) {
 	const keep = new Array(ops.length).fill(false)
+	let markedThrough = -1
 	for (let i = 0; i < ops.length; i++)
-		if (ops[i].type !== 'equal')
-			for (let k = Math.max(0, i - context); k <= Math.min(ops.length - 1, i + context); k++) keep[k] = true
+		if (ops[i].type !== 'equal') {
+			const end = Math.min(ops.length - 1, i + context)
+			for (let k = Math.max(0, i - context, markedThrough + 1); k <= end; k++) keep[k] = true
+			markedThrough = Math.max(markedThrough, end)
+		}
 
 	const out = []
+	// 统计被省略的行数，但不为它们分配展示字符串；切片仍在最后统一按 maxLines 生效。
+	let outputLines = 0
 	let oldLine = 1
 	let newLine = 1
 	let lastKept = -2
 	for (let i = 0; i < ops.length; i++) {
 		const op = ops[i]
-		if (keep[i] && lastKept !== i - 1) out.push(`@@ ${op.type === 'add' ? newLine : oldLine} @@`)
+		if (keep[i] && lastKept !== i - 1) {
+			if (outputLines < maxLines) out.push(`@@ ${op.type === 'add' ? newLine : oldLine} @@`)
+			outputLines++
+		}
 		if (keep[i]) {
-			const marker = op.type === 'del' ? '-' : op.type === 'add' ? '+' : ' '
-			out.push(`${marker} ${op.text}`)
+			if (outputLines < maxLines) {
+				const marker = op.type === 'del' ? '-' : op.type === 'add' ? '+' : ' '
+				out.push(`${marker} ${op.text}`)
+			}
+			outputLines++
 			lastKept = i
 		}
 		if (op.type !== 'add') oldLine++
 		if (op.type !== 'del') newLine++
 	}
-	const omitted = Math.max(0, out.length - maxLines)
+	const omitted = Math.max(0, outputLines - maxLines)
 	const shown = omitted ? out.slice(0, maxLines) : out
 	if (omitted) shown.push(`…（${omitted} 行未显示）`)
 	return shown.join('\n')

@@ -8,7 +8,7 @@ import { defaultDisplay } from '../../shells/chat/src/reply/display.mjs'
 import { getChatI18n, inferCodeLanguageFromPath, renderMarkdownCodeBlock } from '../../shells/chat/src/streaming/index.mjs'
 
 import { collectLoadedHashes, collectUpwardContext, formatUpwardContext, hashContent, mergePluginData, PLUGIN_DATA_KEY, resolveEffectiveLog } from './src/context_files.mjs'
-import { applyEol, applyReplacement, buildFileEditSummary, detectTextStyle, normalizeTagBody, renderLineDiff, restoreBom, similarityRatio, stripBom, toLf } from './src/edit_safety.mjs'
+import { applyEol, applyReplacement, buildFileEditSummary, detectTextStyle, normalizeTagBody, restoreBom, similarityRatio, stripBom, toLf } from './src/edit_safety.mjs'
 import { formatReadWindowNotice, isProbablyTextBuffer, parseReadWindow, windowText } from './src/read_window.mjs'
 import { runRipgrep } from './src/search.mjs'
 import { createArgsExecutorResolver, executionTargetOf, listMachines, resolveLocalPath, resolveTarget } from './src/target.mjs'
@@ -617,11 +617,12 @@ export const replaceFileReplyHandler = defineReplyHandler({
 			}
 
 			if (changed) {
-				const diff = renderLineDiff(lfOriginal, modifiedContent)
+				const summary = buildFileEditSummary(filepath, lfOriginal, modifiedContent)
+				const diff = summary.diff
 				system_content += `\n变更摘要（行级 diff）：\n${renderMarkdownCodeBlock(diff || '（无可见变更）', { lang: 'diff' })}\n若和你的预期不一致，请先用 <view-file> 确认当前内容与版本，再重新 <replace-file> 修正。`
 				try {
 					await executor.writeTextFile(filepath, finalContent)
-					edit = buildFileEditSummary(filepath, lfOriginal, modifiedContent)
+					edit = summary
 				}
 				catch (err) {
 					anyFailure = true
