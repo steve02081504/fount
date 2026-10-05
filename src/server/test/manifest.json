@@ -47,7 +47,8 @@
 			],
 			"triggers": [
 				"src/server/test/integration/**",
-				"src/server/autoupdate.mjs"
+				"src/server/autoupdate.mjs",
+				"src/server/web_server/not_found_mask.mjs"
 			]
 		},
 		{

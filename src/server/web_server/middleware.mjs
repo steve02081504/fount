@@ -4,10 +4,13 @@ import express from 'npm:express'
 import fileUpload from 'npm:express-fileupload'
 
 import { console } from '../../scripts/i18n/index.mjs'
+import { is_local_ip_from_req } from '../../scripts/ratelimit.mjs'
 import { auth_request } from '../auth/index.mjs'
 import { info } from '../info.mjs'
 import { isNoCorsPath } from '../no_cors.mjs'
 import { webRequestHappened } from '../server.mjs'
+
+import { maskNotFound } from './not_found_mask.mjs'
 
 /**
  * 一个中间件，根据请求是否经过身份验证来应用不同的中间件。
@@ -55,7 +58,12 @@ export function registerMiddleware(router) {
 	// 必须在任何 diff_if_auth / try_auth_request 之前解析 Cookie，
 	// 否则 req.cookies 为 undefined，浏览器会话会被误判为未认证。
 	router.use(cookieParser())
-
+	router.use(async (req, res, next) => {
+		if (is_local_ip_from_req(req) || await auth_request(req, res)) return next()
+		res.locals.maskNotFound = true
+		maskNotFound(res)
+		return next()
+	})
 	router.use(skipWhen(isNoCorsPath, diff_if_auth(
 		express.json({ limit: Infinity }),
 		express.json({ limit: 5 * 1024 * 1024 })
