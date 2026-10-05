@@ -25,16 +25,13 @@ export const THEME_RADIUS_SUFFIXES = ['.html', '.mjs', '.js', '.css']
 
 /**
  * 被排除的路径：测试夹具 / 测试文件里的类名是样例数据，不是真实 UI
- * （按项目 `.test` / `.spec` 命名约定排除，覆盖支持后缀）；
- * `.php.html` 是 PHP 诱饵页（`src/server/web_server/php_decoy.mjs` 用静态 HTML 响应对应 `.php` 请求），
- * 非主题化前端页面（与 html_meta 等检查一致排除）。
+ * （按项目 `.test` / `.spec` 命名约定排除，覆盖支持后缀）。
  * @param {string} relativePath 相对仓库根
  * @returns {boolean} 应排除则为 true
  */
 export function isThemeRadiusExcluded(relativePath) {
 	return /(?:^|\/)test\//u.test(relativePath)
 		|| /\.(?:test|spec)\.(?:html|mjs|js|css)$/u.test(relativePath)
-		|| /\.php\.html$/u.test(relativePath)
 }
 
 /**

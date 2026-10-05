@@ -97,7 +97,6 @@ Deno.test('isThemeColorExcluded: excludes user scripts and test fixtures', () =>
 	assertEquals(isThemeColorExcluded('src/public/parts/shells/browserIntegration/public/script.user.js'), true)
 	assertEquals(isThemeColorExcluded('src/public/a/test/b.css'), true)
 	assertEquals(isThemeColorExcluded('src/public/a/b.test.css'), true)
-	assertEquals(isThemeColorExcluded('src/public/a/b.php.html'), true)
 	assertEquals(isThemeColorExcluded('src/public/a/b.css'), false)
 })
 

@@ -119,7 +119,6 @@ Deno.test('scanFileDaisyuiVar: flags @property declarations of abbreviated vars'
 Deno.test('isDaisyuiVarExcluded: matches theme_radius exclusions', () => {
 	assertEquals(isDaisyuiVarExcluded('src/public/a/test/b.css'), true)
 	assertEquals(isDaisyuiVarExcluded('src/public/a/b.test.css'), true)
-	assertEquals(isDaisyuiVarExcluded('src/public/a/b.php.html'), true)
 	assertEquals(isDaisyuiVarExcluded('src/public/a/b.css'), false)
 })
 

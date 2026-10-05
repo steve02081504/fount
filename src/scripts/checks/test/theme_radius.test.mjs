@@ -125,7 +125,6 @@ Deno.test('scanFileThemeRadius: theme-radius-ignore skips the next line only', (
 Deno.test('isThemeRadiusExcluded: excludes test fixtures', () => {
 	assertEquals(isThemeRadiusExcluded('src/public/a/test/b.html'), true)
 	assertEquals(isThemeRadiusExcluded('src/public/a/b.test.mjs'), true)
-	assertEquals(isThemeRadiusExcluded('src/public/a/server-status.php.html'), true)
 	assertEquals(isThemeRadiusExcluded('src/public/a/b.html'), false)
 })
 

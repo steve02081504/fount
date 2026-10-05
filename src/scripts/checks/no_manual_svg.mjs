@@ -35,7 +35,7 @@ const MANUAL_SVG_GLOBAL = new RegExp(MANUAL_SVG_PATTERN.source, 'gu')
 const NO_MANUAL_SVG_IGNORE_DIRECTIVE = /^\s*\/\*\s*no-manual-svg-ignore\s*\*\/\s*$/u
 
 /**
- * 被排除的路径：与 theme_radius 完全一致（测试夹具 / 测试文件 / `.php.html` 诱饵页）。
+ * 被排除的路径：与 theme_radius 完全一致（测试夹具 / 测试文件）。
  * @param {string} relativePath 相对仓库根
  * @returns {boolean} 应排除则为 true
  */

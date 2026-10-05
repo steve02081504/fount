@@ -56,7 +56,6 @@ Deno.test('isNoManualSvgExcluded: matches theme_radius exclusions', () => {
 	assertEquals(isNoManualSvgExcluded('src/public/a/test/b.mjs'), true)
 	assertEquals(isNoManualSvgExcluded('src/public/a/b.test.mjs'), true)
 	assertEquals(isNoManualSvgExcluded('src/public/a/b.spec.mjs'), true)
-	assertEquals(isNoManualSvgExcluded('src/public/a/b.php.html'), true)
 	assertEquals(isNoManualSvgExcluded('src/public/a/b.mjs'), false)
 })
 
