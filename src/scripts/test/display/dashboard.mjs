@@ -205,6 +205,8 @@ export class TestDashboard {
 	#lastCompletionMs = null
 	/** @type {number} */
 	#unknownCount = 0
+	/** @type {number | null} */
+	#remainingCount = null
 	/** @type {string} */
 	#reason = ''
 	/** @type {number} */
@@ -319,6 +321,7 @@ export class TestDashboard {
 		this.#failed = 0
 		this.#lastCompletionMs = null
 		this.#unknownCount = 0
+		this.#remainingCount = null
 		this.#reason = ''
 		this.#aheadCount = 0
 		this.#scheduleRender()
@@ -348,6 +351,7 @@ export class TestDashboard {
 		if (!this.#begun) return
 		this.#lastCompletionMs = msg.lastCompletionMs
 		this.#unknownCount = msg.unknownCount ?? 0
+		this.#remainingCount = msg.remainingCount
 		if (msg.reason && msg.reason !== 'initial') this.#reason = msg.reason
 		const now = Date.now()
 		for (const r of msg.running ?? []) {
@@ -504,6 +508,8 @@ export class TestDashboard {
 			parts.push(geti18nForTerminal('fountConsole.test.display.remaining', { remaining: formatDuration(this.#lastCompletionMs) }))
 		else
 			parts.push(geti18nForTerminal('fountConsole.test.display.dashboard.idle'))
+		if (this.#remainingCount != null)
+			parts.push(geti18nForTerminal('fountConsole.test.display.dashboard.remainingCount', { count: this.#remainingCount }))
 		if (this.#unknownCount > 0)
 			parts.push(geti18nForTerminal('fountConsole.test.display.dashboard.unknownCount', { count: this.#unknownCount }))
 		if (this.#running.size > 0)

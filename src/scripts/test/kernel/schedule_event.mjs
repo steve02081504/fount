@@ -13,6 +13,7 @@ import { geti18n } from '../../i18n/bare.mjs'
  * @param {import('./schedule.mjs').ScheduleSlot[]} projection.running 在跑项
  * @param {number | null} projection.lastCompletionAt 本队列最后一个任务完成时刻
  * @param {number} projection.unknownCount 未知耗时项数
+ * @param {number} projection.remainingCount 本队列剩余套件数（含在跑）
  * @param {object} viewer viewer
  * @param {boolean} viewer.watch 是否 watch
  * @param {string | null} viewer.jobId 归属 job
@@ -37,6 +38,7 @@ export function buildScheduleUpdate(projection, viewer, reason, reasonDetail = '
 			: null,
 		lastCompletionMs: projection.lastCompletionAt,
 		unknownCount: projection.unknownCount,
+		remainingCount: projection.remainingCount,
 		reason,
 		reasonDetail,
 	}

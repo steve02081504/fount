@@ -332,10 +332,10 @@ export function buildTimeline(tasks, { memBudgetBytes, cpuBudgetPct }) {
 }
 
 /**
- * 消费端投影：该 consumer（watch 全局 / 指定 job）的在跑项与其最后一个任务的完成时刻。
+ * 消费端投影：该 consumer（watch 全局 / 指定 job）的剩余套件（含在跑）、在跑项与其最后一个任务的完成时刻。
  * @param {ScheduleSlot[]} slots 时间表
  * @param {{ watch: boolean, jobId?: string | null }} consumer 消费端
- * @returns {{ running: ScheduleSlot[], lastCompletionAt: number | null, unknownCount: number }} 投影
+ * @returns {{ running: ScheduleSlot[], lastCompletionAt: number | null, unknownCount: number, remainingCount: number }} 投影
  */
 export function projectConsumer(slots, { watch = false, jobId = null }) {
 	/**
@@ -348,5 +348,5 @@ export function projectConsumer(slots, { watch = false, jobId = null }) {
 	const knownEnds = own.map(slot => slot.endAt).filter(end => end != null)
 	const lastCompletionAt = knownEnds.length ? Math.max(...knownEnds) : null
 	const unknownCount = own.filter(slot => slot.endAt == null).length
-	return { running, lastCompletionAt, unknownCount }
+	return { running, lastCompletionAt, unknownCount, remainingCount: own.length }
 }

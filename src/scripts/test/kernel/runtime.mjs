@@ -685,7 +685,7 @@ export class TestKernel {
 		for (const viewer of this.viewers.values()) {
 			const projection = timeline
 				? projectConsumer(timeline.slots, { watch: viewer.watch, jobId: viewer.jobId })
-				: { running: [], lastCompletionAt: null, unknownCount: 0 }
+				: { running: [], lastCompletionAt: null, unknownCount: 0, remainingCount: 0 }
 			this.viewers.send(viewer.id, buildScheduleUpdate(projection, viewer, reason, detail))
 		}
 	}

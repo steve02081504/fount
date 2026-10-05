@@ -607,3 +607,18 @@ Deno.test('dashboard move-up count accounts for physical wrap after shrink', () 
 		Object.defineProperty(process.stdout, 'rows', { value: undefined, configurable: true })
 	}
 })
+
+Deno.test('dashboard renders the schedule remaining count and drops it on reset', () => {
+	const { out, dashboard } = captureDashboard()
+	dashboard.begin()
+	try {
+		dashboard.onScheduleUpdate({ remainingCount: 8, lastCompletionMs: 60_000 })
+		assertEquals(stripAnsi(out.at(-1)).includes('剩余 8 项'), true)
+		dashboard.onScheduleUpdate({ remainingCount: 0, lastCompletionMs: 0 })
+		assertEquals(stripAnsi(out.at(-1)).includes('剩余 0 项'), true)
+		dashboard.reset()
+		assertEquals(stripAnsi(out.at(-1)).includes('剩余 0 项'), false)
+	} finally {
+		dashboard.end()
+	}
+})

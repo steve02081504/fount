@@ -223,6 +223,7 @@
 				"dashboard": {
 					"idle": "空闲",
 					"unknownCount": "+${count} 未知",
+					"remainingCount": "剩余 ${count} 项",
 					"runningCount": "运行 ${count}",
 					"passedCount": "通过 ${count}",
 					"failedCount": "失败 ${count}",

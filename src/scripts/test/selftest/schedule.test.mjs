@@ -110,9 +110,11 @@ Deno.test('consumer projection: watch sees all, job sees only its own', () => {
 	]
 	const { slots } = buildTimeline(tasks, ROOMY)
 	const watch = projectConsumer(slots, { watch: true })
+	assertEquals(watch.remainingCount, 2)
 	assertEquals(watch.running.length, 0)
 	assertEquals(watch.lastCompletionAt, 2000)
 	const job1 = projectConsumer(slots, { watch: false, jobId: 'j1' })
+	assertEquals(job1.remainingCount, 1)
 	assertEquals(job1.lastCompletionAt, 1000)
 	const job2 = projectConsumer(slots, { watch: false, jobId: 'j2' })
 	assertEquals(job2.lastCompletionAt, 2000)
@@ -123,6 +125,7 @@ Deno.test('consumer projection exposes running items with remaining', () => {
 		task({ key: 'a', durationMs: 10_000, elapsedMs: 3000, running: true, jobId: 'j1' }),
 	], ROOMY)
 	const job1 = projectConsumer(slots, { watch: false, jobId: 'j1' })
+	assertEquals(job1.remainingCount, 1)
 	assertEquals(job1.running.length, 1)
 	assertEquals(job1.running[0].key, 'a')
 	assertEquals(job1.running[0].endAt, 7000)
