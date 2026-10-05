@@ -6,6 +6,7 @@
 import { geti18n, primaryLocale } from '/scripts/i18n/index.mjs'
 import { arrayBufferToBase64 } from '/scripts/lib/base64.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { CODE_SYNTAX_CSS } from '/scripts/components/codeSyntaxStyles.mjs'
 
 import { renderMarkdownAsStandAloneHtmlString } from '/scripts/features/markdown/index.mjs'
 
@@ -112,6 +113,7 @@ export function wrapStandaloneMarkdownDocument(messageHtml, options = {}) {
 	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />${hasKatex ? `
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css" crossorigin="anonymous">` : ''}
 	<style>
+		${CODE_SYNTAX_CSS}
 		body {
 			margin: 0;
 			font-family: sans-serif;

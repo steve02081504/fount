@@ -4,6 +4,76 @@ import { API_BASE, BASE, holdLocale, leftoverWorkspaceDirs, makeWorkspace, openC
 
 useLeftoverWorkspaceCleanup(test)
 
+test('Markdown fences and Monaco share Shiki colors and nested folding', async ({ modulePage }) => {
+	const result = await modulePage.run(async () => {
+		const { renderMarkdownAsString } = await import('/scripts/features/markdown/index.mjs')
+		const { loadCodeRuntime, resolveFileLanguage } = await import('/scripts/components/codeSyntax.mjs')
+		const { setTheme } = await import('/scripts/theme/index.mjs')
+		document.documentElement.style.backgroundColor = 'var(--color-base-100)'
+		document.documentElement.removeAttribute('data-theme')
+		const source = 'function outer() {\n  if (true) {\n    return "value";\n  }\n}\n'
+		const host = document.createElement('div'), editorHost = document.createElement('div')
+		editorHost.style.cssText = 'width:500px;height:240px'
+		document.body.append(host, editorHost)
+		host.innerHTML = await renderMarkdownAsString('```js\n' + source + '```')
+		const pre = host.querySelector('pre'), buttons = [...host.querySelectorAll('.fount-code-fold-toggle')]
+		const before = pre.textContent
+		buttons[1]?.click()
+		const innerHidden = buttons[1]?.nextElementSibling.hidden
+		buttons[0]?.click()
+		const outerHidden = buttons[0]?.nextElementSibling.hidden
+		buttons[0]?.click()
+		const nestedPreserved = buttons[1]?.nextElementSibling.hidden
+		buttons[1]?.click()
+		const monaco = await loadCodeRuntime()
+		const model = monaco.editor.createModel(source, await resolveFileLanguage('example.js'))
+		const editor = monaco.editor.create(editorHost, { model, minimap: { enabled: false } })
+		await editor.getAction('editor.foldAll').run()
+		/**
+		 * @param {string} theme - 应用主题名。
+		 * @returns {Promise<object>} 两个界面当前的颜色。
+		 */
+		async function colors(theme) {
+			await setTheme(theme)
+			for (let frame = 0; frame < 100 && !document.documentElement.getAttribute('color-scheme')?.includes(theme); frame++) await new Promise(resolve => setTimeout(resolve, 20))
+			await new Promise(resolve => requestAnimationFrame(resolve))
+			for (let frame = 0; frame < 120; frame++) {
+				editor.render(true)
+				if ([...editorHost.querySelectorAll('.view-line span')].some(span => span.textContent.trim() === 'function')) break
+				await new Promise(resolve => requestAnimationFrame(resolve))
+			}
+			const keyword = pre.querySelector('span[style*="--shiki"]')
+			const editorKeyword = [...editorHost.querySelectorAll('.view-line span')].find(span => span.textContent.trim() === 'function')
+			const placeholder = editorHost.querySelector('.inline-folded')
+			if (!keyword || !editorKeyword || !placeholder) throw new Error('Highlighted keyword or fold placeholder missing')
+			return {
+				markdown: getComputedStyle(keyword).color, editor: getComputedStyle(editorKeyword).color,
+				fold: getComputedStyle(placeholder).backgroundColor, button: getComputedStyle(buttons[0]).backgroundColor,
+			}
+		}
+		const light = await colors('light'), dark = await colors('dark')
+		const bat = document.createElement('div')
+		bat.innerHTML = await renderMarkdownAsString('```bat\n@echo off\nset NAME=value\necho %NAME%\n```')
+		const batTokens = bat.querySelectorAll('span[style*="--shiki"]').length
+		const batLanguage = await resolveFileLanguage('example.bat')
+		const output = { before, after: pre.textContent, innerHidden, outerHidden, nestedPreserved, folds: buttons.length, light, dark, batTokens, batLanguage }
+		editor.dispose(); model.dispose(); host.remove(); editorHost.remove()
+		return output
+	})
+	expect(result.before).toBe('function outer() {\n  if (true) {\n    return "value";\n  }\n}\n')
+	expect(result.after).toBe(result.before)
+	expect(result.folds).toBe(2)
+	expect(result.innerHidden && result.outerHidden && result.nestedPreserved).toBe(true)
+	for (const theme of [result.light, result.dark]) {
+		expect(theme.markdown).toBe(theme.editor)
+		expect(theme.fold).toBe(theme.button)
+	}
+	expect(result.dark.markdown).not.toBe(result.light.markdown)
+	expect(result.dark.fold).not.toBe(result.light.fold)
+	expect(result.batLanguage).toBe('bat')
+	expect(result.batTokens).toBeGreaterThan(3)
+})
+
 test('orphan-fence repair leaves intentional and closed code fences intact', async ({ modulePage }) => {
 	const outputs = await modulePage.run(async () => {
 		const { repairOrphanedReplyFence } = await import('/parts/shells:code/src/replyMarkdown.mjs')

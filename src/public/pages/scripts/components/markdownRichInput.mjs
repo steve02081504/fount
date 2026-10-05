@@ -16,12 +16,10 @@ import { positionContextMenu } from '/scripts/components/positionContextMenu.mjs
 import { svgInliner } from '/scripts/lib/svgInliner.mjs'
 import { promptText } from '/scripts/features/promptDialog.mjs'
 import { setElementI18n } from '/scripts/i18n/index.mjs'
+import { CODE_THEMES, loadCodeHighlighter, resolveCodeLanguage } from './codeSyntax.mjs'
 
 /** 块级标签（Firefox/浏览器 Enter 可能产生 `<div>` 等，序列化时视为换行）。 */
 const BLOCK_TAGS = /^(?:DIV|P|LI|H[1-6]|PRE|BLOCKQUOTE|TR|TD)$/
-
-/** 高亮器按需加载，语言与主题由 Shiki 的单例缓存。 */
-let shikiModule
 
 /**
  * 扫描闭合的反引号围栏；短围栏留在外层代码正文中。
@@ -386,12 +384,12 @@ export function createMarkdownRichInput(element, options = {}) {
 	 */
 	function highlightTokens(raw, code, language) {
 		if (!highlightedBlocks.has(raw)) {
-			shikiModule ??= import('https://esm.sh/shiki')
-			const pending = shikiModule.then(async ({ bundledLanguages, codeToTokensWithThemes }) => {
-				if (!Object.hasOwn(bundledLanguages, language)) return null
-				const tokens = await codeToTokensWithThemes(code, {
-					lang: language,
-					themes: { light: 'github-light', dark: 'github-dark-dimmed' },
+			const pending = resolveCodeLanguage(language).then(async lang => {
+				if (lang === 'text') return null
+				const highlighter = await loadCodeHighlighter({ langs: [lang] })
+				const tokens = highlighter.codeToTokensWithThemes(code, {
+					lang,
+					themes: CODE_THEMES,
 				})
 				// 不让高亮器的换行规范化改变可编辑原文。
 				return tokens.map(line => line.map(token => token.content).join('')).join('\n') === code ? tokens : null

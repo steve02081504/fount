@@ -846,6 +846,7 @@
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/markdownRichInput.spec.mjs",
 						"src/public/pages/scripts/components/markdownRichInput.mjs",
+						"src/public/pages/scripts/components/code{Syntax,EditorLocale,SyntaxStyles}.mjs",
 						"src/public/parts/shells/chat/public/shared/mentionQuery.mjs",
 						"src/public/parts/shells/chat/public/hub/markdownRichInput.mjs",
 						"src/public/parts/shells/chat/public/hub/mentionAutocomplete.mjs",

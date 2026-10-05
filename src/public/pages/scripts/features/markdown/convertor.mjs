@@ -15,13 +15,14 @@ import remarkGfm from 'https://esm.sh/remark-gfm'
 import remarkMath from 'https://esm.sh/remark-math'
 import remarkParse from 'https://esm.sh/remark-parse'
 import remarkRehype from 'https://esm.sh/remark-rehype'
-import { createHighlighter } from 'https://esm.sh/shiki'
 import { unified } from 'https://esm.sh/unified'
 import { visit } from 'https://esm.sh/unist-util-visit'
 
+import { CODE_THEMES, loadCodeHighlighter } from '../../components/codeSyntax.mjs'
 import { geti18n } from '../../i18n/index.mjs'
 import { onThemeChange } from '../../theme/index.mjs'
 
+import { rehypeCodeSyntax } from './codeSyntax.mjs'
 import { ensureMarkdownExtensionAssets } from './extensions.mjs'
 import { remarkLiteralizeUnknownHtmlTags } from './literalizeUnknownTags.mjs'
 import { rehypeSanitizeUntrustedContent } from './sanitize.mjs'
@@ -738,6 +739,7 @@ function resolveLanguageExecutor(langOrExt, allowUnsafeExecutors) {
  * @returns {number} 行数。
  */
 function countCodeLines(pre) {
+	if (pre.data?.codeLineCount) return pre.data.codeLineCount
 	const code = pre.children?.find(child => child.type === 'element' && child.tagName === 'code')
 	const lines = code?.children?.filter(child =>
 		child.type === 'element' && child.tagName === 'span' && 'data-line' in (child.properties || {})
@@ -1279,17 +1281,15 @@ export async function GetMarkdownConvertor({
 		processor = processor.use(rehypeFountEmbedLinks)
 	processor = processor
 		.use(rehypeMermaid, { securityLevel: mermaidSecurityLevel })
+		.use(rehypeCodeSyntax)
 		.use(rehypePrettyCode, {
-			theme: {
-				dark: 'github-dark-dimmed',
-				light: 'github-light',
-			},
+			theme: CODE_THEMES,
 			/**
 			 * 扩展默认的高亮器配置
 			 * @param {object} options - 选项。
 			 * @returns {Promise<import('npm:shiki').Highlighter>} - 高亮器。
 			 */
-			getHighlighter: options => createHighlighter({
+			getHighlighter: options => loadCodeHighlighter({
 				...options,
 				langs: [
 					...options.langs,
@@ -1375,8 +1375,10 @@ export async function GetMarkdownConvertor({
 	margin-right: 2px;
 }
 
+.markdown-code-block pre,
 .markdown-body .highlight pre,
 .markdown-body pre {
+	tab-size: 4;
 	color: var(--color-base-content);
 	background-color: var(--color-base-100);
 }

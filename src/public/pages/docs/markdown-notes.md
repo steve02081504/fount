@@ -19,6 +19,8 @@ Flowchart edge labels use HTML (`foreignObject` → `.edgeLabel p` / `.labelBkg`
 
 ## Code block UI
 
+`components/codeSyntax.mjs` owns the shared Shiki highlighter, themes, language aliases and Monaco indentation/region folding; `components/codeSyntaxStyles.mjs` holds `CODE_SYNTAX_CSS` alone so standalone-document export can embed it without pulling in the editor runtime. File editors use incremental TextMate tokens; ordinary Markdown fences use the same tokens and nested fold ranges through `features/markdown/codeSyntax.mjs`. Fold controls carry no source text, so copy/download preserve folded contents. Inline code and fences with pretty-code metadata retain pretty-code handling with the shared highlighter.
+
 Copy / download / execute must be a rehype plugin **after** `rehype-pretty-code`, touching only `figure[data-rehype-pretty-code-figure] > pre`.
 
 Do not use Shiki `transformers.root` wrapping — it breaks inline `{:lang}` (expects `root>pre`). Plain `` `code` `` stays bare `<code>`; `` `code{:js}` `` → `span>code`. HTML `document.write` preview is trusted-only.
