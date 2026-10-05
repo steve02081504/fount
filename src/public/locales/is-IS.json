@@ -223,7 +223,7 @@
 				"dashboard": {
 					"idle": "aðgerðalaus",
 					"unknownCount": "+${count} óþekkt",
-					"remainingCount": null,
+					"remainingCount": "Eftir: ${count}",
 					"runningCount": "${count} í gangi",
 					"passedCount": "${count} stóðust",
 					"failedCount": "${count} mistókst",

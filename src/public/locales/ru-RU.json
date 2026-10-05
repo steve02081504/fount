@@ -223,7 +223,7 @@
 				"dashboard": {
 					"idle": "Простой",
 					"unknownCount": "+${count} неизвестно",
-					"remainingCount": null,
+					"remainingCount": "Осталось: ${count}",
 					"runningCount": "Выполняется: ${count}",
 					"passedCount": "Успешно: ${count}",
 					"failedCount": "Провалено: ${count}",

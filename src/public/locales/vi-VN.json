@@ -223,7 +223,7 @@
 				"dashboard": {
 					"idle": "nhàn rỗi",
 					"unknownCount": "+${count} không xác định",
-					"remainingCount": null,
+					"remainingCount": "Còn lại: ${count}",
 					"runningCount": "Đang chạy: ${count}",
 					"passedCount": "Đạt: ${count}",
 					"failedCount": "Thất bại: ${count}",

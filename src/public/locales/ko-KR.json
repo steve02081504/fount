@@ -223,7 +223,7 @@
 				"dashboard": {
 					"idle": "대기 중",
 					"unknownCount": "+${count} 미상",
-					"remainingCount": null,
+					"remainingCount": "남은 ${count}개",
 					"runningCount": "${count} 실행 중",
 					"passedCount": "${count} 통과",
 					"failedCount": "${count} 실패",
