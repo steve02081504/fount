@@ -6821,7 +6821,8 @@
 				"connected": "Automatische Aktualisierung des Arbeitsbereichs ist verbunden",
 				"disconnected": "Die Verbindung zum Arbeitsbereich ist getrennt; es wird neu verbunden. Die Anzeige kann veraltet sein.",
 				"unavailable": "Die automatische Aktualisierung dieses Arbeitsbereichs ist nicht verfügbar. Prüfe den Arbeitsbereich und die abonnierten Verzeichnisse."
-			}
+			},
+			"cursor": "Zeile ${line}, Spalte ${column}"
 		}
 	},
 	"gist": {

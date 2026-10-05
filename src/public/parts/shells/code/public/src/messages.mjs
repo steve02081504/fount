@@ -17,7 +17,7 @@ import { iconElement, icons } from './icons.mjs'
 import { repairOrphanedReplyFence } from './replyMarkdown.mjs'
 import { updateRunCards } from './runCards.mjs'
 import { markSessionDirty } from './sessionPersistence.mjs'
-import { elements, isBusy, isGenerating, store, SCROLL_TOLERANCE } from './store.mjs'
+import { activeTab, elements, isBusy, isGenerating, store, SCROLL_TOLERANCE } from './store.mjs'
 import { subAgentCardElement } from './subagents.mjs'
 import { regenerateLastReply, retryFromError } from './submission.mjs'
 import { renderTemplate } from './templates.mjs'
@@ -888,12 +888,11 @@ syncObservedMessageElements()
 
 /**
  * 空态布局开关：无条目且未在生成时 composer 垂直居中 + wordmark。
- * 生成中（entries 仍为空）不算空态——消息流必须保持可见，流式气泡才有容器。
+ * 文件标签页和正在生成的会话都不算空态——消息流必须保持可见，流式气泡才有容器。
  */
 export function updateEmptyMode() {
-	// 活动标签页正在生成时即使 entries 仍为空也不算空态——消息流必须保持可见，流式气泡才有容器
-	const empty = !(store.session?.entries?.length || 0) && !isGenerating(store.activeTabKey)
-	elements.main?.classList.toggle('empty-mode', empty)
+	elements.main?.classList.toggle('empty-mode',
+		activeTab()?.type !== 'file' && !store.session?.entries?.length && !isGenerating(store.activeTabKey))
 }
 
 /** 渲染全部消息（并同步活动标签页的待发送附件预览条，标签切换时一并刷新）。 */

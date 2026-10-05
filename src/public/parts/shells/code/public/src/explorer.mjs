@@ -4,36 +4,36 @@ import { showToastI18n } from '/scripts/features/toast.mjs'
 import { svgInliner } from '/scripts/lib/svgInliner.mjs'
 
 import * as api from './endpoints.mjs'
+import { createFileEditor, bufferContent, bufferDirty } from './fileEditor.mjs'
 import { fileIcon, iconElement } from './icons.mjs'
 import { selectWorkspace } from './pills.mjs'
 import { activeTab, getRuntime, richInput, store, tabKeyOf } from './store.mjs'
 import { renderTabs, saveTabPrefs, syncCodeUrl } from './tabs.mjs'
+import { windowedRows } from './windowedRows.mjs'
 
 const tree = document.getElementById('code-explorer-tree')
 const sidebar = document.getElementById('code-explorer')
 const workspaceLabel = document.getElementById('code-explorer-workspace')
 const connectionStatus = document.getElementById('code-explorer-connection')
 const editor = document.getElementById('code-editor')
-const input = document.getElementById('code-editor-input')
-const lines = document.getElementById('code-editor-lines')
-const filename = document.getElementById('code-editor-filename')
-const dirtyMarker = document.getElementById('code-editor-dirty')
-const saveButton = document.getElementById('code-editor-save')
-const diffButton = document.getElementById('code-editor-diff')
-const diffView = document.getElementById('code-editor-diff-view')
-const summary = document.getElementById('code-editor-summary')
+const editorHost = document.getElementById('code-editor-input')
 const status = document.getElementById('code-editor-status')
 const toggle = document.getElementById('code-explorer-toggle')
+let treeWindow = null
+let fileEditor = null, editorPromise = null, fileLoad = null
+let displayedFileTab = null
+/** 状态栏只在 paintEditorStatus 里写入，这里保留最近一次光标位置。 @type {{line: number, column: number}} */
+let cursorPosition = { line: 1, column: 1 }
 
-/** @type {Map<string, {content: string, base: string, version: string, loading?: boolean, saving?: boolean, external?: boolean}>} */
+/** @type {Map<string, {content: string, base: string, version: string, lineEnding?: string, model?: object, viewState?: object, savedAlternativeVersionId?: number, savedOriginalVersionId?: number, saving?: boolean, saveAgain?: boolean, external?: boolean}>} */
 const buffers = new Map()
 /** @type {Map<string, Set<string>>} */
 const expanded = new Map()
 /** @type {Map<string, Array<object>>} */
 const directoryCache = new Map()
+let directoryLoad = null
 let treeRevision = 0
 let fileRevision = 0
-let diffVisible = false
 /** 当前的工作区变化订阅（key 标识工作区与监听目录集合）。 @type {{key: string, stop: (() => void)|null}|null} */
 let watchSubscription = null
 let watchState = 'connecting'
@@ -101,14 +101,18 @@ function cacheKey(workspaceId, path) { return `${workspaceId}\0${path}` }
  */
 export function isFileDirty(tab) {
 	const buffer = tab?.type === 'file' && buffers.get(tabKeyOf(tab))
-	return !!buffer && buffer.content !== buffer.base
+	return !!buffer && bufferDirty(buffer)
 }
 
 /**
  * @param {object} tab - Closed file tab.
  * @returns {void} Discards its buffer.
  */
-export function forgetFileTab(tab) { buffers.delete(tabKeyOf(tab)) }
+export function forgetFileTab(tab) {
+	const key = tabKeyOf(tab), buffer = buffers.get(key)
+	if (buffer) fileEditor?.disposeBuffer(buffer)
+	buffers.delete(key)
+}
 
 /**
  * @param {boolean} visible - Whether the sidebar is shown.
@@ -122,38 +126,29 @@ function setSidebarVisible(visible) {
 
 /** 翻译和工作区状态就绪后初始化控件一次。 @returns {void} */
 export function initExplorer() {
-	window.addEventListener('pagehide', () => { watchSubscription?.stop?.(); watchSubscription = null })
+	// 窗口必须延迟到页面就绪后再创建：模块级创建会让任何 import 本模块的裸页面直接崩掉。
+	treeWindow = windowedRows(tree, { height: 28, render: renderTreeRow })
+	window.addEventListener('pagehide', event => {
+		watchSubscription?.stop?.(); watchSubscription = null; fileLoad?.abort(); directoryLoad?.abort()
+		if (!event.persisted && fileEditor) {
+			fileEditor.dispose()
+			for (const buffer of buffers.values()) fileEditor.disposeBuffer(buffer)
+			fileEditor = null; editorPromise = null
+		}
+	})
 	window.addEventListener('pageshow', event => { if (event.persisted) void refreshExplorer({ clear: true }) })
 	setSidebarVisible(localStorage.getItem('code.explorer.visible') !== 'false' && matchMedia('(min-width: 851px)').matches)
 	window.addEventListener('code-workspace-change', () => void refreshExplorer({ workspaceOverride: store.workspace }))
 	toggle.addEventListener('click', () => setSidebarVisible(sidebar.hidden))
 	document.getElementById('code-explorer-refresh').addEventListener('click', () => void refreshExplorer({ clear: true }))
-	input.addEventListener('input', () => {
-		const tab = activeTab()
-		if (tab?.type !== 'file') return
-		const buffer = buffers.get(tabKeyOf(tab))
-		if (!buffer) return
-		buffer.content = input.value
-		paintEditor(tab)
-	})
-	input.addEventListener('scroll', () => { lines.scrollTop = input.scrollTop })
-	input.addEventListener('keydown', event => {
-		if (event.key === 'Tab') {
-			event.preventDefault()
-			const start = input.selectionStart
-			input.setRangeText('\t', start, input.selectionEnd, 'end')
-			input.dispatchEvent(new Event('input', { bubbles: true }))
-		}
-		if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
-			event.preventDefault()
-			void saveActiveFile()
-		}
-	})
-	saveButton.addEventListener('click', () => void saveActiveFile())
-	diffButton.addEventListener('click', () => {
-		diffVisible = !diffVisible
-		paintEditor(activeTab())
-	})
+	window.addEventListener('blur', () => void saveActiveFile())
+	document.addEventListener('visibilitychange', () => { if (document.hidden) void saveActiveFile() })
+	// Ctrl+S 独占保存并吞掉浏览器默认行为；非文件标签下 saveActiveFile 是空操作。
+	document.addEventListener('keydown', event => {
+		if (!(event.ctrlKey || event.metaKey) || event.key.toLowerCase() !== 's') return
+		event.preventDefault()
+		void saveActiveFile()
+	}, true)
 	void refreshExplorer()
 }
 
@@ -163,6 +158,7 @@ export function initExplorer() {
  * @returns {Promise<void>} Tree render completion.
  */
 export async function refreshExplorer({ clear = false, workspaceOverride = null } = {}) {
+	if (!treeWindow) return
 	const workspace = workspaceOverride || workspaceFor()
 	// 监听范围 = 已展开目录 + 已打开文件的父目录；范围或工作区变化时重订阅
 	const target = workspace && { machine: String(workspace.machine ?? '0'), workdir: workspace.path }
@@ -185,18 +181,22 @@ export async function refreshExplorer({ clear = false, workspaceOverride = null 
 	const revision = ++treeRevision
 	workspaceLabel.textContent = workspace?.name || workspace?.path || geti18n('code.workspaces.none')
 	if (!workspace) {
-		tree.replaceChildren(note('code.explorer.noWorkspace'))
+		treeWindow.set([{ note: 'code.explorer.noWorkspace' }])
 		return
 	}
 	if (clear) for (const key of directoryCache.keys()) if (key.startsWith(`${workspace.id}\0`)) directoryCache.delete(key)
-	await paintDirectory(workspace, '', tree, 0, revision)
+	directoryLoad?.abort()
+	const controller = directoryLoad = new AbortController()
+	const rows = await collectDirectory(workspace, '', 0, revision, controller.signal)
+	if (revision === treeRevision) treeWindow.set(rows)
 }
 
 /** 页面语言改变后重画编辑器与文件树的本地化文案。 @returns {void} */
 export function rerenderExplorer() {
+	if (!treeWindow) return
 	paintWatchState()
 	const tab = activeTab()
-	if (tab?.type === 'file') paintEditor(tab)
+	if (tab?.type === 'file') { fileEditor?.translate(); paintEditor(tab) }
 	void refreshExplorer()
 }
 
@@ -213,66 +213,77 @@ function note(key) {
 }
 
 /**
- * @param {object} workspace - Target workspace.
- * @param {string} path - Relative directory path.
- * @param {HTMLElement} container - Tree container.
- * @param {number} depth - Tree nesting depth.
- * @param {number} revision - Render revision.
- * @returns {Promise<void>} Directory render completion.
+ * @param {object} workspace - Workspace.
+ * @param {string} path - Directory.
+ * @param {number} depth - Indent.
+ * @param {number} revision - Load generation.
+ * @param {AbortSignal} signal - Cancellation.
+ * @returns {Promise<Array<object>>} Flattened expanded tree.
  */
-async function paintDirectory(workspace, path, container, depth, revision) {
+async function collectDirectory(workspace, path, depth, revision, signal) {
 	const key = cacheKey(workspace.id, path)
 	let entries = directoryCache.get(key)
 	if (!entries) 
 		try {
-			entries = (await api.listWorkspaceDirectory({ machine: String(workspace.machine ?? '0'), workdir: workspace.path }, path)).entries
+			entries = []
+			let offset = 0
+			do {
+				const page = await api.listWorkspaceDirectory({ machine: String(workspace.machine ?? '0'), workdir: workspace.path }, path, { offset, limit: 2000, signal })
+				entries.push(...page.entries)
+				offset = page.nextOffset
+			} while (offset != null && !signal.aborted)
+			if (signal.aborted || revision !== treeRevision) return []
 			directoryCache.set(key, entries)
-		}
-		catch (error) {
-			if (revision === treeRevision) container.replaceChildren(note('code.explorer.loadFailed'))
-			// 404 表示目录被外部删除或移动：树上的提示行已经说明了状态，再报 console.error 只会污染页面诊断
+		} catch (error) {
+			if (signal.aborted || revision !== treeRevision) return []
 			if (error?.http_code !== 404) console.error('code explorer: directory failed', error)
-			return
+			return [{ note: 'code.explorer.loadFailed', depth }]
 		}
 	
-	if (revision !== treeRevision) return
-	const rows = entries.slice().sort((a, b) => Number(b.isDirectory) - Number(a.isDirectory) || a.name.localeCompare(b.name))
-	container.replaceChildren(...rows.map(entry => {
-		const wrap = document.createElement('div')
-		const row = document.createElement('button')
-		row.type = 'button'
-		row.className = 'code-tree-row'
-		row.style.paddingInlineStart = `${0.55 + depth * 0.9}rem`
-		row.dataset.selected = String(!entry.isDirectory && activeTab()?.type === 'file' && activeTab().workspaceId === workspace.id && activeTab().id === entry.path)
-		if (entry.isDirectory) row.setAttribute('aria-expanded', String(expanded.get(workspace.id)?.has(entry.path) || false))
-		const arrow = document.createElement('span')
-		arrow.className = 'code-tree-chevron'
-		arrow.textContent = entry.isDirectory ? expanded.get(workspace.id)?.has(entry.path) ? '⌄' : '›' : ''
-		const icon = iconElement(fileIcon(entry.name, entry.isDirectory), { size: 15 })
-		const name = document.createElement('span')
-		name.className = 'code-tree-name'
-		name.setAttribute('user-content', '')
-		name.textContent = entry.name
-		row.append(arrow, icon, name)
-		wrap.appendChild(row)
-		if (entry.isDirectory) {
-			const children = document.createElement('div')
-			if (expanded.get(workspace.id)?.has(entry.path)) void paintDirectory(workspace, entry.path, children, depth + 1, revision)
-			row.addEventListener('click', () => {
-				let paths = expanded.get(workspace.id)
-				if (!paths) expanded.set(workspace.id, paths = new Set())
-				if (paths.has(entry.path)) { paths.delete(entry.path); children.replaceChildren() }
-				else { paths.add(entry.path); void paintDirectory(workspace, entry.path, children, depth + 1, treeRevision) }
-				row.setAttribute('aria-expanded', String(paths.has(entry.path)))
-				arrow.textContent = paths.has(entry.path) ? '⌄' : '›'
-				void refreshExplorer()
-			})
-			wrap.appendChild(children)
-		}
-		else row.addEventListener('click', () => void openFileTab(workspace, entry.path))
-		return wrap
-	}))
-	void svgInliner(container)
+	const rows = []
+	for (const entry of entries.slice().sort((a, b) => Number(b.isDirectory) - Number(a.isDirectory) || a.name.localeCompare(b.name))) {
+		if (signal.aborted || revision !== treeRevision) return []
+		rows.push({ ...entry, workspace, depth })
+		if (entry.isDirectory && expanded.get(workspace.id)?.has(entry.path))
+			rows.push(...await collectDirectory(workspace, entry.path, depth + 1, revision, signal))
+	}
+	return rows
+}
+
+/**
+ * 在虚拟化工作区树中绘制文件、目录或状态提示。
+ * @param {object} entry - Workspace tree entry or a `{ note }` placeholder.
+ * @returns {HTMLElement} Visible tree row.
+ */
+function renderTreeRow(entry) {
+	if (entry.note) return note(entry.note)
+	const { workspace, depth } = entry
+	const row = document.createElement('button')
+	row.type = 'button'
+	row.className = 'code-tree-row'
+	row.style.paddingInlineStart = `${0.55 + depth * 0.9}rem`
+	row.dataset.selected = String(!entry.isDirectory && activeTab()?.type === 'file' && activeTab().workspaceId === workspace.id && activeTab().id === entry.path)
+	const open = expanded.get(workspace.id)?.has(entry.path) || false
+	if (entry.isDirectory) row.setAttribute('aria-expanded', String(open))
+	const arrow = document.createElement('span')
+	arrow.className = 'code-tree-chevron'
+	arrow.textContent = entry.isDirectory ? open ? '⌄' : '›' : ''
+	const icon = iconElement(fileIcon(entry.name, entry.isDirectory), { size: 15 })
+	const name = document.createElement('span')
+	name.className = 'code-tree-name'
+	name.setAttribute('user-content', '')
+	name.textContent = entry.name
+	row.append(arrow, icon, name)
+	row.addEventListener('click', () => {
+		if (!entry.isDirectory) { void openFileTab(workspace, entry.path); return }
+		let paths = expanded.get(workspace.id)
+		if (!paths) expanded.set(workspace.id, paths = new Set())
+		if (paths.has(entry.path)) paths.delete(entry.path)
+		else paths.add(entry.path)
+		void refreshExplorer()
+	})
+	void svgInliner(row)
+	return row
 }
 
 /**
@@ -296,6 +307,8 @@ export async function openFileTab(workspace, path) {
  */
 export async function activateFileTab(tab) {
 	if (tab?.type !== 'file') return
+	if (displayedFileTab && tabKeyOf(displayedFileTab) !== tabKeyOf(tab)) void saveFile(displayedFileTab)
+	displayedFileTab = tab
 	const previous = activeTab()
 	if (previous && previous.type !== 'file' && store.session) {
 		getRuntime(tabKeyOf(previous), { create: true }).session = store.session
@@ -306,31 +319,60 @@ export async function activateFileTab(tab) {
 	const key = tabKeyOf(tab)
 	store.activeTabKey = key
 	store.session = null
+	document.querySelector('.code-main')?.classList.remove('empty-mode')
 	const workspace = workspaceFor(tab)
 	if (workspace) store.workspace = workspace
-	document.querySelector('.code-main').classList.add('file-view')
+	document.querySelector('.code-main')?.classList.add('file-view')
 	editor.hidden = false
 	syncCodeUrl(tab)
 	renderTabs()
 	saveTabPrefs()
 	void refreshExplorer()
+	fileLoad?.abort()
+	const controller = fileLoad = new AbortController()
+	const revision = ++fileRevision
+	try {
+		fileEditor = await (editorPromise ||= createFileEditor(editorHost, {
+			/** @returns {Promise<void>} 重绘活动文件与标签条。 */
+			onChange: () => paintEditor(activeTab()),
+			onSave: saveActiveFile,
+			/** @param {{line: number, column: number}} position 当前选区坐标。 @returns {void} 更新状态栏。 */
+			onSelection: position => { cursorPosition = position; paintEditorStatus() },
+		}))
+	} catch (error) {
+		editorPromise = null
+		if (revision === fileRevision) status.textContent = String(error.message || error)
+		return
+	}
+	if (controller.signal.aborted || revision !== fileRevision || store.activeTabKey !== key) return
 	const buffer = buffers.get(key)
-	if (buffer) { paintEditor(tab); input.focus(); return }
+	if (buffer) { await paintEditor(tab); fileEditor.focus(); return }
 	const target = fileTarget(tab)
 	if (!target) return
-	const revision = ++fileRevision
-	input.disabled = true
-	filename.textContent = tab.id
+	fileEditor.clear()
+	fileEditor.setHidden(false)
 	status.textContent = geti18n('code.explorer.loading')
 	try {
-		const result = await api.readWorkspaceFile(target, tab.id)
+		const result = await api.readWorkspaceFileChunks(target, tab.id, {
+			signal: controller.signal,
+			/**
+			 * 文件加载时就地显示已读取的字节进度。
+			 * @param {number} loaded - 已读取字节数。
+			 * @param {number} total - 文件总字节数。
+			 * @returns {void} 更新加载状态文案。
+			 */
+			onProgress: (loaded, total) => {
+				if (revision === fileRevision) status.textContent = `${geti18n('code.explorer.loading')} · ${Math.ceil(loaded / 1024)} / ${Math.ceil(total / 1024)} KiB`
+			},
+		})
 		if (revision !== fileRevision || store.activeTabKey !== key) return
 		buffers.set(key, { content: result.content, base: result.content, version: result.version })
-		paintEditor(tab)
-		input.focus()
+		await paintEditor(tab)
+		fileEditor.focus()
 	}
 	catch (error) {
 		if (revision !== fileRevision || store.activeTabKey !== key) return
+		if (activeTab() !== tab) return
 		status.textContent = String(error?.message || error)
 		showToastI18n('error', 'code.error.generic', { error: status.textContent })
 	}
@@ -338,108 +380,94 @@ export async function activateFileTab(tab) {
 
 /** 返回代理标签时恢复界面。 @returns {void} */
 export function showConversationView() {
+	if (displayedFileTab) void saveFile(displayedFileTab)
+	displayedFileTab = null
+	fileLoad?.abort()
 	++fileRevision
 	document.querySelector('.code-main').classList.remove('file-view')
 	editor.hidden = true
 }
 
-/**
- * @param {string} before - Original file text.
- * @param {string} after - Edited file text.
- * @returns {Array<{type: string, text: string}>} Aligned lines.
- */
-function lineDiff(before, after) {
-	const a = before.split('\n'), b = after.split('\n')
-	// Full line alignment for typical edits; cap large files to keep typing responsive.
-	if (a.length * b.length > 120000) {
-		let first = 0
-		while (first < a.length && first < b.length && a[first] === b[first]) first++
-		let lastA = a.length - 1, lastB = b.length - 1
-		while (lastA >= first && lastB >= first && a[lastA] === b[lastB]) { lastA--; lastB-- }
-		return [...a.slice(first, lastA + 1).map(text => ({ type: 'remove', text })), ...b.slice(first, lastB + 1).map(text => ({ type: 'add', text }))]
+/** 更新文件标签的未保存状态，不重建标签按钮或移动焦点。 @returns {void} */
+function updateFileTabMarkers() {
+	for (const element of document.querySelectorAll('.code-tab[data-tab-key]')) {
+		const buffer = buffers.get(element.dataset.tabKey)
+		const marker = element.querySelector('.code-tab-dirty')
+		if (marker) marker.hidden = !buffer || !bufferDirty(buffer)
 	}
-	const dp = Array.from({ length: a.length + 1 }, () => new Uint16Array(b.length + 1))
-	for (let i = a.length - 1; i >= 0; i--) for (let j = b.length - 1; j >= 0; j--)
-		dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1])
-	const out = []
-	let i = 0, j = 0
-	while (i < a.length || j < b.length) 
-		if (i < a.length && j < b.length && a[i] === b[j]) { out.push({ type: 'same', text: a[i] }); i++; j++ }
-		else if (j < b.length && (i === a.length || dp[i][j + 1] >= dp[i + 1][j])) out.push({ type: 'add', text: b[j++] })
-		else out.push({ type: 'remove', text: a[i++] })
-	
-	return out
 }
 
-/** @param {object} tab - Active file tab. @returns {void} Updates editor chrome. */
+/** 状态栏只由这里写入，行数与光标位置始终一起显示。 @returns {void} */
+function paintEditorStatus() {
+	const tab = activeTab()
+	const buffer = tab?.type === 'file' && buffers.get(tabKeyOf(tab))
+	if (!buffer) return
+	if (buffer.external) { status.textContent = geti18n('code.explorer.externalChange'); return }
+	const count = buffer.model?.getLineCount() || buffer.content.split(/\r\n|\r|\n/).length
+	status.textContent = `${geti18n('code.explorer.lines', { count })} · ${geti18n('code.explorer.cursor', cursorPosition)}`
+}
+
+/**
+ * 刷新活动文件的编辑器界面。
+ * @param {object} tab - Active file tab.
+ * @returns {Promise<void>} 编辑模型挂载完成。
+ */
 function paintEditor(tab) {
+	if (tab?.type !== 'file') return Promise.resolve()
+	const buffer = buffers.get(tabKeyOf(tab))
+	if (!buffer) return Promise.resolve()
+	const ready = (fileEditor?.show(buffer, tab.id) || Promise.resolve())
+		.catch(error => { status.textContent = String(error?.message || error) })
+	fileEditor?.setHidden(false)
+	updateFileTabMarkers()
+	paintEditorStatus()
+	return ready
+}
+
+/**
+ * 使用乐观并发控制保存当前文件。
+ * @returns {Promise<void>} Completion.
+ */
+export async function saveActiveFile() {
+	return saveFile(activeTab())
+}
+
+/**
+ * 保存指定文件，失焦保存始终绑定原缓冲区。
+ * @param {object} tab - File tab.
+ * @returns {Promise<void>} Save completion.
+ */
+async function saveFile(tab) {
 	if (tab?.type !== 'file') return
 	const buffer = buffers.get(tabKeyOf(tab))
 	if (!buffer) return
-	filename.textContent = tab.id
-	if (input.value !== buffer.content) input.value = buffer.content
-	input.disabled = false
-	const count = buffer.content.split('\n').length
-	lines.textContent = Array.from({ length: count }, (_, index) => index + 1).join('\n')
-	lines.scrollTop = input.scrollTop
-	const dirty = buffer.content !== buffer.base
-	dirtyMarker.hidden = !dirty
-	saveButton.disabled = !dirty || !!buffer.saving
-	diffButton.disabled = !dirty
-	const changes = dirty ? lineDiff(buffer.base, buffer.content) : []
-	const added = changes.filter(line => line.type === 'add').length
-	const removed = changes.filter(line => line.type === 'remove').length
-	summary.hidden = !dirty
-	summary.replaceChildren()
-	if (dirty) {
-		const label = document.createElement('span')
-		label.textContent = `${geti18n('code.explorer.unsaved')} · `
-		const add = document.createElement('span')
-		add.className = 'code-editor-added'
-		add.textContent = `+${added}`
-		const remove = document.createElement('span')
-		remove.className = 'code-editor-removed'
-		remove.textContent = ` −${removed}`
-		summary.append(label, add, remove)
-	}
-	diffView.hidden = !diffVisible || !dirty
-	input.hidden = !diffView.hidden
-	lines.hidden = !diffView.hidden
-	if (!diffView.hidden) 
-		diffView.replaceChildren(...changes.map(line => {
-			const span = document.createElement('span')
-			span.className = `code-editor-diff-line ${line.type}`
-			span.textContent = `${line.type === 'add' ? '+' : line.type === 'remove' ? '-' : ' '} ${line.text}`
-			return span
-		}))
-	
-	status.textContent = buffer.external ? geti18n('code.explorer.externalChange') : geti18n('code.explorer.lines', { count })
-}
-
-/** 使用乐观并发控制保存当前文件。 @returns {Promise<void>} Completion. */
-export async function saveActiveFile() {
-	const tab = activeTab()
-	if (tab?.type !== 'file') return
-	const buffer = buffers.get(tabKeyOf(tab))
-	if (!buffer || buffer.saving || buffer.content === buffer.base) return
+	if (buffer.saving) { buffer.saveAgain = true; return }
+	if (!bufferDirty(buffer)) return
 	const target = fileTarget(tab)
 	if (!target) return
 	buffer.saving = true
-	paintEditor(tab)
+	if (activeTab() === tab) paintEditor(tab)
+	let succeeded = false
 	try {
-		const content = buffer.content
+		const content = bufferContent(buffer)
+		const savedVersionId = buffer.model.getAlternativeVersionId()
 		const result = await api.writeWorkspaceFile(target, tab.id, content, buffer.version)
 		buffer.base = content
+		buffer.savedAlternativeVersionId = savedVersionId
+		buffer.savedOriginalVersionId = savedVersionId
 		buffer.version = result.version
 		buffer.external = false
-		if (activeTab() === tab) paintEditor(tab)
+		succeeded = true
 	}
 	catch (error) {
 		showToastI18n('error', 'code.error.generic', { error: String(error?.message || error) })
-		status.textContent = String(error?.message || error)
+		if (activeTab() === tab) status.textContent = String(error?.message || error)
 	}
 	finally {
 		buffer.saving = false
+		const again = buffer.saveAgain
+		buffer.saveAgain = false
+		if (again && succeeded) void saveFile(tab)
 		if (activeTab() === tab) paintEditor(tab)
 	}
 }
@@ -455,8 +483,12 @@ export async function refreshOpenFiles() {
 			const version = buffer.version
 			const result = await api.readWorkspaceFile(fileTarget(tab), tab.id)
 			if (buffer.saving || buffer.version !== version || result.version === buffer.version) return
-			if (buffer.content !== buffer.base) buffer.external = true
-			else { buffer.content = result.content; buffer.base = result.content; buffer.version = result.version }
+			if (bufferDirty(buffer)) buffer.external = true
+			else {
+				fileEditor?.disposeBuffer(buffer)
+				buffer.content = result.content; buffer.base = result.content; buffer.version = result.version
+				buffer.lineEnding = undefined; buffer.savedAlternativeVersionId = null; buffer.savedOriginalVersionId = null
+			}
 			if (store.activeTabKey === key) paintEditor(tab)
 		}
 		catch { /* File may have been removed by the agent; keep the visible buffer. */ }

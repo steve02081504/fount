@@ -6815,7 +6815,8 @@
 				"connected": "作業區之自動更新已連",
 				"disconnected": "作業區之連已斷，方重連；所示或已陳",
 				"unavailable": "作業區之自動更新不可用，請察作業區與所訂之目錄"
-			}
+			},
+			"cursor": "第 ${line} 行、第 ${column} 列"
 		}
 	},
 	"gist": {

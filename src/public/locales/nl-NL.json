@@ -6827,7 +6827,8 @@
 				"connected": "Automatische updates van de werkruimte zijn verbonden",
 				"disconnected": "De verbinding met de werkruimte is verbroken; opnieuw verbinden. De getoonde inhoud kan verouderd zijn.",
 				"unavailable": "Automatische updates van deze werkruimte zijn niet beschikbaar. Controleer de werkruimte en de geabonneerde mappen."
-			}
+			},
+			"cursor": "regel ${line}, kolom ${column}"
 		}
 	},
 	"gist": {

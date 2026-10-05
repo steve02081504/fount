@@ -218,6 +218,11 @@ export function renderTabs() {
 		main.type = 'button'
 		main.className = 'code-tab-main'
 		if (tab.type === 'file') {
+			const marker = document.createElement('span')
+			marker.className = 'code-tab-dirty'
+			marker.hidden = !isFileDirty(tab)
+			marker.setAttribute('aria-hidden', 'true')
+			main.appendChild(marker)
 			const icon = document.createElement('span')
 			icon.className = 'code-tab-avatar code-tab-avatar-draft'
 			icon.appendChild(iconElement(fileIcon(tab.id), { size: 12 }))
@@ -488,6 +493,8 @@ export async function closeTab(tab, { discard = false } = {}) {
 	}
 	const runtime = getRuntime(key)
 	if (runtime && discard) runtime.savedRevision = runtime.revision
+	// 必须先释放缓冲区：切换标签会触发失焦保存，否则刚被丢弃的文件会被写回。
+	if (tab.type === 'file') forgetFileTab(tab)
 	if (key === store.activeTabKey) {
 		const index = store.tabs.indexOf(tab)
 		const next = store.tabs[index + 1] || store.tabs[index - 1]
@@ -501,7 +508,6 @@ export async function closeTab(tab, { discard = false } = {}) {
 	if (!discard) await flushSession(key)
 	store.tabs = store.tabs.filter(item => tabKeyOf(item) !== key)
 	store.runtimes.delete(key)
-	if (tab.type === 'file') forgetFileTab(tab)
 	renderTabs()
 	saveTabPrefs()
 	if (!store.activeTabKey || !activeTab()) await startNewSession()

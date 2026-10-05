@@ -6821,7 +6821,8 @@
 				"connected": "Sjálfvirkar uppfærslur vinnusvæðisins eru tengdar",
 				"disconnected": "Tenging við vinnusvæðið rofnaði; verið er að endurtengja. Efnið sem birtist gæti verið úrelt.",
 				"unavailable": "Sjálfvirkar uppfærslur þessa vinnusvæðis eru ekki í boði. Athugaðu vinnusvæðið og áskriftarmöppurnar."
-			}
+			},
+			"cursor": "lína ${line}, dálkur ${column}"
 		}
 	},
 	"gist": {

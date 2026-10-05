@@ -84,18 +84,8 @@
 				<div class="code-composer-targets" id="composer-targets"></div>
 			</div>
 			<div class="code-editor" id="code-editor" hidden>
-				<div class="code-editor-head">
-					<span class="code-editor-filename" id="code-editor-filename" user-content></span>
-					<span class="code-editor-dirty" id="code-editor-dirty" hidden>●</span>
-					<button class="btn btn-ghost btn-xs" id="code-editor-diff" type="button" data-i18n="code.explorer.changes" disabled></button>
-					<button class="btn btn-primary btn-xs" id="code-editor-save" type="button" data-i18n="code.explorer.save" disabled></button>
-				</div>
-				<div class="code-editor-summary" id="code-editor-summary" hidden></div>
 				<div class="code-editor-surface">
-					<div class="code-editor-lines" id="code-editor-lines" aria-hidden="true"></div>
-					<label class="sr-only" for="code-editor-input" data-i18n="code.explorer.editorLabel"></label>
-					<textarea id="code-editor-input" class="code-editor-input" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" disabled></textarea>
-					<pre class="code-editor-diff-view" id="code-editor-diff-view" hidden></pre>
+					<div id="code-editor-input" class="code-editor-input" user-content></div>
 				</div>
 				<div class="code-editor-status" id="code-editor-status" role="status" user-content></div>
 			</div>

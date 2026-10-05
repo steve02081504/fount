@@ -6827,7 +6827,8 @@
 				"connected": "Aggiornamento automatico dell’area di lavoro connesso",
 				"disconnected": "Connessione all’area di lavoro interrotta; riconnessione in corso. Il contenuto mostrato potrebbe non essere aggiornato.",
 				"unavailable": "L’aggiornamento automatico di quest’area di lavoro non è disponibile. Controlla l’area di lavoro e le cartelle sottoscritte."
-			}
+			},
+			"cursor": "riga ${line}, colonna ${column}"
 		}
 	},
 	"gist": {

@@ -6821,7 +6821,8 @@
 				"connected": "Workspace updates connected",
 				"disconnected": "Workspace disconnected. Reconnecting; displayed files may be out of date.",
 				"unavailable": "Automatic updates are unavailable. Check the workspace and subscribed directories."
-			}
+			},
+			"cursor": "line ${line}, column ${column}"
 		}
 	},
 	"gist": {

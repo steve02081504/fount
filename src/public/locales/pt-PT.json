@@ -6827,7 +6827,8 @@
 				"connected": "Atualização automática do espaço de trabalho ligada",
 				"disconnected": "A ligação ao espaço de trabalho caiu; a restabelecer. O conteúdo apresentado pode estar desatualizado.",
 				"unavailable": "A atualização automática deste espaço de trabalho não está disponível. Verifique o espaço de trabalho e os diretórios subscritos."
-			}
+			},
+			"cursor": "linha ${line}, coluna ${column}"
 		}
 	},
 	"gist": {

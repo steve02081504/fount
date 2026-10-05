@@ -6778,6 +6778,7 @@ export type LocaleData = {
 				disconnected: string
 				unavailable: string
 			}
+			cursor: string
 		}
 	}
 	gist: {
@@ -7495,6 +7496,7 @@ export type LocaleKeyParams = {
 	'code.char.recommend.main': { charname: string | number }
 	'code.composer.modeSwitched': { mode: string | number }
 	'code.error.generic': { error: string | number }
+	'code.explorer.cursor': { column: string | number; line: string | number }
 	'code.explorer.discardConfirm': { path: string | number }
 	'code.explorer.editedFiles': { count: string | number }
 	'code.explorer.lines': { count: string | number }
