@@ -47,7 +47,10 @@ export default {
 				const char = await loadPart(username, 'chars/' + data.charname)
 				if (!char.interfaces.shellassist) {
 					const { GetDefaultShellAssistInterface } = await import('./src/default_interface/main.mjs')
-					char.interfaces.shellassist = await GetDefaultShellAssistInterface(char, username, data.charname)
+					char.interfaces.shellassist = GetDefaultShellAssistInterface(char, {
+						/** @returns {{ username: string, charname: string }} 当前角色身份。 */
+						getIdentity: () => ({ username, charname: data.charname }),
+					})
 				}
 				const result = await char.interfaces.shellassist.Assist({
 					...data,

@@ -12,16 +12,13 @@ import { GetShellWorld } from './world.mjs'
 /**
  * 获取默认的 ShellAssist 接口。
  * @param {import('../../../../../../../src/decl/charAPI.ts').CharAPI_t} char_API - 角色 API。
- * @param {string} username - 用户名。
- * @param {string} char_name - 角色名称。
- * @param {object} [options] - 角色自定义选项。
+ * @param {object} options - 角色自定义选项。
+ * @param {() => { username: string, charname: string }} options.getIdentity - 每次请求时读取角色身份。
  * @param {Record<string, unknown>} [options.requestExtension] - 合并到每次 GetReply 请求的 extension（每次浅拷贝）。
  * @param {(args: object, reply: object | null | undefined) => void | Promise<void>} [options.onResult] GetReply 完成后调用，包含无回复结果；异常则不调用。用于角色统计等副作用，不改变回复。
  * @returns {object} - ShellAssist 接口。
  */
-export function GetDefaultShellAssistInterface(char_API, username, char_name, { requestExtension = {}, onResult } = {}) {
-	if (!char_API?.interfaces?.chat?.GetReply)
-		throw new Error('charAPI.interfaces.chat.GetReply is required for ShellAssistInterface.')
+export function GetDefaultShellAssistInterface(char_API, { getIdentity, requestExtension = {}, onResult }) {
 	/**
 	 * ShellAssist 主函数。
 	 * @type {(data: {
@@ -53,6 +50,9 @@ export function GetDefaultShellAssistInterface(char_API, username, char_name, { 
 	 * }>}
 	 */
 	async function shellAssistMain(args) {
+		const { username, charname } = getIdentity()
+		const { GetReply } = char_API.interfaces.chat ?? {}
+		if (!GetReply) throw new Error('charAPI.interfaces.chat.GetReply is required for ShellAssistInterface.')
 		// 私域记忆以共享引用传出：ReplyHandler 就地 mutate；workdir 同样必须始终是对象，否则 `<set-workdir>` 只改到浅拷贝副本上。
 		const chat_scoped_char_memory = args.chat_scoped_char_memory ??= {}
 		/**
@@ -116,7 +116,7 @@ ${args.screen}
 			extension: {}
 		})
 		const Charname = (await getPartInfo(char_API, localhostLocales)).name
-		const AIsuggestion = await char_API.interfaces.chat.GetReply({
+		const AIsuggestion = await GetReply({
 			username,
 			supported_functions: {
 				markdown: true,
@@ -128,7 +128,7 @@ ${args.screen}
 			},
 			chat_name: 'shell-assist-' + new Date().getTime(),
 			chat_id: 'shell-assist-' + crypto.randomUUID(),
-			char_id: char_name,
+			char_id: charname,
 			Charname,
 			CharUid: 'char',
 			UserCharname: args.UserCharname,

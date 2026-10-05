@@ -1,5 +1,5 @@
 /**
- * shellassist 默认接口的 `<set-workdir>` 支撑：请求必须传入可就地 mutate 的 workdir 对象，
+ * shellassist 默认接口契约：身份在每次请求时读取，`<set-workdir>` 依赖可就地 mutate 的 workdir 对象，
  * 且写入的记忆要在下次调用沿用。复刻 runReplyHandlers 的浅拷贝语义以暴露「改到副本上」的缺陷。
  */
 /* global Deno */
@@ -19,6 +19,38 @@ const ensureServer = createTestServerBoot({
 	minP2pNode: false,
 	p2p: false,
 	loadParts: ['shells/shellassist'],
+})
+
+Deno.test('shellassist 工厂每次请求重新读取角色身份', async () => {
+	await ensureServer()
+	const { GetDefaultShellAssistInterface } = await import('../../src/default_interface/main.mjs')
+	let identity
+	const requests = []
+	const char = {
+		info: { 'zh-CN': { name: 'Deferred Char' } },
+		interfaces: { chat: {
+			/**
+			 * @param {object} request 回复请求。
+			 * @returns {Promise<{ content: string }>} 回复。
+			 */
+			GetReply: async request => {
+				requests.push([request.username, request.char_id])
+				return { content: 'ok' }
+			},
+		} },
+	}
+	// 身份可能晚于工厂调用才就位：工厂返回的 Assist 每次请求都重新读取它。
+	char.interfaces.shellassist = GetDefaultShellAssistInterface(char, {
+		/** @returns {{ username: string, charname: string }} 当前角色身份。 */
+		getIdentity: () => identity,
+	})
+	const data = { UserCharname: 'User', shellhistory: [], shelltype: 'bash', pwd: '/', command_now: 'pwd', rejected_commands: [] }
+	const assist = char.interfaces.shellassist.Assist
+	identity = { username, charname: 'deferred-char' }
+	await assist(data)
+	identity = { username, charname: 'updated-char' }
+	await assist(data)
+	assertEquals(requests, [[username, 'deferred-char'], [username, 'updated-char']])
 })
 
 Deno.test('shellassist factory preserves character extensions and awaits result hooks without leaking request state', async () => {
@@ -45,7 +77,9 @@ Deno.test('shellassist factory preserves character extensions and awaits result 
 			},
 		} },
 	}
-	const assist = GetDefaultShellAssistInterface(char, username, 'factory-char', {
+	const assist = GetDefaultShellAssistInterface(char, {
+		/** @returns {{ username: string, charname: string }} 当前角色身份。 */
+		getIdentity: () => ({ username, charname: 'factory-char' }),
 		requestExtension,
 		/**
 		 * @param {object} args 终端请求。
@@ -142,7 +176,10 @@ Deno.test('shellassist 默认接口传入可变 workdir 并在记忆中延续', 
 			},
 		},
 	}
-	const assist = GetDefaultShellAssistInterface(char_API, username, 'test-char')
+	const assist = GetDefaultShellAssistInterface(char_API, {
+		/** @returns {{ username: string, charname: string }} 当前角色身份。 */
+		getIdentity: () => ({ username, charname: 'test-char' }),
+	})
 	const data = {
 		username,
 		UserCharname: 'User',
