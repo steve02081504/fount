@@ -6,6 +6,8 @@
  * 3. 字母后纯数字结尾的 key（xxx1）禁用；用有意义名或数组
  * 4. 各语言与 zh-CN 在共有路径上类型须一致（string ↔ object 会导致 UI 空白 / aria 丢失）。
  *    例外：string ↔ switch 叶子（`{ switch, default, cases? }`）兼容，允许仅部分语言使用单复数分支。
+ * 5. 各语言的键集须覆盖 zh-CN（漏掉的键在 bundle 里根本不存在，取用时回落键名本身、无兜底），
+ *    且不得多出 zh-CN 没有的叶子（同步残渣 / 已删键的遗留）。
  *
  * 搬键请用 .esh/commands/update_locale_data.py（见 locale-edits.md）。
  * 批量前缀嵌套写回 locale：.esh/commands/reshape_i18n_keys.py（勿用 JS 写 locale JSON，会打乱如 404 的键序）。
@@ -106,10 +108,13 @@ export function findPrefixClusters(keys, min = PREFIX_CLUSTER_MIN) {
 /**
  * i18n 键结构问题。
  * @typedef {object} I18nKeyIssue
- * @property {'affix' | 'prefix_cluster' | 'numbered' | 'type_mismatch' | 'placeholder_mismatch' | 'forbidden_script'} kind
+ * @property {'affix' | 'prefix_cluster' | 'numbered' | 'type_mismatch' | 'placeholder_mismatch' | 'missing_key' | 'missing_node' | 'extra_key' | 'extra_node' | 'forbidden_script'} kind
  * @property {string} path 点分路径（含违规键或簇所在父路径）
  * @property {string} message 说明
  */
+
+/** 汉字独立判定（emoji 文案的复制粘贴痕迹只看汉字，拉丁指令、假名外借词不算）。 */
+export const HAN_RE = /\p{Script=Han}/u
 
 /** emoji.json 禁止汉字 / 假名 / 西里尔；拉丁仅用于命令、快捷键、插值名 */
 export const EMOJI_LOCALE_FORBIDDEN_RE = /\p{Script=Han}|\p{Script=Hiragana}|\p{Script=Katakana}|\p{Script=Cyrillic}/u
@@ -268,6 +273,161 @@ export function scanLocalePlaceholders(reference, other, path = '') {
 	}
 
 	return []
+}
+
+/**
+ * 键集缺口扫描：`other` 相对 `reference` 缺了哪些键、多出哪些键。
+ *
+ * 叶子与结构（object / array）分别记账：整棵子树缺失时只报子树一次，不再逐叶刷屏。
+ * switch 叶子是终端，其内部的 `default` / `cases` 不是键路径；叶子类型差异由
+ * {@link scanLocaleTreeShape} 负责，这里只认「这个路径在不在」。
+ * @param {unknown} reference 参考树（通常 zh-CN）
+ * @param {unknown} other 待检树
+ * @returns {{ missing: string[], extra: string[], missingNodes: string[], extraNodes: string[] }} 缺口
+ */
+export function localeKeyCoverage(reference, other) {
+	/** @type {{ missing: string[], extra: string[], missingNodes: string[], extraNodes: string[] }} */
+	const result = { missing: [], extra: [], missingNodes: [], extraNodes: [] }
+
+	/**
+	 * 节点是否为需要逐键比对的结构（switch 叶子算终端）。
+	 * @param {unknown} value 节点
+	 * @returns {boolean} 是否结构节点
+	 */
+	function isBranch(value) {
+		if (Array.isArray(value)) return true
+		if (value === null || typeof value !== 'object') return false
+		return !isSwitchValue(value)
+	}
+
+	/**
+	 * @param {unknown} reference 参考节点
+	 * @param {unknown} other 待检节点
+	 * @param {string} path 当前点分路径
+	 * @returns {void}
+	 */
+	function walk(reference, other, path) {
+		const refIsBranch = isBranch(reference)
+		const otherIsBranch = isBranch(other)
+
+		if (refIsBranch && otherIsBranch) {
+			if (Array.isArray(reference) && Array.isArray(other)) {
+				const n = Math.min(reference.length, other.length)
+				for (let index = 0; index < n; index++) walk(reference[index], other[index], `${path}[${index}]`)
+				for (let index = n; index < reference.length; index++) result.missingNodes.push(`${path}[${index}]`)
+				for (let index = n; index < other.length; index++) result.extraNodes.push(`${path}[${index}]`)
+				return
+			}
+			if (Array.isArray(reference) !== Array.isArray(other)) {
+				// 一侧数组、一侧对象：结构层就对不上
+				result[Array.isArray(reference) ? 'missingNodes' : 'extraNodes'].push(path)
+				return
+			}
+			for (const key of Object.keys(reference)) {
+				const child = path ? `${path}.${key}` : key
+				if (!Object.hasOwn(other, key)) {
+					result[isBranch(reference[key]) ? 'missingNodes' : 'missing'].push(child)
+					continue
+				}
+				walk(reference[key], other[key], child)
+			}
+			for (const key of Object.keys(other))
+				if (!Object.hasOwn(reference, key))
+					result[isBranch(other[key]) ? 'extraNodes' : 'extra'].push(path ? `${path}.${key}` : key)
+			return
+		}
+
+		if (refIsBranch !== otherIsBranch) {
+			// 一侧结构、一侧叶子：根在结构层就对不上
+			result[refIsBranch ? 'missingNodes' : 'extraNodes'].push(path)
+			return
+		}
+
+		// 两侧都是叶子（叶子类型差异由 scanLocaleTreeShape 负责，这里只认路径在不在）
+	}
+
+	walk(reference, other, '')
+	return result
+}
+
+/**
+ * 对照参考 locale，扫描另一语言缺失 / 多出的键。
+ *
+ * 缺失的键在 locale bundle 里不存在（`getLocaleData` 只取一个 locale，没有逐键回退），
+ * 取用时 `geti18n` 回落键名本身、`data-i18n` 元素留空，并把 `[i18n:missing]` 记为噪声。
+ * @param {unknown} reference 参考树（通常 zh-CN）
+ * @param {unknown} other 待检树
+ * @returns {I18nKeyIssue[]} 键集问题
+ */
+export function scanLocaleKeyCoverage(reference, other) {
+	const { missing, extra, missingNodes, extraNodes } = localeKeyCoverage(reference, other)
+	/** @type {I18nKeyIssue[]} */
+	const issues = []
+	for (const path of missingNodes)
+		issues.push({
+			kind: 'missing_node',
+			path,
+			message: `缺少整个节点：参考语言有此处的子树，此处没有。遗漏的键在 bundle 里不存在，界面会回落键名 / 空白。补上该节点下 zh-CN 的全部键。${UPDATE_LOCALE_DATA_HINT}`,
+		})
+	for (const path of missing)
+		issues.push({
+			kind: 'missing_key',
+			path,
+			message: `缺少键：参考语言有此键，此处没有。缺失的键在 bundle 里不存在，界面会回落键名 / 空白。${UPDATE_LOCALE_DATA_HINT}`,
+		})
+	for (const path of extraNodes)
+		issues.push({
+			kind: 'extra_node',
+			path,
+			message: `多出节点：zh-CN 没有此处的子树（已删键的遗留或同步残渣）。确认它已废弃后删掉，否则下次同步会把它翻回来。${UPDATE_LOCALE_DATA_HINT}`,
+		})
+	for (const path of extra)
+		issues.push({
+			kind: 'extra_key',
+			path,
+			message: `多出键：zh-CN 没有此键（已删键的遗留或同步残渣）。确认它已废弃后删掉，否则下次同步会把它翻回来。${UPDATE_LOCALE_DATA_HINT}`,
+		})
+	return issues
+}
+
+/**
+ * 扫描 emoji 语言里与 zh-CN 逐字相同的叶子：同步脚本给「没有 Google 目标码」的语言
+ * 直接抄了源语言（`get_compatible_code('emoji')` 走复制分支），抄来的汉字既过不了
+ * {@link scanEmojiLocaleForbiddenScript}，也说明这一条根本没被翻译。
+ * @param {unknown} reference 参考树（通常 zh-CN）
+ * @param {unknown} other emoji 树
+ * @returns {I18nKeyIssue[]} 抄源问题
+ */
+export function scanEmojiLocaleCopiedSource(reference, other) {
+	/** @type {I18nKeyIssue[]} */
+	const issues = []
+
+	/**
+	 * @param {unknown} reference 参考节点
+	 * @param {unknown} other 待检节点
+	 * @param {string} path 当前点分路径
+	 * @returns {void}
+	 */
+	function walk(reference, other, path) {
+		if (isSwitchValue(reference) || isSwitchValue(other)) return
+		const refIsBranch = reference !== null && typeof reference === 'object'
+		const otherIsBranch = other !== null && typeof other === 'object'
+		if (refIsBranch && otherIsBranch && !Array.isArray(reference) && !Array.isArray(other)) {
+			for (const key of Object.keys(reference))
+				if (Object.hasOwn(other, key)) walk(reference[key], other[key], path ? `${path}.${key}` : key)
+			return
+		}
+		if (typeof reference !== 'string' || typeof other !== 'string') return
+		if (!HAN_RE.test(reference) || reference !== other) return
+		issues.push({
+			kind: 'forbidden_script',
+			path,
+			message: `emoji 文案与 zh-CN 逐字相同（「${other}」）：同步脚本对没有 Google 目标码的语言直接抄源语言，这一条没被翻译。改成 emoji 说法。详见 locale-edits.md「Targets Google cannot translate」。`,
+		})
+	}
+
+	walk(reference, other, '')
+	return issues
 }
 
 /**

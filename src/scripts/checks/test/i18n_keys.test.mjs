@@ -18,8 +18,10 @@ import {
 	localeValueKind,
 	nestAllPrefixClusters,
 	nestAllPrefixClustersWithMap,
+	scanEmojiLocaleCopiedSource,
 	scanEmojiLocaleForbiddenScript,
 	scanI18nKeyStructure,
+	scanLocaleKeyCoverage,
 	scanLocalePlaceholders,
 	scanLocaleTreeShape,
 } from '../i18n_keys.mjs'
@@ -307,6 +309,52 @@ Deno.test('all locale JSON trees match zh-CN value kinds on shared paths', async
 	assertEquals(failures, [], failures.join('\n'))
 })
 
+Deno.test('scanLocaleKeyCoverage flags missing / extra leaves and nodes', () => {
+	assertEquals(scanLocaleKeyCoverage({ a: 'x' }, { a: 'y' }), [])
+	// 叶子缺失 / 多出
+	const leaves = scanLocaleKeyCoverage({ a: 'x', b: 'y' }, { a: 'x', c: 'z' })
+	assertEquals(leaves.map(issue => [issue.kind, issue.path]), [
+		['missing_key', 'b'],
+		['extra_key', 'c'],
+	])
+	// 整棵子树缺失时只报节点一次，不逐叶刷屏
+	const subtree = scanLocaleKeyCoverage({ box: { a: 'x', b: 'y' } }, {})
+	assertEquals(subtree.map(issue => [issue.kind, issue.path]), [['missing_node', 'box']])
+	// switch 叶子是终端，内部 default / cases 不算路径
+	const switchLeaf = { switch: 'count', default: '${count} 项', cases: { 1: '1 项' } }
+	assertEquals(scanLocaleKeyCoverage({ label: switchLeaf }, { label: '${count} items' }), [])
+	assertEquals(scanLocaleKeyCoverage({ label: '${count} 项' }, { label: switchLeaf }), [])
+	// 结构 ↔ 叶子在结构层就报，不再往下走
+	assertEquals(
+		scanLocaleKeyCoverage({ a: { deep: 'x' } }, { a: 'plain' }).map(issue => issue.kind),
+		['missing_node'],
+	)
+	assertEquals(
+		scanLocaleKeyCoverage({ a: 'plain' }, { a: { deep: 'x' } }).map(issue => issue.kind),
+		['extra_node'],
+	)
+	// 数组长度差按节点记账
+	assertEquals(
+		scanLocaleKeyCoverage({ list: ['a', 'b'] }, { list: ['a'] }).map(issue => [issue.kind, issue.path]),
+		[['missing_node', 'list[1]']],
+	)
+})
+
+Deno.test('all locale JSON trees cover zh-CN keys and add none', async () => {
+	const { readdir } = await import('node:fs/promises')
+	const localesDir = join(REPO_ROOT, 'src/public/locales')
+	const zhCn = JSON.parse(await readFile(join(localesDir, 'zh-CN.json'), 'utf8'))
+	const localeFiles = (await readdir(localesDir)).filter(name => name.endsWith('.json') && name !== 'zh-CN.json')
+	assert(localeFiles.length > 0, 'expected non-zh-CN locale JSON files')
+	/** @type {string[]} */
+	const failures = []
+	for (const fileName of localeFiles)
+		for (const issue of scanLocaleKeyCoverage(zhCn, JSON.parse(await readFile(join(localesDir, fileName), 'utf8'))))
+			failures.push(`${fileName}: [${issue.kind}] ${issue.path}: ${issue.message}`)
+
+	assertEquals(failures, [], failures.join('\n'))
+})
+
 Deno.test('scanLocalePlaceholders flags renamed / dropped placeholders', () => {
 	assertEquals(scanLocalePlaceholders({ a: '备份到：${path}' }, { a: 'Backed up to: ${path}' }), [])
 	const issues = scanLocalePlaceholders(
@@ -362,6 +410,30 @@ Deno.test('scanEmojiLocaleForbiddenScript flags Han and allows latin+emoji', () 
 Deno.test('emoji.json has no Han / kana / Cyrillic', async () => {
 	const data = JSON.parse(await readFile(join(REPO_ROOT, 'src/public/locales/emoji.json'), 'utf8'))
 	const issues = scanEmojiLocaleForbiddenScript(data)
+	assertEquals(
+		issues.map(issue => `[${issue.kind}] ${issue.path}: ${issue.message}`),
+		[],
+		issues.map(issue => `[${issue.kind}] ${issue.path}: ${issue.message}`).join('\n'),
+	)
+})
+
+Deno.test('scanEmojiLocaleCopiedSource flags zh-CN copy left in emoji', () => {
+	assertEquals(scanEmojiLocaleCopiedSource({ a: '📄 ${count}' }, { a: '📄 ${count}' }), [])
+	assertEquals(scanEmojiLocaleCopiedSource({ a: '第 ${line} 行' }, { a: 'line ${line}' }), [])
+	const issues = scanEmojiLocaleCopiedSource(
+		{ box: { a: '第 ${line} 行' }, b: '已保存' },
+		{ box: { a: '第 ${line} 行' }, b: '✅' },
+	)
+	assertEquals(issues.map(issue => [issue.kind, issue.path]), [
+		['forbidden_script', 'box.a'],
+	])
+})
+
+Deno.test('emoji.json carries no leaf copied verbatim from zh-CN', async () => {
+	const localesDir = join(REPO_ROOT, 'src/public/locales')
+	const zhCn = JSON.parse(await readFile(join(localesDir, 'zh-CN.json'), 'utf8'))
+	const emoji = JSON.parse(await readFile(join(localesDir, 'emoji.json'), 'utf8'))
+	const issues = scanEmojiLocaleCopiedSource(zhCn, emoji)
 	assertEquals(
 		issues.map(issue => `[${issue.kind}] ${issue.path}: ${issue.message}`),
 		[],
