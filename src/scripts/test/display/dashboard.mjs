@@ -483,7 +483,7 @@ export class TestDashboard {
 		/** @type {string[]} */
 		const info = [geti18nForTerminal('fountConsole.test.display.dashboard.elapsed', { elapsed: formatCompactDuration(elapsed) })]
 		if (suite.totalMs != null)
-			info.push(geti18nForTerminal('fountConsole.test.display.dashboard.eta', { remaining: formatCompactDuration(suite.totalMs - elapsed) }))
+			info.push(geti18nForTerminal('fountConsole.test.display.dashboard.eta', { remaining: formatCompactDuration(Math.max(0, suite.totalMs - elapsed)) }))
 		const infoStr = info.join(' ')
 		const nameMax = Math.max(8, leftMax - visibleWidth(infoStr) - 1)
 		const nameRows = wrapByWidth(suite.name, nameMax)

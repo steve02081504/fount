@@ -8,8 +8,8 @@ import { assertEquals } from 'jsr:@std/assert'
 
 import { console } from '../../i18n/bare.mjs'
 import { allowNoise } from '../core/allowNoise.mjs'
-import { shouldClearTestProgress } from '../core/progress.mjs'
 import { formatNoiseAllowBegin, formatNoiseAllowEnd } from '../core/output_filter.mjs'
+import { shouldClearTestProgress } from '../core/progress.mjs'
 import { TestDashboard, renderBar, stripAnsi, visibleWidth, wrapByWidth } from '../display/dashboard.mjs'
 import { displayShouldResolve, resolveDisplayMode } from '../display/mode.mjs'
 import { formatFailureOutput, paintAccepted, paintJobDone, paintJobWait, paintSuiteEnd } from '../display/paint.mjs'
@@ -376,6 +376,15 @@ Deno.test('dashboard uses schedule remaining as the baseline and keeps zero know
 		dashboard.onScheduleUpdate({ running: [{ key, remainingMs: 0 }] })
 		assertEquals(latestLine().endsWith('100%'), true)
 		assertEquals(latestLine().includes('剩余≈0s'), true)
+		// 预估耗尽但套件尚未结束：定时重绘和调度更新之间不能闪回未知。
+		for (let i = 0; i < 3; i++) {
+			at += 1_000
+			dashboard.onJobWait({ aheadCount: 0 })
+			assertEquals(latestLine().includes('剩余≈0s'), true)
+			assertEquals(latestLine().endsWith('100%'), true)
+			dashboard.onScheduleUpdate({ running: [{ key, remainingMs: 0 }] })
+			assertEquals(latestLine().includes('剩余≈0s'), true)
+		}
 		// 真正无基线（expected 与调度剩余都没有）才显示未知。
 		dashboard.onSuiteStart({ key, expectedMs: null })
 		assertEquals(latestLine().endsWith('   ?'), true)
