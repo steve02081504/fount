@@ -666,7 +666,7 @@ export const overrideFileReplyHandler = defineReplyHandler({
 			const existing = await executor.readTextFile(filepath).catch(() => null)
 			if (existing != null) {
 				const style = detectTextStyle(existing)
-				const similarity = similarityRatio(toLf(stripBom(existing)), toLf(newText))
+				const similarity = force ? 1 : similarityRatio(toLf(stripBom(existing)), toLf(newText))
 				const isEmpty = !newText.trim()
 				if (!force && (isEmpty || similarity < 0.3)) {
 					addFileToolLog(args, logContent, `覆写 ${inlineCode(filepath)} 被拒绝：新内容与原文相似度仅 ${(similarity * 100).toFixed(1)}%${isEmpty ? '，且新内容为空' : ''}。\n如确认要整体重写，请为 <override-file> 添加 force="true"；否则请改用 <replace-file> 做局部修改。`, { name: 'file-operations.override-file', executionTarget: executionTargetOf(target) })
