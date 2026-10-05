@@ -874,13 +874,35 @@ export function createMarkdownRichInput(element, options = {}) {
 	}
 
 	/**
-	 * Ctrl+Z / Ctrl+Shift+Z / Ctrl+Y：撤销 / 重做。
+	 * Tab / Shift+Tab：选区或代码正文缩进；Ctrl+Z / Ctrl+Shift+Z / Ctrl+Y：撤销 / 重做。
 	 * @param {KeyboardEvent} event 键盘事件
 	 * @returns {void}
 	 */
 	function onKeyDown(event) {
 		if (disabled || composing) return
 		const mod = event.ctrlKey || event.metaKey
+		if (event.key === 'Tab' && !mod && !event.altKey) {
+			const { start, end } = getOffsets()
+			const block = codeBlocks(rawText).find(item => start >= item.body && end <= item.close)
+			if (start !== end || block) {
+				event.preventDefault()
+				event.stopImmediatePropagation()
+				if (start === end && !event.shiftKey) setRangeText('\t', start, end)
+				else {
+					const from = start === 0 ? 0 : rawText.lastIndexOf('\n', start - 1) + 1
+					const to = end > start && rawText[end - 1] === '\n' ? end - 1 : end
+					const lines = rawText.slice(from, to).split('\n')
+					const changes = lines.map(line => event.shiftKey ? -(line.match(/^(?:\t| {1,4})/)?.[0].length || 0) : 1)
+					const replacement = lines.map((line, i) => changes[i] < 0 ? line.slice(-changes[i]) : '\t'.repeat(changes[i]) + line).join('\n')
+					setRangeText(replacement, from, to, 'select')
+					const delta = changes.reduce((sum, change) => sum + change, 0)
+					const lastLine = rawText.lastIndexOf('\n', from + replacement.length - 1) + 1
+					setSelection(Math.max(from, start + changes[0]), Math.max(lastLine, end + delta))
+				}
+				commitChange()
+				return
+			}
+		}
 		if (!mod) return
 		const key = event.key.toLowerCase()
 		if (key === 'z') {
@@ -1602,6 +1624,7 @@ document.head.prepend(Object.assign(document.createElement('style'), {
 	min-width: 0;
 	overflow-y: auto;
 	white-space: pre-wrap;
+	tab-size: 4;
 	overflow-wrap: anywhere;
 	word-break: break-word;
 	cursor: text;

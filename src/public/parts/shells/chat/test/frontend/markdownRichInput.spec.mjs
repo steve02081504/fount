@@ -7,6 +7,38 @@ import {
 const ENTITY_HASH = 'f'.repeat(128)
 
 test.describe('Markdown rich input', () => {
+	test('Tab indents selections and code bodies with tabs displayed at four spaces before shell shortcuts', async ({ modulePage }) => {
+		await modulePage.run(async () => {
+			const { createMarkdownRichInput } = await import('/scripts/components/markdownRichInput.mjs')
+			const el = document.createElement('div')
+			el.id = 'tab-input'
+			document.body.appendChild(el)
+			createMarkdownRichInput(el, { useRegisteredInlineTokens: false, enableToolbar: false })
+			el.value = 'one\ntwo\nthree'
+			el.focus()
+			el.setSelectionRange(1, 8)
+			el.addEventListener('keydown', event => {
+				if (event.key === 'Tab') el.dataset.shellShortcut = 'called'
+			})
+		})
+		const input = modulePage.page.locator('#tab-input')
+		await input.press('Tab')
+		await expect(input).toHaveJSProperty('value', '\tone\n\ttwo\nthree')
+		await expect(input).not.toHaveAttribute('data-shell-shortcut')
+		await input.press('Shift+Tab')
+		await expect(input).toHaveJSProperty('value', 'one\ntwo\nthree')
+		await input.evaluate(el => {
+			el.value = '```js\nx\n```'
+			el.setSelectionRange(6, 6)
+		})
+		await input.press('Tab')
+		await expect(input).toHaveJSProperty('value', '```js\n\tx\n```')
+		await input.press('Control+z')
+		await expect(input).toHaveJSProperty('value', '```js\nx\n```')
+		await input.evaluate(el => { el.value = '\tx'; el.setSelectionRange(0, 2) })
+		expect(await input.evaluate(el => getComputedStyle(el).tabSize)).toBe('4')
+	})
+
 	test('language fences highlight while native editing, selection and clipboard preserve markdown', async ({ modulePage }) => {
 		const raw = 'before\n```JS\nconst value = "<b>hello</b>";\n\nconsole.log(value)\n```\nafter'
 		await modulePage.run(async raw => {
