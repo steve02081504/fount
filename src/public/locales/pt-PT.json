@@ -6132,6 +6132,9 @@
 				}
 			}
 		},
+		"normal": "Normal",
+		"memoryUsage": "Utilização de memória",
+		"realtimeLogs": "Registos em direto",
 		"update": {
 			"failed": "Falha na solicitação de atualização",
 			"now": "Atualize e reinicie agora",

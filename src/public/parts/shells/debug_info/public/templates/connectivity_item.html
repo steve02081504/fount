@@ -1,6 +1,11 @@
-<li class="flex justify-between items-center p-2 bg-base-200 rounded-field">
-	<span>${name}</span>
-	<span class="badge ${status === 'ok' ? 'badge-success' : 'badge-error'}" ${status !=='ok' ? 'data-i18n="debug_info.failed"' : '' }>
-		${status === 'ok' ? duration + 'ms' : ''}
-	</span>
-</li>
+<tr id="${id || ''}" data-connectivity-key="${id || name}">
+	<th scope="row">
+		<span class="service-name">
+			<img src="${icon}" class="text-icon" alt="" />
+			<span language-check-ignore>${name}</span>
+		</span>
+	</th>
+	<td><canvas class="latency-sparkline connectivity-status" data-state="${status}" data-latency-key="${id || name}" aria-hidden="true"></canvas></td>
+	<td class="latency-value">${status === 'ok' ? duration + 'ms' : '—'}</td>
+	<td><span class="status-badge connectivity-status" data-state="${status}" data-i18n="${status === 'ok' ? 'debug_info.normal' : 'debug_info.failed'}"></span></td>
+</tr>

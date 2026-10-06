@@ -6126,6 +6126,9 @@
 				}
 			}
 		},
+		"normal": "정상",
+		"memoryUsage": "메모리 사용률",
+		"realtimeLogs": "실시간 로그",
 		"update": {
 			"failed": "업데이트 요청 실패",
 			"now": "지금 업데이트하고 다시 시작하세요",

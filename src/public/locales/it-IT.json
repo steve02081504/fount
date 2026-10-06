@@ -6132,6 +6132,9 @@
 				}
 			}
 		},
+		"normal": "Normale",
+		"memoryUsage": "Utilizzo memoria",
+		"realtimeLogs": "Log in tempo reale",
 		"update": {
 			"failed": "Richiesta di aggiornamento non riuscita",
 			"now": "Aggiorna e riavvia ora",

@@ -6126,6 +6126,9 @@
 				}
 			}
 		},
+		"normal": "正常",
+		"memoryUsage": "メモリ使用率",
+		"realtimeLogs": "リアルタイムログ",
 		"update": {
 			"failed": "更新リクエストが失敗しました",
 			"now": "今すぐ更新して再起動",

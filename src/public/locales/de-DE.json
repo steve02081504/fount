@@ -6126,6 +6126,9 @@
 				}
 			}
 		},
+		"normal": "Normal",
+		"memoryUsage": "Speichernutzung",
+		"realtimeLogs": "Live-Protokoll",
 		"update": {
 			"failed": "Die Aktualisierungsanforderung ist fehlgeschlagen",
 			"now": "Jetzt aktualisieren und neu starten",

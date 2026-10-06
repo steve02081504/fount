@@ -6132,6 +6132,9 @@
 				}
 			}
 		},
+		"normal": "Normaal",
+		"memoryUsage": "Geheugengebruik",
+		"realtimeLogs": "Live-logboek",
 		"update": {
 			"failed": "Updateverzoek is mislukt",
 			"now": "Update en start nu opnieuw",

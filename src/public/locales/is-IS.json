@@ -6126,6 +6126,9 @@
 				}
 			}
 		},
+		"normal": "Eðlilegt",
+		"memoryUsage": "Minnisnotkun",
+		"realtimeLogs": "Lifandi annáll",
 		"update": {
 			"failed": "Uppfærslubeiðni mistókst",
 			"now": "Uppfærðu og endurræstu núna",

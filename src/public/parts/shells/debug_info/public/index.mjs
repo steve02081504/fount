@@ -6,6 +6,7 @@ import { onServerEvent } from '/scripts/endpoints/server_events.mjs'
 import { ping } from '/scripts/endpoints/base.mjs'
 import { createTestStatusWs, getSystemInfo, postRestart } from './src/endpoints.mjs'
 import { mountTemplate, renderTemplate } from './templates.mjs'
+import { recordLatency, redrawLatencySparklines } from './src/latency_sparkline.mjs'
 
 applyTheme()
 await initTranslations('debug_info')
@@ -40,9 +41,34 @@ let isUpToDate = null
  * @param {number} bytes - 字节数。
  * @returns {string} 以 GiB 为单位保留两位小数的字符串。
  */
-const bytesToGiB = bytes => (bytes / 1024 ** 3).toFixed(2)
+const bytesToGiB = bytes => Number.isFinite(bytes) && bytes >= 0 ? (bytes / 1024 ** 3).toFixed(2) : 'Unknown'
+
+function getMemoryStats(memory = {}) {
+	const total = Number(memory.total)
+	const free = Number(memory.free)
+	if (!Number.isFinite(total) || !Number.isFinite(free) || total <= 0) return { used: null, percent: null }
+	const used = Math.max(0, total - Math.min(free, total))
+	return { used, percent: Math.round(used / total * 100) }
+}
+
+function setBadgeState(element, state) {
+	element.dataset.state = state
+}
 
 const FOUNT_REPO_COMMITS = 'https://api.github.com/repos/steve02081504/fount/commits'
+const ICONIFY_LINE = 'https://api.iconify.design/line-md'
+const SERVICE_ICONS = new Map([
+	['npm Registry', 'square'],
+	['Deno Land', 'engine'],
+	['jsDelivr', 'cloud'],
+	['JSR', 'list-3-filled'],
+	['fount Network', 'link'],
+	['fount Server', 'computer'],
+	['esm.sh', 'cloud-alt-braces'],
+	['Iconify', 'image'],
+	['fount Public', 'external-link'],
+])
+const serviceIcon = name => `${ICONIFY_LINE}/${SERVICE_ICONS.get(name) || 'square'}.svg`
 
 /**
  * 获取 GitHub 上指定分支的最新提交 SHA。
@@ -75,11 +101,11 @@ async function fetchVersionInfo() {
 		debugData.version.remote = remoteVer
 
 		isUpToDate = localVer === remoteVer
-		versionIndicator.className = `badge badge-lg ${isUpToDate ? 'badge-success' : 'badge-error'} gap-2`
+		setBadgeState(versionIndicator, isUpToDate ? 'ok' : 'outdated')
 		versionIndicator.dataset.i18n = isUpToDate ? 'debug_info.versionStatus.upToDate' : 'debug_info.versionStatus.outdated'
 	} catch (error) {
 		console.error('Version check failed:', error)
-		versionIndicator.className = 'badge badge-lg badge-warning gap-2'
+		setBadgeState(versionIndicator, 'failed')
 		versionIndicator.dataset.i18n = 'debug_info.versionStatus.checkFailed'
 		isUpToDate = null
 	}
@@ -97,17 +123,24 @@ async function fetchSystemInfo() {
 		const data = await getSystemInfo()
 		debugData.system = data
 
-		const { os, cpu, memory, connectivity } = data
+		const { os = {}, cpu = {}, memory = {}, connectivity = [] } = data
+		const { percent } = getMemoryStats(memory)
+		document.getElementById('memory-percent').textContent = percent == null ? '--%' : `${percent}%`
+		document.getElementById('memory-progress').value = percent ?? 0
 		const rows = [
-			{ key: 'OS', val: `${os.platform} ${os.release} (${os.arch})` },
-			{ key: 'CPU', val: `${cpu.model} (${cpu.cores} cores) @ ${cpu.speed}MHz` },
-			{ key: 'Memory', val: `Total: ${bytesToGiB(memory.total)} GB / Free: ${bytesToGiB(memory.free)} GB` },
+			{ key: 'OS', icon: `${ICONIFY_LINE}/monitor.svg`, val: `${os.platform} ${os.release} (${os.arch})` },
+			{ key: 'CPU', icon: `${ICONIFY_LINE}/cog.svg`, val: `${cpu.model} (${cpu.cores} cores) @ ${cpu.speed}MHz` },
+			{ key: 'Memory', icon: `${ICONIFY_LINE}/engine.svg`, val: `Total: ${bytesToGiB(memory.total)} GB / Free: ${bytesToGiB(memory.free)} GB` },
 		]
 
 		await mountTemplate(systemInfoTable, 'system_info_table', { rows })
 
 		debugData.connectivity.backend = connectivity
-		await mountTemplate(backendChecks, 'connectivity_list', { checks: connectivity })
+		for (const check of connectivity) recordLatency(check.id || check.name, check.duration)
+		await mountTemplate(backendChecks, 'connectivity_list', {
+			checks: connectivity.map(check => ({ ...check, icon: serviceIcon(check.name) })),
+		})
+		redrawLatencySparklines(backendChecks)
 	} catch (error) {
 		console.error('System info fetch failed:', error)
 		systemInfoTable.innerHTML = '<tr><td colspan="2" class="text-error text-center" data-i18n="debug_info.systemInfo.failed"></td></tr>'
@@ -119,26 +152,30 @@ async function fetchSystemInfo() {
  */
 async function checkFrontendConnectivity() {
 	const checks = [
-		{ id: 'check-fount-server', name: 'fount Server', url: '/api/ping' },
-		{ id: 'check-esm', name: 'esm.sh', url: 'https://esm.sh' },
-		{ id: 'check-jsdelivr', name: 'jsDelivr', url: 'https://cdn.jsdelivr.net' },
-		{ id: 'check-iconify', name: 'Iconify', url: 'https://api.iconify.design' },
-		{ id: 'check-fount-public', name: 'fount Public', url: 'https://steve02081504.github.io/fount' }
+		{ id: 'check-fount-server', name: 'fount Server', icon: serviceIcon('fount Server'), url: '/api/ping' },
+		{ id: 'check-esm', name: 'esm.sh', icon: serviceIcon('esm.sh'), url: 'https://esm.sh' },
+		{ id: 'check-jsdelivr', name: 'jsDelivr', icon: serviceIcon('jsDelivr'), url: 'https://cdn.jsdelivr.net' },
+		{ id: 'check-iconify', name: 'Iconify', icon: serviceIcon('Iconify'), url: 'https://api.iconify.design' },
+		{ id: 'check-fount-public', name: 'fount Public', icon: serviceIcon('fount Public'), url: 'https://steve02081504.github.io/fount' }
 	]
 
 	await mountTemplate(frontendChecks, 'connectivity_list', { checks })
-
+	const results = []
 	for (const check of checks) {
 		const start = Date.now()
-		let status = 'error', duration = 0
+		let status = 'error', duration
 		try {
 			await fetch(check.url, { method: 'HEAD', mode: 'no-cors', cache: 'no-store' })
 			status = 'ok'
 			duration = Date.now() - start
 		} catch { /* unreachable */ }
-		debugData.connectivity.frontend.push({ ...check, status, duration })
-		document.getElementById(check.id).replaceWith(await renderTemplate('connectivity_item', { ...check, status, duration }))
+		const result = { ...check, status, duration }
+		results.push(result)
+		recordLatency(check.id || check.name, duration)
+		document.getElementById(check.id).replaceWith(await renderTemplate('connectivity_item', result))
 	}
+	debugData.connectivity.frontend = results
+	redrawLatencySparklines(frontendChecks)
 }
 
 let testStatusOpen = false
@@ -176,7 +213,7 @@ async function renderTestStatus(status) {
 	const online = status?.online === true
 	testStatusCard.classList.toggle('hidden', !online)
 	if (!online) return
-	testStatusBadge.className = `badge badge-lg gap-2 ${status.active ? 'badge-success' : 'badge-ghost'}`
+	setBadgeState(testStatusBadge, status.active ? 'running' : 'idle')
 	testStatusBadge.dataset.i18n = status.active ? 'debug_info.testStatus.running' : 'debug_info.testStatus.idle'
 	if (!status.active) {
 		testStatusList.replaceChildren()
@@ -326,8 +363,8 @@ function stopTestStatusStream() {
 	testStatusWs = null
 }
 
-const UPDATE_ICON = 'https://api.iconify.design/mdi/update.svg'
-const LOADING_ICON = 'https://api.iconify.design/line-md/loading-twotone-loop.svg'
+const UPDATE_ICON = 'https://api.iconify.design/line-md/backup-restore.svg'
+const LOADING_ICON = 'https://api.iconify.design/line-md/loading-loop.svg'
 const UPTODATE_ICON = 'https://api.iconify.design/line-md/confirm.svg'
 
 /**
@@ -412,7 +449,7 @@ let pollTimer = null
  */
 async function pollVersionInfo() {
 	lastVersionCheckTime = Date.now()
-	await fetchVersionInfo()
+	await Promise.all([fetchVersionInfo(), fetchSystemInfo(), checkFrontendConnectivity()])
 }
 
 /**
@@ -445,7 +482,9 @@ document.addEventListener('visibilitychange', () => {
 
 if (!document.hidden) startPollTimer()
 
+const redrawSparklines = () => redrawLatencySparklines()
+new ResizeObserver(redrawSparklines).observe(document.documentElement)
+new MutationObserver(redrawSparklines).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+
 pollVersionInfo()
-fetchSystemInfo()
-checkFrontendConnectivity()
 startTestStatusStream()

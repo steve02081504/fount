@@ -6126,6 +6126,9 @@
 				}
 			}
 		},
+		"normal": "正常",
+		"memoryUsage": "内存使用率",
+		"realtimeLogs": "实时日志",
 		"update": {
 			"failed": "更新请求失败",
 			"now": "立即更新并重启",

@@ -1,8 +1,13 @@
 ${checks.map(check => `
-<li class="flex justify-between items-center p-2 bg-base-200 rounded-field" id="${check.id || ''}">
-	<span>${check.name}</span>
-	<span class="badge ${check.status ? (check.status === 'ok' ? 'badge-success' : 'badge-error') : 'badge-ghost'}" ${check.status && check.status !=='ok' ? 'data-i18n="debug_info.failed"' : '' } ${!check.status ? 'data-i18n="debug_info.checking"' : '' } ${check.status === 'ok' && check.duration == null && check.activeLinks != null ? `data-i18n="debug_info.linksCount" data-count="${check.activeLinks}"` : ''}>
-		${check.status === 'ok' && check.duration != null ? check.duration + 'ms' : ''}
-	</span>
-</li>
+<tr id="${check.id || ''}" data-connectivity-key="${check.id || check.name}">
+	<th scope="row">
+		<span class="service-name">
+			<img src="${check.icon}" class="text-icon" alt="" />
+			<span language-check-ignore>${check.name}</span>
+		</span>
+	</th>
+	<td><canvas class="latency-sparkline connectivity-status" data-state="${check.status || 'checking'}" data-latency-key="${check.id || check.name}" aria-hidden="true"></canvas></td>
+	<td class="latency-value">${check.status === 'ok' && check.duration != null ? check.duration + 'ms' : '—'}</td>
+	<td><span class="status-badge connectivity-status" data-state="${check.status || 'checking'}" ${check.status === 'ok' ? 'data-i18n="debug_info.normal"' : check.status ? 'data-i18n="debug_info.failed"' : 'data-i18n="debug_info.checking"'}></span></td>
+</tr>
 `).join('')}

@@ -6126,6 +6126,9 @@
 				}
 			}
 		},
+		"normal": "Bình thường",
+		"memoryUsage": "Mức sử dụng bộ nhớ",
+		"realtimeLogs": "Nhật ký thời gian thực",
 		"update": {
 			"failed": "Yêu cầu cập nhật không thành công",
 			"now": "Cập nhật và khởi động lại ngay",

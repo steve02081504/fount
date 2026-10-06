@@ -6132,6 +6132,9 @@
 				}
 			}
 		},
+		"normal": "Normal",
+		"memoryUsage": "Utilisation de la mémoire",
+		"realtimeLogs": "Journaux en direct",
 		"update": {
 			"failed": "La demande de mise à jour a échoué",
 			"now": "Mettre à jour et redémarrer maintenant",

@@ -1,6 +1,11 @@
 ${rows.map(row => `
 <tr>
-	<th class="w-1/3">${row.key}</th>
-	<td>${row.val}</td>
+	<th scope="row">
+		<span class="system-key">
+			<img src="${row.icon}" class="text-icon" alt="" />
+			<span language-check-ignore>${row.key}</span>
+		</span>
+	</th>
+	<td class="system-value" user-content>${row.val}</td>
 </tr>
 `).join('')}

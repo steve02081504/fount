@@ -6126,6 +6126,9 @@
 				}
 			}
 		},
+		"normal": "OK",
+		"memoryUsage": "Memory",
+		"realtimeLogs": "Live logs",
 		"update": {
 			"failed": "❌🔄",
 			"now": "🆕🔄▶️",

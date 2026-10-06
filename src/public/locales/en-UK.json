@@ -6126,6 +6126,9 @@
 				}
 			}
 		},
+		"normal": "Normal",
+		"memoryUsage": "Memory usage",
+		"realtimeLogs": "Live logs",
 		"update": {
 			"failed": "Update request failed",
 			"now": "Update and restart now",

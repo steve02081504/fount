@@ -3,6 +3,43 @@
 	font-size: 12.5px;
 }
 
+html[data-embedded="debug-info"],
+html[data-embedded="debug-info"] body,
+html[data-embedded="debug-info"] main {
+	background: transparent;
+}
+
+html[data-embedded="debug-info"] main {
+	padding: 0;
+}
+
+html[data-embedded="debug-info"] .log-container {
+	border: 0;
+	border-radius: 0;
+	box-shadow: none;
+	background: transparent;
+}
+
+html[data-embedded="debug-info"] .log-toolbar {
+	min-height: 2.75rem;
+	padding: .4rem .75rem;
+	border-bottom: var(--border) solid var(--border-color);
+	background: color-mix(in oklch, var(--surface-raised) 72%, transparent);
+}
+
+html[data-embedded="debug-info"] #backend-log-list {
+	background: var(--surface-sunken);
+}
+
+html[data-embedded="debug-info"] .log-row {
+	min-height: 1.7rem;
+	padding: .2rem .9rem;
+}
+
+html[data-embedded="debug-info"] .repl-panel {
+	display: none;
+}
+
 .log-row {
 	display: flex;
 	align-items: flex-start;

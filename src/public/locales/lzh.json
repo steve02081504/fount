@@ -6126,6 +6126,9 @@
 				}
 			}
 		},
+		"normal": "正常",
+		"memoryUsage": "記憶體用量",
+		"realtimeLogs": "即時誌",
 		"update": {
 			"failed": "更之請未遂",
 			"now": "當即更並重啟",

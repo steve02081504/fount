@@ -6132,6 +6132,9 @@
 				}
 			}
 		},
+		"normal": "Normal",
+		"memoryUsage": "Uso de memoria",
+		"realtimeLogs": "Registros en vivo",
 		"update": {
 			"failed": "Error en la solicitud de actualización",
 			"now": "Actualiza y reinicia ahora",
