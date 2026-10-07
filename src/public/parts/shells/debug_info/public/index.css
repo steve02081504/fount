@@ -16,7 +16,6 @@
 }
 
 .debug-info-header,
-.header-title-row,
 .panel-heading,
 .version-heading,
 .version-panel,
@@ -35,27 +34,6 @@
 .debug-info-header {
 	gap: 2rem;
 	padding: .5rem 0 .75rem;
-}
-
-.header-title-row {
-	gap: 1rem;
-	flex-wrap: wrap;
-}
-
-.page-status {
-	display: inline-flex;
-	align-items: center;
-	gap: .35rem;
-	color: var(--text-muted);
-	font-size: .8rem;
-}
-
-.status-dot {
-	width: .55rem;
-	height: .55rem;
-	border-radius: var(--radius-selector);
-	background: var(--debug-accent);
-	box-shadow: 0 0 0 .2rem color-mix(in srgb, var(--debug-accent) 14%, transparent);
 }
 
 .debug-info-header h1 {

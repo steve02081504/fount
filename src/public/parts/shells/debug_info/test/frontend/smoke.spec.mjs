@@ -5,13 +5,21 @@ import { test, expect } from './fixtures.mjs'
 
 test.describe('debug_info shell smoke', () => {
 	test('debug info page boots with system table', async ({ page, baseUrl }) => {
+		await page.route('**/api/parts/shells:debug_info/system_info', route => route.fulfill({ json: {
+			os: { platform: 'test', release: '1', arch: 'x64' },
+			cpu: { model: 'test', cores: 1, speed: 1 },
+			memory: { total: 1, free: 0 },
+			connectivity: [{ id: 'fount-network', name: 'fount Network', status: 'ok', activeLinks: 2 }],
+		} }))
 		await page.goto(`${baseUrl}/parts/shells:debug_info/`, { waitUntil: 'domcontentloaded' })
 		await expect(page.locator('main')).toBeVisible({ timeout: 30_000 })
 		await expect(page.locator('#copy-button')).toBeVisible()
 		await expect(page.locator('h1[data-i18n="debug_info.heading"]')).toBeVisible()
+		await expect(page.locator('.page-status')).toHaveCount(0)
 		const systemTable = page.locator('#system-info-table')
 		await expect(systemTable).toBeVisible()
 		await expect(systemTable.locator('tr').first()).toBeVisible({ timeout: 30_000 })
+		await expect(page.locator('[data-i18n="debug_info.linksCount"][data-count="2"]')).toBeVisible()
 	})
 
 	test('update button surfaces the auto-update-disabled notice instead of staying silently disabled', async ({ page, baseUrl }) => {

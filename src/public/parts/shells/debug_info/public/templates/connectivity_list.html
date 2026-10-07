@@ -7,7 +7,7 @@ ${checks.map(check => `
 		</span>
 	</th>
 	<td><canvas class="latency-sparkline connectivity-status" data-state="${check.status || 'checking'}" data-latency-key="${check.id || check.name}" aria-hidden="true"></canvas></td>
-	<td class="latency-value">${check.status === 'ok' && check.duration != null ? check.duration + 'ms' : '—'}</td>
+	<td class="latency-value">${check.status === 'ok' && check.duration != null ? check.duration + 'ms' : check.status === 'ok' && check.activeLinks != null ? `<span data-i18n="debug_info.linksCount" data-count="${check.activeLinks}"></span>` : '—'}</td>
 	<td><span class="status-badge connectivity-status" data-state="${check.status || 'checking'}" ${check.status === 'ok' ? 'data-i18n="debug_info.normal"' : check.status ? 'data-i18n="debug_info.failed"' : 'data-i18n="debug_info.checking"'}></span></td>
 </tr>
 `).join('')}
