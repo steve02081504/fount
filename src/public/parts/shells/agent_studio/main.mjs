@@ -33,9 +33,9 @@ export default {
 			 * @param {string} user 用户名
 			 * @param {string[]} args 子命令与参数
 			 * @param {{ cwd?: string }} context 调用上下文（携带 CLI cwd）
-			 * @returns {Promise<string>} 供 CLI 写到 stdout 的文本
+			 * @returns {Promise<{ type: 'output', content: string }>} 供 CLI 写到 stdout 的文本
 			 */
-			ArgumentsHandler: (user, args, context) => runStudioCli(user, args, context),
+			ArgumentsHandler: async (user, args, context) => ({ type: 'output', content: await runStudioCli(user, args, context) }),
 			/**
 			 * 处理 IPC 调用：`{ args: [...] }` 透传给 CLI。
 			 * @param {string} user 用户名

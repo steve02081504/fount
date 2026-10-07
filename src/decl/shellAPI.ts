@@ -7,6 +7,15 @@ export type PartInvokeResponse =
 	| { result: unknown }
 	| { error: { message: string, code: string } }
 
+/** 直接写入 `fount run` 调用方 stdout 的文本。 */
+export type OutputResult = { type: 'output', content: string }
+
+/** 在发起调用的 CLI 进程中，执行被加载 part 根目录下的模块。 */
+export type RunJsResult = { type: 'run-js', module: string, args: string[], data: unknown }
+
+/** ArgumentsHandler 的返回类型：void 走虚拟控制台，output 写 stdout，run-js 交给调用方执行。 */
+export type ArgumentsResult = void | OutputResult | RunJsResult
+
 /**
  * Shell API 接口
  * @class shellAPI_t
@@ -84,9 +93,9 @@ export class shellAPI_t {
 			 * @param {string} user - 用户名。
 			 * @param {string[]} args - 参数数组。
 			 * @param {object} [context] - 调用上下文（如 `cwd`）。
-			 * @returns {Promise<void | string>} 返回字符串时作为 CLI 机器输出直接写入 stdout。
+			 * @returns {Promise<ArgumentsResult>} 返回 output 时直接写入 CLI stdout，run-js 在调用进程执行。
 			 */
-			ArgumentsHandler?: (user: string, args: string[], context?: { cwd?: string }) => Promise<void | string>;
+			ArgumentsHandler?: (user: string, args: string[], context?: { cwd?: string }) => Promise<ArgumentsResult>;
 			/**
 			 * IPC 调用处理程序。
 			 * @param {string} user - 用户名。

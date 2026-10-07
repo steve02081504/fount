@@ -2,7 +2,7 @@
  * 【文件】src/cli.mjs — Agent Studio CLI
  * 【职责】`fount run agent_studio <subcommand>` / `fount runas <user> agent_studio <subcommand>`：列出会话、读取会话/生成详情并 dump 完整逐轮 prompt。
  * 【原理】复用生成历史的会话查询（`generation_history.mjs`）与 `generationChain.conversationKey`；默认人类可读文本，`--json` / `--format json` 输出机器可读 JSON；`--out` 写文件。
- *   由 `main.mjs` 的 `ArgumentsHandler` 调用，返回值字符串由 CLI 进程写到 stdout；错误抛出由 IPC 通道传播为非零退出。
+ *   由 `main.mjs` 的 `ArgumentsHandler` 调用并包装为结构化 output；错误抛出由 IPC 通道传播为非零退出。
  * 【关联】main.mjs、src/endpoints.mjs、generation_history.mjs、server/index.mjs runpart 输出。
  */
 import fs from 'node:fs'
@@ -160,7 +160,7 @@ function emit(content, outPath, cwd, describe) {
  * @param {string} username 用户名（由 run/runas 分发）
  * @param {string[]} args 子命令与参数
  * @param {{ cwd?: string }} [context] 调用上下文
- * @returns {Promise<string>} 供 CLI 写到 stdout 的文本
+ * @returns {Promise<string>} CLI 输出文本
  */
 export async function runStudioCli(username, args, context = {}) {
 	if (!username) throw new Error('agent_studio CLI: 缺少用户名')
