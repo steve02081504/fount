@@ -13,13 +13,60 @@
 	},
 	"suites": [
 		{
+			"name": "pure",
+			"expected": "5s",
+			"triggers": [
+				"src/public/parts/shells/home/public/shared/**",
+				"src/public/parts/shells/home/test/pure/**",
+				"src/public/parts/shells/chat/public/shared/runUri.mjs"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/deno/serial.mjs",
+				"./src/public/parts/shells/home/test/pure/"
+			]
+		},
+		{
+			"name": "integration",
+			"expected": "40s",
+			"triggers": [
+				"src/public/parts/shells/home/src/{invitation,endpoints}.mjs",
+				"src/public/parts/shells/home/public/shared/invitationLink.mjs",
+				"src/public/parts/shells/home/test/integration/**",
+				"src/public/parts/shells/home/test/node_bootstrap.mjs",
+				"src/server/invitation.mjs",
+				"src/public/parts/shells/chat/src/chat/dm/**",
+				"src/public/parts/shells/chat/src/entity/{profile,identity}.mjs"
+			],
+			"run": [
+				"deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/deno/serial.mjs",
+				"./src/public/parts/shells/home/test/integration/"
+			]
+		},
+		{
 			"name": "frontend",
-			"expected": "2m38s",
+			"expected": "1m2s",
 			"dependsOn": [
 				"server:live"
 			],
 			"trigger": "frontendShared",
 			"subtests": [
+				{
+					"name": "invitation",
+					"expected": "45s",
+					"triggers": [
+						"src/public/pages/invitation-required/**",
+						"src/public/parts/shells/home/public/src/endpoints.mjs",
+						"src/public/parts/shells/home/test/frontend/invitation.spec.mjs",
+						"src/public/parts/shells/home/test/frontend/fixtures.mjs"
+					]
+				},
 				{
 					"name": "smoke",
 					"expected": "1m15s",

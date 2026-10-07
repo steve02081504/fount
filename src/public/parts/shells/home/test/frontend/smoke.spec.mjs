@@ -21,9 +21,13 @@ test.describe('Home shell smoke', () => {
 		await page.goto(`${baseUrl}/parts/shells:home/`, { waitUntil: 'domcontentloaded' })
 		await page.waitForURL(/invitation-required\//)
 		await expect(page.locator('#invitation-link')).toBeVisible()
-		for (const key of ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'])
-			await page.keyboard.press(key)
-		await page.waitForURL(/parts\/shells:home\/?(?:\?|$)/)
+		// 直接派发 keydown，而不是走 page.keyboard：后者依赖浏览器焦点与输入管线，
+		// 与同批前端套件并行时会被挤掉按键，序列在中间断裂。
+		const selfInviteSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a']
+		await page.evaluate(sequence => {
+			for (const key of sequence) document.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }))
+		}, selfInviteSequence)
+		await page.waitForURL(/parts\/shells:home\/?(?:\?|$)/, { timeout: 30_000 })
 		const ping = await page.evaluate(async () => (await fetch('/api/ping')).json())
 		expect(ping.invitedByNodeHash).toBe(ping.nodeHash)
 	})

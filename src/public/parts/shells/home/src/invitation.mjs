@@ -3,32 +3,12 @@ import { ensureRemoteUserRoom } from 'npm:@steve02081504/fount-p2p/transport/rem
 
 import { acceptInvitation, invitationStatus } from '../../../../../server/invitation.mjs'
 import { config, save_config } from '../../../../../server/server.mjs'
-import { parseDmRunUri } from '../../chat/public/shared/runUri.mjs'
 import { getState } from '../../chat/src/chat/dag/materialize.mjs'
 import { createEcdhDmGroup } from '../../chat/src/chat/dm/index.mjs'
 import { validateDmIntroLinkProof } from '../../chat/src/chat/dm/linkValidate.mjs'
 import { getFederationViewForUser } from '../../chat/src/entity/identity.mjs'
 import { getProfile } from '../../chat/src/entity/profile.mjs'
-
-/**
- * 从原生或分享链接中解析私聊邀请。
- * @param {string} input 用户输入
- * @returns {ReturnType<typeof parseDmRunUri>} 私聊载荷
- */
-export function parseInvitationLink(input) {
-	let raw = String(input || '').trim()
-	if (raw.startsWith('https://')) {
-		const url = new URL(raw)
-		if (url.hostname !== 'steve02081504.github.io' || url.pathname !== '/fount/protocol')
-			throw new Error('Expected a fount private chat invitation link')
-		raw = url.searchParams.get('url') || ''
-	}
-	const dm = parseDmRunUri(raw)
-	if (!dm || !isHex64(dm.pubKeyHex) || !/^[\w-]{16,}$/u.test(dm.nonce || '')
-		|| !/^[\da-f]{128}$/iu.test(dm.introSignatureHex || ''))
-		throw new Error('Invalid private chat invitation link')
-	return dm
-}
+import { parseInvitationLink } from '../public/shared/invitationLink.mjs'
 
 /**
  * 解析邀请节点身份并核对可选的 HTTP 地址。
@@ -62,16 +42,28 @@ async function resolveInviterNodeHash(dm) {
 export async function startInvitation(username, input) {
 	if (invitationStatus().invited) return invitationStatus()
 	const dm = parseInvitationLink(input)
-	const proof = await validateDmIntroLinkProof(username, { members: {} }, dm.pubKeyHex, dm.nonce, dm.introSignatureHex)
-	if (!proof.ok) throw new Error(proof.error)
+	if (!dm.entityHash) {
+		const proof = await validateDmIntroLinkProof(username, { members: {} }, dm.pubKeyHex, dm.nonce, dm.introSignatureHex)
+		if (!proof.ok) throw new Error(proof.error)
+	}
 	const nodeHash = await resolveInviterNodeHash(dm)
 	const self = await getFederationViewForUser(username)
 	if (self.nodeHash === nodeHash) throw new Error('Use the keyboard sequence to invite this node itself')
 	const slot = await ensureRemoteUserRoom(nodeHash)
 	if (!slot) throw new Error('Could not connect to inviter node')
+	if (dm.entityHash) {
+		const profile = await getProfile(dm.entityHash, username, { fetchRemote: true, forceRemote: true, skipPresentation: true })
+		dm.pubKeyHex = isHex64(profile?.activePubKeyHex)
+		if (!dm.pubKeyHex) throw new Error('Inviter profile did not provide its active public key')
+	}
 	const group = await createEcdhDmGroup(username, self.activePubKeyHex, dm.pubKeyHex)
 	config.pendingInvitations ??= {}
-	config.pendingInvitations[username] = { groupId: group.groupId, peerPubKeyHex: dm.pubKeyHex, nodeHash }
+	config.pendingInvitations[username] = {
+		groupId: group.groupId,
+		peerPubKeyHex: dm.pubKeyHex,
+		nodeHash,
+		...dm.entityHash && { peerEntityHash: dm.entityHash },
+	}
 	save_config()
 	return { invited: false, pending: true, nodeHash }
 }
@@ -88,7 +80,9 @@ export async function getInvitationProgress(username) {
 	if (!pending) return { ...status, pending: false }
 	const { state } = await getState(username, pending.groupId)
 	const joined = Object.values(state.members || {}).find(member =>
-		member?.status === 'active' && member?.entityHash?.startsWith(pending.nodeHash))
+		member?.status === 'active' && (pending.peerEntityHash
+			? member.entityHash === pending.peerEntityHash
+			: member?.entityHash?.startsWith(pending.nodeHash)))
 	if (!joined) return { ...status, pending: true, nodeHash: pending.nodeHash }
 	const profile = await getProfile(joined.entityHash, username, { fetchRemote: true, skipPresentation: true }).catch(() => null)
 	if (profile?.activePubKeyHex !== pending.peerPubKeyHex)

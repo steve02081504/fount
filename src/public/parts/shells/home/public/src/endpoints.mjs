@@ -20,14 +20,18 @@ export async function getHomeRegistry() {
  * @param {string} path 端点后缀
  * @param {RequestInit} [init] 请求选项
  * @returns {Promise<object>} 响应数据
+ * @throws {Error} 失败时携带 HTTP 状态与后端 error 文案
  */
 async function invitationRequest(path, init) {
 	const response = await fetch(`/api/parts/shells:home/invitation${path}`, {
 		credentials: 'include',
 		...init,
 	})
-	const data = await response.json()
-	if (!response.ok) throw new Error(data.error || `HTTP ${response.status}`)
+	/** 非 JSON 响应（502 网关页等）也必须保留状态码，故先解析再判 ok。 */
+	let data
+	try { data = await response.json() }
+	catch (error) { throw new Error(`HTTP ${response.status}: ${error.message}`) }
+	if (!response.ok) throw new Error(`HTTP ${response.status}${data.error ? `: ${data.error}` : ''}`)
 	return data
 }
 

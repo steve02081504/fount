@@ -30,7 +30,10 @@
 					<textarea id="invitation-link" class="textarea textarea-bordered w-full min-h-28" required data-i18n="invitation-required.link.input"></textarea>
 					<button id="invitation-submit" class="btn btn-primary min-h-12 self-start" type="submit" data-i18n="invitation-required.submit"></button>
 				</form>
-				<p id="invitation-status" role="status" aria-live="polite"></p>
+				<div role="status" aria-live="polite">
+					<p id="invitation-status"></p>
+					<p id="invitation-error" class="hidden text-sm whitespace-pre-wrap break-all" user-content></p>
+				</div>
 			</div>
 		</section>
 	</main>

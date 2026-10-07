@@ -9,6 +9,7 @@ const form = document.getElementById('invitation-form')
 const field = document.getElementById('invitation-link')
 const submit = document.getElementById('invitation-submit')
 const status = document.getElementById('invitation-status')
+const errorDetails = document.getElementById('invitation-error')
 let polling = null
 
 /**
@@ -17,7 +18,20 @@ let polling = null
  * @returns {void}
  */
 function say(key) {
+	errorDetails.textContent = ''
+	errorDetails.classList.add('hidden')
 	setElementI18n(status, key)
+}
+
+/**
+ * 保留本地化提示，并以纯文本显示可复制的错误详情。
+ * @param {unknown} error API 或网络错误
+ * @returns {void}
+ */
+function showError(error) {
+	say('invitation-required.error')
+	errorDetails.textContent = error instanceof Error ? error.message : String(error)
+	errorDetails.classList.toggle('hidden', !errorDetails.textContent)
 }
 
 /**
@@ -42,10 +56,10 @@ form.addEventListener('submit', async event => {
 		await submitInvitation(field.value.trim())
 		say('invitation-required.waiting')
 		if (polling) clearInterval(polling)
-		polling = setInterval(() => refresh().catch(() => say('invitation-required.error')), 3000)
+		polling = setInterval(() => refresh().catch(showError), 3000)
 		await refresh()
 	}
-	catch { say('invitation-required.error') }
+	catch (error) { showError(error) }
 	finally { submit.disabled = false }
 })
 
@@ -60,9 +74,9 @@ document.addEventListener('keydown', async event => {
 		await acceptSelfInvitation()
 		await refresh()
 	}
-	catch { say('invitation-required.error') }
+	catch (error) { showError(error) }
 })
 
 refresh().then(result => {
-	if (result.pending) polling = setInterval(() => refresh().catch(() => say('invitation-required.error')), 3000)
-}).catch(() => say('invitation-required.error'))
+	if (result.pending) polling = setInterval(() => refresh().catch(showError), 3000)
+}).catch(showError)

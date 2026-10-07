@@ -17,6 +17,17 @@ async function stubHomeGithubPagesSync({ page }) {
 	}))
 }
 
+/**
+ * 邀请用例断言该端点失败时页面显示后端详情，这些 4xx/5xx 是按需 mock 的预期失败。
+ * @param {{ kind: string, status?: number | null, url?: string }} entry 网络诊断
+ * @returns {boolean} 是否豁免
+ */
+function isExpectedInvitationFailure(entry) {
+	return entry.kind === 'http'
+		&& [400, 502, 503].includes(entry.status)
+		&& new URL(entry.url).pathname === '/api/parts/shells:home/invitation'
+}
+
 /** Home 前端 E2E fixture（隔离节点）。 */
 export const { test, expect } = createFountFixtures({
 	locale: 'zh-CN',
@@ -25,4 +36,5 @@ export const { test, expect } = createFountFixtures({
 		timeout: ms('3m'),
 		beforeEach: stubHomeGithubPagesSync,
 	},
+	shouldIgnoreNetwork: isExpectedInvitationFailure,
 })
