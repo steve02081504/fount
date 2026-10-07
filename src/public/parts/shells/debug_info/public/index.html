@@ -16,99 +16,97 @@
 	<script blocking="render" type="module" src="/preload.mjs"></script>
 	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
 	<link href="/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="./index.css" rel="stylesheet" type="text/css" />
 	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
 	<script type="module" src="/base.mjs"></script>
 </head>
 
-<body class="p-4 md:p-8 bg-base-200 min-h-screen">
-	<main class="max-w-4xl mx-auto space-y-6">
-		<!-- Header -->
-		<div class="flex justify-between items-center">
-			<h1 class="text-3xl font-bold" data-i18n="debug_info.heading"></h1>
-			<button id="copy-button" class="btn btn-primary gap-2">
-				<img src="https://api.iconify.design/line-md/clipboard.svg" class="text-icon w-5 h-5" alt="" />
+<body class="debug-info-page bg-base-200 min-h-screen">
+	<main class="debug-info-main">
+		<header class="debug-info-header">
+			<h1 data-i18n="debug_info.heading"></h1>
+			<button id="copy-button" class="btn btn-success copy-button">
+				<img src="https://api.iconify.design/line-md/clipboard.svg" class="text-icon" alt="" />
 				<span data-i18n="debug_info.copyButton"></span>
 			</button>
-		</div>
+		</header>
 
-		<!-- Version Status -->
-		<div class="card bg-base-100 shadow-xl">
-			<div class="card-body">
-				<h2 class="card-title" data-i18n="debug_info.versionStatus.title"></h2>
-				<div class="flex flex-wrap items-center gap-4 mt-2">
-					<div id="version-indicator" class="badge badge-lg badge-warning gap-2" data-i18n="debug_info.versionStatus.checking">
-					</div>
-					<div class="text-sm opacity-70">
-						<div><span data-i18n="debug_info.versionStatus.local"></span> <span id="local-version" class="font-mono">...</span></div>
-						<div><span data-i18n="debug_info.versionStatus.remote"></span> <span id="remote-version" class="font-mono">...</span></div>
-					</div>
-					<button id="update-button" class="btn btn-sm btn-primary gap-2" disabled>
-						<img id="update-button-icon" src="https://api.iconify.design/line-md/chevron-triple-up.svg" class="text-icon w-4 h-4" alt="" />
-						<span id="update-button-label" data-i18n="debug_info.update.now"></span>
-					</button>
+		<section class="debug-info-panel version-panel" aria-labelledby="version-heading">
+			<div class="version-heading">
+				<h2 id="version-heading" data-i18n="debug_info.versionStatus.title"></h2>
+				<div id="version-indicator" class="status-badge" data-state="checking" data-i18n="debug_info.versionStatus.checking"></div>
+			</div>
+			<div class="version-details">
+				<div class="version-value"><span data-i18n="debug_info.versionStatus.local"></span><code id="local-version">...</code></div>
+				<div class="version-value"><span data-i18n="debug_info.versionStatus.remote"></span><code id="remote-version">...</code></div>
+			</div>
+			<button id="update-button" class="btn btn-sm update-button" disabled>
+				<img id="update-button-icon" src="https://api.iconify.design/line-md/backup-restore.svg" class="text-icon" alt="" />
+				<span id="update-button-label" data-i18n="debug_info.update.now"></span>
+			</button>
+		</section>
+
+		<section class="debug-info-panel system-panel" aria-labelledby="system-heading">
+			<div class="system-overview">
+				<h2 id="system-heading" data-i18n="debug_info.systemInfo.title"></h2>
+				<div id="memory-summary" class="memory-summary" aria-live="polite">
+					<span data-i18n="debug_info.memoryUsage"></span>
+					<strong id="memory-percent">--%</strong>
+					<progress id="memory-progress" class="progress progress-success" max="100" value="0"></progress>
 				</div>
 			</div>
-		</div>
+			<div class="table-scroll system-table-wrap">
+				<table class="debug-info-table">
+					<tbody id="system-info-table">
+						<tr><td colspan="2" class="loading-cell" data-i18n="debug_info.loading"></td></tr>
+					</tbody>
+				</table>
+			</div>
+		</section>
 
-		<!-- System Info -->
-		<div class="card bg-base-100 shadow-xl">
-			<div class="card-body">
-				<h2 class="card-title" data-i18n="debug_info.systemInfo.title"></h2>
-				<div class="overflow-x-auto">
-					<table class="table table-zebra w-full">
-						<tbody id="system-info-table">
-							<tr>
-								<td colspan="2" class="text-center" data-i18n="debug_info.loading"></td>
-							</tr>
-						</tbody>
+		<section id="test-status-card" class="debug-info-panel hidden" aria-labelledby="test-status-heading">
+			<button id="test-status-toggle" type="button" class="panel-toggle" aria-expanded="false">
+				<span id="test-status-heading" class="panel-title" data-i18n="debug_info.testStatus.title"></span>
+				<span class="test-status-meta">
+					<span id="test-status-badge" class="status-badge" data-state="idle"></span>
+					<img id="test-status-chevron" class="text-icon panel-chevron" src="https://api.iconify.design/line-md/chevron-small-down.svg" alt="" />
+				</span>
+			</button>
+			<ul id="test-status-list" class="test-status-list hidden"></ul>
+		</section>
+
+		<section class="connectivity-grid">
+			<div class="debug-info-panel connectivity-panel">
+				<div class="panel-heading">
+					<h2 data-i18n="debug_info.connectivity.backend"></h2>
+					<img src="https://api.iconify.design/line-md/cloud.svg" class="text-icon" alt="" />
+				</div>
+				<div class="table-scroll">
+					<table class="debug-info-table connectivity-table">
+						<tbody id="backend-checks"><tr><td data-i18n="debug_info.checking"></td></tr></tbody>
 					</table>
 				</div>
 			</div>
-		</div>
-
-		<!-- Test Status -->
-		<div id="test-status-card" class="card bg-base-100 shadow-xl hidden">
-			<div class="card-body">
-				<button id="test-status-toggle" type="button" class="card-title text-left w-full flex items-center justify-between gap-2 cursor-pointer" aria-expanded="false">
-					<span class="flex items-center gap-2">
-						<span data-i18n="debug_info.testStatus.title"></span>
-						<span id="test-status-badge" class="badge badge-lg gap-2"></span>
-					</span>
-					<span id="test-status-chevron" class="transition-transform">▾</span>
-				</button>
-				<ul id="test-status-list" class="mt-2 space-y-2 hidden"></ul>
-			</div>
-		</div>
-
-		<!-- Connectivity -->
-		<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-			<!-- Backend Connectivity -->
-			<div class="card bg-base-100 shadow-xl">
-				<div class="card-body">
-					<h2 class="card-title text-sm uppercase opacity-70" data-i18n="debug_info.connectivity.backend"></h2>
-					<ul id="backend-checks" class="space-y-2 mt-2">
-						<li class="text-center opacity-50" data-i18n="debug_info.checking"></li>
-					</ul>
+			<div class="debug-info-panel connectivity-panel">
+				<div class="panel-heading">
+					<h2 data-i18n="debug_info.connectivity.frontend"></h2>
+					<img src="https://api.iconify.design/line-md/computer.svg" class="text-icon" alt="" />
+				</div>
+				<div class="table-scroll">
+					<table class="debug-info-table connectivity-table">
+						<tbody id="frontend-checks"><tr><td data-i18n="debug_info.checking"></td></tr></tbody>
+					</table>
 				</div>
 			</div>
+		</section>
 
-			<!-- Frontend Connectivity -->
-			<div class="card bg-base-100 shadow-xl">
-				<div class="card-body">
-					<h2 class="card-title text-sm uppercase opacity-70" data-i18n="debug_info.connectivity.frontend"></h2>
-					<ul id="frontend-checks" class="space-y-2 mt-2">
-						<li class="text-center opacity-50" data-i18n="debug_info.checking"></li>
-					</ul>
-				</div>
+		<section class="debug-info-panel log-panel" aria-labelledby="logs-heading">
+			<div class="panel-heading">
+				<h2 id="logs-heading" data-i18n="debug_info.realtimeLogs"></h2>
+				<img src="https://api.iconify.design/line-md/document-code.svg" class="text-icon" alt="" />
 			</div>
-		</div>
-
-		<!-- Log viewer terminal -->
-		<div class="card bg-base-100 shadow-xl">
-			<div class="card-body p-0">
-				<iframe src="/log_viewer/" class="w-full h-[40rem] rounded-box border-0" title="log viewer" loading="lazy"></iframe>
-			</div>
-		</div>
+			<iframe src="/log_viewer/?embedded=debug-info" class="debug-log-frame" title="log viewer" loading="lazy"></iframe>
+		</section>
 	</main>
 
 	<script type="module" src="./index.mjs"></script>

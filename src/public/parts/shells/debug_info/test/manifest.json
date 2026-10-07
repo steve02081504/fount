@@ -4,13 +4,14 @@
 		"frontendShared": [
 			"src/public/parts/shells/debug_info/public/**",
 			"src/public/parts/shells/debug_info/test/frontend/**",
-			"src/public/pages/scripts/test/**"
+			"src/public/pages/scripts/test/**",
+			"src/public/pages/log_viewer/**"
 		]
 	},
 	"suites": [
 		{
 			"name": "frontend",
-			"expected": "5m28s",
+			"expected": "2m52s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -23,7 +24,21 @@
 						"src/public/parts/shells/debug_info/test/frontend/smoke.spec.mjs",
 						"src/public/parts/shells/debug_info/test/frontend/fixtures.mjs",
 						"src/public/parts/shells/debug_info/public/index.{html,mjs}",
-						"src/public/parts/shells/debug_info/public/templates.mjs"
+						"src/public/parts/shells/debug_info/public/templates.mjs",
+						"src/public/parts/shells/debug_info/public/index.css",
+						"src/public/parts/shells/debug_info/public/src/latency_sparkline.mjs",
+						"src/public/parts/shells/debug_info/public/templates/**",
+						"src/public/pages/log_viewer/**"
+					]
+				},
+				{
+					"name": "version",
+					"expected": "20s",
+					"triggers": [
+						"src/public/parts/shells/debug_info/test/frontend/version.spec.mjs",
+						"src/public/parts/shells/debug_info/test/frontend/phases.mjs",
+						"src/public/parts/shells/debug_info/public/index.mjs",
+						"src/public/parts/shells/debug_info/test/frontend/fixtures.mjs"
 					]
 				}
 			],

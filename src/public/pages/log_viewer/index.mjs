@@ -9,6 +9,9 @@ import { createLogsWs, openSource } from './endpoints.mjs'
 import { renderLogItem, createLogToolbar, entryMatchesFilter } from './log.mjs'
 import { initRepl, mountReplPanel } from './repl/index.mjs'
 
+if (new URLSearchParams(location.search).get('embedded') === 'debug-info')
+	document.documentElement.dataset.embedded = 'debug-info'
+
 applyTheme()
 await initTranslations('log_viewer')
 
@@ -252,4 +255,4 @@ initRepl({
 	onEvalExpandRef: (fn) => { evalRequestExpandRef = fn },
 })
 
-replUi?.focus()
+if (document.documentElement.dataset.embedded !== 'debug-info') replUi?.focus()
