@@ -13,13 +13,14 @@ Core: [@steve02081504/fount-p2p](https://www.npmjs.com/package/@steve02081504/fo
 - **Deno / shell / server**: `npm:@steve02081504/fount-p2p/...`
 - **Browser**: `https://esm.sh/@steve02081504/fount-p2p/...`
 - **Archive tunables**: `npm:@steve02081504/fount-p2p/dag/tunables.json` → `shells/chat/src/chat/lib/archive.tunables.json`
-- **fount network only**: `startNode` / `ensureLinkToNode` / `sendToNodeLink` / public rooms (`link_registry`, `user_room`, `group_link_set`, `node_scope`, `room_scopes`, `remote_user_room`) + `node/network`. **Peer health (read-only)**: `transport/peer_health` → `createPeerHealthTracker`, wired once in `p2p_server/index.mjs` after `initNode`; consume via `getPeerHealthTracker()` (never build a synthetic ping). Do **not** import other `transport/*`. Chat fanout / ICE / wire helpers: `shells/chat/src/chat/federation/` and `…/lib/iceServers.mjs`.
+- **fount network only**: `startNode` / `ensureLinkToNode` / `sendToNodeLink` / public rooms (`link_registry`, `user_room`, `group_link_set`, `node_scope`, `room_scopes`, `remote_user_room`) + `node/network`. **Node ICE list**: `transport/ice_servers` (`sanitizeIceServersForSettings` / `DEFAULT_ICE_SERVERS`) through `p2p_server/ice_servers.mjs`. **Peer health (read-only)**: `transport/peer_health` → `createPeerHealthTracker`, wired once in `p2p_server/index.mjs` after `initNode`; consume via `getPeerHealthTracker()` (never build a synthetic ping). Do **not** import other `transport/*`. Chat fanout / group ICE / wire helpers: `shells/chat/src/chat/federation/` and `…/lib/iceServers.mjs`.
 
 ## fount-side responsibilities
 
 | Area | Path |
 | --- | --- |
 | Node startup / entity store | `src/server/p2p_server/index.mjs`, `shells/chat/src/entity/store.mjs` (`findHostingUser` matches profile **or** existing entity dir). `initNode({ nodeDir, entityStore })`; signaling via `setSignalingRuntimeConfig`. `ensureUserRoom({ replicaUsername, attachDefaultWires: true })` for mailbox / part / part_query / chunks |
+| Node ICE/TURN | Set `p2p.iceServers` in local `data/config.json`; `initP2PServer` normalizes it through `p2p_server/ice_servers.mjs` and configures the link registry before `initNode`. Keep TURN credentials local; never log or publish them |
 | Public-good infra | optional `startInfra` / `stopInfra` / `setInfraPriority` / `pullReputationFromNode` / `lockReputationMax` (package `docs/infra.md`). Subfount always runs infra; with a host it pulls host reputation and prioritizes that node |
 | HTTP `/api/p2p/*` | `src/server/web_server/p2p_endpoints.mjs` (`connect-node` → `ensureRemoteUserRoom(targetNodeHash)`, no username argument) |
 | Network verification | `src/server/p2p_server/verification.mjs` + HTTP `/api/p2p/verification` (create), `/status/:challenge` (poll), `/local` (loopback Pages claim). Challenge/receipt node-scope messages use authenticated sender identity; the injected challenge state machine lives in `verification_service.mjs` (no node runtime imports); the local bridge mirrors `fount-p2p/js/node/verification.mjs` until that package export is published. |
@@ -51,6 +52,8 @@ Core: [@steve02081504/fount-p2p](https://www.npmjs.com/package/@steve02081504/fo
 
 - Overlay / wire protocol baseline: [p2p-overlay.md](../../../docs/design/p2p-overlay.md)
 - Signaling / glare / handshake traps (live fed): [signaling.md](../../scripts/p2p/docs/signaling.md)
+- Live node state dump (report-only): [live_state.mjs](../../scripts/p2p/live_state.mjs)
+- Local RTC capability probe (report-only): [rtc_probe.mjs](../../scripts/p2p/rtc_probe.mjs)
 - Permissions: `shells/chat/src/permissions/chat.mjs`
 - Cold archive: [archive/AGENTS.md](../../public/parts/shells/chat/src/chat/archive/AGENTS.md)
 - Hub: [hub/AGENTS.md](../../public/parts/shells/chat/public/hub/AGENTS.md)
