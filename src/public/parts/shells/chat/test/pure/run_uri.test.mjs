@@ -7,6 +7,7 @@ import { assert, assertEquals } from 'jsr:@std/assert'
 import {
 	CHAT_RUN_PART,
 	formatChatDmHref,
+	formatChatDmShareUrl,
 	formatJoinInviteUrl,
 	formatJoinRunUri,
 	formatMessageRunUri,
@@ -136,4 +137,11 @@ Deno.test('formatChatDmHref encodes the entity hash', () => {
 Deno.test('formatChatDmHref falls back to empty ?contact= without input', () => {
 	assertEquals(formatChatDmHref(''), '/parts/shells:chat/hub/?contact=')
 	assertEquals(formatChatDmHref(), '/parts/shells:chat/hub/?contact=')
+})
+
+Deno.test('DM share link opens the contact page on the recipient node', () => {
+	const hash = 'ab'.repeat(64)
+	const url = new URL(formatChatDmShareUrl(hash))
+	assertEquals(url.origin + url.pathname, 'https://steve02081504.github.io/fount/protocol')
+	assertEquals(url.searchParams.get('url'), `fount://page/parts/shells:chat/hub/?contact=${hash}`)
 })

@@ -80,6 +80,15 @@ export function formatChatDmHref(entityHash) {
 }
 
 /**
+ * 组装可跨节点分享的私聊页面链接。
+ * @param {string} entityHash 目标实体 entityHash
+ * @returns {string} GitHub Pages protocol 分享 URL
+ */
+export function formatChatDmShareUrl(entityHash) {
+	return wrapProtocolHttpsUrl(`fount://page${formatChatDmHref(entityHash)}`)
+}
+
+/**
  * 组装 join 深链分享 URL。
  * @param {object} options 载荷
  * @param {string} options.groupId 群 ID

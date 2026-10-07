@@ -258,9 +258,9 @@ export async function wireEntityProfileCardActions(root, entity, options = {}) {
 		/** 复制私聊邀请链接到剪贴板。 */
 		copyLinkButton.onclick = () => {
 			void (async () => {
-				const { formatChatDmHref } = await import('../shared/runUri.mjs')
-				const href = formatChatDmHref(entityHash)
-				await navigator.clipboard.writeText(`${window.location.origin}${href}`)
+				const { formatChatDmShareUrl } = await import('../shared/runUri.mjs')
+				const href = formatChatDmShareUrl(entityHash)
+				await navigator.clipboard.writeText(href)
 				showToastI18n('success', 'chat.hub.profilePopup.dmLinkCopied')
 			})().catch(error => {
 				showToastI18n('error', 'chat.hub.profilePopup.dmLinkCopyFailed', { error: error.message })

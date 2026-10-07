@@ -131,9 +131,9 @@ export async function showEntityProfilePopup(entity) {
 	popup.querySelector('[data-profile-popup-copy-contact]')?.addEventListener('click', () => {
 		void (async () => {
 			if (!isEntityHash128(entity.entityHash)) return
-			const { formatChatDmHref } = await import('./runUri.mjs')
-			const href = formatChatDmHref(entity.entityHash)
-			await navigator.clipboard.writeText(`${window.location.origin}${href}`)
+			const { formatChatDmShareUrl } = await import('./runUri.mjs')
+			const href = formatChatDmShareUrl(entity.entityHash)
+			await navigator.clipboard.writeText(href)
 			showToastI18n('success', 'chat.hub.profilePopup.dmLinkCopied')
 		})().catch(error => {
 			showToastI18n('error', 'chat.hub.profilePopup.dmLinkCopyFailed', { error: error.message })
