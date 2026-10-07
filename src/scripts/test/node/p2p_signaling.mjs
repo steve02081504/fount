@@ -44,9 +44,10 @@ export function testSignalingFromRelayUrls(relayUrls) {
 			// 仅走 loopback 测试 relay 的 nostr；其余通道全关，避免测试节点与真实节点同机互连。
 			nostr: { relay: relayOverride },
 			// 联邦测试仍需建数据链；webrtc 只拨已发现的节点（nostr 已隔离），不会触达真实节点。
+			// 同机测试用 rewrite-loopback 把 host candidate 钉在环回；候选一律随 description 走（已无 trickle 模式），
+			// 该字段只决定 ICE 本地主机名阶梯的起点。
 			webrtc: {
 				iceLocalHostnamePolicy: 'rewrite-loopback',
-				trickleIceOff: true,
 			},
 		}),
 	}
