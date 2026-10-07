@@ -3,7 +3,7 @@
 	"suites": [
 		{
 			"name": "git",
-			"expected": "2m25s",
+			"expected": "41s",
 			"run": [
 				"deno",
 				"run",
@@ -19,6 +19,9 @@
 				"path/fount",
 				"path/**/*.{sh,ps1,mjs}",
 				"path/test/**",
+				".esh/commands/*.ps1",
+				"src/public/parts/**/argument_completer.ps1",
+				"src/runner/dev_env_setup/main.ps1",
 				"src/scripts/test/deno/serial.mjs",
 				"src/scripts/test/core/{repo_root,paths}.mjs",
 				"src/scripts/nicerWriteFile.mjs",

@@ -1,4 +1,6 @@
 ﻿function script:run {
+	# `run` / `runas` 是 part 调用：不接管终端标题与任务栏进度（那属于服务器启动）。
+	$isInvocation = $args[0] -in @('run', 'runas')
 	if ($IsWindows) {
 		Get-Process tray_windows_release -ErrorAction Ignore | Where-Object { $_.CPU -gt 0.5 } | Stop-Process
 	}
@@ -6,9 +8,7 @@
 		Write-Warning (Get-I18n -key 'install.rootWarningAsRoot')
 		Write-Warning (Get-I18n -key 'install.rootWarningPreferUser')
 	}
-	Write-TaskbarProgress -Percent 5
-	$originalTitle = Get-Title
-	Set-Title ""
+	if (-not $isInvocation) { Write-TaskbarProgress -Percent 5; Set-Title "" }
 	$v8Flags = ""
 	if ($env:FOUNT_V8_FLAGS) {
 		$v8Flags = $env:FOUNT_V8_FLAGS
@@ -28,7 +28,7 @@
 			# Could not read or parse, will use the default 100MB.
 		}
 	}
-	Write-TaskbarProgress -Percent 10
+	if (-not $isInvocation) { Write-TaskbarProgress -Percent 10 }
 	if ($v8Flags) { $v8Flags += ",--initial-heap-size=${heapSizeMB}" }
 	else { $v8Flags = "--initial-heap-size=${heapSizeMB}" }
 
@@ -36,8 +36,7 @@
 		$env:FOUNT_START_TIME = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
 	}
 	$env:FOUNT_DENO_START_TIME = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
-	Write-TaskbarProgress -Percent 25
-	Set-Title "𝓯"
+	if (-not $isInvocation) { Write-TaskbarProgress -Percent 25; Set-Title "𝓯" }
 	$proc = [System.Diagnostics.Process]::GetCurrentProcess()
 	$prevPriority = $proc.PriorityClass
 	$env:FOUNT_STARTUP_PRIORITY_BOOST = '1'
@@ -53,10 +52,9 @@
 	finally {
 		try { $proc.PriorityClass = $prevPriority } catch { <# ignore #> }
 		Remove-Item Env:\FOUNT_STARTUP_PRIORITY_BOOST -Force -ErrorAction Ignore
-		Set-Title $originalTitle
 		Remove-Item Env:\FOUNT_START_TIME -Force -ErrorAction Ignore
 		Remove-Item Env:\FOUNT_DENO_START_TIME -Force -ErrorAction Ignore
-		if ($LastExitCode -and $LastExitCode -ne 130) { Write-TaskbarProgressError }
+		if (-not $isInvocation -and $LastExitCode -and $LastExitCode -ne 130) { Write-TaskbarProgressError }
 	}
 }
 

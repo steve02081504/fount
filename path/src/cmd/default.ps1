@@ -1,9 +1,22 @@
 ﻿function script:cmd_default {
 	require terminal env run
 	bootstrap_full @args
-	$originalTitle = Get-Title
+	# `run` / `runas` 是 part 调用：终端标题与任务栏归调用方，这里不保存也不恢复。
+	$isInvocation = $args[0] -in @('run', 'runas')
+	if (-not $isInvocation) { $originalTitle = Get-Title }
 	try {
 		if ($args[0]) {
+			if ($isInvocation) {
+				if (-not $(try { Import-Module fount-pwsh -ErrorAction Stop; Test-FountRunning } catch { $false })) {
+					& (Join-Path $FOUNT_DIR 'path/fount.ps1') background keepalive *> $null
+					if ($LastExitCode -ne 0) { exit $LastExitCode }
+					$deadline = (Get-Date).AddSeconds(60)
+					while (-not $(try { Test-FountRunning } catch { $false })) {
+						if ((Get-Date) -ge $deadline) { Write-Error 'fount server did not start in time'; exit 1 }
+						Start-Sleep -Milliseconds 200
+					}
+				}
+			}
 			run @args
 		}
 		elseif (in_container) {
@@ -24,7 +37,6 @@
 		exit $LastExitCode
 	}
 	finally {
-		Set-Title $originalTitle
-		Write-TaskbarProgressClear
+		if (-not $isInvocation) { Set-Title $originalTitle; Write-TaskbarProgressClear }
 	}
 }

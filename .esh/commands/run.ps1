@@ -1,1 +1,1 @@
-& $PSScriptRoot/../../run.bat @args
+﻿& $PSScriptRoot/../../run.bat @args

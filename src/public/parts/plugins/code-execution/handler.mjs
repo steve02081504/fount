@@ -837,6 +837,11 @@ export const runJsReplyHandler = defineReplyHandler({
 		emit?.({ callId, phase: 'start', name, lang: 'js', code: call.inner })
 		const outcome = await runWithBackgroundFallback({
 			args, call, kind: 'js', executionTarget, limits, stream,
+			/**
+			 * 无生命周期限制地执行一次。
+			 * @param {Function} output 输出回调。
+			 * @returns {Promise<object>} 完成后的执行结果。
+			 */
 			execute: output => executeRunJs({ runtime, args, call, limits: { ...limits, timeoutMs: null }, remote, stream: output }),
 		})
 		emit?.({ callId, phase: 'end', name })
@@ -992,9 +997,17 @@ function createRunShellReplyHandler(shell_name, resolveShells) {
 				 */
 				execute: output => executeRunShell({
 					runtime, args, call, limits: { ...limits, timeoutMs: null }, shellName: shell_name, stream: output,
-					/** 记下本机进程，供停止使用。 @param {object} spawned 已 spawn 的进程。 @returns {void} 无返回值。 */
+					/**
+					 * 记下本机进程，供停止使用。
+					 * @param {object} spawned 已 spawn 的进程。
+					 * @returns {void}
+					 */
 					onSpawn: spawned => { child = spawned },
-					/** 记下远程取消回调，供停止使用。 @param {Function} stop 远程取消回调。 @returns {void} 无返回值。 */
+					/**
+					 * 记下远程取消回调，供停止使用。
+					 * @param {Function} stop 远程取消回调。
+					 * @returns {void}
+					 */
 					onStop: stop => { remoteStop = stop },
 				}),
 			})
