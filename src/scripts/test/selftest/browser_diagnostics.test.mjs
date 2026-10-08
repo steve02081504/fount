@@ -24,6 +24,7 @@ import {
 	recordBrowserNetworkEntry,
 	shouldIgnoreBrowserNetwork,
 } from '../playwright/browser_diagnostics.mjs'
+import { describeWatchState } from '../playwright/watch_state.mjs'
 
 Deno.test('recordBrowserNetworkEntry aggregates identical http failures', () => {
 	/** @type {Map<string, object>} */
@@ -394,4 +395,23 @@ Deno.test('pageErrorFromCdpException uses RemoteObject + StackTrace only', () =>
 		name: 'Error',
 		stack: 'Error\n    at go (https://x/:3:5)',
 	})
+})
+
+Deno.test('describeWatchState names the tasks a stalled drain never covered', () => {
+	assertEquals(describeWatchState(null), '')
+	assertEquals(describeWatchState({}), '')
+	// 主线程被长任务占住：running 有名字、elapsedMs 是它已跑的时间；未覆盖任务给出最近一次实际耗时
+	assertEquals(describeWatchState({
+		started: true, draining: true, running: 'a11y', scheduled: true, idleStreak: 0, elapsedMs: 1900,
+		tasks: [
+			{ name: 'a11y', covered: false, idle: false, lastRunMs: 880, elapsedMs: 1900 },
+			{ name: 'locale', covered: false, idle: true, lastRunMs: null, elapsedMs: null },
+			{ name: 'emoji', covered: true, idle: false, lastRunMs: 12, elapsedMs: null },
+		],
+	}), 'draining · running a11y 1900ms · timer-armed · idleStreak 0 · a11y(UNCOVERED last 880ms), locale(UNCOVERED idle), emoji(covered last 12ms)')
+	// 调度卡住（无人 running、定时器仍待触发）：全部 covered 也照样暴露出来
+	assertEquals(describeWatchState({
+		draining: true, running: null, scheduled: true, idleStreak: 3, elapsedMs: null,
+		tasks: [{ name: 'locale', covered: true, idle: false, lastRunMs: 5 }],
+	}), 'draining · not-running · timer-armed · idleStreak 3 · locale(covered last 5ms)')
 })

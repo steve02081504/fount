@@ -6,12 +6,20 @@
  * 只看样式层（display / visibility / opacity），不按几何尺寸判定：阅读进度条等用 `transform: scaleX(0)`
  * 表达「空」的元素会在滚动时反复缩放，尺寸不是闪隐。
  *
+ * 刻意的视觉脉冲（Monaco 光标每 ~500ms 用内联 `visibility` 画闪烁，节奏与阈值抖动同量级）不是闪烁：
+ * 在产品侧用 `flicker-ignore` 属性标记（见 `FLICKER_IGNORE_ATTRIBUTE`），该子树直接跳过。
+ *
  * watch 自身 `ignore()` 期间（语种轮换、主题测量）的突变不计。
  */
 import { isIgnoring } from './mutation_gate.mjs'
 import { createReporter } from './reporter.mjs'
 
 const reporter = createReporter('[test:flicker]')
+
+/** 刻意闪烁（光标等）的子树跳过属性。 */
+export const FLICKER_IGNORE_ATTRIBUTE = 'flicker-ignore'
+/** 跳过选择器：带该属性的元素及其整棵子树。 */
+export const FLICKER_IGNORE_SELECTOR = `[${FLICKER_IGNORE_ATTRIBUTE}]`
 
 /** 统计窗口（毫秒）。 */
 const WINDOW_MS = 2000
@@ -79,6 +87,15 @@ function pushInWindow(stamps, now) {
 }
 
 /**
+ * 元素是否被标记为刻意闪烁（自身或祖先带 `flicker-ignore`）。
+ * @param {Element} element 元素
+ * @returns {boolean} 是否跳过
+ */
+export function isFlickerIgnored(element) {
+	return Boolean(element.closest?.(FLICKER_IGNORE_SELECTOR))
+}
+
+/**
  * 帧末采样：比较待查元素的可见性与上次记录。
  * @returns {void}
  */
@@ -86,6 +103,7 @@ function sampleVisibility() {
 	frame = 0
 	const now = performance.now()
 	for (const element of pending) {
+		if (isFlickerIgnored(element)) continue
 		const visible = isVisibleForFlicker(element)
 		const state = visibilityState.get(element)
 		if (!state) {
@@ -115,7 +133,7 @@ function sampleVisibility() {
 function onMutations(records) {
 	if (isIgnoring()) return
 	for (const record of records)
-		if (record.target instanceof Element) pending.add(record.target)
+		if (record.target instanceof Element && !isFlickerIgnored(record.target)) pending.add(record.target)
 	if (pending.size && !frame) frame = requestAnimationFrame(sampleVisibility)
 }
 

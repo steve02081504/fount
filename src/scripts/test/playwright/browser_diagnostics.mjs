@@ -1,6 +1,7 @@
 /**
  * 前端 Playwright 浏览器诊断：网络异常噪声行 + pageerror / page watch / i18n missing 硬失败。
  */
+import { describeWatchState } from './watch_state.mjs'
 
 /** 通用：网页 `console.error` 达到该数立即失败并退出（fail-fast）；少于该数时也在 teardown 判失败。 */
 export const MAX_CONSOLE_ERRORS = 13
@@ -173,7 +174,8 @@ export function isBrowserResourceFailureConsoleText(text) {
 
 /**
  * 强制跑完 page watch drain（中日英覆盖 + 一轮 a11y）。
- * 未挂载时 `?.()` 立即返回。
+ * 未挂载时 `?.()` 立即返回。超时错误附带 watch 状态：未覆盖的任务名 + 各自最近一次实际耗时，
+ * 用于区分「某个检查本身跑不完」与「调度卡住」。
  * @param {import('npm:@playwright/test').Page} page Playwright 页面
  * @param {number} [timeoutMs=30000] 超时
  * @returns {Promise<void>}
@@ -191,6 +193,11 @@ export async function waitForWatchDrain(page, timeoutMs = 30_000) {
 				}, timeoutMs)
 			}),
 		])
+	}
+	catch (error) {
+		if (!String(error?.message ?? error).includes('waitForWatchDrain timed out')) throw error
+		const watchState = await page.evaluate(() => globalThis.fount?.test?.watch?.state?.() ?? null).catch(() => null)
+		throw new Error(`${error.message} — ${describeWatchState(watchState) || 'no watch state available'}`)
 	}
 	finally {
 		clearTimeout(timer)

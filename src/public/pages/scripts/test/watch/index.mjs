@@ -10,7 +10,7 @@ import { installFlickerWatch } from './flicker.mjs'
 import { task as layoutTask } from './layout.mjs'
 import { bootstrap, task as localeTask } from './locale.mjs'
 import { holdLocale, releaseLocale } from './locale_hold.mjs'
-import { drain, register, start, started } from './loop.mjs'
+import { drain, register, start, started, state } from './loop.mjs'
 import { observe } from './mutations.mjs'
 import { task as svgThemeTask } from './svg_theme.mjs'
 import { task as viewportTask } from './viewport.mjs'
@@ -83,5 +83,10 @@ globalThis.fount.test.watch = {
 	drain,
 	holdLocale,
 	releaseLocale,
+	/**
+	 * loop 与各任务的进展快照（drain 超时诊断用）。
+	 * @returns {object} 快照
+	 */
+	state,
 }
 void boot()

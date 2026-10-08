@@ -18,6 +18,7 @@ import {
 	reset,
 	start,
 	started,
+	state,
 	wake,
 } from '../../../public/pages/scripts/test/watch/loop.mjs'
 import { createReporter } from '../../../public/pages/scripts/test/watch/reporter.mjs'
@@ -237,6 +238,64 @@ Deno.test('watch loop drain waits until all covered', async () => {
 	start()
 	await drain()
 	assertEquals([...seen].sort(), ['x', 'y'])
+	reset()
+})
+
+Deno.test('watch loop state names the tasks a stalled drain never covered', async () => {
+	reset()
+	let covered = false
+	/**
+	 * @param {{ draining: boolean }} ctx tick 上下文
+	 * @returns {Promise<boolean>} 是否空转
+	 */
+	async function run({ draining }) {
+		if (!draining) return true
+		await new Promise(resolve => setTimeout(resolve, 5))
+		return false
+	}
+	register(task('stuck', 1, run, () => covered))
+	start()
+	assertEquals(state().tasks[0].covered, false)
+	const stalledDrain = drain()
+	await waitUntil(() => state().tasks[0]?.lastRunMs != null, 2000, 5)
+	const stalled = state()
+	assertEquals(stalled.draining, true)
+	assertEquals(stalled.tasks.length, 1)
+	assertEquals(stalled.tasks[0].name, 'stuck')
+	assertEquals(stalled.tasks[0].covered, false)
+	assertEquals(stalled.tasks[0].idle, false)
+	assertEquals(stalled.tasks[0].lastRunMs >= 5, true, 'a task that did work records its own duration')
+	covered = true
+	await stalledDrain
+	assertEquals(state().tasks[0].covered, true)
+	reset()
+	assertEquals(state().tasks, [])
+	assertEquals(state().draining, false)
+})
+
+Deno.test('watch loop drain does not wait out each task delayMs', async () => {
+	reset()
+	let covered = false
+	/** @type {string[]} */
+	const order = []
+	/**
+	 * @param {{ draining: boolean }} ctx tick 上下文
+	 * @returns {boolean} 是否空转
+	 */
+	function run({ draining }) {
+		order.push(draining ? 'drain' : 'idle')
+		return !draining
+	}
+	// 常规间隔 5s：若 drain 还按 delayMs 排下一轮，这次收尾至少要 5s 才能覆盖第二个任务
+	register(task('slow', 5000, run, () => covered))
+	start()
+	await waitUntil(() => order.includes('idle'), 2000, 5)
+	const drainStartedAt = Date.now()
+	const draining = drain()
+	await waitUntil(() => order.includes('drain'), 2000, 5)
+	covered = true
+	await draining
+	assertEquals(Date.now() - drainStartedAt < 1000, true, 'drain must converge without waiting out delayMs')
 	reset()
 })
 

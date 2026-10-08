@@ -97,4 +97,57 @@ test.describe('page watch flicker', () => {
 		expect(lines.some(line => line.includes('visibility-flicker') && line.includes('#blinking')), JSON.stringify(lines)).toBe(true)
 		expect(lines.some(line => line.includes('#steady'))).toBe(false)
 	})
+
+	test('skips a deliberately blinking subtree marked with flicker-ignore', async ({ modulePage }) => {
+		const lines = await modulePage.run(async () => {
+			const { installFlickerWatch } = await import('/scripts/test/watch/flicker.mjs')
+			const logged = []
+			const original = console.error
+			/**
+			 * 记录 console.error 参数。
+			 * @param {...unknown} args 日志参数
+			 * @returns {void}
+			 */
+			function record(...args) { logged.push(args.map(String).join(' ')) }
+			console.error = record
+			/** @returns {Promise<void>} 等两帧 */
+			const frames = () => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
+			/**
+			 * 建一个可见小方块。
+			 * @param {string} id 元素 id
+			 * @returns {HTMLElement} 元素
+			 */
+			const make = id => {
+				const element = document.createElement('div')
+				element.id = id
+				element.textContent = id
+				element.style.cssText = 'width: 40px; height: 20px'
+				document.body.appendChild(element)
+				return element
+			}
+			installFlickerWatch()
+			// 与 Monaco 光标同形的刻意脉冲：每帧切 `visibility`，只差一层 `flicker-ignore` 祖先。
+			const ignoredWrapper = document.createElement('div')
+			ignoredWrapper.setAttribute('flicker-ignore', '')
+			document.body.appendChild(ignoredWrapper)
+			const ignored = make('ignoredCaret')
+			ignoredWrapper.appendChild(ignored)
+			const reported = make('reportedCaret')
+			try {
+				await frames()
+				for (let index = 0; index < 8; index++) {
+					for (const caret of [ignored, reported]) caret.style.visibility = caret.style.visibility === 'hidden' ? 'inherit' : 'hidden'
+					await frames()
+				}
+			}
+			finally {
+				console.error = original
+				ignoredWrapper.remove()
+				reported.remove()
+			}
+			return logged
+		})
+		expect(lines.some(line => line.includes('visibility-flicker') && line.includes('#reportedCaret')), JSON.stringify(lines)).toBe(true)
+		expect(lines.some(line => line.includes('#ignoredCaret')), JSON.stringify(lines)).toBe(false)
+	})
 })
