@@ -67,7 +67,6 @@
 			"sendCommandFailed": "Falha ao enviar o comando: ${error}",
 			"socketError": "Erro de socket: ${error}",
 			"parseResponseFailed": "Falha ao analisar a resposta do servidor: ${error}",
-			"cannotParseResponse": "Não é possível analisar a resposta do servidor.",
 			"unknownError": "Erro desconhecido.",
 			"partPathRequired": "Indique o caminho do componente."
 		},
@@ -6132,6 +6131,9 @@
 				}
 			}
 		},
+		"normal": "Normal",
+		"memoryUsage": "Utilização de memória",
+		"realtimeLogs": "Registos em direto",
 		"update": {
 			"failed": "Falha na solicitação de atualização",
 			"now": "Atualize e reinicie agora",
@@ -6830,6 +6832,35 @@
 				"unavailable": "A atualização automática deste espaço de trabalho não está disponível. Verifique o espaço de trabalho e os diretórios subscritos."
 			},
 			"cursor": "linha ${line}, coluna ${column}"
+		},
+		"cli": {
+			"tui": {
+				"model": "Modelo",
+				"char": "Personagem",
+				"session": "Sessão",
+				"profile": "Perfil",
+				"busy": "● em execução",
+				"idle": "○ pronto",
+				"backToBottom": "↓ Voltar ao mais recente",
+				"inputHint": "Enter para enviar · Shift+Enter para nova linha · Shift+Tab foca os blocos · /help · Ctrl+C para parar/limpar/sair",
+				"pickerEmpty": "Nenhum resultado",
+				"stopping": "A parar…",
+				"copied": "Seleção copiada",
+				"reasoning": "Raciocínio",
+				"you": "Tu",
+				"welcome": "Inicia uma conversa com o teu agente de programação",
+				"emptyHint": "Escreve uma mensagem abaixo · Tab para escolher o modelo · /help para os comandos"
+			}
+		},
+		"usage": {
+			"inputTokens": "entrada ${count}",
+			"outputTokens": "saída ${count}",
+			"reasoningTokens": "raciocínio ${count}",
+			"cacheReadTokens": "leitura de cache ${count}",
+			"cacheWriteTokens": "escrita de cache ${count}",
+			"estimatedCost": "Estimativa do custo conhecido ${amount} ${currency}",
+			"reply": "Utilização: ${usage}",
+			"session": "Total desta sessão: ${usage}"
 		}
 	},
 	"gist": {
@@ -7157,6 +7188,16 @@
 			"preview": "Pré-visualizar ficheiro de texto",
 			"unavailable": "Anexo indisponível",
 			"truncated": "Pré-visualização truncada. Transfira o ficheiro completo para ver o resto."
+		},
+		"usage": {
+			"inputTokens": "entrada ${count}",
+			"outputTokens": "saída ${count}",
+			"reasoningTokens": "raciocínio ${count}",
+			"cacheReadTokens": "leitura de cache ${count}",
+			"cacheWriteTokens": "escrita de cache ${count}",
+			"estimatedCost": "Estimativa do custo conhecido ${amount} ${currency}",
+			"generation": "Esta geração: ${usage}",
+			"conversation": "Utilização da conversa: ${usage}"
 		}
 	},
 	"captcha": {

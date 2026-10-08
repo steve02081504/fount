@@ -52,6 +52,7 @@ export async function createOpenAICompatibleSource({
 		is_paid,
 		extension: {},
 		context_size: config.context_size,
+		pricing: config.pricing,
 		/**
 		 * 纯文本调用。
 		 * @param {string} prompt - 提示。
@@ -95,6 +96,7 @@ export async function createOpenAICompatibleSource({
 				}
 				if (show != null) partialResult.content_for_show = show
 			}
+			base_result.extension = result.extension
 			await run(messages, {
 				signal,
 				result,

@@ -448,9 +448,15 @@ async function resolveJudgeSource(username, name) {
  */
 async function judgeBenchmarkCase({ judgeSource, caseItem, response, originalResponse }) {
 	const prompt = buildJudgePrompt({ case: caseItem, response, originalResponse })
-	const text = await judgeSource.Call(prompt)
+	const callResult = await judgeSource.Call(prompt)
+	const text = typeof callResult === 'string' ? callResult : String(callResult?.content ?? '')
 	const { score, reason } = parseJudgeResponse(text)
-	return { score, reason, model: judgeSource.info?.provider ?? null }
+	return {
+		score,
+		reason,
+		model: judgeSource.info?.provider ?? null,
+		...callResult?.extension?.usage ? { usage: callResult.extension.usage } : {},
+	}
 }
 
 /**

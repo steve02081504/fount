@@ -6,6 +6,7 @@ import { assistantPrefillEnabled, buildAssistantPrefillEnvelope } from '../proxy
 import { identityTokenizer } from '../proxy/src/identityTokenizer.mjs'
 import { cleanupResponseText } from '../proxy/src/responseFormat.mjs'
 import { buildSourceInfo } from '../proxy/src/sourceInfo.mjs'
+import { createUsageRecorder } from '../proxy/src/usage.mjs'
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
@@ -190,6 +191,7 @@ export async function GetSource(config, extra = {}) {
 		is_paid: true,
 		extension: {},
 		context_size: config.context_size ?? configTemplate.context_size,
+		pricing: config.pricing,
 
 		// 简单的文本调用
 		/**
@@ -204,21 +206,28 @@ export async function GetSource(config, extra = {}) {
 				...config.model_arguments,
 			}
 
+			const reply = {}
+			const usageRecorder = createUsageRecorder(reply, config, 'anthropic')
 			let text = ''
 
 			if (config.use_stream) {
 				const stream = await (await clientOf()).messages.create({ ...params, stream: true })
-				for await (const event of stream)
+				for await (const event of stream) {
+					usageRecorder.record(event.message?.usage ?? event.usage, event.message?.model)
 					if (event.type === 'content_block_delta' && event.delta.type === 'text_delta')
 						text += event.delta.text
+				}
 			}
 			else {
 				const message = await (await clientOf()).messages.create(params)
+				usageRecorder.record(message.usage, message.model)
 				// Claude 的响应 content 是一个数组，我们只取文本部分
 				text = message.content.filter(block => block.type === 'text').map(block => block.text).join('')
 			}
 
-			return { content: text }
+			reply.content = text
+			usageRecorder.apply()
+			return reply
 		},
 
 		// 结构化的多模态调用
@@ -268,7 +277,10 @@ export async function GetSource(config, extra = {}) {
 			const result = {
 				content: '',
 				files: [...base_result?.files || []],
+				extension: base_result.extension ??= {},
 			}
+
+			const usageRecorder = createUsageRecorder(result, config, 'anthropic')
 
 			/**
 			 * 预览更新器
@@ -282,22 +294,29 @@ export async function GetSource(config, extra = {}) {
 
 			if (useStream) {
 				const stream = await (await clientOf()).messages.create({ ...params, stream: true }, { signal })
-				for await (const event of stream) {
-					if (signal?.aborted) {
-						const err = new Error('Aborted by user')
-						err.name = 'AbortError'
-						throw err
-					}
-					if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
-						result.content += event.delta.text
-						previewUpdater(result)
+				try {
+					for await (const event of stream) {
+						usageRecorder.record(event.message?.usage ?? event.usage, event.message?.model)
+						if (signal?.aborted) {
+							const err = new Error('Aborted by user')
+							err.name = 'AbortError'
+							throw err
+						}
+						if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+							result.content += event.delta.text
+							previewUpdater(result)
+						}
 					}
 				}
+				// 中断也要落下已上报的计量，否则本轮的调用从会话累计里消失
+				finally { usageRecorder.apply() }
 			}
 			else {
 				const message = await (await clientOf()).messages.create(params, { signal })
+				usageRecorder.record(message.usage, message.model)
 				result.content = message.content.filter(block => block.type === 'text').map(block => block.text).join('')
 				previewUpdater(result)
+				usageRecorder.apply()
 			}
 
 			return Object.assign(base_result, clearFormat(result))

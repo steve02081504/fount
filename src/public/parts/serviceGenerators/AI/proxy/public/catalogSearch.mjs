@@ -98,6 +98,22 @@ export function findCatalogEntry(catalog, config) {
 }
 
 /**
+ * 将 models.dev 的每百万 token 美元单价转换为 proxy 源配置。
+ * @param {object} entry 选中的目录模型。
+ * @returns {object|null} 可用的价格配置；无有效价格时返回 null。
+ */
+export function pricingFromCatalogEntry(entry) {
+	const cost = entry?.cost || {}
+	const pricing = { currency: 'USD' }
+	for (const [catalogKey, configKey] of Object.entries({ input: 'input', cache_read: 'cacheRead', cache_write: 'cacheWrite', output: 'output' })) {
+		const value = cost[catalogKey]
+		if (typeof value === 'number' && Number.isFinite(value) && value >= 0)
+			pricing[configKey] = value
+	}
+	return Object.keys(pricing).length > 1 ? pricing : null
+}
+
+/**
  * 字段 → 相关性权重。含义：该字段命中越"靠前"（整字段相等 > 前缀 > 词首 > 子串）分越高。
  * provider 身份权重最高，使官方源在搜厂商名时压过聚合商的同名模型。
  */

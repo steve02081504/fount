@@ -241,6 +241,40 @@ function createParentArgs(extension = {}) {
 	}
 }
 
+Deno.test('sub-agent limit summary includes its reported call usage', async () => {
+	resetSubAgentState()
+	const ai = createFakeAi(['work'])
+	/** @returns {Promise<object>} 摘要和计量。 */
+	ai.Call = async () => ({ content: 'summary', extension: { usage: { calls: [{ inputTokens: 100, outputTokens: 5 }] } } })
+	const outcome = await runSubAgent(createParentArgs(),
+		{ body: 'task', roundLimit: 1, timeLimitMs: 60_000 }, createDeps(ai, createRegenPlugin(1)))
+	assertEquals(outcome.run.result.extension.usage.total.inputTokens, 100)
+	assertEquals(outcome.run.result.extension.usage.calls[0].purpose, 'summary')
+	assertEquals(outcome.text, 'summary')
+})
+
+Deno.test('failed async sub-agent preserves usage for its settlement', async () => {
+	resetSubAgentState()
+	resetAsyncTaskState()
+	const ai = createFakeAi(['work'])
+	/**
+	 * 报告计量后模拟请求失败。
+	 * @param {object} _prompt 提示。
+	 * @param {object} options 生成选项。
+	 * @returns {Promise<never>} 请求失败。
+	 */
+	ai.StructCall = async (_prompt, options) => {
+		options.base_result.extension.usage = { calls: [{ inputTokens: 100, outputTokens: 5 }], total: { inputTokens: 100, outputTokens: 5 } }
+		throw new Error('request failed after reported usage')
+	}
+	const args = createParentArgs({ generationId: 'usage-failed-test' })
+	const outcome = await runSubAgent(args,
+		{ body: 'task', async: true, roundLimit: 3, timeLimitMs: 60_000 }, createDeps(ai, createRegenPlugin(0)))
+	const settled = await awaitTasks([outcome.backgroundId], { requester: ownerFromArgs(args) })
+	assertEquals(settled.settled[0].state, 'failed')
+	assertEquals(settled.settled[0].meta.usage.total.inputTokens, 100)
+})
+
 /**
  * 轮询等待条件成立。
  * @param {() => boolean} predicate 条件

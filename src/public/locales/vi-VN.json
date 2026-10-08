@@ -67,7 +67,6 @@
 			"sendCommandFailed": "Gửi lệnh thất bại: ${error}",
 			"socketError": "Lỗi Socket: ${error}",
 			"parseResponseFailed": "Phân tích phản hồi từ máy chủ thất bại: ${error}",
-			"cannotParseResponse": "Không thể phân tích phản hồi từ máy chủ.",
 			"unknownError": "Lỗi không xác định.",
 			"partPathRequired": "Vui lòng cung cấp đường dẫn thành phần."
 		},
@@ -6126,6 +6125,9 @@
 				}
 			}
 		},
+		"normal": "Bình thường",
+		"memoryUsage": "Mức sử dụng bộ nhớ",
+		"realtimeLogs": "Nhật ký thời gian thực",
 		"update": {
 			"failed": "Yêu cầu cập nhật không thành công",
 			"now": "Cập nhật và khởi động lại ngay",
@@ -6818,6 +6820,35 @@
 				"unavailable": "Không gian làm việc này không dùng được tính năng tự động cập nhật. Hãy kiểm tra không gian làm việc và các thư mục đã đăng ký theo dõi."
 			},
 			"cursor": "dòng ${line}, cột ${column}"
+		},
+		"cli": {
+			"tui": {
+				"model": "Mô hình",
+				"char": "Nhân vật",
+				"session": "Phiên",
+				"profile": "Hồ sơ",
+				"busy": "● đang chạy",
+				"idle": "○ sẵn sàng",
+				"backToBottom": "↓ Về tin nhắn mới nhất",
+				"inputHint": "Enter để gửi · Shift+Enter để xuống dòng · Shift+Tab chọn các mục thu gọn · /help · Ctrl+C để dừng/xóa/thoát",
+				"pickerEmpty": "Không có kết quả phù hợp",
+				"stopping": "Đang dừng…",
+				"copied": "Đã sao chép phần đã chọn",
+				"reasoning": "Suy luận",
+				"you": "Bạn",
+				"welcome": "Bắt đầu trò chuyện với agent lập trình của bạn",
+				"emptyHint": "Nhập tin nhắn bên dưới · Tab để chọn mô hình · /help để xem lệnh"
+			}
+		},
+		"usage": {
+			"inputTokens": "đầu vào ${count}",
+			"outputTokens": "đầu ra ${count}",
+			"reasoningTokens": "suy luận ${count}",
+			"cacheReadTokens": "đọc bộ nhớ đệm ${count}",
+			"cacheWriteTokens": "ghi bộ nhớ đệm ${count}",
+			"estimatedCost": "Ước tính chi phí đã biết ${amount} ${currency}",
+			"reply": "Mức sử dụng: ${usage}",
+			"session": "Tổng của phiên này: ${usage}"
 		}
 	},
 	"gist": {
@@ -7145,6 +7176,16 @@
 			"preview": "Xem trước tệp văn bản",
 			"unavailable": "Tệp đính kèm không khả dụng",
 			"truncated": "Bản xem trước đã bị cắt. Tải tệp đầy đủ để xem phần còn lại."
+		},
+		"usage": {
+			"inputTokens": "đầu vào ${count}",
+			"outputTokens": "đầu ra ${count}",
+			"reasoningTokens": "suy luận ${count}",
+			"cacheReadTokens": "đọc bộ nhớ đệm ${count}",
+			"cacheWriteTokens": "ghi bộ nhớ đệm ${count}",
+			"estimatedCost": "Ước tính chi phí đã biết ${amount} ${currency}",
+			"generation": "Lần tạo này: ${usage}",
+			"conversation": "Mức sử dụng của cuộc trò chuyện: ${usage}"
 		}
 	},
 	"captcha": {

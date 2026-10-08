@@ -8,6 +8,7 @@ import { buildMessagesFromPromptStruct } from '../proxy/src/messageBuilder.mjs'
 import { withoutReasoningExtension } from '../proxy/src/reasoningRenderer.mjs'
 import { clearFormat } from '../proxy/src/responseFormat.mjs'
 import { buildSourceInfo } from '../proxy/src/sourceInfo.mjs'
+import { createUsageRecorder } from '../proxy/src/usage.mjs'
 
 import { converseStreamDeltaText, messagesToConverse } from './src/converse.mjs'
 
@@ -102,23 +103,31 @@ async function GetSource(config) {
 			...config.model_arguments ? { inferenceConfig: config.model_arguments } : {},
 		}
 		const result = options.result ?? { content: '', files: [] }
+		const usageRecorder = createUsageRecorder(result, config, 'bedrock')
 		if (config.use_stream) {
 			const response = await client.send(new ConverseStreamCommand(input), { abortSignal: options.signal })
-			for await (const event of response.stream) {
-				if (options.signal?.aborted) {
-					const err = new Error('Aborted by user')
-					err.name = 'AbortError'
-					throw err
-				}
-				const delta = converseStreamDeltaText(event)
-				if (delta) {
-					result.content += delta
-					options.previewUpdater?.(result)
+			try {
+				for await (const event of response.stream) {
+					usageRecorder.record(event.metadata?.usage)
+					if (options.signal?.aborted) {
+						const err = new Error('Aborted by user')
+						err.name = 'AbortError'
+						throw err
+					}
+					const delta = converseStreamDeltaText(event)
+					if (delta) {
+						result.content += delta
+						options.previewUpdater?.(result)
+					}
 				}
 			}
+			// 中断也要落下已上报的计量，否则本轮的调用从会话累计里消失
+			finally { usageRecorder.apply() }
 			return result
 		}
 		const response = await client.send(new ConverseCommand(input), { abortSignal: options.signal })
+		usageRecorder.record(response.usage)
+		usageRecorder.apply()
 		result.content = (response.output?.message?.content ?? []).map(part => part.text ?? '').join('')
 		options.previewUpdater?.(result)
 		return result
@@ -130,6 +139,7 @@ async function GetSource(config) {
 		is_paid: true,
 		extension: {},
 		context_size: config.context_size,
+		pricing: config.pricing,
 		/**
 		 * 纯文本调用。
 		 * @param {string} prompt - 提示。
@@ -151,6 +161,7 @@ async function GetSource(config) {
 				// 推理只属于单轮，不随 base_result 跨轮继承
 				extension: withoutReasoningExtension(base_result?.extension),
 			}
+			base_result.extension = result.extension
 			await run(messages, {
 				signal,
 				result,

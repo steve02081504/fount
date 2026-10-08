@@ -67,7 +67,6 @@
 			"sendCommandFailed": "Mistókst að senda skipun: ${error}",
 			"socketError": "Socket villa: ${error}",
 			"parseResponseFailed": "Mistókst að þátta svar netþjóns: ${error}",
-			"cannotParseResponse": "Gat ekki þáttað svar netþjóns",
 			"unknownError": "Óþekkt villa",
 			"partPathRequired": "Vinsamlegast tilgreindu íhlutaslóð."
 		},
@@ -6126,6 +6125,9 @@
 				}
 			}
 		},
+		"normal": "Eðlilegt",
+		"memoryUsage": "Minnisnotkun",
+		"realtimeLogs": "Lifandi annáll",
 		"update": {
 			"failed": "Uppfærslubeiðni mistókst",
 			"now": "Uppfærðu og endurræstu núna",
@@ -6824,6 +6826,35 @@
 				"unavailable": "Sjálfvirkar uppfærslur þessa vinnusvæðis eru ekki í boði. Athugaðu vinnusvæðið og áskriftarmöppurnar."
 			},
 			"cursor": "lína ${line}, dálkur ${column}"
+		},
+		"cli": {
+			"tui": {
+				"model": "Líkan",
+				"char": "Persóna",
+				"session": "Lota",
+				"profile": "Prófíll",
+				"busy": "● í gangi",
+				"idle": "○ tilbúið",
+				"backToBottom": "↓ Aftur í nýjasta",
+				"inputHint": "Enter til að senda · Shift+Enter fyrir nýja línu · Shift+Tab velur samanfellda hluta · /help · Ctrl+C til að stöðva/hreinsa/hætta",
+				"pickerEmpty": "Engar niðurstöður",
+				"stopping": "Verið er að stöðva…",
+				"copied": "Textinn afritaður",
+				"reasoning": "Hugsun",
+				"you": "Þú",
+				"welcome": "Byrjaðu samtal við forritunaraðilann þinn",
+				"emptyHint": "Sláðu inn skilaboð hér að neðan · Tab velur líkan · /help fyrir skipanir"
+			}
+		},
+		"usage": {
+			"inputTokens": "inntak ${count}",
+			"outputTokens": "úttak ${count}",
+			"reasoningTokens": "hugsun ${count}",
+			"cacheReadTokens": "lestur skyndiminni ${count}",
+			"cacheWriteTokens": "skrift í skyndiminni ${count}",
+			"estimatedCost": "Áætlaður þekktur kostnaður ${amount} ${currency}",
+			"reply": "Notkun: ${usage}",
+			"session": "Samtals í þessari lotu: ${usage}"
 		}
 	},
 	"gist": {
@@ -7151,6 +7182,16 @@
 			"preview": "Skoða textaskrá",
 			"unavailable": "Viðhengi ekki tiltækt",
 			"truncated": "Sýnishorn stytt. Sæktu alla skrána til að sjá restina."
+		},
+		"usage": {
+			"inputTokens": "inntak ${count}",
+			"outputTokens": "úttak ${count}",
+			"reasoningTokens": "hugsun ${count}",
+			"cacheReadTokens": "lestur skyndiminni ${count}",
+			"cacheWriteTokens": "skrift í skyndiminni ${count}",
+			"estimatedCost": "Áætlaður þekktur kostnaður ${amount} ${currency}",
+			"generation": "Þessi framleiðsla: ${usage}",
+			"conversation": "Notkun samtalanna: ${usage}"
 		}
 	},
 	"captcha": {

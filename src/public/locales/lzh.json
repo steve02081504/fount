@@ -67,7 +67,6 @@
 			"sendCommandFailed": "傳令失機：${error}",
 			"socketError": "節點有誤：${error}",
 			"parseResponseFailed": "解復令未遂：${error}",
-			"cannotParseResponse": "復令難解，如讀天書",
 			"unknownError": "天有不測之禍",
 			"partPathRequired": "件徑不可缺。"
 		},
@@ -6126,6 +6125,9 @@
 				}
 			}
 		},
+		"normal": "正常",
+		"memoryUsage": "記憶體用量",
+		"realtimeLogs": "即時誌",
 		"update": {
 			"failed": "更之請未遂",
 			"now": "當即更並重啟",
@@ -6818,6 +6820,35 @@
 				"unavailable": "作業區之自動更新不可用，請察作業區與所訂之目錄"
 			},
 			"cursor": "第 ${line} 行、第 ${column} 列"
+		},
+		"cli": {
+			"tui": {
+				"model": "模型",
+				"char": "角色",
+				"session": "會話",
+				"profile": "配置",
+				"busy": "● 方行",
+				"idle": "○ 待命",
+				"backToBottom": "↓ 還至最新",
+				"inputHint": "Enter 發 · Shift+Enter 換行 · Shift+Tab 擇可折者 · /help · Ctrl+C 止/清/去",
+				"pickerEmpty": "無相合者",
+				"stopping": "方止…",
+				"copied": "已鈔所擇",
+				"reasoning": "思之跡",
+				"you": "君",
+				"welcome": "可與碼師共語矣",
+				"emptyHint": "下書其言 · Tab 擇機 · /help 索功用"
+			}
+		},
+		"usage": {
+			"inputTokens": "入 ${count}",
+			"outputTokens": "出 ${count}",
+			"reasoningTokens": "思 ${count}",
+			"cacheReadTokens": "緩讀 ${count}",
+			"cacheWriteTokens": "緩書 ${count}",
+			"estimatedCost": "費約 ${amount} ${currency}",
+			"reply": "用度：${usage}",
+			"session": "此會話共計：${usage}"
 		}
 	},
 	"gist": {
@@ -7145,6 +7176,16 @@
 			"preview": "預覽文牘",
 			"unavailable": "不得附件",
 			"truncated": "預覽已截，請下載全文。"
+		},
+		"usage": {
+			"inputTokens": "入 ${count}",
+			"outputTokens": "出 ${count}",
+			"reasoningTokens": "思 ${count}",
+			"cacheReadTokens": "緩讀 ${count}",
+			"cacheWriteTokens": "緩書 ${count}",
+			"estimatedCost": "費約 ${amount} ${currency}",
+			"generation": "此番所生：${usage}",
+			"conversation": "當下對談：${usage}"
 		}
 	},
 	"captcha": {

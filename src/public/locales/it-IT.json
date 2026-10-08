@@ -67,7 +67,6 @@
 			"sendCommandFailed": "Impossibile inviare il comando: ${error}",
 			"socketError": "Errore socket: ${error}",
 			"parseResponseFailed": "Impossibile analizzare la risposta del server: ${error}",
-			"cannotParseResponse": "Impossibile analizzare la risposta del server.",
 			"unknownError": "Errore sconosciuto.",
 			"partPathRequired": "Specifica il percorso del componente."
 		},
@@ -6132,6 +6131,9 @@
 				}
 			}
 		},
+		"normal": "Normale",
+		"memoryUsage": "Utilizzo memoria",
+		"realtimeLogs": "Log in tempo reale",
 		"update": {
 			"failed": "Richiesta di aggiornamento non riuscita",
 			"now": "Aggiorna e riavvia ora",
@@ -6830,6 +6832,35 @@
 				"unavailable": "L’aggiornamento automatico di quest’area di lavoro non è disponibile. Controlla l’area di lavoro e le cartelle sottoscritte."
 			},
 			"cursor": "riga ${line}, colonna ${column}"
+		},
+		"cli": {
+			"tui": {
+				"model": "Modello",
+				"char": "Personaggio",
+				"session": "Sessione",
+				"profile": "Profilo",
+				"busy": "● in esecuzione",
+				"idle": "○ pronto",
+				"backToBottom": "↓ Torna all'ultimo messaggio",
+				"inputHint": "Invio per inviare · Maiusc+Invio per nuova riga · Maiusc+Tab focalizza i blocchi · /help · Ctrl+C per interrompere/pulire/uscire",
+				"pickerEmpty": "Nessun risultato",
+				"stopping": "Interruzione in corso…",
+				"copied": "Selezione copiata",
+				"reasoning": "Ragionamento",
+				"you": "Tu",
+				"welcome": "Inizia una conversazione con il tuo agente di programmazione",
+				"emptyHint": "Scrivi un messaggio qui sotto · Tab per scegliere il modello · /help per i comandi"
+			}
+		},
+		"usage": {
+			"inputTokens": "input ${count}",
+			"outputTokens": "output ${count}",
+			"reasoningTokens": "ragionamento ${count}",
+			"cacheReadTokens": "lettura cache ${count}",
+			"cacheWriteTokens": "scrittura cache ${count}",
+			"estimatedCost": "Stima del costo noto ${amount} ${currency}",
+			"reply": "Utilizzo: ${usage}",
+			"session": "Totale di questa sessione: ${usage}"
 		}
 	},
 	"gist": {
@@ -7157,6 +7188,16 @@
 			"preview": "Anteprima file di testo",
 			"unavailable": "Allegato non disponibile",
 			"truncated": "Anteprima troncata. Scarica il file completo per vedere il resto."
+		},
+		"usage": {
+			"inputTokens": "input ${count}",
+			"outputTokens": "output ${count}",
+			"reasoningTokens": "ragionamento ${count}",
+			"cacheReadTokens": "lettura cache ${count}",
+			"cacheWriteTokens": "scrittura cache ${count}",
+			"estimatedCost": "Stima del costo noto ${amount} ${currency}",
+			"generation": "Questa generazione: ${usage}",
+			"conversation": "Utilizzo della conversazione: ${usage}"
 		}
 	},
 	"captcha": {

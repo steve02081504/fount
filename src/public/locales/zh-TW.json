@@ -67,7 +67,6 @@
 			"sendCommandFailed": "傳送指令失敗：${error}",
 			"socketError": "Socket 錯誤: ${error}",
 			"parseResponseFailed": "解析伺服器回應失敗: ${error}",
-			"cannotParseResponse": "無法解析伺服器回應",
 			"unknownError": "未知錯誤",
 			"partPathRequired": "請提供組件路徑。"
 		},
@@ -6126,6 +6125,9 @@
 				}
 			}
 		},
+		"normal": "正常",
+		"memoryUsage": "記憶體使用率",
+		"realtimeLogs": "即時日誌",
 		"update": {
 			"failed": "更新請求失敗",
 			"now": "立即更新並重啟",
@@ -6818,6 +6820,35 @@
 				"unavailable": "此工作區的自動更新無法使用，請檢查工作區與訂閱目錄"
 			},
 			"cursor": "第 ${line} 行，第 ${column} 列"
+		},
+		"cli": {
+			"tui": {
+				"model": "模型",
+				"char": "角色",
+				"session": "工作階段",
+				"profile": "設定檔",
+				"busy": "● 執行中",
+				"idle": "○ 就緒",
+				"backToBottom": "↓ 回到最新訊息",
+				"inputHint": "Enter 傳送 · Shift+Enter 換行 · Shift+Tab 聚焦折疊項 · /help · Ctrl+C 停止/清空/離開",
+				"pickerEmpty": "沒有相符項目",
+				"stopping": "正在停止…",
+				"copied": "已複製選取的內容",
+				"reasoning": "思考過程",
+				"you": "你",
+				"welcome": "與編程角色開始對話",
+				"emptyHint": "在下方輸入訊息 · Tab 選擇模型 · /help 查看指令"
+			}
+		},
+		"usage": {
+			"inputTokens": "輸入 ${count}",
+			"outputTokens": "輸出 ${count}",
+			"reasoningTokens": "推理 ${count}",
+			"cacheReadTokens": "快取讀取 ${count}",
+			"cacheWriteTokens": "快取寫入 ${count}",
+			"estimatedCost": "已知費用估算 ${amount} ${currency}",
+			"reply": "用量：${usage}",
+			"session": "本工作階段累計用量：${usage}"
 		}
 	},
 	"gist": {
@@ -7145,6 +7176,16 @@
 			"preview": "預覽文字檔",
 			"unavailable": "附件無法取得",
 			"truncated": "預覽已截斷，請下載完整檔案查看。"
+		},
+		"usage": {
+			"inputTokens": "輸入 ${count}",
+			"outputTokens": "輸出 ${count}",
+			"reasoningTokens": "推理 ${count}",
+			"cacheReadTokens": "快取讀取 ${count}",
+			"cacheWriteTokens": "快取寫入 ${count}",
+			"estimatedCost": "已知費用估算 ${amount} ${currency}",
+			"generation": "本次生成：${usage}",
+			"conversation": "目前對話用量：${usage}"
 		}
 	},
 	"captcha": {

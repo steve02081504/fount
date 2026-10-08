@@ -52,6 +52,7 @@ export async function createResponsesSource({
 		const { url, headers } = await resolveRequest()
 		return fetchResponses({
 			url,
+			usageConfig: config,
 			headers,
 			body: buildResponsesBody(messages),
 			signal: options.signal,
@@ -66,6 +67,7 @@ export async function createResponsesSource({
 		is_paid,
 		extension: {},
 		context_size: config.context_size,
+		pricing: config.pricing,
 		/**
 		 * 纯文本调用。
 		 * @param {string} prompt - 提示。
@@ -87,6 +89,7 @@ export async function createResponsesSource({
 				// 推理只属于单轮，不随 base_result 跨轮继承
 				extension: withoutReasoningExtension(base_result?.extension),
 			}
+			base_result.extension = result.extension
 			await run(messages, {
 				signal,
 				result,

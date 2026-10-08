@@ -5,6 +5,7 @@ import { fetchResponses, messagesToResponsesBody } from '../../codex/src/respons
 import { completionsUrlCandidates } from './completionsUrl.mjs'
 import { AIRequestError, isRetryableCandidateError, readErrorResponse } from './requestError.mjs'
 import { responsesUrlCandidates, urlImpliesResponses } from './responsesUrl.mjs'
+import { createUsageRecorder } from './usage.mjs'
 
 /** Chat Completions 专有的请求参数，Responses API 不接受，转发前需剔除。 */
 const CHAT_ONLY_ARGUMENTS = new Set([
@@ -108,6 +109,7 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 		previewUpdater = () => { },
 		result = { content: '', files: [] },
 	}) {
+		const usageRecorder = createUsageRecorder(result, requestConfig)
 		const startedAt = Date.now()
 		let firstTokenAt
 
@@ -146,6 +148,7 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 				messages,
 				stream: requestConfig.use_stream,
 				...requestConfig.model_arguments,
+				...requestConfig.use_stream ? { stream_options: { ...requestConfig.model_arguments?.stream_options, include_usage: true } } : {},
 			}),
 			signal
 		})
@@ -241,6 +244,8 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 				return
 			}
 
+			usageRecorder.record(json.usage, json.model)
+
 			// 流中夹带的错误对象：过去被静默忽略，导致得到空回复。
 			if (json.error)
 				throw new AIRequestError(
@@ -275,6 +280,7 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 		 * @returns {void}
 		 */
 		const applyNonStreamJson = json => {
+			usageRecorder.record(json.usage, json.model)
 			if (json.error)
 				throw new AIRequestError(
 					`chat error: ${json.error.message ?? JSON.stringify(json.error)}`,
@@ -294,40 +300,44 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 		}
 
 		try {
-			while (true) {
-				if (signal?.aborted) {
-					const err = new Error('User Aborted')
-					err.name = 'AbortError'
-					throw err
+			try {
+				while (true) {
+					if (signal?.aborted) {
+						const err = new Error('User Aborted')
+						err.name = 'AbortError'
+						throw err
+					}
+					const { done, value } = await reader.read()
+					if (done) break
+
+					buffer += decoder.decode(value, { stream: true })
+
+					if (!isSSE && /^data:/m.test(buffer))
+						isSSE = true
+
+					if (isSSE) {
+						const lines = buffer.split('\n')
+						buffer = lines.pop()
+						for (const line of lines) handleSseLine(line)
+					}
 				}
-				const { done, value } = await reader.read()
-				if (done) break
 
-				buffer += decoder.decode(value, { stream: true })
-
-				if (!isSSE && /^data:/m.test(buffer))
-					isSSE = true
-
-				if (isSSE) {
-					const lines = buffer.split('\n')
-					buffer = lines.pop()
-					for (const line of lines) handleSseLine(line)
+				// 冲刷解码器与最后一行（流末尾可能没有换行结尾）。
+				buffer += decoder.decode()
+				if (isSSE)
+					for (const line of buffer.split('\n')) handleSseLine(line)
+				else if (buffer.trim()) {
+					let json
+					try {
+						json = JSON.parse(buffer)
+					} catch (error) {
+						if (!result.content) console.error('Failed to parse response as JSON:', error)
+					}
+					if (json) applyNonStreamJson(json)
 				}
 			}
-
-			// 冲刷解码器与最后一行（流末尾可能没有换行结尾）。
-			buffer += decoder.decode()
-			if (isSSE)
-				for (const line of buffer.split('\n')) handleSseLine(line)
-			else if (buffer.trim()) {
-				let json
-				try {
-					json = JSON.parse(buffer)
-				} catch (error) {
-					if (!result.content) console.error('Failed to parse response as JSON:', error)
-				}
-				if (json) applyNonStreamJson(json)
-			}
+			// 中断也要落下已上报的计量，否则本轮的调用从会话累计里消失
+			finally { usageRecorder.apply() }
 		} catch (error) {
 			if (error.name === 'AbortError') throw error
 			console.error('Stream reading error:', error)
@@ -356,6 +366,7 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 		const requestConfig = { ...config, url: candidate.url }
 		return fetchResponses({
 			url: candidate.url,
+			usageConfig: config,
 			headers: requestHeaders(requestConfig),
 			body: messagesToResponsesBody(messages, {
 				model: config.model,

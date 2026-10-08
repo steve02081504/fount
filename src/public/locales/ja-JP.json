@@ -67,7 +67,6 @@
 			"sendCommandFailed": "コマンドの送信に失敗しました：${error}",
 			"socketError": "ソケットエラー：${error}",
 			"parseResponseFailed": "サーバー応答の解析に失敗しました：${error}",
-			"cannotParseResponse": "サーバー応答を解析できません。",
 			"unknownError": "不明なエラーが発生しました。",
 			"partPathRequired": "コンポーネントパスを指定してください。"
 		},
@@ -6126,6 +6125,9 @@
 				}
 			}
 		},
+		"normal": "正常",
+		"memoryUsage": "メモリ使用率",
+		"realtimeLogs": "リアルタイムログ",
 		"update": {
 			"failed": "更新リクエストが失敗しました",
 			"now": "今すぐ更新して再起動",
@@ -6818,6 +6820,35 @@
 				"unavailable": "自動更新を利用できません。ワークスペースと購読ディレクトリを確認してください。"
 			},
 			"cursor": "行 ${line}、列 ${column}"
+		},
+		"cli": {
+			"tui": {
+				"model": "モデル",
+				"char": "キャラクター",
+				"session": "セッション",
+				"profile": "プロファイル",
+				"busy": "● 実行中",
+				"idle": "○ 待機中",
+				"backToBottom": "↓ 最新へ戻る",
+				"inputHint": "Enter で送信 · Shift+Enter で改行 · Shift+Tab で折りたたみ項目にフォーカス · /help · Ctrl+C で停止/クリア/終了",
+				"pickerEmpty": "一致する結果がありません",
+				"stopping": "停止しています…",
+				"copied": "選択範囲をコピーしました",
+				"reasoning": "思考過程",
+				"you": "あなた",
+				"welcome": "コーディングエージェントと会話を始めましょう",
+				"emptyHint": "下の欄にメッセージを入力 · Tab でモデル選択 · /help でコマンド一覧"
+			}
+		},
+		"usage": {
+			"inputTokens": "入力 ${count}",
+			"outputTokens": "出力 ${count}",
+			"reasoningTokens": "推論 ${count}",
+			"cacheReadTokens": "キャッシュ読み取り ${count}",
+			"cacheWriteTokens": "キャッシュ書き込み ${count}",
+			"estimatedCost": "既知コストの概算 ${amount} ${currency}",
+			"reply": "使用量：${usage}",
+			"session": "このセッションの累計使用量：${usage}"
 		}
 	},
 	"gist": {
@@ -7145,6 +7176,16 @@
 			"preview": "テキストファイルをプレビュー",
 			"unavailable": "添付ファイルを利用できません",
 			"truncated": "プレビューは省略されています。全体を見るにはファイルをダウンロードしてください。"
+		},
+		"usage": {
+			"inputTokens": "入力 ${count}",
+			"outputTokens": "出力 ${count}",
+			"reasoningTokens": "推論 ${count}",
+			"cacheReadTokens": "キャッシュ読み取り ${count}",
+			"cacheWriteTokens": "キャッシュ書き込み ${count}",
+			"estimatedCost": "既知コストの概算 ${amount} ${currency}",
+			"generation": "今回の生成：${usage}",
+			"conversation": "現在の会話の使用量：${usage}"
 		}
 	},
 	"captcha": {

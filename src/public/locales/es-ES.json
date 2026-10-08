@@ -67,7 +67,6 @@
 			"sendCommandFailed": "Error al enviar comando: ${error}",
 			"socketError": "Error de socket: ${error}",
 			"parseResponseFailed": "Error al analizar la respuesta del servidor: ${error}",
-			"cannotParseResponse": "No se puede analizar la respuesta del servidor",
 			"unknownError": "Error desconocido",
 			"partPathRequired": "Indica la ruta del componente."
 		},
@@ -6132,6 +6131,9 @@
 				}
 			}
 		},
+		"normal": "Normal",
+		"memoryUsage": "Uso de memoria",
+		"realtimeLogs": "Registros en vivo",
 		"update": {
 			"failed": "Error en la solicitud de actualización",
 			"now": "Actualiza y reinicia ahora",
@@ -6830,6 +6832,35 @@
 				"unavailable": "La actualización automática de este espacio de trabajo no está disponible. Revisa el espacio de trabajo y los directorios suscritos."
 			},
 			"cursor": "línea ${line}, columna ${column}"
+		},
+		"cli": {
+			"tui": {
+				"model": "Modelo",
+				"char": "Personaje",
+				"session": "Sesión",
+				"profile": "Perfil",
+				"busy": "● en ejecución",
+				"idle": "○ listo",
+				"backToBottom": "↓ Volver al último mensaje",
+				"inputHint": "Enter para enviar · Shift+Enter para nueva línea · Mayús+Tab enfoca los plegables · /help · Ctrl+C para detener/limpiar/salir",
+				"pickerEmpty": "Sin resultados",
+				"stopping": "Deteniendo…",
+				"copied": "Selección copiada",
+				"reasoning": "Razonamiento",
+				"you": "Tú",
+				"welcome": "Inicia una conversación con tu agente de programación",
+				"emptyHint": "Escribe un mensaje abajo · Tab para elegir el modelo · /help para los comandos"
+			}
+		},
+		"usage": {
+			"inputTokens": "entrada ${count}",
+			"outputTokens": "salida ${count}",
+			"reasoningTokens": "razonamiento ${count}",
+			"cacheReadTokens": "lectura de caché ${count}",
+			"cacheWriteTokens": "escritura de caché ${count}",
+			"estimatedCost": "Estimación del coste conocido ${amount} ${currency}",
+			"reply": "Uso: ${usage}",
+			"session": "Total de esta sesión: ${usage}"
 		}
 	},
 	"gist": {
@@ -7157,6 +7188,16 @@
 			"preview": "Previsualizar archivo de texto",
 			"unavailable": "Adjunto no disponible",
 			"truncated": "Vista previa recortada. Descarga el archivo completo para ver el resto."
+		},
+		"usage": {
+			"inputTokens": "entrada ${count}",
+			"outputTokens": "salida ${count}",
+			"reasoningTokens": "razonamiento ${count}",
+			"cacheReadTokens": "lectura de caché ${count}",
+			"cacheWriteTokens": "escritura de caché ${count}",
+			"estimatedCost": "Estimación del coste conocido ${amount} ${currency}",
+			"generation": "Esta generación: ${usage}",
+			"conversation": "Uso de la conversación: ${usage}"
 		}
 	},
 	"captcha": {

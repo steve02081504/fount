@@ -12,6 +12,7 @@ const PROMOTED_PROVIDERS = [
 const {
 	flattenCatalog,
 	findCatalogEntry,
+	pricingFromCatalogEntry,
 	searchCatalog,
 	providerApiToCompletionsUrl,
 } = await import(`${parturl}/catalogSearch.mjs`)
@@ -67,6 +68,9 @@ function applyConfigFromEntry(editors, entry) {
 		model: entry.modelId,
 		url: providerApiToCompletionsUrl(entry.providerApi),
 	}
+	const pricing = pricingFromCatalogEntry(entry)
+	if (pricing) json.pricing = pricing
+	else delete json.pricing
 	const contextSize = entry.inputLimit ?? entry.context
 	if (contextSize != null) json.context_size = contextSize
 	editors.json.set({ json })

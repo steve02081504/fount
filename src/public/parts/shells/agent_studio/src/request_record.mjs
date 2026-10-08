@@ -11,6 +11,7 @@
 /** @typedef {import('../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
 
 import { formatErrorMessage } from '../../../../../scripts/error_format.mjs'
+import { summarizeUsage } from '../../chat/public/shared/usage.mjs'
 import { createPromptRequestRecorder } from '../../chat/src/prompt_struct/snapshot.mjs'
 import { buildDialogue } from '../public/shared/dialogueReplay.mjs'
 
@@ -86,7 +87,9 @@ export async function beginPromptRequest(args, promptStruct, extra = {}) {
 	}
 	if (session.disabled) return null
 	const entry = await session.recorder.record(promptStruct, { model: extra.model, aiSource: extra.aiSource })
-	return { session, entry }
+	const result = args.generation_options?.base_result
+	const usageCallsBefore = result?.extension?.usage?.calls?.length ?? 0
+	return { session, entry, result, usageCallsBefore }
 }
 
 /**
@@ -99,6 +102,9 @@ export function finishPromptRequest(handle, outcome = {}) {
 	if (!handle?.entry) return
 	handle.entry.finishedAt = Date.now()
 	if (typeof outcome.output === 'string') handle.entry.output = outcome.output
+	const usage = outcome.usage ?? outcome.result?.extension?.usage ?? handle.result?.extension?.usage
+	const calls = usage?.calls?.slice(handle.usageCallsBefore ?? 0)
+	if (calls?.length) handle.entry.usage = summarizeUsage(calls)
 	if (outcome.error)
 		handle.entry.error = {
 			name: outcome.error?.name,

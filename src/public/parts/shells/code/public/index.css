@@ -167,6 +167,11 @@ body {
 	color: oklch(98% 0 0);
 }
 
+/* 工作区首字母：生成内容不进无障碍可见文本，标签按钮的 aria-label 只描述标题 */
+.code-tab-avatar::before {
+	content: attr(data-initial);
+}
+
 .code-tab-avatar-draft {
 	color: inherit;
 	opacity: 0.7;
@@ -314,6 +319,12 @@ body {
 .code-message.role-char .code-message-name {
 	font-weight: 600;
 	opacity: 0.75;
+}
+
+.code-usage-label {
+	display: block;
+	font-size: 0.72rem;
+	opacity: 0.68;
 }
 
 .code-message.role-char .code-message-body> :first-child {

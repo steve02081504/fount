@@ -67,7 +67,6 @@
 			"sendCommandFailed": "发送命令失败：${error}",
 			"socketError": "Socket 错误: ${error}",
 			"parseResponseFailed": "解析服务器响应失败: ${error}",
-			"cannotParseResponse": "无法解析服务器响应",
 			"unknownError": "未知错误",
 			"partPathRequired": "请提供组件路径。"
 		},
@@ -6126,6 +6125,9 @@
 				}
 			}
 		},
+		"normal": "正常",
+		"memoryUsage": "内存使用率",
+		"realtimeLogs": "实时日志",
 		"update": {
 			"failed": "更新请求失败",
 			"now": "立即更新并重启",
@@ -6818,6 +6820,35 @@
 				"unavailable": "此工作区的自动更新不可用，请检查工作区和订阅目录"
 			},
 			"cursor": "第 ${line} 行，第 ${column} 列"
+		},
+		"cli": {
+			"tui": {
+				"model": "模型",
+				"char": "角色",
+				"session": "会话",
+				"profile": "配置",
+				"busy": "● 运行中",
+				"idle": "○ 就绪",
+				"backToBottom": "↓ 回到最新消息",
+				"inputHint": "Enter 发送 · Shift+Enter 换行 · Shift+Tab 聚焦折叠项 · /help · Ctrl+C 停止/清空/退出",
+				"pickerEmpty": "没有匹配项",
+				"stopping": "正在停止…",
+				"copied": "已复制所选内容",
+				"reasoning": "思考过程",
+				"you": "你",
+				"welcome": "与编程角色开始对话",
+				"emptyHint": "在下方输入消息 · Tab 选择模型 · /help 查看命令"
+			}
+		},
+		"usage": {
+			"inputTokens": "输入 ${count}",
+			"outputTokens": "输出 ${count}",
+			"reasoningTokens": "推理 ${count}",
+			"cacheReadTokens": "缓存读取 ${count}",
+			"cacheWriteTokens": "缓存写入 ${count}",
+			"estimatedCost": "已知费用估算 ${amount} ${currency}",
+			"reply": "用量：${usage}",
+			"session": "本会话累计用量：${usage}"
 		}
 	},
 	"gist": {
@@ -7145,6 +7176,16 @@
 			"preview": "预览文本文件",
 			"unavailable": "附件不可用",
 			"truncated": "预览已截断，请下载完整文件查看。"
+		},
+		"usage": {
+			"inputTokens": "输入 ${count}",
+			"outputTokens": "输出 ${count}",
+			"reasoningTokens": "推理 ${count}",
+			"cacheReadTokens": "缓存读取 ${count}",
+			"cacheWriteTokens": "缓存写入 ${count}",
+			"estimatedCost": "已知费用估算 ${amount} ${currency}",
+			"generation": "本次生成：${usage}",
+			"conversation": "当前对话用量：${usage}"
 		}
 	},
 	"captcha": {

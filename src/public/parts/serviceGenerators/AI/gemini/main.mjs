@@ -14,6 +14,7 @@ import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../.
 import { estimateTokenCount } from '../proxy/src/identityTokenizer.mjs'
 import { cleanupResponseText } from '../proxy/src/responseFormat.mjs'
 import { buildSourceInfo } from '../proxy/src/sourceInfo.mjs'
+import { createUsageRecorder } from '../proxy/src/usage.mjs'
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
@@ -429,6 +430,7 @@ export async function GetSource(config, extra = {}) {
 		info: buildSourceInfo(infoLocales, config, { url: config.base_url, defaultUrl: configTemplate.base_url }),
 		extension: {},
 		context_size: config.max_input_tokens,
+		pricing: config.pricing,
 
 		/**
 		 * 调用 AI 源。
@@ -447,6 +449,8 @@ export async function GetSource(config, extra = {}) {
 				}
 
 				let text = ''
+				const reply = {}
+				const usageRecorder = createUsageRecorder(reply, config, 'gemini')
 
 				/**
 				 * 处理部分。
@@ -459,17 +463,20 @@ export async function GetSource(config, extra = {}) {
 				}
 				if (config.use_stream) {
 					const result = await ai.models.generateContentStream(model_params)
-					for await (const chunk of result)
+					for await (const chunk of result) {
+						usageRecorder.record(chunk.usageMetadata, chunk.modelVersion)
 						handle_parts(chunk.candidates?.[0]?.content?.parts)
+					}
 				}
 				else {
 					const response = await ai.models.generateContent(model_params)
+					usageRecorder.record(response.usageMetadata, response.modelVersion)
 					handle_parts(response.candidates?.[0]?.content?.parts)
 				}
 
-				return {
-					content: text,
-				}
+				reply.content = text
+				usageRecorder.apply()
+				return reply
 			} catch (err) {
 				if (isGeminiApiKeyError(err)) throw source_dead(err)
 				throw err
@@ -779,7 +786,9 @@ export async function GetSource(config, extra = {}) {
 				const result = {
 					content: '',
 					files: [...base_result?.files || []],
+					extension: base_result.extension ??= {},
 				}
+				const usageRecorder = createUsageRecorder(result, config, 'gemini')
 				/**
 				 * 处理部分。
 				 * @param {Array<object>} parts - 部分数组。
@@ -808,14 +817,19 @@ export async function GetSource(config, extra = {}) {
 
 				if (config.use_stream) {
 					const resultStream = await ai.models.generateContentStream(model_params, { signal })
-					for await (const chunk of resultStream) {
-						if (signal?.aborted) {
-							const err = new Error('Aborted by user')
-							err.name = 'AbortError'
-							throw err
+					try {
+						for await (const chunk of resultStream) {
+							if (signal?.aborted) {
+								const err = new Error('Aborted by user')
+								err.name = 'AbortError'
+								throw err
+							}
+							usageRecorder.record(chunk.usageMetadata, chunk.modelVersion)
+							handle_parts(chunk.candidates?.[0]?.content?.parts)
 						}
-						handle_parts(chunk.candidates?.[0]?.content?.parts)
 					}
+					// 中断也要落下已上报的计量，否则本轮的调用从会话累计里消失
+					finally { usageRecorder.apply() }
 				}
 				else {
 					if (signal?.aborted) {
@@ -824,11 +838,14 @@ export async function GetSource(config, extra = {}) {
 						throw err
 					}
 					const response = await ai.models.generateContent(model_params, { signal })
+					usageRecorder.record(response.usageMetadata, response.modelVersion)
 					handle_parts(response.candidates?.[0]?.content?.parts)
+					usageRecorder.apply()
 				}
 
 				return Object.assign(base_result, clearFormat(result), {
 					extension: {
+						...result.extension,
 						gemini_API_data: {
 							char_id: prompt_struct.char_id,
 							text_part_overrides: Object.fromEntries(Object.entries({ thoughtSignature }).filter(([_, v]) => v)),

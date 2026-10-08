@@ -67,7 +67,6 @@
 			"sendCommandFailed": "فشل إرسال الأمر: ${error}",
 			"socketError": "خطأ في المقبس: ${error}",
 			"parseResponseFailed": "فشل تحليل استجابة الخادم: ${error}",
-			"cannotParseResponse": "لا يمكن تحليل استجابة الخادم",
 			"unknownError": "خطأ غير معروف",
 			"partPathRequired": "يُرجى تحديد مسار المكوّن."
 		},
@@ -6136,6 +6135,9 @@
 				}
 			}
 		},
+		"normal": "طبيعي",
+		"memoryUsage": "استخدام الذاكرة",
+		"realtimeLogs": "السجلات المباشرة",
 		"update": {
 			"failed": "فشل طلب التحديث",
 			"now": "قم بالتحديث وإعادة التشغيل الآن",
@@ -6834,6 +6836,35 @@
 				"unavailable": "التحديث التلقائي لمساحة العمل غير متاح، تحقق من مساحة العمل والمجلدات المشترك بها"
 			},
 			"cursor": "السطر ${line}، العمود ${column}"
+		},
+		"cli": {
+			"tui": {
+				"model": "النموذج",
+				"char": "الشخصية",
+				"session": "الجلسة",
+				"profile": "الملف التعريفي",
+				"busy": "● قيد التشغيل",
+				"idle": "○ جاهز",
+				"backToBottom": "↓ العودة إلى الأحدث",
+				"inputHint": "Enter للإرسال · Shift+Enter لسطر جديد · Shift+Tab لتركيز العناصر القابلة للطي · /help · Ctrl+C للإيقاف/المسح/الخروج",
+				"pickerEmpty": "لا توجد نتائج مطابقة",
+				"stopping": "جارٍ الإيقاف…",
+				"copied": "تم نسخ التحديد",
+				"reasoning": "التفكير",
+				"you": "أنت",
+				"welcome": "ابدأ محادثة مع وكيل البرمجة الخاص بك",
+				"emptyHint": "اكتب رسالة في الأسفل · Tab لاختيار النموذج · /help للأوامر"
+			}
+		},
+		"usage": {
+			"inputTokens": "إدخال ${count}",
+			"outputTokens": "إخراج ${count}",
+			"reasoningTokens": "استدلال ${count}",
+			"cacheReadTokens": "قراءة الذاكرة المؤقتة ${count}",
+			"cacheWriteTokens": "كتابة الذاكرة المؤقتة ${count}",
+			"estimatedCost": "تقدير التكلفة المعروفة ${amount} ${currency}",
+			"reply": "الاستخدام: ${usage}",
+			"session": "إجمالي هذه الجلسة: ${usage}"
 		}
 	},
 	"gist": {
@@ -7161,6 +7192,16 @@
 			"preview": "معاينة ملف نصي",
 			"unavailable": "المرافق غير متوفر",
 			"truncated": "المعاينة مقتطعة. نزّل الملف كاملًا لعرض بقية المحتوى."
+		},
+		"usage": {
+			"inputTokens": "إدخال ${count}",
+			"outputTokens": "إخراج ${count}",
+			"reasoningTokens": "استدلال ${count}",
+			"cacheReadTokens": "قراءة الذاكرة المؤقتة ${count}",
+			"cacheWriteTokens": "كتابة الذاكرة المؤقتة ${count}",
+			"estimatedCost": "تقدير التكلفة المعروفة ${amount} ${currency}",
+			"generation": "هذا التوليد: ${usage}",
+			"conversation": "استخدام المحادثة الحالية: ${usage}"
 		}
 	},
 	"captcha": {

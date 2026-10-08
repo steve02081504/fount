@@ -7,6 +7,7 @@
  * 【关联】runtime.mjs 的 runSubAgent / terminateSubAgentRun / listAvailableAiSources / SubAgentError；state.mjs 的 createBatch / parsePluginListAttr；main.mjs 汇总为 ReplyHandler。
  */
 import { guardOutput } from '../../../../scripts/shell_guard.mjs'
+import { mergeUsage } from '../../shells/chat/public/shared/usage.mjs'
 import { defineReplyHandler, defineReplyHandlers } from '../../shells/chat/src/reply/defineReplyHandler.mjs'
 
 import {
@@ -136,6 +137,11 @@ export const runSubAgentHandler = defineReplyHandler({
 			if (request.async)
 				writeToolLog(args, 'sub-agent.run', `子代理已在后台运行，backgroundId=${outcome.backgroundId}。可用 <await-async ids="${outcome.backgroundId}"/> 等待，或用 <list-async/> 查看；未被等待时完成后会以系统消息通知你。`, false, runToolMeta(outcome.run, true))
 			else {
+				const usage = outcome.run.result?.extension?.usage
+				if (usage) {
+					reply.extension ??= {}
+					reply.extension.usage = mergeUsage(reply.extension.usage, usage)
+				}
 				const guarded = await guardOutput(String(outcome.text ?? ''), { name: 'sub-agent', label: '子代理结果' })
 				writeToolLog(args, 'sub-agent.run', `子代理已完成，最终结果：\n\n${guarded.text}`, false, runToolMeta(outcome.run, false))
 			}

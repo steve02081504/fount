@@ -106,6 +106,27 @@ Deno.test('beginPromptRequest records message ids so consecutive rounds can alig
 	assertEquals(record.dialogue.events[1].message.id, 'm2')
 })
 
+Deno.test('finishPromptRequest stores only the calls added during that request', async () => {
+	const args = makeArgs()
+	const priorCall = { source: 'proxy', model: 'm', inputTokens: 10, outputTokens: 2 }
+	const currentCall = { source: 'proxy', model: 'm', inputTokens: 12, outputTokens: 3 }
+	args.generation_options = { base_result: { extension: { usage: { calls: [priorCall], total: {} } } } }
+	const first = await beginPromptRequest(args, makePromptStruct())
+	args.generation_options.base_result.extension.usage = { calls: [priorCall, currentCall], total: {} }
+	finishPromptRequest(first, { output: 'round one' })
+
+	const secondCall = { source: 'proxy', model: 'm', inputTokens: 14, outputTokens: 4 }
+	const second = await beginPromptRequest(args, makePromptStruct())
+	args.generation_options.base_result.extension.usage = { calls: [priorCall, currentCall, secondCall], total: {} }
+	finishPromptRequest(second, { output: 'round two' })
+
+	const record = collectGenerationRecord(args)
+	assertEquals(record.requests[0].usage.calls, [currentCall])
+	assertEquals(record.requests[0].usage.total.inputTokens, 12)
+	assertEquals(record.requests[1].usage.calls, [secondCall])
+	assertEquals(record.requests[1].usage.total.inputTokens, 14)
+})
+
 Deno.test('request snapshots retain immutable attachment bytes and hashes', async () => {
 	const bytes = new Uint8Array([1, 2, 3])
 	const args = makeArgs()

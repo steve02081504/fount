@@ -67,7 +67,6 @@
 			"sendCommandFailed": "Verzenden van commando mislukt: ${error}",
 			"socketError": "Socketfout: ${error}",
 			"parseResponseFailed": "Parseren van serverrespons mislukt: ${error}",
-			"cannotParseResponse": "Kan serverrespons niet parseren",
 			"unknownError": "Onbekende fout",
 			"partPathRequired": "Geef een componentpad op."
 		},
@@ -6132,6 +6131,9 @@
 				}
 			}
 		},
+		"normal": "Normaal",
+		"memoryUsage": "Geheugengebruik",
+		"realtimeLogs": "Live-logboek",
 		"update": {
 			"failed": "Updateverzoek is mislukt",
 			"now": "Update en start nu opnieuw",
@@ -6830,6 +6832,35 @@
 				"unavailable": "Automatische updates van deze werkruimte zijn niet beschikbaar. Controleer de werkruimte en de geabonneerde mappen."
 			},
 			"cursor": "regel ${line}, kolom ${column}"
+		},
+		"cli": {
+			"tui": {
+				"model": "Model",
+				"char": "Personage",
+				"session": "Sessie",
+				"profile": "Profiel",
+				"busy": "● bezig",
+				"idle": "○ gereed",
+				"backToBottom": "↓ Terug naar het nieuwste bericht",
+				"inputHint": "Enter om te verzenden · Shift+Enter voor een nieuwe regel · Shift+Tab focust uitklapbare blokken · /help · Ctrl+C om te stoppen/wissen/afsluiten",
+				"pickerEmpty": "Geen resultaten",
+				"stopping": "Bezig met stoppen…",
+				"copied": "Selectie gekopieerd",
+				"reasoning": "Redenering",
+				"you": "Jij",
+				"welcome": "Begin een gesprek met je programmeeragent",
+				"emptyHint": "Typ hieronder een bericht · Tab kiest het model · /help voor opdrachten"
+			}
+		},
+		"usage": {
+			"inputTokens": "invoer ${count}",
+			"outputTokens": "uitvoer ${count}",
+			"reasoningTokens": "redenering ${count}",
+			"cacheReadTokens": "cache lezen ${count}",
+			"cacheWriteTokens": "cache schrijven ${count}",
+			"estimatedCost": "Geschatte bekende kosten ${amount} ${currency}",
+			"reply": "Gebruik: ${usage}",
+			"session": "Totaal van deze sessie: ${usage}"
 		}
 	},
 	"gist": {
@@ -7157,6 +7188,16 @@
 			"preview": "Tekstbestand bekijken",
 			"unavailable": "Bijlage niet beschikbaar",
 			"truncated": "Voorbeeld ingekort. Download het volledige bestand om de rest te zien."
+		},
+		"usage": {
+			"inputTokens": "invoer ${count}",
+			"outputTokens": "uitvoer ${count}",
+			"reasoningTokens": "redenering ${count}",
+			"cacheReadTokens": "cache lezen ${count}",
+			"cacheWriteTokens": "cache schrijven ${count}",
+			"estimatedCost": "Geschatte bekende kosten ${amount} ${currency}",
+			"generation": "Deze generatie: ${usage}",
+			"conversation": "Gebruik van het gesprek: ${usage}"
 		}
 	},
 	"captcha": {

@@ -50,7 +50,6 @@ export type LocaleData = {
 			sendCommandFailed: string
 			socketError: string
 			parseResponseFailed: string
-			cannotParseResponse: string
 			unknownError: string
 			partPathRequired: string
 		}
@@ -6088,6 +6087,9 @@ export type LocaleData = {
 				}
 			}
 		}
+		normal: string
+		memoryUsage: string
+		realtimeLogs: string
 		update: {
 			failed: string
 			now: string
@@ -6781,6 +6783,35 @@ export type LocaleData = {
 			}
 			cursor: string
 		}
+		cli: {
+			tui: {
+				model: string
+				char: string
+				session: string
+				profile: string
+				busy: string
+				idle: string
+				backToBottom: string
+				inputHint: string
+				pickerEmpty: string
+				stopping: string
+				copied: string
+				reasoning: string
+				you: string
+				welcome: string
+				emptyHint: string
+			}
+		}
+		usage: {
+			inputTokens: string
+			outputTokens: string
+			reasoningTokens: string
+			cacheReadTokens: string
+			cacheWriteTokens: string
+			estimatedCost: string
+			reply: string
+			session: string
+		}
 	}
 	gist: {
 		title: string
@@ -7108,6 +7139,16 @@ export type LocaleData = {
 			unavailable: string
 			truncated: string
 		}
+		usage: {
+			inputTokens: string
+			outputTokens: string
+			reasoningTokens: string
+			cacheReadTokens: string
+			cacheWriteTokens: string
+			estimatedCost: string
+			generation: string
+			conversation: string
+		}
 	}
 	captcha: {
 		title: string
@@ -7234,6 +7275,14 @@ export type LocaleKeyParams = {
 	'agent_studio.generations.conversationsCount': { count: string | number }
 	'agent_studio.generations.recordsCount': { count: string | number }
 	'agent_studio.run.detail': { generations: string | number; roundLimit: string | number; rounds: string | number }
+	'agent_studio.usage.cacheReadTokens': { count: string | number }
+	'agent_studio.usage.cacheWriteTokens': { count: string | number }
+	'agent_studio.usage.conversation': { usage: string | number }
+	'agent_studio.usage.estimatedCost': { amount: string | number; currency: string | number }
+	'agent_studio.usage.generation': { usage: string | number }
+	'agent_studio.usage.inputTokens': { count: string | number }
+	'agent_studio.usage.outputTokens': { count: string | number }
+	'agent_studio.usage.reasoningTokens': { count: string | number }
 	'auth.error.accountLockedRetry': { timeLeft: string | number }
 	'badges_maker.copy_error': { error: string | number }
 	'browser_integration.csp_warning': { browser: string | number; link: string | number }
@@ -7510,6 +7559,14 @@ export type LocaleKeyParams = {
 	'code.tabs.unread.aria-label': { title: string | number }
 	'code.tool.async.run': { kind: string | number }
 	'code.tool.runShell': { lang: string | number }
+	'code.usage.cacheReadTokens': { count: string | number }
+	'code.usage.cacheWriteTokens': { count: string | number }
+	'code.usage.estimatedCost': { amount: string | number; currency: string | number }
+	'code.usage.inputTokens': { count: string | number }
+	'code.usage.outputTokens': { count: string | number }
+	'code.usage.reasoningTokens': { count: string | number }
+	'code.usage.reply': { usage: string | number }
+	'code.usage.session': { usage: string | number }
 	'code.workspaces.removeConfirm': { name: string | number }
 	'debug_info.linksCount': { count: string | number }
 	'deskpet.toasts.start_failed': { charname: string | number; message: string | number }

@@ -188,7 +188,7 @@
 	"suites": [
 		{
 			"name": "pure",
-			"expected": "8m10s",
+			"expected": "4m25s",
 			"trigger": [
 				"shellBackend",
 				"shellPureExtra",
@@ -208,7 +208,7 @@
 		},
 		{
 			"name": "integration",
-			"expected": "13m50s",
+			"expected": "24m31s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -757,7 +757,7 @@
 		},
 		{
 			"name": "fed_entity_search",
-			"expected": "2m35s",
+			"expected": "55s",
 			"dependsOn": [
 				"fed_core"
 			],

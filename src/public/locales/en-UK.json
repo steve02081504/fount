@@ -67,7 +67,6 @@
 			"sendCommandFailed": "Failed to send command: ${error}",
 			"socketError": "Socket Error: ${error}",
 			"parseResponseFailed": "Failed to parse server response: ${error}",
-			"cannotParseResponse": "Cannot parse server response",
 			"unknownError": "Unknown error",
 			"partPathRequired": "Please provide a component path."
 		},
@@ -6126,6 +6125,9 @@
 				}
 			}
 		},
+		"normal": "Normal",
+		"memoryUsage": "Memory usage",
+		"realtimeLogs": "Live logs",
 		"update": {
 			"failed": "Update request failed",
 			"now": "Update and restart now",
@@ -6824,6 +6826,35 @@
 				"unavailable": "Automatic updates are unavailable. Check the workspace and subscribed directories."
 			},
 			"cursor": "line ${line}, column ${column}"
+		},
+		"cli": {
+			"tui": {
+				"model": "Model",
+				"char": "Character",
+				"session": "Session",
+				"profile": "Profile",
+				"busy": "● running",
+				"idle": "○ ready",
+				"backToBottom": "↓ Back to latest",
+				"inputHint": "Enter send · Shift+Enter newline · Shift+Tab focus disclosure · /help · Ctrl+C stop/clear/exit",
+				"pickerEmpty": "No matches",
+				"stopping": "Stopping…",
+				"copied": "Selection copied",
+				"reasoning": "Thinking",
+				"you": "You",
+				"welcome": "Start a conversation with your coding agent",
+				"emptyHint": "Type a message below · Tab choose model · /help commands"
+			}
+		},
+		"usage": {
+			"inputTokens": "input ${count}",
+			"outputTokens": "output ${count}",
+			"reasoningTokens": "reasoning ${count}",
+			"cacheReadTokens": "cache read ${count}",
+			"cacheWriteTokens": "cache write ${count}",
+			"estimatedCost": "known cost estimate ${amount} ${currency}",
+			"reply": "Usage: ${usage}",
+			"session": "Session total: ${usage}"
 		}
 	},
 	"gist": {
@@ -7151,6 +7182,16 @@
 			"preview": "Preview text file",
 			"unavailable": "Attachment unavailable",
 			"truncated": "Preview shortened. Download the full file to read it all."
+		},
+		"usage": {
+			"inputTokens": "input ${count}",
+			"outputTokens": "output ${count}",
+			"reasoningTokens": "reasoning ${count}",
+			"cacheReadTokens": "cache read ${count}",
+			"cacheWriteTokens": "cache write ${count}",
+			"estimatedCost": "known cost estimate ${amount} ${currency}",
+			"generation": "This generation: ${usage}",
+			"conversation": "Conversation usage: ${usage}"
 		}
 	},
 	"captcha": {

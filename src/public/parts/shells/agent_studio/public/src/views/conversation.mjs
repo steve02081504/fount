@@ -21,6 +21,7 @@ import { appendMetaChips } from '../lib/metaChip.mjs'
 import { requestNavigate } from '../lib/navigationEvents.mjs'
 import { stateBadge } from '../lib/stateBadge.mjs'
 import { textActions } from '../lib/textActions.mjs'
+import { formatUsage, summarizeRecordedUsage } from '../lib/usage.mjs'
 
 /** 当前深链的会话键（语言切换重载时复用）。 */
 let currentKey = ''
@@ -94,6 +95,7 @@ export async function loadConversationView({ key } = {}) {
 	const isSubagent = currentKey.startsWith('subagent:')
 	runPanel?.classList.toggle('hidden', !isSubagent)
 	document.getElementById('conversationReplay')?.classList.remove('hidden')
+	showConversationUsage(null)
 	if (isSubagent) return loadSubagentConversation(currentKey)
 	const meta = document.getElementById('conversationMeta')
 	const generations = document.getElementById('conversationGenerations')
@@ -113,6 +115,7 @@ export async function loadConversationView({ key } = {}) {
 		empty.classList.toggle('hidden', items.length > 0)
 		const metrics = estimatePromptCache(items)
 		const units = buildRoundUnits(items)
+		showConversationUsage(summarizeRecordedUsage(items))
 		renderReplay(units, metrics, count => {
 			generations.replaceChildren(...renderTranscript(conversation.dialogue?.events ?? [], items, units, metrics, count))
 		})
@@ -328,6 +331,7 @@ async function loadSubagentConversation(key) {
 		const record = await getConversation(key).catch(() => null)
 		if (currentKey !== key) return
 		const items = record?.generations?.length ? record.generations : [{ id: run.runId, startedAt: run.startedAt }]
+		showConversationUsage(summarizeRecordedUsage(record?.generations || []))
 		const metrics = estimatePromptCache(items)
 		const units = buildRoundUnits(items)
 		renderReplay(units, metrics, count => {
@@ -343,6 +347,18 @@ async function loadSubagentConversation(key) {
 	catch (error) {
 		showToastI18n('error', 'agent_studio.alerts.loadFailed', { message: error.message })
 	}
+}
+
+/**
+ * 显示当前会话中仍保留的请求用量。
+ * @param {object|null} usage 当前会话中仍保留的请求用量。
+ */
+function showConversationUsage(usage) {
+	const summary = document.getElementById('conversationUsageSummary')
+	if (!summary) return
+	const value = formatUsage(usage, primaryLocale(), geti18n)
+	summary.classList.toggle('hidden', !value)
+	summary.textContent = value ? geti18n('agent_studio.usage.conversation', { usage: value }) : ''
 }
 
 /**
@@ -475,6 +491,22 @@ function renderTranscript(events, items, units, metrics, count) {
 		badge.textContent = rate == null ? geti18n('agent_studio.conversation.cache.noRate') : geti18n('agent_studio.conversation.cache.rate', { rate: formatCachePercent(rate) })
 		badge.title = geti18n('agent_studio.conversation.cache.hint')
 		head.append(label, badge)
+		const roundUsage = formatUsage(request?.usage, primaryLocale(), geti18n)
+		if (roundUsage) {
+			const usageBadge = document.createElement('span')
+			usageBadge.className = 'badge badge-neutral'
+			usageBadge.textContent = roundUsage
+			head.append(usageBadge)
+		}
+		if (offset === 0) {
+			const generationUsage = formatUsage(summarizeRecordedUsage([generation]), primaryLocale(), geti18n)
+			if (generationUsage) {
+				const totalBadge = document.createElement('span')
+				totalBadge.className = 'badge badge-neutral'
+				totalBadge.textContent = geti18n('agent_studio.usage.generation', { usage: generationUsage })
+				head.append(totalBadge)
+			}
+		}
 		if (reuse?.boundary) head.append(buildJumpButton(prompt))
 		if (message.id === `${generation.id}:final`) head.append(textActions(() => message.content, { filename: `generation-${generation.id}-response.txt` }))
 		article.prepend(head)

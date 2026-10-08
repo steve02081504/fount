@@ -67,7 +67,6 @@
 			"sendCommandFailed": "Не удалось отправить команду: ${error}",
 			"socketError": "Ошибка сокета: ${error}",
 			"parseResponseFailed": "Не удалось обработать ответ сервера: ${error}",
-			"cannotParseResponse": "Невозможно обработать ответ сервера.",
 			"unknownError": "Неизвестная ошибка.",
 			"partPathRequired": "Укажите путь к компоненту."
 		},
@@ -6134,6 +6133,9 @@
 				}
 			}
 		},
+		"normal": "Норма",
+		"memoryUsage": "Использование памяти",
+		"realtimeLogs": "Журнал в реальном времени",
 		"update": {
 			"failed": "Запрос на обновление не выполнен",
 			"now": "Обновите и перезапустите сейчас",
@@ -6832,6 +6834,35 @@
 				"unavailable": "Автообновление этой рабочей области недоступно. Проверьте рабочую область и отслеживаемые каталоги."
 			},
 			"cursor": "строка ${line}, столбец ${column}"
+		},
+		"cli": {
+			"tui": {
+				"model": "Модель",
+				"char": "Персонаж",
+				"session": "Сеанс",
+				"profile": "Профиль",
+				"busy": "● выполняется",
+				"idle": "○ готово",
+				"backToBottom": "↓ К последнему сообщению",
+				"inputHint": "Enter — отправить · Shift+Enter — новая строка · Shift+Tab — фокус на сворачиваемых блоках · /help · Ctrl+C — остановить/очистить/выйти",
+				"pickerEmpty": "Нет результатов",
+				"stopping": "Остановка…",
+				"copied": "Выделенное скопировано",
+				"reasoning": "Рассуждения",
+				"you": "Вы",
+				"welcome": "Начните беседу со своим агентом-программистом",
+				"emptyHint": "Введите сообщение ниже · Tab — выбор модели · /help — список команд"
+			}
+		},
+		"usage": {
+			"inputTokens": "ввод ${count}",
+			"outputTokens": "вывод ${count}",
+			"reasoningTokens": "рассуждения ${count}",
+			"cacheReadTokens": "чтение кэша ${count}",
+			"cacheWriteTokens": "запись кэша ${count}",
+			"estimatedCost": "Оценка известной стоимости ${amount} ${currency}",
+			"reply": "Использование: ${usage}",
+			"session": "Всего за сеанс: ${usage}"
 		}
 	},
 	"gist": {
@@ -7159,6 +7190,16 @@
 			"preview": "Просмотр текстового файла",
 			"unavailable": "Вложение недоступно",
 			"truncated": "Предпросмотр обрезан. Скачайте файл целиком, чтобы увидеть остальное."
+		},
+		"usage": {
+			"inputTokens": "ввод ${count}",
+			"outputTokens": "вывод ${count}",
+			"reasoningTokens": "рассуждения ${count}",
+			"cacheReadTokens": "чтение кэша ${count}",
+			"cacheWriteTokens": "запись кэша ${count}",
+			"estimatedCost": "Оценка известной стоимости ${amount} ${currency}",
+			"generation": "Эта генерация: ${usage}",
+			"conversation": "Использование диалога: ${usage}"
 		}
 	},
 	"captcha": {

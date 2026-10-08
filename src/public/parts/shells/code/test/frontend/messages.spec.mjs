@@ -490,3 +490,41 @@ test('tool summaries expose targets and failures as plain text', async ({ module
 	expect(result.map(row => row.status)).toEqual([true, false, true, true])
 	expect(result.every(row => !row.injected)).toBe(true)
 })
+
+test('reply and session usage labels show recorded tokens and omit unknown costs', async ({ modulePage }) => {
+	const result = await modulePage.run(async () => {
+		const flow = document.createElement('div')
+		flow.id = 'messages'
+		const composer = document.createElement('textarea')
+		composer.id = 'composer-input'
+		document.body.append(flow, composer)
+		const { renderEntryBubble, refreshSessionUsage } = await import('/parts/shells:code/src/messages.mjs')
+		const { store } = await import('/parts/shells:code/src/store.mjs')
+		const usage = { calls: [], total: { inputTokens: 12, cacheReadTokens: 4, outputTokens: 3 } }
+		const reply = renderEntryBubble({ id: 'reply', role: 'char', content: 'done', extension: { usage } })
+		store.session = { entries: [{ id: 'reply', role: 'char', content: 'done', extension: { usage } }], usage }
+		refreshSessionUsage()
+		const noCost = {
+			reply: reply.querySelector('.code-usage-label')?.textContent,
+			session: flow.querySelector('[data-usage-scope="session"]')?.textContent,
+		}
+		const priced = renderEntryBubble({
+			id: 'priced', role: 'char', content: 'done',
+			extension: { usage: { total: { inputTokens: 12, outputTokens: 3, costs: { USD: 0.0025 } } } },
+		})
+		// 非角色条目（压缩摘要 / 异步任务通告）也按自己的调用明细显示用量
+		const tool = renderEntryBubble({ id: 'tool', role: 'tool', content: 'run', extension: { usage } })
+		return {
+			noCost,
+			priced: priced.querySelector('.code-usage-label')?.textContent,
+			tool: tool.querySelector('.code-usage-label')?.textContent,
+		}
+	})
+	expect(result.noCost.reply).toContain('12')
+	expect(result.noCost.reply).toContain('3')
+	expect(result.noCost.session).toContain('12')
+	expect(result.noCost.reply).not.toContain('USD')
+	expect(result.noCost.session).not.toContain('USD')
+	expect(result.priced).toContain('USD')
+	expect(result.tool).toContain('12')
+})

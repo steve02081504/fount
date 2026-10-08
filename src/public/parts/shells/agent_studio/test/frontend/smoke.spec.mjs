@@ -98,6 +98,25 @@ test.describe('Agent Studio frontend modules', () => {
 		expect(units.map(unit => unit.generationIndex)).toEqual([0, 0, 0, 0, 1])
 		expect(units.filter(unit => unit.generationStart).map(unit => unit.round)).toEqual([1, 5])
 	})
+
+	test('usage totals include only calls in retained request records', async ({ modulePage }) => {
+		const usage = await modulePage.run(async () => {
+			const { summarizeRecordedUsage, formatUsage } = await import('/parts/shells:agent_studio/src/lib/usage.mjs')
+			const summary = summarizeRecordedUsage([
+				{ usage: { calls: [{ inputTokens: 999 }] }, requests: [
+					{ usage: { calls: [{ inputTokens: 12, outputTokens: 3 }], total: { inputTokens: 12, outputTokens: 3 } } },
+					{ usage: { calls: [{ inputTokens: 5, outputTokens: 2 }], total: { inputTokens: 5, outputTokens: 2 } } },
+				] },
+				{ requests: [] },
+			])
+			return { calls: summary.calls.length, total: summary.total, label: formatUsage(summary, 'zh-CN', key => key) }
+		})
+		expect(usage.calls).toBe(2)
+		expect(usage.total.inputTokens).toBe(17)
+		expect(usage.total.outputTokens).toBe(5)
+		expect(usage.total.costs).toBeUndefined()
+		expect(usage.label).not.toContain('estimatedCost')
+	})
 })
 
 test.describe('Agent Studio shell boot', () => {

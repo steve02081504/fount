@@ -20,6 +20,7 @@ export function pickEntryExtension(extension) {
 	if (extension.asyncInspect) picked.asyncInspect = extension.asyncInspect
 	if (extension.error) picked.error = extension.error
 	if (extension.toolCall) picked.toolCall = extension.toolCall
+	if (extension.usage) picked.usage = extension.usage
 	if (extension.executionTarget) picked.executionTarget = extension.executionTarget
 	if (extension.pluginData && typeof extension.pluginData === 'object' && !Array.isArray(extension.pluginData))
 		picked.pluginData = JSON.parse(JSON.stringify(extension.pluginData))

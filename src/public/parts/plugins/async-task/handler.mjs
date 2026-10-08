@@ -8,6 +8,7 @@
  */
 import { msstr } from '../../../../scripts/ms.mjs'
 import { guardOutput } from '../../../../scripts/shell_guard.mjs'
+import { mergeUsage } from '../../shells/chat/public/shared/usage.mjs'
 import { defineReplyHandler, defineReplyHandlers } from '../../shells/chat/src/reply/defineReplyHandler.mjs'
 import { renderMarkdownCodeBlock } from '../../shells/chat/src/streaming/index.mjs'
 
@@ -159,6 +160,12 @@ export const awaitAsyncHandler = defineReplyHandler({
 		const timeoutMs = parseDurationMs(call.params['time-limit']) ?? DEFAULT_AWAIT_TIMEOUT_MS
 		try {
 			const result = await awaitTasks(ids, { mode, timeoutMs, signal: args.generation_options?.signal, requester: ownerFromArgs(args) })
+			const usages = result.settled.map(task => task.meta?.awaitedUsage).filter(Boolean)
+			if (usages.length) {
+				reply.extension ??= {}
+				reply.extension.usage = mergeUsage(reply.extension.usage, ...usages)
+				for (const task of result.settled) delete task.meta?.awaitedUsage
+			}
 			const resultTexts = new Map(await Promise.all(result.settled.map(async task =>
 				[task.id, task.state === 'failed' ? '' : await guardTaskResult(task)]
 			)))

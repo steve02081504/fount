@@ -67,7 +67,6 @@
 			"sendCommandFailed": "Senden des Befehls fehlgeschlagen: ${error}",
 			"socketError": "Socket-Fehler: ${error}",
 			"parseResponseFailed": "Fehler beim Parsen der Serverantwort: ${error}",
-			"cannotParseResponse": "Serverantwort kann nicht geparst werden",
 			"unknownError": "Unbekannter Fehler",
 			"partPathRequired": "Bitte geben Sie einen Komponentenpfad an."
 		},
@@ -6126,6 +6125,9 @@
 				}
 			}
 		},
+		"normal": "Normal",
+		"memoryUsage": "Speichernutzung",
+		"realtimeLogs": "Live-Protokoll",
 		"update": {
 			"failed": "Die Aktualisierungsanforderung ist fehlgeschlagen",
 			"now": "Jetzt aktualisieren und neu starten",
@@ -6824,6 +6826,35 @@
 				"unavailable": "Die automatische Aktualisierung dieses Arbeitsbereichs ist nicht verfügbar. Prüfe den Arbeitsbereich und die abonnierten Verzeichnisse."
 			},
 			"cursor": "Zeile ${line}, Spalte ${column}"
+		},
+		"cli": {
+			"tui": {
+				"model": "Modell",
+				"char": "Charakter",
+				"session": "Sitzung",
+				"profile": "Profil",
+				"busy": "● läuft",
+				"idle": "○ bereit",
+				"backToBottom": "↓ Zur neuesten Nachricht",
+				"inputHint": "Enter zum Senden · Shift+Enter für Zeilenumbruch · Shift+Tab fokussiert Aufklappbares · /help · Strg+C zum Stoppen/Leeren/Beenden",
+				"pickerEmpty": "Keine passenden Ergebnisse",
+				"stopping": "Wird gestoppt…",
+				"copied": "Auswahl kopiert",
+				"reasoning": "Denkprozess",
+				"you": "Du",
+				"welcome": "Beginne ein Gespräch mit deinem Coding-Agenten",
+				"emptyHint": "Nachricht unten eingeben · Tab wählt Modell · /help für Befehle"
+			}
+		},
+		"usage": {
+			"inputTokens": "Eingabe ${count}",
+			"outputTokens": "Ausgabe ${count}",
+			"reasoningTokens": "Denkprozess ${count}",
+			"cacheReadTokens": "Cache-Lesen ${count}",
+			"cacheWriteTokens": "Cache-Schreiben ${count}",
+			"estimatedCost": "Bekannte Kostenschätzung ${amount} ${currency}",
+			"reply": "Nutzung: ${usage}",
+			"session": "Gesamtnutzung dieser Sitzung: ${usage}"
 		}
 	},
 	"gist": {
@@ -7151,6 +7182,16 @@
 			"preview": "Textdatei ansehen",
 			"unavailable": "Anhang nicht verfügbar",
 			"truncated": "Vorschau gekürzt. Lade die vollständige Datei herunter, um den Rest zu sehen."
+		},
+		"usage": {
+			"inputTokens": "Eingabe ${count}",
+			"outputTokens": "Ausgabe ${count}",
+			"reasoningTokens": "Denkprozess ${count}",
+			"cacheReadTokens": "Cache-Lesen ${count}",
+			"cacheWriteTokens": "Cache-Schreiben ${count}",
+			"estimatedCost": "Bekannte Kostenschätzung ${amount} ${currency}",
+			"generation": "Diese Generierung: ${usage}",
+			"conversation": "Nutzung der aktuellen Unterhaltung: ${usage}"
 		}
 	},
 	"captcha": {

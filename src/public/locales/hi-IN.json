@@ -67,7 +67,6 @@
 			"sendCommandFailed": "कमांड भेजने में विफल: ${error}",
 			"socketError": "सॉकेट त्रुटि: ${error}",
 			"parseResponseFailed": "सर्वर प्रतिक्रिया को पार्स करने में विफल: ${error}",
-			"cannotParseResponse": "सर्वर प्रतिक्रिया को पार्स नहीं किया जा सकता",
 			"unknownError": "अज्ञात त्रुटि",
 			"partPathRequired": "कृपया कंपोनेंट पथ प्रदान करें।"
 		},
@@ -6126,6 +6125,9 @@
 				}
 			}
 		},
+		"normal": "सामान्य",
+		"memoryUsage": "मेमोरी उपयोग",
+		"realtimeLogs": "लाइव लॉग",
 		"update": {
 			"failed": "अद्यतन अनुरोध विफल रहा",
 			"now": "अभी अपडेट करें और पुनः प्रारंभ करें",
@@ -6824,6 +6826,35 @@
 				"unavailable": "वर्कस्पेस का स्वचालित अपडेट उपलब्ध नहीं है। वर्कस्पेस और सब्सक्राइब की गई डायरेक्टरियाँ जाँचें।"
 			},
 			"cursor": "पंक्ति ${line}, स्तंभ ${column}"
+		},
+		"cli": {
+			"tui": {
+				"model": "मॉडल",
+				"char": "किरदार",
+				"session": "सत्र",
+				"profile": "प्रोफ़ाइल",
+				"busy": "● चल रहा है",
+				"idle": "○ तैयार",
+				"backToBottom": "↓ नवीनतम पर वापस जाएँ",
+				"inputHint": "Enter दबाकर भेजें · Shift+Enter से नई पंक्ति · Shift+Tab से सिकुड़े हिस्सों पर फ़ोकस · /help · Ctrl+C से रोकें/साफ़ करें/बाहर निकलें",
+				"pickerEmpty": "कोई मेल खाता परिणाम नहीं",
+				"stopping": "रोका जा रहा है…",
+				"copied": "चयन कॉपी किया गया",
+				"reasoning": "सोच",
+				"you": "आप",
+				"welcome": "अपने कोडिंग एजेंट के साथ बातचीत शुरू करें",
+				"emptyHint": "नीचे संदेश लिखें · Tab से मॉडल चुनें · /help से कमांड देखें"
+			}
+		},
+		"usage": {
+			"inputTokens": "इनपुट ${count}",
+			"outputTokens": "आउटपुट ${count}",
+			"reasoningTokens": "तर्क ${count}",
+			"cacheReadTokens": "कैश पठन ${count}",
+			"cacheWriteTokens": "कैश लेखन ${count}",
+			"estimatedCost": "ज्ञात लागत अनुमान ${amount} ${currency}",
+			"reply": "उपयोग: ${usage}",
+			"session": "इस सत्र का कुल: ${usage}"
 		}
 	},
 	"gist": {
@@ -7151,6 +7182,16 @@
 			"preview": "पाठ फ़ाइल का पूर्वावलोकन करें",
 			"unavailable": "अनुलग्नक उपलब्ध नहीं है",
 			"truncated": "पूर्वावलोकन छोटा कर दिया गया है। शेष देखने के लिए पूरी फ़ाइल डाउनलोड करें।"
+		},
+		"usage": {
+			"inputTokens": "इनपुट ${count}",
+			"outputTokens": "आउटपुट ${count}",
+			"reasoningTokens": "तर्क ${count}",
+			"cacheReadTokens": "कैश पठन ${count}",
+			"cacheWriteTokens": "कैश लेखन ${count}",
+			"estimatedCost": "ज्ञात लागत अनुमान ${amount} ${currency}",
+			"generation": "यह जनरेशन: ${usage}",
+			"conversation": "वर्तमान बातचीत का उपयोग: ${usage}"
 		}
 	},
 	"captcha": {

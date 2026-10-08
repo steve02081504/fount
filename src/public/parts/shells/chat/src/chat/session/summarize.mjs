@@ -11,6 +11,7 @@
 /** @typedef {import('../../../../../../../decl/AIsource.ts').AIsource_t} AIsource_t */
 
 import { estimateTokenCount } from '../../../../../serviceGenerators/AI/proxy/src/identityTokenizer.mjs'
+import { mergeUsage, summarizeUsage } from '../../../public/shared/usage.mjs'
 import { mergeStructPromptChatLog, structPromptToSingle } from '../../prompt_struct/index.mjs'
 import { isSummaryEntry, SUMMARY_ENTRY_TYPE } from '../logEntryTypes.mjs'
 
@@ -81,8 +82,16 @@ export async function compressContext({ args, aiSource, prompt_struct, result })
 		.join('\n\n')
 
 	let content
+	let compressionUsage
 	try {
-		content = await aiSource.Call(buildSummaryPrompt(transcript))
+		const response = await aiSource.Call(buildSummaryPrompt(transcript))
+		content = typeof response === 'string' ? response : response?.content
+		const reported = response?.extension?.usage
+		if (reported) compressionUsage = summarizeUsage(reported.calls.map(call => ({ ...call, purpose: 'compression' })))
+		if (compressionUsage && result) {
+			result.extension ??= {}
+			result.extension.usage = mergeUsage(result.extension.usage, compressionUsage)
+		}
 	}
 	catch (error) {
 		console.warn('context compression failed:', error)
@@ -99,6 +108,7 @@ export async function compressContext({ args, aiSource, prompt_struct, result })
 		time_stamp: new Date(),
 		content: content.trim(),
 		type: SUMMARY_ENTRY_TYPE,
+		...compressionUsage ? { extension: { usage: compressionUsage } } : {},
 	}
 	if (args?.char_id) entry.charVisibility = [args.char_id]
 	if (result) {

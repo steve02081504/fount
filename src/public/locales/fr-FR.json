@@ -67,7 +67,6 @@
 			"sendCommandFailed": "Échec de l'envoi de la commande : ${error}",
 			"socketError": "Erreur de socket : ${error}",
 			"parseResponseFailed": "Échec de l'analyse de la réponse du serveur : ${error}",
-			"cannotParseResponse": "Impossible d'analyser la réponse du serveur.",
 			"unknownError": "Erreur inconnue.",
 			"partPathRequired": "Veuillez indiquer le chemin du composant."
 		},
@@ -6132,6 +6131,9 @@
 				}
 			}
 		},
+		"normal": "Normal",
+		"memoryUsage": "Utilisation de la mémoire",
+		"realtimeLogs": "Journaux en direct",
 		"update": {
 			"failed": "La demande de mise à jour a échoué",
 			"now": "Mettre à jour et redémarrer maintenant",
@@ -6830,6 +6832,35 @@
 				"unavailable": "La mise à jour automatique de cet espace de travail n’est pas disponible. Vérifiez l’espace de travail et les répertoires abonnés."
 			},
 			"cursor": "ligne ${line}, colonne ${column}"
+		},
+		"cli": {
+			"tui": {
+				"model": "Modèle",
+				"char": "Personnage",
+				"session": "Session",
+				"profile": "Profil",
+				"busy": "● en cours",
+				"idle": "○ prêt",
+				"backToBottom": "↓ Retour au plus récent",
+				"inputHint": "Entrée pour envoyer · Maj+Entrée pour nouvelle ligne · Shift+Tab cible les blocs repliables · /help · Ctrl+C pour arrêter/effacer/quitter",
+				"pickerEmpty": "Aucun résultat",
+				"stopping": "Arrêt en cours…",
+				"copied": "Sélection copiée",
+				"reasoning": "Réflexion",
+				"you": "Vous",
+				"welcome": "Commencez une conversation avec votre agent de codage",
+				"emptyHint": "Saisissez un message ci-dessous · Tab pour choisir le modèle · /help pour les commandes"
+			}
+		},
+		"usage": {
+			"inputTokens": "entrée ${count}",
+			"outputTokens": "sortie ${count}",
+			"reasoningTokens": "raisonnement ${count}",
+			"cacheReadTokens": "lecture du cache ${count}",
+			"cacheWriteTokens": "écriture du cache ${count}",
+			"estimatedCost": "Estimation des coûts connus ${amount} ${currency}",
+			"reply": "Utilisation : ${usage}",
+			"session": "Total de cette session : ${usage}"
 		}
 	},
 	"gist": {
@@ -7157,6 +7188,16 @@
 			"preview": "Aperçu du fichier texte",
 			"unavailable": "Pièce jointe indisponible",
 			"truncated": "Aperçu tronqué. Téléchargez le fichier complet pour voir la suite."
+		},
+		"usage": {
+			"inputTokens": "entrée ${count}",
+			"outputTokens": "sortie ${count}",
+			"reasoningTokens": "raisonnement ${count}",
+			"cacheReadTokens": "lecture du cache ${count}",
+			"cacheWriteTokens": "écriture du cache ${count}",
+			"estimatedCost": "Estimation des coûts connus ${amount} ${currency}",
+			"generation": "Cette génération : ${usage}",
+			"conversation": "Utilisation de la conversation : ${usage}"
 		}
 	},
 	"captcha": {

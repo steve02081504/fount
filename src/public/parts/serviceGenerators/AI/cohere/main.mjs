@@ -2,6 +2,7 @@ import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../.
 import { estimateTokenCount } from '../proxy/src/identityTokenizer.mjs'
 import { cleanupResponseText } from '../proxy/src/responseFormat.mjs'
 import { buildSourceInfo } from '../proxy/src/sourceInfo.mjs'
+import { createUsageRecorder } from '../proxy/src/usage.mjs'
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
@@ -100,6 +101,7 @@ async function GetSource(config) {
 		is_paid: false,
 		extension: {},
 		context_size: config.context_size ?? configTemplate.context_size,
+		pricing: config.pricing,
 
 		/**
 		 * 调用 AI 源。
@@ -107,10 +109,12 @@ async function GetSource(config) {
 		 * @returns {Promise<{content: string}>} 来自 AI 的结果。
 		 */
 		Call: async prompt => {
-			const result = await cohere.generate({ prompt, model: config.model })
-			return {
-				content: result.generations.map(generation => generation.text).join('\n')
-			}
+			const result = await cohere.chat({ messages: [{ role: 'user', content: prompt }], model: config.model })
+			const reply = { content: (result.message?.content ?? []).map(part => part.text ?? '').join('\n') }
+			const usageRecorder = createUsageRecorder(reply, config, 'cohere')
+			usageRecorder.record(result.usage?.billedUnits ?? result.meta?.billedUnits)
+			usageRecorder.apply()
+			return reply
 		},
 		/**
 		 * 使用结构化提示调用 AI 源。
@@ -147,7 +151,10 @@ async function GetSource(config) {
 			const result = {
 				content: '',
 				files: [...base_result?.files || []],
+				extension: base_result.extension ??= {},
 			}
+
+			const usageRecorder = createUsageRecorder(result, config, 'cohere')
 
 			/**
 			 * 预览更新器
@@ -162,21 +169,27 @@ async function GetSource(config) {
 				// Use cohere's streaming support
 				const stream = await cohere.chatStream(request)
 
-				for await (const chunk of stream) {
-					if (signal?.aborted) {
-						const err = new Error('Aborted by user')
-						err.name = 'AbortError'
-						throw err
-					}
+				try {
+					for await (const chunk of stream) {
+						usageRecorder.record(chunk.response?.meta?.billedUnits ?? chunk.delta?.usage?.billedUnits)
+						if (signal?.aborted) {
+							const err = new Error('Aborted by user')
+							err.name = 'AbortError'
+							throw err
+						}
 
-					if (chunk.eventType === 'text-generation') {
-						result.content += chunk.text || ''
-						previewUpdater(result)
+						if (chunk.eventType === 'text-generation') {
+							result.content += chunk.text || ''
+							previewUpdater(result)
+						}
 					}
 				}
+				// 中断也要落下已上报的计量，否则本轮的调用从会话累计里消失
+				finally { usageRecorder.apply() }
 			} else {
 				// Use non-streaming mode
 				const apiResult = await cohere.chat(request)
+				usageRecorder.record(apiResult.usage?.billedUnits ?? apiResult.meta?.billedUnits)
 				let text = apiResult?.message?.content?.map(message => message?.text)?.filter(text => text)?.join('\n')
 				if (!text) throw apiResult
 
@@ -186,6 +199,7 @@ async function GetSource(config) {
 
 				result.content = text
 				previewUpdater(result)
+				usageRecorder.apply()
 			}
 
 			return Object.assign(base_result, clearFormat(result))

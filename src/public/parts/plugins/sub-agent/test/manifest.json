@@ -7,6 +7,7 @@
 		"pluginCore": [
 			"src/scripts/plugin_context.mjs",
 			"src/public/parts/plugins/sub-agent/**",
+			"src/public/parts/shells/chat/public/shared/usage.mjs",
 			"src/public/parts/plugins/async-task/{registry,duration}.mjs",
 			"src/public/parts/shells/chat/src/{prompt_struct,reply}/**",
 			"src/public/parts/shells/chat/src/chat/lib/visibility.mjs",

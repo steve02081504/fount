@@ -17,6 +17,7 @@
 			"src/public/parts/plugins/sub-agent/state.mjs",
 			"src/public/parts/shells/chat/src/chat/session/builtinParts.mjs",
 			"src/public/parts/shells/chat/src/prompt_struct/**",
+			"src/public/parts/shells/chat/public/shared/usage.mjs",
 			"src/public/parts/shells/easynew/parts/easychar/template/**",
 			"src/public/parts/ImportHandlers/*/Template/**",
 			"src/server/parts_loader.mjs",
@@ -24,6 +25,7 @@
 		],
 		"frontendShared": [
 			"src/public/parts/shells/agent_studio/public/**",
+			"src/public/parts/shells/chat/public/shared/usage.mjs",
 			"src/public/parts/shells/agent_studio/test/frontend/**",
 			"src/public/parts/shells/agent_studio/test/node_bootstrap.mjs",
 			"src/public/pages/scripts/test/**",

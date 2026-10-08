@@ -10,6 +10,7 @@
 import { getPartInfo } from '../../../../../scripts/locale.mjs'
 import { getUserByUsername } from '../../../../../server/auth/index.mjs'
 import { loadAIsourceFromNameOrConfigData } from '../../../serviceSources/AI/main.mjs'
+import { mergeUsage } from '../../../shells/chat/public/shared/usage.mjs'
 import { identityTokenizer, minKnownContextSize } from '../proxy/src/identityTokenizer.mjs'
 
 import { buildPromptFromFirstSource } from './prompt.mjs'
@@ -86,17 +87,18 @@ async function GetSource(config, { username, SaveConfig }) {
 		/**
 		 * 调用 AI 源。
 		 * @param {string} prompt - 要发送给 AI 的提示。
-		 * @returns {Promise<string>} 来自 AI 的结果。
+		 * @returns {Promise<object>} 来自 AI 的结果。
 		 */
 		Call: async prompt => {
 			if (!sources.length) throw new Error('no source selected')
+			const usages = []
 			const results = await Promise.all(sources.map(source => {
 				const info = getPartInfo(source, getUserByUsername(username).locales)
 				return source.Call(prompt).then(
-					result => `\
-**${info.name} from ${info.provider}:**
-${result}
-`,
+					result => {
+						usages.push(result.extension?.usage)
+						return `**${info.name} from ${info.provider}:**\n${typeof result === 'string' ? result : result.content}\n`
+					},
 					err => `\
 **${info.name} from ${info.provider} error:**
 \`\`\`
@@ -105,7 +107,7 @@ ${err.stack || err}
 `
 				)
 			}))
-			return results.join('\n')
+			return { content: results.join('\n'), extension: { usage: mergeUsage(...usages) } }
 		},
 		/**
 		 * 使用结构化提示调用 AI 源。
@@ -118,6 +120,7 @@ ${err.stack || err}
 
 			if (!sources.length) throw new Error('no source selected')
 
+			const usages = []
 			const allFiles = [...base_result?.files || []]
 			const sourceResults = sources.map(() => ({ content: '', files: [] }))
 
@@ -168,6 +171,7 @@ ${err.stack || err}
 					signal
 				}).then(
 					result => {
+						usages.push(result.extension?.usage)
 						allFiles.push(...result.files || [])
 						let res = `**${info.name} from ${info.provider}:**\n${result.content}\n`
 						if (result.files?.length) {
@@ -177,13 +181,17 @@ ${err.stack || err}
 						}
 						return res
 					},
-					err => `**${info.name} from ${info.provider} error:**\n\`\`\`\n${err.stack || err}\n\`\`\`\n`
+					err => {
+						usages.push(subBaseResult.extension?.usage)
+						return `**${info.name} from ${info.provider} error:**\n\`\`\`\n${err.stack || err}\n\`\`\`\n`
+					}
 				)
 			}))
 
 			return Object.assign(base_result, {
 				content: results.join('\n'),
-				files: allFiles
+				files: allFiles,
+				extension: { ...base_result.extension, usage: mergeUsage(base_result.extension?.usage, ...usages) }
 			})
 		},
 		/**

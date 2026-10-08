@@ -105,10 +105,13 @@ async function GetSource(config, { username, SaveConfig }) {
 		 */
 		StructCall: async (prompt_struct, options = {}) => {
 			if (!sources.length) throw new Error('no source selected')
+			// All attempts retain reported usage on the same reply object.
+			options.base_result ??= {}
 			let index = 0
 			while (true) try {
 				return await sources[index].StructCall(prompt_struct, options)
 			} catch (e) {
+				if (options.signal?.aborted) throw e
 				index++
 				if (index >= config.sources.length) throw new Error('all sources failed')
 				console.error(e)

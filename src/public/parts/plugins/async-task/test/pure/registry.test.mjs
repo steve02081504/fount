@@ -454,6 +454,28 @@ Deno.test('deliverNotification carries the task execution target for preload', a
 	assertEquals(fake.appended[0].extension?.executionTarget, executionTarget, '完成通知应透传任务执行目标')
 })
 
+Deno.test('child usage follows exactly the notification or pending await route', async () => {
+	for (const awaiting of [false, true]) {
+		resetAsyncTaskState()
+		const fake = deliveryChannel()
+		registerChannel('u', 'c', fake.channel)
+		const usage = { calls: [{ inputTokens: 100, outputTokens: 5 }], total: { inputTokens: 100, outputTokens: 5 } }
+		const target = owner({ generationId: 'usage-test' })
+		const task = registerTask({ kind: 'subagent', owner: target, run: resolveWith('done'), meta: { usage } })
+		if (awaiting) await awaitTasks([task.id], { requester: target })
+		else await task.done
+		await flushAsync()
+		assertEquals(fake.appended.length, awaiting ? 0 : 1)
+		assertEquals(task.meta.awaitedUsage, awaiting ? usage : undefined)
+		if (!awaiting) {
+			assertEquals(fake.appended[0].extension.usage, usage)
+			// 已调度通知后再等待，不能把同一用量交给等待者。
+			await awaitTasks([task.id], { requester: target })
+			assertEquals(task.meta.awaitedUsage, undefined)
+		}
+	}
+})
+
 Deno.test('deliverNotification omits executionTarget for tasks without one', async () => {
 	resetAsyncTaskState()
 	const fake = deliveryChannel()

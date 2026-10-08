@@ -67,7 +67,6 @@
 			"sendCommandFailed": "명령 전송에 실패했습니다: ${error}",
 			"socketError": "소켓 오류: ${error}",
 			"parseResponseFailed": "서버 응답 구문 분석에 실패했습니다: ${error}",
-			"cannotParseResponse": "서버 응답을 구문 분석할 수 없습니다.",
 			"unknownError": "알 수 없는 오류가 발생했습니다.",
 			"partPathRequired": "컴포넌트 경로를 입력해 주세요."
 		},
@@ -6126,6 +6125,9 @@
 				}
 			}
 		},
+		"normal": "정상",
+		"memoryUsage": "메모리 사용률",
+		"realtimeLogs": "실시간 로그",
 		"update": {
 			"failed": "업데이트 요청 실패",
 			"now": "지금 업데이트하고 다시 시작하세요",
@@ -6818,6 +6820,35 @@
 				"unavailable": "이 워크스페이스의 자동 업데이트를 사용할 수 없습니다. 워크스페이스와 구독한 디렉터리를 확인하세요."
 			},
 			"cursor": "${line}행, ${column}열"
+		},
+		"cli": {
+			"tui": {
+				"model": "모델",
+				"char": "캐릭터",
+				"session": "세션",
+				"profile": "프로필",
+				"busy": "● 실행 중",
+				"idle": "○ 대기 중",
+				"backToBottom": "↓ 최신으로 돌아가기",
+				"inputHint": "Enter로 전송 · Shift+Enter로 줄바꿈 · Shift+Tab으로 접힌 항목에 포커스 · /help · Ctrl+C로 중지/지우기/종료",
+				"pickerEmpty": "일치하는 결과가 없습니다",
+				"stopping": "중지하는 중…",
+				"copied": "선택한 내용을 복사했습니다",
+				"reasoning": "사고 과정",
+				"you": "나",
+				"welcome": "코딩 에이전트와 대화를 시작하세요",
+				"emptyHint": "아래에 메시지를 입력하세요 · Tab으로 모델 선택 · /help로 명령 보기"
+			}
+		},
+		"usage": {
+			"inputTokens": "입력 ${count}",
+			"outputTokens": "출력 ${count}",
+			"reasoningTokens": "추론 ${count}",
+			"cacheReadTokens": "캐시 읽기 ${count}",
+			"cacheWriteTokens": "캐시 쓰기 ${count}",
+			"estimatedCost": "알려진 비용 추정 ${amount} ${currency}",
+			"reply": "사용량: ${usage}",
+			"session": "이 세션의 누적 사용량: ${usage}"
 		}
 	},
 	"gist": {
@@ -7145,6 +7176,16 @@
 			"preview": "텍스트 파일 미리 보기",
 			"unavailable": "첨부 파일을 사용할 수 없습니다",
 			"truncated": "미리 보기가 잘렸습니다. 나머지를 보려면 전체 파일을 내려받으세요."
+		},
+		"usage": {
+			"inputTokens": "입력 ${count}",
+			"outputTokens": "출력 ${count}",
+			"reasoningTokens": "추론 ${count}",
+			"cacheReadTokens": "캐시 읽기 ${count}",
+			"cacheWriteTokens": "캐시 쓰기 ${count}",
+			"estimatedCost": "알려진 비용 추정 ${amount} ${currency}",
+			"generation": "이번 생성: ${usage}",
+			"conversation": "현재 대화 사용량: ${usage}"
 		}
 	},
 	"captcha": {

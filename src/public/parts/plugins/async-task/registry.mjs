@@ -228,6 +228,8 @@ function finishTask(task, state, result, error) {
 	task.result = result
 	task.error = error
 	task.finishedAt = Date.now()
+	// 被等待的任务不投递通知，其用量交由等待者回复携带。
+	if (task.meta?.usage && task.consumed) task.meta.awaitedUsage = task.meta.usage
 	if (task.eventContext) void emitPluginEvent(task.eventContext, pluginEventForTask(task))
 	if (!task.consumed)
 		void deliverNotification(task).catch(err => console.warn('async-task: 完成通知投递失败', err))
@@ -303,7 +305,7 @@ function makeNotificationEntry(task) {
 		files: [],
 		time_stamp: new Date(),
 		...charId ? { charVisibility: [charId] } : {},
-		extension: { ...executionTarget ? { executionTarget } : {}, pluginEvent: pluginEventForTask(task) },
+		extension: { ...executionTarget ? { executionTarget } : {}, ...task.meta?.usage ? { usage: task.meta.usage } : {}, pluginEvent: pluginEventForTask(task) },
 	}
 }
 

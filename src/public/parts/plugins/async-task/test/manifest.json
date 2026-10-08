@@ -7,6 +7,7 @@
 		"pluginCore": [
 			"src/scripts/plugin_context.mjs",
 			"src/public/parts/plugins/async-task/**",
+			"src/public/parts/shells/chat/public/shared/usage.mjs",
 			"src/public/parts/shells/chat/src/{prompt_struct,reply}/**",
 			"src/scripts/shell_guard.mjs"
 		]

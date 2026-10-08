@@ -8,6 +8,7 @@ import { pickEntryExtension } from '../../src/entry_extension.mjs'
 
 Deno.test('pickEntryExtension keeps frontend-rendering fields and drops the rest', () => {
 	const pluginData = { 'file-operations': { contextHashes: ['abc'] }, nested: { n: 1 } }
+	const usage = { calls: [{ source: 'proxy', model: 'test', inputTokens: 5, outputTokens: 2 }], total: { inputTokens: 5, outputTokens: 2 } }
 	const picked = pickEntryExtension({
 		subAgent: { runId: 'r' },
 		asyncTask: { id: 't', kind: 'js' },
@@ -16,6 +17,7 @@ Deno.test('pickEntryExtension keeps frontend-rendering fields and drops the rest
 		asyncInspect: { id: 't', kind: 'js' },
 		error: true,
 		toolCall: { summary: 'src/main.mjs', state: 'failed' },
+		usage,
 		executionTarget: { machine: '0', workdir: '/w' },
 		pluginData,
 		preloadFiles: [{ path: 'a.mjs', resolved: '/w/a.mjs' }],
@@ -31,6 +33,7 @@ Deno.test('pickEntryExtension keeps frontend-rendering fields and drops the rest
 		asyncInspect: { id: 't', kind: 'js' },
 		error: true,
 		toolCall: { summary: 'src/main.mjs', state: 'failed' },
+		usage,
 		executionTarget: { machine: '0', workdir: '/w' },
 		pluginData,
 	})

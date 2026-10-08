@@ -78,6 +78,9 @@ export async function createFileEditor(host, { onChange, onSave, onSelection }) 
 	view.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.US_OPEN_SQUARE_BRACKET, () => void view.getAction('editor.foldAll')?.run())
 	view.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.US_CLOSE_SQUARE_BRACKET, () => void view.getAction('editor.unfoldAll')?.run())
 	view.getDomNode()?.setAttribute('user-content', '')
+	// Monaco 的光标按 `cursorBlinking`（默认 500ms）用内联 `visibility` 画闪烁，与 page watch
+	// `[test:flicker]` 判「显隐来回抖」的规则同量级——那是刻意的脉冲，标记整棵编辑器子树跳过。
+	host.setAttribute('flicker-ignore', '')
 	/**
 	 * 阻止 Escape 冒泡到页面级快捷键。
 	 * @param {KeyboardEvent} event - 编辑器按键事件。

@@ -5,6 +5,7 @@ import { Ollama } from 'npm:ollama'
 
 import { estimateTokenCount } from '../proxy/src/identityTokenizer.mjs'
 import { buildSourceInfo } from '../proxy/src/sourceInfo.mjs'
+import { createUsageRecorder } from '../proxy/src/usage.mjs'
 
 import { buildOllamaMessages } from './prompt.mjs'
 
@@ -78,6 +79,7 @@ async function GetSource(config) {
 		is_paid: false,
 		extension: {},
 		context_size: config.context_size ?? config.model_arguments?.num_ctx ?? configTemplate.context_size,
+		pricing: config.pricing,
 
 		/**
 		 * 调用 AI 源。
@@ -91,9 +93,11 @@ async function GetSource(config) {
 				stream: false,
 				options: config.model_arguments
 			})
-			return {
-				content: response.response,
-			}
+			const reply = { content: response.response }
+			const usageRecorder = createUsageRecorder(reply, config, 'ollama')
+			usageRecorder.record(response)
+			usageRecorder.apply()
+			return reply
 		},
 		/**
 		 * 使用结构化提示调用 AI 源。
@@ -109,7 +113,10 @@ async function GetSource(config) {
 			const result = {
 				content: '',
 				files: [...base_result?.files || []],
+				extension: base_result.extension ??= {},
 			}
+
+			const usageRecorder = createUsageRecorder(result, config, 'ollama')
 
 			/**
 			 * 预览更新器
@@ -137,18 +144,23 @@ async function GetSource(config) {
 					options: config.model_arguments
 				})
 
-				for await (const chunk of stream) {
-					if (signal?.aborted) {
-						const err = new Error('Aborted by user')
-						err.name = 'AbortError'
-						throw err
-					}
+				try {
+					for await (const chunk of stream) {
+						if (chunk.done) usageRecorder.record(chunk, chunk.model)
+						if (signal?.aborted) {
+							const err = new Error('Aborted by user')
+							err.name = 'AbortError'
+							throw err
+						}
 
-					if (chunk.message?.content) {
-						result.content += chunk.message.content
-						previewUpdater(result)
+						if (chunk.message?.content) {
+							result.content += chunk.message.content
+							previewUpdater(result)
+						}
 					}
 				}
+				// 中断也要落下已上报的计量，否则本轮的调用从会话累计里消失
+				finally { usageRecorder.apply() }
 			} else {
 				// Use non-streaming mode
 				const response = await ollama.chat({
@@ -157,8 +169,10 @@ async function GetSource(config) {
 					stream: false,
 					options: config.model_arguments
 				})
+				usageRecorder.record(response, response.model)
 				result.content = response.message.content
 				previewUpdater(result)
+				usageRecorder.apply()
 			}
 
 			return Object.assign(base_result, result)

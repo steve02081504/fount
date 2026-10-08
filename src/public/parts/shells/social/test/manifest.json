@@ -92,7 +92,7 @@
 	"suites": [
 		{
 			"name": "pure",
-			"expected": "6m45s",
+			"expected": "1m2s",
 			"trigger": [
 				"shellBackend",
 				"shellPureExtra",
@@ -112,7 +112,7 @@
 		},
 		{
 			"name": "integration",
-			"expected": "8m46s",
+			"expected": "14m30s",
 			"dependsOn": [
 				"server:live"
 			],

@@ -52,6 +52,20 @@ function createArgs(extra = {}) {
 	}
 }
 
+Deno.test('await-async adds child calls once to the current reply including nested consumption', async () => {
+	resetAsyncTaskState()
+	const args = createArgs()
+	const usage = { calls: [{ inputTokens: 100, outputTokens: 5 }, { inputTokens: 50, outputTokens: 2 }], total: { inputTokens: 150, outputTokens: 7 } }
+	const task = registerTask({ kind: 'subagent', owner: ownerFromArgs(args), run: resolveWith('done'), meta: { usage } })
+	const reply = { extension: { usage: { calls: [{ inputTokens: 10, outputTokens: 1 }] } } }
+	await awaitAsyncHandler.handle(reply, args, { params: { ids: task.id } })
+	assertEquals(reply.extension.usage.calls.length, 3)
+	assertEquals(reply.extension.usage.total.inputTokens, 160)
+	assertEquals(reply.extension.usage.total.outputTokens, 8)
+	await awaitAsyncHandler.handle(reply, args, { params: { ids: task.id } })
+	assertEquals(reply.extension.usage.calls.length, 3)
+})
+
 Deno.test('list-async reports in-flight tasks for the current owner', async () => {
 	resetAsyncTaskState()
 	const args = createArgs()

@@ -1,4 +1,5 @@
 import { AIRequestError, readErrorResponse } from '../../proxy/src/requestError.mjs'
+import { createUsageRecorder } from '../../proxy/src/usage.mjs'
 
 /**
  * 把 chat 的 content part 转成 Responses 的对应 type。
@@ -114,6 +115,7 @@ function appendReasoningSummary(result, index, text) {
  * @param {object} args - 参数。
  * @param {string} args.url - 端点。
  * @param {Record<string, string>} args.headers - 请求头。
+ * @param {object} [args.usageConfig] - 用量定价配置。
  * @param {object} args.body - JSON body。
  * @param {AbortSignal} [args.signal] - 取消。
  * @param {(result: {content: string, files: any[]}) => void} [args.previewUpdater] - 预览。
@@ -124,10 +126,12 @@ export async function fetchResponses({
 	url,
 	headers,
 	body,
+	usageConfig = {},
 	signal,
 	previewUpdater = () => { },
 	result = { content: '', files: [] },
 }) {
+	const usageRecorder = createUsageRecorder(result, { ...usageConfig, model: body.model })
 	const response = await fetch(url, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json', ...headers },
@@ -139,6 +143,7 @@ export async function fetchResponses({
 
 	if (!body.stream) {
 		const json = await response.json()
+		usageRecorder.record(json.usage, json.model)
 		if (json.error)
 			throw new AIRequestError(
 				`responses error: ${json.error.message ?? JSON.stringify(json.error)}`,
@@ -151,6 +156,7 @@ export async function fetchResponses({
 				for (const summary of item.summary ?? [])
 					if (summary.type === 'summary_text') appendReasoningSummary(result, reasoningIndex++, summary.text)
 		previewUpdater(result)
+		usageRecorder.apply()
 		return result
 	}
 
@@ -181,6 +187,8 @@ export async function fetchResponses({
 			console.warn('Error parsing responses stream data:', error)
 			return
 		}
+
+		usageRecorder.record(json.response?.usage ?? json.usage, json.response?.model ?? json.model)
 
 		// 失败事件：过去被静默忽略，导致得到空回复。
 		if (json.type === 'error' || json.type === 'response.failed') {
@@ -214,22 +222,26 @@ export async function fetchResponses({
 	}
 
 	try {
-		while (true) {
-			if (signal?.aborted) {
-				const err = new Error('User Aborted')
-				err.name = 'AbortError'
-				throw err
+		try {
+			while (true) {
+				if (signal?.aborted) {
+					const err = new Error('User Aborted')
+					err.name = 'AbortError'
+					throw err
+				}
+				const { done, value } = await reader.read()
+				if (done) break
+				buffer += decoder.decode(value, { stream: true })
+				const lines = buffer.split('\n')
+				buffer = lines.pop()
+				for (const line of lines) handleLine(line)
 			}
-			const { done, value } = await reader.read()
-			if (done) break
-			buffer += decoder.decode(value, { stream: true })
-			const lines = buffer.split('\n')
-			buffer = lines.pop()
-			for (const line of lines) handleLine(line)
+			// 冲刷解码器与最后一行（流末尾可能没有换行结尾）。
+			buffer += decoder.decode()
+			for (const line of buffer.split('\n')) handleLine(line)
 		}
-		// 冲刷解码器与最后一行（流末尾可能没有换行结尾）。
-		buffer += decoder.decode()
-		for (const line of buffer.split('\n')) handleLine(line)
+		// 中断也要落下已上报的计量，否则本轮的调用从会话累计里消失
+		finally { usageRecorder.apply() }
 	}
 	finally {
 		reader.releaseLock()

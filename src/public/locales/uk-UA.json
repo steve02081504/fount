@@ -67,7 +67,6 @@
 			"sendCommandFailed": "Не вдалося надіслати команду: ${error}",
 			"socketError": "Помилка сокета: ${error}",
 			"parseResponseFailed": "Не вдалося розібрати відповідь сервера: ${error}",
-			"cannotParseResponse": "Неможливо розібрати відповідь сервера",
 			"unknownError": "Невідома помилка",
 			"partPathRequired": "Вкажіть шлях до компонента."
 		},
@@ -6126,6 +6125,9 @@
 				}
 			}
 		},
+		"normal": "Норма",
+		"memoryUsage": "Використання пам’яті",
+		"realtimeLogs": "Журнал у реальному часі",
 		"update": {
 			"failed": "Помилка запиту на оновлення",
 			"now": "Оновіть і перезапустіть зараз",
@@ -6824,6 +6826,35 @@
 				"unavailable": "Автооновлення цієї робочої області недоступне. Перевірте робочу область і відстежувані каталоги."
 			},
 			"cursor": "рядок ${line}, стовпець ${column}"
+		},
+		"cli": {
+			"tui": {
+				"model": "Модель",
+				"char": "Персонаж",
+				"session": "Сеанс",
+				"profile": "Профіль",
+				"busy": "● виконується",
+				"idle": "○ готово",
+				"backToBottom": "↓ До останнього повідомлення",
+				"inputHint": "Enter — надіслати · Shift+Enter — новий рядок · Shift+Tab — фокус на згорнутих блоках · /help · Ctrl+C — зупинити/очистити/вийти",
+				"pickerEmpty": "Немає результатів",
+				"stopping": "Зупинення…",
+				"copied": "Виділене скопійовано",
+				"reasoning": "Міркування",
+				"you": "Ви",
+				"welcome": "Почніть розмову зі своїм агентом-програмістом",
+				"emptyHint": "Введіть повідомлення нижче · Tab — вибір моделі · /help — список команд"
+			}
+		},
+		"usage": {
+			"inputTokens": "введення ${count}",
+			"outputTokens": "виведення ${count}",
+			"reasoningTokens": "міркування ${count}",
+			"cacheReadTokens": "читання кешу ${count}",
+			"cacheWriteTokens": "запис кешу ${count}",
+			"estimatedCost": "Оцінка відомої вартості ${amount} ${currency}",
+			"reply": "Використання: ${usage}",
+			"session": "Усього за сеанс: ${usage}"
 		}
 	},
 	"gist": {
@@ -7151,6 +7182,16 @@
 			"preview": "Перегляд текстового файлу",
 			"unavailable": "Вкладення недоступне",
 			"truncated": "Перегляд обрізано. Завантажте файл повністю, щоб побачити решту."
+		},
+		"usage": {
+			"inputTokens": "введення ${count}",
+			"outputTokens": "виведення ${count}",
+			"reasoningTokens": "міркування ${count}",
+			"cacheReadTokens": "читання кешу ${count}",
+			"cacheWriteTokens": "запис кешу ${count}",
+			"estimatedCost": "Оцінка відомої вартості ${amount} ${currency}",
+			"generation": "Ця генерація: ${usage}",
+			"conversation": "Використання розмови: ${usage}"
 		}
 	},
 	"captcha": {

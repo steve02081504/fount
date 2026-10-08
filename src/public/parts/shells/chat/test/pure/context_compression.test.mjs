@@ -4,7 +4,27 @@
 /* global Deno */
 import { assertEquals } from 'jsr:@std/assert'
 
-import { needsCompression } from '../../src/chat/session/summarize.mjs'
+import { compressContext, needsCompression } from '../../src/chat/session/summarize.mjs'
+
+Deno.test('compression preserves provider usage in the summary and reply totals', async () => {
+	const call = { inputTokens: 100, outputTokens: 10 }
+	const result = { extension: { usage: { calls: [{ inputTokens: 5, outputTokens: 2 }], total: {} } } }
+	const prompt_struct = {
+		char_id: 'c', char_prompt: { text: [], additional_chat_log: [] }, user_prompt: { text: [], additional_chat_log: [] },
+		world_prompt: { text: [], additional_chat_log: [] }, plugin_prompts: {}, other_chars_prompts: {}, other_personas_prompts: {},
+		chat_log: [{ name: 'a', role: 'user', content: 'history' }], timelines: [],
+	}
+	const aiSource = {
+		/** @returns {Promise<object>} 摘要及计量。 */
+		Call: async () => ({ content: 'summary', extension: { usage: { calls: [call] } } }),
+	}
+	const entry = await compressContext({ args: {}, aiSource, prompt_struct, result })
+	assertEquals(entry.content, 'summary')
+	assertEquals(entry.extension.usage.calls[0].purpose, 'compression')
+	assertEquals(result.extension.usage.total.inputTokens, 105)
+	assertEquals(result.extension.usage.total.outputTokens, 12)
+	assertEquals(await compressContext({ args: {}, aiSource, prompt_struct, result }), null)
+})
 
 /**
  * 构造只统计字符数的 AI 源桩。

@@ -1,13 +1,15 @@
 import { ms } from 'fount/scripts/ms.mjs'
 import { withApiRequest } from 'fount/scripts/test/playwright/api.mjs'
 
+import { formatChatDmShareUrl } from '../../public/shared/runUri.mjs'
+
 import {
 	test,
 	expect,
 	openFreshGroupChannel,
 } from './fixtures.mjs'
 
-test('sidebar profile fits its rail and long bio expands with keyboard without an inner scrollbar', async ({ modulePage }) => {
+test('sidebar profile fits its rail and long bio folds to its first lines with keyboard expand/collapse', async ({ modulePage }) => {
 	const { page } = modulePage
 	await modulePage.run(async () => {
 		const { createEntityProfileCardElement, paintEntityProfileBio } = await import('/parts/shells:chat/shared/entityProfileCard.mjs')
@@ -22,29 +24,116 @@ test('sidebar profile fits its rail and long bio expands with keyboard without a
 	})
 	const rail = page.locator('#profile-test-rail')
 	const bio = rail.locator('[data-entity-profile-bio]')
-	await expect(bio).toBeHidden()
-	const summary = rail.locator('summary')
-	await summary.focus()
-	await summary.press('Enter')
-	await expect(bio).toBeVisible()
-	const geometry = await rail.evaluate(el => {
-		const bio = el.querySelector('[data-entity-profile-bio]')
+	const toggle = rail.locator('[data-profile-popup-bio-toggle]')
+	/**
+	 * 读取测试卡几何。
+	 * @returns {Promise<object>} 宽度 / 高度 / 滚动高度
+	 */
+	const geometry = () => rail.evaluate(el => {
+		const body = el.querySelector('[data-entity-profile-bio]')
 		const card = el.querySelector('.profile-popup')
 		return {
 			width: el.clientWidth,
 			scrollWidth: el.scrollWidth,
 			cardRight: card.getBoundingClientRect().right,
 			railRight: el.getBoundingClientRect().right,
-			bioHeight: bio.clientHeight,
-			bioScrollHeight: bio.scrollHeight,
+			bioHeight: body.clientHeight,
+			bioScrollHeight: body.scrollHeight,
 		}
 	})
-	expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.width)
-	expect(geometry.cardRight).toBeLessThanOrEqual(geometry.railRight)
-	expect(geometry.bioHeight).toBeGreaterThan(125)
-	expect(geometry.bioScrollHeight).toBeLessThanOrEqual(geometry.bioHeight + 1)
-	await summary.press('Space')
-	await expect(bio).toBeHidden()
+
+	// 折叠态：露头几行（正文被裁切，仍可见），按钮为「展开」
+	await expect(bio).toBeVisible()
+	await expect(toggle).toHaveAttribute('data-i18n', 'social.feed.showMore')
+	const folded = await geometry()
+	expect(folded.scrollWidth).toBeLessThanOrEqual(folded.width)
+	expect(folded.cardRight).toBeLessThanOrEqual(folded.railRight)
+	expect(folded.bioScrollHeight).toBeGreaterThan(folded.bioHeight + 1)
+
+	await toggle.focus()
+	await toggle.press('Enter')
+	await expect(toggle).toHaveAttribute('data-i18n', 'social.feed.showLess')
+	const expanded = await geometry()
+	expect(expanded.bioHeight).toBeGreaterThan(folded.bioHeight * 2)
+	expect(expanded.bioScrollHeight).toBeLessThanOrEqual(expanded.bioHeight + 1)
+	expect(expanded.scrollWidth).toBeLessThanOrEqual(expanded.width)
+
+	await toggle.press('Space')
+	await expect(toggle).toHaveAttribute('data-i18n', 'social.feed.showMore')
+	const refolded = await geometry()
+	expect(refolded.bioScrollHeight).toBeGreaterThan(refolded.bioHeight + 1)
+})
+
+test('about section folds only when the bio markdown exceeds 11 lines', async ({ modulePage }) => {
+	const { page } = modulePage
+	/**
+	 * 用指定行数的简介源文本重绘测试卡。
+	 * @param {number} lineCount 源行数
+	 * @returns {Promise<void>} 无返回值
+	 */
+	const paintLines = lineCount => modulePage.run(async count => {
+		const { createEntityProfileCardElement, paintEntityProfileBio } = await import('/parts/shells:chat/shared/entityProfileCard.mjs')
+		let rail = document.getElementById('profile-test-rail')
+		let card = rail?.querySelector('.profile-popup')
+		if (!(card instanceof HTMLElement)) {
+			rail = document.createElement('aside')
+			rail.id = 'profile-test-rail'
+			rail.style.width = '240px'
+			card = await createEntityProfileCardElement('sidebar')
+			rail.append(card)
+			document.body.append(rail)
+		}
+		await paintEntityProfileBio(card.querySelector('[data-entity-profile-bio]'), Array.from({ length: count }, (_, i) => `Line ${i + 1}`).join('\n\n'))
+		await Promise.all([...document.querySelectorAll('link[rel="stylesheet"]')].map(link => link.sheet ? Promise.resolve() : new Promise(resolve => link.addEventListener('load', resolve, { once: true }))))
+	}, lineCount)
+
+	// 11 行源文本：全文正常显示，没有展开按钮
+	await paintLines(11)
+	const rail = page.locator('#profile-test-rail')
+	const bio = rail.locator('[data-entity-profile-bio]')
+	const toggle = rail.locator('[data-profile-popup-bio-toggle]')
+	await expect(bio).toBeVisible()
+	await expect(bio).toContainText('Line 11')
+	await expect(toggle).toBeHidden()
+	expect(await bio.evaluate(el => el.scrollHeight <= el.clientHeight + 1)).toBe(true)
+
+	// 12 行源文本：折叠到前几行 + 展开按钮
+	await paintLines(12)
+	await expect(toggle).toBeVisible()
+	await expect(toggle).toHaveAttribute('data-i18n', 'social.feed.showMore')
+	expect(await bio.evaluate(el => el.scrollHeight > el.clientHeight + 1)).toBe(true)
+
+	await toggle.click()
+	await expect(toggle).toHaveAttribute('data-i18n', 'social.feed.showLess')
+	await expect(bio).toContainText('Line 12')
+	expect(await bio.evaluate(el => el.scrollHeight <= el.clientHeight + 1)).toBe(true)
+})
+
+test('about section measures a paint-then-mount card once it is attached', async ({ modulePage }) => {
+	const { page } = modulePage
+	await modulePage.run(async () => {
+		const { createEntityProfileCardElement, paintEntityProfileBio } = await import('/parts/shells:chat/shared/entityProfileCard.mjs')
+		const card = await createEntityProfileCardElement('embedded')
+		// 先 paint 再挂载（资料页路径）：paint 时卡片还没布局，量不到裁切
+		await paintEntityProfileBio(card.querySelector('[data-entity-profile-bio]'), Array.from({ length: 20 }, (_, i) => `Paragraph ${i}: ${'long biography '.repeat(10)}`).join('\n\n'))
+		const host = document.createElement('div')
+		host.id = 'profile-mount-host'
+		host.style.width = '320px'
+		document.body.append(host)
+		host.replaceChildren(card)
+	})
+	const host = page.locator('#profile-mount-host')
+	const bio = host.locator('[data-entity-profile-bio]')
+	const toggle = host.locator('[data-profile-popup-bio-toggle]')
+	await expect(toggle).toBeVisible()
+	// 挂载后才量得到裁切，渐隐随之补上
+	await expect(host.locator('.profile-popup-bio-wrap')).toHaveClass(/is-clipped/)
+	expect(await bio.evaluate(el => el.scrollHeight > el.clientHeight + 1)).toBe(true)
+
+	await toggle.click()
+	await expect(toggle).toHaveAttribute('data-i18n', 'social.feed.showLess')
+	await expect(bio).toContainText('Paragraph 19')
+	expect(await bio.evaluate(el => el.scrollHeight <= el.clientHeight + 1)).toBe(true)
 })
 
 /**
@@ -255,8 +344,8 @@ test.describe('Chat profile popup refresh', () => {
 		await expect(copyButton).toBeVisible()
 		await copyButton.click()
 
-		const origin = new URL(baseUrl).origin
+		const expected = formatChatDmShareUrl(entityHash)
 		await expect.poll(() => page.evaluate(() => window.__copiedTexts), { timeout: ms('10s') })
-			.toEqual([`${origin}/parts/shells:chat/hub/?contact=${entityHash}`])
+			.toEqual([expected])
 	})
 })

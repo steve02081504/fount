@@ -31,6 +31,45 @@ function entryShowText(entry) {
 	return entry?.content_for_show ?? entry?.content ?? ''
 }
 
+/**
+ * 构建回复或当前会话的用量标签。
+ * @param {object} usage 归一化用量汇总。
+ * @param {string} key 本地化标签键。
+ * @returns {HTMLElement|null} 有计量数据时返回标签，否则返回 null。
+ */
+function usageLabel(usage, key) {
+	if (!usage?.total) return null
+	const total = usage.total
+	const number = new Intl.NumberFormat(undefined, { maximumFractionDigits: 0 })
+	const parts = ['inputTokens', 'outputTokens', 'reasoningTokens', 'cacheReadTokens', 'cacheWriteTokens']
+		.filter(field => total[field] != null && Number.isFinite(Number(total[field])))
+		.map(field => geti18n(`code.usage.${field}`, { count: number.format(total[field]) }))
+	for (const [currency, cost] of Object.entries(total.costs || {}))
+		if (Number.isFinite(Number(cost))) {
+			const amount = new Intl.NumberFormat(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 }).format(cost)
+			parts.push(geti18n('code.usage.estimatedCost', { amount, currency }))
+		}
+
+	if (!parts.length) return null
+	const label = document.createElement('span')
+	label.className = 'code-usage-label'
+	if (key === 'code.usage.session') label.dataset.usageScope = 'session'
+	label.textContent = geti18n(key, { usage: parts.join(' · ') })
+	return label
+}
+
+/**
+ * 刷新当前会话的累计用量标签。
+ * @returns {void}
+ */
+export function refreshSessionUsage() {
+	const current = elements.messages.querySelector('[data-usage-scope="session"]')
+	const next = usageLabel(store.session?.usage, 'code.usage.session')
+	if (current && next) current.replaceWith(next)
+	else if (current) current.remove()
+	else if (next) elements.messages.prepend(next)
+}
+
 /** 已知工具名 → i18n 键（未列出者回落原始 name 或运行 shell 模式）。 */
 const TOOL_NAME_I18N = {
 	shell: 'code.tool.userShell',
@@ -587,6 +626,11 @@ export function renderEntryBubble(entry, { isLast = false } = {}) {
 		name.textContent = entry.name
 		bubble.appendChild(name)
 	}
+	if (entry.extension?.usage) {
+		// 用量按条目记账：角色回复、压缩摘要与异步任务通告都可能带着自己的调用明细。
+		const usage = usageLabel(entry.extension.usage, 'code.usage.reply')
+		if (usage) bubble.appendChild(usage)
+	}
 	const body = document.createElement('div')
 	body.className = 'code-message-body'
 	bubble.appendChild(body)
@@ -901,14 +945,15 @@ export function renderMessages() {
 	updateEmptyMode()
 	const entries = (store.session?.entries || []).filter(isEntryVisible)
 	const changeSummary = createChangeSummary(entries)
+	const usage = usageLabel(store.session?.usage, 'code.usage.session')
 	if (changeSummary) changeSummary.open = elements.messages.querySelector('.code-change-summary')?.open ?? true
 	if (!entries.length) {
-		elements.messages.replaceChildren(...changeSummary ? [changeSummary] : [], backToBottom)
+		elements.messages.replaceChildren(...usage ? [usage] : [], ...changeSummary ? [changeSummary] : [], backToBottom)
 		updateBackToBottom()
 		updateScrollShadow()
 		return
 	}
-	elements.messages.replaceChildren(...entries.map((entry, index) => renderEntryBubble(entry, { isLast: index === entries.length - 1 })), ...changeSummary ? [changeSummary] : [], backToBottom)
+	elements.messages.replaceChildren(...usage ? [usage] : [], ...entries.map((entry, index) => renderEntryBubble(entry, { isLast: index === entries.length - 1 })), ...changeSummary ? [changeSummary] : [], backToBottom)
 	scrollMessagesBottom()
 	updateBackToBottom()
 	updateScrollShadow()

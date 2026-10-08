@@ -6,6 +6,7 @@
 			"expected": "1s",
 			"triggers": [
 				"src/public/parts/serviceGenerators/AI/proxy/**",
+				"src/public/parts/shells/chat/public/shared/usage.mjs",
 				"src/scripts/test/fixtures/openai_prompt_cache_mock.mjs",
 				"src/scripts/test/fixtures/prompt_cache_tracker.mjs"
 			],
@@ -27,6 +28,7 @@
 			],
 			"triggers": [
 				"src/public/parts/serviceGenerators/AI/proxy/**",
+				"src/public/parts/shells/chat/public/shared/usage.mjs",
 				"src/public/parts/serviceGenerators/AI/codex/src/responsesClient.mjs",
 				"default/templates/user/chars/ZL-31/**",
 				"src/public/parts/shells/chat/src/prompt_struct/**",

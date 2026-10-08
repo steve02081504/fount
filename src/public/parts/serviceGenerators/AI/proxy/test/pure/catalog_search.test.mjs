@@ -7,6 +7,7 @@ import { assertEquals } from 'jsr:@std/assert'
 import {
 	flattenCatalog,
 	findCatalogEntry,
+	pricingFromCatalogEntry,
 	providerApiToCompletionsUrl,
 	searchCatalog,
 } from '../../public/catalogSearch.mjs'
@@ -107,4 +108,11 @@ Deno.test('providerApiToCompletionsUrl appends chat/completions only when needed
 		'https://api.openai.com/v1/chat/completions',
 	)
 	assertEquals(providerApiToCompletionsUrl(''), '')
+})
+
+Deno.test('pricingFromCatalogEntry uses explicit USD and omits unavailable rates', () => {
+	assertEquals(pricingFromCatalogEntry({ cost: { input: 2.5, output: 10, cache_read: 1.25 } }), {
+		currency: 'USD', input: 2.5, cacheRead: 1.25, output: 10,
+	})
+	assertEquals(pricingFromCatalogEntry({ cost: {} }), null)
 })

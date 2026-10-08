@@ -67,7 +67,6 @@
 			"sendCommandFailed": "❌➡️: ${error}",
 			"socketError": "🔌❌: ${error}",
 			"parseResponseFailed": "🤔📨❌: ${error}",
-			"cannotParseResponse": "🤷‍♂️📨",
 			"unknownError": "❓🤷‍♂️❌",
 			"partPathRequired": "🧩📍❌"
 		},
@@ -6126,6 +6125,9 @@
 				}
 			}
 		},
+		"normal": "✅",
+		"memoryUsage": "🧠📈",
+		"realtimeLogs": "📜🔴",
 		"update": {
 			"failed": "❌🔄",
 			"now": "🆕🔄▶️",
@@ -6818,6 +6820,35 @@
 				"unavailable": "🚫🔄📁"
 			},
 			"cursor": "📍${line}:${column}"
+		},
+		"cli": {
+			"tui": {
+				"model": "🧠",
+				"char": "🎭",
+				"session": "💬",
+				"profile": "⚙️",
+				"busy": "● 🔄",
+				"idle": "○ 🟢",
+				"backToBottom": "⬇️",
+				"inputHint": "⏎ 📤 · ⇧⏎ ↵ · ⇧⇥ 🗂️ · /help ❓ · ⌃C ⏹️/🧹/🚪",
+				"pickerEmpty": "🔍📭",
+				"stopping": "⏹️⏳…",
+				"copied": "📋✅",
+				"reasoning": "💭",
+				"you": "🙋",
+				"welcome": "🗣️🤖",
+				"emptyHint": "⌨️✍️ · Tab 🎚️ · /help ❓"
+			}
+		},
+		"usage": {
+			"inputTokens": "📥 ${count}",
+			"outputTokens": "📤 ${count}",
+			"reasoningTokens": "💭 ${count}",
+			"cacheReadTokens": "📖 ${count}",
+			"cacheWriteTokens": "✍️ ${count}",
+			"estimatedCost": "💰 ${amount} ${currency}",
+			"reply": "📊 ${usage}",
+			"session": "🧮 ${usage}"
 		}
 	},
 	"gist": {
@@ -7145,6 +7176,16 @@
 			"preview": "👁️📄",
 			"unavailable": "📎❌",
 			"truncated": "✂️👁️📄 ➕ ⬇️✅"
+		},
+		"usage": {
+			"inputTokens": "📥 ${count}",
+			"outputTokens": "📤 ${count}",
+			"reasoningTokens": "💭 ${count}",
+			"cacheReadTokens": "📖 ${count}",
+			"cacheWriteTokens": "✍️ ${count}",
+			"estimatedCost": "💰 ${amount} ${currency}",
+			"generation": "✨ ${usage}",
+			"conversation": "💬 ${usage}"
 		}
 	},
 	"captcha": {

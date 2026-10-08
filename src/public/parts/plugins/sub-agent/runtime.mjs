@@ -12,6 +12,7 @@ import { guardOutput } from '../../../../scripts/shell_guard.mjs'
 import { onSystemWake, setAwakeTimeout } from '../../../../scripts/sleep_watch.mjs'
 import { isStopping } from '../../../../scripts/stopping.mjs'
 import { beginPromptRequest, collectGenerationRecord, finishPromptRequest } from '../../shells/agent_studio/src/request_record.mjs'
+import { mergeUsage, summarizeUsage } from '../../shells/chat/public/shared/usage.mjs'
 import { buildPromptStruct } from '../../shells/chat/src/prompt_struct/index.mjs'
 import { createLongTimeLogger, runBeforeReplyHooks, runReplyHandlers } from '../../shells/chat/src/reply/handlerPipeline.mjs'
 import { finishAsyncGeneration, ownerFromArgs, registerTask } from '../async-task/registry.mjs'
@@ -465,6 +466,11 @@ async function summarizeRun(run, deps, reason) {
 	let text = null
 	try {
 		text = await run.aiSource?.Call?.(buildSummaryPrompt(run, reason))
+		const usage = text?.extension?.usage
+		if (usage && run.result) {
+			run.result.extension ??= {}
+			run.result.extension.usage = mergeUsage(run.result.extension.usage, summarizeUsage(usage.calls.map(call => ({ ...call, purpose: 'summary' }))))
+		}
 	}
 	catch (error) {
 		console.warn('sub-agent: 摘要调用失败', error)
@@ -756,6 +762,8 @@ export async function runSubAgent(args, request, deps = defaultSubAgentDeps) {
 			 */
 			run: async () => {
 				const result = await executeSubAgentRun(run, deps)
+				// 失败也保留已报告用量，由现有完成通知或等待回执结算。
+				task.meta.usage = result.result?.extension?.usage
 				if (result.state === 'failed')
 					throw new Error(result.error?.message ?? '子代理运行失败')
 				return result
