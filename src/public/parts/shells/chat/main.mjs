@@ -2,7 +2,8 @@
  * 【文件】main.mjs
  * 【职责】chat shell 的 Part 入口：向 parts_loader 导出 shellAPI_t，注册 HTTP/群路由与文件 GC，并分发 CLI/IPC 动作。
  * 【原理】side-effect 预加载 dag/index；Load 调用 registerChatRoutes。
- *   handleAction 动态 import actions 表；ArgumentsHandler 解析 dm/join/start/send 等；IPCInvokeHandler 透传 command。
+ *   handleAction 动态 import actions 表；ArgumentsHandler 解析 dm/join/start/send 等；IPCInvokeHandler 透传 command；
+ *   P2PInvokeHandler 接收节点级 `dm_invitation` 投递（邀请者节点由此按需入群）。
  * 【数据结构】loadCount、shellAPI_t（info/Load/Unload/interfaces）、actions 命令键。
  * 【关联】parts_loader 加载；import registerRoutes、files、locales。
  */
@@ -19,6 +20,7 @@ import { sendEventToUser } from '../../../../server/web_server/event_dispatcher.
 import { parseJoinRunPayload } from './public/shared/runUri.mjs'
 import { registerChatChunkProviders, unregisterChatChunkProviders } from './src/chat/chunkProviders.mjs'
 import { registerChatEventTypeDefs, unregisterChatEventTypeDefs } from './src/chat/dag/eventTypes.mjs'
+import { DM_INVITATION_KIND, handleDmInvitation } from './src/chat/dm/invitation.mjs'
 import { registerChatFederationRoomProvider, unregisterChatFederationRoomProvider } from './src/chat/federation/trustGraphRooms.mjs'
 import { registerChatUserRoomDiscoveryHandlers, unregisterChatUserRoomDiscoveryHandlers } from './src/chat/federation/userRoomDiscoveryRegistry.mjs'
 import { registerChatUserRoomEmojiHandlers, unregisterChatUserRoomEmojiHandlers } from './src/chat/federation/userRoomEmojiRegistry.mjs'
@@ -216,6 +218,19 @@ export default {
 			IPCInvokeHandler: async (user, data) => {
 				const { command, ...params } = data
 				return handleAction(user, command, params)
+			},
+			/**
+			 * P2P part_invoke 入站：DM 邀请投递（新建节点的邀请在邀请者侧落地为一次入群）。
+			 * 入站由 p2p_server 的 part_invoke 处理器按需 loadPart 本 shell，故邀请者不必预先加载 chat。
+			 * @param {string} user 登录名（由 partpath 解析出的 replica）
+			 * @param {object} data 入站 invoke 体
+			 * @param {{ requesterNodeHash?: string | null }} [ingress] 联邦入站元数据
+			 * @returns {Promise<object | null>} 响应体
+			 */
+			P2PInvokeHandler: async (user, data, ingress = {}) => {
+				if (data?.kind !== DM_INVITATION_KIND) return null
+				const result = await handleDmInvitation(data, ingress)
+				return result && { result }
 			},
 		}
 	}

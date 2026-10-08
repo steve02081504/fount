@@ -1,14 +1,79 @@
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { ensureRemoteUserRoom } from 'npm:@steve02081504/fount-p2p/transport/remote_user_room'
 
+import { sleep } from '../../../../../scripts/sleep.mjs'
 import { acceptInvitation, invitationStatus } from '../../../../../server/invitation.mjs'
 import { config, save_config } from '../../../../../server/server.mjs'
 import { getState } from '../../chat/src/chat/dag/materialize.mjs'
 import { createEcdhDmGroup } from '../../chat/src/chat/dm/index.mjs'
+import { buildDmInvitation, sendDmInvitation } from '../../chat/src/chat/dm/invitation.mjs'
 import { validateDmIntroLinkProof } from '../../chat/src/chat/dm/linkValidate.mjs'
 import { getFederationViewForUser } from '../../chat/src/entity/identity.mjs'
 import { getProfile } from '../../chat/src/entity/profile.mjs'
+import { materializeFriendBinding } from '../../chat/src/group/lib/friendBinding.mjs'
 import { parseInvitationLink } from '../public/shared/invitationLink.mjs'
+
+/** 仍待确认时重新投递邀请的间隔（毫秒）；单条 node 消息丢失不至于让邀请永久卡住。 */
+const INVITATION_RETRY_INTERVAL_MS = 30_000
+/** 一次自动重投的轮数上限；用尽后由 `getInvitationProgress`（有人看进度时）重新起轮。 */
+const INVITATION_RETRY_ROUND_LIMIT = 20
+
+/** 邀请者资料的重试次数（链路刚建立时 EVFS 首次 manifest 拉取可能超时）与退避基数（毫秒）。 */
+const PROFILE_FETCH_ATTEMPTS = 3
+const PROFILE_FETCH_BACKOFF_MS = 1_200
+
+/** @type {Map<string, ReturnType<typeof setTimeout>>} 各用户的自动重投定时器 */
+const invitationRetryTimers = new Map()
+
+/**
+ * 停止某用户的自动重投（接受、pending 行被替换或确认后调用）。
+ * @param {string} username 本地用户
+ * @returns {void}
+ */
+function stopInvitationRetry(username) {
+	const timer = invitationRetryTimers.get(username)
+	if (!timer) return
+	clearTimeout(timer)
+	invitationRetryTimers.delete(username)
+}
+
+/**
+ * 起一轮后台自动重投：邀请不依赖「有人打开页面轮询」持续推进。
+ * `unref()` 让它不拖住进程退出；每次重投前重新读 pending 行，行被替换或已被接受即自然停轮。
+ * @param {string} username 本地用户
+ * @param {object} pending `config.pendingInvitations[username]` 行
+ * @param {number} [roundsLeft] 剩余轮数
+ * @returns {void}
+ */
+function scheduleInvitationRetry(username, pending, roundsLeft = INVITATION_RETRY_ROUND_LIMIT) {
+	stopInvitationRetry(username)
+	if (roundsLeft <= 0) return
+	const timer = setTimeout(async () => {
+		invitationRetryTimers.delete(username)
+		const current = config.pendingInvitations?.[username]
+		if (!current || current.groupId !== pending.groupId || invitationStatus().invited) return
+		await deliverInvitation(username, current)
+		scheduleInvitationRetry(username, current, roundsLeft - 1)
+	}, INVITATION_RETRY_INTERVAL_MS)
+	timer.unref()
+	invitationRetryTimers.set(username, timer)
+}
+
+/**
+ * 读邀请者的活跃公钥：链路刚建立时远端资料读取可能首次超时，故有界重试后再判失败。
+ * @param {string} username 本地用户
+ * @param {string} entityHash 邀请者实体
+ * @returns {Promise<string | null>} 64 hex 活跃公钥
+ */
+async function resolveInviterPubKeyHex(username, entityHash) {
+	for (let attempt = 1; attempt <= PROFILE_FETCH_ATTEMPTS; attempt++) {
+		const profile = await getProfile(entityHash, username, { fetchRemote: true, forceRemote: true, skipPresentation: true }).catch(() => null)
+		const pubKeyHex = isHex64(profile?.activePubKeyHex)
+		if (pubKeyHex) return pubKeyHex
+		if (attempt < PROFILE_FETCH_ATTEMPTS) await sleep(PROFILE_FETCH_BACKOFF_MS * attempt)
+	}
+	return null
+}
 
 /**
  * 解析邀请节点身份并核对可选的 HTTP 地址。
@@ -34,7 +99,31 @@ async function resolveInviterNodeHash(dm) {
 }
 
 /**
- * 建立私聊并等待邀请者实际加入。
+ * 把待确认的邀请投递给邀请节点：没有这条投递，邀请方永远不会入群，进度也就永远停在 pending。
+ * 失败不抛错——定时器与进度查询都会按 `INVITATION_RETRY_INTERVAL_MS` 重投。
+ * @param {string} username 本地用户
+ * @param {object} pending `config.pendingInvitations[username]` 行
+ * @returns {Promise<boolean>} 本次是否已发出
+ */
+async function deliverInvitation(username, pending) {
+	pending.lastDeliveryAttemptAt = Date.now()
+	try {
+		const invitation = await buildDmInvitation(username, pending.groupId, {
+			inviterEntityHash: pending.peerEntityHash,
+			inviterPubKeyHex: pending.peerPubKeyHex,
+		})
+		pending.invitationDelivered = await sendDmInvitation(pending.nodeHash, invitation)
+	}
+	catch (error) {
+		pending.invitationDelivered = false
+		console.warn('home: DM invitation delivery failed', error)
+	}
+	save_config()
+	return pending.invitationDelivered
+}
+
+/**
+ * 建立私聊、把邀请投递给邀请节点并等待其入群。
  * @param {string} username 本地用户
  * @param {string} input 邀请链接
  * @returns {Promise<object>} 当前邀请进度
@@ -52,19 +141,27 @@ export async function startInvitation(username, input) {
 	const slot = await ensureRemoteUserRoom(nodeHash)
 	if (!slot) throw new Error('Could not connect to inviter node')
 	if (dm.entityHash) {
-		const profile = await getProfile(dm.entityHash, username, { fetchRemote: true, forceRemote: true, skipPresentation: true })
-		dm.pubKeyHex = isHex64(profile?.activePubKeyHex)
+		dm.pubKeyHex = await resolveInviterPubKeyHex(username, dm.entityHash)
 		if (!dm.pubKeyHex) throw new Error('Inviter profile did not provide its active public key')
 	}
-	const group = await createEcdhDmGroup(username, self.activePubKeyHex, dm.pubKeyHex)
+	const friendBinding = dm.entityHash
+		? await materializeFriendBinding(username, { entityHash: dm.entityHash })
+		: null
+	const group = await createEcdhDmGroup(username, self.activePubKeyHex, dm.pubKeyHex, {
+		// 带好友绑定的 DM 才会进 Hub 好友列表；签名 DM 深链没有 entityHash 可绑，保持旧行为。
+		...friendBinding ? { friendBinding } : {},
+	})
 	config.pendingInvitations ??= {}
-	config.pendingInvitations[username] = {
+	const pending = {
 		groupId: group.groupId,
 		peerPubKeyHex: dm.pubKeyHex,
 		nodeHash,
 		...dm.entityHash && { peerEntityHash: dm.entityHash },
 	}
+	config.pendingInvitations[username] = pending
 	save_config()
+	await deliverInvitation(username, pending)
+	scheduleInvitationRetry(username, pending)
 	return { invited: false, pending: true, nodeHash }
 }
 
@@ -75,9 +172,21 @@ export async function startInvitation(username, input) {
  */
 export async function getInvitationProgress(username) {
 	const status = invitationStatus()
-	if (status.invited) return status
+	if (status.invited) {
+		stopInvitationRetry(username)
+		return status
+	}
 	const pending = config.pendingInvitations?.[username]
-	if (!pending) return { ...status, pending: false }
+	if (!pending) {
+		stopInvitationRetry(username)
+		return { ...status, pending: false }
+	}
+	// 重启后（或上一轮重投用尽后）由进度查询补起一轮：自动重投不依赖前端轮询，但轮询会重新武装它。
+	if (!invitationRetryTimers.has(username)) {
+		if (!pending.lastDeliveryAttemptAt || Date.now() - pending.lastDeliveryAttemptAt >= INVITATION_RETRY_INTERVAL_MS)
+			await deliverInvitation(username, pending)
+		scheduleInvitationRetry(username, pending)
+	}
 	const { state } = await getState(username, pending.groupId)
 	const joined = Object.values(state.members || {}).find(member =>
 		member?.status === 'active' && (pending.peerEntityHash
@@ -87,6 +196,7 @@ export async function getInvitationProgress(username) {
 	const profile = await getProfile(joined.entityHash, username, { fetchRemote: true, skipPresentation: true }).catch(() => null)
 	if (profile?.activePubKeyHex !== pending.peerPubKeyHex)
 		return { ...status, pending: true, nodeHash: pending.nodeHash }
+	stopInvitationRetry(username)
 	delete config.pendingInvitations[username]
 	save_config()
 	return acceptInvitation(pending.nodeHash)

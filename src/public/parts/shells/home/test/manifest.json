@@ -33,7 +33,7 @@
 		},
 		{
 			"name": "integration",
-			"expected": "40s",
+			"expected": "2m7s",
 			"triggers": [
 				"src/public/parts/shells/home/src/{invitation,endpoints}.mjs",
 				"src/public/parts/shells/home/public/shared/invitationLink.mjs",
@@ -41,10 +41,16 @@
 				"src/public/parts/shells/home/test/node_bootstrap.mjs",
 				"src/server/invitation.mjs",
 				"src/public/parts/shells/chat/src/chat/dm/**",
-				"src/public/parts/shells/chat/src/entity/{profile,identity}.mjs"
+				"src/public/parts/shells/chat/src/chat/dag/index.mjs",
+				"src/public/parts/shells/chat/src/entity/{profile,identity,store}.mjs"
 			],
 			"run": [
-				"deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
 				"./src/scripts/test/deno/serial.mjs",
 				"./src/public/parts/shells/home/test/integration/"
 			]
