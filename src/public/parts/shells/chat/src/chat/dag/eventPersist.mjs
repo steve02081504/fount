@@ -225,6 +225,10 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 			if (creds) await onRoomCredentialsSyncedFromDag(username, groupId, creds)
 		}
 		// checkpoint 已重建（或按调用方要求跳过），快照与 events 一致后再通知 Hub/对端。
+		if (!persistOpts.skipGenesisSideEffects && ['member_join', 'group_meta_update'].includes(signPayload.type)) {
+			const { maybeAssignEcdhDmAdmin } = await import('../dm/index.mjs')
+			await maybeAssignEcdhDmAdmin(username, groupId)
+		}
 		broadcastEvent(roomKey, { type: 'dag_event', event: signPayload })
 		return
 	}
@@ -283,6 +287,9 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 	}
 	if (isNewLine)
 		await appendJsonlSynced(channelMessagesPath, messageLine)
+	// 触发 OnMessage / 自动回复之前更新已加载缓存，本机发送与联邦入站共用这一落盘点。
+	const { syncCommittedRuntimeMessage } = await import('../session/runtimeLogSync.mjs')
+	await syncCommittedRuntimeMessage(username, groupId, channelId, messageLine)
 	void import('../search/index.mjs').then(({ indexChannelMessageLine }) =>
 		indexChannelMessageLine(username, groupId, channelId, messageLine),
 	).catch(error => {

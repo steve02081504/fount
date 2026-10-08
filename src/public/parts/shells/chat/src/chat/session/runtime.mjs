@@ -6,6 +6,7 @@
  * 【关联】dagSession、models、wsLifecycle、hydration、resolvePart、partConfig。
  */
 import { loadPart } from '../../../../../../../server/parts_loader.mjs'
+import { withGroupWriteLock } from '../dag/groupLock.mjs'
 import { hydrateChatLogFromDag } from '../dag/hydration.mjs'
 import { ensureGroup } from '../dag/lifecycle.mjs'
 import { getLocalNodeHash } from '../lib/replica.mjs'
@@ -87,6 +88,8 @@ export async function buildTimeSliceFromSession(session, replicaUsername, groupI
 
 /**
  * 从 DAG 物化并缓存群 AI runtime。
+ * 只有冷加载需要在群写锁内进行（避免并发冷读各自物化出两份 metadata）；命中缓存时直接返回，
+ * 否则每次读 runtime 都要排一次 DAG 写队列。
  * @param {string} groupId 群 ID
  * @param {string} replicaUsername replica 所有者
  * @returns {Promise<import('./models.mjs').chatMetadata_t>} 群 AI runtime 元数据
@@ -97,18 +100,22 @@ export async function getGroupRuntime(groupId, replicaUsername) {
 	await ensureGroup(replicaUsername, groupId)
 
 	const entry = groupMetadatas.get(groupId)
-	if (!entry?.chatMetadata) {
-		const session = await getMaterializedSession(replicaUsername, groupId)
-		const metadata = new chatMetadata_t(replicaUsername)
-		metadata.LastTimeSlice = await buildTimeSliceFromSession(session, replicaUsername, groupId)
-		metadata.channelWorlds = new Map()
-		for (const [channelId, bind] of Object.entries(session?.channelWorlds || {}))
-			if (bind?.worldname) metadata.channelWorlds.set(channelId, bind.worldname)
+	if (entry.chatMetadata) return entry.chatMetadata
+	return withGroupWriteLock(replicaUsername, groupId, async () => {
+		// 等锁期间可能已被别的冷读填好。
+		if (!entry.chatMetadata) {
+			const session = await getMaterializedSession(replicaUsername, groupId)
+			const metadata = new chatMetadata_t(replicaUsername)
+			metadata.LastTimeSlice = await buildTimeSliceFromSession(session, replicaUsername, groupId)
+			metadata.channelWorlds = new Map()
+			for (const [channelId, bind] of Object.entries(session?.channelWorlds || {}))
+				if (bind?.worldname) metadata.channelWorlds.set(channelId, bind.worldname)
 
-		await hydrateChatLogFromDag(replicaUsername, groupId, metadata)
-		entry.chatMetadata = metadata
-	}
-	return entry.chatMetadata
+			await hydrateChatLogFromDag(replicaUsername, groupId, metadata)
+			entry.chatMetadata = metadata
+		}
+		return entry.chatMetadata
+	})
 }
 
 /**
