@@ -26,6 +26,12 @@ const ENTITY_PROFILE_BANNER_STYLESHEET = '/parts/shells:chat/shared/entityProfil
 const THEME_DEFAULT_ACCENT = 'var(--color-primary, var(--color-base-content))'
 
 /**
+ * 「关于」折叠阈值：简介 markdown 源的非空行超过该行数才提供展开/折叠。
+ * @constant {number}
+ */
+const ABOUT_FOLD_MAX_SOURCE_LINES = 11
+
+/**
  * 取实体卡强调色；未指定主题色时回退为当前主题的默认强调色。
  * @param {string | undefined | null} themeColor profile 主题色
  * @returns {string} 强调色值
@@ -259,6 +265,102 @@ export function profileDescriptionText(profile) {
 }
 
 /**
+ * 刷新「展开 / 收起」按钮的文案与 aria 状态。
+ * @param {HTMLButtonElement} button 按钮
+ * @param {boolean} expanded 是否已展开
+ * @returns {void}
+ */
+function paintBioToggleLabel(button, expanded) {
+	button.dataset.i18n = expanded ? 'social.feed.showLess' : 'social.feed.showMore'
+	button.setAttribute('aria-expanded', String(expanded))
+}
+
+/**
+ * 绑定「展开 / 收起」按钮（每张卡只绑一次）。
+ * @param {HTMLElement} wrap 简介包裹层
+ * @returns {void}
+ */
+function wireBioToggle(wrap) {
+	const button = wrap.querySelector('[data-profile-popup-bio-toggle]')
+	if (!(button instanceof HTMLButtonElement) || wrap.dataset.bioToggleBound === '1') return
+	wrap.dataset.bioToggleBound = '1'
+	button.addEventListener('click', () => {
+		const expanded = wrap.classList.toggle('is-expanded')
+		paintBioToggleLabel(button, expanded)
+	})
+}
+
+/**
+ * 量简介是否被折叠高度裁掉。
+ * @param {HTMLElement} bioElement 简介容器
+ * @returns {boolean | null} 是否被裁切；卡片还没挂载 / 不可见（量不到布局）时返回 null
+ */
+function isBioClipped(bioElement) {
+	if (!bioElement.isConnected || bioElement.clientHeight === 0) return null
+	return bioElement.scrollHeight > bioElement.clientHeight + 1
+}
+
+/**
+ * 落定「关于」折叠态：折叠时给按钮，「展开」后不再加渐隐。
+ * @param {HTMLElement} wrap 简介包裹层
+ * @param {Element | null} button 展开 / 收起按钮
+ * @param {boolean} foldable 是否折叠
+ * @param {boolean | null} clipped 是否真的被裁切（null = 量不到，先不加渐隐）
+ * @returns {void}
+ */
+function finishAboutFold(wrap, button, foldable, clipped) {
+	wrap.classList.toggle('is-foldable', foldable)
+	wrap.classList.toggle('is-clipped', clipped === true)
+	if (!foldable) wrap.classList.remove('is-expanded')
+	if (!(button instanceof HTMLButtonElement)) return
+	button.hidden = !foldable
+	if (foldable) paintBioToggleLabel(button, wrap.classList.contains('is-expanded'))
+}
+
+/**
+ * 卡片还没挂载 / 不可见时量不到布局：等它拿到尺寸后再补测一次折叠态。
+ * @param {HTMLElement} bioElement 简介容器
+ * @param {string} markdown 简介 markdown 源
+ * @returns {void}
+ */
+function remeasureAboutFoldWhenSized(bioElement, markdown) {
+	if (typeof ResizeObserver !== 'function') return
+	const observer = new ResizeObserver(() => {
+		if (isBioClipped(bioElement) === null) return
+		observer.disconnect()
+		applyAboutFold(bioElement, markdown, { retry: true })
+	})
+	observer.observe(bioElement)
+}
+
+/**
+ * 应用「关于」折叠：简介源非空行超过 {@link ABOUT_FOLD_MAX_SOURCE_LINES} 行且真被裁到「头几行」时折叠，
+ * 否则全文正常显示、不给展开按钮。
+ *
+ * 只数 markdown 源行数决定要不要量；卡片尚未挂载时量不到布局，先按源行数给按钮，拿到尺寸后补测一次。
+ * @param {HTMLElement} bioElement 简介容器
+ * @param {string} markdown 简介 markdown 源
+ * @param {{ retry?: boolean }} [options] retry = 补测（不再等尺寸）
+ * @returns {void}
+ */
+function applyAboutFold(bioElement, markdown, options = {}) {
+	const wrap = bioElement.closest('.profile-popup-bio-wrap')
+	if (!(wrap instanceof HTMLElement)) return
+	wireBioToggle(wrap)
+	const button = wrap.querySelector('[data-profile-popup-bio-toggle]')
+	const sourceFoldable = markdown.split(/\r\n|\r|\n/).filter(line => line.trim()).length > ABOUT_FOLD_MAX_SOURCE_LINES
+	if (!sourceFoldable) {
+		finishAboutFold(wrap, button, false, false)
+		return
+	}
+	// 先按折叠态渲染，再量正文是否真的超出「头几行」
+	wrap.classList.add('is-foldable')
+	const clipped = isBioClipped(bioElement)
+	if (clipped === null && !options.retry) remeasureAboutFoldWhenSized(bioElement, markdown)
+	finishAboutFold(wrap, button, clipped !== false, clipped)
+}
+
+/**
  * 将简介 markdown 源本机安全渲染进宿主（可信作者走 allowDangerousHtml，否则 sanitize）。
  * @param {HTMLElement} bioElement 简介容器
  * @param {string} markdown markdown 源
@@ -280,6 +382,7 @@ export async function paintEntityProfileBio(bioElement, markdown, entityHash = '
 		bioElement.classList.remove('markdown-body')
 		bioElement.removeAttribute('user-content')
 		bioElement.dataset.i18n = emptyI18n
+		applyAboutFold(bioElement, text)
 		return
 	}
 	delete bioElement.dataset.i18n
@@ -289,6 +392,7 @@ export async function paintEntityProfileBio(bioElement, markdown, entityHash = '
 		nodeHash: options.nodeHash,
 		viewerOwnerEntityHash: options.viewerOwnerEntityHash,
 	})
+	applyAboutFold(bioElement, text)
 }
 
 /**

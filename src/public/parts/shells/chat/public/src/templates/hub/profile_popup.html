@@ -31,10 +31,13 @@
 			<div class="profile-tags-row" data-entity-profile-tags hidden></div>
 		</div>
 		<div class="profile-popup-divider"></div>
-		<details class="profile-popup-about">
-			<summary class="profile-popup-section-title"><span data-i18n="chat.hub.aboutSection"></span></summary>
-			<div class="profile-popup-bio" data-profile-popup-bio data-entity-profile-bio data-i18n="chat.hub.bioEmpty"></div>
-		</details>
+		<div class="profile-popup-about">
+			<div class="profile-popup-section-title" data-i18n="chat.hub.aboutSection"></div>
+			<div class="profile-popup-bio-wrap" data-profile-popup-bio-wrap>
+				<div class="profile-popup-bio" data-profile-popup-bio data-entity-profile-bio data-i18n="chat.hub.bioEmpty"></div>
+				<button type="button" class="profile-popup-bio-toggle" data-profile-popup-bio-toggle aria-expanded="false" hidden></button>
+			</div>
+		</div>
 		<div class="entity-profile-card-links" data-entity-profile-links hidden></div>
 	</div>
 </div>

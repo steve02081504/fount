@@ -244,14 +244,56 @@
 	overflow-wrap: anywhere;
 }
 
-.profile-popup-about > summary {
-	padding-block: 6px;
+.profile-popup-bio-wrap {
+	position: relative;
+}
+
+/* 长简介折叠：只露头 6 行，点「展开」看全文 */
+.profile-popup-bio-wrap.is-foldable:not(.is-expanded) > .profile-popup-bio {
+	max-height: calc(6 * 1.58em);
+	overflow: hidden;
+}
+
+.profile-popup-bio-wrap.is-clipped:not(.is-expanded) > .profile-popup-bio {
+	mask-image: linear-gradient(to bottom, #000 calc(100% - 2.2rem), transparent);
+	-webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 2.2rem), transparent);
+}
+
+.profile-popup-bio-toggle {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	min-height: 24px;
+	margin-top: 6px;
+	padding: 4px 8px;
+	border: 0;
+	border-radius: var(--radius-field);
+	background: color-mix(in srgb, var(--color-base-content) 6%, transparent);
+	color: var(--color-primary);
+	font: inherit;
+	font-size: 11px;
 	cursor: pointer;
 }
 
-.profile-popup-about > summary:focus-visible {
-	outline: var(--border) solid var(--color-primary);
-	outline-offset: 2px;
+.profile-popup-bio-toggle:hover {
+	background: color-mix(in srgb, var(--color-base-content) 11%, transparent);
+}
+
+.profile-popup-bio-toggle[hidden] {
+	display: none;
+}
+
+/* 展开后：收起按钮悬浮在正文右下角，正文还长时贴着卡片底部 */
+.profile-popup-bio-wrap.is-expanded > .profile-popup-bio-toggle {
+	position: sticky;
+	bottom: 8px;
+	width: max-content;
+	margin: 6px 0 0 auto;
+	padding: 4px 12px;
+	background: color-mix(in srgb, var(--popover-bg, var(--color-base-200)) 85%, transparent);
+	backdrop-filter: blur(6px);
+	box-shadow: 0 2px 10px rgb(0 0 0 / 22%);
 }
 
 .profile-popup-bio.markdown-body {
