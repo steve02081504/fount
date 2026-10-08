@@ -7,6 +7,11 @@
  */
 import { randomUUID } from 'node:crypto'
 
+// 联邦 DAG 依赖注入（side-effect）。chat/main.mjs 会预加载它，但 home 等直接调用 createEcdhDmGroup /
+// performMemberJoin 的外部入口不经过 chat shell 的 Load，缺了它房间凭证解析会抛
+// `initFederationDagDeps must run before federation features`，DM 群会静默地永远不进联邦房间。
+import '../dag/index.mjs'
+
 import { resolveActiveMemberKey, resolveActiveMemberKeyForLocalUser } from '../../group/access.mjs'
 import { appendSignedLocalEvent } from '../dag/append.mjs'
 import { createGroup } from '../dag/lifecycle.mjs'
@@ -116,7 +121,10 @@ export async function createEcdhDmGroup(username, myPubKeyHex, peerPubKeyHex, op
 	await rebuildAndSaveCheckpoint(username, groupId, { skipChannelGc: true })
 
 	invalidateFederationRoomCache(username, groupId)
-	void ensureFederationRoom(username, groupId).catch(error => console.error('DM federation bind:', error))
+	// 房间没建成时必须留下痕迹：否则这个 DM 群只会「存在但没有联邦房间」，对方的入群永远汇合不过来。
+	void ensureFederationRoom(username, groupId)
+		.then(slot => { if (!slot) console.error('DM federation room was not joined', { groupId }) })
+		.catch(error => console.error('DM federation bind:', error))
 
 	return {
 		groupId,
