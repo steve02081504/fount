@@ -23,6 +23,7 @@ import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
 import { getState } from '../dag/materialize.mjs'
 import { DEFAULT_SIGNALING_APP_ID, roomCredentialsFromGroupSettings } from '../federation/roomCredentials.mjs'
 import { mintGroupInviteTicket } from '../lib/inviteTickets.mjs'
+import { isSafeGroupId } from '../lib/paths.mjs'
 
 /** 入站 part_invoke 的 `kind`。 */
 export const DM_INVITATION_KIND = 'dm_invitation'
@@ -145,7 +146,7 @@ export async function handleDmInvitation(data, ingress = {}) {
 		throw new Error('dm_invitation has an invalid sender entity')
 
 	const groupId = String(data?.groupId || '')
-	if (!groupId || groupId.length > 128) throw new Error('dm_invitation has an invalid group id')
+	if (!isSafeGroupId(groupId) || groupId.length > 128) throw new Error('dm_invitation has an invalid group id')
 	const inviteCode = String(data?.inviteCode || '')
 	const roomSecret = String(data?.roomSecret || '')
 	const dmSessionTag = String(data?.dmSessionTag || '')
