@@ -27,7 +27,8 @@
 ### POST /api/parts/shells:home/invitation
 - 认证：需要；JSON `{ "link": "fount://run/shells:chat/dm;…" }`
 - 用途：验证好友私聊邀请，连接邀请节点并建立私聊；之后通过 GET 查询远端加入状态。
-- `link` 也可为私聊页面链接（`fount://page/parts/shells:chat/hub/?contact=<entityHash>` 及其 `https://steve02081504.github.io/fount/protocol?url=` 包装、带 origin 的等价 URL）；此时不含签名证明，改为从该实体资料取当前公钥，加入判定按 entityHash 精确匹配。
+- 建立私聊后经 node scope `part_invoke` 把邀请（群 ID、邀请码、房间凭证、dmSessionTag）投递给邀请节点，对方节点按需加载 chat shell 并自动入群；未确认期间 GET 会按 ~30s 节流重投，单条消息丢失不会让邀请卡死。
+- `link` 也可为私聊页面链接（`fount://page/parts/shells:chat/hub/?contact=<entityHash>` 及其 `https://steve02081504.github.io/fount/protocol?url=` 包装、带 origin 的等价 URL）；此时不含签名证明，改为从该实体资料取当前公钥，加入判定按 entityHash 精确匹配。该资料首次读取可能因链路刚建立而超时，服务端会自行有界重试。
 
 ### POST /api/parts/shells:home/invitation/self
 - 认证：需要
