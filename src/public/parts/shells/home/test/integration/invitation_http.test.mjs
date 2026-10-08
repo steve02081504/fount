@@ -66,6 +66,10 @@ Deno.test({ name: 'the invited node joins the private chat and the fresh node be
 		// 邀请者侧留下的是同一个 DM 群（chat 由 part_invoke 按需加载）。
 		const groups = (await request(inviter, '/api/parts/shells:chat/groups/')).data
 		assertEquals(Array.isArray(groups) ? groups.length : 0, 1, JSON.stringify(groups))
+
+		// 邀请建出的 DM 必须带好友绑定，否则它只会出现在群列表而不是好友列表。
+		const inviteeGroups = (await request(invitee, '/api/parts/shells:chat/groups/')).data
+		assertEquals(inviteeGroups[0]?.friendBinding?.entityHash, identity.entityHash, JSON.stringify(inviteeGroups[0]))
 	}
 	finally {
 		for (const node of nodes.reverse()) await stopNode(node)

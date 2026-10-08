@@ -10,6 +10,7 @@ import { buildDmInvitation, sendDmInvitation } from '../../chat/src/chat/dm/invi
 import { validateDmIntroLinkProof } from '../../chat/src/chat/dm/linkValidate.mjs'
 import { getFederationViewForUser } from '../../chat/src/entity/identity.mjs'
 import { getProfile } from '../../chat/src/entity/profile.mjs'
+import { materializeFriendBinding } from '../../chat/src/group/lib/friendBinding.mjs'
 import { parseInvitationLink } from '../public/shared/invitationLink.mjs'
 
 /** 仍待确认时重新投递邀请的间隔（毫秒）；单条 node 消息丢失不至于让邀请永久卡住。 */
@@ -143,7 +144,13 @@ export async function startInvitation(username, input) {
 		dm.pubKeyHex = await resolveInviterPubKeyHex(username, dm.entityHash)
 		if (!dm.pubKeyHex) throw new Error('Inviter profile did not provide its active public key')
 	}
-	const group = await createEcdhDmGroup(username, self.activePubKeyHex, dm.pubKeyHex)
+	const friendBinding = dm.entityHash
+		? await materializeFriendBinding(username, { entityHash: dm.entityHash })
+		: null
+	const group = await createEcdhDmGroup(username, self.activePubKeyHex, dm.pubKeyHex, {
+		// 带好友绑定的 DM 才会进 Hub 好友列表；签名 DM 深链没有 entityHash 可绑，保持旧行为。
+		...friendBinding ? { friendBinding } : {},
+	})
 	config.pendingInvitations ??= {}
 	const pending = {
 		groupId: group.groupId,

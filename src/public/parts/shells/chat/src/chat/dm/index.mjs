@@ -56,7 +56,7 @@ export async function findDmGroupBySessionTag(username, dmSessionTag) {
  * @param {string} username 当前用户
  * @param {string} myPubKeyHex 本端 ECDH 公钥（实体稳定公钥；与本群 local signer 可不同）
  * @param {string} peerPubKeyHex 对端公钥
- * @param {{ entityHash?: string }} [options] 建群实体（缺省 operator）
+ * @param {{ entityHash?: string, friendBinding?: object }} [options] 建群实体（缺省 operator）与好友绑定
  * @returns {Promise<{ groupId: string, defaultChannelId: string | null, dmSessionTag: string }>} 新建或已存在的 DM 群
  */
 export async function createEcdhDmGroup(username, myPubKeyHex, peerPubKeyHex, options = {}) {
@@ -78,6 +78,8 @@ export async function createEcdhDmGroup(username, myPubKeyHex, peerPubKeyHex, op
 		defaultChannelName: '',
 		markDefaultChannel: false,
 		enableGroupFederation: true,
+		// 带绑定的 DM 才会进 Hub 好友列表（friendRows 只收有 friendBinding 的群）；缺省不写，保持旧行为。
+		...options.friendBinding ? { friendBinding: options.friendBinding } : {},
 	})
 	const { groupId } = result
 	registerGroupRuntime(groupId, username)
