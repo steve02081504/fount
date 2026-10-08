@@ -59,9 +59,17 @@ export default {
 			GetPromptForOther: () => ({ text: [], additional_chat_log: [], extension: {} }),
 			/**
 			 * 立即返回固定回复（测试不依赖 AI 源）。
+			 * @param {object} args - 聊天请求。
 			 * @returns {Promise<object>} 回复对象。
 			 */
-			GetReply: async () => ({ content: 'echo-reply', logContextBefore: [], logContextAfter: [], files: [], extension: {} }),
+			GetReply: async args => {
+				const result = { content: 'echo-reply', logContextBefore: [], logContextAfter: [], files: [], extension: {
+					usage: { calls: [{ source: 'test', model: 'wsEchoChar', purpose: 'reply', inputTokens: 3, cacheReadTokens: 0, cacheWriteTokens: 0, outputTokens: 2 }], total: { inputTokens: 3, cacheReadTokens: 0, cacheWriteTokens: 0, outputTokens: 2 } },
+				} }
+				args.generation_options.base_result = result
+				if (args.chat_log?.some(entry => entry.content === 'metered failure')) throw new Error('metered failure')
+				return result
+			},
 		},
 	},
 }

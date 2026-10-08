@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import process from 'node:process'
-import { setInterval } from 'node:timers'
+import { clearTimeout, setInterval, setTimeout } from 'node:timers'
 
 import { console as baseConsole } from 'npm:@steve02081504/virtual-console'
 import supportsAnsi from 'npm:supports-ansi'
@@ -100,6 +100,119 @@ export const localhostLocales = [...new Set([
  */
 export let localhostLocaleData = getLocaleData(localhostLocales)
 
+/**
+ * 读取 locale JSON；写入方（`update-locales.py` / saveJsonFile）截断瞬间读到空或半截内容时返回 null。
+ * @param {string} filename - 文件路径。
+ * @returns {LocaleData | null} 解析结果；读不到完整 JSON 时为 null。
+ */
+function tryLoadLocaleFile(filename) {
+	try {
+		return loadJsonFile(filename)
+	}
+	catch {
+		return null
+	}
+}
+
+/** locale 重载防抖窗口（毫秒）：写入方先截断再写满，立刻读会拿到半截文件。 */
+const LOCALE_RELOAD_DEBOUNCE_MS = 100
+/** 半截 JSON 的额外重试次数（防抖之外的兜底）。 */
+const LOCALE_RELOAD_ATTEMPTS = 3
+
+/**
+ * 创建 locale 重载调度器：同一 locale 的连续变更合并为一次重载，读到半截 JSON 时保留旧缓存并按退避重试。
+ * 关键点：整个过程绝不向外抛错——在 `fs.watch` 回调里抛 `JSON.parse` 会变成未处理拒绝，
+ * 把跑绿的套件标记成 noisy（见 `checks` 的噪声检测）。
+ * @param {object} [options] - 选项。
+ * @param {string} [options.dir] - locale 目录，默认 `FOUNT_LOCALES_DIR`。
+ * @param {(filename: string) => LocaleData | null} [options.read] - 读取函数，默认容错读取。
+ * @param {number} [options.debounceMs] - 防抖窗口。
+ * @param {number} [options.attempts] - 最多尝试次数（含首次）。
+ * @param {(locale: string, data: LocaleData) => void} [options.onReloaded] - 成功重载后回调。
+ * @param {(locale: string) => void} [options.onGiveUp] - 尝试用尽仍未读到完整 JSON 时回调。
+ * @returns {{ notify: (locale: string) => void, pending: () => number, stop: () => void }} 调度器。
+ */
+export function createLocaleReloadScheduler(options = {}) {
+	const dir = options.dir ?? FOUNT_LOCALES_DIR
+	const read = options.read ?? tryLoadLocaleFile
+	const debounceMs = options.debounceMs ?? LOCALE_RELOAD_DEBOUNCE_MS
+	const attempts = Math.max(1, options.attempts ?? LOCALE_RELOAD_ATTEMPTS)
+	const onReloaded = options.onReloaded ?? (() => { })
+	const onGiveUp = options.onGiveUp ?? (() => { })
+	/** @type {Map<string, ReturnType<typeof setTimeout>>} */
+	const timers = new Map()
+
+	/**
+	 * 读一次；拿不到完整 JSON 就按退避重排，重试仍失败则放弃并保留旧缓存。
+	 * @param {string} locale - locale id。
+	 * @param {number} attempt - 第几次尝试（0 起）。
+	 * @returns {void} 无。
+	 */
+	function attemptReload(locale, attempt) {
+		timers.delete(locale)
+		const data = read(`${dir}/${locale}.json`)
+		if (data == null) {
+			if (attempt + 1 < attempts) {
+				schedule(locale, attempt + 1)
+				return
+			}
+			onGiveUp(locale)
+			return
+		}
+		onReloaded(locale, data)
+	}
+
+	/**
+	 * 排一次重载：同一 locale 已有待处理任务时先取消，避免写入过程中的连续事件反复重载。
+	 * @param {string} locale - locale id。
+	 * @param {number} attempt - 第几次尝试（0 起）。
+	 * @returns {void} 无。
+	 */
+	function schedule(locale, attempt) {
+		const existing = timers.get(locale)
+		if (existing) clearTimeout(existing)
+		const timer = setTimeout(() => attemptReload(locale, attempt), debounceMs * (attempt + 1))
+		timer.unref?.()
+		timers.set(locale, timer)
+	}
+
+	return {
+		/**
+		 * @param {string} locale - locale id。
+		 * @returns {void} 无。
+		 */
+		notify(locale) {
+			schedule(locale, 0)
+		},
+		/**
+		 * @returns {number} 待处理的重载数量。
+		 */
+		pending() {
+			return timers.size
+		},
+		/**
+		 * @returns {void} 无。
+		 */
+		stop() {
+			for (const timer of timers.values()) clearTimeout(timer)
+			timers.clear()
+		},
+	}
+}
+
+const localeReloadScheduler = createLocaleReloadScheduler({
+	/**
+	 * @param {string} locale - locale id。
+	 * @param {LocaleData} data - 新读到的 locale 数据。
+	 * @returns {void} 无。
+	 */
+	onReloaded(locale, data) {
+		fountLocaleCache[locale] = data
+		localhostLocaleData = getLocaleData(localhostLocales)
+		for (const fn of localeFileChangeListeners) fn(locale)
+	},
+})
+
 fs.watch(FOUNT_LOCALES_DIR, (_event, filename) => {
 	if (!filename?.endsWith('.json')) return
 	if (!fs.existsSync(`${FOUNT_LOCALES_DIR}/${filename}`)) return
@@ -107,9 +220,9 @@ fs.watch(FOUNT_LOCALES_DIR, (_event, filename) => {
 	if (!process.env.FOUNT_TEST) console.log(`Detected change in ${filename}.`)
 
 	if (!fountLocaleCache[locale]) return
-	delete fountLocaleCache[locale]
-	localhostLocaleData = getLocaleData(localhostLocales)
-	for (const fn of localeFileChangeListeners) fn(locale)
+	// 写入方会先截断再写满：立刻读会拿到半截 JSON。交给调度器防抖 + 容错重试，
+	// 读到半截就沿用旧缓存，避免在 fs.watch 回调里抛未处理拒绝。
+	localeReloadScheduler.notify(locale)
 }).unref()
 
 if (!process.env.FOUNT_TEST && localhostLocales[0] === 'zh-CN')

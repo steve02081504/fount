@@ -5,7 +5,7 @@
 import { openImageEditor } from '/scripts/components/imageEditor.mjs'
 import { openMediaViewer } from '/scripts/components/mediaViewer.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
-import { setElementI18n } from '/scripts/i18n/index.mjs'
+import { geti18n, setElementI18n } from '/scripts/i18n/index.mjs'
 import { blobToBase64 } from '/scripts/lib/base64.mjs'
 import { formatBytes } from '/scripts/lib/formatBytes.mjs'
 import { svgInliner } from '/scripts/lib/svgInliner.mjs'
@@ -403,7 +403,6 @@ export function renderMessageAttachments(entry) {
 		chip.className = 'code-message-file-chip flex items-center gap-1 text-xs opacity-70'
 		chip.href = `data:${mime};base64,${file.buffer || ''}`
 		chip.download = file.name || 'file'
-		setElementI18n(chip, 'code.attach.download', { name: file.name || 'file' })
 		const name = document.createElement('span')
 		name.setAttribute('user-content', '')
 		name.textContent = file.name || 'file'
@@ -411,6 +410,10 @@ export function renderMessageAttachments(entry) {
 		size.className = 'code-attachment-size'
 		size.textContent = file.buffer ? formatBytes(byteLength(file.buffer)) : ''
 		chip.append(iconElement(fileIcon(mime), { size: 14 }), name, size)
+		// 无障碍名必须包含可见文本（文件名 + 大小，都是动态内容），因此按实际文本拼 label 并跳过语种扫描
+		chip.setAttribute('user-content', 'aria-label')
+		chip.setAttribute('aria-label', [geti18n('code.attach.download.aria-label'), chip.textContent].filter(Boolean).join(': '))
+		chip.setAttribute('title', geti18n('code.attach.download.title'))
 		container.appendChild(chip)
 	}
 	return container

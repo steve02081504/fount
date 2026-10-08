@@ -69,6 +69,7 @@ export default {
 				/** @type {object} */
 				const result = { content: '', logContextBefore: [], logContextAfter: [], files: [], extension: {} }
 				args.generation_options.base_result = result
+				result.extension.usage = { calls: [{ inputTokens: 3, outputTokens: 2 }], total: { inputTokens: 3, outputTokens: 2 } }
 				const slow = args.chat_log?.some(entry => entry.role === 'user' && String(entry.content ?? '').includes('slow'))
 				const text = slow ? 'slow-'.repeat(12) : 'fast-reply'
 				for (const ch of Array.from(text)) {

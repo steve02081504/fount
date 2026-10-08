@@ -20,6 +20,8 @@ Always move keys with `.esh/commands/update_locale_data.py` (below) — never ha
 
 Use `.esh/commands/update_locale_data.py` — **move with `get(old)` → `set(new, value)` → `set(old, None)`** so each locale keeps its existing copy.
 
+Retiring a dead key takes two runs, because the script has no call-site to gate on: delete it from `zh-CN.json` first (`"if file_name == 'zh-CN.json': set(key, None)"`), then run the plain `set(key, None)` across every locale to clear the `extra_key` residue `checks:i18n_keys` now reports for each of them. Regenerate `src/decl/locale_data.ts` from the reference locale afterwards (`.esh/commands/update-locales.py`'s `generate_locale_data_ts`, or `data/locale_copy_review/regen_locale_data.py` standalone to avoid a Google sync); the flat key map at the bottom of that file is part of the generation, not a hand list.
+
 Never delete then refill from zh-CN: `fake` / `emoji` and other non-Google targets collapse to Chinese. `checks:i18n_keys` fails `emoji.json` if any string still carries Han / kana / Cyrillic — rewrite those leaves in emoji, do not wait for Google.
 
 When updating call sites, rewrite only quoted i18n key strings — do not blind-replace `profile.xxx` object fields or module paths.
@@ -68,11 +70,15 @@ A part's own `locales.json` carries `info.<locale>` blocks (`name` / `avatar` / 
 
 `update-locales.py` writes a same-shape `null` skeleton for every key it could not translate — including the case where Google is unreachable and the run circuit-breaks — and reports every gap at the end of the run (log summary per language, `::warning::` annotations, `GITHUB_STEP_SUMMARY`). `null` in a locale file is therefore a greppable retry marker, and `checks:i18n_copy` (rule `null`) turns it red.
 
+Filling that block is a `locale_copy_sample.py apply` job, not 17 hand edits: write one `<locale>.patch.jsonl` (one `{"key", "new"}` object per line) per locale and apply it — `apply` validates that the key exists and that the `${placeholder}` set matches `zh-CN`, and preserves the file's key order. `update_locale_data.py` is only needed when the key set itself changes, because `apply` cannot add a key. `emoji` and `lzh` still need a hand rewrite ([Targets Google cannot translate](#targets-google-cannot-translate)).
+
 Never "fix" a red run by leaving the key out or by keeping the previous copy: a missing key used to be invisible to every check, and this workflow pushes with `GITHUB_TOKEN`, so its commit does not re-trigger Run Tests. That combination is how 14 locales silently lost their `chat.group.settings.page.worlds`, `captcha`, `code.explorer` and `invitation-required` blocks (PR #246's circuit-break path returned without writing anything). Fill the copy, or leave the `null` for the next run to retry. `checks:i18n_keys` now owns that class: dropping the key instead of filling it fails as `missing_key` / `missing_node` (see below).
 
 ## A key a locale never had is not a translation gap
 
 The bundle is **one locale file, not a merge**. `getLocaleData(localeList)` resolves the best match and returns that file alone ([bare.mjs](../../../scripts/i18n/bare.mjs)); `FALLBACK_LOCALE` (`en-UK`) only applies when the requested id matches *nothing*. So a key missing from (say) `emoji.json` is absent from the bundle for an emoji user: `geti18n` logs `[i18n:missing]`, reports to Sentry and returns the **key string itself**, and a `data-i18n` element is simply left empty. There is no "falls back to English" safety net at the leaf level, and the browser does not warn about it at build time — only a Playwright page that renders that leaf hits it.
+
+The key-name return is the browser implementation ([index.mjs](../../pages/scripts/i18n/index.mjs)); the Node-side `bare.mjs` `geti18n` returns `console.warn`'s `undefined` instead, so a Node consumer that compares the value against the key before falling back to English (the code shell's CLI TUI does) never falls back — a `null` leaf paints the literal `null`, an absent one paints `undefined`.
 
 `checks:i18n_keys` therefore compares each locale's key set against `zh-CN` and fails on both directions:
 

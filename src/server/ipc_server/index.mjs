@@ -5,11 +5,12 @@ import * as Sentry from 'npm:@sentry/deno'
 import { VirtualConsole } from 'npm:@steve02081504/virtual-console'
 
 import { console, geti18n } from '../../scripts/i18n/index.mjs'
-import { getLoadedPartList, getPartList, loadPart, getPartDetails } from '../parts_loader.mjs'
+import { DEFAULT_IPC_PORT } from '../../scripts/part_invoke_result.mjs'
+import { getLoadedPartList, getPartList, loadPart, getPartDetails, GetPartPath } from '../parts_loader.mjs'
 import { restartor } from '../server.mjs'
 
-/** 生产默认 IPC 监听端口（单实例 CLI 发现用）。 */
-export const DEFAULT_IPC_PORT = 16698
+/** 生产默认 IPC 监听端口（单实例 CLI 发现用）；常量定义在调用方共用的分派模块里。 */
+export { DEFAULT_IPC_PORT }
 
 /**
  * 处理 IPC 命令。
@@ -21,13 +22,19 @@ export async function processIPCCommand(command, data) {
 	try {
 		switch (command) {
 			case 'runpart': {
-				const { username, partpath, args, cwd } = data
+				let { username } = data
+				const { partpath, args, cwd } = data
+				if (username === null) {
+					const { getLastActiveUsername } = await import('../auth/index.mjs')
+					username = getLastActiveUsername()
+				}
 				console.logI18n('fountConsole.ipc.runPartLog', { partpath, username, args: JSON.stringify(args) })
 				const part = await loadPart(username, partpath)
 				const vc = new VirtualConsole()
 				const context = { cwd: cwd || process.cwd() }
 				const result = await vc.hookAsyncContext(async () => await part.interfaces.invokes.ArgumentsHandler(username, args, context))
-				return { status: 'ok', data: { result, outputs: vc.outputs } }
+				// run-js 需要 part 根目录来解析模块路径；output / void 不带。
+				return { status: 'ok', data: { result, outputs: vc.outputs, ...result?.type === 'run-js' && { partRoot: GetPartPath(username, partpath) } } }
 			}
 			case 'invokepart': {
 				const { username, partpath, data: invokedata } = data
@@ -157,40 +164,48 @@ export class IPCManager {
 
 	/**
 	 * 向 IPC 服务器发送命令。
+	 * 总时限兜住“实例还在监听但永远不回帧”的情况（例如服务端停在半截启动中）；命令本身只是分派，正常远快于此。
 	 * @param {string} type - 命令类型。
 	 * @param {object} data - 命令数据。
-	 * @param {{ port?: number }} [options] 连接选项
+	 * @param {{ port?: number, timeoutMs?: number }} [options] 连接选项
 	 * @returns {Promise<any>} 一个解析为服务器响应的承诺。
 	 */
-	static async sendCommand(type, data, { port = DEFAULT_IPC_PORT } = {}) {
+	static async sendCommand(type, data, { port = DEFAULT_IPC_PORT, timeoutMs = 60_000 } = {}) {
 		return new Promise((resolve, reject) => {
 			const client = net.createConnection({ port })
 
 			let responseData = ''
+			let settled = false
+			/**
+			 * @param {Error | null} error - 传输或协议错误。
+			 * @param {unknown} [value] - 成功响应。
+			 */
+			const finish = (error, value) => {
+				if (settled) return
+				settled = true
+				client.destroy()
+				if (error) reject(error)
+				else resolve(value)
+			}
 
-			client.on('data', async chunk => {
+			client.on('data', chunk => {
 				responseData += chunk
 				// 检查消息分隔符（换行符）
-				if (responseData.includes('\n')) try {
-					const parts = responseData.split('\n')
-					const message = parts[0] // 提取完整消息
-					responseData = parts.slice(1).join('\n') // 保留剩余数据
-
-					const response = JSON.parse(message)
-					if (response.status === 'ok') resolve(response.data) // 返回结果
-					else reject(new Error(response.message || geti18n('fountConsole.ipc.unknownError')))
-				} catch (err) {
-					console.errorI18n('fountConsole.ipc.parseResponseFailed', { error: err })
-					reject(new Error(geti18n('fountConsole.ipc.cannotParseResponse')))
-				} finally {
-					client.end() // 处理后关闭连接
+				if (responseData.includes('\n')) {
+					const [message] = responseData.split('\n')
+					try {
+						const response = JSON.parse(message)
+						if (response.status === 'ok') finish(null, response.data)
+						else finish(new Error(response.message || geti18n('fountConsole.ipc.unknownError')))
+					} catch (error) {
+						finish(error)
+					}
 				}
 			})
 
-			client.on('error', err => {
-				client.destroy()
-				reject(err)
-			})
+			client.on('error', err => finish(err))
+			client.on('close', () => finish(new Error('IPC connection closed before a complete response')))
+			client.setTimeout(timeoutMs, () => finish(Object.assign(new Error('IPC response timed out'), { code: 'ETIMEDOUT' })))
 
 			client.setEncoding('utf8')
 			client.on('connect', () => {

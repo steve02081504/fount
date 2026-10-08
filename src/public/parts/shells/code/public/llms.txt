@@ -17,6 +17,7 @@ AI 编码会话 shell：与任意角色就工作区对话，在本机或已连�
 - `GET /workspaces` / `POST /workspaces {name?, machine, path}` / `PUT /workspaces/:id {name}` / `DELETE /workspaces/:id` → 保存的工作区 CRUD
 - `GET /tabs` → `{ tabs: [{ type: draft|session|file, id, workspaceId, draft? }], activeTab }`（打开的标签页列表与各标签未发送草稿；file 标签的 id 是工作区相对文件路径）
 - `PUT /tabs {tabs, activeTab}` → 保存标签页列表与活动标签（id 须匹配 `[A-Za-z0-9_-]{1,64}`）
+- `GET /cli-drafts/:id?workspaceId=<id>` → `{ draft }`；`PUT /cli-drafts/:id {workspaceId, draft}` → `{ draft }`：保存/清除 CLI 会话输入草稿，按工作区与会话 ID 隔离；非空草稿会保护该会话免于 retention 清理
 - `POST /open-claim {nonce}` → `{ claimed, workspaceId?, prompt? }`：认领一次外部开对话请求（后端 `code-open` 事件携带 nonce，首个认领页面得到 `claimed: true` 及其工作区/提示词，其余为 false）；供 `fount run code --prompt` 在已有页面开新对话时页面认领用
 - `GET /history?machine&workdir&kind=shell|message&shell=` → `{ own: string[], native: string[] }`（own 为自有历史追加序；native 为原生 shell 历史 newest-first，仅 kind=shell）
 - `POST /history {machine, workdir, kind, command}` → 追加自有历史，返回 `{ own: string[] }`
@@ -25,6 +26,7 @@ AI 编码会话 shell：与任意角色就工作区对话，在本机或已连�
 - `GET /files/search?machine&workdir&q=` → `{ files: string[] }`（文件名子串匹配，跳过 node_modules/.git 等）
 - `GET /file?machine&workdir&path=` → `{ content, context }`（content 为文件文本，context 为向上收集的 AGENTS.md/触发文档文本）
 - `GET /workspace/directory?machine&workdir&path=&offset=&limit=` → `{ path, total, nextOffset, entries: [{ name, path, isDirectory, isFile }] }`（工作区相对目录分页，`path` 为空表示根；默认首 2000 项，`limit` 最大 2000；条目路径均为工作区相对路径）
+- `GET /workspace/attachment?machine&workdir&path=` → `{ name, mime_type, buffer }` (base64 binary attachment; maximum 10 MiB per file)
 - `GET /workspace/file?machine&workdir&path=` → `{ path, content, version }`（读取工作区相对 UTF-8 文本文件；version 是 SHA-256 内容版本；拒绝越界路径、符号链接逃逸、二进制/无效 UTF-8 文件及超过 16 MiB 的文件）
 - `GET /workspace/file?machine&workdir&path=&offset=&limit=&version=` → `{ path, offset, totalSize, version, data }`（字节分块读取，`limit` 最大 256 KiB；首块省略 version 并返回快照版本，后续块必须携带该版本；快照在 30 秒后或缓存淘汰后返回 409；进程缓存上限 32 MiB/256 个文件；前端需流式解码 UTF-8）
 - `PUT /workspace/file { machine, workdir, path, content, version }` → `{ path, content, version }`（用读取时的 version 乐观并发保存现有文本文件；版本过期返回 409 和当前 version，内容超过 16 MiB 返回 413）
@@ -36,7 +38,7 @@ AI 编码会话 shell：与任意角色就工作区对话，在本机或已连�
 - `PUT /shutdown {machine, action}` → 预定「所有任务生成完毕后对指定主机执行该电源操作」（`action` 为空则取消该主机，`machine` 为空/null 则取消全部；未知 action 或主机不可用 400）
 - `GET /async-tasks?chatId=` → `{ tasks: [{ id, kind, label, startedAt, meta }] }`（该会话进行中的统一异步任务，`chatId` = `code-<sessionId>`；已完成任务已从内存注册表释放，其结果由完成通知承载）
 - `GET /sessions?machine&workdir=` → `{ sessions: [{ id, title, charname, profile, ai_source, created, updated }] }`
-- `POST /sessions {machine, workdir, session}` / `GET /sessions/:id?machine&workdir=` / `PUT /sessions/:id {machine, workdir, session}` / `DELETE /sessions/:id?machine&workdir=` → 会话存取（写目标机器工作区）；`GET /sessions/:id` 会触达该会话文件的最后修改时间（不改内容），视为一次「打开」
+- `POST /sessions {machine, workdir, session}` / `GET /sessions/:id?machine&workdir=` / `PUT /sessions/:id {machine, workdir, session}` / `DELETE /sessions/:id?machine&workdir=` → 会话存取（写目标机器工作区）；`GET /sessions/:id` 会触达该会话文件的最后修改时间（不改内容），视为一次「打开」。会话对象可带 `usage`（`{ calls, total }`，本会话全部已发生模型调用的累计用量；`PUT` 只保留磁盘上已记录的累计值，不采用请求体里的值）
 - `GET /retention` → `{ days }`；`PUT /retention {days}` → 会话保留天数（默认 30，`0` = 禁用自动清理）
 - `POST /sessions/cleanup` → `{ days, removed: [{ id, workspaceId }] }`：立即清理超过保留期未活动的会话（见下）
 - `GET /sessions` / `GET /sessions/all` 的会话摘要附 `mtimeMs`（会话文件的最后修改时间）
@@ -51,13 +53,13 @@ AI 编码会话 shell：与任意角色就工作区对话，在本机或已连�
   - `ws.close()` 后不再回显（命令可能继续运行；本机进程不随之终止）。
 
 - `WS /ws/parts/shells:code/session`（登录后连接）
-  - 运行身份：客户端可在请求中带 `runId`（缺省由服务端生成）；服务端在每个回帧附带 `runId` 与 `sessionId`，并先回一帧 `{ type: 'run-start' }`。客户端据此丢弃被新请求取代的过期运行的流式事件（避免跨轮串写）。同一会话已有生成运行时，新请求会先中止旧运行（各自收尾落盘）。
-  - 客户端 → `{ type: 'send', runId?, session, machine, workdir, ai_source?, profile?, content, files?, clientEntryId? }`：触发角色回复。`files`（可选）为附件数组 `{ name, mime_type, buffer: base64, description }`，并入用户消息条目（sessionToChatLog 解码后随 chat_log 供角色读取）。`clientEntryId`（可选）为前端已乐观插入 `session.entries` 的用户条目 id；服务端若在该 session 中找到同 id 条目则不再追加/回传用户消息（避免重复）。服务端先回 `{ type: 'run-start' }`，流式回 `{ type: 'preview', content }`；多轮生成中每轮已完成的 tool 日志 / 角色轮次经 `{ type: 'entries-append', entries }` 增量推送（在对应 `preview` 之前，`done` 只补发剩余条目，不重复）；执行工具（`<run-*>` / `<inline-*>`）时穿插回 `{ type: 'tool-output', callId, phase: 'start'|'chunk'|'end', name, lang?, code?, stream?, data? }` 实时转发工具输出；结束回 `{ type: 'done', entries, memory }`（entries = 用户消息（未带 clientEntryId 时）+ tool 日志 + 角色回复）。会话条目同时保留 agent 层 `content` 与展示层 `content_for_show`/`content_for_edit`、`charVisibility`，重载时据此完整还原。
+  - 运行身份：客户端可在请求中带 `runId`（缺省由服务端生成）；服务端在每个回帧附带 `runId` 与 `sessionId`，并先回一帧 `{ type: 'run-start' }`。客户端据此丢弃被新请求取代的过期运行的流式事件（避免跨轮串写）。会话的活动运行按用户名与 sessionId 串行管理（同一 sessionId 在不同工作区也会竞争）；CLI 带 `replace: false` 时繁忙返回 `{ type: 'error', code: 'busy' }`，只有允许取代的请求才中止旧运行。CLI 可附 `expectedVersion`，版本过期返回 `code: 'version-conflict'`。
+  - 客户端 → `{ type: 'send', runId?, session, machine, workdir, ai_source?, profile?, content, files?, clientEntryId? }`：触发角色回复。`files`（可选）为附件数组 `{ name, mime_type, buffer: base64, description }`，并入用户消息条目（sessionToChatLog 解码后随 chat_log 供角色读取）。`clientEntryId`（可选）为前端已乐观插入 `session.entries` 的用户条目 id；服务端若在该 session 中找到同 id 条目则不再追加/回传用户消息（避免重复）。服务端先回 `{ type: 'run-start' }`，随后把该用户条目经一帧 `{ type: 'entries-append', entries: [userEntry] }` 广播出去（前端已乐观插入同 id 条目并按 id 去重，不做乐观插入的客户端（如 CLI）据此拿到权威用户条目），流式回 `{ type: 'preview', content }`；多轮生成中每轮已完成的 tool 日志 / 角色轮次经 `{ type: 'entries-append', entries }` 增量推送（在对应 `preview` 之前，`done` 只补发剩余条目，不重复）；执行工具（`<run-*>` / `<inline-*>`）时穿插回 `{ type: 'tool-output', callId, phase: 'start'|'chunk'|'end', name, lang?, code?, stream?, data? }` 实时转发工具输出；结束回 `{ type: 'done', entries, memory }`（entries = 用户消息（未带 clientEntryId 时）+ tool 日志 + 角色回复）。会话条目同时保留 agent 层 `content` 与展示层 `content_for_show`/`content_for_edit`、`charVisibility`，重载时据此完整还原；条目可带 `extension.usage`（该次回复的 provider 计量），会话级累计写入会话对象的 `usage`。
   - 客户端 → `{ type: 'regen', runId?, session, machine, workdir, ai_source?, profile? }`：以现有 entries 重新生成最后一条角色回复（前端应先弹出旧回复）。服务端同样先流式 `preview`，结束回 `{ type: 'done', entries, memory }`（entries 仅含 tool 日志 + 新角色回复；中断回 `{ type: 'aborted', entries }`，此时旧回复已被弹出、会话暂无该回复）。
   - 客户端 → `{ type: 'trigger', runId?, session, machine, workdir, ai_source?, profile? }`：按当前会话原样生成（不新增用户消息）；后端唤醒在无页面连接时也会自行发起该运行。
-  - 客户端 → `{ type: 'attach', sessionId }`：接入一个后端正在进行的当前会话运行（页面刷新/断线后重新显示停止按钮并继续接收流，包括无页面连接时由后端启动的运行）；服务端回 `run-start` 并补发本运行已产生的全部新条目（`entries-append`，含运行中追加的系统通告，按 id 去重），随后继续推送 `preview` / `entries-append`。无活跃运行时回 `{ type: 'error', error: 'no active run' }`。
+  - 客户端 → `{ type: 'attach', sessionId, runId?, machine?, workdir? }`：接入当前运行；提供目标工作区与 runId 时用于拒绝串接到其他目标或过期运行。服务端只向新连接回放 `run-start`、权威新增条目、最近工具输出分片与当前 `preview`，随后继续推送流；无匹配运行回 `{ type: 'error', error: 'no active run' }`。
   - 客户端 → `{ type: 'typing', sessionId }`：用户正在输入（前端节流发送）；后端据此重置该会话「生成完毕后延迟运行 `agentFinish` 钩子」的计时。
-  - 客户端 → `{ type: 'abort', sessionId? }`：中断该会话当前生成；服务端回 `{ type: 'aborted', entries }`。
+  - 客户端 → `{ type: 'abort', sessionId?, runId?, machine?, workdir? }`：中断匹配的运行；提供 runId 和工作区时，迟到或目标不符的中断会被忽略，避免停止另一个运行。终态回 `{ type: 'aborted', entries }`。
   - 持久化：服务端在运行开始前写一份含「生成中」占位（`is_generating: true`）的会话到工作区磁盘，收尾（`done`/`aborted`/`error`）时用最终条目替换后写回；`ws.close()` 不会中断生成，生成会继续并落盘（旧运行收尾同样落盘）。页面据此可在重载后轮询 `/sessions/:id` 恢复。
   - 出错回 `{ type: 'error', entries, error }`。
   - 每次 `done` 后服务端向用户发送「对话已完成」通知：浏览器在线经 `/ws/notify`，其次 Web Push，均不可达时回退桌面通知（点击打开对应页面）。
@@ -76,7 +78,11 @@ AI 编码会话 shell：与任意角色就工作区对话，在本机或已连�
 
 ## CLI
 
-- `fount run code [--prompt <text>] [--workspace <path>]`（`runas <user> code` 同理）：以 `--workspace`（缺省 CLI cwd）为工作区打开 code 页面。带 `--prompt` 时：若已有 code 页在线则其在目标工作区新开对话、聚焦并立即发送该提示词；无页面在线则打开带 `?prompt=` 的新页面（同样立即发送）。
+- `fount run code` 仍打开网页；`fount run code --prompt <text> [--workspace <path>]` 保持原有行为（已有在线页面则在其目标工作区新开对话并立即发送，否则打开带 `?prompt=` 的新页面）。`fount runas <user> code` 接受相同参数。
+- `fount run code --cli [--session <id>] [--prompt <text>]` 启动交互终端；`--print` 强制一次性输出：stdout 是终端时按文本，被重定向时按 NDJSON。`--output-format ndjson|text` 同样强制 print 模式并指定格式；裸 `fount run code` 打开网页，带 `--cli` 且 stdin/stdout 不是 TTY 时转为 print 模式。NDJSON 每行是 `JSON.stringify` 的一条本轮已提交条目（含用户条目；没有事件信封、预览分片与开始/结束记录）。print 模式必须给出 `--prompt <text>`、`--prompt-file <path>`（`-` 表示读 stdin），或配合 `--session <id>` 的 `--attach`。
+- 参数还有 `--workspace <path>` / `-w`、`--workspace-id <id>`、`--char <name>`、`--model <source>` / `--ai-source <source>`、`--profile <name>`、`--tui-mode fullscreen|regular`（fullscreen 使用 alternate screen；regular 在主屏用相同全屏绘制器，不保证保留原生滚屏历史）。非空 CLI 输入草稿按工作区与 session ID 保存，并受 retention 保护。`--session <id>` / `-s` 在所选工作区打开或新建会话，会话文件按工作区隔离，但活跃运行按用户名与 sessionId 串行管理，同 ID 的跨工作区运行会竞争；参数清单以 `fount run code --help` 为准。print 模式把本轮提交的条目写 stdout（文本或 NDJSON），会话 ID 与 runId 等元信息写 stderr，退出码 0 成功 / 1 失败 / 2 参数错误 / 130 用户中断。
+- 交互客户端支持会话、角色、模型、profile、工作区、机器、目录浏览/搜索/读取、shell 命令、附件、任务与子代理、停止/接入/重试/重生成、消息操作、导出（文本或 `--html` 独立文档）、变更摘要、保留与电源、退出等斜杠命令；`!<command>` 执行 shell 命令，`/help` 列出全部命令。客户端订阅用户事件总线（`/ws/notify`），服务端另行发起的运行（后台唤醒、钩子、任务恢复）会被自动接入，因此 `--attach` 之后仍会跟随后续运行。
+- 通用 ArgumentsHandler 返回值：`{ type: 'output', content }` 写入调用方 stdout；`{ type: 'run-js', module, args, data }` 按被加载 part 的根目录解析模块，并在调用进程执行其导出的 `Run(context)`。不设 version 字段；这是调用方分派契约，不是 code 专有 API。
 
 WebSocket /ws/parts/shells:code/workspace/watch：本机及远程工作区文件变化订阅，需要登录。连接后发送 {machine:"分机编号，0 为本机",workdir:"目标机器上的工作区绝对路径",paths:["","src"]}，paths 为工作区相对目录，最多 128 项。服务端发送 {type:"ready"}、{type:"change"}，收到后重新读取目录及文件；{type:"heartbeat"} 表示连接存活；{type:"disconnected",reason} 表示订阅中断，可重新连接并在 ready 后重新读取；{type:"unavailable",reason} 表示订阅参数或工作区无效，修正后重新订阅。断开连接释放监听。
 

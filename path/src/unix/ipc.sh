@@ -5,7 +5,7 @@ install_ipc_tools() {
 }
 
 # fount 服务器是否在运行：IPC ping（16698，newline 结尾 JSON），等价 pwsh 的 Test-FountRunning。
-# 需要 nc 或 socat；都没有时返回 1（调用方按“未运行”处理，回落到启动服务器）。
+# 优先用 nc/socat，缺失时用 bash 的 /dev/tcp。
 test_fount_running() {
 	local cmd_json='{"type":"ping","data":{}}' response=""
 	if command -v nc >/dev/null 2>&1; then
@@ -13,7 +13,11 @@ test_fount_running() {
 	elif command -v socat >/dev/null 2>&1; then
 		response=$(printf '%s\n' "$cmd_json" | socat -T 2 - TCP:localhost:16698,nodelay 2>/dev/null)
 	else
-		return 1
+		exec 8<>/dev/tcp/localhost/16698 2>/dev/null || return 1
+		printf '%s\n' "$cmd_json" >&8
+		IFS= read -r -t 2 response <&8 || true
+		exec 8<&-
+		exec 8>&-
 	fi
 	[ -n "$response" ] && printf '%s' "$response" | grep -q '"status"[[:space:]]*:[[:space:]]*"ok"'
 }

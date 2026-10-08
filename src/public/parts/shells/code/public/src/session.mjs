@@ -205,7 +205,8 @@ export async function activateTab(tab) {
 
 /**
  * 切到工作区的草稿标签（无则新建）——工作区 pill 切换的落点。
- * 当前活动为空草稿时直接改绑到目标工作区，避免选择工作区时残留无工作区占位草稿。
+ * 当前活动草稿没有工作区绑定（或仍为空）时直接改绑到目标工作区：既避免残留无工作区占位草稿，
+ * 也不把切换期间输入的未发送内容留在旧标签里。
  * @param {string} workspaceId - 工作区 id。
  * @returns {Promise<void>} 完成。
  */
@@ -213,8 +214,13 @@ export async function activateDraftForWorkspace(workspaceId) {
 	const draft = store.tabs.find(tab => tab.type === 'draft' && tab.workspaceId === workspaceId)
 	if (draft) return activateTab(draft)
 	const current = store.tabs.find(item => tabKeyOf(item) === store.activeTabKey)
-	if (current?.type === 'draft' && !current.draft && !store.session?.entries?.length) {
-		// 草稿改绑工作区会改变 tabKey：迁移其运行时，避免同一会话出现两个运行时（帧路由错乱）
+	// 无工作区绑定的草稿没有需要保留的工作区上下文，即使已有未发送内容也随选择一起改绑：
+	// 否则切换会在用户输入的同时另建草稿标签，把已经输入的内容留在旧标签、清空 composer。
+	if (current?.type === 'draft' && !store.session?.entries?.length && (!current.draft || !current.workspaceId)) {
+		// 草稿改绑工作区会改变 tabKey：先固化 composer 内容（改键后 activateTab 的保留分支不再命中），
+		// 再迁移其运行时，避免同一会话出现两个运行时（帧路由错乱）
+		current.draft = richInput.value
+		current.shellMode = store.shellMode
 		const oldKey = tabKeyOf(current)
 		current.workspaceId = workspaceId
 		migrateRuntimeKey(oldKey, tabKeyOf(current))

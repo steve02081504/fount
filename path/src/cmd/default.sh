@@ -1,8 +1,22 @@
 #!/usr/bin/env bash
 cmd_default() {
 	bootstrap_full "$@"
-	trap_terminal_teardown
+	# `run` / `runas` 是 part 调用：终端标题与任务栏归调用方，这里不接管。
+	# 服务器未运行时先拉起后台实例，再让 run 走 IPC 分派。
+	if [ "$1" != run ] && [ "$1" != runas ]; then trap_terminal_teardown; fi
 	if [ "$1" ]; then
+		if [ "$1" = run ] || [ "$1" = runas ]; then
+			require unix/ipc
+			if ! test_fount_running; then
+				"$0" background keepalive >/dev/null 2>&1 || return 1
+				local attempt
+				for ((attempt = 0; attempt < 300; attempt++)); do
+					test_fount_running && break
+					sleep 0.2
+				done
+				if ! test_fount_running; then echo 'fount server did not start in time' >&2; return 1; fi
+			fi
+		fi
 		run "$@"
 		exit $?
 	elif in_container; then

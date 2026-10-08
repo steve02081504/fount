@@ -7,6 +7,8 @@
 		"pureCore": [
 			"src/public/parts/shells/code/src/hooks_config.mjs",
 			"src/public/parts/shells/code/src/finish_scheduler.mjs",
+			"src/public/parts/shells/code/cli/**",
+			"src/scripts/terminal_ui/**",
 			"src/public/parts/shells/code/test/pure/**"
 		],
 		"shellBackend": [
@@ -18,6 +20,7 @@
 			"src/scripts/error_format.mjs",
 			"src/scripts/shell_guard.mjs",
 			"src/public/parts/shells/chat/src/{reply,streaming,tags}/**",
+			"src/public/parts/shells/chat/public/shared/usage.mjs",
 			"src/public/parts/shells/easynew/parts/easychar/template/main.mjs",
 			"src/public/parts/ImportHandlers/SillyTavern/Template/main.mjs",
 			"src/server/web_server/notify/**",
@@ -56,7 +59,7 @@
 		},
 		{
 			"name": "integration",
-			"expected": "6m12s",
+			"expected": "5m22s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -78,12 +81,19 @@
 		},
 		{
 			"name": "frontend",
-			"expected": "15m14s",
+			"expected": "22m12s",
 			"dependsOn": [
 				"server:live"
 			],
 			"trigger": "frontendShared",
 			"subtests": [
+				{
+					"name": "probe_stylechurn",
+					"expected": "30s",
+					"triggers": [
+						"src/public/parts/shells/code/test/frontend/zz_probe_stylechurn.spec.mjs"
+					]
+				},
 				{
 					"name": "smoke",
 					"expected": "55s",
@@ -110,7 +120,7 @@
 				},
 				{
 					"name": "sessions",
-					"expected": "59s",
+					"expected": "3m10s",
 					"triggers": [
 						"src/public/parts/shells/code/test/frontend/sessions.spec.mjs",
 						"src/public/parts/shells/code/public/**"
@@ -223,7 +233,7 @@
 				},
 				{
 					"name": "stream_render",
-					"expected": "1m",
+					"expected": "2m34s",
 					"triggers": [
 						"src/public/parts/shells/code/test/frontend/stream_render.spec.mjs",
 						"src/public/parts/shells/code/test/frontend/fixtures/chars/streamAgent/**",

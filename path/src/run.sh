@@ -17,13 +17,18 @@ handle_auto_reinitialization() {
 
 run() {
 	local original_title exit_code
+	# `run` / `runas` 是 part 调用：不接管终端标题与任务栏进度（那属于服务器启动）。
+	local is_invocation=0
+	if [ "$1" = run ] || [ "$1" = runas ]; then is_invocation=1; fi
 	if [[ $(id -u) -eq 0 ]]; then
 		print_i18n_yellow 'install.rootWarningAsRoot' >&2
 		print_i18n_yellow 'install.rootWarningPreferUser' >&2
 	fi
-	write_taskbar_progress 5
-	original_title=$(get_title)
-	set_title ""
+	if [ "$is_invocation" -eq 0 ]; then
+		write_taskbar_progress 5
+		original_title=$(get_title)
+		set_title ""
+	fi
 	require unix/termux
 	termux_ensure_sensor_api
 	local v8_flags=""
@@ -44,15 +49,14 @@ run() {
 	else
 		v8_flags="--initial-heap-size=${heap_size_mb}"
 	fi
-	write_taskbar_progress 10
+	if [ "$is_invocation" -eq 0 ]; then write_taskbar_progress 10; fi
 	if [ -z "$FOUNT_START_TIME" ]; then
 		FOUNT_START_TIME=$(timestamp)
 	fi
 	export FOUNT_START_TIME
 	FOUNT_DENO_START_TIME=$(timestamp)
 	export FOUNT_DENO_START_TIME
-	write_taskbar_progress 25
-	set_title "𝓯"
+	if [ "$is_invocation" -eq 0 ]; then write_taskbar_progress 25; set_title "𝓯"; fi
 	local boosted=0
 	if [[ $(id -u) -eq 0 ]]; then
 		renice -n -10 -p $$ >/dev/null 2>&1 && boosted=1
@@ -71,10 +75,10 @@ run() {
 		renice -n 0 -p $$ >/dev/null 2>&1 || true
 	fi
 	unset FOUNT_STARTUP_PRIORITY_BOOST
-	set_title "$original_title"
+	if [ "$is_invocation" -eq 0 ]; then set_title "$original_title"; fi
 	unset FOUNT_START_TIME
 	unset FOUNT_DENO_START_TIME
-	if [ "$exit_code" -ne 0 ] && [ "$exit_code" -ne 130 ] && [ "$exit_code" -ne 131 ]; then
+	if [ "$is_invocation" -eq 0 ] && [ "$exit_code" -ne 0 ] && [ "$exit_code" -ne 130 ] && [ "$exit_code" -ne 131 ]; then
 		write_taskbar_progress_error
 	fi
 	return $exit_code

@@ -642,6 +642,25 @@
 			]
 		},
 		{
+			"name": "locale_reload",
+			"expected": 400,
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/selftest/locale_reload.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/locale_reload.test.mjs",
+				"src/scripts/i18n/bare.mjs",
+				"src/scripts/json_loader.mjs"
+			]
+		},
+		{
 			"name": "clobber_guard",
 			"expected": 300,
 			"run": [

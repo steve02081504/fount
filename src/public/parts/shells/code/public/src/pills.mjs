@@ -194,18 +194,21 @@ export function renderPowerButton() {
  * 更新顶栏上下文 chip（当前工作区 / 角色；对话态 targets 隐藏后仍可见，点击打开选择器）。
  * @returns {void}
  */
-function renderContextChip() {
+export function renderContextChip() {
 	const chip = elements.contextChip
 	if (!chip) return
 	const workspaceName = store.workspace?.name || store.workspace?.path || ''
 	const charName = store.charname || ''
 	elements.contextWorkspaceButton.hidden = !workspaceName
 	elements.contextWorkspaceLabel.textContent = workspaceName
-	elements.contextWorkspaceButton.setAttribute('aria-label', geti18n('code.workspaces.open'))
+	// 无障碍名必须包含可见文本（工作区 / 角色名是用户数据），因此拼进 label 并跳过语种扫描
+	elements.contextWorkspaceButton.setAttribute('user-content', 'aria-label')
+	elements.contextWorkspaceButton.setAttribute('aria-label', [geti18n('code.workspaces.open'), workspaceName].filter(Boolean).join(': '))
 	elements.contextWorkspaceButton.setAttribute('title', geti18n('code.workspaces.open'))
 	elements.contextCharButton.hidden = !charName
 	elements.contextCharLabel.textContent = charName
-	elements.contextCharButton.setAttribute('aria-label', geti18n('code.char.switch'))
+	elements.contextCharButton.setAttribute('user-content', 'aria-label')
+	elements.contextCharButton.setAttribute('aria-label', [geti18n('code.char.switch'), charName].filter(Boolean).join(': '))
 	elements.contextCharButton.setAttribute('title', geti18n('code.char.switch'))
 	chip.hidden = !workspaceName && !charName
 }
@@ -862,10 +865,9 @@ export async function openFolderBrowser() {
 			})
 			if (!data) return
 			store.workspaces = data.list
-			store.workspace = store.workspaces.find(w => w.path === path && w.machine === machine) || null
-			renderWorkspacePillLabel()
-			renderWorkspaceMenu()
-			await selectWorkspace(store.workspace?.id || '')
+			// 工作区 pill 标签是「切换完成」的就绪信号（调用方/用户据此开始输入）：只能由 selectWorkspace 在
+			// 切换尾段（改绑/新建草稿、切换 composer 草稿）之后渲染，提前渲染会让切换落定时吃掉这段输入。
+			await selectWorkspace(store.workspaces.find(w => w.path === path && w.machine === machine)?.id)
 		},
 		/**
 		 * 出错处理。

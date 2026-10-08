@@ -14,7 +14,9 @@ import { guardOutput } from '../../../../../scripts/shell_guard.mjs'
 import { getAnyPreferredDefaultPart, loadPart } from '../../../../../server/parts_loader.mjs'
 import { sendEventToUser } from '../../../../../server/web_server/event_dispatcher.mjs'
 import { finishAsyncGeneration } from '../../../plugins/async-task/registry.mjs'
+import { mergeUsage } from '../../chat/public/shared/usage.mjs'
 
+import { pickEntryExtension } from './entry_extension.mjs'
 import { activeCodeRuns, codeRunKey, codeWakes, requestCodeRunStart } from './runs.mjs'
 import { loadSession, saveSession } from './sessions.mjs'
 import { codeWorld } from './world.mjs'
@@ -135,6 +137,7 @@ export async function buildCodeChatRequest({ username, session, requestSession, 
 		remoteToolCallbackPartpath: onToolOutput ? 'shells/code' : undefined,
 		signal,
 	}
+	if (requestSession) requestSession.generationOptions = generation_options
 	return {
 		supported_functions,
 		chat_name: 'code-' + session.id,
@@ -201,13 +204,22 @@ export async function buildCodeChatRequest({ username, session, requestSession, 
 				...Array.isArray(entry?.charVisibility) && entry.charVisibility.length ? { charVisibility: entry.charVisibility.map(String) } : {},
 				time: entry?.time_stamp instanceof Date ? entry.time_stamp.toISOString() : String(entry?.time_stamp ?? new Date().toISOString()),
 				files: [],
+				...entry?.extension ? { extension: pickEntryExtension(entry.extension) } : {},
 			}
 			// 写入运行中的权威副本：`buildFinalEntries` 会把 requestSession.entries 合并进收尾落盘；
 			// 同时登记进 allNewEntries，使 attach 回放与 done 帧的 entries 都包含该条目。
-			const run = activeCodeRuns.get(codeRunKey(username, session.id))
+			let run = activeCodeRuns.get(codeRunKey(username, session.id))
+			while (run?.finished && (run.finalizing || run.completed)) {
+				await run.finished
+				run = activeCodeRuns.get(codeRunKey(username, session.id))
+			}
 			if (run?.requestSession) {
+				const existing = run.requestSession.entries.find(item => String(item?.id) === String(normalized.id))
+				if (existing) return existing
 				run.requestSession.entries.push(normalized)
 				run.allNewEntries?.push(normalized)
+				if (normalized.extension?.usage) run.asyncUsage = mergeUsage(run.asyncUsage, normalized.extension.usage)
+				run.broadcast?.({ type: 'entries-append', entries: [normalized] })
 			}
 			else {
 				// 无进行中的运行（过期请求）：直接落盘工作区会话
@@ -215,13 +227,16 @@ export async function buildCodeChatRequest({ username, session, requestSession, 
 				const latest = await loadSession(username, workTarget, session.id)
 				if (latest) {
 					latest.entries = Array.isArray(latest.entries) ? latest.entries : []
+					const existing = latest.entries.find(item => String(item?.id) === String(normalized.id))
+					if (existing) return existing
 					latest.entries.push(normalized)
+					if (normalized.extension?.usage) latest.usage = mergeUsage(latest.usage, normalized.extension.usage)
 					await saveSession(username, workTarget, latest)
 				}
 			}
 			// 非角色条目的展示事件（与旧 code-async-entry 语义一致）：已打开的页面据此即时合并
 			if (role !== 'char')
-				sendEventToUser(username, 'code-session-entry', { chatName: 'code-' + session.id, entry: normalized })
+				sendEventToUser(username, 'code-session-entry', { chatName: 'code-' + session.id, entry: normalized, machine: String(machine ?? '0'), workdir: String(workdir || '') })
 			return normalized
 		},
 		/**
@@ -249,9 +264,11 @@ export async function triggerCodeReply(options) {
 	try {
 		const worldReply = await request.world.interfaces.chat.GetCharReply?.(request, request.char_id)
 		const reply = worldReply ?? await request.char.interfaces.chat.GetReply(request)
+		if (options.requestSession) options.requestSession.generationResult = reply
 		return { reply, memory: request.chat_scoped_char_memory }
 	}
 	finally {
+		if (options.requestSession) options.requestSession.generationResult ??= request.generation_options.base_result
 		finishAsyncGeneration(request.extension?.generationId)
 	}
 }

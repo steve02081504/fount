@@ -17,6 +17,8 @@ import { loadShellData, saveShellData, assignShellData } from '../../../../../se
 import { sendEventToUser } from '../../../../../server/web_server/event_dispatcher.mjs'
 import { listTasks as listAsyncTasks } from '../../../plugins/async-task/registry.mjs'
 import { availableShells, createTargetExecutor, listMachines, machineDefaultShell, parseVolumeLabels } from '../../../plugins/file-operations/src/target.mjs'
+import { mergeUsage } from '../../chat/public/shared/usage.mjs'
+import { renderMarkdownCodeBlock } from '../../chat/src/streaming/markdown.mjs'
 
 import {
 	getCommand,
@@ -685,6 +687,25 @@ export function setEndpoints(router) {
 		res.json(data)
 	})
 
+	// CLI 草稿独立于网页标签存放，避免终端重启后丢失输入或被保留期清理。
+	router.get('/api/parts/shells\\:code/cli-drafts/:id', authenticate, (req, res) => {
+		const { username } = getUserByReq(req)
+		res.json({ draft: loadShellData(username, 'code', 'cli-drafts')?.[String(req.query.workspaceId || '')]?.[req.params.id] || '' })
+	})
+	router.put('/api/parts/shells\\:code/cli-drafts/:id', authenticate, (req, res) => {
+		const { username } = getUserByReq(req)
+		const workspaceId = String(req.body?.workspaceId || '')
+		if (!workspaceId || !getWorkspaces(username).list.some(item => item.id === workspaceId)) throw httpError(400, 'workspace not found.')
+		const draft = String(req.body?.draft || '')
+		const drafts = loadShellData(username, 'code', 'cli-drafts') ?? {}
+		const bySession = drafts[workspaceId] ??= {}
+		if (draft) bySession[req.params.id] = draft
+		else delete bySession[req.params.id]
+		if (!Object.keys(bySession).length) delete drafts[workspaceId]
+		assignShellData(username, 'code', 'cli-drafts', drafts)
+		res.json({ draft })
+	})
+
 	// `fount run code --prompt` 在已有页面开新对话：页面认领（首个生效），无页面认领时调用方回退为新开页面
 	router.post('/api/parts/shells\\:code/open-claim', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
@@ -892,8 +913,8 @@ export function setEndpoints(router) {
 		const { machine, path } = parseWorkdir(req.body || {})
 		if (activeCodeRuns.has(codeRunKey(username, req.body?.session?.id)) || getUserByReq(req).jobs?.['shells/code']?.[req.body?.session?.id])
 			throw httpError(409, 'session is generating.')
-		await saveSession(username, { machine, path }, req.body?.session)
-		res.json({})
+		await saveSession(username, { machine, path }, { ...req.body?.session, version: 1 })
+		res.json({ version: 1 })
 	})
 
 	router.get('/api/parts/shells\\:code/sessions/:id', authenticate, async (req, res) => {
@@ -912,8 +933,12 @@ export function setEndpoints(router) {
 		if (activeCodeRuns.has(codeRunKey(username, req.params.id)) || getUserByReq(req).jobs?.['shells/code']?.[req.params.id])
 			throw httpError(409, 'session is generating.')
 		if (req.body?.session?.id !== req.params.id) throw httpError(400, 'session id mismatch.')
-		await saveSession(username, { machine, path }, req.body.session)
-		res.json({})
+		const stored = await loadSession(username, { machine, path }, req.params.id)
+		// 首次落盘（网页把草稿标签转成会话、`!` 结果写回）时磁盘上还没有文件：按创建处理，不算版本冲突。
+		if (stored && req.body.expectedVersion != null && req.body.expectedVersion !== (stored.version ?? 0)) throw httpError(409, 'session changed.')
+		const version = (stored?.version ?? 0) + 1
+		await saveSession(username, { machine, path }, { ...req.body.session, usage: stored?.usage ?? req.body.session.usage, version })
+		res.json({ version })
 	})
 
 	router.delete('/api/parts/shells\\:code/sessions/:id', authenticate, async (req, res) => {
@@ -962,10 +987,14 @@ export function setEndpoints(router) {
 	 * @returns {Promise<void>} 生成与落盘结束时完成。
 	 */
 	startCodeRun = async (username, msg, ws) => {
-		if (isStopping()) return
+		if (isStopping()) {
+			ws?.send(JSON.stringify({ type: 'error', sessionId: msg.sessionId || msg.session?.id, runId: msg.runId, error: 'server is stopping' }))
+			return
+		}
 		if (msg.type === 'abort') {
 			const run = msg.sessionId ? activeCodeRuns.get(codeRunKey(username, msg.sessionId)) : null
 			if (!run) return
+			if (msg.workdir != null && (String(msg.machine ?? '0') !== run.workTarget.machine || String(msg.workdir) !== run.workTarget.path)) return
 			// 携带 runId 时校验运行身份：不匹配当前运行则忽略该请求，避免迟到的停止中止下一次运行
 			if (msg.runId && run.runId !== msg.runId) return
 			run.controller.abort()
@@ -974,16 +1003,24 @@ export function setEndpoints(router) {
 		// attach：页面接入一个正在进行的运行，加入观察集合后回放运行身份与已产生的条目，再接收后续流式帧
 		if (msg.type === 'attach') {
 			const run = activeCodeRuns.get(codeRunKey(username, msg.sessionId))
-			if (!run) {
+			if (!run || msg.runId && msg.runId !== run.runId || msg.workdir != null && (String(msg.machine ?? '0') !== run.workTarget.machine || String(msg.workdir) !== run.workTarget.path)) {
 				ws?.send(JSON.stringify({ type: 'error', sessionId: msg.sessionId, error: 'no active run' }))
 				return
 			}
 			attachSocketToRun(run, ws)
 			// 回放本运行已产生的权威新条目（allNewEntries + requestSession 追加，按 id 去重）；
 			// 前端按 id 去重，故一次回放完整集合不会重复渲染。
-			run.broadcast?.({ type: 'run-start' })
+			/**
+			 * 只向本连接回放一条本运行的帧（不改动其它观察者）。
+			 * @param {object} payload - 要回放的帧内容。
+			 * @returns {void} 无返回值。
+			 */
+			const replay = payload => ws?.send(JSON.stringify({ runId: run.runId, sessionId: msg.sessionId, ...payload }))
+			replay({ type: 'run-start' })
 			const replayEntries = run.buildReplayEntries?.() || run.allNewEntries || []
-			if (replayEntries.length) run.broadcast?.({ type: 'entries-append', entries: [...replayEntries] })
+			if (replayEntries.length) replay({ type: 'entries-append', entries: [...replayEntries] })
+			for (const output of run.toolOutputReplay || []) replay(output)
+			if (run.preview) replay(run.preview)
 			return
 		}
 		// trigger：按当前会话原样生成（不新增用户消息），供异步通知空闲时由后端唤醒
@@ -997,12 +1034,42 @@ export function setEndpoints(router) {
 			return
 		}
 		const runKey = codeRunKey(username, session.id)
+		/**
+		 * 拒绝默认非取代的提交：会话已有运行时回忙，避免 CLI 无意中止网页生成。
+		 * @returns {boolean} 已回帧拒绝时为 true。
+		 */
+		const refuseBusy = () => {
+			if (!activeCodeRuns.has(runKey) || msg.replace !== false) return false
+			ws?.send(JSON.stringify({ type: 'error', sessionId: session.id, runId: msg.runId, code: 'busy', error: 'session is generating' }))
+			return true
+		}
+		if (refuseBusy()) return
+		const workTarget = { machine: String(machine ?? '0'), path: String(workdir || '') }
+		/** 磁盘上的当前版本；请求携带的是可能过期的客户端副本，落盘版本只在此基础上自增。 */
+		let storedVersion = 0
+		let storedUsage
+		try {
+			const stored = await loadSession(username, workTarget, session.id)
+			storedVersion = stored?.version ?? 0
+			storedUsage = stored?.usage
+			if (msg.expectedVersion != null && storedVersion !== msg.expectedVersion) {
+				ws?.send(JSON.stringify({ type: 'error', sessionId: session.id, runId: msg.runId, code: 'version-conflict', error: 'session changed; reload before sending' }))
+				return
+			}
+		}
+		catch (error) {
+			ws?.send(JSON.stringify({ type: 'error', sessionId: session.id, runId: msg.runId, error: formatGenerationError(error) }))
+			return
+		}
+		// loadSession 会让出 I/O：别的 socket 可能已在此期间占用该会话，装运行前重查一次。
+		if (refuseBusy()) return
 		// 同一会话已有进行中的生成：中止旧运行（各自收尾落盘），标记其被取代以抑制它的补触发，避免事件串台
 		const previous = activeCodeRuns.get(runKey)
 		if (previous) {
 			previous.superseded = true
 			previous.controller.abort()
 			await previous.finished
+			storedUsage = (await loadSession(username, workTarget, session.id))?.usage
 		}
 		// 本运行持有一份唤醒调度槽：期间到达的唤醒由 Update({ forRound: true }) 观察消费，未消费则 finally 补触发
 		codeWakes.tryBegin(runKey)
@@ -1013,8 +1080,9 @@ export function setEndpoints(router) {
 		// 持久化的恢复参数：只留标识与生成参数；会话内容始终从工作区 `.fount/code/sessions` 读回。
 		const jobData = { sessionId: session.id, workTarget: { machine: String(machine ?? '0'), path: String(workdir || '') }, ai_source, profile, startedAt: Date.now() }
 		const run = {
-			runId, controller: thisRequestController, sockets: new Set(), finished, completed: false,
-			wakeHeld: true, superseded: false, requestSession: null, allNewEntries: null,
+			runId, controller: thisRequestController, sockets: new Set(), finished, completed: false, toolOutputReplay: [], preview: null,
+			workTarget,
+			wakeHeld: true, superseded: false, requestSession: null, allNewEntries: null, asyncUsage: null,
 			/**
 			 * 记录导致中断的原因和时间。
 			 * @param {string} reason - 信号名或普通重启。
@@ -1025,7 +1093,7 @@ export function setEndpoints(router) {
 		activeCodeRuns.set(runKey, run)
 		attachSocketToRun(run, ws)
 		const workPath = String(workdir || '')
-		const workTarget = { machine: String(machine ?? '0'), path: workPath }
+		const nextVersion = Math.max(storedVersion, session.version ?? 0) + 1
 		// 打开/使用工作区时确保会话目录被 git 忽略（best-effort，不阻塞生成）。
 		void ensureSessionsGitignored(username, workTarget)
 		/**
@@ -1054,6 +1122,7 @@ export function setEndpoints(router) {
 			settled = true
 			sendEventToUser(username, 'code-run-settled', {
 				chatName: 'code-' + session.id,
+				machine: workTarget.machine, workdir: workTarget.path,
 				sessionId: session.id,
 				workspaceId: resolveWorkspaceId(username, workTarget, session),
 				runId,
@@ -1074,6 +1143,7 @@ export function setEndpoints(router) {
 		})
 		/** 本轮新增条目（持久化用；按 id 去重、保持顺序）。 */
 		const allNewEntries = []
+		let userEntry
 		// 暴露给 attach 重放：页面接入时补发已产生的新条目
 		run.allNewEntries = allNewEntries
 		/** 原始日志下标对应的已发送条目 ID；中断时只保留已完成的轮次。 */
@@ -1139,6 +1209,7 @@ export function setEndpoints(router) {
 			 * @returns {object[]} 去重后的新条目列表。
 			 */
 		run.buildReplayEntries = () => dedupeEntries([
+			...userEntry ? [userEntry] : [],
 			...allNewEntries,
 			...(requestSession.entries || []).filter(entry => !baseIds.has(String(entry?.id))),
 		])
@@ -1186,8 +1257,9 @@ export function setEndpoints(router) {
 				await saveSession(username, workTarget, {
 					...session,
 					entries: finalEntries,
+					usage: mergeUsage(storedUsage, currentGenerationUsage(), run.asyncUsage),
 					...memory ? { memory } : {},
-					updated: new Date().toISOString(),
+					updated: new Date().toISOString(), version: nextVersion,
 				})
 				return true
 			}
@@ -1201,8 +1273,9 @@ export function setEndpoints(router) {
 			delete session.regenAttempts
 			// 前端已乐观插入用户条目（clientEntryId）时不再重复追加/回传，避免 AI 看到两条、UI 重复
 			const alreadyInSession = msg.clientEntryId && requestSession.entries.some(entry => entry?.id === msg.clientEntryId)
-			if (!alreadyInSession) {
-				const userEntry = addNewEntry({ id: msg.clientEntryId || undefined, role: 'user', name: username, content, uid: 'user', time_stamp: new Date(), files: Array.isArray(msg.files) ? msg.files : [] })
+			if (alreadyInSession) userEntry = requestSession.entries.find(entry => entry.id === msg.clientEntryId)
+			else {
+				userEntry = addNewEntry({ id: msg.clientEntryId || undefined, role: 'user', name: username, content, uid: 'user', time_stamp: new Date(), files: Array.isArray(msg.files) ? msg.files : [] })
 				if (userEntry) {
 					entries.push(userEntry)
 					requestSession.entries.push(userEntry)
@@ -1214,8 +1287,10 @@ export function setEndpoints(router) {
 		if (workPath) StartJob(username, 'shells/code', session.id, jobData)
 		// 生成运行身份：带回 runId 的 run-start 帧（前端据此接纳本运行的事件）
 		broadcast({ type: 'run-start' })
+		// 用户条目是会话的权威追加消息，CLI 的 NDJSON 与网页订阅都从此处收到同一条目。
+		if (userEntry) broadcast({ type: 'entries-append', entries: [userEntry] })
 		// 无 socket 的后台运行（唤醒 / 钩子重生成 / 作业恢复）：广播运行开始，已打开的页面据此 attach 接入
-		if (!ws) sendEventToUser(username, 'code-run-started', { chatName: 'code-' + session.id, runId })
+		if (!ws) sendEventToUser(username, 'code-run-started', { chatName: 'code-' + session.id, runId, machine: workTarget.machine, workdir: workTarget.path })
 		// 新生成开始：取消上一轮待运行的 agentFinish 收尾（计数照常递减，交给本轮）
 		await cancelAgentFinish(username, session.id)
 		// 工作区钩子：任意 agent 开始运行（闭包内 fire-and-forget，不阻塞生成）
@@ -1234,8 +1309,25 @@ export function setEndpoints(router) {
 			is_generating: true,
 			time: new Date().toISOString(),
 		}
+		/**
+		 * 当前运行优先取生成累计结果中的用量，否则取最终回复中的用量。
+		 * @returns {object|undefined} 当前生成记录的用量。
+		 */
+		const currentGenerationUsage = () => requestSession.generationOptions?.base_result?.extension?.usage ?? requestSession.generationResult?.extension?.usage
+		/**
+		 * 将失败或中断时已经发生的调用留在实际消息内，供展示和 NDJSON 导出。
+		 * @param {string} name - 终态名称。
+		 * @param {string} content - 终态说明。
+		 * @returns {void} 无返回值。
+		 */
+		const appendMeteredFailure = (name, content) => {
+			const usage = currentGenerationUsage()
+			if (!usage?.calls?.length) return
+			const entry = addNewEntry({ role: 'system', uid: 'system', name, content, content_for_show: renderMarkdownCodeBlock(content), time_stamp: new Date(), extension: { usage } })
+			if (entry) entries.push(entry)
+		}
 		try {
-			await persist(undefined, [placeholderEntry])
+			if (workPath && !await persist(undefined, [placeholderEntry])) throw new Error('session preparation failed')
 			// 把本轮 result 暴露到 requestSession 上，供预览回调增量读取已累计日志
 			const { reply, memory } = await triggerCodeReply({
 				requestSession,
@@ -1255,7 +1347,8 @@ export function setEndpoints(router) {
 				onPreview: preview => {
 					// 先把本轮已完成的工具日志增量追加出来，再更新生成中气泡（保持文本顺序）
 					flushIncrementalEntries()
-					broadcast({ type: 'preview', content: preview.content_for_show ?? preview.content ?? '' })
+					run.preview = { type: 'preview', content: preview.content_for_show ?? preview.content ?? '' }
+					broadcast(run.preview)
 				},
 				/**
 					 * 转发工具执行实时输出到 WS。
@@ -1263,7 +1356,10 @@ export function setEndpoints(router) {
 					 * @returns {void}
 					 */
 				onToolOutput: event => {
-					broadcast({ type: 'tool-output', ...event })
+					const output = { type: 'tool-output', ...event }
+					run.toolOutputReplay.push(output)
+					if (run.toolOutputReplay.length > 200) run.toolOutputReplay.shift()
+					broadcast(output)
 				},
 				/**
 				 * 完成一轮：落盘已完成的工具结果并确认是否继续生成。
@@ -1272,7 +1368,7 @@ export function setEndpoints(router) {
 				finishRound: async () => {
 					flushIncrementalEntries()
 					completedLogCount = requestSession.generationResult?.logContextBefore?.length ?? emittedLogCount
-					await persist(undefined, [placeholderEntry])
+					if (workPath && !await persist(undefined, [placeholderEntry])) throw new Error('session persistence failed')
 					if (isStopping()) { stoppedForShutdown = true; return false }
 					return true
 				},
@@ -1289,6 +1385,8 @@ export function setEndpoints(router) {
 			}
 			if (thisRequestController.signal.aborted) dropIncompleteLogs()
 			const interrupted = stoppedForShutdown || thisRequestController.signal.aborted
+			if (interrupted) appendMeteredFailure('aborted', 'Generation interrupted.')
+			run.finalizing = true
 			// 权威结果先落盘，再广播完成帧：页面/连接丢失也不会丢内容
 			const saved = await persist(memory, interrupted && isStopping() ? [placeholderEntry] : [])
 			if (interrupted) {
@@ -1322,6 +1420,8 @@ export function setEndpoints(router) {
 				if (entry) entries.push(entry)
 			}
 			if (thisRequestController.signal.aborted) dropIncompleteLogs()
+			appendMeteredFailure(thisRequestController.signal.aborted || stoppedForShutdown ? 'aborted' : 'error', runError)
+			run.finalizing = true
 			const saved = await persist(undefined, isStopping() ? [placeholderEntry] : [])
 			if (!isStopping() && saved) {
 				run.completed = true

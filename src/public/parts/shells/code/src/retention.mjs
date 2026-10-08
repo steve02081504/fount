@@ -73,10 +73,16 @@ export async function pruneInactiveSessions(username, { workspaces = [], tabs = 
 	if (!(days > 0)) return { days, removed: [] }
 	const cutoff = now - days * DAY_MS
 	const draftKeys = new Set()
+	const cliDrafts = loadShellData(username, 'code', 'cli-drafts') ?? {}
 	for (const tab of tabs) {
 		if (tab?.type !== 'session' || !String(tab.draft || '').trim()) continue
 		const workspace = workspaces.find(w => w.id === tab.workspaceId)
 		if (workspace?.path) draftKeys.add(sessionKey(String(workspace.machine ?? '0'), workspace.path, tab.id))
+	}
+	for (const workspace of workspaces) {
+		if (!workspace?.path) continue
+		for (const [id, draft] of Object.entries(cliDrafts[workspace.id] ?? {}))
+			if (String(draft).trim()) draftKeys.add(sessionKey(String(workspace.machine ?? '0'), workspace.path, id))
 	}
 	const removed = []
 	for (const workspace of workspaces) {

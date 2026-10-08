@@ -6,7 +6,7 @@ import { showToastI18n } from '/scripts/features/toast.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
 
 import * as api from './endpoints.mjs'
-import { renderMessages } from './messages.mjs'
+import { refreshSessionUsage, renderMessages } from './messages.mjs'
 import { flushSession, markSessionDirty } from './sessionPersistence.mjs'
 import { getActiveRuntime, getRuntime, isGenerating, store, tabKeyOf } from './store.mjs'
 import { appendVisibleEntry, clearRuntimeView, endGeneratingBubble, generatingBubbleFor, handlePreview, handleToolOutput, insertIncrementalEntries, refreshEmptyMode, startGeneratingBubble } from './streamView.mjs'
@@ -303,6 +303,8 @@ export function handleSessionEntryEvent(payload) {
 		const anchor = generatingBubbleFor(session)
 		if (anchor || session === store.session) appendVisibleEntry(entry, anchor)
 	}
+	// 生成外的异步条目（任务通告、压缩摘要）带着自己的调用明细，累计值需要重新按盘上会话取
+	if (entry.extension?.usage) void refreshSessionUsageFromDisk(runtime, session).then(changed => { if (changed) repaintSessionUsage(runtime, session) })
 	refreshEmptyMode()
 }
 
@@ -388,6 +390,7 @@ async function settleRun(runtime, { entries, memory = null, status, error = '' }
 		refreshEmptyMode()
 	}
 	await flushSession(runtime.tabKey)
+	await refreshSessionUsageFromDisk(runtime, session).then(changed => { if (changed) repaintSessionUsage(runtime, session) })
 	runSettledHandler?.({
 		chatName: `code-${session.id}`,
 		sessionId: session.id,
@@ -395,6 +398,36 @@ async function settleRun(runtime, { entries, memory = null, status, error = '' }
 		runId,
 		status,
 	})
+}
+
+/**
+ * 只在会话已被绘制时重绘画面上的累计用量标签。
+ * @param {object} runtime - 对应会话的运行时。
+ * @param {object} session - 该运行时的会话对象。
+ * @returns {void}
+ */
+function repaintSessionUsage(runtime, session) {
+	if (runtime === getActiveRuntime() && store.session === session) refreshSessionUsage()
+}
+
+/**
+ * 终态后只从持久化会话刷新用量，避免把压缩条目与回复累计重复相加；生成中或无运行时时不改动。
+ * @param {object} runtime 对应会话的运行时。
+ * @param {object} session 当前会话对象。
+ * @returns {Promise<boolean>} 成功刷新时返回 true。
+ */
+async function refreshSessionUsageFromDisk(runtime, session) {
+	if (runtime?.session !== session || runtime.status !== 'idle') return false
+	const workspace = store.workspaces.find(item => item.id === session.workspaceId)
+	if (!workspace?.path) return false
+	try {
+		const stored = await api.loadSession({ machine: String(workspace.machine ?? store.machine), workdir: workspace.path }, session.id)
+		if (runtime.session !== session || runtime.status !== 'idle' || !stored) return false
+		if (stored.usage) session.usage = stored.usage
+		else delete session.usage
+		return true
+	}
+	catch { return false }
 }
 
 /**

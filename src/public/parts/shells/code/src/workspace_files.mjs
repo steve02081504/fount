@@ -1,6 +1,9 @@
 /** 工作区文件浏览与文本编辑：路径边界、版本校验及串行保存。 */
 import { Buffer } from 'node:buffer'
 import { createHash } from 'node:crypto'
+import { basename } from 'node:path'
+
+import * as mime from 'npm:mime-types'
 
 import { httpError } from '../../../../../scripts/http_error.mjs'
 import { authenticate, getUserByReq } from '../../../../../server/auth/index.mjs'
@@ -21,6 +24,7 @@ export function parseWorkdir(source) {
 
 /** 工作区编辑器大小上限，保护远程 RPC 负载和浏览器内存。 */
 const WORKSPACE_EDITOR_MAX_BYTES = 16 * 1024 * 1024
+const ATTACHMENT_MAX_BYTES = 10 * 1024 * 1024
 const WORKSPACE_FILE_CHUNK_MAX_BYTES = 256 * 1024
 const WORKSPACE_FILE_SNAPSHOTS_MAX_BYTES = 32 * 1024 * 1024
 const WORKSPACE_FILE_SNAPSHOTS_MAX_ENTRIES = 256
@@ -270,6 +274,20 @@ export function setWorkspaceFileEndpoints(router) {
 				isFile: Boolean(entry.isFile),
 			})),
 		})
+	})
+
+	// 读取工作区中的二进制附件；与编辑器共用路径边界检查，但不要求 UTF-8。
+	router.get('/api/parts/shells\\:code/workspace/attachment', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const workTarget = parseWorkdir(req.query)
+		const relative = workspaceRelativePath(req.query.path)
+		const { executor, absolute } = await resolveWorkspaceFile(username, workTarget, relative)
+		const stat = await executor.statEntry(absolute)
+		if (!stat?.isFile) throw httpError(404, 'Workspace file not found.')
+		if (stat.size > ATTACHMENT_MAX_BYTES) throw httpError(413, 'Attachment exceeds the 10 MiB limit.')
+		const bytes = await executor.readFileBuffer(absolute)
+		if (bytes.length > ATTACHMENT_MAX_BYTES) throw httpError(413, 'Attachment exceeds the 10 MiB limit.')
+		res.json({ name: basename(relative), mime_type: mime.lookup(relative) || 'application/octet-stream', buffer: bytes.toString('base64') })
 	})
 
 	// 读取编辑器文本；offset/limit 启用字节分块模式，由短期快照维持多次请求间的一致性。

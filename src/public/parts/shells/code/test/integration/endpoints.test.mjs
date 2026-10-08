@@ -498,19 +498,22 @@ Deno.test({
 		 * @returns {Promise<void>}
 		 */
 		const setMtime = (id, ms) => fs.utimes(path.join(root, '.fount/code/sessions', `${id}.json`), new Date(ms), new Date(ms))
-		for (const id of ['oldSess01', 'newSess01', 'draftSess01', 'openedSess01'])
+		for (const id of ['oldSess01', 'newSess01', 'draftSess01', 'cliDraftSess01', 'openedSess01'])
 			assertEquals((await codeFetch(node, 'POST', '/sessions', { machine: '0', workdir: root, session: makeSession(id) })).status, 200)
 		// old/draft/opened 回拨 40 天；new 回拨 2 天（近期，但改小保留期后应被清理）
 		await Promise.all([
 			setMtime('oldSess01', oldMs),
 			setMtime('newSess01', Date.now() - 2 * 86400_000),
 			setMtime('draftSess01', oldMs),
+			setMtime('cliDraftSess01', oldMs),
 			setMtime('openedSess01', oldMs),
 		])
 		// 打开会触达 mtime，重算时间
 		assertEquals((await codeFetch(node, 'GET', `/sessions/openedSess01?machine=0&workdir=${encodeURIComponent(root)}`)).status, 200)
 		// 挂未发送草稿
 		await codeFetch(node, 'PUT', '/tabs', { tabs: [{ type: 'session', id: 'draftSess01', workspaceId, draft: '未发送' }], activeTab: '' })
+		assertEquals((await codeFetch(node, 'PUT', '/cli-drafts/cliDraftSess01', { workspaceId, draft: 'CLI pending' })).status, 200)
+		assertEquals((await (await codeFetch(node, 'GET', `/cli-drafts/cliDraftSess01?workspaceId=${workspaceId}`)).json()).draft, 'CLI pending')
 		const query = 'machine=0&workdir=' + encodeURIComponent(root)
 		/**
 		 * 通过列表端点读取当前会话 id（GET /sessions 不触达 mtime，不影响保留时间）。
@@ -522,13 +525,16 @@ Deno.test({
 		assert(removed.includes('oldSess01'), '超期未活动会话被清理')
 		assert(!removed.includes('newSess01'), '近期活动保留')
 		assert(!removed.includes('draftSess01'), '有未发送草稿保留')
+		assert(!removed.includes('cliDraftSess01'), 'CLI 未发送草稿保留')
 		assert(!removed.includes('openedSess01'), '刚打开过保留')
 		assert(!(await listSessionIds()).includes('oldSess01'), '超期会话文件已删')
 		assert((await listSessionIds()).includes('draftSess01'), '有草稿的会话仍在')
 		// 清空草稿后再清理：draftSess01 被删（用列表核对，避免 GET 打开它重算 mtime）
 		await codeFetch(node, 'PUT', '/tabs', { tabs: [], activeTab: '' })
+		await codeFetch(node, 'PUT', '/cli-drafts/cliDraftSess01', { workspaceId, draft: '' })
 		const second = (await (await codeFetch(node, 'POST', '/sessions/cleanup')).json()).removed.map(item => item.id)
 		assert(second.includes('draftSess01'), '草稿清空后超期会话被清理')
+		assert(second.includes('cliDraftSess01'), 'CLI 草稿清空后超期会话被清理')
 		assert(!(await listSessionIds()).includes('draftSess01'))
 		// 保留天数可配置：改为 1 天后 40 天前的会话被清理，刚打开的仍保留
 		assertEquals((await (await codeFetch(node, 'PUT', '/retention', { days: 1 })).json()).days, 1)

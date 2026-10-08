@@ -73,6 +73,62 @@ function makeWorkspace(tag) {
 	return fs.mkdtemp(join(os.tmpdir(), `fount_code_wake_${tag}_`))
 }
 
+/**
+ * 删除临时工作区，直到它真的消失。
+ * `activeCodeRuns` 里的运行在 `finally` 里就被移除，而钩子分发 / 补触发等收尾写入仍在同一条未 await
+ * 的链上继续；此时删目录会让随后的原子写用 `mkdir -p` 把 `.fount/code/sessions` 重建出来，聚合进程
+ * 随后看到的 `fount_code_wake_*` 就是这次重建（Windows 上还会叠一次删除挂起）。
+ * 因此先按「工作区目录树连续三次读取完全一致」等到写入静默，再重试删除。
+ * @param {string} root - 工作区目录。
+ * @returns {Promise<boolean>} 目录最终是否已消失。
+ */
+async function removeWorkspaceSettled(root) {
+	const deadline = Date.now() + 30_000
+	let previous = null
+	let stable = 0
+	while (Date.now() < deadline) {
+		const snapshot = await treeSnapshot(root)
+		stable = snapshot === previous ? stable + 1 : 0
+		previous = snapshot
+		if (stable >= 3) break
+		await new Promise(resolve => setTimeout(resolve, 100))
+	}
+	for (let attempt = 0; attempt < 20; attempt++) {
+		await fs.rm(root, { recursive: true, force: true }).catch(() => { })
+		await new Promise(resolve => setTimeout(resolve, 100))
+		if (!await fs.stat(root).then(() => true, () => false)) return true
+	}
+	return false
+}
+
+/**
+ * 递归读取目录树的内容快照（目录不存在时返回 `missing`）。
+ * @param {string} root - 目录。
+ * @returns {Promise<string>} 稳定化比较用的快照。
+ */
+async function treeSnapshot(root) {
+	const parts = []
+	/**
+	 * 递归收集条目。
+	 * @param {string} dir - 当前目录。
+	 * @returns {Promise<void>}
+	 */
+	async function walk(dir) {
+		const items = await fs.readdir(dir, { withFileTypes: true }).catch(() => null)
+		if (!items) return void parts.push(`missing:${dir}`)
+		for (const item of items.sort((left, right) => left.name.localeCompare(right.name))) {
+			const full = path.join(dir, item.name)
+			if (item.isDirectory()) { parts.push(`d:${full}`); await walk(full) }
+			else {
+				const text = await fs.readFile(full, 'utf8').catch(() => null)
+				parts.push(`f:${full}:${text === null ? 'unreadable' : text.length}`)
+			}
+		}
+	}
+	await walk(root)
+	return parts.join('\n')
+}
+
 Deno.test('requestCodeRunStart starts when idle, marks the wake while a run holds the slot', async () => {
 	// 本用例先于任何 boot 运行：endpoints 尚未注册真实启动器，用假启动器隔离调度语义。
 	const username = 'wake-unit'
@@ -173,8 +229,21 @@ Deno.test('AddChatLogEntry during a run lands in the live session and a wake dra
 			void request.RequestCharReply()
 			await waitUntil(() => activeCodeRuns.has(key), 15000, 20)
 			const run = activeCodeRuns.get(key)
+			const frames = []
+			run.sockets.add({
+				/**
+				 * 收集观察连接收到的原始帧。
+				 * @param {string} frame - 序列化帧。
+				 * @returns {number} 已收集帧数。
+				 */
+				send: frame => frames.push(JSON.parse(frame)),
+			})
 			// 运行中追加：应写入运行中的权威副本
-			await request.AppendChatLogEntry({ role: 'system', content: 'live-notice', charVisibility: ['wsRoundsChar'] })
+			const notice = { id: 'metered-notice', role: 'system', content: 'live-notice', charVisibility: ['wsRoundsChar'], extension: { usage: { calls: [{ inputTokens: 7 }], total: { inputTokens: 7 } } } }
+			await request.AppendChatLogEntry(notice)
+			await request.AppendChatLogEntry(notice)
+			assertEquals(frames.filter(frame => frame.type === 'entries-append' && frame.entries.some(entry => entry.id === notice.id)).length, 1)
+			assertEquals(run.asyncUsage.total.inputTokens, 7)
 			assert(
 				run.requestSession.entries.some(entry => entry.content === 'live-notice'),
 				'运行中追加应落入 run.requestSession.entries',
@@ -208,9 +277,11 @@ Deno.test('AddChatLogEntry during a run lands in the live session and a wake dra
 			return replies >= 2 && !disk.entries.some(entry => entry.is_generating) && !activeCodeRuns.has(key)
 		}, 30000, 50)
 		assert(disk.entries.some(entry => entry.content === 'live-notice'), '运行中追加的条目应随运行收尾落盘')
+		assertEquals(disk.usage.total.inputTokens, 7)
 		assert(disk.entries.filter(entry => entry.role === 'char').length >= 2, '未消费的唤醒应在运行结束后补一次生成')
 	}
 	finally {
-		await fs.rm(root, { recursive: true, force: true })
+		// 收尾写入与运行释放不共享同一个 await 链：删目录前必须等写入静默（见 removeWorkspaceSettled）
+		assert(await removeWorkspaceSettled(root), `临时工作区未能清理：${root}`)
 	}
 })

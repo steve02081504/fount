@@ -5,6 +5,36 @@ import { chatReply_t } from '../public/parts/shells/chat/decl/chatLog.ts'
 import { info_t, locale_t } from './basedefs.ts'
 import { prompt_struct_t } from './prompt_struct.ts'
 
+/** 每百万 token 单价；缺省表示未配置。 */
+export interface TokenPricing {
+	currency: string
+	input?: number
+	cacheRead?: number
+	cacheWrite?: number
+	output?: number
+}
+
+/** 一次实际调用的 provider 计量；输入包含缓存，输出包含推理。 */
+export interface UsageCall {
+	source?: string
+	model?: string
+	purpose?: string
+	inputTokens?: number
+	cacheReadTokens?: number
+	cacheWriteTokens?: number
+	outputTokens?: number
+	reasoningTokens?: number
+	cost?: number
+	currency?: string
+	pricing?: TokenPricing
+}
+
+/** 已记录调用及其合计，未知字段缺省。 */
+export interface Usage {
+	calls: UsageCall[]
+	total: Omit<UsageCall, 'source' | 'model' | 'purpose' | 'cost' | 'currency' | 'pricing'> & { costs?: Record<string, number> }
+}
+
 /**
  * 分词器接口
  * @class Tokenizer_t
@@ -81,6 +111,8 @@ export class AIsource_t<InputType, OutputType> {
 	 * 未知时缺省；消费方应据此保守地裁剪输入，缺失时自行降级。
 	 */
 	context_size?: number
+	/** 可选 token 计费单价。 */
+	pricing?: TokenPricing
 
 	/**
 	 * 按本源的配置把 fount 格式的 `prompt_struct` 构建成其出站形态的 JSON 结构。
@@ -162,10 +194,9 @@ export class GenerationOptions {
 /**
  * 文本 AI 数据源接口
  * @class textAISource_t
- * @augments AIsource_t<string, Promise<string>>
  * 专用于处理文本输入的 AI 数据源。
  */
-export class textAISource_t extends AIsource_t<string, Promise<string>> {
+export class textAISource_t extends AIsource_t<string, Promise<{ content: string, extension?: { usage?: Usage } }>> {
 	/**
 	 * 使用结构化的 prompt 调用 AI 数据源。
 	 * @param {prompt_struct_t} prompt_struct - 结构化的 prompt。

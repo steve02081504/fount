@@ -3,10 +3,10 @@
  */
 import { mkdtempSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { basename, join } from 'node:path'
 
 import { test, expect } from './fixtures.mjs'
-import { API_BASE, holdLocale, leftoverWorkspaceDirs, openCode, releaseLocale, removeAllWorkspacesViaApi, rmDirRetry, selectWorkspaceViaBrowser, useLeftoverWorkspaceCleanup } from './helpers.mjs'
+import { API_BASE, holdLocale, leftoverWorkspaceDirs, openCode, openFolderBrowserViaMenu, releaseLocale, removeAllWorkspacesViaApi, rmDirRetry, selectWorkspaceViaBrowser, useLeftoverWorkspaceCleanup } from './helpers.mjs'
 
 useLeftoverWorkspaceCleanup(test)
 
@@ -67,6 +67,50 @@ test.describe('code shell tabs', () => {
 		}
 		finally {
 			await rmDirRetry(dir)
+		}
+	})
+
+	test('workspace selection reports readiness only when settled and keeps input typed meanwhile', async ({ page, baseUrl }) => {
+		const dir = mkdtempSync(join(tmpdir(), 'fount-code-fe-wsrace-'))
+		leftoverWorkspaceDirs.add(dir)
+		try {
+			await openCode(page, baseUrl)
+			// 卡住切换尾段必经的会话聚合请求，把「确认目录 → 切换落定」之间的窗口钉成确定态：
+			// 窗口不释放就不会自然关闭，输入与切换落定的先后顺序因而完全可复现（不依赖机器快慢）。
+			let releaseSwitch
+			const switchGate = new Promise(resolve => { releaseSwitch = resolve })
+			let switchStarted = false
+			await page.route(url => new URL(url).pathname.endsWith('/sessions/all'), async route => {
+				switchStarted = true
+				await switchGate
+				await route.continue()
+			})
+			await holdLocale(page)
+			try {
+				await openFolderBrowserViaMenu(page)
+				await page.locator('#folder-path-input').fill(dir)
+				await page.locator('#folder-select-button').click()
+				await expect.poll(() => switchStarted, { timeout: 30_000 }).toBe(true)
+				// 切换仍在进行时：工作区 pill 不得宣称已切到新工作区（否则调用方/用户以为可以开始输入）
+				await expect(page.locator('#workspace-pill-label')).not.toContainText(basename(dir))
+				await page.locator('#composer-input').click()
+				await page.keyboard.type('！echo switch-race')
+				releaseSwitch()
+				await expect(page.locator('#workspace-pill-label')).toContainText(basename(dir))
+				// 切换落定后：窗口内输入的文本与 shell 模式留在 composer 里随草稿绑定到新工作区，
+				// 且不额外多出一个草稿标签
+				await expect(page.locator('#composer-input')).toContainText('switch-race')
+				await expect(page.locator('.code-composer-shell')).toHaveClass(/shell-mode/)
+				await expect(page.locator('#tab-strip .code-tab')).toHaveCount(1)
+			}
+			finally {
+				releaseSwitch()
+				await releaseLocale(page)
+			}
+		}
+		finally {
+			await rmDirRetry(dir)
+			await removeAllWorkspacesViaApi(page, baseUrl)
 		}
 	})
 

@@ -239,7 +239,9 @@ export function renderTabs() {
 			const name = workspace?.name || workspace?.path || '?'
 			const avatar = document.createElement('span')
 			avatar.className = 'code-tab-avatar'
-			avatar.textContent = [...name][0]?.toUpperCase() || '·'
+			// 首字母只是视觉标识：用 CSS 生成内容绘制（真实文本节点会被 axe 计入可见文本，而 aria-label 只含标题）
+			avatar.dataset.initial = [...name][0]?.toUpperCase() || '·'
+			avatar.setAttribute('aria-hidden', 'true')
 			const hue = [...name].reduce((sum, ch) => sum + (ch.codePointAt(0) || 0), 0) % 360
 			avatar.style.background = `oklch(72% 0.11 ${hue})`
 			main.appendChild(avatar)

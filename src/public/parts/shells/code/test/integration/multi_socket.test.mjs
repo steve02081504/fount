@@ -10,12 +10,17 @@ import { Buffer } from 'node:buffer'
 import fs from 'node:fs/promises'
 import os from 'node:os'
 import path, { dirname } from 'node:path'
+import { Writable } from 'node:stream'
 import { fileURLToPath } from 'node:url'
 
 import { assert, assertEquals } from 'jsr:@std/assert'
 
 import { waitUntil } from 'fount/scripts/test/core/wait.mjs'
 import { launchNode, stopNode } from 'fount/scripts/test/node/launch.mjs'
+
+import { createCodeClient } from '../../cli/client.mjs'
+import { Run } from '../../cli/main.mjs'
+import { createTransport } from '../../cli/transport.mjs'
 
 import { codeFetch, sessionStream } from './helpers/code_http.mjs'
 
@@ -188,6 +193,11 @@ async function scenarioConcurrentAbort(node) {
 		const abortedA = await wsA.waitFor(frame => frame.type === 'aborted')
 		assertEquals(abortedA.runId, 'run-A')
 		assertEquals(abortedA.sessionId, sessionA.id)
+		const abortedEntry = abortedA.entries.find(entry => entry.name === 'aborted')
+		assertEquals(abortedEntry.extension.usage.total.outputTokens, 2)
+		const storedA = await (await codeFetch(node, 'GET', `/sessions/concA?machine=0&workdir=${encodeURIComponent(root)}`)).json()
+		assertEquals(storedA.entries.find(entry => entry.id === abortedEntry.id).extension.usage, abortedEntry.extension.usage)
+		assertEquals(storedA.usage.calls.length, 1)
 		// B 在 A 中止后继续流式并正常完成
 		const doneB = await wsB.waitFor(frame => frame.type === 'done')
 		assertEquals(doneB.runId, 'run-B')
@@ -337,6 +347,203 @@ async function scenarioSuperseded(node) {
 	}
 }
 
+/**
+ * 场景六：CLI 式提交在会话忙时拒绝取代，并在版本过期时报告冲突；attach 回放只发给新连接。
+ * @param {object} node - 共享测试节点。
+ * @returns {Promise<void>}
+ */
+async function scenarioCliBusyAndVersion(node) {
+	const { root } = await makeWorkspace(node, 'cli-guard')
+	const sockets = []
+	try {
+		const session = makeSession('cliguard01', 'wsSlowChar')
+		assertEquals((await codeFetch(node, 'POST', '/sessions', { machine: '0', workdir: root, session })).status, 200)
+		session.version = 1
+		const owner = openFramesWs(sessionWsUrl(node)); sockets.push(owner)
+		const observer = openFramesWs(sessionWsUrl(node)); sockets.push(observer)
+		await Promise.all([owner.ready, observer.ready])
+		owner.send({ type: 'send', runId: 'guard-owner', session, machine: '0', workdir: root, content: 'slow-owner', expectedVersion: 1, replace: false })
+		await owner.waitFor(frame => frame.type === 'run-start' && frame.runId === 'guard-owner')
+		observer.send({ type: 'attach', sessionId: session.id })
+		await observer.waitFor(frame => frame.type === 'run-start' && frame.runId === 'guard-owner')
+		assertEquals(owner.frames.filter(frame => frame.type === 'run-start' && frame.runId === 'guard-owner').length, 1)
+		observer.send({ type: 'send', runId: 'guard-busy', session, machine: '0', workdir: root, content: 'must-not-replace', expectedVersion: 1, replace: false })
+		const busy = await observer.waitFor(frame => frame.type === 'error' && frame.runId === 'guard-busy')
+		assertEquals(busy.code, 'busy')
+		owner.send({ type: 'abort', sessionId: session.id, runId: 'guard-owner' })
+		await owner.waitFor(frame => frame.type === 'aborted' && frame.runId === 'guard-owner')
+		const stale = openFramesWs(sessionWsUrl(node)); sockets.push(stale); await stale.ready
+		stale.send({ type: 'send', runId: 'guard-stale', session, machine: '0', workdir: root, content: 'stale', expectedVersion: 1, replace: false })
+		const conflict = await stale.waitFor(frame => frame.type === 'error' && frame.runId === 'guard-stale')
+		assertEquals(conflict.code, 'version-conflict')
+	}
+	finally {
+		for (const socket of sockets) socket.close()
+		await fs.rm(root, { recursive: true, force: true })
+	}
+}
+
+/**
+ * 两个同时到达的 CLI 提交即使在读同一份磁盘版本时也只能有一个成为运行。
+ * @param {object} node - 共享测试节点。
+ * @returns {Promise<void>}
+ */
+async function scenarioSimultaneousCliSend(node) {
+	const { root } = await makeWorkspace(node, 'cli-simultaneous')
+	const sockets = []
+	try {
+		const session = makeSession('clirace01', 'wsSlowChar')
+		assertEquals((await codeFetch(node, 'POST', '/sessions', { machine: '0', workdir: root, session })).status, 200)
+		session.version = 1
+		const first = openFramesWs(sessionWsUrl(node)); sockets.push(first)
+		const second = openFramesWs(sessionWsUrl(node)); sockets.push(second)
+		await Promise.all([first.ready, second.ready])
+		first.send({ type: 'send', runId: 'race-one', session, machine: '0', workdir: root, content: 'slow-one', expectedVersion: 1, replace: false })
+		second.send({ type: 'send', runId: 'race-two', session, machine: '0', workdir: root, content: 'slow-two', expectedVersion: 1, replace: false })
+		const [a, b] = await Promise.all([
+			first.waitFor(frame => frame.runId === 'race-one' && ['run-start', 'error'].includes(frame.type)),
+			second.waitFor(frame => frame.runId === 'race-two' && ['run-start', 'error'].includes(frame.type)),
+		])
+		assertEquals([a.type, b.type].sort(), ['error', 'run-start'])
+		assertEquals((a.type === 'error' ? a : b).code, 'busy')
+		const owner = a.type === 'run-start' ? first : second
+		owner.send({ type: 'abort', sessionId: session.id, runId: a.type === 'run-start' ? 'race-one' : 'race-two' })
+		await owner.waitFor(frame => frame.type === 'aborted')
+	}
+	finally {
+		for (const socket of sockets) socket.close()
+		await fs.rm(root, { recursive: true, force: true })
+	}
+}
+
+/**
+ * 另一个工作区的 CLI 观察者不能接入或中止同 ID 的运行。
+ * @param {object} node - 共享测试节点。
+ * @returns {Promise<void>}
+ */
+async function scenarioScopedCliAttachAbort(node) {
+	const firstWorkspace = await makeWorkspace(node, 'cli-target-one')
+	const secondWorkspace = await makeWorkspace(node, 'cli-target-two')
+	const sockets = []
+	try {
+		const session = makeSession('clitarget01', 'wsSlowChar')
+		assertEquals((await codeFetch(node, 'POST', '/sessions', { machine: '0', workdir: firstWorkspace.root, session })).status, 200)
+		const owner = openFramesWs(sessionWsUrl(node)); sockets.push(owner)
+		const other = openFramesWs(sessionWsUrl(node)); sockets.push(other)
+		await Promise.all([owner.ready, other.ready])
+		owner.send({ type: 'send', runId: 'target-owner', session: { ...session, version: 1 }, machine: '0', workdir: firstWorkspace.root, content: 'slow-owner', expectedVersion: 1, replace: false })
+		await owner.waitFor(frame => frame.type === 'run-start' && frame.runId === 'target-owner')
+		other.send({ type: 'attach', sessionId: session.id, machine: '0', workdir: secondWorkspace.root })
+		assertEquals((await other.waitFor(frame => frame.type === 'error')).error, 'no active run')
+		other.send({ type: 'abort', sessionId: session.id, runId: 'target-owner', machine: '0', workdir: secondWorkspace.root })
+		owner.send({ type: 'attach', sessionId: session.id, runId: 'different-run', machine: '0', workdir: firstWorkspace.root })
+		assertEquals((await owner.waitFor(frame => frame.type === 'error')).error, 'no active run')
+		owner.send({ type: 'abort', sessionId: session.id, runId: 'target-owner', machine: '0', workdir: firstWorkspace.root })
+		await owner.waitFor(frame => frame.type === 'aborted' && frame.runId === 'target-owner')
+	}
+	finally {
+		for (const socket of sockets) socket.close()
+		await fs.rm(firstWorkspace.root, { recursive: true, force: true })
+		await fs.rm(secondWorkspace.root, { recursive: true, force: true })
+	}
+}
+
+/**
+ * 场景七：CLI 传输层与客户端能通过 HTTP/WS 完成一轮并落盘。
+ * @param {object} node - 共享测试节点。
+ * @returns {Promise<void>}
+ */
+async function scenarioCliClient(node) {
+	const { root, workspaceId } = await makeWorkspace(node, 'cli-client')
+	try {
+		const transport = createTransport({ baseUrl: node.baseUrl, apiKey: node.apiKey })
+		const client = createCodeClient({ transport, workspaceId, username: 'code-multi-user', char: 'wsEchoChar' })
+		await client.selectWorkspace(workspaceId)
+		await client.openSession('cliclient01')
+		const result = await client.run({ input: 'hello from CLI' })
+		assertEquals(result.status, 'done')
+		assert(result.entries.some(entry => entry.role === 'char'))
+		const stored = await transport.get(`/api/parts/shells:code/sessions/${client.state.sessionId}?machine=0&workdir=${encodeURIComponent(root)}`)
+		assertEquals(stored.entries.filter(entry => entry.role === 'user').length, 1)
+		client.dispose()
+	}
+	finally { await fs.rm(root, { recursive: true, force: true }) }
+}
+
+/**
+ * 场景八：print 入口真跑一轮，确认它落盘、只把本轮文本写 stdout、把身份信息写 stderr。
+ * @param {object} node - 共享测试节点。
+ * @returns {Promise<void>}
+ */
+async function scenarioCliPrint(node) {
+	const { root, workspaceId } = await makeWorkspace(node, 'cli-print')
+	const out = []
+	const err = []
+	const cleanups = []
+	/**
+	 * 造一个把写入内容收集起来的可写流。
+	 * @param {string[]} chunks - 收集目标。
+	 * @returns {Writable} 捕获流。
+	 */
+	const capture = chunks => new Writable({
+		/**
+		 * 记录一次写入。
+		 * @param {Buffer} chunk - 写入的字节。
+		 * @param {string} _encoding - 编码名。
+		 * @param {Function} callback - 完成回调。
+		 * @returns {void} 无返回值。
+		 */
+		write(chunk, _encoding, callback) { chunks.push(String(chunk)); callback() },
+	})
+	try {
+		const code = await Run({
+			args: ['--print', '--session', 'print01', '--char', 'wsEchoChar', '--prompt', 'hello print'],
+			data: { baseUrl: node.baseUrl, apiKey: node.apiKey, username: 'code-multi-user', workspaceId },
+			stdin: { isTTY: false }, stdout: capture(out), stderr: capture(err), isTTY: false,
+			/**
+			 * 登记直接调用 Run 所需的清理回调。
+			 * @param {Function} callback - 清理回调。
+			 * @returns {void} 无返回值。
+			 */
+			onCleanup: callback => { cleanups.push(callback) },
+		})
+		assertEquals(code, 0)
+		const outputEntries = out.join('').trim().split('\n').map(line => JSON.parse(line))
+		assert(outputEntries.some(entry => entry.role === 'char' && entry.name === 'wsEchoChar'), 'print NDJSON writes the committed assistant entry')
+		assert(outputEntries.some(entry => entry.role === 'user' && entry.content === 'hello print'), 'print NDJSON includes the submitted user entry')
+		const reply = outputEntries.find(entry => entry.role === 'char' && entry.name === 'wsEchoChar')
+		assertEquals(reply.extension.usage.total.outputTokens, 2, 'reply entry carries its usage in extension')
+		const stored = await (await codeFetch(node, 'GET', `/sessions/print01?machine=0&workdir=${encodeURIComponent(root)}`)).json()
+		assertEquals(stored.usage.total.inputTokens, 3, 'session aggregate persists the recorded run usage')
+		assertEquals(stored.usage.total.outputTokens, 2, 'session aggregate preserves output usage')
+		assert(err.join('').includes('sessionId=print01'), '会话身份写 stderr')
+		assert(err.join('').includes('runId='), '运行身份写 stderr')
+		out.length = 0
+		const failedCode = await Run({
+			args: ['--print', '--session', 'failed01', '--char', 'wsEchoChar', '--prompt', 'metered failure'],
+			data: { baseUrl: node.baseUrl, apiKey: node.apiKey, username: 'code-multi-user', workspaceId },
+			stdin: { isTTY: false }, stdout: capture(out), stderr: capture(err), isTTY: false,
+			/**
+			 * 登记失败运行的清理回调。
+			 * @param {Function} callback - 清理回调。
+			 * @returns {void} 无返回值。
+			 */
+			onCleanup: callback => { cleanups.push(callback) },
+		})
+		assertEquals(failedCode, 1)
+		const failedEntries = out.join('').trim().split('\n').map(line => JSON.parse(line))
+		const failure = failedEntries.find(entry => entry.role === 'system' && entry.name === 'error')
+		assertEquals(failure.extension.usage.total.outputTokens, 2)
+		const failedStored = await (await codeFetch(node, 'GET', `/sessions/failed01?machine=0&workdir=${encodeURIComponent(root)}`)).json()
+		assertEquals(failedStored.entries.find(entry => entry.id === failure.id).extension.usage, failure.extension.usage)
+		assertEquals(failedStored.usage.calls.length, 1)
+	}
+	finally {
+		for (const cleanup of cleanups.reverse()) await cleanup()
+		await fs.rm(root, { recursive: true, force: true })
+	}
+}
+
 Deno.test({
 	name: 'code session multi-socket runtime (concurrent abort / multi-attach / settled / files-only / supersede)',
 	timeout: 120_000,
@@ -349,6 +556,11 @@ Deno.test({
 		await t.step('code-run-settled is emitted after the completed run is persisted', () => scenarioRunSettled(node))
 		await t.step('files-only send succeeds and persists the user entry attachments', () => scenarioFilesOnly(node))
 		await t.step('a superseded run does not emit code-run-settled', () => scenarioSuperseded(node))
+		await t.step('CLI send refuses busy and stale session versions; attach replay stays local', () => scenarioCliBusyAndVersion(node))
+		await t.step('simultaneous CLI sends admit only one run', () => scenarioSimultaneousCliSend(node))
+		await t.step('CLI attach and abort are scoped to the selected workspace and run', () => scenarioScopedCliAttachAbort(node))
+		await t.step('CLI print entry point emits one persisted turn to stdout', () => scenarioCliPrint(node))
+		await t.step('CLI transport and client send a persisted round over HTTP and WS cookies', () => scenarioCliClient(node))
 	}
 	finally {
 		await stopNode(node)

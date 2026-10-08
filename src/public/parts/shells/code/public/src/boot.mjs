@@ -30,6 +30,7 @@ import {
 	renderAiSourceMenu,
 	renderAiSourcePillLabel,
 	renderCharRecommendation,
+	renderContextChip,
 	renderMachineMenu,
 	renderMachinePillLabel,
 	renderModeMenu,
@@ -95,6 +96,7 @@ async function handleExternalOpen(payload) {
 function rerenderDynamicText() {
 	refreshHomePicker()
 	renderTabs()
+	renderContextChip()
 	renderMachinePillLabel()
 	renderMachineMenu()
 	renderWorkspacePillLabel()
