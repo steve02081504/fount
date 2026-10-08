@@ -62,13 +62,13 @@ Live tests inject shared loopback relays via `init({ P2P: { signaling: { channel
 
 ## Nostr relay publish health and answer retries
 
-#42 is still open, so nothing below is active in the pinned package. The fix there is to record each publish target's result, including results that arrive after another relay already accepted the event: `publishEvent()` succeeds as soon as any target accepts, and when every target rejects or times out it records each outcome before failing. A publish failure demotes that relay for 30 minutes. Probe successes do not clear that publish-failure cooldown; a later successful publish does.
+Fixed in `0.0.51`, which fount now pins ([#42](https://github.com/steve02081504/fount-p2p/issues/42), `f361376` + `7155b3b`): each publish target's result is recorded, including results that arrive after another relay already accepted the event. `publishEvent()` succeeds as soon as any target accepts, and when every target rejects or times out it records each outcome before failing. A publish failure demotes that relay for 30 minutes. Probe successes do not clear that publish-failure cooldown; a later successful publish does.
 
 `getListenRelays()` excludes only the known `NIP66_BOOTSTRAP_RELAYS` until this node has successfully published to them. These bootstrap relays remain discovery sources while ordinary NIP-66 discoveries remain eligible for publish testing. Explicit relay URLs in `channels.nostr.relay` or node `relayUrls` remain configured publish targets even while their pool health is poor; their outcomes still update pool health.
 
 When an answerer's initial WebRTC answer publish fails before the link is ready, it retries after 200 ms and then 500 ms, for up to three sends total. It stops retrying if the peer connection was replaced or closed, or the link is already ready.
 
-The measurement below was collected one relay at a time through `sendNodeSignalPacket()` (kind 20787) on 2026-10-07, on the pinned `0.0.50` release:
+The measurement below was collected one relay at a time through `sendNodeSignalPacket()` (kind 20787) on 2026-10-07, on `0.0.50` (pre-#42, so rejections were not recorded yet):
 
 | relay | publish result |
 | --- | --- |
@@ -89,9 +89,11 @@ p2p:webrtc answer gathered { rung: 0, policy: 'drop', candidates: 6, hasCandidat
 p2p:webrtc fail { err: 'p2p: link closed before ready (signal-error:nostr: publish ok timeout for wss://relay.nostr.watch)' }
 ```
 
-Today this can leave `ensureLinkToNode()` returning `null` while the peer only reports `remote-close`, which looks like an ICE/NAT failure. A green `fed_*` run cannot catch this because its loopback relays always accept. The intended fix adds per-relay publish health and the bounded answer retry described above.
+Before `0.0.51` this could leave `ensureLinkToNode()` returning `null` while the peer only reported `remote-close`, which looked like an ICE/NAT failure. A green `fed_*` run cannot catch this because its loopback relays always accept. Since `0.0.51` records per-relay publish health and retries a failed answer signal, a relay that will not carry our kinds is demoted out of `getWorkingRelays()` / `getListenRelays()` instead.
 
-The fount-p2p version fount pins (`^0.0.50` in `deno.json`) predates #42, and for `0.0.x` the caret admits no newer patch — picking up the fix means bumping that pin. Until then the behavior above is not active.
+The fount pin (`deno.json`) is `^0.0.52`. On the `0.0.51` pin the runtime passes `getRelayUrls`, which selects the explicit-relay branch even without manual pinning: directed signals go only to local relays while receivers subscribe on their own sets. With disjoint sets, dials can end as `handshake-timeout` despite fresh adverts and accepted publishes ([fount-p2p#43](https://github.com/steve02081504/fount-p2p/issues/43)). Discovery can produce an intersection without manual configuration; the recorded two-host workaround was to force one by pinning. The ordinary provider routing branch already chooses peer listen relays, but the runtime callback bypasses it.
+
+The `0.0.52` package publishes directed signals to the union of the explicit local set and the peer's advertised listen set. The existing destination gate and validated DNS targets still apply; bidirectional delivery no longer needs intersecting local sets when both peers advertise usable relays. Routing with no accepting relay now rejects instead of returning success. The same release stops the `MaxListenersExceededWarning` that concurrent publish fan-out produced on `0.0.51`, where the shared relay socket's listener limit was computed once from a queue-length snapshot at attach time and publishes queued afterwards pushed the live count past it ([fount-p2p#44](https://github.com/steve02081504/fount-p2p/issues/44)). The warning is diagnostic only: after `0.0.52`, seeing it again means that warning class is real.
 
 To pin a known-good relay set explicitly (optional), update `node.json` through the package API and re-register signaling:
 
