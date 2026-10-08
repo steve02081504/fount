@@ -224,6 +224,23 @@ await testCase('creator join-snapshot + catchup sees joiner', async () => {
 
 await testCase('creator members>=2 after DM join', async () => WaitFedMembers(creator, gid, 2, 120))
 
+await testCase('both DM users hold admin on both replicas after federation join', async () => pollUntil(async () => {
+	for (const node of [creator, joiner]) {
+		await Api(node, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('3s') })
+		const response = await Api(node, 'GET', `/groups/${gid}/state`)
+		// /state 已过滤非 active 成员，DTO 的种类字段是 kind。
+		const users = response.json?.meta?.members?.filter(member => member.kind === 'user') || []
+		if (response.status !== 200 || users.length !== 2 || users.some(member => !member.roles?.includes('admin'))) return false
+	}
+	return true
+}, 90, 3))
+
+await testCase('joining DM user can rename the group', async () => {
+	const response = await Api(joiner, 'PUT', `/groups/${gid}/meta`, { name: 'DM · renamed by joining member' })
+	if (response.status !== 200) throw new Error(`joiner meta update ${response.status}: ${response.raw}`)
+	return true
+})
+
 await testCase('joiner state has openable channel', async () => pollUntil(async () => {
 	await Api(joiner, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('4s') })
 	const s = await Api(joiner, 'GET', `/groups/${gid}/state`)

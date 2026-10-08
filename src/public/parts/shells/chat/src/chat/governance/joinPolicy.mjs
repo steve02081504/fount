@@ -111,9 +111,13 @@ export async function validateJoinPolicy(state, event, replicaUsername, options 
 	const hasDmIntroProof = (content.dmIntroNonce || '').length >= 16
 		&& /^[\da-f]{128}$/iu.test((content.dmIntroSignatureHex || '').replace(/^0x/iu, ''))
 	const dmMeta = state.groupMeta || {}
-	const dmKnownPeer = dmMeta.dmKind === 'ecdh' && [dmMeta.dmPeerPubKeyHex, dmMeta.dmMyPubKeyHex, dmMeta.dmPubKeyLow, dmMeta.dmPubKeyHigh]
+	// DM 的另一方是本群天然成员，不需要邀请码。比较的必须是**实体活跃公钥**（member_join 的绑定字段
+	// `entityActivePubKeyHex`，由 authorizeEvent 用 bindingSig + 归属证明校验过）：
+	// `event.sender` 是 per-group signer 的 pubKeyHash，与实体公钥不是同一命名空间，拿它比对永远为 false。
+	const dmPartyPubKeys = [dmMeta.dmPeerPubKeyHex, dmMeta.dmMyPubKeyHex, dmMeta.dmPubKeyLow, dmMeta.dmPubKeyHigh]
 		.filter(Boolean)
-		.includes(senderKey)
+	const senderEntityPubKey = String(content.entityActivePubKeyHex || '')
+	const dmKnownPeer = dmMeta.dmKind === 'ecdh' && !!senderEntityPubKey && dmPartyPubKeys.includes(senderEntityPubKey)
 	if (joinPolicy === 'invite-only' && !hasDmIntroProof && activeBefore > 0 && !senderAlreadyActive && !dmKnownPeer) {
 		if (!content.inviteCode)
 			throw joinPolicyError('member_join requires inviteCode', { pendable: fromFederation })

@@ -7,8 +7,15 @@
  */
 import { randomUUID } from 'node:crypto'
 
+// 联邦 DAG 依赖注入（side-effect）。chat/main.mjs 会预加载它，但 home 等直接调用 createEcdhDmGroup /
+// performMemberJoin 的外部入口不经过 chat shell 的 Load，缺了它房间凭证解析会抛
+// `initFederationDagDeps must run before federation features`，DM 群会静默地永远不进联邦房间。
+import '../dag/index.mjs'
+
 import { resolveActiveMemberKey, resolveActiveMemberKeyForLocalUser } from '../../group/access.mjs'
+import { hasPermission, PERMISSIONS, GROUP_SCOPE_ID } from '../../permissions/chat.mjs'
 import { appendSignedLocalEvent } from '../dag/append.mjs'
+import { withGroupWriteLock } from '../dag/groupLock.mjs'
 import { createGroup } from '../dag/lifecycle.mjs'
 import { getLocalSignerForNewGroup, peekLocalSignerPubKeyHash } from '../dag/localSigner.mjs'
 import { getState, rebuildAndSaveCheckpoint } from '../dag/materialize.mjs'
@@ -51,7 +58,7 @@ export async function findDmGroupBySessionTag(username, dmSessionTag) {
  * @param {string} username 当前用户
  * @param {string} myPubKeyHex 本端 ECDH 公钥（实体稳定公钥；与本群 local signer 可不同）
  * @param {string} peerPubKeyHex 对端公钥
- * @param {{ entityHash?: string }} [options] 建群实体（缺省 operator）
+ * @param {{ entityHash?: string, friendBinding?: object }} [options] 建群实体（缺省 operator）与好友绑定
  * @returns {Promise<{ groupId: string, defaultChannelId: string | null, dmSessionTag: string }>} 新建或已存在的 DM 群
  */
 export async function createEcdhDmGroup(username, myPubKeyHex, peerPubKeyHex, options = {}) {
@@ -73,6 +80,8 @@ export async function createEcdhDmGroup(username, myPubKeyHex, peerPubKeyHex, op
 		defaultChannelName: '',
 		markDefaultChannel: false,
 		enableGroupFederation: true,
+		// 带绑定的 DM 才会进 Hub 好友列表（friendRows 只收有 friendBinding 的群）；缺省不写，保持旧行为。
+		...options.friendBinding ? { friendBinding: options.friendBinding } : {},
 	})
 	const { groupId } = result
 	registerGroupRuntime(groupId, username)
@@ -116,7 +125,10 @@ export async function createEcdhDmGroup(username, myPubKeyHex, peerPubKeyHex, op
 	await rebuildAndSaveCheckpoint(username, groupId, { skipChannelGc: true })
 
 	invalidateFederationRoomCache(username, groupId)
-	void ensureFederationRoom(username, groupId).catch(error => console.error('DM federation bind:', error))
+	// 房间没建成时必须留下痕迹：否则这个 DM 群只会「存在但没有联邦房间」，对方的入群永远汇合不过来。
+	void ensureFederationRoom(username, groupId)
+		.then(slot => { if (!slot) console.error('DM federation room was not joined', { groupId }) })
+		.catch(error => console.error('DM federation bind:', error))
 
 	return {
 		groupId,
@@ -129,23 +141,25 @@ export async function createEcdhDmGroup(username, myPubKeyHex, peerPubKeyHex, op
  * ECDH 双人 DM：第二成员入群后双方均为 admin。
  * @param {string} username replica 所有者
  * @param {string} groupId 群 ID
- * @param {object} [state] 已物化 state（省略则重新加载）
  * @returns {Promise<void>}
  */
-export async function maybeAssignEcdhDmAdmin(username, groupId, state) {
-	const materialized = state ?? (await getState(username, groupId)).state
-	if (materialized.groupMeta?.dmKind !== 'ecdh') return
-	const activeUsers = Object.values(materialized.members)
-		.filter(member => member?.status === 'active' && member.memberKind !== 'agent')
-	if (activeUsers.length !== 2) return
-	const joinerKey = await resolveActiveMemberKeyForLocalUser(username, groupId, materialized)
-	if (!joinerKey) return
-	const joiner = materialized.members[joinerKey]
-	if ((joiner.roles || []).includes('admin')) return
-	await appendSignedLocalEvent(username, groupId, {
-		type: 'role_assign',
-		timestamp: Date.now(),
-		content: { targetMemberKey: joinerKey, roleId: 'admin' },
+export async function maybeAssignEcdhDmAdmin(username, groupId) {
+	await withGroupWriteLock(username, groupId, async () => {
+		// 锁内重新读取，避免并发 catch-up 或编排入口使用旧角色表重复授予。
+		const materialized = (await getState(username, groupId)).state
+		if (materialized.groupMeta?.dmKind !== 'ecdh' || materialized.groupSettings?.batterySaver) return
+		const activeUsers = Object.entries(materialized.members)
+			.filter(([, member]) => member?.status === 'active' && member.memberKind !== 'agent')
+		if (activeUsers.length !== 2) return
+		const localKey = await resolveActiveMemberKeyForLocalUser(username, groupId, materialized)
+		if (!localKey || !hasPermission(materialized.members[localKey], PERMISSIONS.MANAGE_ADMINS,
+			materialized.roles, GROUP_SCOPE_ID, materialized.groupPermissions)) return
+		for (const [targetMemberKey, member] of activeUsers) {
+			if ((member.roles || []).includes('admin')) continue
+			await appendSignedLocalEvent(username, groupId, {
+				type: 'role_assign', timestamp: Date.now(), content: { targetMemberKey, roleId: 'admin' },
+			})
+		}
 	})
 }
 
@@ -176,8 +190,7 @@ export async function orchestrateDmFirstContact(username, introPubKeyHex, dmIntr
 					pubKeyHex: myPubKey,
 				},
 			})
-		const { state: afterJoin } = await getState(username, existing.groupId)
-		await maybeAssignEcdhDmAdmin(username, existing.groupId, afterJoin)
+		await maybeAssignEcdhDmAdmin(username, existing.groupId)
 
 		return {
 			groupId: existing.groupId,
@@ -266,8 +279,8 @@ export async function performMemberJoin(username, groupId, options = {}) {
 			console.error('performMemberJoin ensureFederationRoom:', error)
 		})
 		await appendSignedLocalEvent(username, groupId, { type: 'member_join', timestamp: Date.now(), content }, { entityHash })
+		await maybeAssignEcdhDmAdmin(username, groupId)
 		const { state: afterJoin } = await getState(username, groupId)
-		await maybeAssignEcdhDmAdmin(username, groupId, afterJoin)
 		defaultChannelId = afterJoin.groupSettings?.defaultChannelId ?? null
 		try {
 			// 发布加入者 entity profile 到 EVFS，让远端成员能验证 member_join 的活跃钥归属。
