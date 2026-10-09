@@ -2784,8 +2784,6 @@
 				"context": {
 					"manage": "Beheer groep",
 					"notifyPrefs": "Meldingsinstellingen",
-					"invite": "Nodig anderen uit",
-					"inviteCopied": "Uitnodigingslink gekopieerd naar klembord",
 					"addChar": "Rol toevoegen",
 					"addCharLabel": "Selecteer rol",
 					"addCharSubmit": "Toevoegen aan",
@@ -2802,6 +2800,10 @@
 						"confirm": "Weet je zeker dat je de groep \"${name}\" wilt verlaten? Je kunt geen berichten meer bekijken in deze groep.",
 						"confirmBatch": "Weet je zeker dat je de ${count} geselecteerde groepen wilt verlaten? Dit apparaat bewaart geen gegevens meer voor deze groepen.",
 						"ok": "Verliet de groep"
+					},
+					"invite": {
+						"main": "Nodig anderen uit",
+						"copied": "Uitnodigingslink gekopieerd naar klembord"
 					}
 				},
 				"descriptionEmpty": "Er is nog geen profiel voor deze groep.",

@@ -2784,8 +2784,6 @@
 				"context": {
 					"manage": "Stjórna hóp",
 					"notifyPrefs": "Stillingar tilkynninga",
-					"invite": "Bjóddu öðrum",
-					"inviteCopied": "Boðstengillinn afritaður á klippiFánarð",
 					"addChar": "Bæta við hlutverki",
 					"addCharLabel": "Veldu hlutverk",
 					"addCharSubmit": "Bæta við",
@@ -2802,6 +2800,10 @@
 						"confirm": "Ertu viss um að þú viljir yfirgefa hópinn \"${name}\"? Þú munt ekki lengur geta skoðað skilaboð í þessum hópi.",
 						"confirmBatch": "Ertu viss um að þú viljir yfirgefa ${count} valda hópa? Vélin mun ekki lengur geyma gögn fyrir þessa hópa.",
 						"ok": "Yfirgaf hópinn"
+					},
+					"invite": {
+						"main": "Bjóddu öðrum",
+						"copied": "Boðstengillinn afritaður á klippiFánarð"
 					}
 				},
 				"descriptionEmpty": "Það er enginn prófíll fyrir þennan hóp ennþá.",

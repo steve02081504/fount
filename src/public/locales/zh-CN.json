@@ -2784,8 +2784,6 @@
 				"context": {
 					"manage": "管理群",
 					"notifyPrefs": "通知设置",
-					"invite": "邀请他人",
-					"inviteCopied": "邀请链接已复制到剪贴板",
 					"addChar": "添加角色",
 					"addCharLabel": "选择角色",
 					"addCharSubmit": "添加",
@@ -2802,6 +2800,14 @@
 						"confirm": "确定要退出群「${name}」吗？你将无法再查看此群消息。",
 						"confirmBatch": "确定要退出所选的 ${count} 个群吗？本机将不再保留这些群的数据。",
 						"ok": "已退出群组"
+					},
+					"invite": {
+						"main": "邀请他人",
+						"copied": "邀请链接已复制到剪贴板",
+						"copy": "复制邀请链接",
+						"help": "把邀请链接发给朋友，对方打开后即可加入群聊。",
+						"link": "邀请链接",
+						"manualCopy": "请复制已选中的邀请链接"
 					}
 				},
 				"descriptionEmpty": "这个群组还没有简介。",

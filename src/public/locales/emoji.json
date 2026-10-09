@@ -2784,8 +2784,6 @@
 				"context": {
 					"manage": "👥⚙️",
 					"notifyPrefs": "🔔⚙️",
-					"invite": "📨👤",
-					"inviteCopied": "🎟️✅📋",
 					"addChar": "➕🎭",
 					"addCharLabel": "👆🎭",
 					"addCharSubmit": "➕",
@@ -2802,6 +2800,10 @@
 						"confirm": "⬅️👥「${name}」❓🚫👀💬",
 						"confirmBatch": "⬅️ ${count} 👥❓💻🚫💾",
 						"ok": "✅⬅️👥"
+					},
+					"invite": {
+						"main": "📨👤",
+						"copied": "🎟️✅📋"
 					}
 				},
 				"descriptionEmpty": "📝📭👥",

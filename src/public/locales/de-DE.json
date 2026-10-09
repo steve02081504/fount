@@ -2784,8 +2784,6 @@
 				"context": {
 					"manage": "Managementgruppe",
 					"notifyPrefs": "Benachrichtigungseinstellungen",
-					"invite": "Laden Sie andere ein",
-					"inviteCopied": "Einladungslink in die Zwischenablage kopiert",
 					"addChar": "Rolle hinzufügen",
 					"addCharLabel": "Rolle auswählen",
 					"addCharSubmit": "Hinzufügen zu",
@@ -2802,6 +2800,10 @@
 						"confirm": "Sind Sie sicher, dass Sie die Gruppe „${name}“ verlassen möchten? Sie können Nachrichten in dieser Gruppe nicht mehr anzeigen.",
 						"confirmBatch": "Sind Sie sicher, dass Sie die ausgewählten ${count} Gruppen verlassen möchten? Dieses Gerät speichert keine Daten mehr für diese Gruppen.",
 						"ok": "Verließ die Gruppe"
+					},
+					"invite": {
+						"main": "Laden Sie andere ein",
+						"copied": "Einladungslink in die Zwischenablage kopiert"
 					}
 				},
 				"descriptionEmpty": "Für diese Gruppe gibt es noch kein Profil.",

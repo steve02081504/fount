@@ -2784,8 +2784,6 @@
 				"context": {
 					"manage": "Manage group",
 					"notifyPrefs": "Notification settings",
-					"invite": "Invite others",
-					"inviteCopied": "Invitation link copied to clipboard",
 					"addChar": "Add role",
 					"addCharLabel": "Select role",
 					"addCharSubmit": "Add",
@@ -2802,6 +2800,14 @@
 						"confirm": "Are you sure you want to leave the group \"${name}\"? You will no longer be able to view messages in this group.",
 						"confirmBatch": "Are you sure you want to leave the ${count} selected groups? This device will no longer retain data for these groups.",
 						"ok": "Left the group"
+					},
+					"invite": {
+						"main": "Invite others",
+						"copied": "Invitation link copied to clipboard",
+						"copy": "Copy invitation link",
+						"help": "Send this invitation to your friend so they can join the conversation.",
+						"link": "Invitation link",
+						"manualCopy": "Copy the selected invitation link"
 					}
 				},
 				"descriptionEmpty": "There is no profile for this group yet.",

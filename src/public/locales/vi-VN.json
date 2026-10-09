@@ -2784,8 +2784,6 @@
 				"context": {
 					"manage": "Nhóm quản lý",
 					"notifyPrefs": "Cài đặt thông báo",
-					"invite": "Mời người khác",
-					"inviteCopied": "Đã sao chép liên kết lời mời vào bảng nhớ tạm",
 					"addChar": "Thêm vai trò",
 					"addCharLabel": "Chọn vai trò",
 					"addCharSubmit": "Thêm",
@@ -2802,6 +2800,10 @@
 						"confirm": "Bạn có chắc muốn rời nhóm \"${name}\"? Bạn sẽ không xem được tin nhắn trong nhóm này nữa.",
 						"confirmBatch": "Bạn có chắc muốn rời ${count} nhóm đã chọn? Máy sẽ không còn giữ dữ liệu các nhóm này.",
 						"ok": "Đã rời nhóm"
+					},
+					"invite": {
+						"main": "Mời người khác",
+						"copied": "Đã sao chép liên kết lời mời vào bảng nhớ tạm"
 					}
 				},
 				"descriptionEmpty": "Chưa có hồ sơ cho nhóm này.",

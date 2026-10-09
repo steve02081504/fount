@@ -2784,8 +2784,6 @@
 				"context": {
 					"manage": "管理群",
 					"notifyPrefs": "通知設定",
-					"invite": "邀請他人",
-					"inviteCopied": "邀請連結已複製到剪貼簿",
 					"addChar": "新增角色",
 					"addCharLabel": "選擇角色",
 					"addCharSubmit": "新增",
@@ -2802,6 +2800,10 @@
 						"confirm": "確定要退出群「${name}」嗎？你將無法再檢視此群訊息。",
 						"confirmBatch": "確定要退出所選的 ${count} 個群嗎？本機將不再保留這些群的資料。",
 						"ok": "已退出群組"
+					},
+					"invite": {
+						"main": "邀請他人",
+						"copied": "邀請連結已複製到剪貼簿"
 					}
 				},
 				"descriptionEmpty": "這個群組還沒有簡介。",

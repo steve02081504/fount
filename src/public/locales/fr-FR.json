@@ -2784,8 +2784,6 @@
 				"context": {
 					"manage": "Groupe de gestion",
 					"notifyPrefs": "Paramètres de notification",
-					"invite": "Inviter d'autres personnes",
-					"inviteCopied": "Lien d'invitation copié dans le presse-papiers",
 					"addChar": "Ajouter un rôle",
 					"addCharLabel": "Sélectionnez un rôle",
 					"addCharSubmit": "Ajouter à",
@@ -2802,6 +2800,10 @@
 						"confirm": "Êtes-vous sûr de vouloir quitter le groupe \"${name}\" ? Vous ne pourrez plus afficher les messages de ce groupe.",
 						"confirmBatch": "Voulez-vous vraiment quitter les ${count} groupes sélectionnés ? La machine ne conservera plus les données de ces groupes.",
 						"ok": "A quitté le groupe"
+					},
+					"invite": {
+						"main": "Inviter d'autres personnes",
+						"copied": "Lien d'invitation copié dans le presse-papiers"
 					}
 				},
 				"descriptionEmpty": "Il n'y a pas encore de profil pour ce groupe.",

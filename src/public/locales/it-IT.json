@@ -2784,8 +2784,6 @@
 				"context": {
 					"manage": "Gestisci gruppo",
 					"notifyPrefs": "Impostazioni di notifica",
-					"invite": "Invita altri",
-					"inviteCopied": "Link dell'invito copiato negli appunti",
 					"addChar": "Aggiungi personaggio",
 					"addCharLabel": "Seleziona personaggio",
 					"addCharSubmit": "Aggiungere",
@@ -2802,6 +2800,10 @@
 						"confirm": "Sei sicuro di voler lasciare il gruppo \"${name}\"? Non potrai più visualizzare i messaggi in questo gruppo.",
 						"confirmBatch": "Sei sicuro di voler lasciare i ${count} gruppi selezionati? Questo dispositivo non conserverà più i dati di questi gruppi.",
 						"ok": "Lasciato il gruppo"
+					},
+					"invite": {
+						"main": "Invita altri",
+						"copied": "Link dell'invito copiato negli appunti"
 					}
 				},
 				"descriptionEmpty": "Non esiste ancora un profilo per questo gruppo.",

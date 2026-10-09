@@ -2784,8 +2784,6 @@
 				"context": {
 					"manage": "관리 그룹",
 					"notifyPrefs": "알림 설정",
-					"invite": "다른 사람 초대",
-					"inviteCopied": "초대 링크가 클립보드에 복사되었습니다.",
 					"addChar": "역할 추가",
 					"addCharLabel": "역할 선택",
 					"addCharSubmit": "다음에 추가",
@@ -2802,6 +2800,10 @@
 						"confirm": "정말로 \"${name}\" 그룹에서 탈퇴하시겠습니까? 이 그룹의 메시지는 더 이상 볼 수 없습니다.",
 						"confirmBatch": "선택한 ${count}개 그룹에서 나가시겠습니까? 이 기기에는 해당 그룹 데이터가 더 이상 남지 않습니다.",
 						"ok": "그룹을 탈퇴했습니다"
+					},
+					"invite": {
+						"main": "다른 사람 초대",
+						"copied": "초대 링크가 클립보드에 복사되었습니다."
 					}
 				},
 				"descriptionEmpty": "아직 이 그룹에 대한 프로필이 없습니다.",

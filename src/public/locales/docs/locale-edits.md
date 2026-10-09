@@ -37,7 +37,7 @@ python .esh/commands/reshape_i18n_keys.py
 python .esh/commands/reshape_i18n_keys.py path/to/extra_renames.json
 ```
 
-Nests all locales, writes `data/test/i18n_key_rename_map.json`, and rewrites quoted old keys in-repo. A second exact pass may still use `src/scripts/checks/tools/rewrite_i18n_exact_pass.mjs` (source only — does not write locale JSON).
+Nests all locales, writes `data/test/i18n_key_rename_map.json`, and rewrites quoted old keys in-repo. A second exact pass may still use `src/scripts/checks/tools/rewrite_i18n_exact_pass.mjs` (source only — does not write locale JSON). When the container name is already a sibling leaf (`context.invite` next to `inviteHelp`…), that leaf is folded in as `<container>.main` (`context.invite` → `context.invite.main`), so call sites and `data-i18n` move to `.main` exactly like `leave.main`.
 
 ## Reshape string → `{ title, aria-label }`
 
