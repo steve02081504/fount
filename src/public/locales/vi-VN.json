@@ -7301,5 +7301,25 @@
 				"placeholder": "Dán liên kết đầy đủ mà người kia đã gửi cho bạn"
 			}
 		}
+	},
+	"proxy_exposure": {
+		"description": "Một proxy công khai trả lời mà không một lời tín nhiệm, nên nút đã khép cửa. Hãy dạy nó những dấu chuyển tiếp mà nó đang chờ, và dịch vụ sẽ trở lại.",
+		"title": "fount đã tạm dừng dịch vụ web",
+		"language": "Ngôn ngữ trang",
+		"risk": {
+			"title": "Vì sao cấu hình này nguy hiểm?",
+			"text": "fount vốn tin vào những yêu cầu cục bộ trực tiếp. Proxy phải đánh dấu các yêu cầu được chuyển tiếp; nếu lưu lượng công cộng chạm tới dịch vụ qua giao diện vòng lặp, để khách truy cập điều khiển tiêu đề Host và không thêm dấu chuyển tiếp, một khách từ xa có thể mạo nhận một lời gọi cục bộ và giành quyền cục bộ: chạy mã máy chủ, đọc nhật ký và hành động trên tài khoản."
+		},
+		"action": {
+			"title": "fount đã làm gì",
+			"text": "fount đã dừng dịch vụ HTTP(S) ban đầu và đóng các kết nối đang có, rồi khởi động trên cùng cổng đó một máy chủ cảnh báo riêng. Những yêu cầu chấp nhận HTML được chuyển hướng tới đây; các yêu cầu HTTP khác và việc nâng cấp WebSocket nhận mã 500. Truy cập web cục bộ cũng bị tắt; không có gì khác đang chạy trong tiến trình bị dừng lại."
+		},
+		"recovery": {
+			"title": "Cách khôi phục dịch vụ",
+			"proxy": "Trước tiên hãy dừng đường hầm hoặc proxy hiện tại, rồi chuyển sang loại có thêm dấu chuyển tiếp, hoặc bật tùy chọn tương ứng trong proxy bạn đang dùng.",
+			"headers": "Hãy để chính proxy thêm Forwarded hoặc X-Forwarded-For, và xóa hoặc ghi đè những tiêu đề ấy khi chúng đến từ khách truy cập. Đừng chỉ dựa vào việc ghi lại Host; fount phải nhận ra được rằng một yêu cầu đã được chuyển tiếp.",
+			"restart": "Sau khi proxy đã được cấu hình, hãy chạy fount reboot trên máy cục bộ và mở lại cổng vào công cộng. Việc tạm dừng kéo dài tới khi khởi động lại; một yêu cầu về sau tình cờ mang dấu chuyển tiếp sẽ không tự gỡ bỏ nó."
+		},
+		"limit": "Đây là bước kiểm tra cấu hình triển khai: nó dựa vào tiêu đề Host và việc phân giải DNS, nên không thể hứa sẽ phát hiện mọi cấu hình sai, cũng không thể hoàn tác những gì đã xảy ra trước khi tạm dừng."
 	}
 }

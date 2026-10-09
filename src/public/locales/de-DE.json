@@ -7307,5 +7307,25 @@
 				"placeholder": "Fügen Sie hier den vollständigen Link ein, den Sie erhalten haben"
 			}
 		}
+	},
+	"proxy_exposure": {
+		"description": "Ein öffentlicher Proxy hat ohne ein Wort des Vertrauens geantwortet, worauf der Knoten seine Türen verschlossen hat. Bringen Sie ihm die Weiterleitungsmerkmale bei, auf die er wartet, und der Dienst läuft wieder.",
+		"title": "fount hat seinen Webdienst ausgesetzt",
+		"language": "Sprache der Seite",
+		"risk": {
+			"title": "Warum ist diese Konfiguration gefährlich?",
+			"text": "fount vertraut direkten lokalen Anfragen von Grund auf. Ein Proxy muss weitergeleitete Anfragen kennzeichnen; wenn öffentlicher Verkehr den Dienst über die Loopback-Schnittstelle erreicht, Besucher den Host-Kopf steuern dürfen und keine Weiterleitungsmerkmale gesetzt werden, kann ein entfernter Besucher sich als lokaler Aufrufer ausgeben und lokale Rechte erlangen — Servercode ausführen, Protokolle lesen, auf Konten handeln."
+		},
+		"action": {
+			"title": "Was fount unternommen hat",
+			"text": "fount hat den ursprünglichen HTTP(S)-Dienst gestoppt und bestehende Verbindungen geschlossen und dann auf demselben Port einen eigenständigen Hinweisserver gestartet. Anfragen, die HTML annehmen, werden hierher umgeleitet; andere HTTP-Anfragen und WebSocket-Aufwertungen erhalten 500. Auch der lokale Webzugang ist deaktiviert; sonst wurde nichts im laufenden Prozess gestoppt."
+		},
+		"recovery": {
+			"title": "Wie Sie den Dienst wiederherstellen",
+			"proxy": "Stoppen Sie zuerst den aktuellen Tunnel oder Proxy und wechseln Sie dann zu einem, der Weiterleitungsmerkmale setzt, oder aktivieren Sie die passende Option in dem Proxy, den Sie bereits nutzen.",
+			"headers": "Lassen Sie den Proxy Forwarded oder X-Forwarded-For selbst setzen und dieselben Köpfe von Besuchern entfernen oder überschreiben. Verlassen Sie sich nicht allein auf das Umschreiben des Host-Kopfes; fount muss erkennen können, dass eine Anfrage weitergeleitet wurde.",
+			"restart": "Führen Sie nach der Konfiguration des Proxys auf dem lokalen Rechner fount reboot aus und öffnen Sie den öffentlichen Zugang erneut. Die Aussetzung bleibt bis zu einem Neustart bestehen; eine spätere Anfrage, die zufällig Weiterleitungsmerkmale trägt, hebt sie nicht von selbst auf."
+		},
+		"limit": "Dies ist eine Prüfung der Bereitstellungskonfiguration: Sie stützt sich auf den Host-Kopf und die DNS-Auflösung, kann also nicht versprechen, jede Fehlkonfiguration zu finden, und kann nichts rückgängig machen, was vor der Aussetzung geschehen ist."
 	}
 }

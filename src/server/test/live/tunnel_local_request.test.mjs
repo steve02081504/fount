@@ -59,7 +59,7 @@ Deno.test({
 		assertEquals(local.is_local_ip, true)
 		assertEquals(await upgradeStatus(`${node.baseUrl.replace(/^http/u, 'ws')}/ws/eval`, {}), 101)
 		for (const headers of [
-			{ host: 'fount.example.invalid' },
+			{ host: 'fount.example.invalid', 'x-forwarded-for': '203.0.113.9' },
 			{ 'x-forwarded-for': '127.0.0.1' },
 			{ forwarded: 'for=127.0.0.1;host=localhost' },
 			{ 'x-forwarded-host': 'localhost' },

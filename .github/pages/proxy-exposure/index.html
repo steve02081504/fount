@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="robots" content="noindex,nofollow" />
+	<meta property="og:title" content="The Gate Stood Open: fount Withdrew Its Web Service" />
+	<meta property="og:url" content="https://steve02081504.github.io/fount/proxy-exposure/" />
+	<meta property="og:type" content="website" />
+	<meta property="og:description" content="A public proxy answered without a word of trust, so the node drew its doors shut. Teach it the forwarding marks it is waiting for, and service resumes." />
+	<meta property="og:image" content="https://steve02081504.github.io/fount/imgs/icon.svg" />
+	<meta name="description" content="A public proxy answered without a word of trust, so the node drew its doors shut. Teach it the forwarding marks it is waiting for, and service resumes." />
+	<link rel="icon" href="https://steve02081504.github.io/fount/imgs/icon.svg" type="image/svg+xml" />
+	<title data-i18n="proxy_exposure.title"></title>
+	<script blocking="render" type="module" src="../preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/themes.css" rel="stylesheet" crossorigin="anonymous" />
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="../base.css" />
+	<script type="module" src="./index.mjs"></script>
+</head>
+<body class="min-h-screen bg-base-200 text-base-content p-6">
+	<main class="max-w-2xl mx-auto card bg-base-100 shadow-xl">
+		<div class="card-body gap-6">
+			<label class="form-control">
+				<span data-i18n="proxy_exposure.language"></span>
+				<select id="language" class="select select-bordered" language-check-ignore></select>
+			</label>
+			<h1 class="text-3xl font-bold" data-i18n="proxy_exposure.title"></h1>
+			<p data-i18n="proxy_exposure.description"></p>
+			<section>
+				<h2 class="text-xl font-semibold mb-3" data-i18n="proxy_exposure.risk.title"></h2>
+				<p data-i18n="proxy_exposure.risk.text"></p>
+			</section>
+			<section>
+				<h2 class="text-xl font-semibold mb-3" data-i18n="proxy_exposure.action.title"></h2>
+				<p data-i18n="proxy_exposure.action.text"></p>
+			</section>
+			<section>
+				<h2 class="text-xl font-semibold mb-3" data-i18n="proxy_exposure.recovery.title"></h2>
+				<ol class="list-decimal pl-6 space-y-3">
+					<li data-i18n="proxy_exposure.recovery.proxy"></li>
+					<li data-i18n="proxy_exposure.recovery.headers"></li>
+					<li data-i18n="proxy_exposure.recovery.restart"></li>
+				</ol>
+			</section>
+			<p class="text-sm" data-i18n="proxy_exposure.limit"></p>
+		</div>
+	</main>
+</body>
+</html>

@@ -77,6 +77,13 @@
 						".github/pages/test/frontend/captcha.spec.mjs",
 						".github/pages/captcha/**"
 					]
+				},
+				{
+					"name": "proxy-exposure",
+					"triggers": [
+						".github/pages/proxy-exposure/**",
+						".github/pages/test/frontend/proxy-exposure.spec.mjs"
+					]
 				}
 			]
 		}

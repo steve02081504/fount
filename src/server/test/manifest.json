@@ -30,7 +30,9 @@
 				"src/scripts/part_paths.mjs",
 				"src/scripts/markdown_ansi.mjs",
 				"src/public/pages/scripts/lib/partPaths.mjs",
-				"src/public/pages/scripts/endpoints/registries.mjs"
+				"src/public/pages/scripts/endpoints/registries.mjs",
+				"src/scripts/await_timeout.mjs",
+				"src/scripts/proxy_exposure.mjs"
 			]
 		},
 		{
@@ -50,7 +52,9 @@
 			"triggers": [
 				"src/server/test/integration/**",
 				"src/server/autoupdate.mjs",
-				"src/server/web_server/not_found_mask.mjs"
+				"src/server/web_server/not_found_mask.mjs",
+				"src/scripts/proxy_exposure.mjs",
+				"src/scripts/proxy_exposure_guard.mjs"
 			]
 		},
 		{
@@ -78,7 +82,10 @@
 				"src/scripts/systray_protocol.mjs",
 				"src/scripts/WsAbleRouter.mjs",
 				"src/scripts/sentrytunnel.mjs",
-				"src/scripts/sentry_state.mjs"
+				"src/scripts/sentry_state.mjs",
+				"src/scripts/proxy_exposure.mjs",
+				"src/scripts/proxy_exposure_guard.mjs",
+				"src/server/server.mjs"
 			]
 		}
 	]

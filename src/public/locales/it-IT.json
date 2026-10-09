@@ -7313,5 +7313,25 @@
 				"placeholder": "Incolla qui il link completo che ti è stato inviato"
 			}
 		}
+	},
+	"proxy_exposure": {
+		"description": "Un proxy pubblico ha risposto senza una parola di fiducia, così il nodo ha serrato le sue porte. Indicagli le intestazioni di inoltro che attende e il servizio riprenderà.",
+		"title": "fount ha sospeso il suo servizio web",
+		"language": "Lingua della pagina",
+		"risk": {
+			"title": "Perché questa configurazione è pericolosa?",
+			"text": "fount si fida per progettazione delle richieste locali dirette. Un proxy deve marcare le richieste inoltrate; se il traffico pubblico raggiunge il servizio attraverso l’interfaccia di loopback, lascia che i visitatori controllino l’intestazione Host e non aggiunge marche di inoltro, un visitatore remoto può fingersi una chiamata locale e ottenere privilegi locali: eseguire codice del server, leggere i registri e agire sugli account."
+		},
+		"action": {
+			"title": "Che cosa ha fatto fount",
+			"text": "fount ha fermato il servizio HTTP(S) originale e chiuso le connessioni esistenti, poi ha avviato sulla stessa porta un server di avviso indipendente. Le richieste che accettano HTML vengono reindirizzate qui; le altre richieste HTTP e gli upgrade WebSocket ricevono 500. Anche l’accesso web locale è disattivato; nulla d’altro in esecuzione nel processo è stato fermato."
+		},
+		"recovery": {
+			"title": "Come ripristinare il servizio",
+			"proxy": "Ferma prima il tunnel o il proxy attuale, poi passa a uno che aggiunga marche di inoltro, oppure attiva l’opzione corrispondente nel proxy che già usi.",
+			"headers": "Lascia che sia il proxy ad aggiungere Forwarded o X-Forwarded-For, e rimuovi o sovrascrivi le stesse intestazioni quando arrivano dai visitatori. Non affidarti alla sola riscrittura di Host; fount deve poter riconoscere che una richiesta è stata inoltrata.",
+			"restart": "Con il proxy già configurato, esegui fount reboot sulla macchina locale e riapri l’ingresso pubblico. La sospensione dura fino a un riavvio; una richiesta successiva che porti per caso marche di inoltro non la revocherà da sola."
+		},
+		"limit": "Questo è un controllo della configurazione di distribuzione: si basa sull’intestazione Host e sulla risoluzione DNS, quindi non può promettere di scoprire ogni configurazione errata, né annullare quanto accaduto prima della sospensione."
 	}
 }

@@ -7313,5 +7313,25 @@
 				"placeholder": "Plak hier de volledige link die je hebt ontvangen"
 			}
 		}
+	},
+	"proxy_exposure": {
+		"description": "Een publieke proxy antwoordde zonder een woord van vertrouwen, waarop de node zijn deuren sloot. Leer hem de doorstuurmarkeringen waarop hij wacht, en de dienst hervat.",
+		"title": "fount heeft zijn webdienst stilgelegd",
+		"language": "Taal van de pagina",
+		"risk": {
+			"title": "Waarom is deze configuratie gevaarlijk?",
+			"text": "fount vertrouwt directe lokale verzoeken van nature. Een proxy moet doorgestuurde verzoeken markeren; als publiek verkeer de dienst via de loopback-interface bereikt, bezoekers de Host-kop laat beheren en er geen doorstuurmarkeringen worden toegevoegd, kan een bezoeker op afstand zich voordoen als een lokale aanroeper en lokale rechten krijgen: servercode uitvoeren, logboeken lezen en op accounts handelen."
+		},
+		"action": {
+			"title": "Wat fount heeft gedaan",
+			"text": "fount heeft de oorspronkelijke HTTP(S)-dienst gestopt en bestaande verbindingen gesloten, en daarna op dezelfde poort een zelfstandige waarschuwingsserver gestart. Verzoeken die HTML accepteren worden hierheen omgeleid; overige HTTP-verzoeken en WebSocket-upgrades krijgen 500. De lokale webtoegang is ook uitgeschakeld; verder is er niets in het proces gestopt."
+		},
+		"recovery": {
+			"title": "Zo herstelt u de dienst",
+			"proxy": "Stop eerst de huidige tunnel of proxy en stap dan over op een die doorstuurmarkeringen toevoegt, of zet de betreffende optie aan in de proxy die u al gebruikt.",
+			"headers": "Laat de proxy zelf Forwarded of X-Forwarded-For toevoegen, en verwijder of overschrijf diezelfde koppen wanneer ze van bezoekers komen. Vertrouw niet alleen op het herschrijven van Host; fount moet kunnen herkennen dat een verzoek is doorgestuurd.",
+			"restart": "Voer, zodra de proxy is ingesteld, fount reboot uit op de lokale machine en open de publieke ingang opnieuw. De stillegging duurt tot een herstart; een later verzoek dat toevallig doorstuurmarkeringen draagt, heft die niet vanzelf op."
+		},
+		"limit": "Dit is een controle op de uitrolconfiguratie: ze leunt op de Host-kop en de DNS-omzetting, dus ze kan niet beloven elke verkeerde configuratie te vinden, en ze kan niets ongedaan maken wat vóór de stillegging is gebeurd."
 	}
 }

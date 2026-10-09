@@ -7307,5 +7307,25 @@
 				"placeholder": "Paste the complete link they sent you"
 			}
 		}
+	},
+	"proxy_exposure": {
+		"description": "A public proxy answered without a word of trust, so the node drew its doors shut. Teach it the forwarding marks it is waiting for, and service resumes.",
+		"title": "fount has suspended its web service",
+		"language": "Page language",
+		"risk": {
+			"title": "Why is this configuration dangerous?",
+			"text": "fount trusts direct local requests by design. A proxy must mark forwarded requests; if public traffic reaches the loopback service, lets visitors control the Host header and adds no forwarding marks, a remote visitor can impersonate a local caller and gain local privileges — running server code, reading logs, acting on accounts."
+		},
+		"action": {
+			"title": "What fount did about it",
+			"text": "fount stopped the original HTTP(S) service and closed existing connections, then started a standalone notice server on the same port. Requests that accept HTML are redirected here; other HTTP requests and WebSocket upgrades receive 500. Local web access is disabled too; nothing else running in the process was stopped."
+		},
+		"recovery": {
+			"title": "How to recover",
+			"proxy": "Stop the current tunnel or proxy first, then switch to one that adds forwarding marks, or turn on the relevant option in the proxy you already use.",
+			"headers": "Let the proxy add Forwarded or X-Forwarded-For itself, and strip or overwrite the same headers coming from visitors. Do not rely on rewriting Host alone; fount must be able to tell that a request was forwarded.",
+			"restart": "Once the proxy is configured, run fount reboot on the local machine and open the public entry point again. The suspension lasts until a restart; a later request that happens to carry forwarding marks will not lift it by itself."
+		},
+		"limit": "This is a deployment-configuration check: it relies on the Host header and DNS resolution, so it cannot promise to catch every misconfiguration, and it cannot undo anything that happened before the suspension."
 	}
 }

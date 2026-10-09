@@ -7301,5 +7301,25 @@
 				"placeholder": "📌🔗"
 			}
 		}
+	},
+	"proxy_exposure": {
+		"title": "⛲ 🌐🛑",
+		"description": "🌐🚪 🙈🤝 ➡️ ⛲🚪🔒 · 📢❗🔁 ➡️ ✅🔁",
+		"language": "🌐🗣️",
+		"risk": {
+			"title": "⚠️❓",
+			"text": "⛲ 🤝💻🙋 · 🌐🚪❗🔒Host ➕ 🚫📢❗ ➡️ 🙈👤=💻🙋 ➕ 💻🔑: ▶️🖥️, 📜👀, 👤🔧"
+		},
+		"action": {
+			"title": "⛲✔️",
+			"text": "⛲ ⏹️HTTP(S) ➕ 🔒🔌, ➕ ▶️ 📢🖥️ 📍🔢 · 📄➡️👈, ➕ 🚫📄/🔌➡️5️⃣0️⃣0️⃣ · 💻🌐🛑 · 🈚➕🛑"
+		},
+		"recovery": {
+			"title": "🔧❓",
+			"proxy": "1️⃣ ⏹️🚪/🌐🚪 ➡️ ✅📢❗🌐🚪 ➕ 🔛🔘",
+			"headers": "🌐🚪 ➕ Forwarded/X-Forwarded-For, ➕ 🗑️/🔄👤❗ · 🚫🙈Host ✍️ · ⛲🔍📢❗✅",
+			"restart": "🌐🚪⚙️✅ ➡️ 💻 `fount reboot` ➡️ 🌐🚪🔁 · 🛑 ⏳♻️ · 📢❗🙅🔓"
+		},
+		"limit": "🔍⚙️: 🤝Host ➕ DNS · 🚫🔍∞ · 🚫↩️⏪"
 	}
 }

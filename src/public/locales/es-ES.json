@@ -7313,5 +7313,25 @@
 				"placeholder": "Pega aquí el enlace completo que te han enviado"
 			}
 		}
+	},
+	"proxy_exposure": {
+		"description": "Un proxy público respondió sin una sola palabra de confianza, así que el nodo cerró sus puertas. Enséñale las marcas de reenvío que espera y el servicio se reanudará.",
+		"title": "fount ha suspendido su servicio web",
+		"language": "Idioma de la página",
+		"risk": {
+			"title": "¿Por qué es peligrosa esta configuración?",
+			"text": "fount confía por diseño en las peticiones locales directas. Un proxy debe marcar las peticiones reenviadas; si el tráfico público llega al servicio por la interfaz de bucle local, deja que los visitantes controlen la cabecera Host y no añade marcas de reenvío, un visitante remoto puede hacerse pasar por una llamada local y obtener privilegios locales: ejecutar código del servidor, leer registros y actuar sobre las cuentas."
+		},
+		"action": {
+			"title": "Lo que hizo fount al respecto",
+			"text": "fount detuvo el servicio HTTP(S) original y cerró las conexiones existentes, y luego inició un servidor de aviso independiente en el mismo puerto. Las peticiones que aceptan HTML se redirigen aquí; las demás peticiones HTTP y las elevaciones WebSocket reciben 500. El acceso web local también queda desactivado; nada más de lo que corre en el proceso se detuvo."
+		},
+		"recovery": {
+			"title": "Cómo restablecer el servicio",
+			"proxy": "Detén primero el túnel o proxy actual y pasa a uno que añada marcas de reenvío, o activa la opción correspondiente en el proxy que ya usas.",
+			"headers": "Deja que el propio proxy añada Forwarded o X-Forwarded-For, y elimina o sobrescribe esas mismas cabeceras cuando vengan de los visitantes. No confíes solo en reescribir Host; fount tiene que poder reconocer que una petición fue reenviada.",
+			"restart": "Con el proxy ya configurado, ejecuta fount reboot en la máquina local y vuelve a abrir la entrada pública. La suspensión dura hasta un reinicio; una petición posterior que lleve marcas de reenvío por casualidad no la levantará por sí sola."
+		},
+		"limit": "Esta es una comprobación de la configuración de despliegue: se apoya en la cabecera Host y en la resolución DNS, así que no puede prometer que detecte todas las configuraciones erróneas, ni deshacer lo ocurrido antes de la suspensión."
 	}
 }

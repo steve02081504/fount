@@ -7307,5 +7307,25 @@
 				"placeholder": "Límdu hér fullan hlekkinn sem þér var sendur"
 			}
 		}
+	},
+	"proxy_exposure": {
+		"description": "Opinber milliliður svaraði án orðs um traust, svo hnúturinn lokaði hliðum sínum. Kenndu honum framsendingarmerkin sem hann bíður eftir, og þjónustan hefst á ný.",
+		"title": "fount hefur stöðvað vefþjónustuna",
+		"language": "Tungumál síðunnar",
+		"risk": {
+			"title": "Af hverju er þessi stilling hættuleg?",
+			"text": "fount treystir beinum staðbundnum beiðnum í eðli sínu. Milliliður verður að merkja framsendrar beiðnir; ef almenn umferð nær til þjónustunnar um lykkjuskilinn, lætur gesti stjórna Host-hausnum og bætir engum framsendingarmerkjum við, getur fjarlægur gestur þótt staðbundin beiðni og öðlast staðbundin réttindi: keyrt netþjónakóða, lesið annála og hagað sér fyrir hönd reikninga."
+		},
+		"action": {
+			"title": "Hvað fount gerði",
+			"text": "fount stöðvaði upprunalegu HTTP(S)-þjónustuna og lokaði fyrirliggjandi tengingum, og ræsti síðan sjálfstæðan tilkynningaþjón á sama porti. Beiðnir sem taka við HTML eru endurbeint hingað; aðrar HTTP-beiðnir og WebSocket-uppfærslur fá 500. Staðbundinn vefaðgangur er einnig gerður óvirkur; engu öðru sem keyrir í ferlinum var stöðvað."
+		},
+		"recovery": {
+			"title": "Hvernig á að endurreisa þjónustuna",
+			"proxy": "Stöðvaðu fyrst núverandi göng eða millilið og skiptu síðan yfir í einn sem bætir við framsendingarmerkjum, eða kveiktu á viðeigandi valkosti í milliliðnum sem þú notar þegar.",
+			"headers": "Leyfðu milliliðnum að bæta Forwarded eða X-Forwarded-For við sjálfur, og fjarlægðu eða skrifaðu yfir sömu hausa þegar þeir koma frá gestum. Treystu ekki einvörðungu á að endurskrifa Host; fount verður að geta greint að beiðni hafi verið framsend.",
+			"restart": "Þegar milliliðurinn er stilltur skaltu keyra fount reboot á staðbundnu vélinni og opna almennu inngönguna aftur. Stöðvunin varir þar til endurræst er; seinna beiðni sem ber framsendingarmerki fyrir tilviljun afléttir henni ekki af sjálfu sér."
+		},
+		"limit": "Þetta er athugun á uppsetningu: hún byggir á Host-hausnum og DNS-upplausn, svo hún getur hvorki lofað að finna hverja rangstilltingu né afturkallað það sem gerðist fyrir stöðvunina."
 	}
 }

@@ -7313,5 +7313,25 @@
 				"placeholder": "Cole aqui a ligação completa que lhe foi enviada"
 			}
 		}
+	},
+	"proxy_exposure": {
+		"description": "Um proxy público respondeu sem uma palavra de confiança, por isso o nó fechou as suas portas. Ensine-lhe as marcas de reencaminhamento que espera e o serviço retoma.",
+		"title": "o fount suspendeu o serviço web",
+		"language": "Idioma da página",
+		"risk": {
+			"title": "Porque é que esta configuração é perigosa?",
+			"text": "O fount confia, por desenho, nos pedidos locais diretos. Um proxy tem de marcar os pedidos reencaminhados; se o tráfego público chega ao serviço pela interface de loopback, deixa os visitantes controlar o cabeçalho Host e não acrescenta marcas de reencaminhamento, um visitante remoto pode fazer-se passar por uma chamada local e obter privilégios locais: executar código do servidor, ler registos e agir sobre contas."
+		},
+		"action": {
+			"title": "O que o fount fez",
+			"text": "O fount parou o serviço HTTP(S) original e fechou as ligações existentes, e depois iniciou na mesma porta um servidor de aviso autónomo. Os pedidos que aceitam HTML são redirecionados para aqui; os restantes pedidos HTTP e as passagens para WebSocket recebem 500. O acesso web local também ficou desativado; nada mais em execução no processo foi parado."
+		},
+		"recovery": {
+			"title": "Como restabelecer o serviço",
+			"proxy": "Pare primeiro o túnel ou proxy atual e passe depois para um que acrescente marcas de reencaminhamento, ou ative a opção correspondente no proxy que já usa.",
+			"headers": "Deixe o próprio proxy acrescentar Forwarded ou X-Forwarded-For, e remova ou substitua esses mesmos cabeçalhos quando vierem dos visitantes. Não conte apenas com a reescrita do Host; o fount tem de conseguir reconhecer que um pedido foi reencaminhado.",
+			"restart": "Com o proxy já configurado, execute fount reboot na máquina local e volte a abrir a entrada pública. A suspensão dura até um reinício; um pedido posterior que traga marcas de reencaminhamento por acaso não a levantará sozinho."
+		},
+		"limit": "Isto é uma verificação da configuração de implementação: assenta no cabeçalho Host e na resolução DNS, por isso não pode prometer detetar todas as configurações erradas, nem desfazer o que aconteceu antes da suspensão."
 	}
 }

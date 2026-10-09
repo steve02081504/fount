@@ -24,7 +24,7 @@ function fetchUserscript(baseUrl, apiKey, host) {
 	return new Promise((resolve, reject) => {
 		const req = request(
 			`${baseUrl}/virtual_files/parts/shells:browserIntegration/script.user.js?fount-apikey=${encodeURIComponent(apiKey)}`,
-			host ? { headers: { host } } : {},
+			host ? { headers: { host, 'x-forwarded-for': '203.0.113.9' } } : {},
 			res => {
 				let body = ''
 				res.setEncoding('utf8')

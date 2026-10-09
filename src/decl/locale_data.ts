@@ -7264,6 +7264,26 @@ export type LocaleData = {
 			}
 		}
 	}
+	proxy_exposure: {
+		description: string
+		title: string
+		language: string
+		risk: {
+			title: string
+			text: string
+		}
+		action: {
+			title: string
+			text: string
+		}
+		recovery: {
+			title: string
+			proxy: string
+			headers: string
+			restart: string
+		}
+		limit: string
+	}
 }
 /**
  * i18n switch 叶子（singular / plural 等），由 geti18n 按 params[switch] 解析。

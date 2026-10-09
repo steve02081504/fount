@@ -3,17 +3,38 @@ const FORWARDING_HEADERS = new Set([
 	'forwarded', 'via', 'x-real-ip', 'cf-connecting-ip', 'cf-connecting-ipv6', 'cf-ray', 'true-client-ip',
 ])
 
+/** 能骗过 URL 解析或凭空捏出一个 authority 的字符：空白、`#`（在 URL 里截断 authority）、`,`（多值）、`/?@\`。 */
+const ILLEGAL_HOST = /[\s#,/?@\\]/u
+
+/**
+ * 解析 Host 头为小写主机名；非法 authority（多值、带路径、缺 host）返回空串。
+ * @param {unknown} host Host 头。
+ * @returns {string} 主机名（IPv6 去掉方括号）；非法时为空串。
+ */
+export function parseRequestHost(host) {
+	if (typeof host !== 'string' || !host || ILLEGAL_HOST.test(host)) return ''
+	try { return new URL(`http://${host}`).hostname.toLowerCase() }
+	catch { return '' }
+}
+
+/**
+ * @param {object} headers 请求头。
+ * @returns {boolean} 是否带有转发标记。
+ */
+export function hasForwardingHeaders(headers) {
+	return Object.keys(headers).some(name => {
+		const header = name.toLowerCase()
+		return FORWARDING_HEADERS.has(header) || header.startsWith('x-forwarded-')
+	})
+}
+
 /**
  * 判断 Host 是否为回环地址；拒绝缺失、多值及不合法的 authority。
  * @param {string} host Host 头。
  * @returns {boolean} 是否回环主机。
  */
 function isLoopbackHost(host) {
-	if (/[\s,/@?#\\]/u.test(host)) return false
-	try {
-		return ['localhost', '127.0.0.1', '[::1]'].includes(new URL(`http://${host}`).hostname)
-	}
-	catch { return false }
+	return ['localhost', '127.0.0.1', '[::1]'].includes(parseRequestHost(host))
 }
 
 /**
@@ -27,10 +48,7 @@ export function is_direct_local_request(req, isLocalIP) {
 	// 只有原始 Host 才算数：代理提供的 hostname 可以随便声称自己是 localhost。
 	if (!isLocalIP(req.socket?.remoteAddress) || !isLoopbackHost(req.headers?.host)) return false
 	if (req.ip && !isLocalIP(req.ip)) return false
-	return !Object.keys(req.headers).some(name => {
-		const header = name.toLowerCase()
-		return FORWARDING_HEADERS.has(header) || header.startsWith('x-forwarded-')
-	})
+	return !hasForwardingHeaders(req.headers)
 }
 
 /**

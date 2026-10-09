@@ -1,7 +1,7 @@
 /* global Deno */
 import { assertEquals } from 'jsr:@std/assert'
 
-import { is_direct_local_request, is_trusted_direct_local_request } from '../../../scripts/local_request.mjs'
+import { is_direct_local_request, is_trusted_direct_local_request, parseRequestHost } from '../../../scripts/local_request.mjs'
 
 /**
  * 测试用回环地址集合。
@@ -29,6 +29,15 @@ Deno.test('direct local HTTP and WebSocket requests require local transport and 
 	assertEquals(is_direct_local_request(request({}, '127.0.0.1', '203.0.113.9'), isLocalIP), false)
 	assertEquals(is_direct_local_request(request({}, '203.0.113.9', '127.0.0.1'), isLocalIP), false)
 	assertEquals(is_direct_local_request({ headers: { host: 'localhost' } }, isLocalIP), false)
+})
+
+Deno.test('parseRequestHost canonicalises authorities and rejects malformed ones', () => {
+	assertEquals(parseRequestHost('LOCALHOST:8931'), 'localhost')
+	assertEquals(parseRequestHost('127.0.0.1'), '127.0.0.1')
+	assertEquals(parseRequestHost('[::1]:8931'), '[::1]')
+	assertEquals(parseRequestHost('fount.example.'), 'fount.example.')
+	for (const host of [undefined, '', 'localhost,example.com', 'localhost@evil.example', 'bad/host', 'bad host', 'bad#host', 'localhost\\example'])
+		assertEquals(parseRequestHost(host), '', String(host))
 })
 
 Deno.test('tunnels, proxies and cross-site origins stay remote even when they claim localhost', () => {

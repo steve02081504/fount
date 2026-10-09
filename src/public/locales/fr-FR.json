@@ -7313,5 +7313,25 @@
 				"placeholder": "Collez ici le lien complet qui vous a été envoyé"
 			}
 		}
+	},
+	"proxy_exposure": {
+		"description": "Un proxy public a répondu sans le moindre gage de confiance ; le nœud a donc refermé ses portes. Enseignez-lui les marques de transfert qu’il attend, et le service reprendra.",
+		"title": "fount a suspendu son service web",
+		"language": "Langue de la page",
+		"risk": {
+			"title": "Pourquoi cette configuration est-elle dangereuse ?",
+			"text": "fount fait confiance par conception aux requêtes locales directes. Un proxy doit marquer les requêtes transférées ; si le trafic public atteint le service par l’interface de bouclage, laisse les visiteurs contrôler l’en-tête Host et n’ajoute aucune marque de transfert, un visiteur distant peut se faire passer pour un appel local et obtenir des privilèges locaux : exécuter du code serveur, lire les journaux, agir sur les comptes."
+		},
+		"action": {
+			"title": "Ce que fount a fait",
+			"text": "fount a arrêté le service HTTP(S) d’origine et fermé les connexions en cours, puis a démarré sur le même port un serveur d’avis indépendant. Les requêtes qui acceptent le HTML sont redirigées ici ; les autres requêtes HTTP et les passages en WebSocket reçoivent 500. L’accès web local est désactivé lui aussi ; rien d’autre en cours dans le processus n’a été arrêté."
+		},
+		"recovery": {
+			"title": "Comment rétablir le service",
+			"proxy": "Arrêtez d’abord le tunnel ou le proxy actuel, puis passez à un proxy qui ajoute des marques de transfert, ou activez l’option correspondante dans celui que vous utilisez déjà.",
+			"headers": "Laissez le proxy ajouter lui-même Forwarded ou X-Forwarded-For, et supprimez ou réécrivez ces mêmes en-têtes lorsqu’ils viennent des visiteurs. Ne comptez pas sur la seule réécriture de Host ; fount doit pouvoir reconnaître qu’une requête a été transférée.",
+			"restart": "Une fois le proxy configuré, lancez fount reboot sur la machine locale et rouvrez l’entrée publique. La suspension dure jusqu’à un redémarrage ; une requête ultérieure qui porterait par hasard des marques de transfert ne la lèvera pas d’elle-même."
+		},
+		"limit": "Il s’agit d’un contrôle de configuration de déploiement : il s’appuie sur l’en-tête Host et sur la résolution DNS, il ne peut donc pas promettre de détecter toutes les erreurs de configuration, ni annuler ce qui s’est produit avant la suspension."
 	}
 }

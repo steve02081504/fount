@@ -14,6 +14,7 @@ import { loadJsonFile, saveJsonFile } from '../scripts/json_loader.mjs'
 import { ms } from '../scripts/ms.mjs'
 import { isLoopbackListen, resolveListenBinds } from '../scripts/net_listen.mjs'
 import { notify } from '../scripts/notify.mjs'
+import { createProxyExposureGuard } from '../scripts/proxy_exposure_guard.mjs'
 import { get_hosturl_in_local_ip } from '../scripts/ratelimit.mjs'
 import { ClearTaskbarProgress, SetTaskbarProgress } from '../scripts/taskbar_progress.mjs'
 import { setWindowTitle, getWindowTitle } from '../scripts/title.mjs'
@@ -199,18 +200,22 @@ export async function init(start_config) {
 		/** @type {import('node:http').Server[]} */
 		const servers = []
 		/**
+		 * 创建应用与提示页共用的 HTTP(S) 服务器。
+		 * @param {Function} listener 请求处理器。
+		 * @returns {import('node:http').Server} 未监听的服务器。
+		 */
+		const createWebServer = listener => httpsConfig?.enabled ? https.createServer({
+			key: fs.readFileSync(path.resolve(__dirname, httpsConfig.keyFile)),
+			cert: fs.readFileSync(path.resolve(__dirname, httpsConfig.certFile)),
+		}, listener) : http.createServer(listener)
+		const exposureGuard = createProxyExposureGuard({ createServer: createWebServer, report: handleError })
+		/**
 		 * 懒加载地获取 Express 应用程序实例。
 		 * @returns {Promise<import('npm:express').Application>} Express 应用程序实例。
 		 */
 		const getApp = () => appPromise ??= import('./web_server/index.mjs').then(async ({ app }) => {
 			app.set('trust proxy', trust_proxy ?? 'loopback')
 			await authPromise
-			for (const server of servers) {
-				server.removeListener('request', requestListener)
-				server.on('request', app)
-				server.removeListener('upgrade', upgradeListener)
-				server.on('upgrade', app.ws_on_upgrade)
-			}
 			return app
 		})
 		/**
@@ -221,6 +226,8 @@ export async function init(start_config) {
 		 */
 		const requestListener = async (req, res) => {
 			try {
+				// 判定缓存与停用状态都在守卫里：装载 Express 前后各问一次不会得到不同答案。
+				if (await exposureGuard.http(req, res)) return
 				const app = await getApp()
 				return app(req, res)
 			}
@@ -239,6 +246,7 @@ export async function init(start_config) {
 		 */
 		const upgradeListener = async (req, socket, head) => {
 			try {
+				if (await exposureGuard.upgrade(req, socket)) return
 				const app = await getApp()
 				return app.ws_on_upgrade(req, socket, head)
 			}
@@ -256,10 +264,7 @@ export async function init(start_config) {
 		 * @returns {Promise<import('node:http').Server | null>} 已监听的 server，或族不支持时为 null
 		 */
 		const listenOne = (bind) => new Promise((resolve, reject) => {
-			const server = httpsConfig?.enabled ? https.createServer({
-				key: fs.readFileSync(path.resolve(__dirname, httpsConfig.keyFile)),
-				cert: fs.readFileSync(path.resolve(__dirname, httpsConfig.certFile)),
-			}, requestListener) : http.createServer(requestListener)
+			const server = createWebServer(requestListener)
 			server.on('upgrade', upgradeListener)
 			server.once('error', (err) => {
 				server.close(() => {
@@ -267,7 +272,10 @@ export async function init(start_config) {
 					else reject(err)
 				})
 			})
-			server.listen(bind, () => resolve(server))
+			server.listen(bind, () => {
+				exposureGuard.register(server, bind)
+				resolve(server)
+			})
 		})
 
 		/**
