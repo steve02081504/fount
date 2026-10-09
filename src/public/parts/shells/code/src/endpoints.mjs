@@ -1153,10 +1153,10 @@ export function setEndpoints(router) {
 		/** 退出流程要求停止、本轮结果保留为续跑起点。 */
 		let stoppedForShutdown = false
 		/**
-			 * 规整并登记一条本轮新条目；已存在于基础会话或本轮时返回 null。
-			 * @param {object} rawEntry - 原始条目。
-			 * @returns {object|null} 规整后的条目（重复时为 null）。
-			 */
+		 * 规整并登记一条本轮新条目；已存在于基础会话或本轮时返回 null。
+		 * @param {object} rawEntry - 原始条目。
+		 * @returns {object|null} 规整后的条目（重复时为 null）。
+		 */
 		const addNewEntry = rawEntry => {
 			const entry = sanitizeEntry(rawEntry)
 			const id = String(entry.id)
@@ -1165,18 +1165,18 @@ export function setEndpoints(router) {
 			return entry
 		}
 		/**
-			 * 按 id 去重后依次追加条目。
-			 * @param {object[]} entries - 待追加的条目序列。
-			 * @returns {object[]} 去重后的条目列表。
-			 */
+		 * 按 id 去重后依次追加条目。
+		 * @param {object[]} entries - 待追加的条目序列。
+		 * @returns {object[]} 去重后的条目列表。
+		 */
 		const dedupeEntries = entries => {
 			const seen = new Set()
 			const out = []
 			/**
-				 * 按 id 去重后追加一条条目。
-				 * @param {object} entry - 待追加的条目。
-				 * @returns {void}
-				 */
+			 * 按 id 去重后追加一条条目。
+			 * @param {object} entry - 待追加的条目。
+			 * @returns {void}
+			 */
 			const push = entry => {
 				if (!entry || entry.id == null) return
 				const id = String(entry.id)
@@ -1188,9 +1188,9 @@ export function setEndpoints(router) {
 			return out
 		}
 		/**
-			 * 合并本轮权威会话条目：基础条目 + 本轮新增 + 请求侧追加（异步通知等）。
-			 * @returns {object[]} 去重后的完整条目列表。
-			 */
+		 * 合并本轮权威会话条目：基础条目 + 本轮新增 + 请求侧追加（异步通知等）。
+		 * @returns {object[]} 去重后的完整条目列表。
+		 */
 		const buildFinalEntries = () => {
 			const out = []
 			/**
@@ -1205,9 +1205,9 @@ export function setEndpoints(router) {
 			return dedupeEntries(out)
 		}
 		/**
-			 * 本运行已产生的权威新条目（不含前端送来的基础条目）：供 attach 页面回放。
-			 * @returns {object[]} 去重后的新条目列表。
-			 */
+		 * 本运行已产生的权威新条目（不含前端送来的基础条目）：供 attach 页面回放。
+		 * @returns {object[]} 去重后的新条目列表。
+		 */
 		run.buildReplayEntries = () => dedupeEntries([
 			...userEntry ? [userEntry] : [],
 			...allNewEntries,
@@ -1216,16 +1216,16 @@ export function setEndpoints(router) {
 		/** 已确定条目（send = 用户消息；失败/中断时原样返回）。 */
 		const entries = []
 		/**
-			 * 增量条目发送水位：本轮已推给前端的 tool 日志条目数。
-			 * `done`/`error` 只需补发剩余部分，避免前端重复插入。
-			 * @type {number}
-			 */
+		 * 增量条目发送水位：本轮已推给前端的 tool 日志条目数。
+		 * `done`/`error` 只需补发剩余部分，避免前端重复插入。
+		 * @type {number}
+		 */
 		let emittedLogCount = 0
 		/**
-			 * 把本轮已累计但尚未推送的 tool 日志条目增量发给前端（生成中即可追加气泡）。
-			 * 只读 `base_result.logContextBefore`，不依赖角色/插件是否实现了 `onToolOutput`。
-			 * @returns {void}
-			 */
+		 * 把本轮已累计但尚未推送的 tool 日志条目增量发给前端（生成中即可追加气泡）。
+		 * 只读 `base_result.logContextBefore`，不依赖角色/插件是否实现了 `onToolOutput`。
+		 * @returns {void}
+		 */
 		const flushIncrementalEntries = () => {
 			const log = requestSession.generationResult?.logContextBefore || []
 			if (log.length <= emittedLogCount) return
@@ -1245,9 +1245,9 @@ export function setEndpoints(router) {
 				if (incompleteIds.has(allNewEntries[i].id)) allNewEntries.splice(i, 1)
 		}
 		/**
-			 * 持久化本轮会话到工作区磁盘（无工作区时跳过；失败不影响生成流程）。
-			 * @param {object} [memory] - 更新后的 chat_scoped_char_memory。
-			 * @param {object[]} [extraEntries] - 额外写入的条目（如生成中占位）。
+		 * 持久化本轮会话到工作区磁盘（无工作区时跳过；失败不影响生成流程）。
+		 * @param {object} [memory] - 更新后的 chat_scoped_char_memory。
+		 * @param {object[]} [extraEntries] - 额外写入的条目（如生成中占位）。
 		 * @returns {Promise<boolean>} 是否成功落盘。
 		 */
 		const persist = async (memory, extraEntries = []) => {
@@ -1351,10 +1351,10 @@ export function setEndpoints(router) {
 					broadcast(run.preview)
 				},
 				/**
-					 * 转发工具执行实时输出到 WS。
-					 * @param {object} event - 工具输出事件。
-					 * @returns {void}
-					 */
+				 * 转发工具执行实时输出到 WS。
+				 * @param {object} event - 工具输出事件。
+				 * @returns {void}
+				 */
 				onToolOutput: event => {
 					const output = { type: 'tool-output', ...event }
 					run.toolOutputReplay.push(output)
