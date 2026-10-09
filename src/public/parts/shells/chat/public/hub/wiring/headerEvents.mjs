@@ -1,7 +1,7 @@
 import { wireCallHeaderButton } from '../call.mjs'
 import { store } from '../core/state.mjs'
 import { wireForkActions } from '../federation/forkActions.mjs'
-import { showGroupHeaderMenu } from '../groupContextMenu.mjs'
+import { showGroupHeaderMenu, showGroupInvite } from '../groupContextMenu.mjs'
 import { clearMessageSelection } from '../messages/messageSelection.mjs'
 import { wirePinsBookmarksPanels } from '../pinsBookmarks.mjs'
 import { wirePresenceInteractions } from '../presence.mjs'
@@ -14,6 +14,14 @@ export function wireHeaderEvents() {
 	wireProfilePopupDismiss()
 	wirePinsBookmarksPanels()
 	wireCallHeaderButton()
+	document.getElementById('header-invite-button')?.addEventListener('click', async event => {
+		const groupId = store.context.currentGroupId
+		if (!groupId) return
+		const button = event.currentTarget
+		button.disabled = true
+		try { await showGroupInvite(groupId) }
+		finally { button.disabled = false }
+	})
 
 	document.getElementById('prefs-button')?.addEventListener('click', () => {
 		void import('../hubPrefs.mjs').then(({ openHubPrefsModal }) => openHubPrefsModal({

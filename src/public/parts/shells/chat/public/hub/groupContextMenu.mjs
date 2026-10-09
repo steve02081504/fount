@@ -31,6 +31,40 @@ let openMenuElement = null
 /** @type {(ReturnType<typeof bindDismissOnDocumentInteraction>) | null} */
 let menuDismissClose = null
 
+/**
+ * 展示可分享的邀请，剪贴板不可用时支持手动复制。
+ * @param {string} groupId 被邀请加入的群。
+ * @returns {Promise<void>} 对话框挂载完成。
+ */
+export async function showGroupInvite(groupId) {
+	try {
+		const ticket = await createGroupInvite(groupId)
+		const url = ticket.clipboardText || buildInviteJoinShareUrl(groupId, ticket.code, ticket.roomSecret, ticket.introducerPubKeyHash, ticket.introducerNodeHash)
+		await openDialogFromTemplate('hub/modals/group_invite', {}, {
+			/** @param {HTMLDialogElement} dialog 邀请对话框。 @returns {void} */
+			onReady: dialog => {
+				const input = dialog.querySelector('[data-invite-url]')
+				input.value = url
+				input.addEventListener('focus', () => input.select())
+				dialog.querySelector('[data-invite-copy]').addEventListener('click', async () => {
+					try {
+						await navigator.clipboard.writeText(url)
+						showToastI18n('success', 'chat.hub.group.context.invite.copied')
+					}
+					catch {
+						input.focus()
+						input.select()
+						showToastI18n('info', 'chat.hub.group.context.invite.manualCopy')
+					}
+				})
+			},
+		})
+	}
+	catch (error) {
+		handleError('chat.hub.shareGroupFailed')(error)
+	}
+}
+
 /** 关闭已打开的群操作菜单。 @returns {void} */
 export function dismissGroupActionMenu() {
 	menuDismissClose?.unbind()
@@ -213,22 +247,7 @@ async function mountGroupActionMenuAt(groupId, left, top, targetGroupIds = null)
 
 	menu.querySelector('.group-menu-invite')?.addEventListener('click', async () => {
 		dismissGroupActionMenu()
-		try {
-			const ticket = await createGroupInvite(groupId)
-			const url = ticket.clipboardText
-				|| buildInviteJoinShareUrl(
-					groupId,
-					ticket.code,
-					ticket.roomSecret,
-					ticket.introducerPubKeyHash,
-					ticket.introducerNodeHash,
-				)
-			await navigator.clipboard.writeText(url)
-			showToastI18n('success', 'chat.hub.group.context.inviteCopied')
-		}
-		catch (err) {
-			handleError('chat.hub.shareGroupFailed')(err)
-		}
+		await showGroupInvite(groupId)
 	})
 
 	menu.querySelector('.group-menu-add-char')?.addEventListener('click', async () => {

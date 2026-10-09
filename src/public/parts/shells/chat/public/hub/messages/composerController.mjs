@@ -93,6 +93,7 @@ export function refreshHubHeaderButtons() {
 	document.body.dataset.surface = hasConversation ? 'conversation' : store.context.currentMode
 
 	const filesVisible = store.context.currentMode === 'groups' && store.context.currentGroupId && store.context.currentState?.isMember
+	document.getElementById('header-invite-button')?.toggleAttribute('hidden', !filesVisible)
 
 	const filesButton = document.getElementById('header-files-button')
 	if (filesButton)
