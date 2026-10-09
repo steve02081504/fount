@@ -8,6 +8,7 @@
 				"src/public/pages/{service_worker,service_worker_policy}.mjs",
 				"src/public/pages/scripts/lib/concurrency.mjs",
 				"src/public/pages/scripts/lib/corsImage.mjs",
+				"src/public/pages/scripts/lib/serverReachability.mjs",
 				"src/public/pages/test/pure/**"
 			],
 			"run": [
