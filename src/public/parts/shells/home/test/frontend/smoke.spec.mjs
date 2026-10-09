@@ -2,6 +2,7 @@
  * Home shell 前端 smoke：页面可加载、核心控件可见。
  */
 import { deriveTitleFromMarkdown } from 'fount/public/parts/shells/gist/public/src/title.mjs'
+import { parseInvitationLink } from 'fount/public/parts/shells/home/public/shared/invitationLink.mjs'
 
 import { test, expect } from './fixtures.mjs'
 
@@ -49,6 +50,41 @@ test.describe('Home shell smoke', () => {
 			timeout: 30_000,
 		})
 		await expect(page.locator('#function-buttons-container')).toBeAttached()
+	})
+
+	test('Home exposes a usable network invitation with instructions and manual copying', async ({ page, baseUrl, apiKey }) => {
+		await acceptSelfInvitation(baseUrl, apiKey)
+		await page.goto(`${baseUrl}/parts/shells:home/`, { waitUntil: 'domcontentloaded' })
+		const button = page.locator('#home-invite-copy')
+		await expect(button).toBeVisible()
+		await expect(button).toBeEnabled()
+		await page.evaluate(() => {
+			Object.defineProperty(navigator, 'clipboard', {
+				configurable: true,
+				value: {
+					/** @param {string} text 捕获邀请链接。 */
+					writeText: async text => { window.copiedInvitation = text },
+				},
+			})
+		})
+		await button.click()
+		const input = page.locator('#home-invite-link')
+		await expect(input).toBeVisible()
+		const link = await input.inputValue()
+		const identity = await page.evaluate(async () => {
+			const identity = await (await fetch('/api/p2p/federation')).json()
+			return { entityHash: identity.entityHash, copied: window.copiedInvitation }
+		})
+		expect(parseInvitationLink(link).entityHash).toBe(identity.entityHash)
+		expect(identity.copied).toBe(link)
+		await page.evaluate(() => {
+			/** 模拟剪贴板拒绝授权。 */
+			navigator.clipboard.writeText = async () => { throw new Error('permission denied') }
+		})
+		await button.click()
+		await expect(input).toBeFocused()
+		expect(await input.evaluate(input => input.selectionEnd - input.selectionStart)).toBe(link.length)
+		await expect(page.locator('#home-invite-status')).not.toHaveText('')
 	})
 
 	test('dropping a markdown file creates a gist and navigates to its view page', async ({ page, baseUrl, apiKey }) => {

@@ -1186,6 +1186,16 @@
 			"generateXFountPart": {
 				"description": "fountコンポーネント情報の生成"
 			}
+		},
+		"inviteFriends": {
+			"title": "友達を fount に招待する",
+			"description": "参加用の招待リンクをコピーして友達に送ると、友達は fount に参加できます。",
+			"copy": "参加用の招待リンクをコピー",
+			"link": "あなたの参加用招待リンク",
+			"preparing": "招待リンクを準備しています…",
+			"copied": "コピーしました",
+			"manualCopy": "クリップボードを利用できません。下のリンクを手動でコピーしてください。",
+			"failed": "招待リンクを準備できませんでした。fount の動作を確認して再試行してください。"
 		}
 	},
 	"chat": {

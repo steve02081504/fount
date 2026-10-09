@@ -86,7 +86,10 @@
 						"src/public/pages/scripts/features/template.mjs",
 						"src/public/pages/base.mjs",
 						"src/public/pages/scripts/i18n/base.mjs",
-						"src/scripts/ms.mjs"
+						"src/scripts/ms.mjs",
+						"src/public/parts/shells/home/public/src/{home,inviteFriends}.mjs",
+						"src/public/pages/scripts/endpoints/p2p/federation.mjs",
+						"src/public/parts/shells/chat/public/shared/runUri.mjs"
 					]
 				}
 			],

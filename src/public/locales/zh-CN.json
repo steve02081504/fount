@@ -1186,6 +1186,16 @@
 			"generateXFountPart": {
 				"description": "生成 fount 组件信息"
 			}
+		},
+		"inviteFriends": {
+			"title": "邀请朋友加入 fount",
+			"description": "复制你的入网邀请链接发给朋友使其能加入 fount。",
+			"copy": "复制入网邀请链接",
+			"link": "你的入网邀请链接",
+			"preparing": "正在准备邀请链接…",
+			"copied": "已复制",
+			"manualCopy": "剪贴板不可用，请手动复制下方链接。",
+			"failed": "暂时无法准备邀请链接，请确认 fount 正常运行后重试。"
 		}
 	},
 	"chat": {

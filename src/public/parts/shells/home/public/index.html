@@ -71,6 +71,16 @@
 				<div id="part-types-containers">
 					<!-- Containers will be injected here -->
 				</div>
+				<section class="bg-base-200 rounded-box p-4 mt-6 flex flex-col gap-2" aria-labelledby="home-invite-title">
+					<h2 id="home-invite-title" class="font-semibold" data-i18n="home.inviteFriends.title"></h2>
+					<p class="text-sm" data-i18n="home.inviteFriends.description"></p>
+					<button id="home-invite-copy" type="button" class="btn btn-primary btn-sm self-start" data-i18n="home.inviteFriends.copy" disabled></button>
+					<label id="home-invite-field" class="form-control" hidden>
+						<span class="label-text" data-i18n="home.inviteFriends.link"></span>
+						<input id="home-invite-link" class="input input-bordered w-full" type="text" readonly user-content />
+					</label>
+					<p id="home-invite-status" class="text-sm" role="status" aria-live="polite"></p>
+				</section>
 			</main>
 		</div>
 

@@ -11,6 +11,7 @@ import { applyTheme, serializeCurrentTheme } from '../../../scripts/theme/index.
 
 import { getHomeRegistry } from './endpoints.mjs'
 import { setupDOMEventListeners, setupServerEventListeners } from './events.mjs'
+import { wireInviteFriends } from './inviteFriends.mjs'
 import { setHomeRegistry, setDefaultParts, setIsSfw, homeRegistry, preloadDragGenerators } from './state.mjs'
 import {
 	setupPartTypeUI,
@@ -86,6 +87,7 @@ export async function initializeApp() {
 	}
 
 	const urlParams = new URLSearchParams(window.location.search)
+	wireInviteFriends()
 	const query = urlParams.get('search')
 	const paramPath = urlParams.get('partpath') || 'chars'
 

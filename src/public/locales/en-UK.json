@@ -1186,6 +1186,16 @@
 			"generateXFountPart": {
 				"description": "Generate fount part info"
 			}
+		},
+		"inviteFriends": {
+			"title": "Invite a friend to fount",
+			"description": "Copy your network invitation link and send it to a friend so that they can join fount.",
+			"copy": "Copy network invitation",
+			"link": "Your network invitation link",
+			"preparing": "Preparing invitation…",
+			"copied": "Copied",
+			"manualCopy": "The clipboard is unavailable. Copy the link below manually.",
+			"failed": "Could not prepare an invitation. Check that fount is running and try again."
 		}
 	},
 	"chat": {
