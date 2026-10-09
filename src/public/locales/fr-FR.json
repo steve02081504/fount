@@ -1188,14 +1188,14 @@
 			}
 		},
 		"inviteFriends": {
-			"title": null,
-			"description": null,
-			"copy": null,
-			"link": null,
-			"preparing": null,
-			"copied": null,
-			"manualCopy": null,
-			"failed": null
+			"title": "Inviter un ami sur fount",
+			"description": "Copiez votre lien d'invitation au réseau et envoyez-le à un ami pour qu'il puisse rejoindre fount.",
+			"copy": "Copier l'invitation au réseau",
+			"link": "Ton lien d'invitation au réseau",
+			"preparing": "Préparation de l'invitation…",
+			"copied": "Copié",
+			"manualCopy": "Le presse-papiers n'est pas disponible. Copie le lien ci-dessous à la main.",
+			"failed": "Impossible de préparer l'invitation. Vérifie que fount fonctionne, puis réessaie."
 		}
 	},
 	"chat": {
@@ -2813,7 +2813,11 @@
 					},
 					"invite": {
 						"main": "Inviter d'autres personnes",
-						"copied": "Lien d'invitation copié dans le presse-papiers"
+						"copied": "Lien d'invitation copié dans le presse-papiers",
+						"copy": "Copier le lien d'invitation",
+						"help": "Envoyez le lien d'invitation à un ami : une fois ouvert, il pourra rejoindre la discussion de groupe.",
+						"link": "Lien d'invitation",
+						"manualCopy": "Copiez le lien d'invitation sélectionné"
 					}
 				},
 				"descriptionEmpty": "Il n'y a pas encore de profil pour ce groupe.",

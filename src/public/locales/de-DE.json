@@ -1188,14 +1188,14 @@
 			}
 		},
 		"inviteFriends": {
-			"title": null,
-			"description": null,
-			"copy": null,
-			"link": null,
-			"preparing": null,
-			"copied": null,
-			"manualCopy": null,
-			"failed": null
+			"title": "Freund zu fount einladen",
+			"description": "Kopieren Sie Ihren Netzwerk-Einladungslink und senden Sie ihn einem Freund, damit er fount beitreten kann.",
+			"copy": "Netzwerk-Einladung kopieren",
+			"link": "Ihr Netzwerk-Einladungslink",
+			"preparing": "Einladung wird vorbereitet…",
+			"copied": "Kopiert",
+			"manualCopy": "Die Zwischenablage ist nicht verfügbar. Kopiere den Link unten von Hand.",
+			"failed": "Die Einladung konnte nicht vorbereitet werden. Prüfe, ob fount läuft, und versuche es erneut."
 		}
 	},
 	"chat": {
@@ -2813,7 +2813,11 @@
 					},
 					"invite": {
 						"main": "Laden Sie andere ein",
-						"copied": "Einladungslink in die Zwischenablage kopiert"
+						"copied": "Einladungslink in die Zwischenablage kopiert",
+						"copy": "Einladungslink kopieren",
+						"help": "Senden Sie den Einladungslink an eine Freundin oder einen Freund; nach dem Öffnen kann die Person dem Gruppenchat beitreten.",
+						"link": "Einladungslink",
+						"manualCopy": "Markierten Einladungslink kopieren"
 					}
 				},
 				"descriptionEmpty": "Für diese Gruppe gibt es noch kein Profil.",

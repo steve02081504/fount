@@ -1188,14 +1188,14 @@
 			}
 		},
 		"inviteFriends": {
-			"title": null,
-			"description": null,
-			"copy": null,
-			"link": null,
-			"preparing": null,
-			"copied": null,
-			"manualCopy": null,
-			"failed": null
+			"title": "邀請朋友加入 fount",
+			"description": "複製你的入網邀請連結傳給朋友，對方就能加入 fount。",
+			"copy": "複製入網邀請連結",
+			"link": "你的入網邀請連結",
+			"preparing": "正在準備邀請連結…",
+			"copied": "已複製",
+			"manualCopy": "剪貼簿無法使用，請手動複製下方連結。",
+			"failed": "暫時無法準備邀請連結，請確認 fount 正常運作後再試一次。"
 		}
 	},
 	"chat": {
@@ -2813,7 +2813,11 @@
 					},
 					"invite": {
 						"main": "邀請他人",
-						"copied": "邀請連結已複製到剪貼簿"
+						"copied": "邀請連結已複製到剪貼簿",
+						"copy": "複製邀請連結",
+						"help": "把邀請連結傳給朋友，對方點開後就能加入群組聊天。",
+						"link": "邀請連結",
+						"manualCopy": "請複製已選取的邀請連結"
 					}
 				},
 				"descriptionEmpty": "這個群組還沒有簡介。",

@@ -1188,14 +1188,14 @@
 			}
 		},
 		"inviteFriends": {
-			"title": null,
-			"description": null,
-			"copy": null,
-			"link": null,
-			"preparing": null,
-			"copied": null,
-			"manualCopy": null,
-			"failed": null
+			"title": "친구를 fount에 초대하세요",
+			"description": "네트워크 초대 링크를 복사해 친구에게 보내면, 친구가 fount에 들어올 수 있습니다.",
+			"copy": "네트워크 초대 링크 복사",
+			"link": "내 네트워크 초대 링크",
+			"preparing": "초대 링크를 준비하는 중…",
+			"copied": "복사했습니다",
+			"manualCopy": "클립보드를 쓸 수 없습니다. 아래 링크를 직접 복사하세요.",
+			"failed": "초대 링크를 준비하지 못했습니다. fount가 실행 중인지 확인한 뒤 다시 시도하세요."
 		}
 	},
 	"chat": {
@@ -2813,7 +2813,11 @@
 					},
 					"invite": {
 						"main": "다른 사람 초대",
-						"copied": "초대 링크가 클립보드에 복사되었습니다."
+						"copied": "초대 링크가 클립보드에 복사되었습니다.",
+						"copy": "초대 링크 복사",
+						"help": "초대 링크를 친구에게 보내면, 링크를 연 친구가 바로 그룹 채팅에 들어올 수 있습니다.",
+						"link": "초대 링크",
+						"manualCopy": "선택한 초대 링크를 복사하세요"
 					}
 				},
 				"descriptionEmpty": "아직 이 그룹에 대한 프로필이 없습니다.",

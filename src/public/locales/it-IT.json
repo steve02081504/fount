@@ -1188,14 +1188,14 @@
 			}
 		},
 		"inviteFriends": {
-			"title": null,
-			"description": null,
-			"copy": null,
-			"link": null,
-			"preparing": null,
-			"copied": null,
-			"manualCopy": null,
-			"failed": null
+			"title": "Invita un amico su fount",
+			"description": "Copia il tuo link di invito alla rete e invialo a un amico, così potrà unirsi a fount.",
+			"copy": "Copia l'invito alla rete",
+			"link": "Il tuo link di invito alla rete",
+			"preparing": "Preparazione dell'invito…",
+			"copied": "Copiato",
+			"manualCopy": "Gli appunti non sono disponibili. Copia il link qui sotto a mano.",
+			"failed": "Impossibile preparare l'invito. Verifica che fount sia in esecuzione e riprova."
 		}
 	},
 	"chat": {
@@ -2813,7 +2813,11 @@
 					},
 					"invite": {
 						"main": "Invita altri",
-						"copied": "Link dell'invito copiato negli appunti"
+						"copied": "Link dell'invito copiato negli appunti",
+						"copy": "Copia il link di invito",
+						"help": "Invia il link di invito a un amico: una volta aperto, potrà entrare nella chat di gruppo.",
+						"link": "Link di invito",
+						"manualCopy": "Copia il link di invito selezionato"
 					}
 				},
 				"descriptionEmpty": "Non esiste ancora un profilo per questo gruppo.",

@@ -1188,14 +1188,14 @@
 			}
 		},
 		"inviteFriends": {
-			"title": null,
-			"description": null,
-			"copy": null,
-			"link": null,
-			"preparing": null,
-			"copied": null,
-			"manualCopy": null,
-			"failed": null
+			"title": "Mời bạn bè tham gia fount",
+			"description": "Sao chép liên kết mời vào mạng và gửi cho bạn bè để họ có thể tham gia fount.",
+			"copy": "Sao chép lời mời vào mạng",
+			"link": "Liên kết mời vào mạng của bạn",
+			"preparing": "Đang chuẩn bị liên kết mời…",
+			"copied": "Đã sao chép",
+			"manualCopy": "Không dùng được bộ nhớ tạm. Hãy sao chép liên kết bên dưới theo cách thủ công.",
+			"failed": "Chưa chuẩn bị được liên kết mời. Hãy kiểm tra xem fount có đang chạy không rồi thử lại."
 		}
 	},
 	"chat": {
@@ -2813,7 +2813,11 @@
 					},
 					"invite": {
 						"main": "Mời người khác",
-						"copied": "Đã sao chép liên kết lời mời vào bảng nhớ tạm"
+						"copied": "Đã sao chép liên kết lời mời vào bảng nhớ tạm",
+						"copy": "Sao chép liên kết mời",
+						"help": "Hãy gửi liên kết mời cho bạn bè; mở liên kết là họ vào được nhóm trò chuyện ngay.",
+						"link": "Liên kết mời",
+						"manualCopy": "Hãy sao chép liên kết mời đã chọn"
 					}
 				},
 				"descriptionEmpty": "Chưa có hồ sơ cho nhóm này.",

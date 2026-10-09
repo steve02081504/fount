@@ -1188,14 +1188,14 @@
 			}
 		},
 		"inviteFriends": {
-			"title": null,
-			"description": null,
-			"copy": null,
-			"link": null,
-			"preparing": null,
-			"copied": null,
-			"manualCopy": null,
-			"failed": null
+			"title": "Convidar um amigo para o fount",
+			"description": "Copia a tua ligação de convite à rede e envia-a a um amigo, para que ele possa entrar no fount.",
+			"copy": "Copiar o convite à rede",
+			"link": "A tua ligação de convite à rede",
+			"preparing": "A preparar o convite…",
+			"copied": "Copiado",
+			"manualCopy": "A área de transferência não está disponível. Copia a ligação abaixo à mão.",
+			"failed": "Não foi possível preparar o convite. Confirma que o fount está a funcionar e tenta de novo."
 		}
 	},
 	"chat": {
@@ -2813,7 +2813,11 @@
 					},
 					"invite": {
 						"main": "Convide outras pessoas",
-						"copied": "Link do convite copiado para a área de transferência"
+						"copied": "Link do convite copiado para a área de transferência",
+						"copy": "Copiar a ligação de convite",
+						"help": "Envie a ligação de convite a um amigo; assim que a abrir, poderá entrar no chat do grupo.",
+						"link": "Ligação de convite",
+						"manualCopy": "Copia a ligação de convite selecionada"
 					}
 				},
 				"descriptionEmpty": "Ainda não há perfil para este grupo.",

@@ -1188,14 +1188,14 @@
 			}
 		},
 		"inviteFriends": {
-			"title": null,
-			"description": null,
-			"copy": null,
-			"link": null,
-			"preparing": null,
-			"copied": null,
-			"manualCopy": null,
-			"failed": null
+			"title": "Bjóða vini í fount",
+			"description": "Afritaðu netboðshlekkinn og sendu hann vini svo hann geti gengið í fount.",
+			"copy": "Afrita netboð",
+			"link": "Netboðshlekkurinn þinn",
+			"preparing": "Hlekkurinn er í burðarliðnum…",
+			"copied": "Afritað",
+			"manualCopy": "Klemmuspjaldið er ekki í boði. Afritaðu hlekkinn hér fyrir neðan handvirkt.",
+			"failed": "Ekki tókst að útbúa boð. Athugaðu hvort fount er í gangi og reyndu aftur."
 		}
 	},
 	"chat": {
@@ -2813,7 +2813,11 @@
 					},
 					"invite": {
 						"main": "Bjóddu öðrum",
-						"copied": "Boðstengillinn afritaður á klippiFánarð"
+						"copied": "Boðstengillinn afritaður á klippiFánarð",
+						"copy": "Afrita boðshlekk",
+						"help": "Sendu boðshlekkinn til vinar; þegar hann opnar hann getur hann gengið í hópspjallið.",
+						"link": "Boðshlekkur",
+						"manualCopy": "Afritaðu valinn boðshlekk"
 					}
 				},
 				"descriptionEmpty": "Það er enginn prófíll fyrir þennan hóp ennþá.",

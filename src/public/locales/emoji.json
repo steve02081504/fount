@@ -1188,14 +1188,14 @@
 			}
 		},
 		"inviteFriends": {
-			"title": "邀请朋友加入 fount",
-			"description": "复制你的入网邀请链接发给朋友使其能加入 fount。",
-			"copy": "复制入网邀请链接",
-			"link": "你的入网邀请链接",
-			"preparing": "正在准备邀请链接…",
-			"copied": "已复制",
-			"manualCopy": "剪贴板不可用，请手动复制下方链接。",
-			"failed": "暂时无法准备邀请链接，请确认 fount 正常运行后重试。"
+			"title": "📨👤➡️ fount",
+			"description": "📋🌐🔗 ➡️ 👤 · 👤✅ ➡️ fount",
+			"copy": "📋🌐📨",
+			"link": "🌐🔗",
+			"preparing": "⏳🌐🔗",
+			"copied": "✅📋",
+			"manualCopy": "📋❌ · 👆📋🔗",
+			"failed": "⚠️ 📋🔗 ❌ · 🔁"
 		}
 	},
 	"chat": {
@@ -2814,10 +2814,10 @@
 					"invite": {
 						"main": "📨👤",
 						"copied": "🎟️✅📋",
-						"copy": "复制邀请链接",
-						"help": "把邀请链接发给朋友，对方打开后即可加入群聊。",
-						"link": "邀请链接",
-						"manualCopy": "请复制已选中的邀请链接"
+						"copy": "📋🔗",
+						"help": "📨🔗 ➡️ 👤 · 👤 ✅ ➡️ 👥",
+						"link": "🔗",
+						"manualCopy": "👆📋🔗"
 					}
 				},
 				"descriptionEmpty": "📝📭👥",

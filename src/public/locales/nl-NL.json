@@ -1188,14 +1188,14 @@
 			}
 		},
 		"inviteFriends": {
-			"title": null,
-			"description": null,
-			"copy": null,
-			"link": null,
-			"preparing": null,
-			"copied": null,
-			"manualCopy": null,
-			"failed": null
+			"title": "Nodig een vriend uit voor fount",
+			"description": "Kopieer je netwerkuitnodigingslink en stuur hem naar een vriend, zodat hij bij fount kan komen.",
+			"copy": "Netwerkuitnodigingslink kopiëren",
+			"link": "Je netwerkuitnodigingslink",
+			"preparing": "Uitnodiging wordt voorbereid…",
+			"copied": "Gekopieerd",
+			"manualCopy": "Het klembord is niet beschikbaar. Kopieer de link hieronder handmatig.",
+			"failed": "De uitnodiging kon niet worden voorbereid. Controleer of fount draait en probeer het opnieuw."
 		}
 	},
 	"chat": {
@@ -2813,7 +2813,11 @@
 					},
 					"invite": {
 						"main": "Nodig anderen uit",
-						"copied": "Uitnodigingslink gekopieerd naar klembord"
+						"copied": "Uitnodigingslink gekopieerd naar klembord",
+						"copy": "Uitnodigingslink kopiëren",
+						"help": "Stuur de uitnodigingslink naar een vriend; zodra die hem opent, kan hij meedoen aan de groepschat.",
+						"link": "Uitnodigingslink",
+						"manualCopy": "Kopieer de geselecteerde uitnodigingslink"
 					}
 				},
 				"descriptionEmpty": "Er is nog geen profiel voor deze groep.",
