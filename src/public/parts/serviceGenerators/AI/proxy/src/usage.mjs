@@ -55,7 +55,10 @@ export function createUsageRecorder(result, config, provider = 'openai') {
 		 * @returns {void}
 		 */
 		fail(error) {
-			measurement.status = error?.name === 'AbortError' ? 'aborted' : 'failed'
+			// 输出退化是我们自己中断了这次尝试，原因记在 stopReason 上。
+			const degenerated = error?.code === 'output_degenerated'
+			measurement.status = degenerated || error?.name === 'AbortError' ? 'aborted' : 'failed'
+			if (degenerated) measurement.stopReason = error.code
 			measurement.finishedAt ??= Date.now()
 		},
 		/** 独立于 logprobs 与用量计量记录首个有效模型输出。 */

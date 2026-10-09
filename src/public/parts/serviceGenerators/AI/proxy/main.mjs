@@ -54,6 +54,7 @@ const configTemplate = {
 	allowed_mime_types: null,
 	convert_config: defaultConvertConfig(),
 	use_stream: true,
+	output_recovery: true,
 }
 /**
  * 获取 Proxy AI 源。

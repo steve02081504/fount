@@ -70,7 +70,7 @@ export async function createOpenAICompatibleSource({
 		 * @returns {Promise<{content: string, files: any[]}>} 回复。
 		 */
 		StructCall: async (prompt_struct, options = {}) => {
-			const { base_result = {}, replyPreviewUpdater, signal, supported_functions } = options
+			const { base_result = {}, replyPreviewUpdater, signal, supported_functions, onGenerationRestart } = options
 			const enableLogprobsShow = config.model_arguments?.logprobs && supported_functions?.html
 			const enableHtmlShow = supported_functions?.html ?? false
 			const useThemeStyles = supported_functions?.fount_themes ?? false
@@ -99,6 +99,7 @@ export async function createOpenAICompatibleSource({
 			base_result.extension = result.extension
 			await run(messages, {
 				signal,
+				onGenerationRestart,
 				result,
 				/**
 				 * 流式预览。

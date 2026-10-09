@@ -3,6 +3,7 @@ import { Buffer } from 'node:buffer'
 import { fetchResponses, messagesToResponsesBody } from '../../codex/src/responsesClient.mjs'
 
 import { completionsUrlCandidates } from './completionsUrl.mjs'
+import { withOutputRecovery } from './outputRecovery.mjs'
 import { AIRequestError, isRetryableCandidateError, readErrorResponse } from './requestError.mjs'
 import { responsesUrlCandidates, urlImpliesResponses } from './responsesUrl.mjs'
 import { createUsageRecorder } from './usage.mjs'
@@ -91,7 +92,7 @@ export function requestCandidates(config) {
  * 创建带重试的聊天补全请求函数。
  * @param {object} config - 服务配置（会在 URL 自动修正时被更新）。
  * @param {{ SaveConfig: Function }} deps - 依赖项。
- * @returns {(messages: Array<object>, options?: { signal?: AbortSignal, previewUpdater?: Function, result?: {content: string, content_for_show?: string, files: any[], extension?: object} }) => Promise<{content: string, content_for_show?: string, files: any[], extension?: object}>} 返回带重试的聊天补全请求函数。
+ * @returns {(messages: Array<object>, options?: { signal?: AbortSignal, previewUpdater?: Function, onGenerationRestart?: Function, result?: {content: string, content_for_show?: string, files: any[], extension?: object} }) => Promise<{content: string, content_for_show?: string, files: any[], extension?: object}>} 返回带重试的聊天补全请求函数。
  */
 export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 	/**
@@ -101,12 +102,14 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 	 * @param {object} options - 选项对象。
 	 * @param {AbortSignal} options.signal - 用于中止请求的 AbortSignal。
 	 * @param {(result: {content: string, content_for_show?: string, files: any[]}) => void} options.previewUpdater - 处理部分结果的回调函数。
+	 * @param {(result: object, final?: boolean) => void} options.inspectOutput - 检查原始模型输出。
 	 * @param {{content: string, content_for_show?: string, files: any[], extension?: object}} options.result - 包含内容和文件的结果对象。
 	 * @returns {Promise<{content: string, content_for_show?: string, files: any[], extension?: object}>} 模型返回的内容。
 	 */
 	async function fetchChatCompletion(messages, requestConfig, {
 		signal,
 		previewUpdater = () => { },
+		inspectOutput = () => { },
 		result = { content: '', files: [] },
 	}) {
 		const usageRecorder = createUsageRecorder(result, requestConfig)
@@ -158,11 +161,10 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 				throw await readErrorResponse(response, { url: requestConfig.url, apiStyle: 'chat' })
 
 			const reader = response.body.getReader()
-			signal?.addEventListener?.('abort', () => {
-				const err = new Error('User Aborted')
-				err.name = 'AbortError'
-				reader.cancel(err).catch(() => { })
-			}, { once: true })
+			/** @returns {Promise<void>} Cancel the underlying stream with its actual reason. */
+			const cancelReader = () => reader.cancel(signal.reason).catch(() => { })
+			signal?.addEventListener('abort', cancelReader, { once: true })
+			if (signal?.aborted) cancelReader()
 
 			const decoder = new TextDecoder()
 			let buffer = ''
@@ -201,7 +203,7 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 				const promise = (async () => {
 					const newFiles = await Promise.all(urls.map(async (url) => {
 						try {
-							const imageResponse = await fetch(url)
+							const imageResponse = await fetch(url, { signal })
 							if (!imageResponse.ok) return null
 							const mimeType = (imageResponse.headers.get('content-type') || 'image/png').split(';')[0].trim()
 							const extension = mimeType.split('/')[1]?.replace('jpeg', 'jpg') || 'png'
@@ -211,13 +213,14 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 								mime_type: mimeType,
 							}
 						} catch (error) {
+							if (signal?.aborted) return null
 							console.error('Failed to fetch image:', url, error)
 							return null
 						}
 					}))
 
 					const validFiles = newFiles.filter(Boolean)
-					if (validFiles.length > 0) {
+					if (validFiles.length > 0 && !signal?.aborted) {
 						result.files.push(...validFiles)
 						previewUpdater(result)
 					}
@@ -271,7 +274,10 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 					result.extension.reasoning_content = (result.extension.reasoning_content ?? '') + reasoningChunk
 				}
 
-				if (content || reasoningChunk) previewUpdater(result)
+				if (content || reasoningChunk) {
+					inspectOutput(result)
+					previewUpdater(result)
+				}
 
 				const images = delta?.images || message?.images
 				if (images) processImages(images)
@@ -294,22 +300,20 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 				appendLogprobsFromChoice(json.choices?.[0])
 				if (message) {
 					result.content = message.content || ''
-					if (message.images) processImages(message.images)
 					if (message.reasoning_content ?? message.reasoning) {
 						result.extension ??= {}
 						result.extension.reasoning_content = message.reasoning_content ?? message.reasoning
 					}
+					inspectOutput(result, true)
+					if (message.images) processImages(message.images)
 				}
 			}
 
 			try {
 				while (true) {
-					if (signal?.aborted) {
-						const err = new Error('User Aborted')
-						err.name = 'AbortError'
-						throw err
-					}
+					signal?.throwIfAborted()
 					const { done, value } = await reader.read()
+					signal?.throwIfAborted()
 					if (done) break
 
 					buffer += decoder.decode(value, { stream: true })
@@ -337,10 +341,12 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 					}
 					if (json) applyNonStreamJson(json)
 				}
+				inspectOutput(result, true)
 			} catch (error) {
-				if (error.name !== 'AbortError') console.error('Stream reading error:', error)
+				if (error.name !== 'AbortError' && error.code !== 'output_degenerated') console.error('Stream reading error:', error)
 				throw error
 			} finally {
+				signal?.removeEventListener('abort', cancelReader)
 				reader.releaseLock()
 			}
 
@@ -380,6 +386,7 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 			}),
 			signal: options.signal,
 			previewUpdater: options.previewUpdater,
+			inspectOutput: options.inspectOutput,
 			result: options.result,
 		})
 	}
@@ -387,10 +394,10 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 	/**
 	 * 调用基础模型（按候选顺序回退）。
 	 * @param {Array<object>} messages - 消息数组。
-	 * @param {{ signal?: AbortSignal, previewUpdater?: (result: {content: string, content_for_show?: string, files: any[]}) => void, result?: {content: string, content_for_show?: string, files: any[]} }} options - 选项。
+	 * @param {{ signal?: AbortSignal, previewUpdater?: (result: {content: string, content_for_show?: string, files: any[]}) => void, onGenerationRestart?: (info: {attempt: number, reason: string}) => void, result?: {content: string, content_for_show?: string, files: any[]} }} options - 选项。
 	 * @returns {Promise<{content: string, content_for_show?: string, files: any[]}>} 模型返回的内容。
 	 */
-	return async function fetchChatCompletionWithRetry(messages, options = {}) {
+	return withOutputRecovery(async function fetchChatCompletionWithRetry(messages, options = {}) {
 		const errors = []
 
 		for (const candidate of requestCandidates(config))
@@ -406,7 +413,8 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 
 				return result
 			} catch (error) {
-				if (error.name === 'AbortError') throw error
+				if (options.signal?.aborted) throw options.signal.reason
+				if (error.name === 'AbortError' || error.code === 'output_degenerated') throw error
 				errors.push(error)
 				// 只有端点不对才继续尝试下一个候选；内容错误立刻抛出，避免放大请求量并掩盖真错。
 				if (!isRetryableCandidateError(error)) break
@@ -419,5 +427,5 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 		if (errors.some(error => error.apiStyle === 'chat') && hasAssistantAttachments(messages))
 			failure.message += `\n${ASSISTANT_ATTACHMENT_HINT}`
 		throw failure
-	}
+	}, config)
 }

@@ -119,6 +119,7 @@ function appendReasoningSummary(result, index, text) {
  * @param {object} args.body - JSON body。
  * @param {AbortSignal} [args.signal] - 取消。
  * @param {(result: {content: string, files: any[]}) => void} [args.previewUpdater] - 预览。
+ * @param {(result: object, final?: boolean) => void} [args.inspectOutput] - 检查原始输出（proxy 可选）。
  * @param {{content: string, files: any[], extension?: object}} [args.result] - 累积结果。
  * @returns {Promise<{content: string, files: any[], extension?: object}>} 回复。
  */
@@ -129,6 +130,7 @@ export async function fetchResponses({
 	usageConfig = {},
 	signal,
 	previewUpdater = () => { },
+	inspectOutput = () => { },
 	result = { content: '', files: [] },
 }) {
 	const usageRecorder = createUsageRecorder(result, { ...usageConfig, model: body.model })
@@ -144,6 +146,7 @@ export async function fetchResponses({
 
 		if (!body.stream) {
 			const json = await response.json()
+			signal?.throwIfAborted()
 			usageRecorder.record(json.usage, json.model)
 			if (json.error)
 				throw new AIRequestError(
@@ -156,16 +159,16 @@ export async function fetchResponses({
 				if (item.type === 'reasoning')
 					for (const summary of item.summary ?? [])
 						if (summary.type === 'summary_text') appendReasoningSummary(result, reasoningIndex++, summary.text)
+			inspectOutput(result, true)
 			previewUpdater(result)
 			return result
 		}
 
 		const reader = response.body.getReader()
-		signal?.addEventListener?.('abort', () => {
-			const err = new Error('User Aborted')
-			err.name = 'AbortError'
-			reader.cancel(err).catch(() => { })
-		}, { once: true })
+		/** @returns {Promise<void>} Cancel the underlying stream with its actual reason. */
+		const cancelReader = () => reader.cancel(signal.reason).catch(() => { })
+		signal?.addEventListener('abort', cancelReader, { once: true })
+		if (signal?.aborted) cancelReader()
 		const decoder = new TextDecoder()
 		let buffer = ''
 
@@ -209,28 +212,30 @@ export async function fetchResponses({
 
 			if (json.type === 'response.output_text.delta') {
 				result.content += json.delta ?? ''
+				inspectOutput(result)
 				previewUpdater(result)
 			}
 			else if (json.type === 'response.refusal.delta') {
 				result.content += json.delta ?? ''
+				inspectOutput(result)
 				previewUpdater(result)
 			}
 			else if (json.type === 'response.reasoning_summary_text.delta') {
 				appendReasoningSummary(result, json.summary_index ?? json.content_index ?? 0, json.delta ?? '')
+				inspectOutput(result)
 				previewUpdater(result)
 			}
-			else if (json.type === 'response.completed' && json.response)
+			else if (json.type === 'response.completed' && json.response) {
 				result.content ||= textFromResponsesJson(json.response)
+				inspectOutput(result, true)
+			}
 		}
 
 		try {
 			while (true) {
-				if (signal?.aborted) {
-					const err = new Error('User Aborted')
-					err.name = 'AbortError'
-					throw err
-				}
+				signal?.throwIfAborted()
 				const { done, value } = await reader.read()
+				signal?.throwIfAborted()
 				if (done) break
 				buffer += decoder.decode(value, { stream: true })
 				const lines = buffer.split('\n')
@@ -240,8 +245,10 @@ export async function fetchResponses({
 			// 冲刷解码器与最后一行（流末尾可能没有换行结尾）。
 			buffer += decoder.decode()
 			for (const line of buffer.split('\n')) handleLine(line)
+			inspectOutput(result, true)
 		}
 		finally {
+			signal?.removeEventListener('abort', cancelReader)
 			reader.releaseLock()
 		}
 		return result

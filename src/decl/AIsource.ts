@@ -178,6 +178,8 @@ export class GenerationOptions {
 	replyPreviewUpdater?: (partial: chatReply_t) => void
 	/** 中断信号 (关键！) */
 	signal?: AbortSignal
+	/** 来源放弃当前尝试，准备从原始提示重新生成。 */
+	onGenerationRestart?: (info: { attempt: number, reason: string }) => void
 	/** 当前 shell 支持能力，用于决定响应渲染策略 */
 	supported_functions?: {
 		markdown?: boolean
