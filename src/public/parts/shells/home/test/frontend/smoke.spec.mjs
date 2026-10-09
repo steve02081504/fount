@@ -21,13 +21,18 @@ test.describe('Home shell smoke', () => {
 		await page.goto(`${baseUrl}/parts/shells:home/`, { waitUntil: 'domcontentloaded' })
 		await page.waitForURL(/invitation-required\//)
 		await expect(page.locator('#invitation-link')).toBeVisible()
+		// 邀请页脚本先 await initTranslations 才注册 keydown：等标题翻出来再派发序列，否则按键落在空窗里。
+		await expect(page.locator('h1')).not.toHaveText('', { timeout: 30_000 })
 		// 直接派发 keydown，而不是走 page.keyboard：后者依赖浏览器焦点与输入管线，
 		// 与同批前端套件并行时会被挤掉按键，序列在中间断裂。
 		const selfInviteSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a']
+		// 自邀请求经 P2P 往返，并行负载下可能远超固定等待：先等它的响应，再等跳转。
+		const selfInviteAccepted = page.waitForResponse(response => new URL(response.url()).pathname.endsWith('/invitation/self'))
 		await page.evaluate(sequence => {
 			for (const key of sequence) document.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }))
 		}, selfInviteSequence)
-		await page.waitForURL(/parts\/shells:home\/?(?:\?|$)/, { timeout: 30_000 })
+		expect((await selfInviteAccepted).ok()).toBe(true)
+		await page.waitForURL(/parts\/shells:home\/?(?:\?|$)/, { timeout: 60_000 })
 		const ping = await page.evaluate(async () => (await fetch('/api/ping')).json())
 		expect(ping.invitedByNodeHash).toBe(ping.nodeHash)
 	})
