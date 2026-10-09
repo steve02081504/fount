@@ -64,7 +64,8 @@ export async function executeObservedPluginTool(args, handler, call, execute) {
 	const pluginName = Object.entries(args.plugins ?? {}).find(([, plugin]) =>
 		flattenReplyHandlers(plugin?.interfaces?.chat?.ReplyHandler).some(leaf =>
 			leaf === handler || (leaf.name === handler.name && leaf.pattern?.tag === handler.pattern?.tag)))?.[0]
-	if (!pluginName) return execute()
+	const notify = args.generation_options?.onToolStatistics
+	if (!pluginName && !notify) return execute()
 	const evaluation = handler.evaluate && args.extension?.evaluatedToolCalls?.[handler.name]?.entries?.[call.occurrence]
 	let id = evaluation && evaluationEventIds.get(evaluation)
 	if (!id) {
@@ -72,15 +73,23 @@ export async function executeObservedPluginTool(args, handler, call, execute) {
 		if (evaluation) evaluationEventIds.set(evaluation, id)
 	}
 	const event = { pluginName, type: 'tool', tool: handler.name, call: { tag: call.tag, params: call.params, body: call.body ?? call.inner } }
-	await emitPluginEvent(args, { ...event, id: `${id}:started`, status: 'started' })
+	const statistics = { callId: id, name: handler.name, startedAt: evaluation?.startedAt ?? Date.now(), status: 'running' }
+	notify?.(statistics)
+	if (pluginName) await emitPluginEvent(args, { ...event, id: `${id}:started`, status: 'started' })
 	try {
 		const outcome = await execute() ?? {}
 		const status = outcome.failed || call.error ? 'failed' : outcome.pending ? 'pending' : 'succeeded'
-		await emitPluginEvent(args, { ...event, id: `${id}:${status}`, status })
+		statistics.status = status
+		if (pluginName) await emitPluginEvent(args, { ...event, id: `${id}:${status}`, status })
 		return outcome
 	} catch (error) {
-		await emitPluginEvent(args, { ...event, id: `${id}:failed`, status: 'failed', error: String(error) })
+		statistics.status = 'failed'
+		if (pluginName) await emitPluginEvent(args, { ...event, id: `${id}:failed`, status: 'failed', error: String(error) })
 		throw error
+	}
+	finally {
+		statistics.finishedAt = Date.now()
+		notify?.(statistics)
 	}
 }
 

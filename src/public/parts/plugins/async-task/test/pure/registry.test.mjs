@@ -179,6 +179,30 @@ Deno.test('registerTask emits start and settle lifecycle events', async () => {
 	assert(!('result' in settle.task), '生命周期事件不应携带结果体（结果由完成通知承载）')
 })
 
+Deno.test('task lifecycle reports its interval to the producing request', async () => {
+	resetAsyncTaskState()
+	const events = []
+	/**
+	 * 收集本源产生的工具统计事件。
+	 * @param {object} event - 工具统计事件。
+	 * @returns {number} 收集后的条数。
+	 */
+	const collectStatistics = event => events.push({ ...event })
+	const eventContext = { generation_options: { onToolStatistics: collectStatistics } }
+	const target = owner()
+	const task = registerTask({ kind: 'js', label: 'demo', owner: target, eventContext, run: resolveWith('ok') })
+	assertEquals(events, [{ callId: `async:${task.id}`, name: 'js', async: true, startedAt: task.startedAt, finishedAt: null, status: 'running' }])
+
+	await task.done
+	assertEquals(events.length, 2)
+	assertEquals(events[1].callId, events[0].callId)
+	assertEquals(events[1].status, 'done')
+	assert(events[1].finishedAt >= events[1].startedAt)
+
+	const note = takePendingNotifications(target)[0]
+	assertEquals(note.extension.asyncWork, { callId: `async:${task.id}`, name: 'js', startedAt: task.startedAt, finishedAt: task.finishedAt, status: 'done' })
+})
+
 Deno.test('failed tasks record the error then release', async () => {
 	resetAsyncTaskState()
 	const target = owner()

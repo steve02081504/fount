@@ -41,10 +41,10 @@ export function syncEvaluationCache(cache, calls, evaluate, args, onlyOccurrence
 	for (let index = 0; index < calls.length; index++) {
 		if (onlyOccurrence !== undefined && index !== onlyOccurrence) continue
 		if (!cache.entries[index]) {
-			const entry = cache.entries[index] = { settled: false }
+			const entry = cache.entries[index] = { settled: false, startedAt: Date.now() }
 			entry.promise = Promise.resolve().then(() => evaluate(calls[index], args)).then(
-				value => Object.assign(entry, { value, settled: true }),
-				error => Object.assign(entry, { error, settled: true }),
+				value => Object.assign(entry, { value, settled: true, finishedAt: Date.now() }),
+				error => Object.assign(entry, { error, settled: true, finishedAt: Date.now() }),
 			)
 		}
 	}

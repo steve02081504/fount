@@ -101,6 +101,10 @@ function taskView(task) {
  * @returns {void}
  */
 function emitTaskEvent(phase, task) {
+	try {
+		task.eventContext?.generation_options?.onToolStatistics?.({ callId: `async:${task.id}`, name: task.kind, async: true, startedAt: task.startedAt, finishedAt: task.finishedAt, status: task.state })
+	}
+	catch (error) { console.warn('async-task: 统计通知失败', error) }
 	if (!notifier) return
 	try {
 		notifier({ phase, task: taskView(task) })
@@ -305,7 +309,7 @@ function makeNotificationEntry(task) {
 		files: [],
 		time_stamp: new Date(),
 		...charId ? { charVisibility: [charId] } : {},
-		extension: { ...executionTarget ? { executionTarget } : {}, ...task.meta?.usage ? { usage: task.meta.usage } : {}, pluginEvent: pluginEventForTask(task) },
+		extension: { asyncWork: { callId: `async:${task.id}`, name: task.kind, startedAt: task.startedAt, finishedAt: task.finishedAt, status: task.state }, ...executionTarget ? { executionTarget } : {}, ...task.meta?.usage ? { usage: task.meta.usage } : {}, pluginEvent: pluginEventForTask(task) },
 	}
 }
 

@@ -99,6 +99,16 @@ export type GenerationOptions_t = {
 	/** 远程流式回显时，主机侧实现 `interfaces.subfount.RemoteCallBack` 的 partpath（仅在同时设置 `onToolOutput` 时使用）。 */
 	remoteToolCallbackPartpath?: string
 	/**
+	 * 模型请求生命周期回调：同一次请求在开始与结束时各回调一次（`callId` 相同，结束事件补齐 `finishedAt`），
+	 * 携带该次请求的上下文快照；宿主据此记录不随生成历史保留期限过期的运行统计（如 code shell）。
+	 */
+	onRequestStatistics?: (event: object) => void
+	/**
+	 * 工具执行生命周期回调：每个标签 / 模式 handler 的起止各回调一次（并行批次与复用的缓存求值同样覆盖），
+	 * `async: true` 表示这次调用只是登记了一个后台任务（任务区间由异步任务自身结算）。
+	 */
+	onToolStatistics?: (event: object) => void
+	/**
 	 * 一轮工具处理结束时的轮次边界回调：由 shell 选择性提供。
 	 * 缺省 / 返回 undefined = 继续下一轮；只有明确返回 false 才停止（如 code shell 的进程退出收尾）。
 	 */

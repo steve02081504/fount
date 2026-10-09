@@ -127,6 +127,34 @@ Deno.test('finishPromptRequest stores only the calls added during that request',
 	assertEquals(record.requests[1].usage.total.inputTokens, 14)
 })
 
+Deno.test('beginPromptRequest reports context estimates and closes the request interval', async () => {
+	const args = makeArgs()
+	const events = []
+	/**
+	 * 收集请求生命周期统计事件。
+	 * @param {object} event - 请求统计事件。
+	 * @returns {number} 收集后的条数。
+	 */
+	const collectStatistics = event => events.push({ ...event })
+	args.generation_options = { onRequestStatistics: collectStatistics }
+	const prompt = makePromptStruct()
+	prompt.plugin_prompts = { demo: { text: [{ content: 'use tools wisely' }] } }
+	const handle = await beginPromptRequest(args, prompt, { model: 'demo-model' })
+
+	assertEquals(events.length, 1)
+	assertEquals(events[0].model, 'demo-model')
+	assertEquals(events[0].finishedAt, undefined)
+	assertEquals(events[0].context.estimated, true)
+	assert(events[0].context.components.tools > 0)
+	assert(events[0].context.components.system > 0)
+	assertEquals(events[0].context.components.other, events[0].context.total - events[0].context.components.system - events[0].context.components.tools - events[0].context.components.messages)
+
+	finishPromptRequest(handle, { output: 'bye' })
+	assertEquals(events.length, 2)
+	assertEquals(events[1].callId, events[0].callId)
+	assert(events[1].finishedAt >= events[1].startedAt)
+})
+
 Deno.test('request snapshots retain immutable attachment bytes and hashes', async () => {
 	const bytes = new Uint8Array([1, 2, 3])
 	const args = makeArgs()

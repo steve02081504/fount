@@ -15,6 +15,8 @@ import { summarizeUsage } from '../../chat/public/shared/usage.mjs'
 import { createPromptRequestRecorder } from '../../chat/src/prompt_struct/snapshot.mjs'
 import { buildDialogue } from '../public/shared/dialogueReplay.mjs'
 
+import { requestContextStatistics } from './request_statistics.mjs'
+
 /**
  * 每次生成的记录会话。
  * @typedef {object} recordSession_t
@@ -87,9 +89,12 @@ export async function beginPromptRequest(args, promptStruct, extra = {}) {
 	}
 	if (session.disabled) return null
 	const entry = await session.recorder.record(promptStruct, { model: extra.model, aiSource: extra.aiSource })
+	const statistics = { callId: crypto.randomUUID(), startedAt: Date.now(), model: extra.model, context: requestContextStatistics(entry, promptStruct, extra.aiSource) }
+	const notify = args.generation_options?.onRequestStatistics
+	notify?.(statistics)
 	const result = args.generation_options?.base_result
 	const usageCallsBefore = result?.extension?.usage?.calls?.length ?? 0
-	return { session, entry, result, usageCallsBefore }
+	return { session, entry, result, usageCallsBefore, statistics, notify }
 }
 
 /**
@@ -101,6 +106,10 @@ export async function beginPromptRequest(args, promptStruct, extra = {}) {
 export function finishPromptRequest(handle, outcome = {}) {
 	if (!handle?.entry) return
 	handle.entry.finishedAt = Date.now()
+	if (handle.statistics) {
+		handle.statistics.finishedAt = handle.entry.finishedAt
+		handle.notify?.(handle.statistics)
+	}
 	if (typeof outcome.output === 'string') handle.entry.output = outcome.output
 	const usage = outcome.usage ?? outcome.result?.extension?.usage ?? handle.result?.extension?.usage
 	const calls = usage?.calls?.slice(handle.usageCallsBefore ?? 0)

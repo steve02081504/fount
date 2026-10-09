@@ -53,7 +53,7 @@
 		},
 		{
 			"name": "integration",
-			"expected": "1m23s",
+			"expected": "4m46s",
 			"trigger": [
 				"integrationCore",
 				"testFramework"
