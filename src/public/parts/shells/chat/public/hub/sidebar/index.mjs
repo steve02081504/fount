@@ -10,11 +10,13 @@ import {
 	updateStatusBanners,
 } from '../banners.mjs'
 import { groupDisplayName } from '../core/domUtils.mjs'
+import { captureGroupContext } from '../core/groupContext.mjs'
 import { store, setState } from '../core/state.mjs'
 import { parseHash, updateHash } from '../core/urlHash.mjs'
 import { bumpViewEpoch, currentViewEpoch } from '../core/viewEpoch.mjs'
 import { resetFilesDrawerWire } from '../files.mjs'
 import { cancelScheduledChannelRefresh } from '../messages/channelRefreshScheduler.mjs'
+import { leaveChannelView } from '../messages/messageRefresh.mjs'
 import { mountMessagesPlaceholder } from '../messages/messagesPlaceholder.mjs'
 import { clearPinPreviewCache } from '../messages/pinPreview.mjs'
 import { refreshPinsBookmarks } from '../pinsBookmarks.mjs'
@@ -71,17 +73,16 @@ async function paintGroupHubChrome(state, stillCurrent) {
 	if (!stillCurrent()) return
 	groupNameElement.textContent = displayName
 	groupNameElement.setAttribute('user-content', '')
-	await renderChannelList(state)
-	if (!stillCurrent()) return
-	await renderMemberList(state)
-	if (!stillCurrent()) return
 	setState('context.currentMode', 'groups')
 	document.querySelectorAll('.server-item[data-mode]').forEach(el => {
 		el.classList.toggle('mode-active', el.dataset.mode === 'groups')
 	})
-	await renderGroupInfoCard(state)
-	if (!stillCurrent()) return
+	// 右侧资料不阻塞频道激活；群作用域允许切频道，但切群后旧渲染必须作废。
+	const groupCurrent = captureGroupContext(store.context.currentGroupId)
+	renderMemberList(state, groupCurrent).catch(handleError('chat.hub.operationFailed'))
+	renderGroupInfoCard(state, groupCurrent).catch(handleError('chat.hub.operationFailed'))
 	const { refreshHubHeaderButtons } = await import('../messages/composerController.mjs')
+	if (!stillCurrent()) return
 	refreshHubHeaderButtons()
 	updateStatusBanners()
 }
@@ -107,6 +108,7 @@ async function activateGroupChannel(state, presetChannelId) {
 			: firstOpenableChannelId(state)
 	if (targetChannelId) await selectChannel(targetChannelId)
 	else {
+		await renderChannelList(state)
 		setState('context.currentChannelId', null)
 		updateHash(store.context.currentGroupId, null)
 		const { disableComposer } = await import('../messages/composerController.mjs')
@@ -148,16 +150,18 @@ export async function selectGroup(groupId, presetChannelId = null) {
 	resetFilesDrawerWire()
 	closeGroupWebSocket()
 	cancelScheduledChannelRefresh()
+	leaveChannelView()
 	setState('context.currentGroupId', groupId)
 	setState('context.currentChannelId', null)
 	setState('context.currentState', null)
-	const { setMode } = await import('../mode.mjs')
-	await setMode('groups')
-	if (!stillCurrent()) return
-	loadGroups().catch(handleError('chat.hub.load.groupFailed'))
 	try {
-		let state = await getGroupState(groupId)
+		// 本地状态读取与模式模板准备互不依赖，避免冷模板延后第一条请求。
+		let [state] = await Promise.all([
+			getGroupState(groupId),
+			import('../mode.mjs').then(({ setMode }) => setMode('groups')),
+		])
 		if (!stillCurrent()) return
+		loadGroups().catch(handleError('chat.hub.load.groupFailed'))
 		const memberState = await ensureGroupMembership(groupId, state)
 		if (!memberState) return
 		if (!stillCurrent()) return

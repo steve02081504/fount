@@ -80,6 +80,19 @@ function saveChannelViewCache() {
 }
 
 /**
+ * 切群前保存当前频道并立即释放消息 DOM，避免旧长消息的布局/滚动与新群加载争用主线程。
+ * @returns {void}
+ */
+export function leaveChannelView() {
+	saveChannelViewCache()
+	destroyChannelVirtualList()
+	store.messages.channelMessagesSource = []
+	store.messages.channelMessages = []
+	store.messages.composerPendingId = null
+	store.messages.lastMessageId = null
+}
+
+/**
  * @param {string | null | undefined} groupId 群 ID
  * @param {string | null | undefined} channelId 频道 ID
  * @returns {boolean} 是否命中缓存

@@ -1,5 +1,52 @@
 import { test, expect, openFreshGroupChannel, waitForHub, sendMessageViaComposer, expectMessageInChat } from './fixtures.mjs'
 
+test('group messages and composer open while the member sidebar is pending', async ({ page, baseUrl, apiKey }) => {
+	const { groupId } = await openFreshGroupChannel(page, baseUrl, apiKey)
+	await waitForHub(page, baseUrl)
+	let release
+	const gate = new Promise(resolve => { release = resolve })
+	const memberRequest = page.waitForRequest(request => new URL(request.url()).pathname.endsWith('/personal-lists'))
+	await page.route(url => new URL(url).pathname.endsWith('/personal-lists'), async route => {
+		await gate
+		await route.continue()
+	})
+	try {
+		await page.locator(`#server-list [data-group-id="${groupId}"]`).first().click()
+		await memberRequest
+		await expect(page.locator('#message-input')).toHaveJSProperty('disabled', false)
+		await expect(page.locator('#messages .hub-empty-loading')).toHaveCount(0)
+		await expect(page.locator('#member-list .member-item')).toHaveCount(0)
+	}
+	finally { release() }
+	await expect(page.locator('#member-list .member-item').first()).toBeAttached()
+})
+
+test('a delayed member render cannot overwrite another group sidebar', async ({ modulePage }) => {
+	const result = await modulePage.run(async () => {
+		const { renderMemberList } = await import('/parts/shells:chat/hub/sidebar/members.mjs')
+		const { store, setState } = await import('/parts/shells:chat/hub/core/state.mjs')
+		document.body.innerHTML = '<div id="member-list">new group</div><div id="member-digest"></div>'
+		setState('context.currentGroupId', 'old-group')
+		store.context.currentState = { members: [] }
+		const originalFetch = globalThis.fetch
+		let release, started
+		const gate = new Promise(resolve => { release = resolve })
+		const loading = new Promise(resolve => { started = resolve })
+		/** @returns {Promise<Response>} 延迟旧群的成员过滤请求。 */
+		globalThis.fetch = async () => { started(); await gate; return Response.json({ entries: [] }) }
+		try {
+			const render = renderMemberList({ members: [] })
+			await loading
+			setState('context.currentGroupId', 'new-group')
+			release()
+			await render
+			return document.getElementById('member-list').textContent
+		}
+		finally { release(); globalThis.fetch = originalFetch }
+	})
+	expect(result).toBe('new group')
+})
+
 test('local conversation opens while group refresh and federation rebind are pending', async ({ page, baseUrl, apiKey }) => {
 	const { groupId } = await openFreshGroupChannel(page, baseUrl, apiKey)
 	await waitForHub(page, baseUrl)

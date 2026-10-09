@@ -125,11 +125,11 @@ export async function selectChannel(channelId) {
 	}
 	const headerIcon = document.querySelector('.main-header-icon')
 	const { renderHubChannelSidebar } = await import('./index.mjs')
-	const [, iconHtml] = await Promise.all([
-		renderHubChannelSidebar(store.context.currentState),
-		channelTypeIconHtml(channelType),
-	])
-	headerIcon.innerHTML = iconHtml
+	// 频道树和图标不阻塞草稿/消息请求；完成后只更新仍选中的频道。
+	renderHubChannelSidebar(store.context.currentState).catch(handleError('chat.hub.operationFailed'))
+	channelTypeIconHtml(channelType).then(iconHtml => {
+		if (isChannelCurrent()) headerIcon.innerHTML = iconHtml
+	}).catch(handleError('chat.hub.operationFailed'))
 	if (store.context.currentGroupId)
 		rebindFederationRoomQuiet(store.context.currentGroupId, { channelId })
 	const { loadMessages } = await import('../messages/messages.mjs')

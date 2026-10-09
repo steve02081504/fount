@@ -68,7 +68,9 @@ export async function setMode(mode) {
 	}
 
 	const container = document.getElementById('channel-list')
-	await mountTemplate(container, 'hub/nav/side_muted', { i18nKey: 'chat.hub.loading' })
+	// 群侧栏随后直接渲染频道树（或清空）；无需先下载/渲染马上被移除的模板。
+	if (mode === 'groups') container.replaceChildren()
+	else await mountTemplate(container, 'hub/nav/side_muted', { i18nKey: 'chat.hub.loading' })
 	document.getElementById('member-list').innerHTML = ''
 	document.getElementById('info-card-host').innerHTML = ''
 
