@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 
-import { is_local_ip_from_req, is_loopback_host_request } from '../../../../../scripts/ratelimit.mjs'
+import { is_trusted_local_request } from '../../../../../scripts/ratelimit.mjs'
 import { authenticate, getUserByReq } from '../../../../../server/auth/index.mjs'
 import { loadPart } from '../../../../../server/parts_loader.mjs'
 
@@ -29,7 +29,7 @@ export function setEndpoints(router) {
 		// 「本地版」引用本机 file:// 路径，只发给确属本机的浏览器：socket 回环**且** Host 也是回环。
 		// 只判 socket 会把隧道 / 本机反代后面的远端访客当成本机——他们拿到指向别人磁盘的脚本，
 		// 既跑不起来又泄露本机安装路径。
-		if (is_local_ip_from_req(req) && is_loopback_host_request(req)) {
+		if (is_trusted_local_request(req)) {
 			const localScriptTemplatePath = path.join(scriptPublicPath, 'local_script.user.js')
 			const mainScriptFileUrl = pathToFileURL(publicScriptPath).href
 

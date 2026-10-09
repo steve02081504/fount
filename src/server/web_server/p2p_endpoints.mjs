@@ -10,6 +10,7 @@ import {
 	getFederationViewForUser,
 	saveFederationViewForUser,
 } from '../../public/parts/shells/chat/src/entity/identity.mjs'
+import { is_local_ip_from_req } from '../../scripts/ratelimit.mjs'
 import { authenticate, getUserByReq } from '../auth/index.mjs'
 import { getNetworkVerificationService, proveNetworkVerification } from '../p2p_server/verification.mjs'
 
@@ -21,7 +22,7 @@ import { getNetworkVerificationService, proveNetworkVerification } from '../p2p_
  * @returns {void} 无返回值
  */
 function verificationLocalCors(req, res, next) {
-	if (!['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(req.socket.remoteAddress)) {
+	if (!is_local_ip_from_req(req)) {
 		res.status(403).end()
 		return
 	}

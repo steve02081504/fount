@@ -4,10 +4,11 @@ import os from 'node:os'
 import { config } from '../server/server.mjs'
 
 import { in_docker } from './env.mjs'
+import { is_direct_local_request, is_trusted_direct_local_request } from './local_request.mjs'
 import { ms } from './ms.mjs'
 
 const localIPs = [
-	'127.0.0.1', '::1',
+	'127.0.0.1', '::1', '::ffff:127.0.0.1',
 	in_docker ? await dns.promises.lookup('host.docker.internal').then(r => r.address).catch(() => null) : null
 ].filter(Boolean)
 
@@ -21,55 +22,21 @@ export function is_local_ip(ip) {
 }
 
 /**
- * 检查请求是否来自本地 IP。
+ * 检查请求是否直接来自本机：地址、Host 和转发标记必须同时满足本机条件。
  * @param {import('npm:express').Request} req - Express 请求对象。
- * @returns {boolean} 如果请求来自本地 IP，则返回 true，否则返回 false。
+ * @returns {boolean} 直接本机请求返回 true，隧道及反代请求返回 false。
  */
 export function is_local_ip_from_req(req) {
-	return is_local_ip(req.ip)
+	return is_direct_local_request(req, is_local_ip)
 }
 
 /**
- * 是否为回环主机名（去端口、大小写归一）。
- * @param {string | undefined | null} host `Host` 头
- * @returns {boolean} 是否回环主机
- */
-function is_loopback_host(host) {
-	if (!host) return false
-	const hostname = String(host).replace(/:\d+$/u, '').toLowerCase()
-	return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1' || hostname === '[::1]'
-}
-
-/**
- * 本机可信请求：socket 来自回环，且请求不是浏览器跨站 / DNS rebinding 伪装。
- * 浏览器总是带 `Origin`，其 host 必须是回环；非浏览器客户端（`fount log` / 终端）无 `Origin` 也可信。
- * 仅凭 socket 回环不够——任意网页都能让本机浏览器请求 `localhost` 的免认证端点。
- * @param {import('npm:express').Request} req - Express 请求对象。
- * @returns {boolean} 是否本机可信
+ * 可信本机请求：直接本机连接、回环 Host、无转发标记，且 Origin 为本机或缺省。
+ * @param {import('npm:express').Request} req - 请求对象。
+ * @returns {boolean} 是否可信本机请求。
  */
 export function is_trusted_local_request(req) {
-	if (!is_local_ip_from_req(req)) return false
-	// DNS rebinding：外部域名解析到回环时 Host 仍是外部域名。
-	if (!is_loopback_host_request(req)) return false
-	const origin = req.headers?.origin
-	if (origin == null || origin === '') return true
-	try {
-		return is_loopback_host(new URL(origin).hostname)
-	}
-	catch {
-		return false
-	}
-}
-
-/**
- * 请求的 `Host` 头是否指向回环主机。
- * 隧道 / 本机反代会把「socket 是回环」带进来，但 Host 仍是外部域名——
- * 需要按「本机」发能力（本地文件访问之类）时，两者必须同时成立。
- * @param {import('npm:express').Request} req - Express 请求对象。
- * @returns {boolean} Host 是否为回环主机
- */
-export function is_loopback_host_request(req) {
-	return is_loopback_host(req.headers?.host)
+	return is_trusted_direct_local_request(req, is_local_ip)
 }
 
 /**
