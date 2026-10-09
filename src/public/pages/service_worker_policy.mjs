@@ -76,6 +76,7 @@ export function shouldCacheResponse({ request, url }) {
  * 于是「no-cors 抓一次 → HEAD 探测 ACAO → cors 再抓一次」＝ 2 GET + 1 HEAD 全是白挨的；
  * 抓到可读的那份并缓存后，两种消费复用同一份。
  * 同源资源没有 opaque 问题，按请求本身的模式抓即可。
+ * 跨域改 cors 时的凭据处理见 `corsUpgradeInit`。
  * @param {object} params - 参数对象。
  * @param {URL} params.url - 请求 URL。
  * @param {string} params.origin - 当前 Service Worker 的来源（self.location.origin）。
@@ -83,4 +84,24 @@ export function shouldCacheResponse({ request, url }) {
  */
 export function firstFetchModeFor({ url, origin }) {
 	return url.origin === origin ? 'request' : 'cors'
+}
+
+/**
+ * 跨域资源改用 cors 抓取时传给 `new Request(request, init)` 的 init。
+ *
+ * HTML 为 no-cors 子资源请求（`<img>` / `<link>` / 媒体元素等，未声明 `crossorigin`）设的凭据模式是
+ * `include`，而 CDN / GitHub 头像这类主机只回 `Access-Control-Allow-Origin: *`；
+ * 带凭据的 cors 请求会被 CORS 拒绝（控制台那条 "The value of the 'Access-Control-Allow-Origin'
+ * header in the response must not be the wildcard '*' when the request's credentials mode is 'include'"），
+ * 于是「cors 抓一次 → 失败 → 原模式再抓一次」＝ 每次冷启动都白报一条 CORS 错，还什么都缓存不下来。
+ * 这份 cors 抓取是为了拿到可读、可进缓存的响应（与旧行为一致：抓到的那一份就是交给消费方的）；
+ * no-cors 消费方本来就没要求 CORS 语义，也不可能满足带凭据的 CORS 检查，故明确不带凭据；
+ * 它失败或响应不 ok 时由 `fetchAndCache` 退回请求本来的模式（opaque，凭据照旧）。
+ * cors 消费方（页面 `fetch`）保持自己的凭据模式：它的失败与不带 SW 时完全一致，不该由 SW 改写。
+ * @param {{ mode?: string }} request - 原始请求（Request 或同形对象）。
+ * @returns {{ mode: 'cors', credentials?: 'omit' }} 请求 init。
+ */
+export function corsUpgradeInit(request) {
+	if (request?.mode === 'no-cors') return { mode: 'cors', credentials: 'omit' }
+	return { mode: 'cors' }
 }

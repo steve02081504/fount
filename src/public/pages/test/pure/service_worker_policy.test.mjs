@@ -6,6 +6,7 @@ import { assertEquals } from 'jsr:@std/assert'
 
 import {
 	constructibleRequestMode,
+	corsUpgradeInit,
 	firstFetchModeFor,
 	isCacheFirstExemptUrl,
 	isColdBootMarkedRequest,
@@ -109,4 +110,20 @@ Deno.test('firstFetchModeFor fetches cross-origin resources as cors and same-ori
 	// 跨域必须先 cors：opaque 响应读不到也存不进缓存，否则同一个 URL 会被抓三次。
 	assertEquals(firstFetchModeFor({ url: new URL('https://cdn.example/a.svg'), origin: ORIGIN }), 'cors')
 	assertEquals(firstFetchModeFor({ url: new URL('/static/app.js', ORIGIN), origin: ORIGIN }), 'request')
+})
+
+Deno.test('corsUpgradeInit drops credentials for no-cors subresource requests', () => {
+	// 浏览器给 no-cors 子资源（`<img>` / `<link>`）设的凭据模式是 include，而 CDN / 头像这类主机只回
+	// ACAO: *：带 include 去 cors 抓必被 CORS 拒绝，故升级 mode 的同时必须去掉凭据。
+	assertEquals(corsUpgradeInit({ mode: 'no-cors' }), { mode: 'cors', credentials: 'omit' })
+	// cors 消费方（页面 fetch）保持自己的凭据模式——它的成败与不带 SW 时一致。
+	assertEquals(corsUpgradeInit({ mode: 'cors' }), { mode: 'cors' })
+	assertEquals(corsUpgradeInit({ mode: 'same-origin' }), { mode: 'cors' })
+})
+
+Deno.test('corsUpgradeInit yields a request that wildcard ACAO hosts can answer', () => {
+	const subresource = new Request('https://cdn.example/a.css', { mode: 'no-cors', credentials: 'include' })
+	const upgraded = new Request(subresource, corsUpgradeInit(subresource))
+	assertEquals(upgraded.mode, 'cors')
+	assertEquals(upgraded.credentials, 'omit')
 })

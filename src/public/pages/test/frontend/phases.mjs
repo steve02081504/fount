@@ -12,4 +12,5 @@ export const phases = [
 	{ name: 'svgInlinerGating', testMatch: ['svgInlinerGating.spec.mjs'] },
 	{ name: 'imageEditor', testMatch: ['imageEditor.spec.mjs'] },
 	{ name: 'startPageServiceWorkerWait', testMatch: ['startPageServiceWorkerWait.spec.mjs'] },
+	{ name: 'serviceWorkerCrossOrigin', testMatch: ['serviceWorkerCrossOrigin.spec.mjs'] },
 ]

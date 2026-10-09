@@ -65,6 +65,15 @@
 					]
 				},
 				{
+					"name": "serviceWorkerCrossOrigin",
+					"expected": "1s",
+					"triggers": [
+						"src/public/pages/test/frontend/serviceWorkerCrossOrigin.spec.mjs",
+						"src/public/pages/test/frontend/fixtures.mjs",
+						"src/public/pages/{service_worker,service_worker_policy}.mjs"
+					]
+				},
+				{
 					"name": "toast",
 					"expected": "20s",
 					"triggers": [

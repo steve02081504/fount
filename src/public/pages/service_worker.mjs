@@ -1,4 +1,4 @@
-import { constructibleRequestMode, firstFetchModeFor, isCacheFirstExemptUrl, isColdBootMarkedRequest, isColdBootNavigationRequest, shouldCacheResponse } from './service_worker_policy.mjs'
+import { constructibleRequestMode, corsUpgradeInit, firstFetchModeFor, isCacheFirstExemptUrl, isColdBootMarkedRequest, isColdBootNavigationRequest, shouldCacheResponse } from './service_worker_policy.mjs'
 
 // --- 全局常量与配置 ---
 
@@ -383,15 +383,32 @@ async function fetchAndCache(request) {
 	try {
 		const cache = await caches.open(CACHE_NAME)
 		const crossOrigin = firstFetchModeFor({ url: new URL(request.url), origin: self.location.origin }) === 'cors'
-		let networkResponse = await fetch(crossOrigin ? new Request(request, { mode: 'cors' }) : request).catch(() => undefined)
-		// 对端不配合 CORS 时 cors 抓取会直接失败（opaque 响应读不到，缓存也用不上）：
-		// 退回请求本身的模式抓一次，至少让 `<img>` / `url()` 这类 no-cors 消费方拿到内容。
-		if (!networkResponse && crossOrigin) networkResponse = await fetch(request).catch(() => undefined)
-		if (!networkResponse) throw new Error(`fetch failed for ${request.url}`)
+		/** 首次抓取失败的原因，作为抛出的错误的 cause 保留——否则日志里只剩没有线索的 "fetch failed"。 */
+		let fetchError
+		/**
+		 * 抓取一次。
+		 * @param {Request} input - 请求。
+		 * @returns {Promise<Response | undefined>} 响应；失败时 undefined（原因记入 fetchError）。
+		 */
+		const tryFetch = input => fetch(input).catch(error => { fetchError = error; return undefined })
+		let networkResponse
+		if (!crossOrigin) networkResponse = await tryFetch(request)
+		else {
+			// 跨域先按 cors 抓（no-cors 的 opaque 响应读不到内容，也写不进缓存），凭据模式见 corsUpgradeInit。
+			const readableResponse = await tryFetch(new Request(request, corsUpgradeInit(request)))
+			// 对端不配合 CORS，或这份响应不 ok 时，退回请求本身的模式再抓一次：
+			// no-cors 消费方（`<img>` / `url()`）至少能拿到与不带 SW 时一致的内容（可能 opaque）。
+			// cors 消费方没有这一层余地——它的失败与不带 SW 时同因，重抓一次也只会再失败一次。
+			if (readableResponse?.ok || request.mode !== 'no-cors') networkResponse = readableResponse
+			else networkResponse = await tryFetch(request) ?? readableResponse
+		}
+		if (!networkResponse) throw new Error(`fetch failed for ${request.url}`, { cause: fetchError })
 
 		// 同源请求拿到 opaque 或非 2xx 时按对端是否允许 CORS 重试一次：
 		// 重建请求才能带 mode——展开 Request 不会复制任何字段，headers / mode 都会丢。
-		if (!crossOrigin && (networkResponse.type === 'opaque' || !networkResponse.ok)) {
+		// opaque-redirect（导航请求的 `redirect: manual`）不是失败：它就是重定向本身，浏览器会自行跟随，
+		// 重抓只会再拿到一份同样的 opaque-redirect。
+		if (!crossOrigin && networkResponse.type !== 'opaqueredirect' && (networkResponse.type === 'opaque' || !networkResponse.ok)) {
 			const cachedResponse = await cache.match(request)
 			const can_cors = cachedResponse ? cachedResponse.headers.get('Access-Control-Allow-Origin') : new URL(request.url).origin !== self.location.origin && await fetch(request.url, { method: 'HEAD' }).then(response => response.headers.get('Access-Control-Allow-Origin')).catch(_ => null)
 			const retryRequest = new Request(request, { mode: can_cors ? 'cors' : constructibleRequestMode(request.mode) })
@@ -403,7 +420,7 @@ async function fetchAndCache(request) {
 
 		const cacheable = shouldCacheResponse({ request, url: new URL(request.url) })
 
-		if (networkResponse.type == 'opaque');
+		if (networkResponse.type === 'opaque' || networkResponse.type === 'opaqueredirect');
 		else if (networkResponse && networkResponse.ok) {
 			if (!ws && new URL(request.url).origin === self.location.origin) connectWebSocket()
 			const responseToCache = networkResponse.clone()
@@ -432,7 +449,11 @@ async function fetchAndCache(request) {
 		return networkResponse
 	}
 	catch (error) {
-		console.error(`[SW ${CACHE_NAME}] fetchAndCache failed for ${request.url}:`, error)
+		// 抓取失败在这里只是「网络这条路没成」：调用方（handleNetworkFirst / handleCacheFirst）能在缓存里找到就照常服务，
+		// 真的两手空空时才由它们报 error。fount 的冷启动（服务未醒）天生会走到这里，故这一层记 warn。
+		console.warn(`[SW ${CACHE_NAME}] fetchAndCache failed for ${request.url}:`, error)
+		// 真正的失败原因挂在 cause 上（如 `TypeError: Failed to fetch`）；不单独打出来，粘贴日志时就只剩没有线索的那一句。
+		if (error?.cause) console.warn(`[SW ${CACHE_NAME}] fetchAndCache cause for ${request.url}:`, error.cause)
 		throw error
 	}
 }
