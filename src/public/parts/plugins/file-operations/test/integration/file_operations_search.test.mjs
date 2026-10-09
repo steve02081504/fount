@@ -352,7 +352,7 @@ Deno.test('runRipgrep 用 code shell 的索引目录搜索工作区，无 tgrep 
 	}
 })
 
-Deno.test('runRipgrep 不给 indexRoot 时只用 rg，不猜测索引', async () => {
+Deno.test('runRipgrep 非 Git 目录不给 indexRoot 时只用 rg', async () => {
 	const root = await tempDir()
 	const { calls, restore } = recordMissingCommands()
 	try {
@@ -363,6 +363,53 @@ Deno.test('runRipgrep 不给 indexRoot 时只用 rg，不猜测索引', async ()
 	}
 	finally {
 		restore()
+		await fs.rm(root, { recursive: true, force: true })
+	}
+})
+
+Deno.test('runRipgrep 从文件目标向上发现 Git 索引，序列化执行仍可搜索', async () => {
+	const root = await tempDir()
+	const index = tgrepIndexPath(root)
+	const previousTest = process.env.FOUNT_TEST
+	process.env.FOUNT_TEST = '1'
+	const { calls, restore } = recordMissingCommands()
+	try {
+		await seedWorkspace(root)
+		await fs.mkdir(path.join(root, '.git'))
+		await fs.writeFile(path.join(root, '.git', 'config'), '')
+		await fs.mkdir(index, { recursive: true })
+		const executor = createTargetExecutor('u', { machine: '0', workdir: root })
+		const result = await executor.execJs(runRipgrep, { mode: 'grep', root: path.join(root, 'sub', 'c.mjs'), pattern: 'hello' })
+		assertEquals(result.total, 1)
+		assertEquals(calls.map(call => call.name), ['rg', 'tgrep', path.join(os.tmpdir(), 'fount', 'bin', process.platform === 'win32' ? 'tgrep.exe' : 'tgrep')])
+		assertEquals(calls[1].args.slice(0, 3), ['--index-path', index, '--no-require-git'])
+	}
+	finally {
+		restore()
+		if (previousTest === undefined) delete process.env.FOUNT_TEST
+		else process.env.FOUNT_TEST = previousTest
+		await fs.rm(index, { recursive: true, force: true })
+		await fs.rm(root, { recursive: true, force: true })
+	}
+})
+
+Deno.test('runRipgrep 远端机器不给 indexRoot 时不发现索引', async () => {
+	const root = await tempDir()
+	const index = tgrepIndexPath(root)
+	const { calls, restore } = recordMissingCommands()
+	try {
+		await seedWorkspace(root)
+		await fs.mkdir(path.join(root, '.git'))
+		await fs.writeFile(path.join(root, '.git', 'config'), '')
+		await fs.mkdir(index, { recursive: true })
+		const result = await runRipgrep({ mode: 'grep', root, pattern: 'hello', machine: '1', limit: 10 })
+		assertEquals(result.matches.length, 2)
+		// 索引服务只有本机起得来：远端连模块都取不到，只跑 rg。
+		assertEquals(calls.map(call => call.name), ['rg'])
+	}
+	finally {
+		restore()
+		await fs.rm(index, { recursive: true, force: true })
 		await fs.rm(root, { recursive: true, force: true })
 	}
 })

@@ -14,7 +14,8 @@
  * @property {string[]} [includes] - 文件名 glob 过滤器（mode='grep'）。
  * @property {boolean} [filesOnly] - 仅返回命中的文件路径（mode='grep'）。
  * @property {number} [limit] - 最大返回条数。
- * @property {string} [indexRoot] - 已启动 tgrep 索引服务的工作区根目录；给出时才尝试索引搜索。
+ * @property {string} [indexRoot] - 工作区索引根目录；缺省时在本机向上发现最近的 Git 仓库索引。
+ * @property {string|number} [machine] - 执行机器（`> 0` 为远端）；只有本机能建索引。
  *
  * @typedef {object} ripgrepMatch_t
  * @property {string} path - 相对 root 的路径（分隔符统一为 `/`）。
@@ -39,6 +40,7 @@
  * @returns {Promise<ripgrepResult_t>} 搜索结果。
  */
 export async function runRipgrep(params) {
+	const { default: fs } = await import('node:fs/promises')
 	const { default: path } = await import('node:path')
 	const { default: os } = await import('node:os')
 	const { default: process } = await import('node:process')
@@ -52,19 +54,62 @@ export async function runRipgrep(params) {
 	 * @returns {string} 相对路径。
 	 */
 	const toRelative = p => (path.relative(path.isAbsolute(p) ? root : '.', p) || p).replace(/\\/g, '/')
-	// 索引目录必须与 code shell 的 search_index.mjs 算出的一致，那里同时起着 `tgrep serve`。
-	const indexKey = params.indexRoot && (process.platform === 'win32' ? params.indexRoot.toLowerCase() : params.indexRoot)
-	const tgrepIndexArgs = indexKey
-		? ['--index-path', path.join(os.tmpdir(), 'tgrep', createHash('sha256').update(indexKey).digest('hex')), '--no-require-git']
-		: null
+	/**
+	 * 路径是否为普通文件；不存在时为 false。
+	 * @param {string} target - 绝对路径。
+	 * @returns {Promise<boolean>} 是否为文件。
+	 */
+	const isFile = async target => (await fs.stat(target).catch(() => null))?.isFile() ?? false
+	/**
+	 * 路径是否为目录；不存在时为 false。
+	 * @param {string} target - 绝对路径。
+	 * @returns {Promise<boolean>} 是否为目录。
+	 */
+	const isDir = async target => (await fs.stat(target).catch(() => null))?.isDirectory() ?? false
 
+	let indexRoot = params.indexRoot && path.resolve(params.indexRoot)
+	/** @type {Promise<void>|undefined} */
+	let discoveryPromise
+	/**
+	 * 首次调用才向上寻找最近的 Git 仓库并记账，之后复用同一结果。
+	 * 只有本机（machine 0）能起索引服务：远端连模块都取不到，不做无用功。
+	 * @returns {Promise<void>} 发现完成。
+	 */
+	const discovery = () => discoveryPromise ??= findIndexRoot().catch(error => console.warn('file-operations search index:', error))
+	/**
+	 * 向上寻找最近的 Git 仓库，索引目录已存在则直接用，否则后台起索引。
+	 * @returns {Promise<void>} 发现完成。
+	 */
+	async function findIndexRoot() {
+		if (indexRoot || params.machine > 0) return
+		const start = path.resolve(root)
+		let dir = await isFile(start) ? path.dirname(start) : start
+		for (;;) {
+			if (await isFile(path.join(dir, '.git', 'config'))) {
+				// 索引目录必须与 code shell 的 search_index.mjs 算得一致，那里同时起着 `tgrep serve`。
+				const indexKey = process.platform === 'win32' ? dir.toLowerCase() : dir
+				const index = path.join(os.tmpdir(), 'tgrep', createHash('sha256').update(indexKey).digest('hex'))
+				if (await isDir(index)) indexRoot = dir
+				const { pathToFileURL } = await import('node:url')
+				const { startWorkspaceSearchIndex } = await import(pathToFileURL(path.resolve('src/public/parts/shells/code/src/search_index.mjs')).href)
+				void startWorkspaceSearchIndex({ path: dir }).catch(error => console.warn('file-operations search index:', error))
+				return
+			}
+			const parent = path.dirname(dir)
+			if (parent === dir) return
+			dir = parent
+		}
+	}
 	/**
 	 * 拼上索引参数后的 tgrep 参数。
 	 * tgrep 把重复的全局开关当参数冲突报错，而各搜索模式自己也会带 `--no-require-git`。
 	 * @param {string[]} args - 搜索参数。
 	 * @returns {string[]} 去重后的参数。
 	 */
-	const withIndex = args => [...new Set([...tgrepIndexArgs, ...args])]
+	const withIndex = args => [...new Set([
+		'--index-path', path.join(os.tmpdir(), 'tgrep', createHash('sha256').update(process.platform === 'win32' ? indexRoot.toLowerCase() : indexRoot).digest('hex')),
+		'--no-require-git', ...args,
+	])]
 	/**
 	 * 执行搜索命令，返回 { code, stdout, stderr }。
 	 * @param {string[]} args - 搜索参数。
@@ -72,20 +117,26 @@ export async function runRipgrep(params) {
 	 * @returns {Promise<{code: number, stdout: string, stderr: string}>} 执行结果。
 	 */
 	const exec = async (args, options = {}) => {
-		const candidates = [
-			...tgrepIndexArgs ? [
+		const cwd = options.preopens?.['.'] || undefined
+		// 没有索引就先并行搜起来：向上定位仓库与建索引不阻塞这次搜索。
+		const earlyRg = indexRoot ? null : new globalThis.Deno.Command('rg', {
+			args, cwd, stdout: 'piped', stderr: 'piped',
+		}).output().catch(() => null)
+		await discovery()
+		const candidates = indexRoot
+			? [
 				{ name: 'tgrep', args: withIndex(args) },
 				{ name: path.join(os.tmpdir(), 'fount', 'bin', process.platform === 'win32' ? 'tgrep.exe' : 'tgrep'), args: withIndex(args) },
-			] : [],
-			{ name: 'rg', args },
-		]
+				{ name: 'rg', args },
+			]
+			: [{ name: 'rg', args }]
 		let lastFailure
 		for (const candidate of candidates)
 			try {
-				const output = await new globalThis.Deno.Command(candidate.name, {
-					args: candidate.args, cwd: options.preopens?.['.'] || undefined,
-					stdout: 'piped', stderr: 'piped',
+				const output = candidate.name === 'rg' && earlyRg ? await earlyRg : await new globalThis.Deno.Command(candidate.name, {
+					args: candidate.args, cwd, stdout: 'piped', stderr: 'piped',
 				}).output()
+				if (!output) continue
 				const result = { code: output.code, stdout: new TextDecoder().decode(output.stdout), stderr: new TextDecoder().decode(output.stderr) }
 				if (result.code <= 1) return result
 				lastFailure = result
@@ -120,7 +171,6 @@ export async function runRipgrep(params) {
 		const files = stdout.split('\n').map(line => line.trim()).filter(Boolean).map(toRelative)
 			.filter(file => !filePatterns.length || fileMatches.some(match => match(file)))
 		if (dirPatterns.length) {
-			const { default: fs } = await import('node:fs/promises')
 			const maxDepth = dirPatterns.some(glob => glob.includes('**'))
 				? Infinity
 				: Math.max(...dirPatterns.map(glob => glob.slice(0, -1).split('/').length))
