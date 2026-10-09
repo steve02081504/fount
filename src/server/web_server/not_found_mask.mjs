@@ -1,4 +1,29 @@
+import { isIP } from 'node:net'
+
 import { render } from 'npm:cloudflare-error-page'
+
+/**
+ * 取错误页展示用访客地址；隧道的回环地址不代表访客，取不到真实访客就用 `127.0.0.1` 占位。此值不用于授权。
+ * @param {import('npm:express').Request} req 请求。
+ * @returns {string} 访客地址。
+ */
+function displayClientIP(req) {
+	const forwarded = req.get('Forwarded')?.split(',')[0].match(/(?:^|;)\s*for=("[^"]*"|[^;\s]+)/iu)?.[1]
+	const candidates = [
+		req.get('CF-Connecting-IP'), req.get('True-Client-IP'), req.get('X-Real-IP'),
+		req.get('X-Forwarded-For')?.split(',')[0], forwarded,
+		req.ip, req.socket.remoteAddress,
+	].filter(Boolean)
+	for (const candidate of candidates) {
+		let ip = candidate.trim().replace(/^"|"$/gu, '')
+		if (ip.startsWith('[')) ip = ip.match(/^\[([^\]]+)\](?::\d+)?$/u)?.[1] || ''
+		else if (/^\d+\.\d+\.\d+\.\d+:\d+$/u.test(ip)) ip = ip.slice(0, ip.lastIndexOf(':'))
+		if (ip.toLowerCase().startsWith('::ffff:')) ip = ip.slice(7)
+		if (!isIP(ip) || ip === '::1' || ip === '::' || ip.startsWith('127.') || ip === '0.0.0.0') continue
+		return ip
+	}
+	return '127.0.0.1'
+}
 
 /**
  * 把匿名远程请求的 404 伪装成 Cloudflare 500，避免暴露 fount 的路由结构。
@@ -38,7 +63,7 @@ export function maskNotFound(res) {
 			what_can_i_do: 'Please try again in a few minutes.',
 			perf_sec_by: { text: '', link: '' },
 			ray_id: (req.get('Cf-Ray') ?? '').substring(0, 16),
-			client_ip: req.get('X-Forwarded-For') || req.socket.remoteAddress,
+			client_ip: displayClientIP(req),
 		})
 		// 先落地状态与头部，再调原生 end：它内部还会走一次 writeHead，那一次必须看到 500。
 		for (const header of ['Content-Length', 'Content-Encoding', 'ETag', 'Content-Range']) res.removeHeader(header)
