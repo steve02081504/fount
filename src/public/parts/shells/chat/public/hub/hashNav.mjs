@@ -9,8 +9,10 @@ import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { store } from './core/state.mjs'
 import { DISCOVERY_HASH, FRIENDS_HASH, INBOX_HASH, isFriendsHash, parseHash } from './core/urlHash.mjs'
+import { bumpViewEpoch } from './core/viewEpoch.mjs'
 import { friendBindingForGroup } from './friendBindings.mjs'
 import { enterFriendChat } from './friendChat.mjs'
+import { disableComposer } from './messages/composerController.mjs'
 import { setMode } from './mode.mjs'
 import { loadGroups } from './serverBar.mjs'
 import { selectChannel, selectGroup } from './sidebar/index.mjs'
@@ -102,6 +104,12 @@ async function scrollToAndHighlightEventId(eventId) {
  * @returns {Promise<void>}
  */
 export function navigateFromHash() {
+	const { groupId, channelId } = parseHash()
+	// 导航本身要排队执行：先同步作废当前视图的在途渲染并禁用 composer，避免旧会话在换群窗口里还能输入。
+	if (groupId !== store.context.currentGroupId || (channelId && channelId !== store.context.currentChannelId)) {
+		bumpViewEpoch()
+		disableComposer()
+	}
 	const run = navigationQueue.then(() => navigateFromHashInner())
 	navigationQueue = run.catch(() => { })
 	return run

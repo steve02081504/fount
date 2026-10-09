@@ -19,7 +19,10 @@ import { bindDismissOnDocumentInteraction } from '/scripts/components/contextMen
 import { groupDisplayName } from './core/domUtils.mjs'
 import { positionContextMenu } from '/scripts/components/positionContextMenu.mjs'
 import { setState, store } from './core/state.mjs'
+import { bumpViewEpoch } from './core/viewEpoch.mjs'
 import { clearGroupSelection, contextMenuTargetGroupIds, orderedSidebarGroupIds } from './groupSelection.mjs'
+import { cancelScheduledChannelRefresh } from './messages/channelRefreshScheduler.mjs'
+import { mountMessagesPlaceholder } from './messages/messagesPlaceholder.mjs'
 import { openGroupNotifyPrefsDialog } from './notifyPrefsDialog.mjs'
 import { clearPrivateGroupState } from './privateGroup.mjs'
 import { loadGroups, renderServerBar } from './serverBar.mjs'
@@ -127,19 +130,24 @@ async function applyLeaveGroupsLocal(groupIds) {
 	)
 	if (touchesCurrent) closeGroupWebSocket()
 	if (touchesCurrent) {
+		bumpViewEpoch()
+		cancelScheduledChannelRefresh()
 		if (store.privateGroup.groupId && leaving.has(store.privateGroup.groupId))
 			clearPrivateGroupState()
-		// 退群前刷新群列表：确保好友绑定群的 friendBinding 是最新值（否则 DM 群会被当作普通群选中）。
-		const leavingGroupId = store.context.currentGroupId
+		setState('context.currentGroupId', null)
+		setState('context.currentChannelId', null)
+		setState('context.currentState', null)
+		const { disableComposer } = await import('./messages/composerController.mjs')
+		disableComposer()
+		await mountMessagesPlaceholder(document.getElementById('messages'), 'hub/empty/loading', {})
+		// 先清空旧会话再刷新列表：已退群 / 已失效的群不得成为下一个被选中的会话。
 		await loadGroups().catch(handleError('chat.hub.load.groupFailed'))
-		// 刷新期间用户可能已切换当前群：仅当仍停留在原退群群时才接管选择，避免覆盖用户的新选择。
-		if (store.context.currentGroupId === leavingGroupId) {
-			const next = orderedSidebarGroupIds().find(id => !leaving.has(id))
+		if (!store.context.currentGroupId) {
+			// 退群中的群（含上一批尚未完成的）不可成为下一个会话。
+			const leavingNow = new Set(store.sidebar.groups.filter(group => group.isLeaving).map(group => group.groupId))
+			const next = orderedSidebarGroupIds().find(id => !leavingNow.has(id))
 			if (next) await selectGroup(next)
 			else {
-				setState('context.currentGroupId', null)
-				setState('context.currentChannelId', null)
-				setState('context.currentState', null)
 				const { setMode } = await import('./mode.mjs')
 				await setMode('friends')
 			}
@@ -194,10 +202,11 @@ function runLeaveGroupsInBackground(groupIds) {
  * @returns {Promise<void>}
  */
 export async function leaveGroupsOptimistic(groupIds) {
-	await applyLeaveGroupsLocal(groupIds)
+	const localUpdate = applyLeaveGroupsLocal(groupIds)
 	if (groupIds.length > 1)
 		showToastI18n('info', 'chat.hub.group.context.leave.batchPending', { count: groupIds.length })
 	runLeaveGroupsInBackground(groupIds)
+	await localUpdate
 }
 
 /**

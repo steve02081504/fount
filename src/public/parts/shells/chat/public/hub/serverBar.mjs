@@ -222,12 +222,24 @@ export async function renderServerBar() {
 	attachServerBarDnd(list)
 }
 
-/** 拉取群组列表与文件夹布局并刷新服务器栏。 @returns {Promise<void>} */
+/** 群列表加载序号：仅最新一次请求允许写入 store 与服务器栏。 */
+let loadGroupsSequence = 0
+
+/**
+ * 拉取群组列表与文件夹布局并刷新服务器栏。
+ * @returns {Promise<void>}
+ */
 export async function loadGroups() {
+	const sequence = ++loadGroupsSequence
 	const [groupList, foldersPayload] = await Promise.all([
 		getGroupList(),
 		getGroupFolders().catch(error => { handleError('chat.hub.operationFailed')(error); return null }),
 	])
+	if (sequence !== loadGroupsSequence) return
+	// 退群是乐观更新：刷新期间必须保留 isLeaving，否则刚退的群会重新变成可进入的普通群。
+	const leaving = new Set(store.sidebar.groups.filter(group => group.isLeaving).map(group => group.groupId))
+	for (const group of groupList)
+		if (leaving.has(group.groupId)) group.isLeaving = true
 	store.sidebar.groups = groupList.sort(
 		(left, right) => new Date(right.lastMessageTime || 0) - new Date(left.lastMessageTime || 0),
 	)
@@ -239,6 +251,7 @@ export async function loadGroups() {
 		)
 		if (liveBookmarks.length !== bookmarks.length) await saveChatBookmarks(liveBookmarks)
 	}
+	if (sequence !== loadGroupsSequence) return
 	if (foldersPayload)
 		store.sidebar.groupFoldersState = {
 			folders: foldersPayload.folders.map((folder, folderIndex) => ({

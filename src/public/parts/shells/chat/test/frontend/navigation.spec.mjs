@@ -1,3 +1,5 @@
+import { waitForHubReady } from 'fount/scripts/test/playwright/ready.mjs'
+
 import {
 	test,
 	expect,
@@ -10,6 +12,7 @@ import {
 	createFriendChatGroup,
 	listChatGroups,
 	deleteChatGroup,
+	parseGroupHashFromUrl,
 	sendMessageViaComposer,
 	expectMessageInChat,
 } from './fixtures.mjs'
@@ -89,6 +92,59 @@ test.describe('Chat hub navigation', () => {
 		await expect(page.locator('body')).toHaveAttribute('data-surface', 'friends')
 		await expect(page.locator('.empty--friends')).toBeVisible()
 		await expect(page.locator('#message-input')).toHaveJSProperty('disabled', true)
+	})
+
+	test('leaving the current DM drops its messages before the next group loads', async ({
+		page,
+		baseUrl,
+		apiKey,
+	}) => {
+		const { groupId: normalGroupId } = await openFreshGroupChannel(page, baseUrl, apiKey, {
+			name: `pw-leave-dm-residue-${Date.now()}`,
+		})
+		const { groupId: dmGroupId } = await createFriendChatGroup(baseUrl, apiKey, 'on_message_yes', {
+			name: `pw-leave-dm-residue-dm-${Date.now()}`,
+		})
+
+		// 只留一个普通群：退掉当前 DM 后 Hub 必然把该普通群当作下一个视图（否则回好友列表，测不到换群窗口）。
+		for (const group of await listChatGroups(baseUrl, apiKey)) {
+			if (group.groupId === normalGroupId || group.groupId === dmGroupId || group.friendBinding) continue
+			await deleteChatGroup(baseUrl, apiKey, group.groupId)
+		}
+
+		await page.goto(`${baseUrl}/parts/shells:chat/hub/#group:${encodeURIComponent(dmGroupId)}`, {
+			waitUntil: 'domcontentloaded',
+		})
+		await waitForHubReady(page)
+		await expect(page.locator('body')).toHaveAttribute('data-group-id', dmGroupId, { timeout: 60_000 })
+		await expect(page.locator('#message-input')).toHaveJSProperty('disabled', false, { timeout: 60_000 })
+		const dmChannelId = parseGroupHashFromUrl(page.url())?.channelId
+		const text = `dm-residue-${Date.now()}`
+		await sendMessageViaComposer(page, dmGroupId, dmChannelId, text)
+		await expectMessageInChat(page, text)
+
+		// 卡住下一个群的 /state：退群后主区必须先清掉已退群的频道消息，而不是等下一个群加载完才替换。
+		let releaseState
+		const stateGate = new Promise(resolve => { releaseState = resolve })
+		const nextGroupStateRequest = page.waitForRequest(request => new URL(request.url()).pathname.endsWith('/state'))
+		await page.route(url => new URL(url).pathname.endsWith('/state'), async route => {
+			await stateGate
+			await route.continue()
+		})
+
+		page.once('dialog', dialog => dialog.accept())
+		await page.locator('#group-header').click()
+		await page.locator('.group-menu-leave').click()
+		await nextGroupStateRequest
+
+		// 下一个群仍在加载：主区不得残留已退群 DM 的消息。
+		await expect(page.locator('#messages')).not.toContainText(text)
+		await expect(page.locator('#messages .message')).toHaveCount(0)
+
+		releaseState()
+		await page.unrouteAll({ behavior: 'wait' })
+		await expect(page).toHaveURL(new RegExp(`#group:${encodeURIComponent(normalGroupId)}`), { timeout: 60_000 })
+		await expect(page.locator('#messages')).not.toContainText(text)
 	})
 
 	test('creates a group via hub UI', async ({ page, baseUrl }) => {
