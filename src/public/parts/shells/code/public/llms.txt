@@ -78,7 +78,7 @@ AI 编码会话 shell：与任意角色就工作区对话，在本机或已连�
 
 ## CLI
 
-- `fount run code` 仍打开网页；`fount run code --prompt <text> [--workspace <path>]` 保持原有行为（已有在线页面则在其目标工作区新开对话并立即发送，否则打开带 `?prompt=` 的新页面）。`fount runas <user> code` 接受相同参数。
+- `fount run code` 仍打开网页；默认从调用目录向上查找最近的 `.git/config`，使用该层目录作为工作区，找不到则使用调用目录。`--workspace <path>` / `-w` 显式指定工作区（相对调用目录解析），跳过探测；`fount run code --prompt <text> [--workspace <path>]` 保持原有行为（已有在线页面则在其目标工作区新开对话并立即发送，否则打开带 `?prompt=` 的新页面）。`fount runas <user> code` 接受相同参数。
 - `fount run code --cli [--session <id>] [--prompt <text>]` 启动交互终端；`--print` 强制一次性输出：stdout 是终端时按文本，被重定向时按 NDJSON。`--output-format ndjson|text` 同样强制 print 模式并指定格式；裸 `fount run code` 打开网页，带 `--cli` 且 stdin/stdout 不是 TTY 时转为 print 模式。NDJSON 每行是 `JSON.stringify` 的一条本轮已提交条目（含用户条目；没有事件信封、预览分片与开始/结束记录）。print 模式必须给出 `--prompt <text>`、`--prompt-file <path>`（`-` 表示读 stdin），或配合 `--session <id>` 的 `--attach`。
 - 参数还有 `--workspace <path>` / `-w`、`--workspace-id <id>`、`--char <name>`、`--model <source>` / `--ai-source <source>`、`--profile <name>`、`--tui-mode fullscreen|regular`（fullscreen 使用 alternate screen；regular 在主屏用相同全屏绘制器，不保证保留原生滚屏历史）。非空 CLI 输入草稿按工作区与 session ID 保存，并受 retention 保护。`--session <id>` / `-s` 在所选工作区打开或新建会话，会话文件按工作区隔离，但活跃运行按用户名与 sessionId 串行管理，同 ID 的跨工作区运行会竞争；参数清单以 `fount run code --help` 为准。print 模式把本轮提交的条目写 stdout（文本或 NDJSON），会话 ID 与 runId 等元信息写 stderr，退出码 0 成功 / 1 失败 / 2 参数错误 / 130 用户中断。
 - 交互客户端支持会话、角色、模型、profile、工作区、机器、目录浏览/搜索/读取、shell 命令、附件、任务与子代理、停止/接入/重试/重生成、消息操作、导出（文本或 `--html` 独立文档）、变更摘要、保留与电源、退出等斜杠命令；`!<command>` 执行 shell 命令，`/help` 列出全部命令。客户端订阅用户事件总线（`/ws/notify`），服务端另行发起的运行（后台唤醒、钩子、任务恢复）会被自动接入，因此 `--attach` 之后仍会跟随后续运行。

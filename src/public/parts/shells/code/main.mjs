@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { basename, resolve } from 'node:path'
+import { basename } from 'node:path'
 import process from 'node:process'
 
 import open from 'npm:open'
@@ -10,6 +10,7 @@ import { loadShellData, assignShellData } from '../../../../server/setting_loade
 import { dispatchRemoteStreamOutput } from '../../plugins/file-operations/src/remote_stream.mjs'
 
 import { CLI_HELP, parseCodeArgs, shouldUseCodeCli } from './cli/args.mjs'
+import { resolveCodeWorkspace } from './cli/workspace.mjs'
 import { requestExternalOpen, resumeCodeJob, setEndpoints } from './src/endpoints.mjs'
 
 const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
@@ -64,7 +65,7 @@ function parseRunArgs(args = []) {
 }
 
 /**
- * CLI `fount run code [--prompt <text>] [--workspace <path>]`：以 cwd（或被指定路径）为工作区打开 code 页面，
+ * CLI `fount run code [--prompt <text>] [--workspace <path>]`：以探测到的 Git 根目录（无则 cwd，显式路径跳过探测）为工作区打开 code 页面，
  * 带 `--prompt` 时在已有页面新开对话并聚焦，无页面在线则打开带 `?prompt=` 的新页面。
  * @param {string} username - 用户名。
  * @param {string[]} args - 参数。
@@ -74,7 +75,7 @@ function parseRunArgs(args = []) {
 async function openCodePage(username, args, context = {}) {
 	const cwd = context.cwd || process.cwd()
 	const { prompt, workspace } = parseRunArgs(args)
-	const targetCwd = workspace ? resolve(cwd, workspace) : cwd
+	const targetCwd = resolveCodeWorkspace(cwd, workspace)
 	const workspaceId = ensureWorkspace(username, targetCwd)
 	const url = `${baseUrl}/parts/shells:code/?workspace=${encodeURIComponent(workspaceId)}`
 	console.log(`Opening code shell in workspace: ${targetCwd}`)
@@ -122,7 +123,7 @@ async function handleCodeArguments(username, args, context = {}) {
 		const workspaces = loadShellData(username, 'code', 'workspaces')?.list ?? []
 		if (!workspaces.some(workspace => workspace.id === workspaceId)) return cliUsageError(args, `workspace not found: ${workspaceId}`)
 	}
-	else workspaceId = ensureWorkspace(username, parsed.workspace ? resolve(context.cwd || process.cwd(), parsed.workspace) : context.cwd || process.cwd())
+	else workspaceId = ensureWorkspace(username, resolveCodeWorkspace(context.cwd || process.cwd(), parsed.workspace))
 	return {
 		type: 'run-js', module: 'cli/main.mjs', args,
 		data: { username, workspaceId, baseUrl, accessToken: await issueAccessToken(username) },
@@ -172,7 +173,7 @@ export default {
 		},
 		invokes: {
 			/**
-			 * 处理 CLI / IPC 参数：默认以 cwd 为工作区打开 code 页面；CLI 开关则返回客户端执行描述符。
+			 * 处理 CLI / IPC 参数：默认探测 Git 根目录作为工作区打开 code 页面；CLI 开关则返回客户端执行描述符。
 			 * @param {string} user - 用户名。
 			 * @param {string[]} args - 参数。
 			 * @param {{cwd?: string}} context - 调用上下文。

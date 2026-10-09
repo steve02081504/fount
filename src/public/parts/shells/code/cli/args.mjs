@@ -9,7 +9,7 @@ export const CLI_HELP = `fount run code [--cli | --print] [options]
   --session, -s ID            Open or create ID in the selected workspace
   --prompt, -p TEXT           Send TEXT
   --prompt-file PATH          Read prompt from PATH (- means stdin)
-  --workspace, -w PATH        Use PATH relative to the calling directory
+  --workspace, -w PATH        Use PATH relative to the calling directory; skip detection
   --workspace-id ID           Use a saved local or remote workspace
   --char NAME                 Select a character
   --model, --ai-source NAME   Select an AI source (char = character default)
@@ -18,6 +18,7 @@ export const CLI_HELP = `fount run code [--cli | --print] [options]
   --tui-mode fullscreen|regular
   --help                      Show this help
 
+By default, use the nearest ancestor (including cwd) with .git/config, or cwd if none.
 Session IDs are scoped to one workspace. Use /sessions all to locate another workspace.`
 
 /**
