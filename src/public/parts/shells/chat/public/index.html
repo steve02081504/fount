@@ -18,6 +18,8 @@
 	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
 	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
 	<link href="/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<!-- This page immediately redirects; avoid starting a transition that the redirect aborts. -->
+	<style>@view-transition { navigation: none; }</style>
 	<script type="module" src="/base.mjs"></script>
 </head>
 

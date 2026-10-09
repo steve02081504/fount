@@ -29,8 +29,11 @@ async function loadViewerIdentity() {
 	ingestAgentEntityHashList(store.viewer.agents)
 }
 
-/** @returns {Promise<void>} 按 URL 进入好友/群频道视图 */
-async function navigateHubFromLocation() {
+/**
+ * @param {{ groupsLoaded: boolean }} options 引导阶段的群列表加载结果
+ * @returns {Promise<void>} 按 URL 进入好友/群频道视图
+ */
+async function navigateHubFromLocation({ groupsLoaded }) {
 	const urlParams = new URLSearchParams(window.location.search)
 	const charParam = urlParams.get('char')
 	const contactParam = urlParams.get('contact')
@@ -49,6 +52,7 @@ async function navigateHubFromLocation() {
 			handleError('chat.hub.load.groupFailed')(e)
 		}
 		if (applied?.groupId) {
+			groupsLoaded = false // run URI 可能刚刚加入/创建了群，导航前需重新拉取。
 			groupId = applied.groupId
 			channelId = applied.channelId || channelId
 			const clean = new URL(window.location.href)
@@ -82,7 +86,7 @@ async function navigateHubFromLocation() {
 		return
 	}
 
-	await navigateFromHash()
+	await navigateFromHash({ groupsLoaded })
 }
 
 /** @returns {Promise<void>} Hub 壳层就绪：翻译、群列表与 hash 导航 */
@@ -90,15 +94,21 @@ export async function initCore() {
 	await initTranslations('chat')
 	const { setHubPane } = await import('./hubPane.mjs')
 	setHubPane('nav')
-	await loadViewerIdentity()
-	await loadAliases().catch(handleError('chat.hub.operationFailed'))
-	try {
-		const { loadGroups } = await import('./serverBar.mjs')
-		await loadGroups()
-	}
-	catch (error) {
+	// API 请求期间并行下载导航模块，避免身份、别名与模块图逐段串行等待。
+	const aliasesReady = loadAliases().catch(handleError('chat.hub.operationFailed'))
+	const groupsReady = import('./serverBar.mjs').then(async ({ loadGroups }) => {
+		await loadGroups({ beforeRender: aliasesReady })
+		return true
+	}).catch(error => {
 		store.sidebar.groups = []
 		handleError('chat.hub.load.groupFailed')(error)
-	}
-	await navigateHubFromLocation()
+		return false
+	})
+	const [, groupsLoaded] = await Promise.all([
+		loadViewerIdentity(),
+		groupsReady,
+		aliasesReady,
+		import('./hashNav.mjs'),
+	])
+	await navigateHubFromLocation({ groupsLoaded })
 }

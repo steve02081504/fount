@@ -16,9 +16,7 @@ import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { avatarColor, avatarInitial, groupDisplayName } from './core/domUtils.mjs'
 import { store } from './core/state.mjs'
-import { showFolderContextMenu } from './folderContextMenu.mjs'
 import { getSidebarGroups } from './friendBindings.mjs'
-import { showGroupContextMenu } from './groupContextMenu.mjs'
 import {
 	clearGroupSelection,
 	handleGroupItemModifierClick,
@@ -27,7 +25,6 @@ import {
 	syncGroupSelectionStyles,
 } from './groupSelection.mjs'
 import { attachServerBarDnd } from './serverBarDnd.mjs'
-import { selectGroup } from './sidebar/index.mjs'
 import { formatUnreadBadgeHtml } from './unread.mjs'
 
 /**
@@ -182,7 +179,7 @@ export async function renderServerBar() {
 	list.replaceChildren(frag)
 
 	list.querySelectorAll('.server-item[data-group-id]').forEach(el => {
-		el.addEventListener('click', (event) => {
+		el.addEventListener('click', async (event) => {
 			const groupId = el.dataset.groupId || ''
 			if (!groupId) return
 			if (event.shiftKey || event.ctrlKey || event.metaKey) {
@@ -194,13 +191,16 @@ export async function renderServerBar() {
 				return
 			}
 			clearGroupSelection()
-			void selectGroup(groupId)
+			const { selectGroup } = await import('./sidebar/index.mjs')
+			await selectGroup(groupId)
 		})
-		el.addEventListener('contextmenu', (event) => {
+		el.addEventListener('contextmenu', async (event) => {
 			const groupId = el.dataset.groupId || ''
 			if (!groupId) return
 			primeContextMenuSelection(groupId)
-			void showGroupContextMenu(event, groupId)
+			// 事件默认行为由 showGroupContextMenu 自己拦下（菜单打开前要先拉模块）。
+			const { showGroupContextMenu } = await import('./groupContextMenu.mjs')
+			await showGroupContextMenu(event, groupId)
 		})
 	})
 	syncGroupSelectionStyles()
@@ -213,9 +213,12 @@ export async function renderServerBar() {
 			void persistGroupFolders()
 			void renderServerBar()
 		})
-		head.addEventListener('contextmenu', (event) => {
+		head.addEventListener('contextmenu', async (event) => {
 			const folderIndex = Number(head.getAttribute('data-folder-idx'))
 			if (!Number.isFinite(folderIndex) || folderIndex < 0 || folderIndex >= store.sidebar.groupFoldersState.folders.length) return
+			event.preventDefault()
+			event.stopPropagation()
+			const { showFolderContextMenu } = await import('./folderContextMenu.mjs')
 			showFolderContextMenu(event, folderIndex)
 		})
 	})
@@ -227,9 +230,10 @@ let loadGroupsSequence = 0
 
 /**
  * 拉取群组列表与文件夹布局并刷新服务器栏。
+ * @param {{ beforeRender?: Promise<unknown> }} [options] 引导时允许并行拉取，但渲染前等待别名就绪
  * @returns {Promise<void>}
  */
-export async function loadGroups() {
+export async function loadGroups({ beforeRender } = {}) {
 	const sequence = ++loadGroupsSequence
 	const [groupList, foldersPayload] = await Promise.all([
 		getGroupList(),
@@ -264,5 +268,7 @@ export async function loadGroups() {
 		}
 
 	else store.sidebar.groupFoldersState = { folders: [] }
+	if (beforeRender) await beforeRender
+	if (sequence !== loadGroupsSequence) return
 	await renderServerBar()
 }

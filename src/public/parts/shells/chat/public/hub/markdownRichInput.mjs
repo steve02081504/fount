@@ -45,5 +45,11 @@ export function installHubRichInput() {
 	const input = document.getElementById('message-input')
 	if (!(input instanceof HTMLElement) || input instanceof HTMLTextAreaElement) return null
 	if (input.classList.contains('fount-markdown-rich-input')) return null
-	return createMarkdownRichInput(input, { resolveTokenLabel: hubTokenLabel })
+	const handle = createMarkdownRichInput(input, { resolveTokenLabel: hubTokenLabel })
+	// 引导/切频道先安装编辑器，再由 i18n 写入 placeholder；只更新占位 span，不重建输入内容。
+	new MutationObserver(() => handle.setPlaceholderI18n(null)).observe(input, {
+		attributes: true,
+		attributeFilter: ['placeholder'],
+	})
+	return handle
 }

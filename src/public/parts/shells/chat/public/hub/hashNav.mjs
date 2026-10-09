@@ -8,38 +8,34 @@
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { store } from './core/state.mjs'
-import { DISCOVERY_HASH, FRIENDS_HASH, INBOX_HASH, isFriendsHash, parseHash } from './core/urlHash.mjs'
+import { DISCOVERY_HASH, INBOX_HASH, isFriendsHash, parseHash } from './core/urlHash.mjs'
 import { bumpViewEpoch } from './core/viewEpoch.mjs'
 import { friendBindingForGroup } from './friendBindings.mjs'
-import { enterFriendChat } from './friendChat.mjs'
 import { disableComposer } from './messages/composerController.mjs'
-import { setMode } from './mode.mjs'
 import { loadGroups } from './serverBar.mjs'
-import { selectChannel, selectGroup } from './sidebar/index.mjs'
 
 /** @type {Promise<void>} */
 let navigationQueue = Promise.resolve()
 
 /**
+ * @param {{ groupsLoaded?: boolean }} options 本次导航是否已有最新群列表
  * @returns {Promise<void>}
  */
-async function navigateFromHashInner() {
+async function navigateFromHashInner({ groupsLoaded = false }) {
 	try {
 		const hash = window.location.hash.slice(1)
-		if (hash === INBOX_HASH) {
-			await setMode('inbox')
-			return
-		}
-		if (hash === DISCOVERY_HASH) {
-			await setMode('discovery')
-			return
-		}
-		if (!hash || hash === FRIENDS_HASH) {
-			await setMode('friends')
-			return
-		}
 		const { groupId, channelId, eventId } = parseHash()
+		// 只有列表/发现页需要模式模块；群深链直接进入目标频道，不必下载它。
 		if (!groupId) {
+			const { setMode } = await import('./mode.mjs')
+			if (hash === INBOX_HASH) {
+				await setMode('inbox')
+				return
+			}
+			if (hash === DISCOVERY_HASH) {
+				await setMode('discovery')
+				return
+			}
 			await setMode('friends')
 			return
 		}
@@ -57,19 +53,22 @@ async function navigateFromHashInner() {
 			&& channelId !== store.context.currentChannelId
 			&& store.context.currentState?.channels?.[channelId]
 		) {
+			const { selectChannel } = await import('./sidebar/index.mjs')
 			await selectChannel(channelId)
 			if (eventId) await scrollToAndHighlightEventId(eventId)
 			return
 		}
 
-		await loadGroups()
+		if (!groupsLoaded) await loadGroups()
 		const binding = friendBindingForGroup(groupId)
 		if (binding) {
+			const { enterFriendChat } = await import('./friendChat.mjs')
 			await enterFriendChat({ groupId, binding, channelId: channelId || undefined })
 			if (eventId) await scrollToAndHighlightEventId(eventId)
 			return
 		}
 
+		const { selectGroup } = await import('./sidebar/index.mjs')
 		await selectGroup(groupId, channelId)
 		if (eventId) await scrollToAndHighlightEventId(eventId)
 	}
@@ -101,16 +100,17 @@ async function scrollToAndHighlightEventId(eventId) {
 
 /**
  * 串行执行 hash 导航，避免 initCore 与 hashchange 并发交错。
+ * @param {{ groupsLoaded?: boolean }} [options] 本次导航已加载的群列表；仅引导阶段使用
  * @returns {Promise<void>}
  */
-export function navigateFromHash() {
+export function navigateFromHash(options = {}) {
 	const { groupId, channelId } = parseHash()
 	// 导航本身要排队执行：先同步作废当前视图的在途渲染并禁用 composer，避免旧会话在换群窗口里还能输入。
 	if (groupId !== store.context.currentGroupId || (channelId && channelId !== store.context.currentChannelId)) {
 		bumpViewEpoch()
 		disableComposer()
 	}
-	const run = navigationQueue.then(() => navigateFromHashInner())
+	const run = navigationQueue.then(() => navigateFromHashInner(options))
 	navigationQueue = run.catch(() => { })
 	return run
 }
