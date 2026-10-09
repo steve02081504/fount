@@ -11,6 +11,7 @@ import { loadAIsourceFromNameOrConfigData } from '../../../serviceSources/AI/mai
 import { identityTokenizer, minKnownContextSize } from '../proxy/src/identityTokenizer.mjs'
 
 import { buildPromptInOrder } from './prompt.mjs'
+import { callWithFallback } from './request.mjs'
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
@@ -86,17 +87,7 @@ async function GetSource(config, { username, SaveConfig }) {
 		 * @param {string} prompt - 要发送给 AI 的提示。
 		 * @returns {Promise<any>} 来自 AI 的结果。
 		 */
-		Call: async prompt => {
-			if (!sources.length) throw new Error('no source selected')
-			let index = 0
-			while (true) try {
-				return await sources[index].Call(prompt)
-			} catch (e) {
-				index++
-				if (index >= config.sources.length) throw new Error('all sources failed')
-				console.error(e)
-			}
-		},
+		Call: async prompt => callWithFallback(sources, source => source.Call(prompt)),
 		/**
 		 * 使用结构化提示调用 AI 源。
 		 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
@@ -104,18 +95,9 @@ async function GetSource(config, { username, SaveConfig }) {
 		 * @returns {Promise<any>} 来自 AI 的结果。
 		 */
 		StructCall: async (prompt_struct, options = {}) => {
-			if (!sources.length) throw new Error('no source selected')
 			// All attempts retain reported usage on the same reply object.
 			options.base_result ??= {}
-			let index = 0
-			while (true) try {
-				return await sources[index].StructCall(prompt_struct, options)
-			} catch (e) {
-				if (options.signal?.aborted) throw e
-				index++
-				if (index >= config.sources.length) throw new Error('all sources failed')
-				console.error(e)
-			}
+			return callWithFallback(sources, source => source.StructCall(prompt_struct, options), options)
 		},
 		/**
 		 * 按 StructCall 的故障转移顺序委托内层源构建 prompt 结构。

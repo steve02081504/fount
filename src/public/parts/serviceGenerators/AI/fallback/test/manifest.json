@@ -6,7 +6,10 @@
 			"expected": "2s",
 			"triggers": [
 				"src/public/parts/serviceGenerators/AI/fallback/**",
-				"src/public/parts/serviceGenerators/AI/proxy/src/buildPromptDelegation.mjs"
+				"src/public/parts/serviceGenerators/AI/proxy/src/**",
+				"src/public/parts/serviceGenerators/AI/proxy/test/mockFetch.mjs",
+				"src/public/parts/serviceGenerators/AI/codex/src/responsesClient.mjs",
+				"src/public/parts/shells/chat/public/shared/usage.mjs"
 			],
 			"run": [
 				"deno",
