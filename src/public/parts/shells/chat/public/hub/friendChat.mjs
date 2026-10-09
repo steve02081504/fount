@@ -81,7 +81,8 @@ function enqueueResolveFriendGroup(fn, signal) {
  * @returns {Promise<string|null>} 群 ID
  */
 async function findExistingFriendGroup(binding) {
-	await loadGroups()
+	if (!store.sidebar.groups.some(group => friendBindingMatches(group.friendBinding, binding)))
+		await loadGroups()
 	const matches = store.sidebar.groups.filter(group => friendBindingMatches(group.friendBinding, binding))
 	if (!matches.length) return null
 	matches.sort((a, b) => new Date(b.lastMessageTime || 0) - new Date(a.lastMessageTime || 0))
@@ -257,7 +258,7 @@ async function openFriendGroupChat(groupId, binding, signal, channelIdOpt) {
 	if (!friendBindingsEqual(existingBinding, binding))
 		await setGroupFriendBinding(groupId, binding)
 	throwIfAborted(signal)
-	await loadGroups()
+	loadGroups().catch(handleError('chat.hub.load.groupFailed'))
 
 	const input = document.getElementById('message-input')
 	if (charname) {
@@ -338,6 +339,11 @@ export async function dispatchFriendChat(entity) {
 		return
 	}
 	if (entity.type !== 'user') return
+	const existing = entity.entityHash && store.sidebar.groups.find(group => !group.isLeaving && friendBindingMatches(group.friendBinding, entity))
+	if (existing) {
+		await enterFriendChat({ groupId: existing.groupId, binding: { ...existing.friendBinding, ...entity.displayName ? { displayName: entity.displayName } : {} } })
+		return
+	}
 
 	const fed = await getFederationSettings()
 	const myPubKeyHex = fed?.activePubKeyHex || ''

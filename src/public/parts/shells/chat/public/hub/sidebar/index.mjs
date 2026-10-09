@@ -61,20 +61,26 @@ export async function renderHubChannelSidebar(state) {
 /**
  * 渲染群侧栏与标题。
  * @param {object} state 群 state
+ * @param {() => boolean} stillCurrent 选择仍有效的守卫。
  * @returns {Promise<void>}
  */
-async function paintGroupHubChrome(state) {
+async function paintGroupHubChrome(state, stillCurrent) {
 	const groupNameElement = document.getElementById('group-name-display')
 	delete groupNameElement.dataset.i18n
-	groupNameElement.textContent = await groupDisplayName(store.context.currentGroupId, state.groupMeta.name)
+	const displayName = await groupDisplayName(store.context.currentGroupId, state.groupMeta.name)
+	if (!stillCurrent()) return
+	groupNameElement.textContent = displayName
 	groupNameElement.setAttribute('user-content', '')
 	await renderChannelList(state)
+	if (!stillCurrent()) return
 	await renderMemberList(state)
+	if (!stillCurrent()) return
 	setState('context.currentMode', 'groups')
 	document.querySelectorAll('.server-item[data-mode]').forEach(el => {
 		el.classList.toggle('mode-active', el.dataset.mode === 'groups')
 	})
 	await renderGroupInfoCard(state)
+	if (!stillCurrent()) return
 	const { refreshHubHeaderButtons } = await import('../messages/composerController.mjs')
 	refreshHubHeaderButtons()
 	updateStatusBanners()
@@ -148,8 +154,7 @@ export async function selectGroup(groupId, presetChannelId = null) {
 	const { setMode } = await import('../mode.mjs')
 	await setMode('groups')
 	if (!stillCurrent()) return
-	await loadGroups()
-	if (!stillCurrent()) return
+	loadGroups().catch(handleError('chat.hub.load.groupFailed'))
 	try {
 		let state = await getGroupState(groupId)
 		if (!stillCurrent()) return
@@ -160,7 +165,7 @@ export async function selectGroup(groupId, presetChannelId = null) {
 		state = await syncGroupStateForHub(groupId, state, channelId)
 		if (!stillCurrent()) return
 		updateHash(groupId, channelId)
-		await paintGroupHubChrome(state)
+		await paintGroupHubChrome(state, stillCurrent)
 		if (!stillCurrent()) return
 		await activateGroupChannel(state, channelIdFromHashOr(groupId, channelId))
 	}

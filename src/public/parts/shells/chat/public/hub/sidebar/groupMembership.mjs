@@ -54,9 +54,9 @@ export async function syncGroupFromNetwork(groupId, options = {}) {
 	if (store.context.currentChannelId) {
 		const state = await refreshGroupState(groupId)
 		if (!stillCurrent()) return
-		const { loadMessages } = await import('../messages/messages.mjs')
+		const { scheduleChannelIncrementalRefresh } = await import('../messages/messages.mjs')
 		if (!stillCurrent()) return
-		if (state) await loadMessages()
+		if (state) scheduleChannelIncrementalRefresh({ immediate: true })
 	}
 	if (!stillCurrent()) return
 
@@ -196,7 +196,7 @@ export async function syncGroupStateForHub(groupId, state, presetChannelId) {
 	if (!stillCurrent()) return state
 	setState('context.currentState', state)
 	// 先等分区房间重绑，再 catch-up；否则 tip ping 打在空 roster 上，横幅误报无邻居。
-	await rebindFederationRoomQuiet(groupId, {
+	const roomReady = rebindFederationRoomQuiet(groupId, {
 		channelId: presetChannelId || state.groupSettings?.defaultChannelId || null,
 	})
 	if (!stillCurrent()) return state
@@ -204,18 +204,20 @@ export async function syncGroupStateForHub(groupId, state, presetChannelId) {
 	if (state.viewerEntityHash)
 		store.viewer.viewerEntityHash = state.viewerEntityHash
 	const { refreshViewerHubPresentation } = await import('../init.mjs')
-	await refreshViewerHubPresentation()
+	refreshViewerHubPresentation().catch(handleError('chat.hub.operationFailed'))
 	if (!stillCurrent()) return state
 	if (state.viewerEntityHash) {
 		const { syncViewerPresence } = await import('../hubStatus.mjs')
-		await syncViewerPresence(state.viewerEntityHash)
+		syncViewerPresence(state.viewerEntityHash).catch(handleError('chat.hub.operationFailed'))
 	}
 	if (!stillCurrent()) return state
 	const needsHeavySync = !Object.keys(state.channels || {}).length
-	if (needsHeavySync)
+	if (needsHeavySync) {
+		await roomReady
 		await syncGroupFromNetwork(groupId, { waitMs: 8000 })
+	}
 	else if (state.federationActive)
-		void syncGroupFromNetwork(groupId)
+		roomReady.then(() => syncGroupFromNetwork(groupId)).catch(handleError('chat.hub.operationFailed'))
 	else
 		setSyncBanner(false)
 	if (needsHeavySync) {
