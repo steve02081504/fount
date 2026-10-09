@@ -75,9 +75,7 @@ async function renderApiKey() {
 		if (toggleApiKeyButton)
 			toggleApiKeyButton.addEventListener('click', () => {
 				apiKeyInput.type = apiKeyInput.type === 'password' ? 'text' : 'password'
-				// @fetch-resource https://api.iconify.design/line-md/watch.svg
-				// @fetch-resource https://api.iconify.design/line-md/watch-off.svg
-				toggleApiKeyButton.innerHTML = /* html */ `<img src="https://api.iconify.design/line-md/watch${apiKeyInput.type === 'password' ? '-off' : ''}.svg" class="text-icon h-6 w-6" />`
+				toggleApiKeyButton.innerHTML = /* html */ `<img crossorigin="anonymous" src="https://api.iconify.design/line-md/watch${apiKeyInput.type === 'password' ? '-off' : ''}.svg" class="text-icon h-6 w-6" />`
 			})
 
 		proxyApiUrlQueryInput.value = `${apiUrl}?fount-apikey=${apiKey}`

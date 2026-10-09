@@ -4,13 +4,13 @@
 			"id": "network",
 			"info": "subfounts.home_function_buttons.network",
 			"level": 2,
-			"button": "<img src=\"https://api.iconify.design/line-md/link.svg\" class=\"text-icon\"/>",
+			"button": "<img crossorigin=\"anonymous\" src=\"https://api.iconify.design/line-md/link.svg\" class=\"text-icon\"/>",
 			"sub_items": [
 				{
 					"info": "subfounts.home_function_buttons.network.sub_items.subfounts",
 					"level": 1,
 					"url": "/parts/shells:subfounts/",
-					"button": "<img src=\"https://api.iconify.design/line-md/computer.svg\" class=\"text-icon\"/>"
+					"button": "<img crossorigin=\"anonymous\" src=\"https://api.iconify.design/line-md/computer.svg\" class=\"text-icon\"/>"
 				}
 			]
 		}

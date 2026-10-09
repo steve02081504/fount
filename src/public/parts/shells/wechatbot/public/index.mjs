@@ -277,7 +277,7 @@ async function handleCharSelectChange(selectedChar) {
  */
 function handleToggleToken() {
 	tokenInput.type = tokenInput.type === 'password' ? 'text' : 'password'
-	toggleTokenButton.innerHTML = /* html */ `<img src="https://api.iconify.design/line-md/watch${tokenInput.type === 'password' ? '-off' : ''}.svg" class="text-icon" data-i18n="wechat_bots.configCard.toggleBotTokenIcon" />`
+	toggleTokenButton.innerHTML = /* html */ `<img crossorigin="anonymous" src="https://api.iconify.design/line-md/watch${tokenInput.type === 'password' ? '-off' : ''}.svg" class="text-icon" data-i18n="wechat_bots.configCard.toggleBotTokenIcon" />`
 }
 
 /**
@@ -288,6 +288,7 @@ function handleToggleToken() {
  * @returns {Promise<any>} 操作完成后的 Promise。
  */
 async function withButtonFeedback(button, statusIcon, action) {
+	statusIcon.crossOrigin = 'anonymous'
 	statusIcon.src = ICON_LOADING
 	statusIcon.classList.remove('hidden')
 	button.disabled = true

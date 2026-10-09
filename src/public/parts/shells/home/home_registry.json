@@ -15,7 +15,7 @@
 				"interface": "web",
 				"level": 0,
 				"url": "/parts/${access_path}",
-				"button": "<img src=\"https://api.iconify.design/line-md/external-link.svg\" class=\"text-icon\"/>"
+				"button": "<img crossorigin=\"anonymous\" src=\"https://api.iconify.design/line-md/external-link.svg\" class=\"text-icon\"/>"
 			}
 		]
 	}

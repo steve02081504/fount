@@ -4,13 +4,13 @@
 			"id": "dev",
 			"info": "code.home_function_buttons.dev",
 			"level": 6,
-			"button": "<img src=\"https://api.iconify.design/mdi/code-braces.svg\" class=\"text-icon\"/>",
+			"button": "<img crossorigin=\"anonymous\" src=\"https://api.iconify.design/mdi/code-braces.svg\" class=\"text-icon\"/>",
 			"sub_items": [
 				{
 					"info": "code.home_function_buttons.code",
 					"level": 1,
 					"url": "/parts/shells:code/",
-					"button": "<img src=\"https://api.iconify.design/mdi/terminal.svg\" class=\"text-icon\"/>"
+					"button": "<img crossorigin=\"anonymous\" src=\"https://api.iconify.design/mdi/terminal.svg\" class=\"text-icon\"/>"
 				}
 			]
 		}

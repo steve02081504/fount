@@ -2,6 +2,7 @@ import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 
 import { base_dir } from '../../base.mjs'
 import { geti18n, i18nElement } from '../i18n/index.mjs'
+import { corsImgAttribute } from '../lib/corsImage.mjs'
 import { escapeHtml } from '../lib/escapeHtml.mjs'
 import { svgInliner } from '../lib/svgInliner.mjs'
 
@@ -224,6 +225,9 @@ function createTemplatesApi(resolvedRoot) {
 		 */
 		data.setValue ??= (name, value) => data[name] = value
 		data.escapeHtml ??= escapeHtml
+		// 模板里数据驱动的图片（部件头像、成就图标…）用 `<img${corsImgAttribute(url)} …>` 取属性：
+		// 支持的 host 同步带上，未知 host 先不加并在后台探一次。
+		data.corsImgAttribute ??= corsImgAttribute
 		const url = `${resolvedRoot}/${template}.html`
 		const cacheKey = url
 		if (!Object.hasOwn(template_cache, cacheKey))

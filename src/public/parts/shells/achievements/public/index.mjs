@@ -11,6 +11,9 @@ import { renderTemplate } from './templates.mjs'
 
 const achievementsContainer = document.getElementById('achievements-container')
 
+/** 来源区块没有自带图标时的兜底图标（Iconify 奖杯）。 */
+const DEFAULT_SOURCE_ICON = 'https://api.iconify.design/material-symbols/trophy.svg'
+
 let render_lock
 
 const shakeStates = new Map()
@@ -139,6 +142,7 @@ async function renderAchievements() {
 					const section = await renderTemplate('source_section', {
 						partpath,
 						source: info,
+						defaultSourceIcon: DEFAULT_SOURCE_ICON,
 						achievements,
 						totalAchievements,
 						unlockedAchievements,
@@ -155,6 +159,7 @@ async function renderAchievements() {
 				const section = await renderTemplate('source_section', {
 					partpath,
 					source: info,
+					defaultSourceIcon: DEFAULT_SOURCE_ICON,
 					achievements,
 					totalAchievements,
 					unlockedAchievements,

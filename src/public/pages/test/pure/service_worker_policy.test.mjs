@@ -6,6 +6,7 @@ import { assertEquals } from 'jsr:@std/assert'
 
 import {
 	constructibleRequestMode,
+	firstFetchModeFor,
 	isCacheFirstExemptUrl,
 	isColdBootMarkedRequest,
 	isColdBootNavigationRequest,
@@ -102,4 +103,10 @@ Deno.test('constructibleRequestMode downgrades navigate and preserves other mode
 Deno.test('constructibleRequestMode yields a mode the Request constructor accepts', () => {
 	const navigateMode = constructibleRequestMode('navigate')
 	assertEquals(new Request('https://fount.local/', { mode: navigateMode }).mode, 'same-origin')
+})
+
+Deno.test('firstFetchModeFor fetches cross-origin resources as cors and same-origin ones as requested', () => {
+	// 跨域必须先 cors：opaque 响应读不到也存不进缓存，否则同一个 URL 会被抓三次。
+	assertEquals(firstFetchModeFor({ url: new URL('https://cdn.example/a.svg'), origin: ORIGIN }), 'cors')
+	assertEquals(firstFetchModeFor({ url: new URL('/static/app.js', ORIGIN), origin: ORIGIN }), 'request')
 })

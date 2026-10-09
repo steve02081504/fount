@@ -4,6 +4,7 @@ import { getFiltersFromString, compileFilter, makeSearchable } from '../../../sc
 import { getPartBranches, unlockAchievement, setDefaultPart, unsetDefaultPart, getAllDefaultParts } from '../../../scripts/endpoints/parts.mjs'
 import { renderMarkdown } from '../../../scripts/features/markdown/index.mjs'
 import { geti18n, console } from '../../../scripts/i18n/index.mjs'
+import { corsifyHtml } from '../../../scripts/lib/corsImage.mjs'
 import { onElementRemoved } from '../../../scripts/lib/onElementRemoved.mjs'
 import { svgInliner } from '../../../scripts/lib/svgInliner.mjs'
 import { viewTransition } from '../../../scripts/motion/viewTransition.mjs'
@@ -592,7 +593,7 @@ async function createMenuItem(name, path, branches, filterFn) {
 		// 文件夹样式构造
 		const iconSpan = document.createElement('span')
 		iconSpan.classList.add('mr-2')
-		iconSpan.innerHTML = '<img src="https://api.iconify.design/line-md/folder-filled.svg" class="text-icon" />'
+		iconSpan.innerHTML = '<img crossorigin="anonymous" src="https://api.iconify.design/line-md/folder-filled.svg" class="text-icon" />'
 
 		const nameSpan = document.createElement('span')
 		nameSpan.textContent = displayName
@@ -810,13 +811,14 @@ export async function displayFunctionButtons() {
 	function createButtonMenuItem(item) {
 		const li = document.createElement('li')
 		const info = geti18n(item.info)
-		const iconHtml = item.button ?? '<img src="https://api.iconify.design/line-md/question-circle.svg" class="text-icon" />'
+		// 注册表 HTML 由部件自带（可能引用 Iconify 之外的域名）：插入前按 host 支持情况补 crossorigin。
+		const iconHtml = corsifyHtml(item.button ?? '<img crossorigin="anonymous" src="https://api.iconify.design/line-md/question-circle.svg" class="text-icon" />')
 
 		if (item.sub_items?.length) {
 			// 子菜单
 			const iconSpan = document.createElement('span')
 			iconSpan.classList.add('mr-2')
-			iconSpan.innerHTML = item.button ?? '<img src="https://api.iconify.design/line-md/folder-filled.svg" class="text-icon" />'
+			iconSpan.innerHTML = corsifyHtml(item.button ?? '<img crossorigin="anonymous" src="https://api.iconify.design/line-md/folder-filled.svg" class="text-icon" />')
 			svgInliner(iconSpan)
 
 			const titleSpan = document.createElement('span')

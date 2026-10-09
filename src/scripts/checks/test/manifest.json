@@ -464,6 +464,26 @@
 				"src/scripts/checks/walk.mjs",
 				"**/*.{mjs,js,ts}"
 			]
+		},
+		{
+			"name": "icon_crossorigin",
+			"expected": "20s",
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/checks/test/icon_crossorigin.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/checks/{icon_crossorigin.mjs,walk.mjs}",
+				"src/scripts/checks/test/icon_crossorigin.test.mjs",
+				"src/public/**",
+				".github/pages/**"
+			]
 		}
 	]
 }

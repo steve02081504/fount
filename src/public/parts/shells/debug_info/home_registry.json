@@ -4,7 +4,7 @@
 			"info": "debug_info.home_function_buttons.debug.main",
 			"level": 9999,
 			"url": "/parts/shells:debug_info/",
-			"button": "<img src=\"https://api.iconify.design/line-md/file-search.svg\" class=\"text-icon\"/>"
+			"button": "<img crossorigin=\"anonymous\" src=\"https://api.iconify.design/line-md/file-search.svg\" class=\"text-icon\"/>"
 		}
 	]
 }

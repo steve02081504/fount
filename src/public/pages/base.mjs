@@ -7,9 +7,65 @@
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
 import { onServerEvent } from './scripts/endpoints/server_events.mjs'
+import { firstPositive, probeServerReachability } from './scripts/lib/serverReachability.mjs'
 import './scripts/motion/index.mjs'
 
 let skipBreadcrumb = false
+
+/**
+ * 等待 Service Worker 接管的超时（毫秒）。
+ * 首次注册激活通常远快于此；只有注册被拒/永不激活才会耗满。
+ */
+const SERVICE_WORKER_CONTROLLER_TIMEOUT_MS = 5000
+
+/**
+ * 等待 Service Worker 应答 `postMessage` 的超时（毫秒）。
+ * 正常回执是同一个事件循环内的事；超时说明 worker 正在更新/已被杀。
+ */
+const SERVICE_WORKER_REPLY_TIMEOUT_MS = 3000
+
+/**
+ * 在限定时间内等待 Promise，超时与拒绝都返回兜底值（不抛出）。
+ * 页面启动路径上的 Service Worker 等待都必须走这里：注册被拒时
+ * `navigator.serviceWorker.ready` 永不 settle，未设上限的 await 会把启动页吊死在 loading 上。
+ * @template T
+ * @param {Promise<T>} promise - 被等待的 Promise
+ * @param {number} timeoutMs - 超时毫秒
+ * @param {T} [fallback] - 超时/拒绝时的兜底值
+ * @returns {Promise<T>} 结果或兜底值
+ */
+async function waitWithTimeout(promise, timeoutMs, fallback) {
+	/** @type {ReturnType<typeof setTimeout> | undefined} */
+	let timer
+	try {
+		return await Promise.race([
+			promise.catch(() => fallback),
+			new Promise(resolve => { timer = setTimeout(resolve, timeoutMs, fallback) }),
+		])
+	}
+	finally {
+		clearTimeout(timer)
+	}
+}
+
+/**
+ * 向 Service Worker 发一条消息并等它回执。
+ * @param {ServiceWorker} controller - 当前页面的 Service Worker
+ * @param {string} type - 消息类型
+ * @returns {Promise<any>} 回执数据；worker 不回话（正在更新/已被杀）时为 undefined
+ */
+async function askServiceWorker(controller, type) {
+	return await waitWithTimeout(new Promise(resolve => {
+		const channel = new MessageChannel()
+		/**
+		 * 处理 Service Worker 返回的消息。
+		 * @param {MessageEvent} event - 消息事件。
+		 * @returns {void}
+		 */
+		channel.port1.onmessage = event => resolve(event.data)
+		controller.postMessage({ type }, [channel.port2])
+	}), SERVICE_WORKER_REPLY_TIMEOUT_MS)
+}
 
 /**
  * 初始化 Service Worker 活跃状态同步与通知抑制分发。
@@ -107,16 +163,9 @@ if (globalThis.fount?.test?.enabled && !globalThis.fount?.test?.watch?.disabled 
  * @returns {Promise<string>} fount 版本字符串
  */
 async function queryFountVersion() {
-	const version = navigator.serviceWorker.controller ? await new Promise(resolve => {
-		const channel = new MessageChannel()
-		/**
-		 * 处理 Service Worker 返回的版本消息。
-		 * @param {MessageEvent} event - 消息事件。
-		 * @returns {void}
-		 */
-		channel.port1.onmessage = event => resolve(event.data?.fountVersion)
-		navigator.serviceWorker.controller.postMessage({ type: 'GET_FOUNT_VERSION' }, [channel.port2])
-	}) : 'unknown'
+	const controller = navigator.serviceWorker.controller
+	const reply = controller && await askServiceWorker(controller, 'GET_FOUNT_VERSION')
+	const version = reply?.fountVersion || 'unknown'
 	Sentry.setTag('release', globalThis.fount.version = version)
 	return version
 }
@@ -158,19 +207,31 @@ async function ensureWebPushSubscription() {
 }
 
 // register service worker
+/** 当前页面的注册尝试：注册被拒时用它让 controller 的等待立刻结束，而不是白等满上限。 */
+let serviceWorkerRegistration
 ; (async () => {
 	if (!navigator.serviceWorker) return
 	try {
-		await navigator.serviceWorker.register('/service_worker.mjs', { scope: '/', type: 'module' })
+		serviceWorkerRegistration = navigator.serviceWorker.register('/service_worker.mjs', { scope: '/', type: 'module' })
+		await serviceWorkerRegistration
 		await navigator.serviceWorker.ready
 		initServiceWorkerIntegration()
 		const { initUserActivityTracking } = await import('./scripts/features/userActivity.mjs')
 		initUserActivityTracking()
-		await Promise.all([ensureWebPushSubscription(), queryFountVersion()])
 	} catch (error) {
 		if (error.name != 'SecurityError') console.error('Service Worker registration failed: ', error)
+		return
 	}
+	// 推送订阅是可选的：浏览器/用户没给通知权限（NotAllowedError「Registration failed - permission denied」）
+	// 只是没有推送能力，不能记成「Service Worker 注册失败」——那会把正常的推送拒绝说成 SW 故障。
+	await Promise.all([
+		ensureWebPushSubscription().catch(error => console.warn('Web push subscription unavailable: ', error)),
+		queryFountVersion(),
+	])
 })()
+
+/** 永不 settle 的 Promise：用于「这条分支不会给出结果」时把竞争让给另一条。 */
+const NEVER_SETTLES = new Promise(() => { })
 
 const is_hidden_page = !window.innerHeight || !window.innerWidth
 
@@ -179,15 +240,27 @@ const is_hidden_page = !window.innerHeight || !window.innerWidth
  * 新注册的 worker 尚未 claim 页面时，controller 暂时为 null，需等
  * `navigator.serviceWorker.ready` 与 `controllerchange` 后才有可用的 controller，
  * 以便 WAKE_SERVER_REQUEST 能送达新激活的 worker。
+ * 注册被浏览器拒绝（无痕 / 内嵌 WebView 的 NotAllowedError 等）时 `ready` 永不 settle，
+ * 因此整段等待必须有上限：没有 controller 只是失去推送/离线能力，不能拖死页面启动
+ *（启动页会因此停在 loading 上，连未登录的登录跳转都到不了）。
+ * 而注册一旦失败就说明不会再有 controller 出现了，此时不必白等满上限——启动页是 `await wakeServer()` 的，
+ * 那 5 秒会直接加在启动耗时上；注册成功的那条分支则继续按正常流程等接管。
  * @returns {Promise<ServiceWorker | null>} 控制当前页面的 Service Worker，无则返回 null。
  */
 async function waitServiceWorkerController() {
 	if (!navigator.serviceWorker) return null
-	if (!navigator.serviceWorker.controller) {
-		try { await navigator.serviceWorker.ready } catch { return navigator.serviceWorker.controller }
-		if (navigator.serviceWorker.controller) return navigator.serviceWorker.controller
+	if (navigator.serviceWorker.controller) return navigator.serviceWorker.controller
+	/** 新注册的 worker 尚未 claim 页面：`ready` 之后还要等一次 `controllerchange`。 */
+	const waitForClaim = async () => {
+		await navigator.serviceWorker.ready
+		if (navigator.serviceWorker.controller) return
 		await new Promise(resolve => navigator.serviceWorker.addEventListener('controllerchange', resolve, { once: true }))
 	}
+	/** 注册失败（被浏览器拒绝）时给出信号；注册成功则永不 settle，继续走正常的接管等待。 */
+	const registrationRefused = serviceWorkerRegistration
+		? serviceWorkerRegistration.then(() => NEVER_SETTLES, () => 'refused')
+		: NEVER_SETTLES
+	await waitWithTimeout(Promise.race([waitForClaim(), registrationRefused]), SERVICE_WORKER_CONTROLLER_TIMEOUT_MS)
 	return navigator.serviceWorker.controller
 }
 
@@ -203,33 +276,30 @@ function exitColdBoot() {
 
 /**
  * 向 Service Worker 查询服务器是否适合启动。
+ *
+ * 两路并行、先有肯定答案者胜：SW 询问（可能本身就把服务器唤醒）与资源探测
+ * （`probeServerReachability`，其判定预算按本次通道实测的往返时延推导，而不是写死毫秒数——
+ * 写死的值在隧道/代理上会把正常请求判成失败，进而误拉 `fount://` 协议处理器）。
+ * SW 先答「可以」时把并行的探测中止掉，省掉那次多余的请求。
  * @returns {Promise<boolean>} 是否适合启动服务器。
  */
 export async function queryWakeServer() {
 	const controller = await waitServiceWorkerController()
-	if (controller) {
-		const approved = await new Promise(resolve => {
-			const channel = new MessageChannel()
-			/**
-			 * 处理 Service Worker 返回的在线状态消息。
-			 * @param {MessageEvent} event - 消息事件。
-			 * @returns {void}
-			 */
-			channel.port1.onmessage = event => resolve(!!event.data?.approved)
-			controller.postMessage({ type: 'WAKE_SERVER_REQUEST' }, [channel.port2])
-		})
-		// 服务器可达且非预渲染页面：中心化退出冷启动，使 chat/tutorial 等页面一并生效。
-		if (approved && !document.prerendering) exitColdBoot()
-		return approved
-	}
-	try {
-		await fetch('/api/ping', { method: 'GET', mode: 'cors', credentials: 'omit', cache: 'no-store', signal: AbortSignal.timeout(500) })
-	}
-	catch {
-		return false
-	}
-	if (!document.prerendering) exitColdBoot()
-	return true
+	// worker 没回话（正在更新 / 已被杀）时按「没有 controller」继续，不能把启动吊死在这里。
+	const approvedPromise = controller
+		? askServiceWorker(controller, 'WAKE_SERVER_REQUEST').then(reply => !!reply?.approved)
+		: Promise.resolve(false)
+	const probeAbort = new AbortController()
+	const reachable = await firstPositive([
+		approvedPromise.then(approved => {
+			if (approved) probeAbort.abort()
+			return approved
+		}),
+		probeServerReachability({ signal: probeAbort.signal }),
+	])
+	// 服务器可达且非预渲染页面：中心化退出冷启动，使 chat/tutorial 等页面一并生效。
+	if (reachable && !document.prerendering) exitColdBoot()
+	return reachable
 }
 
 /**

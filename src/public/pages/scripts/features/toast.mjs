@@ -5,6 +5,7 @@
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
 import { geti18n, setLocalizeLogic } from '../i18n/index.mjs'
+import { applyCorsAttribute, corsifyHtml, corsifyImages } from '../lib/corsImage.mjs'
 
 /** 显式设置的 toast 容器；为 null 时使用默认的 #toast-container。 */
 let toastContainer = null
@@ -96,9 +97,9 @@ function base_showToast(type, message, duration = defaultToastDuration) {
 	if (type == 'custom') {
 		// custom 是后端/插件推送 HTML toast 的既定通道（如成就解锁），此处保留 HTML 渲染。
 		if (Object(message) instanceof HTMLElement)
-			alertDiv.appendChild(message)
+			alertDiv.appendChild(corsifyImages(message))
 		else
-			alertDiv.innerHTML = message
+			alertDiv.innerHTML = corsifyHtml(message)
 		alertDiv.id = alertId
 	}
 	else {
@@ -107,6 +108,8 @@ function base_showToast(type, message, duration = defaultToastDuration) {
 
 		const iconUrl = icons[type] || icons.info
 		const iconElement = document.createElement('img')
+		// 图标是 Iconify URL（允许 CORS）：带上 crossorigin 才能让 svgInliner 的内联复用同一份下载。
+		applyCorsAttribute(iconElement, iconUrl)
 		iconElement.src = iconUrl
 		iconElement.alt = type
 		iconElement.className = 'h-6 w-6 flex-shrink-0'

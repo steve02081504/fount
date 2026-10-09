@@ -228,9 +228,7 @@ async function handleCharSelectChange(selectedChar) {
  */
 function handleToggleToken() {
 	tokenInput.type = tokenInput.type === 'password' ? 'text' : 'password'
-	// @fetch-resource https://api.iconify.design/line-md/watch.svg
-	// @fetch-resource https://api.iconify.design/line-md/watch-off.svg
-	toggleTokenButton.innerHTML = /* html */ `<img src="https://api.iconify.design/line-md/watch${tokenInput.type === 'password' ? '-off' : ''}.svg" class="text-icon" data-i18n="discord_bots.configCard.toggleApiKeyIcon" />`
+	toggleTokenButton.innerHTML = /* html */ `<img crossorigin="anonymous" src="https://api.iconify.design/line-md/watch${tokenInput.type === 'password' ? '-off' : ''}.svg" class="text-icon" data-i18n="discord_bots.configCard.toggleApiKeyIcon" />`
 }
 
 /**
@@ -246,6 +244,7 @@ async function handleSaveConfig() {
 		config: configEditor.getJson(),
 	}
 
+	saveStatusIcon.crossOrigin = 'anonymous'
 	saveStatusIcon.src = 'https://api.iconify.design/line-md/loading-loop.svg'
 	saveStatusIcon.classList.remove('hidden')
 	saveConfigButton.disabled = true
@@ -277,6 +276,7 @@ async function handleSaveConfig() {
 async function handleStartStopBot() {
 	if (!selectedBot) return
 
+	startStopStatusIcon.crossOrigin = 'anonymous'
 	startStopStatusIcon.src = 'https://api.iconify.design/line-md/loading-loop.svg'
 	startStopStatusIcon.classList.remove('hidden')
 	startStopBotButton.disabled = true

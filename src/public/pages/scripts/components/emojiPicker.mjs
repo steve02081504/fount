@@ -19,6 +19,7 @@ import {
 	unicodeEmojiSectionKey,
 } from '../features/emoji/unicodeData.mjs'
 import { handleError } from '../features/errorHandlers.mjs'
+import { corsImgAttribute } from '../lib/corsImage.mjs'
 import { escapeHtml } from '../lib/escapeHtml.mjs'
 import { onElementRemoved } from '../lib/onElementRemoved.mjs'
 import { svgInliner } from '../lib/svgInliner.mjs'
@@ -30,8 +31,8 @@ import { positionFloatingPanel, wireOutsideClickClose } from './floatingPanel.mj
 /** 重导出 showEmojiPackPreview。 */
 export { showEmojiPackPreview } from './emojiPackPreview.mjs'
 
-const JUMP_START_ICON = '<img src="https://api.iconify.design/mdi/arrow-collapse-up.svg" class="text-icon" width="16" height="16" alt="" aria-hidden="true" />'
-const JUMP_UNICODE_ICON = '<img src="https://api.iconify.design/mdi/earth.svg" class="text-icon" width="16" height="16" alt="" aria-hidden="true" />'
+const JUMP_START_ICON = '<img crossorigin="anonymous" src="https://api.iconify.design/mdi/arrow-collapse-up.svg" class="text-icon" width="16" height="16" alt="" aria-hidden="true" />'
+const JUMP_UNICODE_ICON = '<img crossorigin="anonymous" src="https://api.iconify.design/mdi/earth.svg" class="text-icon" width="16" height="16" alt="" aria-hidden="true" />'
 
 /**
  * 来源侧默认包：由 provider/API 回显的 defaultEmojiPackId（已在后端 resolve）判定。
@@ -77,7 +78,7 @@ function insertAtCursor(inputElement, token) {
  */
 function packRailInnerHtml(pack) {
 	if (pack.avatar)
-		return `<img class="emoji-rail-avatar" src="${escapeHtml(pack.avatar)}" alt="" loading="lazy" />`
+		return `<img${corsImgAttribute(pack.avatar)} class="emoji-rail-avatar" src="${escapeHtml(pack.avatar)}" alt="" loading="lazy" />`
 	const glyph = (pack.name || pack.packId || '?').slice(0, 1)
 	return `<span class="emoji-rail-glyph" aria-hidden="true">${escapeHtml(glyph)}</span>`
 }
@@ -306,7 +307,7 @@ export function renderContinuousPicker(host, sections, handlers) {
 		railBtn.dataset.section = section.id
 		railBtn.setAttribute('aria-current', 'false')
 		if (section.kind === 'pack' && section.pack?.avatar)
-			railBtn.innerHTML = `<img class="emoji-rail-avatar" src="${escapeHtml(section.pack.avatar)}" alt="" loading="lazy" />`
+			railBtn.innerHTML = `<img${corsImgAttribute(section.pack.avatar)} class="emoji-rail-avatar" src="${escapeHtml(section.pack.avatar)}" alt="" loading="lazy" />`
 		else if (section.kind === 'pack')
 			railBtn.innerHTML = packRailInnerHtml({ name: packName, packId: section.packId })
 		else

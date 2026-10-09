@@ -112,6 +112,8 @@ const BLOCK_PREFIX = {
 function makeActionIcon(action) {
 	const img = document.createElement('img')
 	img.className = 'text-icon'
+	// 图标是 Iconify URL（允许 CORS）：带上 crossorigin 才能让 svgInliner 的内联复用同一份下载。
+	img.crossOrigin = 'anonymous'
 	img.src = ACTION_ICON[action]
 	img.alt = ''
 	img.setAttribute('aria-hidden', 'true')

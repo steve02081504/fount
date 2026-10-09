@@ -107,6 +107,19 @@ function parseHsl(colorString) {
 let theme_now
 
 /**
+ * 读取存储里的主题名。
+ * 未设置时的 `null` 曾经被 `localStorage.setItem` 存成字面量字符串 `"null"`，
+ * 心跳/焦点监听再读回来就会去应用一个名叫 `"null"` 的 daisyUI 主题（该主题不存在，主题 token 全落空），
+ * 因此把这两个历史脏值一并当「未设置」处理。
+ * @returns {string | null} 主题名；没有有效值时返回 null
+ */
+function readStoredTheme() {
+	const stored = localStorage.getItem(STORAGE_KEY_THEME)
+	if (!stored || stored === 'null' || stored === 'undefined') return null
+	return stored
+}
+
+/**
  * 当前是否为暗黑模式。
  * 初始化时基于系统偏好设置。
  * @type {boolean}
@@ -262,7 +275,9 @@ function applyThemeToDOM(theme) {
 	if (theme === theme_now && document.documentElement.getAttribute('data-theme') === resolvedTheme) return
 
 	theme_now = theme
-	localStorage.setItem(STORAGE_KEY_THEME, theme)
+	// 空主题（未设置）不能存成字面量 "null"/"undefined"：心跳会把它当成真主题读回来。
+	if (theme) localStorage.setItem(STORAGE_KEY_THEME, theme)
+	else localStorage.removeItem(STORAGE_KEY_THEME)
 
 	if (document.documentElement.getAttribute('data-theme') !== resolvedTheme)
 		document.documentElement.dataset.theme = resolvedTheme
@@ -276,7 +291,7 @@ function applyThemeToDOM(theme) {
  * @returns {void}
  */
 function themeHeartbeat() {
-	const currentStored = localStorage.getItem(STORAGE_KEY_THEME)
+	const currentStored = readStoredTheme()
 	if (currentStored && currentStored !== theme_now) setTheme(currentStored)
 	autoresize_frames()
 	check_color_change()
@@ -288,7 +303,7 @@ function themeHeartbeat() {
  * @returns {Promise<void>}
  */
 export async function applyTheme() {
-	const storedTheme = localStorage.getItem(STORAGE_KEY_THEME)
+	const storedTheme = readStoredTheme()
 	const customCss = localStorage.getItem(STORAGE_KEY_CUSTOM_CSS)
 	const customUrl = localStorage.getItem(STORAGE_KEY_CUSTOM_URL)
 
@@ -528,7 +543,7 @@ observer.observe(document.documentElement, { attributes: true })
 // 监听系统颜色偏好变化
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
 	// 只有当设置为 auto 时，才响应系统变化
-	const stored = localStorage.getItem(STORAGE_KEY_THEME)
+	const stored = readStoredTheme()
 	if (stored === 'auto' || !stored) setTheme('auto')
 })
 
@@ -540,7 +555,7 @@ window.addEventListener('focus', async () => {
 	const mjs = localStorage.getItem(STORAGE_KEY_CUSTOM_MJS)
 	if (mjs && !currentCustomMjsModule) await loadCustomMjs(mjs)
 
-	const currentTheme = localStorage.getItem(STORAGE_KEY_THEME)
+	const currentTheme = readStoredTheme()
 	if (currentTheme && currentTheme !== theme_now)
 		await setTheme(currentTheme)
 })

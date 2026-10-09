@@ -2,7 +2,7 @@ ${rows.map(row => `
 <tr>
 	<th scope="row">
 		<span class="system-key">
-			<img src="${row.icon}" class="text-icon" alt="" />
+			<img${corsImgAttribute(row.icon)} src="${row.icon}" class="text-icon" alt="" />
 			<span language-check-ignore>${row.key}</span>
 		</span>
 	</th>

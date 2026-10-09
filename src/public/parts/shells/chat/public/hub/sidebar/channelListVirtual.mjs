@@ -148,6 +148,7 @@ function renderCategoryRow(row) {
 	el.dataset.cat = row.id
 	el.setAttribute('aria-expanded', String(!row.collapsed))
 	const arrow = document.createElement('img')
+	arrow.crossOrigin = 'anonymous'
 	arrow.src = 'https://api.iconify.design/mdi/chevron-down.svg'
 	arrow.className = 'category-arrow'
 	arrow.width = 12

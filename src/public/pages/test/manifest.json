@@ -6,6 +6,8 @@
 			"expected": "10s",
 			"triggers": [
 				"src/public/pages/{service_worker,service_worker_policy}.mjs",
+				"src/public/pages/scripts/lib/concurrency.mjs",
+				"src/public/pages/scripts/lib/corsImage.mjs",
 				"src/public/pages/test/pure/**"
 			],
 			"run": [
@@ -49,6 +51,16 @@
 						"src/public/pages/login/**",
 						"src/public/pages/scripts/endpoints/base.mjs",
 						"src/public/pages/scripts/components/passwordStrength.mjs"
+					]
+				},
+				{
+					"name": "startPageServiceWorkerWait",
+					"expected": "25s",
+					"triggers": [
+						"src/public/pages/test/frontend/startPageServiceWorkerWait.spec.mjs",
+						"src/public/pages/test/frontend/fixtures.mjs",
+						"src/public/pages/base.mjs",
+						"src/public/pages/index.html"
 					]
 				},
 				{
@@ -116,6 +128,17 @@
 						"src/public/pages/test/frontend/fixtures.mjs",
 						"src/public/pages/scripts/components/imageEditor.mjs",
 						"src/public/pages/scripts/features/toast.mjs"
+					]
+				},
+				{
+					"name": "svgInlinerGating",
+					"expected": "25s",
+					"triggers": [
+						"src/public/pages/test/frontend/svgInlinerGating.spec.mjs",
+						"src/public/pages/test/frontend/fixtures.mjs",
+						"src/public/pages/scripts/lib/svgInliner.mjs",
+						"src/public/pages/scripts/lib/corsImage.mjs",
+						"src/public/pages/scripts/features/template.mjs"
 					]
 				}
 			],

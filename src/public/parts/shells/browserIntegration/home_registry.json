@@ -4,13 +4,13 @@
 			"id": "integration_related",
 			"info": "browser_integration.home_function_buttons.integration_related",
 			"level": 5,
-			"button": "<img src=\"https://api.iconify.design/line-md/link.svg\" class=\"text-icon\"/>",
+			"button": "<img crossorigin=\"anonymous\" src=\"https://api.iconify.design/line-md/link.svg\" class=\"text-icon\"/>",
 			"sub_items": [
 				{
 					"info": "browser_integration.home_function_buttons.integration_related.sub_items.browserIntegrationLink",
 					"level": 2,
 					"url": "/parts/shells:browserIntegration/",
-					"button": "<img src=\"https://api.iconify.design/line-md/cookie.svg\" class=\"text-icon\"/>"
+					"button": "<img crossorigin=\"anonymous\" src=\"https://api.iconify.design/line-md/cookie.svg\" class=\"text-icon\"/>"
 				}
 			]
 		}

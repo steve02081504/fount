@@ -5,6 +5,7 @@ import { applyTheme } from '/scripts/theme/index.mjs'
 import { initTranslations, geti18n } from '/scripts/i18n/index.mjs'
 import { discoverEmojiPackOffers } from '/scripts/features/emoji/discover.mjs'
 import { showEmojiPackPreview } from '/scripts/components/emojiPackPreview.mjs'
+import { corsImgAttribute } from '/scripts/lib/corsImage.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
@@ -55,7 +56,7 @@ function renderOfferCard(offer) {
 		? geti18n('chat.emojiPacks.sourceAuthor') || 'Author'
 		: geti18n('chat.emojiPacks.sourceGroup') || 'Group'
 	const avatar = offer.avatar
-		? `<img class="emoji-pack-offer-avatar" src="${escapeHtml(offer.avatar)}" alt="" loading="lazy" />`
+		? `<img${corsImgAttribute(offer.avatar)} class="emoji-pack-offer-avatar" src="${escapeHtml(offer.avatar)}" alt="" loading="lazy" />`
 		: `<div class="emoji-pack-offer-avatar-fallback" aria-hidden="true">${escapeHtml((offer.name || '?').slice(0, 1))}</div>`
 
 	card.innerHTML = `

@@ -4,13 +4,13 @@
 			"id": "bot_related",
 			"info": "discord_bots.home_function_buttons.bot_related",
 			"level": 3,
-			"button": "<img src=\"https://api.iconify.design/lucide/bot.svg\" class=\"text-icon\"/>",
+			"button": "<img crossorigin=\"anonymous\" src=\"https://api.iconify.design/lucide/bot.svg\" class=\"text-icon\"/>",
 			"sub_items": [
 				{
 					"info": "discord_bots.home_function_buttons.bot_related.sub_items.manage",
 					"level": 10,
 					"url": "/parts/shells:discordbot/",
-					"button": "<img src=\"https://api.iconify.design/line-md/discord.svg\" class=\"text-icon\"/>"
+					"button": "<img crossorigin=\"anonymous\" src=\"https://api.iconify.design/line-md/discord.svg\" class=\"text-icon\"/>"
 				}
 			]
 		}
@@ -22,7 +22,7 @@
 				"level": 10,
 				"interface": "discord",
 				"url": "/parts/shells:discordbot/?name=${name}&char=${name}",
-				"button": "<img src=\"https://api.iconify.design/line-md/discord.svg\" class=\"text-icon\"/>"
+				"button": "<img crossorigin=\"anonymous\" src=\"https://api.iconify.design/line-md/discord.svg\" class=\"text-icon\"/>"
 			}
 		]
 	}

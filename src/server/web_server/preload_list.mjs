@@ -48,6 +48,28 @@ function hasBackendOnlyImports(content) {
 }
 
 /**
+ * 是否为图片 URL。图片不预取：预取器在页面 `load` 之后才启动，而页面里的 `<img>` 早在解析期
+ * 就把同一批 URL 请求过了，预取只会重复发一遍（`as="image"` 的预取还可能被判为「未被使用」而取消）；
+ * 第三方图标 API（api.iconify.design）有限流，实测这种重复会把页面自己的图标请求打成 429。
+ * 因此静态提取阶段就把图片丢掉（含 `// @fetch-resource` 点名要的），别让它们占用预取列表。
+ * @param {string} url - 候选 URL
+ * @returns {boolean} 是否为图片
+ */
+function isImageUrl(url) {
+	return /\.(?:svg|png|jpe?g|webp|gif|ico|avif|bmp)$/i.test(new URL(url).pathname)
+}
+
+/**
+ * 按 URL 后缀的类型收下一个资源；图片直接丢弃。
+ * @param {PreloadResource[]} out - 结果列表
+ * @param {string} url - 资源 URL
+ * @returns {void} 无返回值
+ */
+function pushResource(out, url) {
+	if (!isImageUrl(url)) out.push({ url, type: typeFromUrlSuffix(url) })
+}
+
+/**
  * 从 URL 路径推断资源类型
  * @param {string} url - 完整 URL
  * @returns {PreloadResourceType} 资源类型
@@ -93,11 +115,10 @@ export function extractFromJs(content) {
 		if (isComment) {
 			if (/@fetch-resource/i.test(line)) {
 				const inlineMatch = line.match(/@fetch-resource\s+(https?:\/\/\S+)/)
-				if (inlineMatch)
-					out.push({ url: inlineMatch[1], type: typeFromUrlSuffix(inlineMatch[1]) })
+				if (inlineMatch) pushResource(out, inlineMatch[1])
 				else if (lines[i + 1]) {
 					const nextMatch = lines[i + 1].match(/(https?:\/\/[^\s"']+)/)
-					if (nextMatch) out.push({ url: nextMatch[1], type: typeFromUrlSuffix(nextMatch[1]) })
+					if (nextMatch) pushResource(out, nextMatch[1])
 					i++
 				}
 			}
@@ -107,27 +128,30 @@ export function extractFromJs(content) {
 		const importOrFetch = line.match(/(?:import\s+(?:[^"']+\s+from\s+)?|import\s*\(\s*|fetch\s*\(\s*)["'](https?:\/\/[^"']+)["']/)
 		const assigned = importOrFetch ? null : line.match(/(?:const|let|var)\s+\w+\s*=\s*'(https?:\/\/[^']+)'/)
 		const urlMatch = importOrFetch || assigned
-		if (urlMatch) {
-			const url = urlMatch[1]
-			if (assigned && !isStaticAssetUrl(url)) continue
-			const type = line.includes('import') ? 'mjs' : typeFromUrlSuffix(url)
-			out.push({ url, type })
-		}
+		if (!urlMatch) continue
+		const url = urlMatch[1]
+		if (isImageUrl(url)) continue
+		if (assigned && !isStaticAssetUrl(url)) continue
+		// import() 的消费目标是 script，fetch() 的是 fetch；const 字面量按 URL 后缀判类型
+		// （它的消费方是页面里对应的标签/代码，目标不匹配的预取浏览器不会复用）。
+		const type = importOrFetch ? line.includes('import') ? 'mjs' : 'resource' : typeFromUrlSuffix(url)
+		out.push({ url, type })
 	}
 	return out
 }
 
 /**
- * 提取 HTML 中的外部 URL (script, img, video, audio, source 等标签)
+ * 提取 HTML 中的外部 URL (script, video, audio, source 等标签)
  * @param {string} content - 文件内容
  * @returns {PreloadResource[]} 提取的资源列表
  */
-function extractFromHtml(content) {
+export function extractFromHtml(content) {
 	const out = []
-	const tagSrcRe = /<(script|img|video|audio|source)(\s[^>]*)?\s*src\s*=\s*["'](https?:\/\/[^"']+)["']/gi
+	const tagSrcRe = /<(script|video|audio|source)(\s[^>]*)?\s*src\s*=\s*["'](https?:\/\/[^"']+)["']/gi
 
 	for (const match of content.matchAll(tagSrcRe)) {
 		const tag = match[1].toLowerCase()
+		if (isImageUrl(match[3])) continue
 		let type = 'resource'
 		if (tag === 'script') type = /type\s*=\s*["']module["']/i.test(match[2] || '') ? 'mjs' : 'js'
 		out.push({ url: match[3], type })

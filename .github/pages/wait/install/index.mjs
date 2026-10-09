@@ -6,6 +6,7 @@ import { makeSearchable } from '../../scripts/components/search.mjs'
 import { showToastI18n } from '../../scripts/features/toast.mjs'
 import { waitForFountService, saveFountHostUrl, getFountHostUrl, pingFount } from '../../scripts/fountHostGetter.mjs'
 import { initTranslations, geti18n, console, getAvailableLocales, getLocaleNames, setLocales, onLanguageChange, setElementI18n } from '../../scripts/i18n/index.mjs'
+import { corsImgAttribute } from '../../scripts/lib/corsImage.mjs'
 import { escapeHtml } from '../../scripts/lib/escapeHtml.mjs'
 import { viewTransition } from '../../scripts/motion/viewTransition.mjs'
 import {
@@ -512,10 +513,13 @@ function createRotatingText(container, initialWords, interval) {
  * @returns {Promise<void>}
  */
 async function renderTestimonial(slideEl, item) {
-	const avatarUrl = (item.avatar && escapeHtml(item.avatar)) || 'https://api.iconify.design/line-md/account.svg'
+	const avatarSrc = item.avatar || 'https://api.iconify.design/line-md/account.svg'
 	const fragment = await renderTemplate('testimonial_slide', {
 		feedback: item.feedback,
-		avatarUrl,
+		avatarUrl: escapeHtml(avatarSrc),
+		// 评语头像来自数据（GitHub 头像等）：按 host 支持情况决定要不要 CORS 模式，
+		// 否则 svgInliner 读不到 no-cors 的响应，同一个图标要下载两次。
+		avatarCors: corsImgAttribute(avatarSrc),
 		authorName: item.name || geti18n('installer_wait_screen.testimonials.anonymous')
 	})
 	slideEl.replaceChildren(...fragment.childNodes)

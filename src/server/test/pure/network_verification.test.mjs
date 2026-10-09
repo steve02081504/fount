@@ -9,7 +9,19 @@ const B = 'b'.repeat(64)
 const C = 'c'.repeat(64)
 
 test('network verification needs authenticated claim and requester receipt', async () => {
-	let b
+	// 两个服务互相回调，所以先各自建好：闭包只在 prove/receive 真正发消息时才会读到对方。
+	const b = createNetworkVerificationService({ nodeHash: B,
+		/**
+		 * @param {string} peer target
+		 * @param {string} action operation
+		 * @param {object} payload message
+		 * @returns {Promise<boolean>} delivery
+		 */
+		send: async (peer, action, payload) => {
+			assert.equal(peer, A)
+			await a.receive(action, payload, B)
+			return true
+		} })
 	const a = createNetworkVerificationService({ nodeHash: A,
 		/**
 		 * @param {string} peer target
@@ -20,18 +32,6 @@ test('network verification needs authenticated claim and requester receipt', asy
 		send: async (peer, action, payload) => {
 			assert.equal(peer, B)
 			await b.receive(action, payload, A)
-			return true
-		} })
-	b = createNetworkVerificationService({ nodeHash: B,
-		/**
-		 * @param {string} peer target
-		 * @param {string} action operation
-		 * @param {object} payload message
-		 * @returns {Promise<boolean>} delivery
-		 */
-		send: async (peer, action, payload) => {
-			assert.equal(peer, A)
-			await a.receive(action, payload, B)
 			return true
 		} })
 	const challenge = a.create()

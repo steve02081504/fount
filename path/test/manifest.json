@@ -3,7 +3,7 @@
 	"suites": [
 		{
 			"name": "git",
-			"expected": "41s",
+			"expected": "3m22s",
 			"run": [
 				"deno",
 				"run",

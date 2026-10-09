@@ -547,6 +547,7 @@ async function saveFile() {
 	}
 
 	isSaving = true
+	saveStatusIcon.crossOrigin = 'anonymous'
 	saveStatusIcon.src = 'https://api.iconify.design/line-md/loading-loop.svg'
 	saveStatusIcon.classList.remove('hidden')
 	syncActionButtons()

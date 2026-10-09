@@ -2,7 +2,7 @@ ${checks.map(check => `
 <tr id="${check.id || ''}" data-connectivity-key="${check.id || check.name}">
 	<th scope="row">
 		<span class="service-name">
-			<img src="${check.icon}" class="text-icon" alt="" />
+			<img${corsImgAttribute(check.icon)} src="${check.icon}" class="text-icon" alt="" />
 			<span language-check-ignore>${check.name}</span>
 		</span>
 	</th>

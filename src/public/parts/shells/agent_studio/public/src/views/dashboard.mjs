@@ -6,6 +6,7 @@
  */
 import { geti18n } from '/scripts/i18n/index.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
+import { applyCorsAttribute } from '/scripts/lib/corsImage.mjs'
 
 import { getCharOverview } from '../endpoints.mjs'
 import { bindActivate } from '../lib/activate.mjs'
@@ -140,7 +141,13 @@ export async function selectChar(charId) {
 function renderCharHero(overview) {
 	const info = overview.char ?? {}
 	const avatar = document.getElementById('charHeroAvatar')
-	if (avatar instanceof HTMLImageElement) avatar.src = info.avatar || DEFAULT_AVATAR
+	if (avatar instanceof HTMLImageElement) {
+		const avatarUrl = info.avatar || DEFAULT_AVATAR
+		// 头像可能是本部件之外的数据（部件 locales.json / 用户上传）：先定属性再给 src，
+		// 否则图片已经按 no-cors 发出，svgInliner 只能再下一次。
+		applyCorsAttribute(avatar, avatarUrl)
+		avatar.src = avatarUrl
+	}
 	const name = document.getElementById('charHeroName')
 	if (name) name.textContent = info.name || overview.char?.id || ''
 	const description = document.getElementById('charHeroDescription')

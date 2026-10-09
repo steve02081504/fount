@@ -175,6 +175,7 @@ async function saveConfig() {
 	}
 
 	// Show loading icon and disable button
+	saveStatusIcon.crossOrigin = 'anonymous'
 	saveStatusIcon.src = 'https://api.iconify.design/line-md/loading-loop.svg'
 	saveStatusIcon.classList.remove('hidden')
 	saveButton.disabled = true

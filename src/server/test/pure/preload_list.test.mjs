@@ -19,38 +19,77 @@ const response = await fetch('https://godbolt.org/api/compiler/\${compilerId}/co
 }
 `
 
-Deno.test('extractFromJs picks literal fetch URL', async () => {
+Deno.test('extractFromJs picks literal fetch and import URLs', async () => {
 	const { extractFromJs } = await import('../../web_server/preload_list.mjs')
-	const urls = extractFromJs('await fetch(\'https://api.iconify.design/line-md/play.svg\')')
-	assertEquals(urls.map(resource => resource.url), ['https://api.iconify.design/line-md/play.svg'])
-})
-
-Deno.test('extractFromJs picks const/let/var single-quoted URL assignments', async () => {
-	const { extractFromJs } = await import('../../web_server/preload_list.mjs')
-	const urls = extractFromJs(`\
-const UPDATE_ICON = 'https://api.iconify.design/mdi/update.svg'
-let loading = 'https://api.iconify.design/line-md/loading-twotone-loop.svg'
-var skipDouble = "https://example.com/ignored.svg"
-const templatey = \`https://example.com/\${id}.svg\`
+	const extracted = extractFromJs(`\
+await fetch('https://cdn.example/data.json')
+await import('https://esm.sh/mermaid')
 `)
-	assertEquals(urls.map(resource => resource.url), [
-		'https://api.iconify.design/mdi/update.svg',
-		'https://api.iconify.design/line-md/loading-twotone-loop.svg',
+	assertEquals(extracted, [
+		{ url: 'https://cdn.example/data.json', type: 'resource' },
+		{ url: 'https://esm.sh/mermaid', type: 'mjs' },
 	])
 })
 
-Deno.test('extractFromJs does not preload POST APIs or origin roots from const URLs', async () => {
+Deno.test('extractFromJs picks const/let/var single-quoted URL assignments and skips unresolved templates', async () => {
 	const { extractFromJs } = await import('../../web_server/preload_list.mjs')
 	const urls = extractFromJs(`\
+const STYLES = 'https://cdn.jsdelivr.net/npm/daisyui/daisyui.css'
+var skipDouble = "https://example.com/ignored.css"
+const templatey = \`https://example.com/\${id}.css\`
+`)
+	assertEquals(urls, [{ url: 'https://cdn.jsdelivr.net/npm/daisyui/daisyui.css', type: 'css' }])
+})
+
+Deno.test('extractFromJs does not preload POST APIs, origin roots or image URLs', async () => {
+	const { extractFromJs } = await import('../../web_server/preload_list.mjs')
+	const extracted = extractFromJs(`\
 const CATBOX_API_URL = 'https://litterbox.catbox.moe/resources/internals/api.php'
 const CATBOX_SERVE_HOST = 'https://litter.catbox.moe'
 const base_dir = 'https://steve02081504.github.io/fount'
-const DAISY = 'https://cdn.jsdelivr.net/npm/daisyui/daisyui.css'
+const ICON_LOADING = 'https://api.iconify.design/line-md/loading-loop.svg'
 await fetch('https://api.iconify.design/line-md/play.svg')
 `)
-	assertEquals(urls.map(resource => resource.url), [
+	assertEquals(extracted, [])
+})
+
+Deno.test('extractFromJs honors @fetch-resource for non-images and drops its image annotations', async () => {
+	const { extractFromJs } = await import('../../web_server/preload_list.mjs')
+	const extracted = extractFromJs(`\
+// @fetch-resource https://cdn.example/table.json
+// @fetch-resource
+// https://api.iconify.design/line-md/watch.svg
+`)
+	assertEquals(extracted, [{ url: 'https://cdn.example/table.json', type: 'resource' }])
+})
+
+Deno.test('extractFromHtml drops img tags but keeps scripts by module-ness and other media', async () => {
+	const { extractFromHtml } = await import('../../web_server/preload_list.mjs')
+	const extracted = extractFromHtml(`\
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<script type="module" src="https://esm.sh/foo"></script>
+<img src="https://api.iconify.design/mdi/menu.svg" class="text-icon" />
+<source src="https://cdn.example/poster.png" />
+<video src="https://example.com/clip.mp4"></video>
+`)
+	assertEquals(extracted, [
+		{ url: 'https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4', type: 'js' },
+		{ url: 'https://esm.sh/foo', type: 'mjs' },
+		{ url: 'https://example.com/clip.mp4', type: 'resource' },
+	])
+})
+
+Deno.test('mergeAndDedupe keeps code, style and fetch resources and dedupes by url', async () => {
+	const { mergeAndDedupe } = await import('../../web_server/preload_list.mjs')
+	const merged = mergeAndDedupe([[
+		{ url: 'https://esm.sh/mermaid', type: 'mjs' },
+		{ url: 'https://cdn.jsdelivr.net/npm/daisyui/daisyui.css', type: 'css' },
+		{ url: 'https://cdn.jsdelivr.net/npm/unicode-emoji-json/data-by-group.json', type: 'resource' },
+	]])
+	assertEquals(merged.map(resource => resource.url), [
+		'https://esm.sh/mermaid',
 		'https://cdn.jsdelivr.net/npm/daisyui/daisyui.css',
-		'https://api.iconify.design/line-md/play.svg',
+		'https://cdn.jsdelivr.net/npm/unicode-emoji-json/data-by-group.json',
 	])
 })
 

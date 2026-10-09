@@ -1,6 +1,6 @@
 <div class="source-section">
 	<h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
-		<img src="${source.icon || source.avatar || 'https://api.iconify.design/material-symbols/trophy.svg'}" class="text-icon w-8 h-8 object-cover" alt="" aria-hidden="true">
+		<img${corsImgAttribute(source.icon || source.avatar || defaultSourceIcon)} src="${source.icon || source.avatar || defaultSourceIcon}" class="text-icon w-8 h-8 object-cover" alt="" aria-hidden="true">
 		<span user-content>${source.name}</span>
 		<span class="text-lg opacity-70">(${unlockedAchievements}/${totalAchievements})</span>
 		<progress class="progress progress-primary w-56" value="${unlockedAchievements}" max="${totalAchievements}" aria-hidden="true"></progress>
@@ -11,7 +11,7 @@
 			<div class="card-body">
 				<div class="flex items-center gap-4">
 					<div class="achievement-icon text-5xl">
-						<img src="${(achievement.unlocked_at ? null : achievement.locked_icon) || achievement.icon}" class="w-12 h-12" alt="" aria-hidden="true" />
+						<img${corsImgAttribute((achievement.unlocked_at ? null : achievement.locked_icon) || achievement.icon)} src="${(achievement.unlocked_at ? null : achievement.locked_icon) || achievement.icon}" class="w-12 h-12" alt="" aria-hidden="true" />
 					</div>
 					<div>
 						<h3 class="card-title" data-i18n="${(achievement.unlocked_at ? null : achievement.locked_name) || achievement.name}"></h3>

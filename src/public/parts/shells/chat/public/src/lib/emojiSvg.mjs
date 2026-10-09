@@ -31,7 +31,7 @@ export function iconifyImg(icon, options = {}) {
 		alt = '',
 	} = options
 	const cls = className ? ` class="${className}"` : ''
-	return `<img src="${iconifyUrl(icon)}"${cls} width="${width}" height="${height}" alt="${alt}" aria-hidden="true" />`
+	return `<img crossorigin="anonymous" src="${iconifyUrl(icon)}"${cls} width="${width}" height="${height}" alt="${alt}" aria-hidden="true" />`
 }
 
 /** Hub 空状态：频道无消息 */

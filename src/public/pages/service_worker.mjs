@@ -1,4 +1,4 @@
-import { constructibleRequestMode, isCacheFirstExemptUrl, isColdBootMarkedRequest, isColdBootNavigationRequest, shouldCacheResponse } from './service_worker_policy.mjs'
+import { constructibleRequestMode, firstFetchModeFor, isCacheFirstExemptUrl, isColdBootMarkedRequest, isColdBootNavigationRequest, shouldCacheResponse } from './service_worker_policy.mjs'
 
 // --- 全局常量与配置 ---
 
@@ -382,14 +382,22 @@ function cleanResponse(response) {
 async function fetchAndCache(request) {
 	try {
 		const cache = await caches.open(CACHE_NAME)
-		let error, networkResponse = await fetch(request).catch(_ => { error = _ })
-		if (networkResponse?.type === 'opaque' || !networkResponse?.ok) {
+		const crossOrigin = firstFetchModeFor({ url: new URL(request.url), origin: self.location.origin }) === 'cors'
+		let networkResponse = await fetch(crossOrigin ? new Request(request, { mode: 'cors' }) : request).catch(() => undefined)
+		// 对端不配合 CORS 时 cors 抓取会直接失败（opaque 响应读不到，缓存也用不上）：
+		// 退回请求本身的模式抓一次，至少让 `<img>` / `url()` 这类 no-cors 消费方拿到内容。
+		if (!networkResponse && crossOrigin) networkResponse = await fetch(request).catch(() => undefined)
+		if (!networkResponse) throw new Error(`fetch failed for ${request.url}`)
+
+		// 同源请求拿到 opaque 或非 2xx 时按对端是否允许 CORS 重试一次：
+		// 重建请求才能带 mode——展开 Request 不会复制任何字段，headers / mode 都会丢。
+		if (!crossOrigin && (networkResponse.type === 'opaque' || !networkResponse.ok)) {
 			const cachedResponse = await cache.match(request)
 			const can_cors = cachedResponse ? cachedResponse.headers.get('Access-Control-Allow-Origin') : new URL(request.url).origin !== self.location.origin && await fetch(request.url, { method: 'HEAD' }).then(response => response.headers.get('Access-Control-Allow-Origin')).catch(_ => null)
-			// 用 new Request(request, ...) 重建请求：展开 Request 不会复制任何字段，会丢失 headers / mode。
 			const retryRequest = new Request(request, { mode: can_cors ? 'cors' : constructibleRequestMode(request.mode) })
-			const newNetworkResponse = await fetch(retryRequest).catch(_ => { error = _ })
-			if (newNetworkResponse?.ok) networkResponse = newNetworkResponse
+			let error
+			const retryResponse = await fetch(retryRequest).catch(caught => { error = caught })
+			if (retryResponse?.ok) networkResponse = retryResponse
 			else if (error) throw error
 		}
 
@@ -863,13 +871,16 @@ self.addEventListener('activate', event => {
 	event.waitUntil(
 		(async () => {
 			// 尝试注册定期后台同步任务，用于自动清理过期缓存。
+			// 被拒（`NotAllowedError`：Chrome 在未安装为应用 / 参与度不足时很常见）只跳过这一步，
+			// 绝不能 `return` —— 那会连带跳过下面的 `clients.claim()` 与缓存清理：SW 永不接管页面
+			//（首次访问拿不到离线/推送能力，页面启动还要为等一个永远不来的 controller 白等满上限），
+			// 鉴权数据的缓存也从不在激活时清理。
 			if (self.registration?.periodicSync) try {
 				await self.registration.periodicSync.register(PERIODIC_SYNC_TAG, {
 					minInterval: 24 * 60 * 60 * 1000, // 至少每 24 小时执行一次。
 				})
 			} catch (err) {
-				if (err.name === 'NotAllowedError') return
-				console.error('[SW] Periodic background sync failed to register:', err)
+				if (err.name !== 'NotAllowedError') console.error('[SW] Periodic background sync failed to register:', err)
 			}
 
 			// 确保新的 Service Worker 立即控制所有当前打开的客户端（页面）。

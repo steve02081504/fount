@@ -48,7 +48,7 @@ For components outside the social shell, an `<img>` from the Iconify CDN is
 inlined by `svgInliner` so it inherits `currentColor`:
 
 ```html
-<img src="https://api.iconify.design/mdi/check.svg" class="text-icon" alt="" />
+<img crossorigin="anonymous" src="https://api.iconify.design/mdi/check.svg" class="text-icon" alt="" />
 ```
 
 Mark user-controlled images (avatars, media) `svg-inliner-ignore` — inlining

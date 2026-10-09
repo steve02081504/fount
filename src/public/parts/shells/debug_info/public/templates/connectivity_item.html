@@ -1,7 +1,7 @@
 <tr id="${id || ''}" data-connectivity-key="${id || name}">
 	<th scope="row">
 		<span class="service-name">
-			<img src="${icon}" class="text-icon" alt="" />
+			<img${corsImgAttribute(icon)} src="${icon}" class="text-icon" alt="" />
 			<span language-check-ignore>${name}</span>
 		</span>
 	</th>

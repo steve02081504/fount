@@ -1,5 +1,5 @@
 <li class="char-item" data-char-id="${escapeHtml(id)}" tabindex="0" role="button">
-	<img class="char-avatar" src="${escapeHtml(avatar)}" alt="" aria-hidden="true" loading="lazy" />
+	<img${corsImgAttribute(avatar)} class="char-avatar" src="${escapeHtml(avatar)}" alt="" aria-hidden="true" loading="lazy" />
 	<div class="char-item-body">
 		<p class="char-item-name" user-content>${escapeHtml(name)}</p>
 		<p class="char-item-desc" user-content>${escapeHtml(description)}</p>

@@ -395,7 +395,10 @@ const UPTODATE_ICON = 'https://api.iconify.design/line-md/confirm.svg'
 function refreshUpdateButton() {
 	const upToDate = isUpToDate === true
 	updateButton.disabled = isUpToDate !== false
-	if (updateButtonIcon) updateButtonIcon.src = upToDate ? UPTODATE_ICON : UPDATE_ICON
+	if (updateButtonIcon) {
+		updateButtonIcon.crossOrigin = 'anonymous'
+		updateButtonIcon.src = upToDate ? UPTODATE_ICON : UPDATE_ICON
+	}
 	if (updateButtonLabel) updateButtonLabel.dataset.i18n = upToDate ? 'debug_info.alreadyLatest' : 'debug_info.update.now'
 }
 
@@ -404,7 +407,10 @@ function refreshUpdateButton() {
  */
 function setUpdateButtonRestarting() {
 	updateButton.disabled = true
-	if (updateButtonIcon) updateButtonIcon.src = LOADING_ICON
+	if (updateButtonIcon) {
+		updateButtonIcon.crossOrigin = 'anonymous'
+		updateButtonIcon.src = LOADING_ICON
+	}
 	if (updateButtonLabel) updateButtonLabel.dataset.i18n = 'debug_info.update.restarting'
 }
 

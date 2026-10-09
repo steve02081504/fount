@@ -67,3 +67,20 @@ export function shouldCacheResponse({ request, url }) {
 	if (isColdBootMarkedRequest(url)) return false
 	return true
 }
+
+/**
+ * 首次抓取跨域资源时使用的模式。
+ * 必须用 cors 抓：no-cors 请求拿到的是 opaque 响应，读不到内容也不会被写进缓存
+ * （`fetchAndCache` 明确跳过 opaque），而同一份跨域资源在页面里几乎总有两种消费方式
+ * （`<img>` / `url()` 的 no-cors 与 svgInliner 的 cors fetch），
+ * 于是「no-cors 抓一次 → HEAD 探测 ACAO → cors 再抓一次」＝ 2 GET + 1 HEAD 全是白挨的；
+ * 抓到可读的那份并缓存后，两种消费复用同一份。
+ * 同源资源没有 opaque 问题，按请求本身的模式抓即可。
+ * @param {object} params - 参数对象。
+ * @param {URL} params.url - 请求 URL。
+ * @param {string} params.origin - 当前 Service Worker 的来源（self.location.origin）。
+ * @returns {'cors' | 'request'} 首次抓取使用的模式。
+ */
+export function firstFetchModeFor({ url, origin }) {
+	return url.origin === origin ? 'request' : 'cors'
+}
