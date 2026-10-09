@@ -6913,7 +6913,7 @@
 			"context": {
 				"title": "Current context",
 				"total": "Current context / max",
-				"note": "ℹ️",
+				"note": "Counting basis",
 				"snapshot": "Latest request snapshot; text components are estimates. Attachment tokens depend on provider usage."
 			}
 		}

@@ -1,5 +1,6 @@
 /**
- * 本地化文案的机器味与同步残渣扫描：空值、产品名走样、复合词断裂、空白框架漂移、标点粘连。
+ * 本地化文案的机器味与同步残渣扫描：空值、产品名走样、复合词断裂、空白框架漂移、标点粘连、
+ * 整条只用 emoji（有 emoji 就该画在页面上）、文言条目一个汉字都没有。
  *
  * 与 `i18n_keys` 的分工：那边管键结构与 `${placeholder}` 集合，这边管文案本身是否像
  * 母语产品团队写的、是否还留着同步脚本的痕迹。
@@ -27,6 +28,38 @@ const SCRIPT_TESTS = [
 
 /** 用符号和希腊字母当术语的语言：emoji 语言（Σ 求和、Δ 增量）。 */
 const SCRIPT_FREE_LOCALES = new Set(['emoji'])
+
+/**
+ * 整条文案只写一个 emoji 的语言：emoji 是页面自己的图形（图标由页面渲染），
+ * 占着本地化的位置只会让这句话在页面上凭空少一段文字，等于没翻。
+ * en-UK 是页面巡检与同步脚本的参考译文，先只管它；其余语言用符号说话是各自的选择。
+ */
+const EMOJI_ONLY_FORBIDDEN_LOCALES = new Set(['en-UK'])
+
+/** 整条文案就是一个 emoji：emoji 本体 + 组合件（ZWJ、变体选择符、肤色、区域指示符、键帽）。 */
+const EMOJI_ONLY = /^(?:\p{Extended_Pictographic}|\p{Emoji_Component}|\u20e3)+$/u
+
+/** 至少得有一个真图形：整条只有 `#` / 数字（组合件）时不算 emoji 文案。 */
+const EMOJI_GLYPH = /[\p{Extended_Pictographic}\u20e3]/u
+
+/** 文言（lzh）。 */
+const LZH = 'lzh'
+
+/**
+ * 文言里允许一个汉字都没有的键：`Standing by...` 是致敬假面骑士 555 的原文，
+ * 各语言都保持英文（见 src/public/locales/decl.md）。
+ */
+const LZH_LATIN_EXEMPT = new Set(['fountConsole.server.standingBy'])
+
+/**
+ * 判断一条文案从头到尾是否只有 emoji（周边空白不算）。
+ * @param {string} value 文案
+ * @returns {boolean} 是否为纯 emoji 文案
+ */
+function isEmojiOnlyCopy(value) {
+	const trimmed = value.trim()
+	return EMOJI_GLYPH.test(trimmed) && EMOJI_ONLY.test(trimmed)
+}
 
 /**
  * 找出不属于该语言的文字系统的字母（拉丁字母永远允许，品牌与技术词要用）。
@@ -165,6 +198,18 @@ export function checkLeaf({ locale, key, value, source, reference }) {
 		if (!EMPTY_ALLOWED[locale]?.includes(key)) hits.push({ rule: 'empty', detail: 'value is empty' })
 
 	if (typeof value !== 'string') return hits
+
+	if (EMOJI_ONLY_FORBIDDEN_LOCALES.has(locale) && isEmojiOnlyCopy(value))
+		hits.push({
+			rule: 'emoji_only',
+			detail: `the whole value is the emoji "${value.trim()}" where the source says "${source ?? ''}" — an emoji is a glyph of the page, not copy: put it in the page markup and write this locale real text`,
+		})
+
+	if (locale === LZH && !LZH_LATIN_EXEMPT.has(key) && typeof source === 'string' && HAN.test(source) && !HAN.test(value))
+		hits.push({
+			rule: 'no_han',
+			detail: `the source "${source}" carries Han but this value has none — lzh is written in 文言, so this leaf was never rewritten`,
+		})
 
 	if (SCHEME.test(value)) hits.push({ rule: 'brand', detail: 'fonte:// instead of fount://' })
 	if (!BRAND_SAFE_LOCALES.has(locale) && typeof source === 'string' && source.toLowerCase().includes('fount')) {

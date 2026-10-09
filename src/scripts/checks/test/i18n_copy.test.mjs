@@ -118,6 +118,29 @@ Deno.test('checkLeaf keeps camel-case identifiers', () => {
 	}).length, 0)
 })
 
+Deno.test('checkLeaf rejects a copy that is nothing but an emoji', () => {
+	assertEquals(checkLeaf({ locale: 'en-UK', key: 'k', value: 'ℹ️', source: '统计口径' }).map(hit => hit.rule), ['emoji_only'])
+	assertEquals(checkLeaf({ locale: 'en-UK', key: 'k', value: '⚠️ ', source: '统计口径' })[0].detail.includes('page markup'), true)
+	assertEquals(checkLeaf({ locale: 'en-UK', key: 'k', value: 'Counting basis', source: '统计口径' }), [])
+	// 以 emoji 起头的是文案，不是图形
+	assertEquals(checkLeaf({ locale: 'en-UK', key: 'k', value: 'ℹ️ Counting basis', source: '统计口径' }), [])
+	// 别语言的符号用法各随其便，emoji 语言本来就以符号说话
+	assertEquals(checkLeaf({ locale: 'de-DE', key: 'k', value: 'ℹ️', source: '统计口径' }), [])
+	assertEquals(checkLeaf({ locale: 'emoji', key: 'k', value: 'ℹ️', source: '统计口径' }), [])
+	// 纯数字 / `#` 只是 emoji 组合件，不算图形
+	assertEquals(checkLeaf({ locale: 'en-UK', key: 'k', value: '123', source: '统计口径' }), [])
+})
+
+Deno.test('checkLeaf expects Han where the lzh source carries it', () => {
+	assertEquals(checkLeaf({ locale: 'lzh', key: 'k', value: 'media', source: '媒体' }).map(hit => hit.rule), ['no_han'])
+	assertEquals(checkLeaf({ locale: 'lzh', key: 'k', value: '媒體', source: '媒体' }), [])
+	// 源文本就无汉字（占位符、品牌、命令）时无需落笔
+	assertEquals(checkLeaf({ locale: 'lzh', key: 'k', value: '${n}', source: '${n}' }), [])
+	assertEquals(checkLeaf({ locale: 'lzh', key: 'k', value: 'GitHub', source: 'GitHub' }), [])
+	// 致敬假面骑士 555 的原文：即便源文日后改成汉字也保持英文
+	assertEquals(checkLeaf({ locale: 'lzh', key: 'fountConsole.server.standingBy', value: 'Standing by...', source: '待机中...' }), [])
+})
+
 Deno.test('scanLocaleCopy skips zh-CN and reports per locale', () => {
 	const issues = scanLocaleCopy({
 		'zh-CN': { a: 'fount 是' },

@@ -2575,7 +2575,7 @@
 				},
 				"name": "類名",
 				"nameInput": {
-					"placeholder": "media"
+					"placeholder": "媒體"
 				},
 				"perm": {
 					"loadFailed": "載此類之權未遂：${error}",
@@ -5955,7 +5955,7 @@
 	},
 	"subfounts": {
 		"title": "Subfounts - 朋輩互連之器",
-		"pageTitle": "Subfounts",
+		"pageTitle": "子fount",
 		"description": "治 Subfount 朋輩之源流",
 		"hostConnectionCode": {
 			"title": "東道連繫碼",
@@ -6880,7 +6880,7 @@
 			"toolCount": "器具調用數",
 			"ttft": "首出平均（TTFT）",
 			"speed": "輸出之速（TPS）",
-			"ttftValue": "${seconds}s · ${count}",
+			"ttftValue": "${seconds}秒 · ${count}次取樣",
 			"total": "總用量",
 			"cache": "快取命中率",
 			"uncached": "未快取之輸入",
@@ -6907,7 +6907,7 @@
 			"context": {
 				"title": "當前上下文",
 				"total": "當前上下文 / max",
-				"note": "ℹ️",
+				"note": "統計之準",
 				"snapshot": "取最近請求之快照；文字分類皆估算，附件 token 以提供方計量為準"
 			}
 		}
