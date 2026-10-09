@@ -11,6 +11,9 @@ import { getMessageText } from './render/text.mjs'
 /** 反应映射稳定签名（新增/移除任一 emoji 或投票者都会变化），实现见 reactionSignature.mjs。 */
 export { reactionsSignature } from './reactionSignature.mjs'
 
+/** view-log 单页条数：首屏、增量刷新与上翻历史共用同一分页大小。 */
+export const CHANNEL_VIEW_LOG_PAGE_SIZE = 50
+
 /** @returns {void} */
 export function refreshChannelView() {
 	refreshChannelMessagesView(getMessageText)

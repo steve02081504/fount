@@ -21,7 +21,7 @@ import {
 	fetchRowsForMessageEvent,
 	setPendingScrollTarget,
 } from './channelMessageStore.mjs'
-import { enqueueChannelMutation } from './channelMutationQueue.mjs'
+import { channelMutationRevision, enqueueChannelMutation } from './channelMutationQueue.mjs'
 import {
 	scheduleDebouncedChannelRefresh,
 } from './channelRefreshScheduler.mjs'
@@ -37,6 +37,7 @@ import {
 	scrollToBottom,
 } from './messageScroll.mjs'
 import {
+	CHANNEL_VIEW_LOG_PAGE_SIZE,
 	clearHubEmptyPlaceholder,
 	mergeIncrementalChannelBatch,
 	messageIdSelector,
@@ -296,10 +297,13 @@ export async function refreshChannelViewDom(container, scrollBottom = false) {
 }
 
 /**
- * @param {(() => boolean) | undefined} [isCurrent] 本次频道选择的有效性守卫；为假则立即停止后续副作用
+ * @param {(() => boolean) | undefined} [stillSelected] 本次频道选择的有效性守卫；为假则立即停止后续副作用
  * @returns {Promise<void>}
  */
-export async function loadMessages(isCurrent) {
+export async function loadMessages(stillSelected) {
+	const scope = captureChannelViewScope(store.context.currentGroupId, store.context.currentChannelId)
+	/** @returns {boolean} 当前频道选择和视图作用域是否都仍有效。 */
+	const isCurrent = () => isChannelViewScopeCurrent(scope) && (!stillSelected || stillSelected())
 	store.messages.channelSearchQuery = null
 	const searchInput = document.getElementById('header-search')
 	if (searchInput instanceof HTMLInputElement) searchInput.value = ''
@@ -326,21 +330,22 @@ export async function loadMessages(isCurrent) {
 		if (hadStale) {
 			refreshChannelView()
 			await refreshReactionPerms()
+			if (!isCurrent()) return
 			initChannelVirtualList(container)
 		}
 		else
 			await mountTemplate(container, 'hub/empty/loading', {})
 	}
 	if (await loadNonTextChannel(container, channel)) return
-	if (isCurrent && !isCurrent()) return
+	if (!isCurrent()) return
 	try {
 		store.messages.channelOlderExhausted = false
 		const { messages, reactions, readMarker } = await getChannelViewLog(
 			groupId,
 			channelId,
-			{ limit: 50 },
+			{ limit: CHANNEL_VIEW_LOG_PAGE_SIZE },
 		)
-		if (isCurrent && !isCurrent()) return
+		if (!isCurrent()) return
 		// 载入期间发出的乐观行不能被服务端快照覆盖丢掉（否则 confirmPendingRow 无行可确认）。
 		const pendingRows = sameChannel
 			? store.messages.channelMessagesSource.filter(row => row.pending)
@@ -356,6 +361,7 @@ export async function loadMessages(isCurrent) {
 		store.messages.firstUnreadEventId = firstUnreadEventId(readMarker, messages)
 		refreshChannelView()
 		await refreshReactionPerms()
+		if (!isCurrent()) return
 		syncChannelActionsContext()
 		if (!store.messages.channelMessagesSource.length) {
 			destroyChannelVirtualList()
@@ -379,19 +385,20 @@ export async function loadMessages(isCurrent) {
 		// 有未读时滚到分割线；打开频道即标已读（badge 清零），分割线锚点保留到下次 load
 		if (!softReload && !store.messages.firstUnreadEventId) scrollToBottom()
 		await markCurrentChannelRead().catch(handleError('chat.hub.operationFailed'))
-		if (isCurrent && !isCurrent()) return
+		if (!isCurrent()) return
 		refreshChannelPinsBar().catch(handleError('chat.hub.operationFailed'))
 		saveChannelViewCache()
 		try {
 			const { fetchMemberReadMarkers } = await import('../memberReadMarkers.mjs')
 			await fetchMemberReadMarkers(groupId, channelId)
-			if (isCurrent && !isCurrent()) return
+			if (!isCurrent()) return
 		}
 		catch (error) {
 			handleError('chat.hub.operationFailed')(error)
 		}
 	}
 	catch (err) {
+		if (!isCurrent()) return
 		const error = handleError('chat.hub.load.messagesFailed')(err)
 		// 管道可能仍在（宽带载入失败），必须经唯一入口销毁后再替换 #messages 子树。
 		await mountMessagesPlaceholder(container, 'hub/empty/error', {
@@ -405,13 +412,17 @@ export async function loadMessages(isCurrent) {
  * @returns {Promise<void>}
  */
 export function refreshChannelMessagesIncremental() {
-	return enqueueChannelMutation(doRefreshChannelMessagesIncremental)
+	return doRefreshChannelMessagesIncremental()
 }
+
+let incrementalRefreshSequence = 0
 
 /**
  * @returns {Promise<void>}
  */
 async function doRefreshChannelMessagesIncremental() {
+	const sequence = ++incrementalRefreshSequence
+	const revision = channelMutationRevision()
 	const searchActive = !!store.messages.channelSearchQuery
 	const groupId = store.context.currentGroupId
 	const channelId = store.context.currentChannelId
@@ -423,7 +434,7 @@ async function doRefreshChannelMessagesIncremental() {
 	const container = getMessagesContainer()
 	if (!container) return
 
-	const options = { limit: 50 }
+	const options = { limit: CHANNEL_VIEW_LOG_PAGE_SIZE }
 	if (store.messages.lastMessageId)
 		options.since = store.messages.lastMessageId
 
@@ -433,35 +444,48 @@ async function doRefreshChannelMessagesIncremental() {
 		options,
 	)
 	if (!isChannelViewScopeCurrent(scope)) return
-	const reactionSig = reactionsSignature(reactions)
-	if (!messages.length && !reactionSig) return
-
-	if (searchActive) {
-		if (reactionSig !== store.messages.reactionsEtag) {
-			store.messages.reactionsEtag = reactionSig
-			store.messages.channelReactions = reactions || {}
-		}
-		if (messages.length && isChannelViewScopeCurrent(scope)) {
-			store.messages.channelMessagesSource = mergeIncrementalChannelBatch(
-				store.messages.channelMessagesSource,
-				messages,
-			)
-			updateLastMessageId()
-		}
+	if (sequence !== incrementalRefreshSequence) return
+	// 网络等待不占用写入队列；期间若有 WS 编辑/删除/发送，重新读取以免旧快照覆盖它们。
+	if (revision !== channelMutationRevision()) {
+		scheduleChannelIncrementalRefresh()
 		return
 	}
+	return enqueueChannelMutation(async () => {
+		if (!isChannelViewScopeCurrent(scope) || sequence !== incrementalRefreshSequence) return
+		if (channelMutationRevision() !== revision + 1) {
+			scheduleChannelIncrementalRefresh()
+			return
+		}
+		const reactionSig = reactionsSignature(reactions)
+		if (!messages.length && !reactionSig) return
 
-	clearHubEmptyPlaceholder(container)
+		if (searchActive) {
+			if (reactionSig !== store.messages.reactionsEtag) {
+				store.messages.reactionsEtag = reactionSig
+				store.messages.channelReactions = reactions || {}
+			}
+			if (messages.length && isChannelViewScopeCurrent(scope)) {
+				store.messages.channelMessagesSource = mergeIncrementalChannelBatch(
+					store.messages.channelMessagesSource,
+					messages,
+				)
+				updateLastMessageId()
+			}
+			return
+		}
 
-	const nearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100
-	if (reactionSig !== store.messages.reactionsEtag) {
-		store.messages.reactionsEtag = reactionSig
-		await patchReactionRows(container, reactions || {})
-		if (!isChannelViewScopeCurrent(scope)) return
-		if (!messages.length) return
-	}
-	store.messages.channelReactions = reactions || {}
-	await applyIncomingMessageBatch(messages, { scroll: nearBottom })
+		clearHubEmptyPlaceholder(container)
+
+		const nearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100
+		if (reactionSig !== store.messages.reactionsEtag) {
+			store.messages.reactionsEtag = reactionSig
+			await patchReactionRows(container, reactions || {})
+			if (!isChannelViewScopeCurrent(scope)) return
+			if (!messages.length) return
+		}
+		store.messages.channelReactions = reactions || {}
+		await applyIncomingMessageBatch(messages, { scroll: nearBottom })
+	})
 }
 
 /**

@@ -24,7 +24,7 @@ import {
 	setPendingHighlightEventId,
 } from './messageScroll.mjs'
 import { clearMessageSelection, syncMessageSelectionStyles } from './messageSelection.mjs'
-import { isTwoPartyCharDialogue, refreshChannelView } from './messageShared.mjs'
+import { isTwoPartyCharDialogue, refreshChannelView, CHANNEL_VIEW_LOG_PAGE_SIZE } from './messageShared.mjs'
 import {
 	bindMessageSurface,
 	createMessageSurfacePipeline,
@@ -46,14 +46,17 @@ export function destroyChannelVirtualList() {
 
 /** @type {Promise<number> | null} */
 let olderMessagesInFlight = null
+let olderMessagesScope = null
 
 /** @returns {Promise<number>} 新载入的更早消息条数 */
 export async function loadOlderMessages() {
-	if (olderMessagesInFlight) return olderMessagesInFlight
-	olderMessagesInFlight = doLoadOlderMessages().finally(() => {
-		olderMessagesInFlight = null
+	if (olderMessagesInFlight && isChannelViewScopeCurrent(olderMessagesScope)) return olderMessagesInFlight
+	olderMessagesScope = captureChannelViewScope(store.context.currentGroupId, store.context.currentChannelId)
+	const request = doLoadOlderMessages().finally(() => {
+		if (olderMessagesInFlight === request) olderMessagesInFlight = null
 	})
-	return olderMessagesInFlight
+	olderMessagesInFlight = request
+	return request
 }
 
 /** @returns {Promise<number>} 新载入的更早消息条数 */
@@ -66,7 +69,7 @@ async function doLoadOlderMessages() {
 		store.messages.channelOlderExhausted = true
 		return 0
 	}
-	const limit = Math.max(1, Math.ceil(store.messages.channelMessages.length / 2))
+	const limit = CHANNEL_VIEW_LOG_PAGE_SIZE
 	const known = new Set(
 		store.messages.channelMessagesSource.map(m => String(m.eventId)).filter(Boolean),
 	)
@@ -86,7 +89,7 @@ async function doLoadOlderMessages() {
 			oldestRawEventId = page.oldestRawEventId
 		}
 		catch {
-			store.messages.channelOlderExhausted = true
+			// 临时故障必须保持可重试：不标记耗尽，也不改动别的频道。
 			return 0
 		}
 		if (!isChannelViewScopeCurrent(scope)) return 0
