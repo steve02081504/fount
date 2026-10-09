@@ -14,6 +14,7 @@ import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 
 import { linesIncludingOverlaysForTargets } from '../../../public/shared/messageMerge.mjs'
+import { archiveMonthCanAffectPage } from '../archive/pageBoundary.mjs'
 import { resolveGroupChannelId } from '../lib/channelId.mjs'
 import { gcLogContextSidecars } from '../lib/contextSidecar.mjs'
 import { eventsPath, messagesPath, snapshotPath } from '../lib/paths.mjs'
@@ -75,6 +76,16 @@ function messageLineWallMs(line) {
 }
 
 /**
+ * 按展示顺序原地排序消息行：HLC 墙钟，其次 eventId。
+ * @param {object[]} lines 消息行
+ * @returns {object[]} 同一数组
+ */
+function sortMessageLines(lines) {
+	return lines.sort((a, b) => messageLineWallMs(a) - messageLineWallMs(b)
+		|| String(a.eventId).localeCompare(String(b.eventId), 'und'))
+}
+
+/**
  * 列出频道消息 JSONL 行（可选解密；供联邦快照与历史拉取）。
  * @param {string} username 用户名
  * @param {string} groupId 群 ID
@@ -84,28 +95,27 @@ function messageLineWallMs(line) {
  */
 export async function listChannelMessages(username, groupId, channelId, q = {}) {
 	const lines = await readJsonl(messagesPath(username, groupId, channelId), { sanitize: stripDagEventLocalExtensions })
+	const cap = Math.min(Number(q.limitCap) || 500, JOIN_CHANNEL_HISTORY_LIMIT)
+	const limit = Math.min(Number(q.limit) || 200, cap)
 	if (q.includeArchive) {
 		const { listArchiveMonthsForChannel } = await import('../archive/index.mjs')
 		const { readArchiveAsMessageLines } = await import('../archive/reader.mjs')
 		const months = await listArchiveMonthsForChannel(username, groupId, channelId)
-		const archived = await readArchiveAsMessageLines(username, groupId, channelId, months)
 		const known = new Set(lines.map(row => String(row.eventId).trim()))
-		for (const row of archived) {
-			const id = String(row.eventId).trim()
-			if (id && !known.has(id)) {
-				lines.push(row)
-				known.add(id)
+		sortMessageLines(lines)
+		for (const month of [...months].sort().reverse()) {
+			if (!archiveMonthCanAffectPage(lines, month, { ...q, limit })) break
+			const archived = await readArchiveAsMessageLines(username, groupId, channelId, [month])
+			for (const row of archived) {
+				const id = String(row.eventId).trim()
+				if (id && !known.has(id)) {
+					lines.push(row)
+					known.add(id)
+				}
 			}
+			sortMessageLines(lines)
 		}
-		lines.sort((a, b) => {
-			const ta = messageLineWallMs(a)
-			const tb = messageLineWallMs(b)
-			if (ta !== tb) return ta - tb
-			return String(a.eventId).localeCompare(String(b.eventId))
-		})
 	}
-	const cap = Math.min(Number(q.limitCap) || 500, JOIN_CHANNEL_HISTORY_LIMIT)
-	const limit = Math.min(Number(q.limit) || 200, cap)
 	if (Array.isArray(q.eventIds) && q.eventIds.length) {
 		const filtered = linesIncludingOverlaysForTargets(lines, q.eventIds)
 		if (q.decrypt === false) return filtered
@@ -166,12 +176,7 @@ export async function mergeChannelHistoryRows(username, groupId, channelId, inco
 			toAdd.push(row)
 		}
 		if (!toAdd.length) return 0
-		const merged = [...existing, ...toAdd].sort((a, b) => {
-			const ta = messageLineWallMs(a)
-			const tb = messageLineWallMs(b)
-			if (ta !== tb) return ta - tb
-			return String(a.eventId).localeCompare(String(b.eventId), 'und')
-		})
+		const merged = sortMessageLines([...existing, ...toAdd])
 		await mkdir(dirname(path), { recursive: true })
 		await writeFile(
 			path,
