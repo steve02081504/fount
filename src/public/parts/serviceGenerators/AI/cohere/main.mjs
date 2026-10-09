@@ -109,12 +109,19 @@ async function GetSource(config) {
 		 * @returns {Promise<{content: string}>} 来自 AI 的结果。
 		 */
 		Call: async prompt => {
-			const result = await cohere.chat({ messages: [{ role: 'user', content: prompt }], model: config.model })
-			const reply = { content: (result.message?.content ?? []).map(part => part.text ?? '').join('\n') }
+			const reply = { content: '' }
 			const usageRecorder = createUsageRecorder(reply, config, 'cohere')
-			usageRecorder.record(result.usage?.billedUnits ?? result.meta?.billedUnits)
-			usageRecorder.apply()
-			return reply
+			try {
+				const result = await cohere.chat({ messages: [{ role: 'user', content: prompt }], model: config.model })
+				reply.content = (result.message?.content ?? []).map(part => part.text ?? '').join('\n')
+				usageRecorder.record(result.usage?.billedUnits ?? result.meta?.billedUnits)
+				return reply
+			}
+			catch (error) {
+				usageRecorder.fail(error)
+				throw error
+			}
+			finally { usageRecorder.apply() }
 		},
 		/**
 		 * 使用结构化提示调用 AI 源。
@@ -155,21 +162,21 @@ async function GetSource(config) {
 			}
 
 			const usageRecorder = createUsageRecorder(result, config, 'cohere')
+			try {
 
-			/**
-			 * 预览更新器
-			 * @param {{content: string, files: any[]}} r - 结果对象
-			 * @returns {void}
-			 */
-			const previewUpdater = r => replyPreviewUpdater?.(clearFormat({ ...r }))
+				/**
+				 * 预览更新器
+				 * @param {{content: string, files: any[]}} r - 结果对象
+				 * @returns {void}
+				 */
+				const previewUpdater = r => replyPreviewUpdater?.(clearFormat({ ...r }))
 
-			// Use streaming based on config
-			const useStream = (config.use_stream ?? true) && !!replyPreviewUpdater
-			if (useStream) {
+				// Use streaming based on config
+				const useStream = (config.use_stream ?? true) && !!replyPreviewUpdater
+				if (useStream) {
 				// Use cohere's streaming support
-				const stream = await cohere.chatStream(request)
+					const stream = await cohere.chatStream(request)
 
-				try {
 					for await (const chunk of stream) {
 						usageRecorder.record(chunk.response?.meta?.billedUnits ?? chunk.delta?.usage?.billedUnits)
 						if (signal?.aborted) {
@@ -178,31 +185,35 @@ async function GetSource(config) {
 							throw err
 						}
 
+						if (chunk.text || chunk.delta?.message?.content?.text) usageRecorder.firstOutput()
 						if (chunk.eventType === 'text-generation') {
 							result.content += chunk.text || ''
 							previewUpdater(result)
 						}
 					}
-				}
-				// 中断也要落下已上报的计量，否则本轮的调用从会话累计里消失
-				finally { usageRecorder.apply() }
-			} else {
+				} else {
 				// Use non-streaming mode
-				const apiResult = await cohere.chat(request)
-				usageRecorder.record(apiResult.usage?.billedUnits ?? apiResult.meta?.billedUnits)
-				let text = apiResult?.message?.content?.map(message => message?.text)?.filter(text => text)?.join('\n')
-				if (!text) throw apiResult
+					const apiResult = await cohere.chat(request)
+					usageRecorder.record(apiResult.usage?.billedUnits ?? apiResult.meta?.billedUnits)
+					let text = apiResult?.message?.content?.map(message => message?.text)?.filter(text => text)?.join('\n')
+					if (!text) throw apiResult
 
-				const removeduplicate = [...new Set(text.split('\n'))].join('\n')
-				if (removeduplicate.length / text.length < 0.3)
-					text = removeduplicate
+					const removeduplicate = [...new Set(text.split('\n'))].join('\n')
+					if (removeduplicate.length / text.length < 0.3)
+						text = removeduplicate
 
-				result.content = text
-				previewUpdater(result)
-				usageRecorder.apply()
+					result.content = text
+					previewUpdater(result)
+				}
+
+				return Object.assign(base_result, clearFormat(result))
 			}
-
-			return Object.assign(base_result, clearFormat(result))
+			catch (error) {
+				// 失败/中断同样结算：已上报的计量与请求区间都要留下
+				usageRecorder.fail(error)
+				throw error
+			}
+			finally { usageRecorder.apply() }
 		},
 		/**
 		 * 按本源配置把 prompt_struct 构建成 Cohere 出站 `{ model, messages }`，供快照与缓存对比。

@@ -83,8 +83,14 @@ export async function compressContext({ args, aiSource, prompt_struct, result })
 
 	let content
 	let compressionUsage
+	const compressionStartedAt = Date.now()
 	try {
 		const response = await aiSource.Call(buildSummaryPrompt(transcript))
+		if (result) {
+			result.extension ??= {}
+			const measurements = response?.extension?.modelCalls ?? [{ callId: crypto.randomUUID(), startedAt: compressionStartedAt, finishedAt: Date.now() }]
+			result.extension.modelCalls = [...result.extension.modelCalls ?? [], ...measurements.map(call => ({ ...call, purpose: 'compression' }))]
+		}
 		content = typeof response === 'string' ? response : response?.content
 		const reported = response?.extension?.usage
 		if (reported) compressionUsage = summarizeUsage(reported.calls.map(call => ({ ...call, purpose: 'compression' })))

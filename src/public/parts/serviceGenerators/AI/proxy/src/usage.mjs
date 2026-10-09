@@ -40,13 +40,28 @@ export function normalizeUsage(raw, provider) {
  * @param {object} result 回复对象。
  * @param {object} config 源配置。
  * @param {string} provider 接口类型。
- * @returns {{record: (raw: object, model?: string) => void, apply: () => void}} 记录器。
+ * @returns {{record: (raw: object, model?: string) => void, firstOutput: () => void, fail: (error: Error) => void, apply: () => void}} 记录器。
  */
 export function createUsageRecorder(result, config, provider = 'openai') {
 	const previous = result.extension?.usage?.calls ?? []
+	result.extension ??= {}
+	const measurement = { callId: crypto.randomUUID(), source: config.name, model: config.model, contextLimit: config.context_size, startedAt: Date.now() }
+	result.extension.modelCalls = [...result.extension.modelCalls ?? [], measurement]
 	let reported = {}
 	let actualModel = config.model
 	return {
+		/**
+		 * @param {Error} error - 失败的请求（`AbortError` 记为中断）。
+		 * @returns {void}
+		 */
+		fail(error) {
+			measurement.status = error?.name === 'AbortError' ? 'aborted' : 'failed'
+			measurement.finishedAt ??= Date.now()
+		},
+		/** 独立于 logprobs 与用量计量记录首个有效模型输出。 */
+		firstOutput() {
+			measurement.firstOutputAt ??= Date.now()
+		},
 		/**
 		 * 合并一次上报（缺计量的片段直接忽略）。
 		 * @param {object} raw 提供方计量。
@@ -55,6 +70,7 @@ export function createUsageRecorder(result, config, provider = 'openai') {
 		 */
 		record(raw, model) {
 			actualModel = model ?? actualModel
+			measurement.model = actualModel
 			if (!raw) return
 			const merged = { ...reported, ...raw }
 			for (const field of detailFields)
@@ -67,9 +83,11 @@ export function createUsageRecorder(result, config, provider = 'openai') {
 		 */
 		apply() {
 			const usage = normalizeUsage(reported, provider)
+			measurement.finishedAt ??= Date.now()
+			measurement.status ??= 'succeeded'
+			Object.assign(measurement, usage)
 			if (usage.inputTokens == null && usage.outputTokens == null) return
-			result.extension ??= {}
-			result.extension.usage = summarizeUsage([...previous, priceUsage({ source: config.name, model: actualModel, purpose: 'reply', ...usage }, config.pricing)])
+			result.extension.usage = summarizeUsage([...previous, priceUsage({ callId: measurement.callId, source: config.name, model: actualModel, purpose: 'reply', ...usage }, config.pricing)])
 		},
 	}
 }

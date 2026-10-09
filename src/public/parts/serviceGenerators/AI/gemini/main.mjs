@@ -438,6 +438,8 @@ export async function GetSource(config, extra = {}) {
 		 * @returns {Promise<{content: string}>} 来自 AI 的结果。
 		 */
 		Call: async prompt => {
+			const reply = {}
+			const usageRecorder = createUsageRecorder(reply, config, 'gemini')
 			try {
 				const model_params = {
 					model: config.model,
@@ -449,9 +451,6 @@ export async function GetSource(config, extra = {}) {
 				}
 
 				let text = ''
-				const reply = {}
-				const usageRecorder = createUsageRecorder(reply, config, 'gemini')
-
 				/**
 				 * 处理部分。
 				 * @param {Array<object>} parts - 部分数组。
@@ -475,12 +474,12 @@ export async function GetSource(config, extra = {}) {
 				}
 
 				reply.content = text
-				usageRecorder.apply()
 				return reply
 			} catch (err) {
+				usageRecorder.fail(err)
 				if (isGeminiApiKeyError(err)) throw source_dead(err)
 				throw err
-			}
+			} finally { usageRecorder.apply() }
 		},
 
 		/**
@@ -789,35 +788,36 @@ export async function GetSource(config, extra = {}) {
 					extension: base_result.extension ??= {},
 				}
 				const usageRecorder = createUsageRecorder(result, config, 'gemini')
+				try {
 				/**
 				 * 处理部分。
 				 * @param {Array<object>} parts - 部分数组。
 				 */
-				function handle_parts(parts) {
-					if (!parts) return
-					for (const part of parts) {
-						if (config.keep_thought_signature && part.thoughtSignature) thoughtSignature = part.thoughtSignature
-						if (part.text && !part.thought) result.content += part.text
-						else if (part.inlineData) try {
-							const { mime_type, data } = part.inlineData
-							const fileExtension = mime.extension(mime_type) || 'png'
-							const fileName = `${result.files.length}.${fileExtension}`
-							const dataBuffer = Buffer.from(data, 'base64')
-							result.files.push({
-								name: fileName,
-								mime_type,
-								buffer: dataBuffer
-							})
-						} catch (error) {
-							console.error('Error processing inline image data:', error)
+					function handle_parts(parts) {
+						if (!parts) return
+						for (const part of parts) {
+							if (config.use_stream && (part.text || part.inlineData || part.functionCall)) usageRecorder.firstOutput()
+							if (config.keep_thought_signature && part.thoughtSignature) thoughtSignature = part.thoughtSignature
+							if (part.text && !part.thought) result.content += part.text
+							else if (part.inlineData) try {
+								const { mime_type, data } = part.inlineData
+								const fileExtension = mime.extension(mime_type) || 'png'
+								const fileName = `${result.files.length}.${fileExtension}`
+								const dataBuffer = Buffer.from(data, 'base64')
+								result.files.push({
+									name: fileName,
+									mime_type,
+									buffer: dataBuffer
+								})
+							} catch (error) {
+								console.error('Error processing inline image data:', error)
+							}
+							previewUpdater(result)
 						}
-						previewUpdater(result)
 					}
-				}
 
-				if (config.use_stream) {
-					const resultStream = await ai.models.generateContentStream(model_params, { signal })
-					try {
+					if (config.use_stream) {
+						const resultStream = await ai.models.generateContentStream(model_params, { signal })
 						for await (const chunk of resultStream) {
 							if (signal?.aborted) {
 								const err = new Error('Aborted by user')
@@ -828,30 +828,33 @@ export async function GetSource(config, extra = {}) {
 							handle_parts(chunk.candidates?.[0]?.content?.parts)
 						}
 					}
-					// 中断也要落下已上报的计量，否则本轮的调用从会话累计里消失
-					finally { usageRecorder.apply() }
-				}
-				else {
-					if (signal?.aborted) {
-						const err = new Error('Aborted by user')
-						err.name = 'AbortError'
-						throw err
-					}
-					const response = await ai.models.generateContent(model_params, { signal })
-					usageRecorder.record(response.usageMetadata, response.modelVersion)
-					handle_parts(response.candidates?.[0]?.content?.parts)
-					usageRecorder.apply()
-				}
-
-				return Object.assign(base_result, clearFormat(result), {
-					extension: {
-						...result.extension,
-						gemini_API_data: {
-							char_id: prompt_struct.char_id,
-							text_part_overrides: Object.fromEntries(Object.entries({ thoughtSignature }).filter(([_, v]) => v)),
+					else {
+						if (signal?.aborted) {
+							const err = new Error('Aborted by user')
+							err.name = 'AbortError'
+							throw err
 						}
+						const response = await ai.models.generateContent(model_params, { signal })
+						usageRecorder.record(response.usageMetadata, response.modelVersion)
+						handle_parts(response.candidates?.[0]?.content?.parts)
 					}
-				})
+
+					return Object.assign(base_result, clearFormat(result), {
+						extension: {
+							...result.extension,
+							gemini_API_data: {
+								char_id: prompt_struct.char_id,
+								text_part_overrides: Object.fromEntries(Object.entries({ thoughtSignature }).filter(([_, v]) => v)),
+							}
+						}
+					})
+				}
+				catch (error) {
+					// 失败/中断同样结算：已上报的计量与请求区间都要留下
+					usageRecorder.fail(error)
+					throw error
+				}
+				finally { usageRecorder.apply() }
 			} catch (err) {
 				if (isGeminiApiKeyError(err)) throw source_dead(err)
 				throw err

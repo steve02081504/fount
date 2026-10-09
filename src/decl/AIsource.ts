@@ -16,6 +16,7 @@ export interface TokenPricing {
 
 /** 一次实际调用的 provider 计量；输入包含缓存，输出包含推理。 */
 export interface UsageCall {
+	callId?: string
 	source?: string
 	model?: string
 	purpose?: string
@@ -32,7 +33,7 @@ export interface UsageCall {
 /** 已记录调用及其合计，未知字段缺省。 */
 export interface Usage {
 	calls: UsageCall[]
-	total: Omit<UsageCall, 'source' | 'model' | 'purpose' | 'cost' | 'currency' | 'pricing'> & { costs?: Record<string, number> }
+	total: Omit<UsageCall, 'callId' | 'source' | 'model' | 'purpose' | 'cost' | 'currency' | 'pricing'> & { costs?: Record<string, number> }
 }
 
 /**

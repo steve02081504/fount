@@ -92,11 +92,13 @@ async function GetSource(config, { username, SaveConfig }) {
 		Call: async prompt => {
 			if (!sources.length) throw new Error('no source selected')
 			const usages = []
+			const modelCalls = []
 			const results = await Promise.all(sources.map(source => {
 				const info = getPartInfo(source, getUserByUsername(username).locales)
 				return source.Call(prompt).then(
 					result => {
 						usages.push(result.extension?.usage)
+						modelCalls.push(...result.extension?.modelCalls ?? [])
 						return `**${info.name} from ${info.provider}:**\n${typeof result === 'string' ? result : result.content}\n`
 					},
 					err => `\
@@ -107,7 +109,7 @@ ${err.stack || err}
 `
 				)
 			}))
-			return { content: results.join('\n'), extension: { usage: mergeUsage(...usages) } }
+			return { content: results.join('\n'), extension: { usage: mergeUsage(...usages), modelCalls } }
 		},
 		/**
 		 * 使用结构化提示调用 AI 源。
@@ -121,6 +123,7 @@ ${err.stack || err}
 			if (!sources.length) throw new Error('no source selected')
 
 			const usages = []
+			const modelCalls = []
 			const allFiles = [...base_result?.files || []]
 			const sourceResults = sources.map(() => ({ content: '', files: [] }))
 
@@ -172,6 +175,7 @@ ${err.stack || err}
 				}).then(
 					result => {
 						usages.push(result.extension?.usage)
+						modelCalls.push(...result.extension?.modelCalls ?? [])
 						allFiles.push(...result.files || [])
 						let res = `**${info.name} from ${info.provider}:**\n${result.content}\n`
 						if (result.files?.length) {
@@ -183,6 +187,7 @@ ${err.stack || err}
 					},
 					err => {
 						usages.push(subBaseResult.extension?.usage)
+						modelCalls.push(...subBaseResult.extension?.modelCalls ?? [])
 						return `**${info.name} from ${info.provider} error:**\n\`\`\`\n${err.stack || err}\n\`\`\`\n`
 					}
 				)
@@ -191,7 +196,7 @@ ${err.stack || err}
 			return Object.assign(base_result, {
 				content: results.join('\n'),
 				files: allFiles,
-				extension: { ...base_result.extension, usage: mergeUsage(base_result.extension?.usage, ...usages) }
+				extension: { ...base_result.extension, usage: mergeUsage(base_result.extension?.usage, ...usages), modelCalls: [...base_result.extension?.modelCalls ?? [], ...modelCalls] }
 			})
 		},
 		/**

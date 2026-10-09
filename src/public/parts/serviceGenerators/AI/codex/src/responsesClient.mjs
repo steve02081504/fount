@@ -132,96 +132,97 @@ export async function fetchResponses({
 	result = { content: '', files: [] },
 }) {
 	const usageRecorder = createUsageRecorder(result, { ...usageConfig, model: body.model })
-	const response = await fetch(url, {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json', ...headers },
-		body: JSON.stringify(body),
-		signal,
-	})
-	if (!response.ok)
-		throw await readErrorResponse(response, { url, apiStyle: 'responses' })
-
-	if (!body.stream) {
-		const json = await response.json()
-		usageRecorder.record(json.usage, json.model)
-		if (json.error)
-			throw new AIRequestError(
-				`responses error: ${json.error.message ?? JSON.stringify(json.error)}`,
-				{ url, apiStyle: 'responses', data: json },
-			)
-		result.content = textFromResponsesJson(json)
-		let reasoningIndex = 0
-		for (const item of json.output ?? [])
-			if (item.type === 'reasoning')
-				for (const summary of item.summary ?? [])
-					if (summary.type === 'summary_text') appendReasoningSummary(result, reasoningIndex++, summary.text)
-		previewUpdater(result)
-		usageRecorder.apply()
-		return result
-	}
-
-	const reader = response.body.getReader()
-	signal?.addEventListener?.('abort', () => {
-		const err = new Error('User Aborted')
-		err.name = 'AbortError'
-		reader.cancel(err).catch(() => { })
-	}, { once: true })
-	const decoder = new TextDecoder()
-	let buffer = ''
-
-	/**
-	 * 处理一行 SSE `data:`。
-	 * @param {string} line - 原始行。
-	 * @returns {void}
-	 */
-	const handleLine = line => {
-		const trimmed = line.trim()
-		if (!trimmed.startsWith('data:')) return
-		const data = trimmed.slice(5).trim()
-		if (!data || data === '[DONE]') return
-
-		let json
-		try {
-			json = JSON.parse(data)
-		} catch (error) {
-			console.warn('Error parsing responses stream data:', error)
-			return
-		}
-
-		usageRecorder.record(json.response?.usage ?? json.usage, json.response?.model ?? json.model)
-
-		// 失败事件：过去被静默忽略，导致得到空回复。
-		if (json.type === 'error' || json.type === 'response.failed') {
-			const failed = json.error ?? json.response?.error ?? json
-			throw new AIRequestError(
-				`responses stream error: ${failed?.message ?? JSON.stringify(failed)}`,
-				{ url, apiStyle: 'responses', data: json },
-			)
-		}
-		// 顶层直接挂 error 对象的来源
-		if (json.error)
-			throw new AIRequestError(
-				`responses stream error: ${json.error.message ?? JSON.stringify(json.error)}`,
-				{ url, apiStyle: 'responses', data: json },
-			)
-
-		if (json.type === 'response.output_text.delta') {
-			result.content += json.delta ?? ''
-			previewUpdater(result)
-		}
-		else if (json.type === 'response.refusal.delta') {
-			result.content += json.delta ?? ''
-			previewUpdater(result)
-		}
-		else if (json.type === 'response.reasoning_summary_text.delta') {
-			appendReasoningSummary(result, json.summary_index ?? json.content_index ?? 0, json.delta ?? '')
-			previewUpdater(result)
-		}
-		else if (json.type === 'response.completed' && json.response)
-			result.content ||= textFromResponsesJson(json.response)
-	}
-
 	try {
+		const response = await fetch(url, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json', ...headers },
+			body: JSON.stringify(body),
+			signal,
+		})
+		if (!response.ok)
+			throw await readErrorResponse(response, { url, apiStyle: 'responses' })
+
+		if (!body.stream) {
+			const json = await response.json()
+			usageRecorder.record(json.usage, json.model)
+			if (json.error)
+				throw new AIRequestError(
+					`responses error: ${json.error.message ?? JSON.stringify(json.error)}`,
+					{ url, apiStyle: 'responses', data: json },
+				)
+			result.content = textFromResponsesJson(json)
+			let reasoningIndex = 0
+			for (const item of json.output ?? [])
+				if (item.type === 'reasoning')
+					for (const summary of item.summary ?? [])
+						if (summary.type === 'summary_text') appendReasoningSummary(result, reasoningIndex++, summary.text)
+			previewUpdater(result)
+			return result
+		}
+
+		const reader = response.body.getReader()
+		signal?.addEventListener?.('abort', () => {
+			const err = new Error('User Aborted')
+			err.name = 'AbortError'
+			reader.cancel(err).catch(() => { })
+		}, { once: true })
+		const decoder = new TextDecoder()
+		let buffer = ''
+
+		/**
+		 * 处理一行 SSE `data:`。
+		 * @param {string} line - 原始行。
+		 * @returns {void}
+		 */
+		const handleLine = line => {
+			const trimmed = line.trim()
+			if (!trimmed.startsWith('data:')) return
+			const data = trimmed.slice(5).trim()
+			if (!data || data === '[DONE]') return
+
+			let json
+			try {
+				json = JSON.parse(data)
+			} catch (error) {
+				console.warn('Error parsing responses stream data:', error)
+				return
+			}
+
+			usageRecorder.record(json.response?.usage ?? json.usage, json.response?.model ?? json.model)
+
+			// 失败事件：过去被静默忽略，导致得到空回复。
+			if (json.type === 'error' || json.type === 'response.failed') {
+				const failed = json.error ?? json.response?.error ?? json
+				throw new AIRequestError(
+					`responses stream error: ${failed?.message ?? JSON.stringify(failed)}`,
+					{ url, apiStyle: 'responses', data: json },
+				)
+			}
+			// 顶层直接挂 error 对象的来源
+			if (json.error)
+				throw new AIRequestError(
+					`responses stream error: ${json.error.message ?? JSON.stringify(json.error)}`,
+					{ url, apiStyle: 'responses', data: json },
+				)
+
+			if (json.delta && ['response.output_text.delta', 'response.refusal.delta', 'response.reasoning_summary_text.delta', 'response.function_call_arguments.delta'].includes(json.type)) usageRecorder.firstOutput()
+
+			if (json.type === 'response.output_text.delta') {
+				result.content += json.delta ?? ''
+				previewUpdater(result)
+			}
+			else if (json.type === 'response.refusal.delta') {
+				result.content += json.delta ?? ''
+				previewUpdater(result)
+			}
+			else if (json.type === 'response.reasoning_summary_text.delta') {
+				appendReasoningSummary(result, json.summary_index ?? json.content_index ?? 0, json.delta ?? '')
+				previewUpdater(result)
+			}
+			else if (json.type === 'response.completed' && json.response)
+				result.content ||= textFromResponsesJson(json.response)
+		}
+
 		try {
 			while (true) {
 				if (signal?.aborted) {
@@ -240,11 +241,15 @@ export async function fetchResponses({
 			buffer += decoder.decode()
 			for (const line of buffer.split('\n')) handleLine(line)
 		}
-		// 中断也要落下已上报的计量，否则本轮的调用从会话累计里消失
-		finally { usageRecorder.apply() }
+		finally {
+			reader.releaseLock()
+		}
+		return result
 	}
-	finally {
-		reader.releaseLock()
+	catch (error) {
+		// 失败/中断同样结算：已上报的计量与请求区间都要留下
+		usageRecorder.fail(error)
+		throw error
 	}
-	return result
+	finally { usageRecorder.apply() }
 }

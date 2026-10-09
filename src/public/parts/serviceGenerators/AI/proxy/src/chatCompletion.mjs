@@ -110,196 +110,198 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 		result = { content: '', files: [] },
 	}) {
 		const usageRecorder = createUsageRecorder(result, requestConfig)
-		const startedAt = Date.now()
-		let firstTokenAt
-
-		/**
-		 * 累积 OpenAI 兼容 logprobs，并维护基础性能指标。
-		 * @param {any} choice - 响应中的 choice 对象。
-		 */
-		const appendLogprobsFromChoice = (choice) => {
-			if (!requestConfig.model_arguments?.logprobs) return
-			const contentLogprobs = choice?.logprobs?.content ?? []
-			if (!contentLogprobs.length) return
-
-			result.extension ??= {}
-			result.extension.logprobs ??= { content: [] }
-			result.extension.logprobs.content.push(...contentLogprobs)
-
-			if (!firstTokenAt) firstTokenAt = Date.now()
-			const timeSeconds = Math.max(0, (Date.now() - startedAt) / 1000)
-			const tokensCount = result.extension.logprobs.content.length
-			const speed = timeSeconds > 0 ? tokensCount / timeSeconds : 0
-
-			result.extension.logprobs_metrics = {
-				ttftSeconds: Math.max(0, (firstTokenAt - startedAt) / 1000),
-				timeSeconds,
-				tokensCount,
-				speed,
-			}
-		}
-
-		let imageIndex = 0
-		const response = await fetch(requestConfig.url, {
-			method: 'POST',
-			headers: requestHeaders(requestConfig),
-			body: JSON.stringify({
-				model: requestConfig.model,
-				messages,
-				stream: requestConfig.use_stream,
-				...requestConfig.model_arguments,
-				...requestConfig.use_stream ? { stream_options: { ...requestConfig.model_arguments?.stream_options, include_usage: true } } : {},
-			}),
-			signal
-		})
-
-		if (!response.ok)
-			throw await readErrorResponse(response, { url: requestConfig.url, apiStyle: 'chat' })
-
-		const reader = response.body.getReader()
-		signal?.addEventListener?.('abort', () => {
-			const err = new Error('User Aborted')
-			err.name = 'AbortError'
-			reader.cancel(err).catch(() => { })
-		}, { once: true })
-
-		const decoder = new TextDecoder()
-		let buffer = ''
-		let isSSE = false
-
-		const imageProcessingPromises = []
-
-		/**
-		 * 从流式 choice 的 `images` 字段收集图片 URL。
-		 *
-		 * 各来源形状不一：裸 URL 字符串、`{url}`，以及 OpenRouter 的
-		 * `{type:'image_url', image_url:{url}}`。
-		 * @param {any} images - choice 里的 images 字段。
-		 * @returns {string[]} 图片 URL 列表。
-		 */
-		const imageUrlsOf = (images) => {
-			if (!images) return []
-			const list = Array.isArray(images) ? images : [images]
-			const urls = []
-			for (const image of list)
-				if (typeof image === 'string') urls.push(image)
-				else if (typeof image?.url === 'string') urls.push(image.url)
-				else if (typeof image?.image_url === 'string') urls.push(image.image_url)
-				else if (typeof image?.image_url?.url === 'string') urls.push(image.image_url.url)
-			return urls
-		}
-
-		/**
-		 * 下载图片 URL 并加入结果文件。
-		 * @param {any} images - choice 里的 images 字段。
-		 */
-		const processImages = (images) => {
-			const urls = imageUrlsOf(images)
-			if (!urls.length) return
-
-			const promise = (async () => {
-				const newFiles = await Promise.all(urls.map(async (url) => {
-					try {
-						const imageResponse = await fetch(url)
-						if (!imageResponse.ok) return null
-						const mimeType = (imageResponse.headers.get('content-type') || 'image/png').split(';')[0].trim()
-						const extension = mimeType.split('/')[1]?.replace('jpeg', 'jpg') || 'png'
-						return {
-							name: `image${imageIndex++}.${extension}`,
-							buffer: Buffer.from(await imageResponse.arrayBuffer()),
-							mime_type: mimeType,
-						}
-					} catch (error) {
-						console.error('Failed to fetch image:', url, error)
-						return null
-					}
-				}))
-
-				const validFiles = newFiles.filter(Boolean)
-				if (validFiles.length > 0) {
-					result.files.push(...validFiles)
-					previewUpdater(result)
-				}
-			})()
-			imageProcessingPromises.push(promise)
-		}
-
-		/**
-		 * 处理一行 SSE `data:`。
-		 * @param {string} line - 原始行。
-		 * @returns {void}
-		 */
-		const handleSseLine = (line) => {
-			const trimmed = line.trim()
-			if (!trimmed.startsWith('data:')) return
-
-			const data = trimmed.slice(5).trim()
-			if (!data || data === '[DONE]') return
-
-			let json
-			try {
-				json = JSON.parse(data)
-			} catch (error) {
-				console.warn('Error parsing stream data:', error)
-				return
-			}
-
-			usageRecorder.record(json.usage, json.model)
-
-			// 流中夹带的错误对象：过去被静默忽略，导致得到空回复。
-			if (json.error)
-				throw new AIRequestError(
-					`chat stream error: ${json.error.message ?? JSON.stringify(json.error)}`,
-					{ apiStyle: 'chat', url: requestConfig.url, data: json },
-				)
-
-			const delta = json.choices?.[0]?.delta
-			const message = json.choices?.[0]?.message
-
-			const content = delta?.content || message?.content || ''
-			if (content) result.content += content
-
-			appendLogprobsFromChoice(json.choices?.[0])
-
-			// 推理字段：DeepSeek 用 reasoning_content，OpenRouter / 新版 vLLM 用 reasoning
-			const reasoningChunk = delta?.reasoning_content ?? message?.reasoning_content ?? delta?.reasoning ?? message?.reasoning ?? ''
-			if (reasoningChunk) {
-				result.extension ??= {}
-				result.extension.reasoning_content = (result.extension.reasoning_content ?? '') + reasoningChunk
-			}
-
-			if (content || reasoningChunk) previewUpdater(result)
-
-			const images = delta?.images || message?.images
-			if (images) processImages(images)
-		}
-
-		/**
-		 * 处理非流式 JSON 响应。
-		 * @param {object} json - 响应 JSON。
-		 * @returns {void}
-		 */
-		const applyNonStreamJson = json => {
-			usageRecorder.record(json.usage, json.model)
-			if (json.error)
-				throw new AIRequestError(
-					`chat error: ${json.error.message ?? JSON.stringify(json.error)}`,
-					{ apiStyle: 'chat', url: requestConfig.url, data: json },
-				)
-
-			const message = json.choices?.[0]?.message
-			appendLogprobsFromChoice(json.choices?.[0])
-			if (message) {
-				result.content = message.content || ''
-				if (message.images) processImages(message.images)
-				if (message.reasoning_content ?? message.reasoning) {
-					result.extension ??= {}
-					result.extension.reasoning_content = message.reasoning_content ?? message.reasoning
-				}
-			}
-		}
-
 		try {
+			const startedAt = Date.now()
+			let firstTokenAt
+
+			/**
+			 * 累积 OpenAI 兼容 logprobs，并维护基础性能指标。
+			 * @param {any} choice - 响应中的 choice 对象。
+			 */
+			const appendLogprobsFromChoice = (choice) => {
+				if (!requestConfig.model_arguments?.logprobs) return
+				const contentLogprobs = choice?.logprobs?.content ?? []
+				if (!contentLogprobs.length) return
+
+				result.extension ??= {}
+				result.extension.logprobs ??= { content: [] }
+				result.extension.logprobs.content.push(...contentLogprobs)
+
+				if (!firstTokenAt) firstTokenAt = Date.now()
+				const timeSeconds = Math.max(0, (Date.now() - startedAt) / 1000)
+				const tokensCount = result.extension.logprobs.content.length
+				const speed = timeSeconds > 0 ? tokensCount / timeSeconds : 0
+
+				result.extension.logprobs_metrics = {
+					ttftSeconds: Math.max(0, (firstTokenAt - startedAt) / 1000),
+					timeSeconds,
+					tokensCount,
+					speed,
+				}
+			}
+
+			let imageIndex = 0
+			const response = await fetch(requestConfig.url, {
+				method: 'POST',
+				headers: requestHeaders(requestConfig),
+				body: JSON.stringify({
+					model: requestConfig.model,
+					messages,
+					stream: requestConfig.use_stream,
+					...requestConfig.model_arguments,
+					...requestConfig.use_stream ? { stream_options: { ...requestConfig.model_arguments?.stream_options, include_usage: true } } : {},
+				}),
+				signal
+			})
+
+			if (!response.ok)
+				throw await readErrorResponse(response, { url: requestConfig.url, apiStyle: 'chat' })
+
+			const reader = response.body.getReader()
+			signal?.addEventListener?.('abort', () => {
+				const err = new Error('User Aborted')
+				err.name = 'AbortError'
+				reader.cancel(err).catch(() => { })
+			}, { once: true })
+
+			const decoder = new TextDecoder()
+			let buffer = ''
+			let isSSE = false
+
+			const imageProcessingPromises = []
+
+			/**
+			 * 从流式 choice 的 `images` 字段收集图片 URL。
+			 *
+			 * 各来源形状不一：裸 URL 字符串、`{url}`，以及 OpenRouter 的
+			 * `{type:'image_url', image_url:{url}}`。
+			 * @param {any} images - choice 里的 images 字段。
+			 * @returns {string[]} 图片 URL 列表。
+			 */
+			const imageUrlsOf = (images) => {
+				if (!images) return []
+				const list = Array.isArray(images) ? images : [images]
+				const urls = []
+				for (const image of list)
+					if (typeof image === 'string') urls.push(image)
+					else if (typeof image?.url === 'string') urls.push(image.url)
+					else if (typeof image?.image_url === 'string') urls.push(image.image_url)
+					else if (typeof image?.image_url?.url === 'string') urls.push(image.image_url.url)
+				return urls
+			}
+
+			/**
+			 * 下载图片 URL 并加入结果文件。
+			 * @param {any} images - choice 里的 images 字段。
+			 */
+			const processImages = (images) => {
+				const urls = imageUrlsOf(images)
+				if (!urls.length) return
+
+				const promise = (async () => {
+					const newFiles = await Promise.all(urls.map(async (url) => {
+						try {
+							const imageResponse = await fetch(url)
+							if (!imageResponse.ok) return null
+							const mimeType = (imageResponse.headers.get('content-type') || 'image/png').split(';')[0].trim()
+							const extension = mimeType.split('/')[1]?.replace('jpeg', 'jpg') || 'png'
+							return {
+								name: `image${imageIndex++}.${extension}`,
+								buffer: Buffer.from(await imageResponse.arrayBuffer()),
+								mime_type: mimeType,
+							}
+						} catch (error) {
+							console.error('Failed to fetch image:', url, error)
+							return null
+						}
+					}))
+
+					const validFiles = newFiles.filter(Boolean)
+					if (validFiles.length > 0) {
+						result.files.push(...validFiles)
+						previewUpdater(result)
+					}
+				})()
+				imageProcessingPromises.push(promise)
+			}
+
+			/**
+			 * 处理一行 SSE `data:`。
+			 * @param {string} line - 原始行。
+			 * @returns {void}
+			 */
+			const handleSseLine = (line) => {
+				const trimmed = line.trim()
+				if (!trimmed.startsWith('data:')) return
+
+				const data = trimmed.slice(5).trim()
+				if (!data || data === '[DONE]') return
+
+				let json
+				try {
+					json = JSON.parse(data)
+				} catch (error) {
+					console.warn('Error parsing stream data:', error)
+					return
+				}
+
+				usageRecorder.record(json.usage, json.model)
+
+				// 流中夹带的错误对象：过去被静默忽略，导致得到空回复。
+				if (json.error)
+					throw new AIRequestError(
+						`chat stream error: ${json.error.message ?? JSON.stringify(json.error)}`,
+						{ apiStyle: 'chat', url: requestConfig.url, data: json },
+					)
+
+				const delta = json.choices?.[0]?.delta
+				const message = json.choices?.[0]?.message
+
+				const content = delta?.content || message?.content || ''
+				if (content) result.content += content
+				if (content || delta?.tool_calls?.length || message?.tool_calls?.length) usageRecorder.firstOutput()
+
+				appendLogprobsFromChoice(json.choices?.[0])
+
+				// 推理字段：DeepSeek 用 reasoning_content，OpenRouter / 新版 vLLM 用 reasoning
+				const reasoningChunk = delta?.reasoning_content ?? message?.reasoning_content ?? delta?.reasoning ?? message?.reasoning ?? ''
+				if (reasoningChunk) {
+					usageRecorder.firstOutput()
+					result.extension ??= {}
+					result.extension.reasoning_content = (result.extension.reasoning_content ?? '') + reasoningChunk
+				}
+
+				if (content || reasoningChunk) previewUpdater(result)
+
+				const images = delta?.images || message?.images
+				if (images) processImages(images)
+			}
+
+			/**
+			 * 处理非流式 JSON 响应。
+			 * @param {object} json - 响应 JSON。
+			 * @returns {void}
+			 */
+			const applyNonStreamJson = json => {
+				usageRecorder.record(json.usage, json.model)
+				if (json.error)
+					throw new AIRequestError(
+						`chat error: ${json.error.message ?? JSON.stringify(json.error)}`,
+						{ apiStyle: 'chat', url: requestConfig.url, data: json },
+					)
+
+				const message = json.choices?.[0]?.message
+				appendLogprobsFromChoice(json.choices?.[0])
+				if (message) {
+					result.content = message.content || ''
+					if (message.images) processImages(message.images)
+					if (message.reasoning_content ?? message.reasoning) {
+						result.extension ??= {}
+						result.extension.reasoning_content = message.reasoning_content ?? message.reasoning
+					}
+				}
+			}
+
 			try {
 				while (true) {
 					if (signal?.aborted) {
@@ -335,21 +337,24 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 					}
 					if (json) applyNonStreamJson(json)
 				}
+			} catch (error) {
+				if (error.name !== 'AbortError') console.error('Stream reading error:', error)
+				throw error
+			} finally {
+				reader.releaseLock()
 			}
-			// 中断也要落下已上报的计量，否则本轮的调用从会话累计里消失
-			finally { usageRecorder.apply() }
-		} catch (error) {
-			if (error.name === 'AbortError') throw error
-			console.error('Stream reading error:', error)
-			throw error
-		} finally {
-			reader.releaseLock()
+
+			if (imageProcessingPromises.length > 0)
+				await Promise.allSettled(imageProcessingPromises)
+
+			return result
 		}
-
-		if (imageProcessingPromises.length > 0)
-			await Promise.allSettled(imageProcessingPromises)
-
-		return result
+		catch (error) {
+			// 失败/中断同样结算：已上报的计量与请求区间都要留下
+			usageRecorder.fail(error)
+			throw error
+		}
+		finally { usageRecorder.apply() }
 	}
 
 	/**

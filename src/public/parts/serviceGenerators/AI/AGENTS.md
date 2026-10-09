@@ -65,3 +65,5 @@ Credentials come from the user’s environment or JSON fields — no invented fa
 `claude-api` / `gemini` export `GetSource` extras (`getClient` / `createAi`) so OAuth and Vertex do not copy the call layer.
 
 Tests: `fount test serviceGenerators/AI/<name>` and `fount test shells/oauth_handler`.
+
+**Performance telemetry**: `createUsageRecorder` also appends one `extension.modelCalls` interval per actual request, even when provider usage is absent. Call `firstOutput()` only for nonempty streamed model content/reasoning/tool arguments; never for headers, role-only events, or nonstream responses. Enclose connection/HTTP/stream parsing in `try/catch/finally`: `fail(error)` records failure or abort and `apply()` seals the interval and any reported usage idempotently. Performance counts remain independent of billing; local generation may report its actual tokenizer output count there without inventing provider usage. Preserve `modelCalls` across reused `base_result` rounds and wrapper sources.

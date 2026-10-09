@@ -104,9 +104,9 @@ async function GetSource(config) {
 		}
 		const result = options.result ?? { content: '', files: [] }
 		const usageRecorder = createUsageRecorder(result, config, 'bedrock')
-		if (config.use_stream) {
-			const response = await client.send(new ConverseStreamCommand(input), { abortSignal: options.signal })
-			try {
+		try {
+			if (config.use_stream) {
+				const response = await client.send(new ConverseStreamCommand(input), { abortSignal: options.signal })
 				for await (const event of response.stream) {
 					usageRecorder.record(event.metadata?.usage)
 					if (options.signal?.aborted) {
@@ -116,21 +116,25 @@ async function GetSource(config) {
 					}
 					const delta = converseStreamDeltaText(event)
 					if (delta) {
+						usageRecorder.firstOutput()
 						result.content += delta
 						options.previewUpdater?.(result)
 					}
 				}
+				return result
 			}
-			// 中断也要落下已上报的计量，否则本轮的调用从会话累计里消失
-			finally { usageRecorder.apply() }
+			const response = await client.send(new ConverseCommand(input), { abortSignal: options.signal })
+			usageRecorder.record(response.usage)
+			result.content = (response.output?.message?.content ?? []).map(part => part.text ?? '').join('')
+			options.previewUpdater?.(result)
 			return result
 		}
-		const response = await client.send(new ConverseCommand(input), { abortSignal: options.signal })
-		usageRecorder.record(response.usage)
-		usageRecorder.apply()
-		result.content = (response.output?.message?.content ?? []).map(part => part.text ?? '').join('')
-		options.previewUpdater?.(result)
-		return result
+		catch (error) {
+			// 失败/中断同样结算：已上报的计量与请求区间都要留下
+			usageRecorder.fail(error)
+			throw error
+		}
+		finally { usageRecorder.apply() }
 	}
 
 	return {

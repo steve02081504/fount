@@ -36,12 +36,12 @@ Deno.test('partial token details preserve cached input and reasoning across stre
 Deno.test('a recorder that saw no usable count leaves the reply unmetered', () => {
 	const result = {}
 	createUsageRecorder(result, { model: 'claude' }, 'anthropic').apply()
-	assertEquals(result.extension, undefined)
+	assertEquals(result.extension?.usage, undefined)
 	const empty = {}
 	const recorder = createUsageRecorder(empty, { model: 'claude' }, 'anthropic')
 	recorder.record(undefined)
 	recorder.apply()
-	assertEquals(empty.extension, undefined)
+	assertEquals(empty.extension?.usage, undefined)
 })
 
 Deno.test('provider normalization keeps inclusive input and reasoning output', () => {
@@ -88,6 +88,32 @@ for (const api_mode of ['chat', 'responses']) Deno.test(`actual ${api_mode} requ
 		assertEquals(result.content, 'hello')
 		assertEquals(result.extension.usage.total, { inputTokens: 100, cacheReadTokens: 80, cacheWriteTokens: 0, outputTokens: 5 })
 		assertEquals(result.extension.usage.calls.length, 1)
+		assertEquals(result.extension.modelCalls.length, 1)
+		assertEquals(typeof result.extension.modelCalls[0].firstOutputAt, 'number')
 	}
 	finally { mock.restore() }
+})
+
+Deno.test('performance records first output without logprobs or fabricated provider usage', () => {
+	const result = {}
+	const recorder = createUsageRecorder(result, { model: 'plain' })
+	recorder.firstOutput()
+	const first = result.extension.modelCalls[0].firstOutputAt
+	recorder.firstOutput()
+	recorder.apply()
+	recorder.apply()
+	assertEquals(result.extension.usage, undefined)
+	assertEquals(result.extension.modelCalls.length, 1)
+	assertEquals(result.extension.modelCalls[0].firstOutputAt, first)
+	assertEquals(result.extension.modelCalls[0].status, 'succeeded')
+})
+
+Deno.test('failed unmetered requests retain their timing but no token count', () => {
+	const result = {}
+	const recorder = createUsageRecorder(result, { model: 'plain' })
+	recorder.fail(new Error('network failed'))
+	recorder.apply()
+	assertEquals(result.extension.modelCalls[0].status, 'failed')
+	assertEquals(typeof result.extension.modelCalls[0].finishedAt, 'number')
+	assertEquals(result.extension.usage, undefined)
 })

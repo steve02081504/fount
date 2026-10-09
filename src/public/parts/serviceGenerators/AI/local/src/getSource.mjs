@@ -193,6 +193,10 @@ export async function GetSource(config) {
 				extension: withoutReasoningExtension(base_result?.extension),
 			}
 
+			const measurement = { callId: crypto.randomUUID(), model: config.model_path, contextLimit: context.contextSize, startedAt: streamStartAt }
+			out.extension.modelCalls = [...out.extension.modelCalls ?? [], measurement]
+			// 生成期间即可读到本轮区间（code shell 的实时统计取 base_result.extension.modelCalls）
+			base_result.extension = out.extension
 			const useStream = (config.use_stream ?? true) && !!replyPreviewUpdater
 			const sequence = context.getSequence()
 			/**
@@ -240,12 +244,13 @@ export async function GetSource(config) {
 					}
 				}
 
-				const onResponseChunk = enableLogprobsShow && useStream
+				const onResponseChunk = useStream
 					? (chunk) => {
 						if (chunk.type !== undefined) return
 						const newTokens = chunk.tokens
 						if (!newTokens?.length) return
 						if (firstChunkAt == null) firstChunkAt = Date.now()
+						measurement.firstOutputAt ??= firstChunkAt
 						const prevLen = streamTokens.length
 						streamTokens.push(...newTokens)
 						if (!logprobCollector) return
@@ -282,6 +287,8 @@ export async function GetSource(config) {
 				}))
 				await logprobQueue
 				const promptEndAt = Date.now()
+				measurement.finishedAt = promptEndAt
+				measurement.outputTokens = streamTokens.length || model.tokenize(reply).length
 				if (!useStream)
 					out.content = reply
 				else if (!out.content && reply)
@@ -325,6 +332,7 @@ export async function GetSource(config) {
 				}
 			}
 			finally {
+				measurement.finishedAt ??= Date.now()
 				if (replaySequence)
 					try {
 						await replaySequence.dispose()

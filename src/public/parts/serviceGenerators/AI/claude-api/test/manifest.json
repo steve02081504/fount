@@ -21,7 +21,7 @@
 		},
 		{
 			"name": "integration",
-			"expected": "5s",
+			"expected": "1m2s",
 			"triggers": [
 				"src/public/parts/serviceGenerators/AI/claude-api/**",
 				"src/public/parts/shells/chat/public/shared/usage.mjs",

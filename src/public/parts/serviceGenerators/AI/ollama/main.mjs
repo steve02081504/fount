@@ -87,17 +87,24 @@ async function GetSource(config) {
 		 * @returns {Promise<{content: string}>} 来自 AI 的结果。
 		 */
 		Call: async prompt => {
-			const response = await ollama.generate({
-				model: config.model,
-				prompt,
-				stream: false,
-				options: config.model_arguments
-			})
-			const reply = { content: response.response }
+			const reply = {}
 			const usageRecorder = createUsageRecorder(reply, config, 'ollama')
-			usageRecorder.record(response)
-			usageRecorder.apply()
-			return reply
+			try {
+				const response = await ollama.generate({
+					model: config.model,
+					prompt,
+					stream: false,
+					options: config.model_arguments
+				})
+				reply.content = response.response
+				usageRecorder.record(response)
+				return reply
+			}
+			catch (error) {
+				usageRecorder.fail(error)
+				throw error
+			}
+			finally { usageRecorder.apply() }
 		},
 		/**
 		 * 使用结构化提示调用 AI 源。
@@ -117,36 +124,37 @@ async function GetSource(config) {
 			}
 
 			const usageRecorder = createUsageRecorder(result, config, 'ollama')
+			try {
 
-			/**
-			 * 预览更新器
-			 * @param {{content: string, files: any[]}} r - 结果对象
-			 * @returns {void}
-			 */
-			const previewUpdater = r => replyPreviewUpdater?.(r)
+				/**
+				 * 预览更新器
+				 * @param {{content: string, files: any[]}} r - 结果对象
+				 * @returns {void}
+				 */
+				const previewUpdater = r => replyPreviewUpdater?.(r)
 
-			// Check for abort before starting
-			if (signal?.aborted) {
-				const err = new Error('Aborted by user')
-				err.name = 'AbortError'
-				throw err
-			}
+				// Check for abort before starting
+				if (signal?.aborted) {
+					const err = new Error('Aborted by user')
+					err.name = 'AbortError'
+					throw err
+				}
 
-			// Use streaming based on config
-			const useStream = (config.use_stream ?? true) && !!replyPreviewUpdater
+				// Use streaming based on config
+				const useStream = (config.use_stream ?? true) && !!replyPreviewUpdater
 
-			if (useStream) {
+				if (useStream) {
 				// Use ollama's streaming support
-				const stream = await ollama.chat({
-					model: config.model,
-					messages,
-					stream: true,
-					options: config.model_arguments
-				})
+					const stream = await ollama.chat({
+						model: config.model,
+						messages,
+						stream: true,
+						options: config.model_arguments
+					})
 
-				try {
 					for await (const chunk of stream) {
 						if (chunk.done) usageRecorder.record(chunk, chunk.model)
+						if (chunk.message?.content || chunk.message?.thinking || chunk.message?.tool_calls?.length) usageRecorder.firstOutput()
 						if (signal?.aborted) {
 							const err = new Error('Aborted by user')
 							err.name = 'AbortError'
@@ -158,24 +166,27 @@ async function GetSource(config) {
 							previewUpdater(result)
 						}
 					}
-				}
-				// 中断也要落下已上报的计量，否则本轮的调用从会话累计里消失
-				finally { usageRecorder.apply() }
-			} else {
+				} else {
 				// Use non-streaming mode
-				const response = await ollama.chat({
-					model: config.model,
-					messages,
-					stream: false,
-					options: config.model_arguments
-				})
-				usageRecorder.record(response, response.model)
-				result.content = response.message.content
-				previewUpdater(result)
-				usageRecorder.apply()
-			}
+					const response = await ollama.chat({
+						model: config.model,
+						messages,
+						stream: false,
+						options: config.model_arguments
+					})
+					usageRecorder.record(response, response.model)
+					result.content = response.message.content
+					previewUpdater(result)
+				}
 
-			return Object.assign(base_result, result)
+				return Object.assign(base_result, result)
+			}
+			catch (error) {
+				// 失败/中断同样结算：已上报的计量与请求区间都要留下
+				usageRecorder.fail(error)
+				throw error
+			}
+			finally { usageRecorder.apply() }
 		},
 		/**
 		 * 按本源配置把 prompt_struct 构建成 Ollama 消息结构（图片保留为 Buffer），供快照与缓存对比。

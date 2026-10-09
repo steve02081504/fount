@@ -208,26 +208,33 @@ export async function GetSource(config, extra = {}) {
 
 			const reply = {}
 			const usageRecorder = createUsageRecorder(reply, config, 'anthropic')
-			let text = ''
+			try {
+				let text = ''
 
-			if (config.use_stream) {
-				const stream = await (await clientOf()).messages.create({ ...params, stream: true })
-				for await (const event of stream) {
-					usageRecorder.record(event.message?.usage ?? event.usage, event.message?.model)
-					if (event.type === 'content_block_delta' && event.delta.type === 'text_delta')
-						text += event.delta.text
+				if (config.use_stream) {
+					const stream = await (await clientOf()).messages.create({ ...params, stream: true })
+					for await (const event of stream) {
+						usageRecorder.record(event.message?.usage ?? event.usage, event.message?.model)
+						if (event.type === 'content_block_delta' && (event.delta?.text || event.delta?.thinking || event.delta?.partial_json)) usageRecorder.firstOutput()
+						if (event.type === 'content_block_delta' && event.delta.type === 'text_delta')
+							text += event.delta.text
+					}
 				}
-			}
-			else {
-				const message = await (await clientOf()).messages.create(params)
-				usageRecorder.record(message.usage, message.model)
-				// Claude 的响应 content 是一个数组，我们只取文本部分
-				text = message.content.filter(block => block.type === 'text').map(block => block.text).join('')
-			}
+				else {
+					const message = await (await clientOf()).messages.create(params)
+					usageRecorder.record(message.usage, message.model)
+					// Claude 的响应 content 是一个数组，我们只取文本部分
+					text = message.content.filter(block => block.type === 'text').map(block => block.text).join('')
+				}
 
-			reply.content = text
-			usageRecorder.apply()
-			return reply
+				reply.content = text
+				return reply
+			}
+			catch (error) {
+				usageRecorder.fail(error)
+				throw error
+			}
+			finally { usageRecorder.apply() }
 		},
 
 		// 结构化的多模态调用
@@ -281,22 +288,23 @@ export async function GetSource(config, extra = {}) {
 			}
 
 			const usageRecorder = createUsageRecorder(result, config, 'anthropic')
+			try {
 
-			/**
-			 * 预览更新器
-			 * @param {{content: string, files: any[]}} r - 结果对象
-			 * @returns {void}
-			 */
-			const previewUpdater = r => replyPreviewUpdater?.(clearFormat({ ...r }))
+				/**
+				 * 预览更新器
+				 * @param {{content: string, files: any[]}} r - 结果对象
+				 * @returns {void}
+				 */
+				const previewUpdater = r => replyPreviewUpdater?.(clearFormat({ ...r }))
 
-			// Use streaming based on config
-			const useStream = (config.use_stream ?? true) && !!replyPreviewUpdater
+				// Use streaming based on config
+				const useStream = (config.use_stream ?? true) && !!replyPreviewUpdater
 
-			if (useStream) {
-				const stream = await (await clientOf()).messages.create({ ...params, stream: true }, { signal })
-				try {
+				if (useStream) {
+					const stream = await (await clientOf()).messages.create({ ...params, stream: true }, { signal })
 					for await (const event of stream) {
 						usageRecorder.record(event.message?.usage ?? event.usage, event.message?.model)
+						if (event.type === 'content_block_delta' && (event.delta?.text || event.delta?.thinking || event.delta?.partial_json)) usageRecorder.firstOutput()
 						if (signal?.aborted) {
 							const err = new Error('Aborted by user')
 							err.name = 'AbortError'
@@ -308,18 +316,21 @@ export async function GetSource(config, extra = {}) {
 						}
 					}
 				}
-				// 中断也要落下已上报的计量，否则本轮的调用从会话累计里消失
-				finally { usageRecorder.apply() }
-			}
-			else {
-				const message = await (await clientOf()).messages.create(params, { signal })
-				usageRecorder.record(message.usage, message.model)
-				result.content = message.content.filter(block => block.type === 'text').map(block => block.text).join('')
-				previewUpdater(result)
-				usageRecorder.apply()
-			}
+				else {
+					const message = await (await clientOf()).messages.create(params, { signal })
+					usageRecorder.record(message.usage, message.model)
+					result.content = message.content.filter(block => block.type === 'text').map(block => block.text).join('')
+					previewUpdater(result)
+				}
 
-			return Object.assign(base_result, clearFormat(result))
+				return Object.assign(base_result, clearFormat(result))
+			}
+			catch (error) {
+				// 失败/中断同样结算：已上报的计量与请求区间都要留下
+				usageRecorder.fail(error)
+				throw error
+			}
+			finally { usageRecorder.apply() }
 		},
 		tokenizer: identityTokenizer,
 		/**
