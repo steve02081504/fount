@@ -204,6 +204,9 @@ export async function loadDraft(groupId, channelId, isCurrent) {
 
 	let draft
 	try {
+		// 快速切回同一频道时，先等该频道的后台保存完成；其他频道仍可独立加载。
+		await draftOpQueues.get(key)?.catch(() => { })
+		if (isCurrent && !isCurrent()) return
 		draft = await getDraft(key)
 	}
 	catch (error) {

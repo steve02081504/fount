@@ -16,6 +16,7 @@ export const phases = [
 			'markdownRichInput.spec.mjs',
 			'attachments.spec.mjs',
 			'navigation.spec.mjs',
+			'usability.spec.mjs',
 			'dmChannelContext.spec.mjs',
 			'noDefaultChannel.spec.mjs',
 			'messageActions.spec.mjs',

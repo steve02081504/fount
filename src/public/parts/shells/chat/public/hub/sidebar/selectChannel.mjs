@@ -65,11 +65,11 @@ export async function selectChannel(channelId) {
 		const input = document.getElementById('message-input')
 		const contentWarningInput = document.getElementById('content-warning')
 		const sensitiveMediaInput = document.getElementById('sensitive-media')
-		await flushDraft(prevGroupId, prevChannelId, {
+		flushDraft(prevGroupId, prevChannelId, {
 			text: isTextComposer(input) ? input.value : '',
 			content_warning: contentWarningInput instanceof HTMLInputElement ? contentWarningInput.value.trim() : '',
 			sensitive_media: sensitiveMediaInput instanceof HTMLInputElement ? sensitiveMediaInput.checked : false,
-			files: selectedFiles,
+			files: [...selectedFiles],
 		})
 	}
 	if (!stillCurrent()) return
@@ -94,14 +94,18 @@ export async function selectChannel(channelId) {
 	clearReplyTarget()
 	const channelType = channel.type || 'text'
 	// surface/composer 必须在 showHubMainPane 之前落好：mobile 主屏一开，groups surface 会把 .input-area display:none
-	if (channelType === 'list' || channelType === 'streaming')
-		disableComposer(channelType === 'list' ? 'chat.hub.channel.readonlyList' : 'chat.hub.channel.readonlyStream')
-	else if (store.context.currentState?.groupSettings?.rootChannelId === channelId)
-		disableComposer('chat.hub.channel.readonlyRoot')
-	else if (store.context.currentState?.suspectedRemoved)
-		disableComposer('chat.hub.composerSuspectedRemoved')
-	else
-		enableComposer()
+	/** @returns {void} 草稿恢复完成后才允许输入。 */
+	const applyComposerState = () => {
+		if (channelType === 'list' || channelType === 'streaming')
+			disableComposer(channelType === 'list' ? 'chat.hub.channel.readonlyList' : 'chat.hub.channel.readonlyStream')
+		else if (store.context.currentState?.groupSettings?.rootChannelId === channelId)
+			disableComposer('chat.hub.channel.readonlyRoot')
+		else if (store.context.currentState?.suspectedRemoved)
+			disableComposer('chat.hub.composerSuspectedRemoved')
+		else
+			enableComposer()
+	}
+	disableComposer()
 	const { showHubMainPane } = await import('../hubPane.mjs')
 	showHubMainPane()
 	warmCharEntityHashCache().catch(handleError('chat.hub.warmCharCacheFailed'))
@@ -143,8 +147,12 @@ export async function selectChannel(channelId) {
 	// WS 先于消息加载连上：任一频道类型都保持连接，list/idle 表面也照常收 `dag_event`。
 	if (store.context.currentGroupId)
 		connectGroupWebSocket(store.context.currentGroupId, channelId)
-	await loadDraft(store.context.currentGroupId, channelId, isChannelCurrent)
-	await loadMessages(isChannelCurrent)
+	await Promise.all([
+		loadDraft(store.context.currentGroupId, channelId, isChannelCurrent).then(() => {
+			if (isChannelCurrent()) applyComposerState()
+		}),
+		loadMessages(isChannelCurrent),
+	])
 	if (!isChannelCurrent()) return
 	updateStatusBanners()
 	refreshPinsBookmarks().catch(handleError('chat.hub.operationFailed'))

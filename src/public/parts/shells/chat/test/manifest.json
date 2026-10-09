@@ -1146,6 +1146,19 @@
 						"src/public/parts/shells/chat/public/markdown_extensions/**",
 						"src/public/pages/scripts/features/emoji/packIndex.mjs"
 					]
+				},
+				{
+					"name": "usability",
+					"expected": "2m30s",
+					"triggers": [
+						"src/public/parts/shells/chat/test/frontend/usability.spec.mjs",
+						"src/public/parts/shells/chat/public/hub/{friendChat,groupContextMenu,hashNav,serverBar,composerDraft}.mjs",
+						"src/public/parts/shells/chat/public/hub/messages/{messageRefresh,messageVirtualList,composerController,channelMutationQueue}.mjs",
+						"src/public/parts/shells/chat/public/hub/sidebar/**",
+						"src/public/parts/shells/chat/public/hub/wiring/headerEvents.mjs",
+						"src/public/parts/shells/chat/public/src/templates/hub/modals/group_invite.html",
+						"src/public/pages/scripts/endpoints/p2p/federation.mjs"
+					]
 				}
 			],
 			"run": [
