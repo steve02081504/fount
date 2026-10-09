@@ -9,6 +9,41 @@ import {
 	openFreshGroupChannel,
 } from './fixtures.mjs'
 
+test('DM friend labels hydrate current profiles without inheriting the open group persona', async ({ modulePage }) => {
+	const { page } = modulePage
+	const peer = '3'.repeat(64) + '1'.repeat(64)
+	const aliasedPeer = '3'.repeat(64) + '2'.repeat(64)
+	const requests = []
+	await page.route('**/api/parts/shells:chat/entities/*', async route => {
+		requests.push(route.request().url())
+		await route.fulfill({ json: { profile: { name: 'Current peer name', status: 'offline' } } })
+	})
+	await page.route('**/api/parts/shells:chat/aliases*', route => route.fulfill({
+		json: { entities: { [aliasedPeer]: 'My alias' }, groups: {} },
+	}))
+	await modulePage.run(async ({ peer, aliasedPeer }) => {
+		const { loadAliases } = await import('/parts/shells:chat/shared/aliases.mjs')
+		const { buildFriendRows } = await import('/parts/shells:chat/shared/friendRows.mjs')
+		const { renderFriendsColumn } = await import('/parts/shells:chat/hub/friendsList.mjs')
+		const { store } = await import('/parts/shells:chat/hub/core/state.mjs')
+		await loadAliases()
+		store.context.currentGroupId = 'unrelated-open-group'
+		const header = document.createElement('div')
+		header.id = 'group-name-display'
+		const host = document.createElement('div')
+		host.id = 'channel-list'
+		document.body.append(header, host)
+		await renderFriendsColumn(buildFriendRows([peer, aliasedPeer].map((entityHash, index) => ({
+			groupId: `dm-${index}`,
+			friendBinding: { entityHash, displayName: 'Stale binding name' },
+		}))))
+	}, { peer, aliasedPeer })
+	await expect(page.locator(`[data-entity-hash="${peer}"] .char-list-name`)).toHaveText('Current peer name')
+	await expect(page.locator(`[data-entity-hash="${aliasedPeer}"] .char-list-name`)).toHaveText('My alias')
+	expect(requests).toHaveLength(2)
+	expect(requests.every(url => !new URL(url).searchParams.has('groupId'))).toBe(true)
+})
+
 test('sidebar profile fits its rail and long bio folds to its first lines with keyboard expand/collapse', async ({ modulePage }) => {
 	const { page } = modulePage
 	await modulePage.run(async () => {

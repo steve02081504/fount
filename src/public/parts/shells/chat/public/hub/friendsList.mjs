@@ -80,10 +80,11 @@ function bindFriendProfileHover(el, target) {
 		if (!isEntityHash128(entityHash) && target.charname)
 			entityHash = await charAgentEntityHash(target.charname) || ''
 		if (!isEntityHash128(entityHash)) return null
+		const displayName = el.querySelector('.char-list-name')?.textContent?.trim() || target.displayName
 		return {
 			cacheKey: entityHash,
 			entityHash,
-			displayName: target.displayName,
+			displayName,
 			groupId: target.groupId || undefined,
 			wireActions: true,
 			entity: {
@@ -91,7 +92,7 @@ function bindFriendProfileHover(el, target) {
 				charname: target.charname || null,
 				pubKeyHex: null,
 				pubKeyHash: null,
-				displayName: target.displayName,
+				displayName,
 			},
 			paintOptions: friendHoverPaintOptions(),
 		}

@@ -188,7 +188,7 @@
 	"suites": [
 		{
 			"name": "pure",
-			"expected": "4m20s",
+			"expected": "1m57s",
 			"trigger": [
 				"shellBackend",
 				"shellPureExtra",
@@ -801,7 +801,7 @@
 		},
 		{
 			"name": "frontend",
-			"expected": "35m49s",
+			"expected": "17m29s",
 			"dependsOn": [
 				"server:live",
 				"e2e_single"
@@ -812,7 +812,9 @@
 					"name": "smoke",
 					"expected": "11s",
 					"triggers": [
-						"src/public/parts/shells/chat/test/frontend/smoke.spec.mjs"
+						"src/public/parts/shells/chat/test/frontend/smoke.spec.mjs",
+						"src/public/parts/shells/chat/public/hub/{index,initCore,hashNav,serverBar}.mjs",
+						"src/public/parts/shells/chat/public/hub/{index.html,vars.css,layout.css,components.css,messages.css,widgets.css}"
 					]
 				},
 				{
@@ -838,6 +840,7 @@
 						"src/public/parts/shells/chat/public/hub/widgets.css",
 						"src/public/parts/shells/chat/public/hub/composerExtras.mjs",
 						"src/public/parts/shells/chat/public/hub/composerDraft.mjs",
+						"src/public/parts/shells/chat/public/hub/markdownRichInput.mjs",
 						"src/public/parts/shells/chat/public/hub/messages/composerController.mjs",
 						"src/public/parts/shells/chat/public/src/composerAttachments.mjs"
 					]
@@ -1070,6 +1073,9 @@
 						"src/public/parts/shells/chat/test/frontend/profilePopup.spec.mjs",
 						"src/public/parts/shells/chat/public/hub/profilePopup.mjs",
 						"src/public/parts/shells/chat/public/hub/presence.mjs",
+						"src/public/parts/shells/chat/public/hub/friendsList.mjs",
+						"src/public/parts/shells/chat/public/shared/{entityHash,friendRows,nameResolve}.mjs",
+						"src/public/parts/shells/chat/public/src/templates/hub/mode/chars_column.html",
 						"src/public/parts/shells/chat/public/hub/entityProfile.mjs",
 						"src/public/parts/shells/chat/public/hub/core/avatarCover.mjs",
 						"src/public/parts/shells/chat/public/hub/core/domUtils.mjs",

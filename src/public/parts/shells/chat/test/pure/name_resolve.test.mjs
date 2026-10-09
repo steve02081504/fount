@@ -6,8 +6,18 @@ import { assertEquals } from 'jsr:@std/assert'
 
 import { disambiguateLabels, resolveDisplayName } from 'fount/public/parts/shells/chat/public/shared/nameResolve.mjs'
 
+import { entityHashLabel, formatEntityAtId } from '../../public/shared/entityHash.mjs'
+
 
 const HASH = 'a'.repeat(128)
+
+Deno.test('entity at-id and name fallback abbreviate the same subject hash', () => {
+	const hash = '3c063b42'.padEnd(64, '0') + '1201057b'.padEnd(60, '1') + '879a'
+	assertEquals(entityHashLabel(hash), '1201057b…879a')
+	assertEquals(formatEntityAtId(hash), '@1201057b…879a')
+	assertEquals(formatEntityAtId(hash, { handle: 'Seele' }), '@seele (@1201057b…879a)')
+	assertEquals(formatEntityAtId(hash, { headLen: 4, tailLen: 2 }), '@1201…9a')
+})
 
 Deno.test('resolveDisplayName 优先级：alias → profile → fallback → 短码', () => {
 	assertEquals(resolveDisplayName({ entityHash: HASH, alias: '老王', profileName: 'Wang', fallbackLabel: 'fb' }), '老王')

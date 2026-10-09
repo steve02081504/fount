@@ -476,18 +476,22 @@ export function applyAvatarsTo(rootElement) {
 		if (!authorKey) return
 		const { profileKey } = authorPresentationKeys(authorKey)
 		if (av.dataset.avatarLoaded) return
-		void fetchAuthorProfile(profileKey, { groupId: store.context.currentGroupId || undefined }).then(async (profile) => {
-			if (!profile) return
-			av.dataset.avatarLoaded = '1'
+		const friendName = av.closest('.char-list-item[data-friend-kind]')?.querySelector('.char-list-name')
+		void fetchAuthorProfile(profileKey, { groupId: friendName ? undefined : store.context.currentGroupId || undefined }).then(async (profile) => {
+			if (!profile || av.dataset.avatarFor !== authorKey) return
 			const entityHash = resolveEntityHashForAuthorKey(authorKey) || profileKey
+			const label = resolveDisplayName({
+				entityHash,
+				alias: entityHash ? aliasForEntity(entityHash) : '',
+				profileName: await pageLocaleProfileName(profile),
+				fallbackLabel: friendName?.textContent?.trim() || authorDisplayLabel(authorKey),
+			})
+			if (av.dataset.avatarFor !== authorKey) return
+			av.dataset.avatarLoaded = '1'
+			if (friendName) friendName.textContent = label
 			applyProfileAvatarToHost(av, {
 				seed: profileKey,
-				label: resolveDisplayName({
-					entityHash,
-					alias: entityHash ? aliasForEntity(entityHash) : '',
-					profileName: await pageLocaleProfileName(profile),
-					fallbackLabel: authorDisplayLabel(authorKey),
-				}),
+				label,
 				avatar: displayProfileAvatar(profile),
 			})
 			const dot = av.closest('.member-avatar-wrap, .avatar-wrap')?.querySelector('.status-dot')

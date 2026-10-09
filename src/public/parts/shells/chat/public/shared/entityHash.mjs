@@ -65,8 +65,10 @@ export function entityHashLabel(entityHash) {
  */
 export function formatEntityAtId(entityHash, options = {}) {
 	const handle = (options.handle || '').trim().replace(/^@+/u, '').toLowerCase()
+	const subject = parseEntityHash(entityHash)?.subjectHash
 	const hashAt = formatHashShort(entityHash, {
 		withAt: true,
+		useSubject: !!subject,
 		headLen: options.headLen ?? 8,
 		tailLen: options.tailLen ?? 4,
 	})

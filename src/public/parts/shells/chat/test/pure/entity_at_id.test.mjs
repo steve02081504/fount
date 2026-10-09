@@ -11,26 +11,26 @@ const HASH = '459e5033' + 'a'.repeat(116) + 'a419'
 Deno.test('formatEntityAtId：无 handle → @hash 缩写', () => {
 	assertEquals(
 		formatEntityAtId(HASH),
-		formatHashShort(HASH, { withAt: true, headLen: 8, tailLen: 4 }),
+		formatHashShort(HASH, { withAt: true, useSubject: true, headLen: 8, tailLen: 4 }),
 	)
-	assertEquals(formatEntityAtId(HASH), '@459e5033…a419')
+	assertEquals(formatEntityAtId(HASH), '@aaaaaaaa…a419')
 })
 
 Deno.test('formatEntityAtId：有具名 handle → @handle (@hash)', () => {
 	assertEquals(
 		formatEntityAtId(HASH, { handle: 'steve02081504' }),
-		'@steve02081504 (@459e5033…a419)',
+		'@steve02081504 (@aaaaaaaa…a419)',
 	)
 })
 
 Deno.test('formatEntityAtId：剥掉多余 @ 并小写化 handle', () => {
 	assertEquals(
 		formatEntityAtId(HASH, { handle: '@@Steve_Name' }),
-		'@steve_name (@459e5033…a419)',
+		'@steve_name (@aaaaaaaa…a419)',
 	)
 })
 
 Deno.test('formatEntityAtId：空白 handle 视为未设置', () => {
-	assertEquals(formatEntityAtId(HASH, { handle: '   ' }), '@459e5033…a419')
-	assertEquals(formatEntityAtId(HASH, { handle: null }), '@459e5033…a419')
+	assertEquals(formatEntityAtId(HASH, { handle: '   ' }), '@aaaaaaaa…a419')
+	assertEquals(formatEntityAtId(HASH, { handle: null }), '@aaaaaaaa…a419')
 })
