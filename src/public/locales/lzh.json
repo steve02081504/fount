@@ -7318,8 +7318,8 @@
 		}
 	},
 	"proxy_exposure": {
-		"description": "一公網代理未出一語可信，故節點閉其門。教以所待之轉送標記，服務即復。",
 		"title": "fount 已停 Web 之務",
+		"description": "一公網代理未出一語可信，故節點閉其門。教以所待之轉送標記，服務即復。",
 		"language": "頁面之語",
 		"risk": {
 			"title": "此配置何危之有？",

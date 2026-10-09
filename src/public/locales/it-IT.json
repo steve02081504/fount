@@ -7330,8 +7330,8 @@
 		}
 	},
 	"proxy_exposure": {
-		"description": "Un proxy pubblico ha risposto senza una parola di fiducia, così il nodo ha serrato le sue porte. Indicagli le intestazioni di inoltro che attende e il servizio riprenderà.",
 		"title": "fount ha sospeso il suo servizio web",
+		"description": "Un proxy pubblico ha risposto senza una parola di fiducia, così il nodo ha serrato le sue porte. Indicagli le intestazioni di inoltro che attende e il servizio riprenderà.",
 		"language": "Lingua della pagina",
 		"risk": {
 			"title": "Perché questa configurazione è pericolosa?",

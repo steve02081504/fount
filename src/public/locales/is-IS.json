@@ -7324,8 +7324,8 @@
 		}
 	},
 	"proxy_exposure": {
-		"description": "Opinber milliliður svaraði án orðs um traust, svo hnúturinn lokaði hliðum sínum. Kenndu honum framsendingarmerkin sem hann bíður eftir, og þjónustan hefst á ný.",
 		"title": "fount hefur stöðvað vefþjónustuna",
+		"description": "Opinber milliliður svaraði án orðs um traust, svo hnúturinn lokaði hliðum sínum. Kenndu honum framsendingarmerkin sem hann bíður eftir, og þjónustan hefst á ný.",
 		"language": "Tungumál síðunnar",
 		"risk": {
 			"title": "Af hverju er þessi stilling hættuleg?",

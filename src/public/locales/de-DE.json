@@ -7324,8 +7324,8 @@
 		}
 	},
 	"proxy_exposure": {
-		"description": "Ein öffentlicher Proxy hat ohne ein Wort des Vertrauens geantwortet, worauf der Knoten seine Türen verschlossen hat. Bringen Sie ihm die Weiterleitungsmerkmale bei, auf die er wartet, und der Dienst läuft wieder.",
 		"title": "fount hat seinen Webdienst ausgesetzt",
+		"description": "Ein öffentlicher Proxy hat ohne ein Wort des Vertrauens geantwortet, worauf der Knoten seine Türen verschlossen hat. Bringen Sie ihm die Weiterleitungsmerkmale bei, auf die er wartet, und der Dienst läuft wieder.",
 		"language": "Sprache der Seite",
 		"risk": {
 			"title": "Warum ist diese Konfiguration gefährlich?",

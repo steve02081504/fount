@@ -7330,8 +7330,8 @@
 		}
 	},
 	"proxy_exposure": {
-		"description": "Um proxy público respondeu sem uma palavra de confiança, por isso o nó fechou as suas portas. Ensine-lhe as marcas de reencaminhamento que espera e o serviço retoma.",
 		"title": "o fount suspendeu o serviço web",
+		"description": "Um proxy público respondeu sem uma palavra de confiança, por isso o nó fechou as suas portas. Ensine-lhe as marcas de reencaminhamento que espera e o serviço retoma.",
 		"language": "Idioma da página",
 		"risk": {
 			"title": "Porque é que esta configuração é perigosa?",

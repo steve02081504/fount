@@ -7330,8 +7330,8 @@
 		}
 	},
 	"proxy_exposure": {
-		"description": "Een publieke proxy antwoordde zonder een woord van vertrouwen, waarop de node zijn deuren sloot. Leer hem de doorstuurmarkeringen waarop hij wacht, en de dienst hervat.",
 		"title": "fount heeft zijn webdienst stilgelegd",
+		"description": "Een publieke proxy antwoordde zonder een woord van vertrouwen, waarop de node zijn deuren sloot. Leer hem de doorstuurmarkeringen waarop hij wacht, en de dienst hervat.",
 		"language": "Taal van de pagina",
 		"risk": {
 			"title": "Waarom is deze configuratie gevaarlijk?",

@@ -7318,8 +7318,8 @@
 		}
 	},
 	"proxy_exposure": {
-		"description": "Một proxy công khai trả lời mà không một lời tín nhiệm, nên nút đã khép cửa. Hãy dạy nó những dấu chuyển tiếp mà nó đang chờ, và dịch vụ sẽ trở lại.",
 		"title": "fount đã tạm dừng dịch vụ web",
+		"description": "Một proxy công khai trả lời mà không một lời tín nhiệm, nên nút đã khép cửa. Hãy dạy nó những dấu chuyển tiếp mà nó đang chờ, và dịch vụ sẽ trở lại.",
 		"language": "Ngôn ngữ trang",
 		"risk": {
 			"title": "Vì sao cấu hình này nguy hiểm?",

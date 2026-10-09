@@ -7330,8 +7330,8 @@
 		}
 	},
 	"proxy_exposure": {
-		"description": "Un proxy public a répondu sans le moindre gage de confiance ; le nœud a donc refermé ses portes. Enseignez-lui les marques de transfert qu’il attend, et le service reprendra.",
 		"title": "fount a suspendu son service web",
+		"description": "Un proxy public a répondu sans le moindre gage de confiance ; le nœud a donc refermé ses portes. Enseignez-lui les marques de transfert qu’il attend, et le service reprendra.",
 		"language": "Langue de la page",
 		"risk": {
 			"title": "Pourquoi cette configuration est-elle dangereuse ?",

@@ -6805,7 +6805,7 @@ export type LocaleData = {
 			changes: string
 			unsaved: string
 			externalChange: string
-			lines: LocaleSwitchLeaf
+			lines: string
 			discardConfirm: string
 			editorLabel: string
 			editedFiles: string
@@ -7280,8 +7280,8 @@ export type LocaleData = {
 		}
 	}
 	proxy_exposure: {
-		description: string
 		title: string
+		description: string
 		language: string
 		risk: {
 			title: string

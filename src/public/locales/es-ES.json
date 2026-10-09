@@ -7330,8 +7330,8 @@
 		}
 	},
 	"proxy_exposure": {
-		"description": "Un proxy público respondió sin una sola palabra de confianza, así que el nodo cerró sus puertas. Enséñale las marcas de reenvío que espera y el servicio se reanudará.",
 		"title": "fount ha suspendido su servicio web",
+		"description": "Un proxy público respondió sin una sola palabra de confianza, así que el nodo cerró sus puertas. Enséñale las marcas de reenvío que espera y el servicio se reanudará.",
 		"language": "Idioma de la página",
 		"risk": {
 			"title": "¿Por qué es peligrosa esta configuración?",

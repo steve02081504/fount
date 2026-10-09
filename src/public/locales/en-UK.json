@@ -7324,8 +7324,8 @@
 		}
 	},
 	"proxy_exposure": {
-		"description": "A public proxy answered without a word of trust, so the node drew its doors shut. Teach it the forwarding marks it is waiting for, and service resumes.",
 		"title": "fount has suspended its web service",
+		"description": "A public proxy answered without a word of trust, so the node drew its doors shut. Teach it the forwarding marks it is waiting for, and service resumes.",
 		"language": "Page language",
 		"risk": {
 			"title": "Why is this configuration dangerous?",
