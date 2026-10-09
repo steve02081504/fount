@@ -6790,7 +6790,7 @@ export type LocaleData = {
 			changes: string
 			unsaved: string
 			externalChange: string
-			lines: string
+			lines: LocaleSwitchLeaf
 			discardConfirm: string
 			editorLabel: string
 			editedFiles: string
