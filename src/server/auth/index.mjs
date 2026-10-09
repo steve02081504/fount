@@ -508,27 +508,32 @@ export async function try_auth_request(req, res) {
 		const user = await verifyApiKey(apiKey)
 		if (user) { req.user = user; return }
 		// 无效 API Key：帮忙清除，并继续尝试会话认证，避免其永久阻塞登录
-		// WebSocket 升级的模拟响应无法写 Cookie，跳过清除以免抛错。
-		if (!req.ws) res.clearCookie('fount-apikey', { path: '/' })
+		res.clearCookie('fount-apikey', { path: '/' })
 	}
 
 	// 2. Cookie 令牌认证
 	const { accessToken = undefined, refreshToken = undefined } = req.cookies
 	const decoded = accessToken ? await verifyToken(accessToken) : null
 	if (decoded) {
-		req.user = config.data.users[decoded.username]
+		const user = config.data.users[decoded.username]
+		// 令牌验签通过但用户已不存在（重命名/删除）：必须按未授权处理。
+		// 放行会让 req.user 为 undefined 却调用 next()——WebSocket 升级先「成功」，
+		// 随后路由处理器才抛 401（客户端只看到握手成功后 1006）。
+		if (!user) return Unauthorized('Session expired, please login again.')
+		req.user = user
 		return
 	}
 
 	// 3. 尝试刷新令牌
 	if (!refreshToken) {
 		// 仅在确实收到过（已失效的）访问令牌时清除，避免匿名请求（登录页 / 登出后）被反复下发无意义的清除头。
-		if (!req.ws && accessToken) clearAuthCookies(res, getSecureCookieOptions(req))
+		if (accessToken) clearAuthCookies(res, getSecureCookieOptions(req))
 		return Unauthorized('Session expired, please login again.')
 	}
 
-	// 4. WebSocket 升级响应（模拟 res）无法下发新 Cookie：只校验刷新令牌以认证本次连接，
-	// 不轮换/消费刷新令牌——否则旧 refreshToken 被撤销、新值却到不了浏览器，宽限期后客户端会被登出。
+	// 4. 升级成功走的是 101 握手（由 ws 直接写出），带不下新的 Set-Cookie：
+	// 只校验刷新令牌以认证本次连接，不轮换/消费刷新令牌——否则旧 refreshToken 被撤销、
+	// 新值却到不了浏览器，宽限期后客户端会被登出。
 	if (req.ws) {
 		const decodedRefresh = await verifyToken(refreshToken)
 		const refreshUser = decodedRefresh && config.data.users[decodedRefresh.username]

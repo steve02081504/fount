@@ -118,7 +118,7 @@ Deno.test({
 		assertEquals(tokens.length, 1)
 		const oldJti = tokens[0].jti
 
-		// 模拟 WebSocket 升级：WsAbleRouter 的模拟响应没有 cookie / clearCookie 方法。
+		// 模拟 WebSocket 升级：只提供该认证路径真正用到的响应方法（刷新令牌分支不写 Cookie）。
 		const wsReq = {
 			ws: true,
 			cookies: { refreshToken },

@@ -71,6 +71,7 @@
 				"src/server/read_progress.mjs",
 				"src/server/web_server/**",
 				"src/scripts/ms.mjs",
+				"src/scripts/ratelimit.mjs",
 				"src/scripts/tray.mjs",
 				"src/scripts/systray_protocol.mjs",
 				"src/scripts/WsAbleRouter.mjs",

@@ -50,7 +50,7 @@ function is_loopback_host(host) {
 export function is_trusted_local_request(req) {
 	if (!is_local_ip_from_req(req)) return false
 	// DNS rebinding：外部域名解析到回环时 Host 仍是外部域名。
-	if (!is_loopback_host(req.headers?.host)) return false
+	if (!is_loopback_host_request(req)) return false
 	const origin = req.headers?.origin
 	if (origin == null || origin === '') return true
 	try {
@@ -59,6 +59,17 @@ export function is_trusted_local_request(req) {
 	catch {
 		return false
 	}
+}
+
+/**
+ * 请求的 `Host` 头是否指向回环主机。
+ * 隧道 / 本机反代会把「socket 是回环」带进来，但 Host 仍是外部域名——
+ * 需要按「本机」发能力（本地文件访问之类）时，两者必须同时成立。
+ * @param {import('npm:express').Request} req - Express 请求对象。
+ * @returns {boolean} Host 是否为回环主机
+ */
+export function is_loopback_host_request(req) {
+	return is_loopback_host(req.headers?.host)
 }
 
 /**
