@@ -3,7 +3,7 @@
  * 【职责】好友私聊入口：查找或创建 DM 群、绑定角色/用户、切换 Hub 到私聊布局并连接群组 WS。
  * 【原理】`enterFriendChat` 渲染活跃角色卡、调整侧栏高亮与 composer；`dispatchFriendChat` 处理列表点击；设置 `store.privateGroup` 后加载默认频道消息，与群聊共用 `messages` 管道。
  * 【数据结构】store（core/state）及本模块函数入参/返回值；详见 JSDoc。
- * 【关联】由 `hashNav.navigateFromHash` 在解析到好友绑定 groupId 时调用本模块；../../../../scripts/template、../../../../scripts/toast、groupCore/Dm/federationSettings、groupFriendBinding、fount-p2p/core/hexIds、charCard。
+ * 【关联】由 `hashNav.navigateFromHash` 在解析到好友绑定 groupId 时调用本模块；../../../../scripts/template、../../../../scripts/toast、groupCore/Dm、/scripts/endpoints/p2p/federation、groupFriendBinding、fount-p2p/core/hexIds、charCard。
  */
 import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 
@@ -11,10 +11,10 @@ import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { aliasForEntity } from '../shared/aliases.mjs'
 import { isEntityHash128 } from '../shared/entityHash.mjs'
 import { buildUserFriendBinding, charFriendBindingInput, friendBindingMatches, normalizeFriendBinding } from '../shared/friendBinding.mjs'
-import { getFederationSettings } from '../src/endpoints/federationSettings.mjs'
 import { addGroupChar, createFriendGroup, getGroupState, listGroupChars } from '../src/endpoints/groupCore.mjs'
 import { createDirectMessageByPubKeys } from '../src/endpoints/groupDm.mjs'
 import { setGroupFriendBinding } from '../src/endpoints/groupFriendBinding.mjs'
+import { getFederationSettings } from '/scripts/endpoints/p2p/federation.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { getCharDetails, renderCharInfoCardActive } from './charCard.mjs'

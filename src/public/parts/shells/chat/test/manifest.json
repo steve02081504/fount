@@ -824,6 +824,8 @@
 						"src/public/parts/shells/chat/public/shared/runUri.mjs",
 						"src/public/parts/shells/chat/public/hub/sidebar/selectChannel.mjs",
 						"src/public/parts/shells/chat/public/hub/friendChat.mjs",
+						"src/public/parts/shells/chat/public/src/deepLinkConsume.mjs",
+						"src/public/pages/scripts/endpoints/p2p/federation.mjs",
 						"src/public/parts/shells/chat/test/fixtures/chars/on_message_yes/**"
 					]
 				},

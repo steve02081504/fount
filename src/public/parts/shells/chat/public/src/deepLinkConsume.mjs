@@ -10,7 +10,7 @@ import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 
 import { parseDmRunUri, parseJoinRunUri, parseMessageRunUri } from '../shared/runUri.mjs'
 
-import { getFederationSettings } from './endpoints/federationSettings.mjs'
+import { getFederationSettings } from '/scripts/endpoints/p2p/federation.mjs'
 import { getGroupState, getPowChallenge, joinGroup } from './endpoints/groupCore.mjs'
 import { createDirectMessageByPubKeys } from './endpoints/groupDm.mjs'
 import { getViewer } from './endpoints/viewer.mjs'

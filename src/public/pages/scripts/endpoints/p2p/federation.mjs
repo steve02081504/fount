@@ -1,10 +1,10 @@
 /**
- * 【文件】public/src/endpoints/federationSettings.mjs
- * 【职责】本节点联邦设置 REST（/api/p2p/federation）。
+ * 【文件】scripts/endpoints/p2p/federation.mjs
+ * 【职责】本节点 P2P 联邦设置 REST（`/api/p2p/federation`）：读取 / 更新联邦视图（活跃公钥、中继、DM 介绍 nonce 等）。
  */
 
 /**
- * @param {string} [path=''] 相对 /federation 的子路径
+ * @param {string} [path=''] 相对 `/api/p2p/federation` 的子路径
  * @param {RequestInit & { json?: object }} [options] fetch 选项
  * @returns {Promise<any>} JSON
  */

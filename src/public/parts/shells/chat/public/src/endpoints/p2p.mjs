@@ -1,6 +1,6 @@
 /**
  * 【文件】public/src/endpoints/p2p.mjs
- * 【职责】浏览器侧 P2P REST（denylist / 联邦连接；联邦设置见 federationSettings.mjs）。
+ * 【职责】浏览器侧 P2P REST（denylist / 联邦连接；联邦设置见 /scripts/endpoints/p2p/federation.mjs）。
  */
 
 /**

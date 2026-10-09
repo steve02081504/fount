@@ -3,7 +3,7 @@
  * 【职责】§16 DM Link：nonce 轮换、Ed25519 签名与 formatDmRunUri 分享链接。
  * 【原理】dmLinkSignableBytes 构造验签域；rotateDmLink 更新联邦设置中的 nonce；sign(signer.mjs) 产出 intro 签名。
  * 【数据结构】pubKeyHex64、nonceBase64Url、introSignatureHex；persist 选项。
- * 【关联】dmLinkSignature.mjs、federationSettings.mjs、runUri.mjs、signer.mjs。
+ * 【关联】dmLinkSignature.mjs、endpoints/p2p/federation.mjs、runUri.mjs、signer.mjs。
  */
 
 import { HEX_ID_64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
@@ -11,8 +11,8 @@ import { HEX_ID_64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 import { bytesToHex } from '../shared/digest.mjs'
 import { formatDmRunUri } from '../shared/runUri.mjs'
 
-import { getFederationSettings, putFederationSettings } from './endpoints/federationSettings.mjs'
 import { dmLinkSignableBytes } from '/parts/shells:chat/shared/dmLinkSignature.mjs'
+import { getFederationSettings, putFederationSettings } from '/scripts/endpoints/p2p/federation.mjs'
 import { sign } from './lib/signer.mjs'
 
 

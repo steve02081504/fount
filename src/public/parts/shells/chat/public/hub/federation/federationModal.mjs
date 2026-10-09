@@ -9,7 +9,7 @@ import { HEX_ID_64, isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
 import { confirmI18n, geti18n } from '../../../../../scripts/i18n/index.mjs'
 import { createDmLinkAndSync, rotateDmLinkAndSync } from '../../src/dmLink.mjs'
-import { getFederationSettings, putFederationSettings } from '../../src/endpoints/federationSettings.mjs'
+import { getFederationSettings, putFederationSettings } from '/scripts/endpoints/p2p/federation.mjs'
 import { getGroupState } from '../../src/endpoints/groupCore.mjs'
 import { repairJoinSnapshot, rotateFederationRoomSecret } from '../../src/endpoints/groupFederation.mjs'
 import { getGroupReputation, postReputationReset, postReputationSlash } from '../../src/endpoints/groupGovernance.mjs'
