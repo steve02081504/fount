@@ -11,6 +11,7 @@ import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { aliasForEntity } from '../shared/aliases.mjs'
 import { isEntityHash128 } from '../shared/entityHash.mjs'
 import { buildUserFriendBinding, charFriendBindingInput, friendBindingMatches, normalizeFriendBinding } from '../shared/friendBinding.mjs'
+import { resolveDisplayName } from '../shared/nameResolve.mjs'
 import { addGroupChar, createFriendGroup, getGroupState, listGroupChars } from '../src/endpoints/groupCore.mjs'
 import { createDirectMessageByPubKeys } from '../src/endpoints/groupDm.mjs'
 import { setGroupFriendBinding } from '../src/endpoints/groupFriendBinding.mjs'
@@ -47,6 +48,7 @@ function friendBindingsEqual(a, b) {
 	if (!na || !nb) return !na && !nb
 	return na.entityHash === nb.entityHash
 		&& (na.charname || '') === (nb.charname || '')
+		&& (na.displayName || '') === (nb.displayName || '')
 }
 
 /**
@@ -205,8 +207,12 @@ async function openFriendGroupChat(groupId, binding, signal, channelIdOpt) {
 	const state = await getGroupState(groupId)
 	throwIfAborted(signal)
 	const resolvedChannelId = resolvePrivateChannelId(state, channelIdOpt)
-	const displayName = aliasForEntity(binding.entityHash)
-		|| binding.displayName || binding.charname || state.groupMeta?.name || groupId
+	const displayName = resolveDisplayName({
+		entityHash: binding.entityHash,
+		alias: aliasForEntity(binding.entityHash),
+		profileName: binding.displayName,
+		fallbackLabel: binding.charname,
+	})
 
 	store.privateGroup.peerEntityHash = binding.entityHash
 	store.privateGroup.groupId = groupId
@@ -222,6 +228,18 @@ async function openFriendGroupChat(groupId, binding, signal, channelIdOpt) {
 	const groupNameElement = document.getElementById('group-name-display')
 	delete groupNameElement.dataset.i18n
 	groupNameElement.textContent = displayName
+	groupNameElement.setAttribute('user-content', '')
+	// 无本地别名时补拉对端资料名（别名优先，此时上面的展示名已定），刷新群标题。
+	if (!binding.charname && !aliasForEntity(binding.entityHash))
+		import('./presence.mjs').then(async ({ fetchAuthorProfile }) => {
+			const profile = await fetchAuthorProfile(binding.entityHash)
+			if (signal.aborted || store.privateGroup.groupId !== groupId) return
+			groupNameElement.textContent = resolveDisplayName({
+				entityHash: binding.entityHash,
+				profileName: profile?.name || binding.displayName,
+			})
+		}).catch(handleError('chat.hub.operationFailed'))
+
 	const charname = binding.charname || null
 	if (charname) {
 		const details = await getCharDetails(charname)
@@ -345,5 +363,6 @@ export async function dispatchFriendChat(entity) {
 			pubKeyHex: peerHex,
 			displayName: entity.displayName,
 		})
+	if (entity.displayName) binding.displayName = entity.displayName
 	await enterFriendChat({ groupId: data.groupId, binding })
 }
