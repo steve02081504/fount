@@ -5947,6 +5947,10 @@
 			"urlInput": {
 				"aria-label": "🤖🔗"
 			}
+		},
+		"outputRecovery": {
+			"restarting": "🔁⚠️ → 🔄",
+			"failed": "🔁⚠️ ×2 → ⏹️"
 		}
 	},
 	"subfounts": {

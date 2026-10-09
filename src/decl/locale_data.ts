@@ -5910,6 +5910,10 @@ export type LocaleData = {
 				'aria-label': string
 			}
 		}
+		outputRecovery: {
+			restarting: string
+			failed: string
+		}
 	}
 	subfounts: {
 		title: string

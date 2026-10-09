@@ -5947,6 +5947,10 @@
 			"urlInput": {
 				"aria-label": "điểm cuối API"
 			}
+		},
+		"outputRecovery": {
+			"restarting": "Nội dung trước có dấu hiệu lặp lại. Đang tạo lại:",
+			"failed": "Nội dung lần thứ hai vẫn có dấu hiệu lặp lại. Đã dừng tạo nội dung."
 		}
 	},
 	"subfounts": {

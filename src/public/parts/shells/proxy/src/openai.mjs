@@ -1,7 +1,28 @@
 import { v4 as uuidv4 } from 'npm:uuid'
 
+import { geti18nForLocales, localhostLocales } from '../../../../../scripts/i18n/bare.mjs'
 import { authenticate, getUserByReq } from '../../../../../server/auth/index.mjs'
 import { getPartList, loadPart } from '../../../../../server/parts_loader.mjs'
+
+import { createChatCompletionStream, OUTPUT_DEGENERATED_CODE } from './chatStream.mjs'
+
+/**
+ * 按 OpenAI 错误格式统一处理两个补全入口抛出的错误。
+ * @param {Error & {status?: number, code?: string}} error - 抛出的错误。
+ * @param {string} label - 日志中的请求类型。
+ * @param {import('npm:express').Response} res - 响应对象。
+ * @returns {void}
+ */
+function respondWithError(error, label, res) {
+	console.error(`Error processing ${label} request:`, error)
+	// 流式响应已经发出头与错误帧，此时再写状态码只会抛错。
+	if (res.headersSent) return res.end()
+	if (error.code === OUTPUT_DEGENERATED_CODE)
+		return res.status(500).json({ error: { message: 'The model kept repeating itself after a retry.', type: 'api_error', code: error.code } })
+	if (error.message === 'Unauthorized' || error.status === 401)
+		return res.status(401).json({ error: { message: 'Authentication failed.', type: 'invalid_request_error', code: 'authentication_error' } })
+	res.status(500).json({ error: { message: 'An internal server error occurred.', type: 'api_error', code: 'internal_server_error' } })
+}
 
 /**
  * 处理补全请求。
@@ -129,66 +150,35 @@ async function handleChatCompletionsRequest(req, res, username, model) {
 		res.setHeader('Connection', 'keep-alive')
 		res.flushHeaders()
 
-		let lastContent = ''
-		let sentRole = false
-		/**
-		 * 处理 AI 响应的进度更新。
-		 * @param {{content: string, files: any[]}} result - 包含内容和文件的结果对象。
-		 * @returns {void}
-		 */
-		const replyPreviewUpdater = (result) => {
-			const contentDelta = result.content.substring(lastContent.length)
-			lastContent = result.content
-
-			if (contentDelta) {
-				const delta = { content: contentDelta }
-				if (!sentRole) {
-					delta.role = 'assistant'
-					sentRole = true
-				}
-				const chunkData = {
-					id: chatId,
-					object: 'chat.completion.chunk',
-					created: createdTimestamp,
-					model,
-					choices: [{
-						index: 0,
-						delta,
-						finish_reason: null
-					}]
-				}
-				res.write(`data: ${JSON.stringify(chunkData)}\n\n`)
-			}
-		}
+		const locales = [...req.acceptsLanguages(), ...localhostLocales]
+		const output = createChatCompletionStream({
+			/**
+			 * @param {string} data SSE frame.
+			 * @returns {void} Write only while the client is connected.
+			 */
+			write: data => { if (!res.destroyed && !res.writableEnded) res.write(data) },
+			id: chatId,
+			created: createdTimestamp,
+			model,
+			restartMessage: geti18nForLocales(locales, 'proxy.outputRecovery.restarting'),
+			failureMessage: geti18nForLocales(locales, 'proxy.outputRecovery.failed'),
+		})
 
 		try {
-			await AIsource.StructCall(promptStruct, { replyPreviewUpdater, signal: req.signal })
-
-			// Send final chunk
-			const finalChunkData = {
-				id: chatId,
-				object: 'chat.completion.chunk',
-				created: createdTimestamp,
-				model,
-				choices: [{
-					index: 0,
-					delta: {},
-					finish_reason: 'stop'
-				}]
-			}
-			res.write(`data: ${JSON.stringify(finalChunkData)}\n\n`)
-			res.write('data: [DONE]\n\n')
+			const result = await AIsource.StructCall(promptStruct, { replyPreviewUpdater: output.replyPreviewUpdater, onGenerationRestart: output.onGenerationRestart, signal: req.signal })
+			output.finish(result)
 		} catch (error) {
-			if (error.name !== 'AbortError')
+			// 头已发出，只能把失败写进 SSE 帧；服务端日志仍要留下原因。
+			if (error.name !== 'AbortError') {
 				console.error('Error during streaming StructCall:', error)
-			// It's hard to send an error once the stream has started.
-			// We can try to send an error in the stream format if possible, but for now, just closing is fine.
+				output.fail(error)
+			}
 		} finally {
 			res.end()
 		}
 	}
 	else {
-		const result = await AIsource.StructCall(promptStruct)
+		const result = await AIsource.StructCall(promptStruct, { signal: req.signal })
 		const text_result = result.content
 		res.status(200).json({
 			id: chatId,
@@ -264,14 +254,7 @@ export function setOpenAIAPIEndpoints(router) {
 			// Call the core logic function
 			await handleCompletionsRequest(req, res, username, model)
 		}
-		catch (error) {
-			console.error('Error processing completions request:', error)
-			// Differentiate auth errors from other errors if possible
-			if (error.message === 'Unauthorized' || error.status === 401)
-				return res.status(401).json({ error: { message: 'Authentication failed.', type: 'invalid_request_error', code: 'authentication_error' } })
-
-			res.status(500).json({ error: { message: 'An internal server error occurred.', type: 'api_error', code: 'internal_server_error' } })
-		}
+		catch (error) { respondWithError(error, 'completions', res) }
 	}
 
 	/**
@@ -293,14 +276,7 @@ export function setOpenAIAPIEndpoints(router) {
 			// Call the core logic function
 			await handleChatCompletionsRequest(req, res, username, model)
 		}
-		catch (error) {
-			console.error('Error processing chat completions request:', error)
-			// Differentiate auth errors from other errors if possible
-			if (error.message === 'Unauthorized' || error.status === 401)
-				return res.status(401).json({ error: { message: 'Authentication failed.', type: 'invalid_request_error', code: 'authentication_error' } })
-
-			res.status(500).json({ error: { message: 'An internal server error occurred.', type: 'api_error', code: 'internal_server_error' } })
-		}
+		catch (error) { respondWithError(error, 'chat completions', res) }
 	}
 
 	// 2. 补全 (Completions) - Register both routes

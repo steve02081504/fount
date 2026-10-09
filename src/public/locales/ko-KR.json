@@ -5947,6 +5947,10 @@
 			"urlInput": {
 				"aria-label": "API 엔드포인트"
 			}
+		},
+		"outputRecovery": {
+			"restarting": "이전 출력에서 반복이 의심되어 다시 생성합니다:",
+			"failed": "두 번째 출력에서도 반복이 의심되어 생성을 중단했습니다."
 		}
 	},
 	"subfounts": {

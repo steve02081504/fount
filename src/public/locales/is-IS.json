@@ -5947,6 +5947,10 @@
 			"urlInput": {
 				"aria-label": "API endapunktur"
 			}
+		},
+		"outputRecovery": {
+			"restarting": "Fyrra úttakið virtist endurtaka sig. Verið er að búa það til aftur:",
+			"failed": "Seinna úttakið virtist enn endurtaka sig. Framleiðslu var hætt."
 		}
 	},
 	"subfounts": {

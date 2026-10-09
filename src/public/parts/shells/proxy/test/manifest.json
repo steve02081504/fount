@@ -9,6 +9,19 @@
 	},
 	"suites": [
 		{
+			"name": "pure",
+			"expected": "1s",
+			"triggers": [
+				"src/public/parts/shells/proxy/src/**",
+				"src/public/parts/shells/proxy/test/pure/**",
+				"src/public/parts/serviceGenerators/AI/proxy/src/**",
+				"src/public/parts/serviceGenerators/AI/proxy/test/mockFetch.mjs",
+				"src/public/parts/serviceGenerators/AI/codex/src/responsesClient.mjs",
+				"src/public/parts/shells/chat/public/shared/usage.mjs"
+			],
+			"run": ["deno", "test", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/proxy/test/pure/"]
+		},
+		{
 			"name": "frontend",
 			"expected": "54s",
 			"dependsOn": [

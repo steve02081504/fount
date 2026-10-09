@@ -5947,6 +5947,10 @@
 			"urlInput": {
 				"aria-label": "APIエンドポイント"
 			}
+		},
+		"outputRecovery": {
+			"restarting": "前の出力に繰り返しが疑われるため、再生成しています：",
+			"failed": "再生成した出力にも繰り返しが疑われるため、生成を停止しました。"
 		}
 	},
 	"subfounts": {

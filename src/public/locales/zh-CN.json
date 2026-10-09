@@ -5947,6 +5947,10 @@
 			"urlInput": {
 				"aria-label": "API 端点"
 			}
+		},
+		"outputRecovery": {
+			"restarting": "检测到上一次输出疑似重复，正在重新生成：",
+			"failed": "第二次输出仍疑似重复，已停止生成。"
 		}
 	},
 	"subfounts": {

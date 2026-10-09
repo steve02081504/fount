@@ -5947,6 +5947,10 @@
 			"urlInput": {
 				"aria-label": "API endpoint"
 			}
+		},
+		"outputRecovery": {
+			"restarting": "The previous output appeared repetitive. Regenerating:",
+			"failed": "The second output still appeared repetitive. Generation stopped."
 		}
 	},
 	"subfounts": {

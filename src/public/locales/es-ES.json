@@ -5953,6 +5953,10 @@
 			"urlInput": {
 				"aria-label": "Punto final API"
 			}
+		},
+		"outputRecovery": {
+			"restarting": "La salida anterior parecía repetitiva. Se está generando de nuevo:",
+			"failed": "La segunda salida seguía pareciendo repetitiva. Se ha detenido la generación."
 		}
 	},
 	"subfounts": {

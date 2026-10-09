@@ -5947,6 +5947,10 @@
 			"urlInput": {
 				"aria-label": "API-Endpunkt"
 			}
+		},
+		"outputRecovery": {
+			"restarting": "Die vorherige Ausgabe schien sich zu wiederholen. Sie wird neu erzeugt:",
+			"failed": "Auch die zweite Ausgabe schien sich zu wiederholen. Die Generierung wurde gestoppt."
 		}
 	},
 	"subfounts": {

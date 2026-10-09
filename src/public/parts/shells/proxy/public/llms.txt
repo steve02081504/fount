@@ -28,6 +28,7 @@ OpenAI 兼容代理，供外部客户端调用本机 `serviceSources/AI`。
 ### POST /api/parts/shells:proxy/calling/openai/v1/chat/completions
 - Body：OpenAI chat completions（`model`、`messages` 等）
 - 用途：聊天补全。
+- 重复输出恢复：使用启用此功能的 proxy AI 来源时，疑似重复会中断当前请求并重新生成一次。流式响应保留已发送内容，追加分界提示后发送第二次回答；第二次仍重复时发送错误并结束，不作为成功完成。非流式响应成功时只返回第二次结果，再次重复时返回 HTTP 500，错误码为 `output_degenerated`。
 
 ### POST /api/parts/shells:proxy/calling/openai/models/:modelname/v1/chat/completions
 - 用途：同上，模型由路径指定。

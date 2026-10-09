@@ -5953,6 +5953,10 @@
 			"urlInput": {
 				"aria-label": "API-eindpunt"
 			}
+		},
+		"outputRecovery": {
+			"restarting": "De vorige uitvoer leek zich te herhalen. Opnieuw genereren:",
+			"failed": "Ook de tweede uitvoer leek zich te herhalen. Het genereren is gestopt."
 		}
 	},
 	"subfounts": {
