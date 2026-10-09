@@ -1149,6 +1149,16 @@ export type LocaleData = {
 				description: string
 			}
 		}
+		inviteFriends: {
+			title: string
+			description: string
+			copy: string
+			link: string
+			preparing: string
+			copied: string
+			manualCopy: string
+			failed: string
+		}
 	}
 	chat: {
 		title: string
@@ -2746,8 +2756,6 @@ export type LocaleData = {
 				context: {
 					manage: string
 					notifyPrefs: string
-					invite: string
-					inviteCopied: string
 					addChar: string
 					addCharLabel: string
 					addCharSubmit: string
@@ -2764,6 +2772,14 @@ export type LocaleData = {
 						confirm: string
 						confirmBatch: string
 						ok: string
+					}
+					invite: {
+						main: string
+						copied: string
+						copy: string
+						help: string
+						link: string
+						manualCopy: string
 					}
 				}
 				descriptionEmpty: string

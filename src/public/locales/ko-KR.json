@@ -1186,6 +1186,16 @@
 			"generateXFountPart": {
 				"description": "fount 컴포넌트 정보 생성"
 			}
+		},
+		"inviteFriends": {
+			"title": null,
+			"description": null,
+			"copy": null,
+			"link": null,
+			"preparing": null,
+			"copied": null,
+			"manualCopy": null,
+			"failed": null
 		}
 	},
 	"chat": {

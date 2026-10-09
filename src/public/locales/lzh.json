@@ -1186,6 +1186,16 @@
 			"generateXFountPart": {
 				"description": "以器衍其標"
 			}
+		},
+		"inviteFriends": {
+			"title": "邀请朋友加入 fount",
+			"description": "复制你的入网邀请链接发给朋友使其能加入 fount。",
+			"copy": "复制入网邀请链接",
+			"link": "你的入网邀请链接",
+			"preparing": "正在准备邀请链接…",
+			"copied": "已复制",
+			"manualCopy": "剪贴板不可用，请手动复制下方链接。",
+			"failed": "暂时无法准备邀请链接，请确认 fount 正常运行后重试。"
 		}
 	},
 	"chat": {
@@ -2803,7 +2813,11 @@
 					},
 					"invite": {
 						"main": "邀請他人",
-						"copied": "邀請鏈接已謄錄到剪貼板"
+						"copied": "邀請鏈接已謄錄到剪貼板",
+						"copy": "复制邀请链接",
+						"help": "把邀请链接发给朋友，对方打开后即可加入群聊。",
+						"link": "邀请链接",
+						"manualCopy": "请复制已选中的邀请链接"
 					}
 				},
 				"descriptionEmpty": "此群尚無引言。",

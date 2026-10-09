@@ -1186,6 +1186,16 @@
 			"generateXFountPart": {
 				"description": "Genera informazioni sui componenti di fount"
 			}
+		},
+		"inviteFriends": {
+			"title": null,
+			"description": null,
+			"copy": null,
+			"link": null,
+			"preparing": null,
+			"copied": null,
+			"manualCopy": null,
+			"failed": null
 		}
 	},
 	"chat": {
