@@ -146,7 +146,7 @@ export async function handleDmInvitation(data, ingress = {}) {
 		throw new Error('dm_invitation has an invalid sender entity')
 
 	const groupId = String(data?.groupId || '')
-	if (!isSafeGroupId(groupId) || groupId.length > 128) throw new Error('dm_invitation has an invalid group id')
+	if (!isSafeGroupId(groupId)) throw new Error('dm_invitation has an invalid group id')
 	const inviteCode = String(data?.inviteCode || '')
 	const roomSecret = String(data?.roomSecret || '')
 	const dmSessionTag = String(data?.dmSessionTag || '')

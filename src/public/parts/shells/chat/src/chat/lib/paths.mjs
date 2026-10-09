@@ -56,14 +56,19 @@ export function groupDir(username, groupId) {
 	return join(shellChatRoot(username), 'groups', groupId)
 }
 
+/** 群 / 会话 ID 的长度上限：协议里是 UUID（36 字符），128 是给导入与联邦 ID 留的余量。 */
+export const MAX_GROUP_ID_LENGTH = 128
+
 /**
- * groupId 形校验：拒绝空串、`.`/`..` 及含路径分隔符/NUL 的值，避免拼接 `groups/<groupId>` 时越出目录。
+ * groupId 形校验：拒绝空串、超长（> [MAX_GROUP_ID_LENGTH]）、`.`/`..` 及含路径分隔符/NUL 的值，
+ * 避免拼接 `groups/<groupId>` 时越出目录。
  * @param {unknown} groupId 候选群 ID
  * @returns {boolean} 是否可安全用作目录名
  */
 export function isSafeGroupId(groupId) {
 	return typeof groupId === 'string'
 		&& groupId.length > 0
+		&& groupId.length <= MAX_GROUP_ID_LENGTH
 		&& groupId !== '.'
 		&& groupId !== '..'
 		&& !/[/\\\0]/u.test(groupId)

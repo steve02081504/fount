@@ -27,7 +27,7 @@ import { DEFAULT_SIGNALING_APP_ID, mintRoomSecret } from '../federation/roomCred
 import { initGroupFileMasterKey } from '../file_keys/store.mjs'
 import { releaseFileStorageRefs } from '../files/groupFiles.mjs'
 import { safeRm } from '../lib/fsSafe.mjs'
-import { groupDir, eventsPath } from '../lib/paths.mjs'
+import { groupDir, eventsPath, isSafeGroupId } from '../lib/paths.mjs'
 import { getLocalNodeHash } from '../lib/replica.mjs'
 import { invalidateKnownMemberIndex } from '../mailbox/memberIndex.mjs'
 import { purgeGroupSession } from '../session/wsLifecycle.mjs'
@@ -102,6 +102,9 @@ export async function convergeDagTipsIfAuthorized(username, groupId) {
  */
 export async function createGroup(username, body) {
 	const groupId = body.groupId || randomUUID()
+	// 建群是 groups/<groupId> 的第一次落盘，也是「groupId 从哪来」的最后一道闸：
+	// 调用方（HTTP 路由的 body.groupId、联邦入站）可能直接把外部字符串递进来，故此处 fail-closed。
+	if (!isSafeGroupId(groupId)) throw new Error('createGroup: invalid groupId')
 	const { clearGroupReplicaPurging } = await import('./replicaPurge.mjs')
 	clearGroupReplicaPurging(username, groupId)
 	await mkdir(groupDir(username, groupId), { recursive: true })
