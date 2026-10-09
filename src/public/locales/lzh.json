@@ -6865,6 +6865,47 @@
 			"estimatedCost": "費約 ${amount} ${currency}",
 			"reply": "用度：${usage}",
 			"session": "此會話共計：${usage}"
+		},
+		"statistics": {
+			"duration": "${minutes}分${seconds}秒",
+			"working": "作業中 · ${duration}",
+			"worked": "所耗 ${duration}",
+			"modelTime": "模型所耗",
+			"toolTime": "器具總耗",
+			"toolWait": "候具之時（除並行重計）",
+			"toolCount": "器具調用數",
+			"ttft": "首出平均（TTFT）",
+			"speed": "輸出之速（TPS）",
+			"ttftValue": "${seconds}s · ${count}",
+			"total": "總用量",
+			"cache": "快取命中率",
+			"uncached": "未快取之輸入",
+			"cacheRead": "快取讀取",
+			"cacheWrite": "快取寫入",
+			"output": "輸出（含推理）",
+			"reasoning": "其中推理",
+			"incomplete": "計量之況",
+			"partial": "有調用未報全量",
+			"reported": "已報之計量",
+			"system": "系統提示",
+			"tools": "器具與外掛之定義",
+			"messages": "對話諸訊",
+			"other": "附件 / 請求封裝 / 其餘",
+			"asyncTime": "後臺諸事所耗",
+			"performance": {
+				"title": "會話統計",
+				"summary": "${rounds} 輪 ${steps} 步 · ${speed} tok/s"
+			},
+			"tokens": {
+				"title": "Token 用量",
+				"summary": "${tokens} tok · 快取命中率 ${rate}"
+			},
+			"context": {
+				"title": "當前上下文",
+				"total": "當前上下文 / max",
+				"note": "ℹ️",
+				"snapshot": "取最近請求之快照；文字分類皆估算，附件 token 以提供方計量為準"
+			}
 		}
 	},
 	"gist": {

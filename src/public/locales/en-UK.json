@@ -6871,6 +6871,47 @@
 			"estimatedCost": "known cost estimate ${amount} ${currency}",
 			"reply": "Usage: ${usage}",
 			"session": "Session total: ${usage}"
+		},
+		"statistics": {
+			"duration": "${minutes}m ${seconds}s",
+			"working": "Working · ${duration}",
+			"worked": "Time taken ${duration}",
+			"modelTime": "Model time",
+			"toolTime": "Total tool time",
+			"toolWait": "Tool wait (overlap removed)",
+			"toolCount": "Tool calls",
+			"ttft": "Average first output (TTFT)",
+			"speed": "Output speed (TPS)",
+			"ttftValue": "${seconds}s · ${count}",
+			"total": "Total usage",
+			"cache": "Cache hit rate",
+			"uncached": "Uncached input",
+			"cacheRead": "Cache reads",
+			"cacheWrite": "Cache writes",
+			"output": "Output (includes reasoning)",
+			"reasoning": "Of which reasoning",
+			"incomplete": "Metering status",
+			"partial": "Some calls lack complete usage",
+			"reported": "Reported call usage",
+			"system": "System prompt",
+			"tools": "Tool and plugin definitions",
+			"messages": "Conversation messages",
+			"other": "Attachments / framing / other",
+			"asyncTime": "Background task time",
+			"performance": {
+				"title": "Session statistics",
+				"summary": "${rounds} runs ${steps} steps · ${speed} tok/s"
+			},
+			"tokens": {
+				"title": "Token usage",
+				"summary": "${tokens} tok · Cache hit rate ${rate}"
+			},
+			"context": {
+				"title": "Current context",
+				"total": "Current context / max",
+				"note": "ℹ️",
+				"snapshot": "Latest request snapshot; text components are estimates. Attachment tokens depend on provider usage."
+			}
 		}
 	},
 	"gist": {

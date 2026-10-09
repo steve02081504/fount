@@ -19,6 +19,7 @@ import { listTasks as listAsyncTasks } from '../../../plugins/async-task/registr
 import { availableShells, createTargetExecutor, listMachines, machineDefaultShell, parseVolumeLabels } from '../../../plugins/file-operations/src/target.mjs'
 import { mergeUsage } from '../../chat/public/shared/usage.mjs'
 import { renderMarkdownCodeBlock } from '../../chat/src/streaming/markdown.mjs'
+import { mergeRunStatistics } from '../public/shared/statistics.mjs'
 
 import {
 	getCommand,
@@ -937,7 +938,7 @@ export function setEndpoints(router) {
 		// 首次落盘（网页把草稿标签转成会话、`!` 结果写回）时磁盘上还没有文件：按创建处理，不算版本冲突。
 		if (stored && req.body.expectedVersion != null && req.body.expectedVersion !== (stored.version ?? 0)) throw httpError(409, 'session changed.')
 		const version = (stored?.version ?? 0) + 1
-		await saveSession(username, { machine, path }, { ...req.body.session, usage: stored?.usage ?? req.body.session.usage, version })
+		await saveSession(username, { machine, path }, { ...req.body.session, usage: stored?.usage ?? req.body.session.usage, statistics: stored?.statistics, version })
 		res.json({ version })
 	})
 
@@ -1016,7 +1017,7 @@ export function setEndpoints(router) {
 			 * @returns {void} 无返回值。
 			 */
 			const replay = payload => ws?.send(JSON.stringify({ runId: run.runId, sessionId: msg.sessionId, ...payload }))
-			replay({ type: 'run-start' })
+			replay({ type: 'run-start', ...run.statisticsSnapshot?.() })
 			const replayEntries = run.buildReplayEntries?.() || run.allNewEntries || []
 			if (replayEntries.length) replay({ type: 'entries-append', entries: [...replayEntries] })
 			for (const output of run.toolOutputReplay || []) replay(output)
@@ -1048,10 +1049,12 @@ export function setEndpoints(router) {
 		/** 磁盘上的当前版本；请求携带的是可能过期的客户端副本，落盘版本只在此基础上自增。 */
 		let storedVersion = 0
 		let storedUsage
+		let storedStatistics
 		try {
 			const stored = await loadSession(username, workTarget, session.id)
 			storedVersion = stored?.version ?? 0
 			storedUsage = stored?.usage
+			storedStatistics = stored?.statistics
 			if (msg.expectedVersion != null && storedVersion !== msg.expectedVersion) {
 				ws?.send(JSON.stringify({ type: 'error', sessionId: session.id, runId: msg.runId, code: 'version-conflict', error: 'session changed; reload before sending' }))
 				return
@@ -1069,7 +1072,9 @@ export function setEndpoints(router) {
 			previous.superseded = true
 			previous.controller.abort()
 			await previous.finished
-			storedUsage = (await loadSession(username, workTarget, session.id))?.usage
+			const stored = await loadSession(username, workTarget, session.id)
+			storedUsage = stored?.usage
+			storedStatistics = stored?.statistics
 		}
 		// 本运行持有一份唤醒调度槽：期间到达的唤醒由 Update({ forRound: true }) 观察消费，未消费则 finally 补触发
 		codeWakes.tryBegin(runKey)
@@ -1082,6 +1087,7 @@ export function setEndpoints(router) {
 		const run = {
 			runId, controller: thisRequestController, sockets: new Set(), finished, completed: false, toolOutputReplay: [], preview: null,
 			workTarget,
+			statistics: { runId, startedAt: jobData.startedAt, requests: [], tools: [], asyncTasks: [] },
 			wakeHeld: true, superseded: false, requestSession: null, allNewEntries: null, asyncUsage: null,
 			/**
 			 * 记录导致中断的原因和时间。
@@ -1103,7 +1109,7 @@ export function setEndpoints(router) {
 		 */
 		const broadcast = payload => {
 			if (!run.sockets.size) return
-			const frame = JSON.stringify({ runId, sessionId: session.id, ...payload })
+			const frame = JSON.stringify({ runId, sessionId: session.id, ...['run-start', 'done', 'aborted', 'error'].includes(payload.type) ? run.statisticsSnapshot?.() : {}, ...payload })
 			for (const socket of run.sockets)
 				try { socket.send(frame) }
 				catch { run.sockets.delete(socket) }
@@ -1258,6 +1264,7 @@ export function setEndpoints(router) {
 					...session,
 					entries: finalEntries,
 					usage: mergeUsage(storedUsage, currentGenerationUsage(), run.asyncUsage),
+					statistics: run.statisticsSnapshot().statistics,
 					...memory ? { memory } : {},
 					updated: new Date().toISOString(), version: nextVersion,
 				})
@@ -1282,6 +1289,51 @@ export function setEndpoints(router) {
 				}
 			}
 		}
+		/**
+		 * 构建不依赖生成历史保留期限的统计快照。
+		 * @returns {object} 本次运行的权威 `statistics` 与 `usage`。
+		 */
+		run.statisticsSnapshot = () => {
+			const baseResult = requestSession.generationOptions?.base_result
+			const result = requestSession.generationResult
+			const providerCalls = baseResult?.extension?.modelCalls ?? result?.extension?.modelCalls ?? []
+			const calls = providerCalls.map(call => ({ ...call, ...run.statistics.finishedAt && !call.finishedAt ? { finishedAt: run.statistics.finishedAt } : {} }))
+			for (const request of run.statistics.requests)
+				if (!providerCalls.some(call => call.startedAt >= request.startedAt && call.startedAt <= (request.finishedAt ?? Infinity)))
+					calls.push({ callId: request.callId, model: request.model, startedAt: request.startedAt, finishedAt: request.finishedAt ?? run.statistics.finishedAt, observed: true })
+			const current = { runId, startedAt: run.statistics.startedAt, finishedAt: run.statistics.finishedAt, status: run.statistics.status, calls, tools: run.statistics.tools, asyncTasks: run.statistics.asyncTasks, context: run.statistics.context }
+			const lastCall = providerCalls.at(-1)
+			if (current.context && Number.isFinite(lastCall?.inputTokens) && lastCall.startedAt >= (run.statistics.requests.at(-1)?.startedAt ?? Infinity))
+				current.context = { ...current.context, model: lastCall.model ?? current.context.model, limit: lastCall.contextLimit ?? current.context.limit, total: lastCall.inputTokens, estimated: false }
+			return { statistics: mergeRunStatistics(storedStatistics, current), usage: mergeUsage(storedUsage, baseResult?.extension?.usage ?? result?.extension?.usage, run.asyncUsage) }
+		}
+		/**
+		 * 按稳定标识合并更新，支持并行工具调用。
+		 * @param {string} kind - 计量集合名（`requests` / `tools` / `asyncTasks`）。
+		 * @param {object} event - 生命周期更新（同一 `callId` 再次到达即替换）。
+		 */
+		const updateStatistics = (kind, event) => {
+			const list = run.statistics[kind]
+			const index = list.findIndex(item => item.callId === event.callId)
+			if (index < 0) list.push({ ...event })
+			else list[index] = { ...event }
+			if (event.context) run.statistics.context = event.context
+		}
+		/**
+		 * 在持久化和发送终态帧前结算本次工作耗时。
+		 * @param {string} status - 终态（`done` / `aborted` / `error`）。
+		 */
+		const finishStatistics = status => {
+			run.statistics.finishedAt ??= Date.now()
+			run.statistics.status = status
+			for (const tool of run.statistics.tools) if (!tool.finishedAt) {
+				tool.finishedAt = run.statistics.finishedAt
+				tool.status = 'interrupted'
+			}
+			const final = allNewEntries.findLast(entry => entry.role === 'char' || ['error', 'aborted'].includes(entry.name))
+			if (final) final.extension = { ...final.extension, work: { runId, startedAt: run.statistics.startedAt, finishedAt: run.statistics.finishedAt, status } }
+		}
+		let statisticsTimer
 		beginCodeGeneration(username)
 		const generationId = randomUUID()
 		if (workPath) StartJob(username, 'shells/code', session.id, jobData)
@@ -1322,11 +1374,12 @@ export function setEndpoints(router) {
 		 */
 		const appendMeteredFailure = (name, content) => {
 			const usage = currentGenerationUsage()
-			if (!usage?.calls?.length) return
-			const entry = addNewEntry({ role: 'system', uid: 'system', name, content, content_for_show: renderMarkdownCodeBlock(content), time_stamp: new Date(), extension: { usage } })
+			const entry = addNewEntry({ role: 'system', uid: 'system', name, content, content_for_show: renderMarkdownCodeBlock(content), time_stamp: new Date(), extension: { ...usage?.calls?.length ? { usage } : {} } })
 			if (entry) entries.push(entry)
 		}
 		try {
+			statisticsTimer = setInterval(() => broadcast({ type: 'statistics', ...run.statisticsSnapshot() }), 1000)
+			statisticsTimer.unref?.()
 			if (workPath && !await persist(undefined, [placeholderEntry])) throw new Error('session preparation failed')
 			// 把本轮 result 暴露到 requestSession 上，供预览回调增量读取已累计日志
 			const { reply, memory } = await triggerCodeReply({
@@ -1340,10 +1393,22 @@ export function setEndpoints(router) {
 				generationId,
 				signal: thisRequestController.signal,
 				/**
-					 * 转发流式预览到 WS（优先展示层 `content_for_show`，含工具调用替换）。
-					 * @param {object} preview - 预览回复。
-					 * @returns {void}
-					 */
+				 * 记录模型请求生命周期更新。
+				 * @param {object} event - 请求计量更新。
+				 * @returns {void}
+				 */
+				onRequestStatistics: event => updateStatistics('requests', event),
+				/**
+				 * 记录工具执行生命周期更新。
+				 * @param {object} event - 工具计量更新。
+				 * @returns {void}
+				 */
+				onToolStatistics: event => updateStatistics(event.async ? 'asyncTasks' : 'tools', event),
+				/**
+				 * 转发流式预览的展示层内容。
+				 * @param {object} preview - 预览回复（展示层）。
+				 * @returns {void}
+				 */
 				onPreview: preview => {
 					// 先把本轮已完成的工具日志增量追加出来，再更新生成中气泡（保持文本顺序）
 					flushIncrementalEntries()
@@ -1388,6 +1453,7 @@ export function setEndpoints(router) {
 			if (interrupted) appendMeteredFailure('aborted', 'Generation interrupted.')
 			run.finalizing = true
 			// 权威结果先落盘，再广播完成帧：页面/连接丢失也不会丢内容
+			finishStatistics(interrupted ? 'aborted' : 'done')
 			const saved = await persist(memory, interrupted && isStopping() ? [placeholderEntry] : [])
 			if (interrupted) {
 				if (!isStopping() && saved) {
@@ -1406,6 +1472,7 @@ export function setEndpoints(router) {
 				void notifyCodeCompletion(username, session)
 			}
 			else {
+				finishStatistics('error')
 				broadcast({ type: 'error', entries, error: 'session persistence failed; generation remains resumable.' })
 				emitSettled('error')
 			}
@@ -1422,6 +1489,7 @@ export function setEndpoints(router) {
 			if (thisRequestController.signal.aborted) dropIncompleteLogs()
 			appendMeteredFailure(thisRequestController.signal.aborted || stoppedForShutdown ? 'aborted' : 'error', runError)
 			run.finalizing = true
+			finishStatistics(thisRequestController.signal.aborted || stoppedForShutdown ? 'aborted' : 'error')
 			const saved = await persist(undefined, isStopping() ? [placeholderEntry] : [])
 			if (!isStopping() && saved) {
 				run.completed = true
@@ -1437,6 +1505,7 @@ export function setEndpoints(router) {
 			}
 		}
 		finally {
+			clearInterval(statisticsTimer)
 			stopWake()
 			const superseded = run.superseded
 			if (activeCodeRuns.get(runKey) === run) activeCodeRuns.delete(runKey)

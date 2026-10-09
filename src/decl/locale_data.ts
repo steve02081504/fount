@@ -6828,6 +6828,47 @@ export type LocaleData = {
 			reply: string
 			session: string
 		}
+		statistics: {
+			duration: string
+			working: string
+			worked: string
+			modelTime: string
+			toolTime: string
+			toolWait: string
+			toolCount: string
+			ttft: string
+			speed: string
+			ttftValue: string
+			total: string
+			cache: string
+			uncached: string
+			cacheRead: string
+			cacheWrite: string
+			output: string
+			reasoning: string
+			incomplete: string
+			partial: string
+			reported: string
+			system: string
+			tools: string
+			messages: string
+			other: string
+			asyncTime: string
+			performance: {
+				title: string
+				summary: string
+			}
+			tokens: {
+				title: string
+				summary: string
+			}
+			context: {
+				title: string
+				total: string
+				note: string
+				snapshot: string
+			}
+		}
 	}
 	gist: {
 		title: string
@@ -7569,6 +7610,12 @@ export type LocaleKeyParams = {
 	'code.power.armedAria': { count: string | number }
 	'code.power.armedCount': { count: string | number }
 	'code.sessions.deleteConfirm': { title: string | number }
+	'code.statistics.duration': { minutes: string | number; seconds: string | number }
+	'code.statistics.performance.summary': { rounds: string | number; speed: string | number; steps: string | number }
+	'code.statistics.tokens.summary': { rate: string | number; tokens: string | number }
+	'code.statistics.ttftValue': { count: string | number; seconds: string | number }
+	'code.statistics.worked': { duration: string | number }
+	'code.statistics.working': { duration: string | number }
 	'code.subagent.open': { task: string | number }
 	'code.subagent.working': { roundLimit: string | number; rounds: string | number }
 	'code.tabs.generating.aria-label': { title: string | number }

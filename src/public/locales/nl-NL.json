@@ -6877,6 +6877,47 @@
 			"estimatedCost": "Geschatte bekende kosten ${amount} ${currency}",
 			"reply": "Gebruik: ${usage}",
 			"session": "Totaal van deze sessie: ${usage}"
+		},
+		"statistics": {
+			"duration": "${minutes}m ${seconds}s",
+			"working": "Bezig · ${duration}",
+			"worked": "Duur ${duration}",
+			"modelTime": "Modeltijd",
+			"toolTime": "Totale tijd van hulpmiddelen",
+			"toolWait": "Wachttijd hulpmiddelen (zonder overlap)",
+			"toolCount": "Aanroepen van hulpmiddelen",
+			"ttft": "Gemiddelde eerste uitvoer (TTFT)",
+			"speed": "Uitvoersnelheid (TPS)",
+			"ttftValue": "${seconds}s · ${count}",
+			"total": "Totaal gebruik",
+			"cache": "Cachetrefferpercentage",
+			"uncached": "Invoer zonder cache",
+			"cacheRead": "Cachelezingen",
+			"cacheWrite": "Cacheschrijfacties",
+			"output": "Uitvoer (inclusief redenering)",
+			"reasoning": "Waarvan redenering",
+			"incomplete": "Meetstatus",
+			"partial": "Sommige aanroepen melden onvolledige gegevens",
+			"reported": "Gerapporteerd gebruik",
+			"system": "Systeemprompt",
+			"tools": "Definities van hulpmiddelen en plugins",
+			"messages": "Gespreksberichten",
+			"other": "Bijlagen / aanvraagformaat / overige",
+			"asyncTime": "Tijd van achtergrondtaken",
+			"performance": {
+				"title": "Sessiestatistieken",
+				"summary": "${rounds} rondes ${steps} stappen · ${speed} tok/s"
+			},
+			"tokens": {
+				"title": "Tokengebruik",
+				"summary": "${tokens} tok · Cachetrefferpercentage ${rate}"
+			},
+			"context": {
+				"title": "Huidige context",
+				"total": "Huidige context / max",
+				"note": "ℹ️",
+				"snapshot": "Laatste aanvraag; tekstonderdelen zijn schattingen. Tokens van bijlagen worden door de provider gemeld."
+			}
 		}
 	},
 	"gist": {

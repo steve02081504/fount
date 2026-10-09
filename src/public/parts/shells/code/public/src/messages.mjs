@@ -17,6 +17,7 @@ import { iconElement, icons } from './icons.mjs'
 import { repairOrphanedReplyFence } from './replyMarkdown.mjs'
 import { updateRunCards } from './runCards.mjs'
 import { markSessionDirty } from './sessionPersistence.mjs'
+import { createWorkClock, refreshStatistics } from './statistics.mjs'
 import { activeTab, elements, isBusy, isGenerating, store, SCROLL_TOLERANCE } from './store.mjs'
 import { subAgentCardElement } from './subagents.mjs'
 import { regenerateLastReply, retryFromError } from './submission.mjs'
@@ -634,6 +635,7 @@ export function renderEntryBubble(entry, { isLast = false } = {}) {
 	const body = document.createElement('div')
 	body.className = 'code-message-body'
 	bubble.appendChild(body)
+	if (entry.extension?.work) bubble.appendChild(createWorkClock(entry.extension.work))
 	if (entry.role === 'tool' && entry.extension?.subAgent?.runId)
 		body.appendChild(subAgentCardElement(entry))
 
@@ -941,6 +943,7 @@ export function updateEmptyMode() {
 
 /** 渲染全部消息（并同步活动标签页的待发送附件预览条，标签切换时一并刷新）。 */
 export function renderMessages() {
+	refreshStatistics()
 	renderAttachmentStrip()
 	updateEmptyMode()
 	const entries = (store.session?.entries || []).filter(isEntryVisible)

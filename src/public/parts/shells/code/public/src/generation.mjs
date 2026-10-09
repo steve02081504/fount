@@ -5,9 +5,12 @@
 import { showToastI18n } from '/scripts/features/toast.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
 
+import { mergeAsyncStatistics } from '../shared/statistics.mjs'
+
 import * as api from './endpoints.mjs'
 import { refreshSessionUsage, renderMessages } from './messages.mjs'
 import { flushSession, markSessionDirty } from './sessionPersistence.mjs'
+import { refreshStatistics } from './statistics.mjs'
 import { getActiveRuntime, getRuntime, isGenerating, store, tabKeyOf } from './store.mjs'
 import { appendVisibleEntry, clearRuntimeView, endGeneratingBubble, generatingBubbleFor, handlePreview, handleToolOutput, insertIncrementalEntries, refreshEmptyMode, startGeneratingBubble } from './streamView.mjs'
 
@@ -239,6 +242,8 @@ function applyRecoveredSession(runtime, disk) {
 	if (disk.memory) session.memory = disk.memory
 	session.updated = disk.updated || session.updated
 	session.title = disk.title || session.title
+	session.statistics = disk.statistics
+	session.usage = disk.usage
 	runtime.status = 'idle'
 	runtime.runId = null
 	clearRuntimeView(runtime)
@@ -299,11 +304,13 @@ export function handleSessionEntryEvent(payload) {
 	if (!session || !entry) return
 	if (session.entries.some(item => String(item.id) === String(entry.id))) return
 	session.entries.push(entry)
+	session.statistics = mergeAsyncStatistics(session.statistics, [entry])
 	if (runtime === getActiveRuntime() || store.session === session) {
 		const anchor = generatingBubbleFor(session)
 		if (anchor || session === store.session) appendVisibleEntry(entry, anchor)
 	}
 	// 生成外的异步条目（任务通告、压缩摘要）带着自己的调用明细，累计值需要重新按盘上会话取
+	refreshStatistics()
 	if (entry.extension?.usage) void refreshSessionUsageFromDisk(runtime, session).then(changed => { if (changed) repaintSessionUsage(runtime, session) })
 	refreshEmptyMode()
 }
@@ -339,11 +346,20 @@ function onSocketMessage(event) {
 	if (msg.type === 'run-start') {
 		const runtime = runtimeForSessionId(msg.sessionId)
 		if (runtime && msg.runId) runtime.runId = msg.runId
-		if (runtime) settleAttach(runtime, true)
+		if (runtime) {
+			if (msg.statistics) runtime.session.statistics = msg.statistics
+			if (msg.usage) runtime.session.usage = msg.usage
+			settleAttach(runtime, true)
+			refreshStatistics()
+		}
 		return
 	}
 	const runtime = runtimeForSessionId(msg.sessionId)
 	if (!runtime || !isCurrentRunFrame(runtime, msg)) return
+	if (msg.statistics) runtime.session.statistics = msg.statistics
+	if (msg.usage) runtime.session.usage = msg.usage
+	if (msg.statistics || msg.usage) refreshStatistics()
+	if (msg.type === 'statistics') return
 	if (msg.type === 'preview') { handlePreview(runtime, msg.content); return }
 	if (msg.type === 'tool-output') { handleToolOutput(runtime, msg); return }
 	if (msg.type === 'entries-append') { insertIncrementalEntries(runtime, msg.entries || []); return }
@@ -367,6 +383,14 @@ async function settleRun(runtime, { entries, memory = null, status, error = '' }
 	if (!session) { resetRuntime(runtime); return }
 	const wasActive = runtime === getActiveRuntime()
 	const knownIds = new Set(session.entries.map(entry => String(entry.id)))
+	let updatedWork = false
+	for (const entry of entries || []) {
+		if (!entry.extension?.work) continue
+		const existing = session.entries.find(item => String(item.id) === String(entry.id))
+		if (!existing) continue
+		existing.extension = { ...existing.extension, work: entry.extension.work }
+		updatedWork = true
+	}
 	const fresh = (entries || []).filter(entry => !knownIds.has(String(entry.id)))
 	session.entries = session.entries.filter(entry => !entry.is_generating)
 	session.entries.push(...fresh)
@@ -386,6 +410,7 @@ async function settleRun(runtime, { entries, memory = null, status, error = '' }
 			? [session.entries.at(-1)]
 			: fresh
 		for (const entry of visibleFresh) if (entry) appendVisibleEntry(entry)
+		if (updatedWork) renderMessages()
 		if (status === 'aborted') showToastI18n('info', 'code.error.aborted')
 		refreshEmptyMode()
 	}
@@ -423,8 +448,10 @@ async function refreshSessionUsageFromDisk(runtime, session) {
 	try {
 		const stored = await api.loadSession({ machine: String(workspace.machine ?? store.machine), workdir: workspace.path }, session.id)
 		if (runtime.session !== session || runtime.status !== 'idle' || !stored) return false
+		session.statistics = stored.statistics
 		if (stored.usage) session.usage = stored.usage
 		else delete session.usage
+		refreshStatistics()
 		return true
 	}
 	catch { return false }

@@ -17,6 +17,7 @@ import { createTargetExecutor, joinWorkdir } from '../../../plugins/file-operati
  * @property {string} created 创建时间（ISO）
  * @property {string} updated 更新时间（ISO）
  * @property {object} [usage] 全部已发生模型调用的累计用量（删除/重生成条目不减回）
+ * @property {object} [statistics] Authoritative run intervals and current request context.
  * @property {object} memory chat_scoped_char_memory；JS 运行时工作区 `coderunner_workspace` 是运行期 scratch，序列化时忽略、不落盘
  * @property {number} [regenAttempts] 工作区自动检查失败后的连续回灌次数（用户发消息时清零）
  * @property {Array<import('../../../../../decl/chatLog.ts').chatLogEntry_t & {time: string}>} entries 消息列表（content=agent 层，content_for_show=人类展示层；同时保留 content_for_edit / charVisibility / files）

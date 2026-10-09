@@ -6865,6 +6865,47 @@
 			"estimatedCost": "已知费用估算 ${amount} ${currency}",
 			"reply": "用量：${usage}",
 			"session": "本会话累计用量：${usage}"
+		},
+		"statistics": {
+			"duration": "${minutes}分${seconds}秒",
+			"working": "工作中 · ${duration}",
+			"worked": "用时 ${duration}",
+			"modelTime": "模型用时",
+			"toolTime": "工具累计用时",
+			"toolWait": "工具等待（并行去重）",
+			"toolCount": "工具调用次数",
+			"ttft": "首输出平均（TTFT）",
+			"speed": "输出速度（TPS）",
+			"ttftValue": "${seconds}秒 · ${count}次采样",
+			"total": "累计用量",
+			"cache": "缓存命中率",
+			"uncached": "未缓存输入",
+			"cacheRead": "缓存读取",
+			"cacheWrite": "缓存写入",
+			"output": "输出（含推理）",
+			"reasoning": "其中推理",
+			"incomplete": "计量状态",
+			"partial": "部分调用未上报完整计量",
+			"reported": "已上报的调用计量",
+			"system": "系统提示词",
+			"tools": "工具与插件定义",
+			"messages": "对话消息",
+			"other": "附件 / 请求封装 / 其他",
+			"asyncTime": "后台任务累计用时",
+			"performance": {
+				"title": "会话统计",
+				"summary": "${rounds} 轮 ${steps} 步 · ${speed} tok/s"
+			},
+			"tokens": {
+				"title": "Token 用量",
+				"summary": "${tokens} tok · 缓存命中 ${rate}"
+			},
+			"context": {
+				"title": "当前上下文",
+				"total": "上下文已用 / 上限",
+				"note": "统计口径",
+				"snapshot": "最近请求快照；分类为文本估算，附件 token 以提供方计量为准"
+			}
 		}
 	},
 	"gist": {

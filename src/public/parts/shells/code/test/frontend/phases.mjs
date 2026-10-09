@@ -7,6 +7,7 @@ export const phases = [
 		name: 'smoke',
 		testMatch: [
 			'smoke.spec.mjs',
+			'statistics.spec.mjs',
 			'composer.spec.mjs',
 			'pill_dropdowns.spec.mjs',
 			'sessions.spec.mjs',

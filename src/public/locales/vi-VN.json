@@ -6865,6 +6865,47 @@
 			"estimatedCost": "Ước tính chi phí đã biết ${amount} ${currency}",
 			"reply": "Mức sử dụng: ${usage}",
 			"session": "Tổng của phiên này: ${usage}"
+		},
+		"statistics": {
+			"duration": "${minutes}m ${seconds}s",
+			"working": "Đang làm việc · ${duration}",
+			"worked": "Thời gian đã dùng ${duration}",
+			"modelTime": "Thời gian mô hình",
+			"toolTime": "Tổng thời gian công cụ",
+			"toolWait": "Chờ công cụ (loại phần chồng lặp)",
+			"toolCount": "Số lần gọi công cụ",
+			"ttft": "Thời gian ra kết quả đầu tiên trung bình (TTFT)",
+			"speed": "Tốc độ đầu ra (TPS)",
+			"ttftValue": "${seconds}s · ${count}",
+			"total": "Tổng lượng sử dụng",
+			"cache": "Tỷ lệ trúng bộ nhớ đệm",
+			"uncached": "Đầu vào không có trong bộ nhớ đệm",
+			"cacheRead": "Đọc bộ nhớ đệm",
+			"cacheWrite": "Ghi bộ nhớ đệm",
+			"output": "Đầu ra (bao gồm suy luận)",
+			"reasoning": "Trong đó là suy luận",
+			"incomplete": "Trạng thái đo lường",
+			"partial": "Một số lần gọi thiếu dữ liệu đầy đủ",
+			"reported": "Lượng sử dụng được báo cáo",
+			"system": "Lời nhắc hệ thống",
+			"tools": "Định nghĩa công cụ và plugin",
+			"messages": "Tin nhắn hội thoại",
+			"other": "Tệp đính kèm / định dạng yêu cầu / khác",
+			"asyncTime": "Thời gian tác vụ nền",
+			"performance": {
+				"title": "Thống kê phiên",
+				"summary": "${rounds} lượt ${steps} bước · ${speed} tok/s"
+			},
+			"tokens": {
+				"title": "Lượng token sử dụng",
+				"summary": "${tokens} tok · Tỷ lệ trúng bộ nhớ đệm ${rate}"
+			},
+			"context": {
+				"title": "Ngữ cảnh hiện tại",
+				"total": "Ngữ cảnh hiện tại / max",
+				"note": "ℹ️",
+				"snapshot": "Yêu cầu gần nhất; các thành phần văn bản là ước tính. Token của tệp đính kèm theo dữ liệu nhà cung cấp."
+			}
 		}
 	},
 	"gist": {

@@ -6871,6 +6871,47 @@
 			"estimatedCost": "Áætlaður þekktur kostnaður ${amount} ${currency}",
 			"reply": "Notkun: ${usage}",
 			"session": "Samtals í þessari lotu: ${usage}"
+		},
+		"statistics": {
+			"duration": "${minutes}m ${seconds}s",
+			"working": "Í vinnslu · ${duration}",
+			"worked": "Tími ${duration}",
+			"modelTime": "Tími líkans",
+			"toolTime": "Heildartími verkfæra",
+			"toolWait": "Bið eftir verkfærum (án skörunar)",
+			"toolCount": "Verkfæraköll",
+			"ttft": "Meðaltími að fyrsta úttaki (TTFT)",
+			"speed": "Úttakshraði (TPS)",
+			"ttftValue": "${seconds}s · ${count}",
+			"total": "Heildarnotkun",
+			"cache": "Hlutfall skyndiminnishittna",
+			"uncached": "Inntak utan skyndiminnis",
+			"cacheRead": "Lestur úr skyndiminni",
+			"cacheWrite": "Skrif í skyndiminni",
+			"output": "Úttak (með rökhugsun)",
+			"reasoning": "Þar af rökhugsun",
+			"incomplete": "Staða mælinga",
+			"partial": "Sum köll skila ófullkomnum gögnum",
+			"reported": "Tilkynnt notkun",
+			"system": "Kerfisfyrirmæli",
+			"tools": "Skilgreiningar verkfæra og viðbóta",
+			"messages": "Skilaboð samtals",
+			"other": "Viðhengi / snið beiðnar / annað",
+			"asyncTime": "Tími bakgrunnsverkefna",
+			"performance": {
+				"title": "Tölfræði samtals",
+				"summary": "${rounds} umferðir ${steps} skref · ${speed} tok/s"
+			},
+			"tokens": {
+				"title": "Táknanotkun",
+				"summary": "${tokens} tok · Hlutfall skyndiminnishittna ${rate}"
+			},
+			"context": {
+				"title": "Núverandi samhengi",
+				"total": "Núverandi samhengi / max",
+				"note": "ℹ️",
+				"snapshot": "Síðasta beiðni; textahlutar eru áætlaðir. Tákn viðhengja miðast við mælingar þjónustuaðila."
+			}
 		}
 	},
 	"gist": {

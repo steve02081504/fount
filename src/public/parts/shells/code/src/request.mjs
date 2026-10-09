@@ -15,6 +15,7 @@ import { getAnyPreferredDefaultPart, loadPart } from '../../../../../server/part
 import { sendEventToUser } from '../../../../../server/web_server/event_dispatcher.mjs'
 import { finishAsyncGeneration } from '../../../plugins/async-task/registry.mjs'
 import { mergeUsage } from '../../chat/public/shared/usage.mjs'
+import { mergeAsyncStatistics } from '../public/shared/statistics.mjs'
 
 import { pickEntryExtension } from './entry_extension.mjs'
 import { activeCodeRuns, codeRunKey, codeWakes, requestCodeRunStart } from './runs.mjs'
@@ -85,11 +86,13 @@ async function sessionToChatLog(entries) {
  * @param {string} [options.generationId] - 本轮生成 id（供子代理回链父代生成；缺省由调用方生成）。
  * @param {(reply: chatReply_t) => void} [options.onPreview] - 流式预览回调。
  * @param {(event: object) => void} [options.onToolOutput] - 工具执行实时输出回调（`generation_options.onToolOutput`）。
+ * @param {(event: object) => void} [options.onRequestStatistics] - 请求生命周期统计回调。
+ * @param {(event: object) => void} [options.onToolStatistics] - 工具执行生命周期统计回调。
  * @param {() => Promise<boolean>} [options.finishRound] - 一轮结束时的持久化回调，返回是否继续生成。
  * @param {AbortSignal} [options.signal] - 中断信号。
  * @returns {Promise<chatReplyRequest_t>} 构建好的请求。
  */
-export async function buildCodeChatRequest({ username, session, requestSession, machine, workdir, ai_source, profile, generationId, onPreview, onToolOutput, finishRound, signal }) {
+export async function buildCodeChatRequest({ username, session, requestSession, machine, workdir, ai_source, profile, generationId, onPreview, onToolOutput, onRequestStatistics, onToolStatistics, finishRound, signal }) {
 	const char = await loadPart(username, 'chars/' + session.charname)
 	const personaName = getAnyPreferredDefaultPart(username, 'personas')
 	const user = personaName ? await loadPart(username, 'personas/' + personaName) : null
@@ -125,6 +128,8 @@ export async function buildCodeChatRequest({ username, session, requestSession, 
 		},
 		/** 工具执行实时输出（code-execution 插件回调），远程流式回显经 `shells/code` 的 RemoteCallBack。 */
 		onToolOutput,
+		onRequestStatistics,
+		onToolStatistics,
 		/**
 		 * agent 完成一轮（AI 调用与回复处理均已结束）：持久化本轮结果并返回是否继续生成。
 		 * 退出流程中返回 false，让循环停止但保留续跑状态。
@@ -176,7 +181,7 @@ export async function buildCodeChatRequest({ username, session, requestSession, 
 		Update: async (updateOptions = {}) => {
 			const { forRound = false } = updateOptions
 			const snapshot = forRound ? codeWakes.snapshot() : null
-			const rebuilt = await buildCodeChatRequest({ username, session, machine, workdir, ai_source, profile, generationId, onPreview, onToolOutput, finishRound, signal })
+			const rebuilt = await buildCodeChatRequest({ username, session, machine, workdir, ai_source, profile, generationId, onPreview, onToolOutput, onRequestStatistics, onToolStatistics, finishRound, signal })
 			if (forRound) codeWakes.observe(codeRunKey(username, session.id), snapshot)
 			return rebuilt
 		},
@@ -218,6 +223,8 @@ export async function buildCodeChatRequest({ username, session, requestSession, 
 				if (existing) return existing
 				run.requestSession.entries.push(normalized)
 				run.allNewEntries?.push(normalized)
+				// 后台任务的结算区间登记进运行快照：任务可能在启动它的运行结束后才结算，之后到达的运行只有这条条目能提供区间
+				run.statistics.asyncTasks = mergeAsyncStatistics({ asyncTasks: run.statistics.asyncTasks }, [normalized]).asyncTasks
 				if (normalized.extension?.usage) run.asyncUsage = mergeUsage(run.asyncUsage, normalized.extension.usage)
 				run.broadcast?.({ type: 'entries-append', entries: [normalized] })
 			}
@@ -230,6 +237,7 @@ export async function buildCodeChatRequest({ username, session, requestSession, 
 					const existing = latest.entries.find(item => String(item?.id) === String(normalized.id))
 					if (existing) return existing
 					latest.entries.push(normalized)
+					latest.statistics = mergeAsyncStatistics(latest.statistics, [normalized])
 					if (normalized.extension?.usage) latest.usage = mergeUsage(latest.usage, normalized.extension.usage)
 					await saveSession(username, workTarget, latest)
 				}

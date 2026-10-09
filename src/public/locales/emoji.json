@@ -6865,6 +6865,47 @@
 			"estimatedCost": "💰 ${amount} ${currency}",
 			"reply": "📊 ${usage}",
 			"session": "🧮 ${usage}"
+		},
+		"statistics": {
+			"duration": "${minutes}m ${seconds}s",
+			"working": "🛠️ · ${duration}",
+			"worked": "⏱️ ${duration}",
+			"modelTime": "🧠⏱️",
+			"toolTime": "🛠️Σ⏱️",
+			"toolWait": "🛠️⌛∪",
+			"toolCount": "🛠️🔢",
+			"ttft": "🥇⏱️ TTFT",
+			"speed": "⚡ TPS",
+			"ttftValue": "${seconds}s · ${count}",
+			"total": "Σ🔢",
+			"cache": "🗄️🎯%",
+			"uncached": "🗄️❌⬅️",
+			"cacheRead": "🗄️📖",
+			"cacheWrite": "🗄️✍️",
+			"output": "➡️🧠",
+			"reasoning": "🧠🔢",
+			"incomplete": "📏ℹ️",
+			"partial": "⚠️📏",
+			"reported": "📏✅",
+			"system": "⚙️💬",
+			"tools": "🛠️🧩",
+			"messages": "💬",
+			"other": "📎📦",
+			"asyncTime": "🌙Σ⏱️",
+			"performance": {
+				"title": "💬📊",
+				"summary": "${rounds} 🔄 ${steps} 👣 · ${speed} tok/s"
+			},
+			"tokens": {
+				"title": "🔢📊",
+				"summary": "${tokens} tok · 🗄️🎯% ${rate}"
+			},
+			"context": {
+				"title": "🧠📦",
+				"total": "🧠📦 / max",
+				"note": "ℹ️",
+				"snapshot": "🕘📸 · 📝≈ · 📎🔢↔️🏢📏"
+			}
 		}
 	},
 	"gist": {

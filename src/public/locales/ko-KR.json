@@ -6865,6 +6865,47 @@
 			"estimatedCost": "알려진 비용 추정 ${amount} ${currency}",
 			"reply": "사용량: ${usage}",
 			"session": "이 세션의 누적 사용량: ${usage}"
+		},
+		"statistics": {
+			"duration": "${minutes}분 ${seconds}초",
+			"working": "작업 중 · ${duration}",
+			"worked": "소요 시간 ${duration}",
+			"modelTime": "모델 소요 시간",
+			"toolTime": "도구 누적 소요 시간",
+			"toolWait": "도구 대기 시간 (중복 제외)",
+			"toolCount": "도구 호출 수",
+			"ttft": "평균 첫 출력 시간 (TTFT)",
+			"speed": "출력 속도 (TPS)",
+			"ttftValue": "${seconds}s · ${count}",
+			"total": "누적 사용량",
+			"cache": "캐시 적중률",
+			"uncached": "캐시되지 않은 입력",
+			"cacheRead": "캐시 읽기",
+			"cacheWrite": "캐시 쓰기",
+			"output": "출력 (추론 포함)",
+			"reasoning": "그중 추론",
+			"incomplete": "측정 상태",
+			"partial": "일부 호출의 사용량 정보가 불완전합니다",
+			"reported": "보고된 사용량",
+			"system": "시스템 프롬프트",
+			"tools": "도구 및 플러그인 정의",
+			"messages": "대화 메시지",
+			"other": "첨부 파일 / 요청 형식 / 기타",
+			"asyncTime": "백그라운드 작업 소요 시간",
+			"performance": {
+				"title": "세션 통계",
+				"summary": "${rounds} 회 ${steps} 단계 · ${speed} tok/s"
+			},
+			"tokens": {
+				"title": "토큰 사용량",
+				"summary": "${tokens} tok · 캐시 적중률 ${rate}"
+			},
+			"context": {
+				"title": "현재 컨텍스트",
+				"total": "현재 컨텍스트 / max",
+				"note": "ℹ️",
+				"snapshot": "최근 요청 기준이며 텍스트 분류는 추정값입니다. 첨부 파일 토큰은 제공자의 측정값을 따릅니다."
+			}
 		}
 	},
 	"gist": {

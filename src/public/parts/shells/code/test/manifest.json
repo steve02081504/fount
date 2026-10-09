@@ -9,10 +9,12 @@
 			"src/public/parts/shells/code/src/finish_scheduler.mjs",
 			"src/public/parts/shells/code/cli/**",
 			"src/scripts/terminal_ui/**",
-			"src/public/parts/shells/code/test/pure/**"
+			"src/public/parts/shells/code/test/pure/**",
+			"src/public/parts/shells/code/public/shared/statistics.mjs"
 		],
 		"shellBackend": [
 			"src/public/parts/shells/code/src/**",
+			"src/public/parts/shells/code/public/shared/statistics.mjs",
 			"src/public/parts/shells/code/{main.mjs,fount.json,locales.json,home_registry.json}",
 			"src/public/parts/plugins/file-operations/{handler.mjs,prompt.mjs,src/**}",
 			"src/public/parts/plugins/code-execution/{handler.mjs,prompt.mjs}",
@@ -59,7 +61,7 @@
 		},
 		{
 			"name": "integration",
-			"expected": "5m22s",
+			"expected": "11m12s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -274,6 +276,15 @@
 						"src/public/parts/shells/code/test/frontend/i18nPlural.spec.mjs",
 						"src/public/parts/shells/code/test/frontend/phases.mjs",
 						"src/public/parts/shells/code/public/**"
+					]
+				},
+				{
+					"name": "statistics",
+					"expected": "55s",
+					"triggers": [
+						"src/public/parts/shells/code/test/frontend/statistics.spec.mjs",
+						"src/public/parts/shells/code/public/src/statistics.mjs",
+						"src/public/parts/shells/code/public/shared/statistics.mjs"
 					]
 				}
 			],

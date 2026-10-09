@@ -6871,6 +6871,47 @@
 			"estimatedCost": "Bekannte Kostenschätzung ${amount} ${currency}",
 			"reply": "Nutzung: ${usage}",
 			"session": "Gesamtnutzung dieser Sitzung: ${usage}"
+		},
+		"statistics": {
+			"duration": "${minutes}m ${seconds}s",
+			"working": "In Arbeit · ${duration}",
+			"worked": "Dauer ${duration}",
+			"modelTime": "Modellzeit",
+			"toolTime": "Gesamte Werkzeugzeit",
+			"toolWait": "Werkzeugwartezeit (ohne Überschneidung)",
+			"toolCount": "Werkzeugaufrufe",
+			"ttft": "Mittlere erste Ausgabe (TTFT)",
+			"speed": "Ausgabegeschwindigkeit (TPS)",
+			"ttftValue": "${seconds}s · ${count}",
+			"total": "Gesamtverbrauch",
+			"cache": "Cache-Trefferrate",
+			"uncached": "Nicht gecachte Eingabe",
+			"cacheRead": "Cache-Lesezugriffe",
+			"cacheWrite": "Cache-Schreibzugriffe",
+			"output": "Ausgabe (mit Denkprozess)",
+			"reasoning": "Davon Denkprozess",
+			"incomplete": "Erfassungsstatus",
+			"partial": "Für einige Aufrufe fehlen vollständige Daten",
+			"reported": "Gemeldeter Verbrauch",
+			"system": "Systemprompt",
+			"tools": "Werkzeug- und Plugin-Definitionen",
+			"messages": "Gesprächsnachrichten",
+			"other": "Anhänge / Anfrageformat / Sonstiges",
+			"asyncTime": "Zeit der Hintergrundaufgaben",
+			"performance": {
+				"title": "Sitzungsstatistik",
+				"summary": "${rounds} Durchläufe ${steps} Schritte · ${speed} tok/s"
+			},
+			"tokens": {
+				"title": "Token-Verbrauch",
+				"summary": "${tokens} tok · Cache-Trefferrate ${rate}"
+			},
+			"context": {
+				"title": "Aktueller Kontext",
+				"total": "Aktueller Kontext / max",
+				"note": "ℹ️",
+				"snapshot": "Letzte Anfrage; Textanteile sind Schätzungen. Anhang-Tokens stammen aus Anbieterangaben."
+			}
 		}
 	},
 	"gist": {

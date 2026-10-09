@@ -43,6 +43,7 @@ import {
 	updateCharMenu,
 } from './pills.mjs'
 import { activateTab, refreshAllSessions } from './session.mjs'
+import { initStatistics, refreshStatistics } from './statistics.mjs'
 import { elements, getPref, initComposer, markBootCompleted, setPref, store, tabKeyOf } from './store.mjs'
 import { handleSubAgentEvent } from './subagents.mjs'
 import { onSendButtonClick, submitMessage, updateSendButton } from './submission.mjs'
@@ -94,6 +95,7 @@ async function handleExternalOpen(payload) {
 
 /** 语言切换时的动态文案重渲染。 */
 function rerenderDynamicText() {
+	refreshStatistics()
 	refreshHomePicker()
 	renderTabs()
 	renderContextChip()
@@ -148,7 +150,8 @@ export async function boot() {
 	onServerEvent('code-open', handleExternalOpen)
 	// 运行终态统一交给 completion；状态变更刷新发送/停止按钮
 	setRunSettledHandler(payload => { void handleRunSettled(payload) })
-	onRuntimeStatusChange(() => updateSendButton())
+	onRuntimeStatusChange(() => { updateSendButton(); refreshStatistics() })
+	initStatistics()
 	// pill 镀铬挂载后再初始化 composer，避免输入组件绑定到尚未挂载的页面结构
 	initComposer()
 	wireComposerEvents()

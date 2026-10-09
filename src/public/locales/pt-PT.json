@@ -6877,6 +6877,47 @@
 			"estimatedCost": "Estimativa do custo conhecido ${amount} ${currency}",
 			"reply": "Utilização: ${usage}",
 			"session": "Total desta sessão: ${usage}"
+		},
+		"statistics": {
+			"duration": "${minutes}m ${seconds}s",
+			"working": "Em curso · ${duration}",
+			"worked": "Tempo decorrido ${duration}",
+			"modelTime": "Tempo do modelo",
+			"toolTime": "Tempo total das ferramentas",
+			"toolWait": "Espera das ferramentas (sem sobreposição)",
+			"toolCount": "Chamadas de ferramentas",
+			"ttft": "Primeira saída média (TTFT)",
+			"speed": "Velocidade de saída (TPS)",
+			"ttftValue": "${seconds}s · ${count}",
+			"total": "Utilização total",
+			"cache": "Taxa de acertos da cache",
+			"uncached": "Entrada sem cache",
+			"cacheRead": "Leituras da cache",
+			"cacheWrite": "Escritas na cache",
+			"output": "Saída (inclui raciocínio)",
+			"reasoning": "Da qual raciocínio",
+			"incomplete": "Estado da medição",
+			"partial": "Algumas chamadas não indicam dados completos",
+			"reported": "Utilização indicada",
+			"system": "Instruções do sistema",
+			"tools": "Definições de ferramentas e plugins",
+			"messages": "Mensagens da conversa",
+			"other": "Anexos / formato do pedido / outros",
+			"asyncTime": "Tempo das tarefas em segundo plano",
+			"performance": {
+				"title": "Estatísticas da sessão",
+				"summary": "${rounds} rondas ${steps} passos · ${speed} tok/s"
+			},
+			"tokens": {
+				"title": "Utilização de tokens",
+				"summary": "${tokens} tok · Taxa de acertos da cache ${rate}"
+			},
+			"context": {
+				"title": "Contexto atual",
+				"total": "Contexto atual / max",
+				"note": "ℹ️",
+				"snapshot": "Último pedido; os componentes de texto são estimativas. Os tokens dos anexos dependem do fornecedor."
+			}
 		}
 	},
 	"gist": {

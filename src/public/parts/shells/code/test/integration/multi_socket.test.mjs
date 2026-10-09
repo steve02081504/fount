@@ -193,6 +193,8 @@ async function scenarioConcurrentAbort(node) {
 		const abortedA = await wsA.waitFor(frame => frame.type === 'aborted')
 		assertEquals(abortedA.runId, 'run-A')
 		assertEquals(abortedA.sessionId, sessionA.id)
+		assertEquals(abortedA.statistics.runs.at(-1).status, 'aborted')
+		assert(abortedA.statistics.runs.at(-1).finishedAt >= abortedA.statistics.runs.at(-1).startedAt)
 		const abortedEntry = abortedA.entries.find(entry => entry.name === 'aborted')
 		assertEquals(abortedEntry.extension.usage.total.outputTokens, 2)
 		const storedA = await (await codeFetch(node, 'GET', `/sessions/concA?machine=0&workdir=${encodeURIComponent(root)}`)).json()
@@ -223,13 +225,14 @@ async function scenarioMultiConnection(node) {
 		const wsA = openFramesWs(sessionWsUrl(node)); closeables.push(() => wsA.close())
 		await wsA.ready
 		wsA.send({ type: 'send', runId: 'run-multi', session, machine: '0', workdir: root, ai_source: '', profile: '', content: 'slow-multi', files: [] })
-		await wsA.waitFor(frame => frame.type === 'run-start')
+		const startA = await wsA.waitFor(frame => frame.type === 'run-start')
 		// 第二个连接接入同一运行（不替换 A）
 		const wsB = openFramesWs(sessionWsUrl(node)); closeables.push(() => wsB.close())
 		await wsB.ready
 		wsB.send({ type: 'attach', sessionId: session.id })
 		const startB = await wsB.waitFor(frame => frame.type === 'run-start')
 		assertEquals(startB.runId, 'run-multi')
+		assertEquals(startB.statistics.runs.at(-1).startedAt, startA.statistics.runs.at(-1).startedAt)
 		// 两个连接都应收到后续流式帧
 		await Promise.all([
 			wsA.waitFor(frame => frame.type === 'preview'),
@@ -241,6 +244,11 @@ async function scenarioMultiConnection(node) {
 		await waitUntil(() => wsA.frames.filter(frame => frame.type === 'preview').length > previewsBefore, 5000)
 		const done = await wsA.waitFor(frame => frame.type === 'done')
 		assertEquals(done.runId, 'run-multi')
+		assertEquals(done.statistics.runs.length, 1)
+		const work = done.entries.find(entry => entry.extension?.work)?.extension.work
+		assert(work.finishedAt >= work.startedAt)
+		const stored = await (await codeFetch(node, 'GET', `/sessions/multi01?machine=0&workdir=${encodeURIComponent(root)}`)).json()
+		assertEquals(stored.statistics, done.statistics)
 	}
 	finally {
 		for (const close of closeables) close()

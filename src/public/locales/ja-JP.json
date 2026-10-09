@@ -6865,6 +6865,47 @@
 			"estimatedCost": "既知コストの概算 ${amount} ${currency}",
 			"reply": "使用量：${usage}",
 			"session": "このセッションの累計使用量：${usage}"
+		},
+		"statistics": {
+			"duration": "${minutes}分${seconds}秒",
+			"working": "作業中 · ${duration}",
+			"worked": "所要時間 ${duration}",
+			"modelTime": "モデル所要時間",
+			"toolTime": "ツールの累計所要時間",
+			"toolWait": "ツール待機時間（重複除外）",
+			"toolCount": "ツール呼び出し回数",
+			"ttft": "最初の出力までの平均時間（TTFT）",
+			"speed": "出力速度（TPS）",
+			"ttftValue": "${seconds}s · ${count}",
+			"total": "累計使用量",
+			"cache": "キャッシュヒット率",
+			"uncached": "非キャッシュ入力",
+			"cacheRead": "キャッシュ読み取り",
+			"cacheWrite": "キャッシュ書き込み",
+			"output": "出力（推論を含む）",
+			"reasoning": "うち推論",
+			"incomplete": "計測状況",
+			"partial": "一部の呼び出しは使用量の報告が不完全です",
+			"reported": "報告された使用量",
+			"system": "システムプロンプト",
+			"tools": "ツールとプラグインの定義",
+			"messages": "会話メッセージ",
+			"other": "添付ファイル / リクエスト形式 / その他",
+			"asyncTime": "バックグラウンドタスク所要時間",
+			"performance": {
+				"title": "セッション統計",
+				"summary": "${rounds} 回 ${steps} ステップ · ${speed} tok/s"
+			},
+			"tokens": {
+				"title": "トークン使用量",
+				"summary": "${tokens} tok · キャッシュヒット率 ${rate}"
+			},
+			"context": {
+				"title": "現在のコンテキスト",
+				"total": "現在のコンテキスト / max",
+				"note": "ℹ️",
+				"snapshot": "直近のリクエスト。テキストの内訳は推定値です。添付ファイルのトークン数は提供元の計測に基づきます。"
+			}
 		}
 	},
 	"gist": {

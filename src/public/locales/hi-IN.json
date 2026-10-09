@@ -6871,6 +6871,47 @@
 			"estimatedCost": "ज्ञात लागत अनुमान ${amount} ${currency}",
 			"reply": "उपयोग: ${usage}",
 			"session": "इस सत्र का कुल: ${usage}"
+		},
+		"statistics": {
+			"duration": "${minutes}m ${seconds}s",
+			"working": "कार्य जारी · ${duration}",
+			"worked": "लगा समय ${duration}",
+			"modelTime": "मॉडल का समय",
+			"toolTime": "टूल का कुल समय",
+			"toolWait": "टूल की प्रतीक्षा (ओवरलैप हटाकर)",
+			"toolCount": "टूल कॉल",
+			"ttft": "पहले आउटपुट का औसत समय (TTFT)",
+			"speed": "आउटपुट गति (TPS)",
+			"ttftValue": "${seconds}s · ${count}",
+			"total": "कुल उपयोग",
+			"cache": "कैश हिट दर",
+			"uncached": "कैश के बिना इनपुट",
+			"cacheRead": "कैश पढ़ना",
+			"cacheWrite": "कैश लिखना",
+			"output": "आउटपुट (तर्क सहित)",
+			"reasoning": "जिसमें तर्क",
+			"incomplete": "मापन स्थिति",
+			"partial": "कुछ कॉल का उपयोग डेटा अधूरा है",
+			"reported": "रिपोर्ट किया गया उपयोग",
+			"system": "सिस्टम प्रॉम्प्ट",
+			"tools": "टूल और प्लगइन परिभाषाएँ",
+			"messages": "बातचीत के संदेश",
+			"other": "अटैचमेंट / अनुरोध प्रारूप / अन्य",
+			"asyncTime": "बैकग्राउंड कार्यों का समय",
+			"performance": {
+				"title": "सत्र के आँकड़े",
+				"summary": "${rounds} राउंड ${steps} चरण · ${speed} tok/s"
+			},
+			"tokens": {
+				"title": "टोकन उपयोग",
+				"summary": "${tokens} tok · कैश हिट दर ${rate}"
+			},
+			"context": {
+				"title": "वर्तमान संदर्भ",
+				"total": "वर्तमान संदर्भ / max",
+				"note": "ℹ️",
+				"snapshot": "नवीनतम अनुरोध; टेक्स्ट के भाग अनुमानित हैं। अटैचमेंट के टोकन प्रदाता के आँकड़ों पर निर्भर हैं।"
+			}
 		}
 	},
 	"gist": {

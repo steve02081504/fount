@@ -8,6 +8,7 @@ import { compactToolSummary } from '/parts/shells:chat/shared/toolSummary.mjs'
 
 import { appendEntryBubble, backToBottom, isEntryVisible, messageMarkdown, renderEntryBubble, updateBackToBottom, updateEmptyMode } from './messages.mjs'
 import { updateRunCards } from './runCards.mjs'
+import { createWorkClock } from './statistics.mjs'
 import { elements, getActiveRuntime, store } from './store.mjs'
 
 /** 当前活动视图：仅活动标签页的生成会话有 DOM。 @type {{session: object, bubble: HTMLElement, renderer: object, cards: Map<string, {root: HTMLElement, output: HTMLElement}>}|null} */
@@ -68,6 +69,8 @@ export function startGeneratingBubble(runtime = getActiveRuntime()) {
 	const body = document.createElement('div')
 	body.className = 'code-message-body markdown-body'
 	bubble.append(name, body)
+	const work = session.statistics?.runs?.at(-1)
+	if (work?.runId === runtime?.runId && work.startedAt) bubble.appendChild(createWorkClock(work, true))
 	elementsInsert(bubble)
 	view = {
 		session,

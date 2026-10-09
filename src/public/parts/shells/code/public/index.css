@@ -1370,3 +1370,62 @@ pre.code-shell-stream-output {
 	border-radius: var(--radius-selector);
 	background: currentColor;
 }
+
+.code-statistics {
+	position: relative;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 0.35rem 0.75rem;
+	padding-block: 0.5rem;
+	font-size: 0.75rem;
+	color: var(--color-base-content);
+	font-variant-numeric: tabular-nums;
+}
+
+.code-statistics[hidden] { display: none; }
+
+/* 面板以 .code-statistics 为定位基准，不跟随单个分组盒子 */
+.code-statistic { position: static; }
+
+.code-statistic > summary {
+	display: flex;
+	align-items: center;
+	gap: 0.35rem;
+	list-style: none;
+	cursor: pointer;
+	padding: 0.2rem 0.5rem;
+	border-radius: var(--radius-selector);
+	background: var(--color-base-200);
+}
+
+.code-statistic > summary::-webkit-details-marker { display: none; }
+.code-statistic > summary:focus-visible { outline: 2px solid var(--color-primary); }
+
+.code-statistic-panel {
+	position: absolute;
+	bottom: calc(100% + 0.5rem);
+	left: 0;
+	z-index: 30;
+	width: min(22rem, 85vw);
+	padding: 1rem;
+	border: var(--border) solid var(--color-base-300);
+	border-radius: var(--radius-box);
+	background: var(--color-base-200);
+	box-shadow: 0 0.5rem 2rem color-mix(in oklch, var(--color-base-content) 15%, transparent);
+}
+
+.code-statistic:last-child .code-statistic-panel { left: auto; right: 0; }
+.code-statistic-panel > strong { display: block; padding-bottom: 0.5rem; }
+.code-statistic-row { display: flex; justify-content: space-between; gap: 1rem; padding-block: 0.25rem; }
+.code-statistic-row > span:first-child { opacity: 0.7; flex-shrink: 0; }
+.code-statistic-row > span:last-child { text-align: right; overflow-wrap: anywhere; }
+.code-work-clock { padding-block: 0.5rem; font-size: 0.75rem; opacity: 0.7; font-variant-numeric: tabular-nums; }
+
+.code-context-meter { height: 0.35rem; margin-block: 0.5rem; background: var(--color-base-300); border-radius: var(--radius-selector); overflow: hidden; }
+.code-context-meter-used { display: flex; height: 100%; }
+.code-context-meter-used > span { min-width: 0; }
+[data-context-segment="system"] { background: var(--color-base-content); }
+[data-context-segment="tools"] { background: var(--color-secondary); }
+[data-context-segment="messages"] { background: var(--color-info); }
+[data-context-segment="other"] { background: var(--color-warning); }
