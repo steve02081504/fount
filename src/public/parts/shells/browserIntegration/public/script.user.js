@@ -1735,9 +1735,9 @@ function notifyFocus() {
 async function syncScriptsFromServer() {
 	const { host, protocol } = await getStoredData()
 	if (host) try {
-		const { success, scripts } = await makeApiRequest(host, protocol, '/api/parts/shells:browserIntegration/autorun-scripts')
-		if (success && Array.isArray(scripts)) await GM.setValue(AUTORUN_SCRIPTS_KEY, scripts)
-		else throw new Error('Server response invalid.')
+		const { scripts } = await makeApiRequest(host, protocol, '/api/parts/shells:browserIntegration/autorun-scripts')
+		if (!Array.isArray(scripts)) throw new Error('Server response invalid.')
+		await GM.setValue(AUTORUN_SCRIPTS_KEY, scripts)
 	} catch (error) {
 		console.error('fount userscript: Sync failed. Using local scripts as fallback.', error.message)
 	}

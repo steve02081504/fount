@@ -25,6 +25,16 @@
 						"src/public/parts/shells/browserIntegration/public/index.{html,mjs}",
 						"src/public/parts/shells/browserIntegration/public/templates.mjs"
 					]
+				},
+				{
+					"name": "userscriptContract",
+					"expected": "20s",
+					"triggers": [
+						"src/public/parts/shells/browserIntegration/test/frontend/userscriptContract.spec.mjs",
+						"src/public/parts/shells/browserIntegration/test/frontend/fixtures.mjs",
+						"src/public/parts/shells/browserIntegration/public/script.user.js",
+						"src/public/parts/shells/browserIntegration/src/{endpoints,api}.mjs"
+					]
 				}
 			],
 			"run": [
