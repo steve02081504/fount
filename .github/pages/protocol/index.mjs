@@ -80,7 +80,7 @@ async function attemptConnection() {
  * @returns {Promise<void>}
  */
 async function main() {
-	await initTranslations('protocolhandler')
+	await initTranslations('protocolhandler.github')
 	await attemptConnection()
 }
 

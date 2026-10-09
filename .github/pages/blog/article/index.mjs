@@ -288,7 +288,7 @@ async function showArticle() {
 	}
 }
 
-await initTranslations('blog')
+await initTranslations('blog.article_detail')
 mountThemeMenu(themeMenu).catch(console.error)
 
 index = await loadIndex().catch(error => {

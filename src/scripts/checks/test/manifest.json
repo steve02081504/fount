@@ -31,6 +31,25 @@
 			]
 		},
 		{
+			"name": "meta_language",
+			"expected": "1s",
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/checks/test/meta_language.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/checks/{html_meta.mjs,meta_language.mjs,walk.mjs}",
+				"src/scripts/checks/test/meta_language.test.mjs",
+				"**/*.html"
+			]
+		},
+		{
 			"name": "info",
 			"expected": "4s",
 			"run": [

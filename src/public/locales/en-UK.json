@@ -633,7 +633,7 @@
 	},
 	"installer_wait_screen": {
 		"title": "Welcome to fount!",
-		"description": "Follow the installation's progress and glimpse the features within. fount will be ready to launch in a moment.",
+		"description": "Watch the weave of installation as fount stirs to life. A patient breath, then the door to your companions swings open.",
 		"hero": {
 			"title": "Imagination, Given Voice.",
 			"description": "fount is an AI-powered role interaction platform designed to empower <i>you</i>. It is a bridge that connects you with your imagined characters, allowing you to easily talk to them, create your own characters, and share them with the world."
@@ -734,7 +734,7 @@
 		},
 		"error": {
 			"title": "Installation failed!",
-			"description": "There seems to be something wrong with the fount installer.",
+			"description": "Something has jarred the installer from its rhythm. Pause here—we will help you find steady ground before the journey resumes.",
 			"connection_failed": "Connection failed!",
 			"close_page": "Close page",
 			"summary": "There seems to be something wrong with the fount installer.",
@@ -787,7 +787,11 @@
 				"retry": "Try again"
 			}
 		},
-		"fountNotFound": "Oh dear :(\n\nfount was not found. Perhaps you need to install it first?"
+		"fountNotFound": "Oh dear :(\n\nfount was not found. Perhaps you need to install it first?",
+		"github": {
+			"title": "Whispers in the Digital Stream: fount Protocol Handler",
+			"description": "Guiding the unseen currents, this page ensures your fount links lead you true, connecting intentions to immersive realities."
+		}
 	},
 	"startPage": {
 		"title": "fount!",
@@ -884,7 +888,7 @@
 	},
 	"login_info": {
 		"title": "Login Information",
-		"description": "A secure space for managing your fount login credentials—the keys to your world of untold stories.",
+		"description": "A quiet sanctum for tending your fount login credentials—the keys to worlds of untold stories, kept safe until you choose to turn the lock.",
 		"modal": {
 			"title": "Certificate transfer error",
 			"retrieve_error": "An error occurred while trying to save your login credentials:\n${error}\nYou can continue but cannot save the login information.",
@@ -943,7 +947,7 @@
 	},
 	"home": {
 		"title": "Home",
-		"description": "This is where your fount experience begins. Characters, worlds and personas — everything your imagination holds is here. This is where every story starts.",
+		"description": "The heart of your fount experience. Here, manage the denizens of your imagination—characters, worlds, and personas. Your stories begin and branch from this central nexus.",
 		"sidebarTitle": "Details",
 		"closeSidebar": "Close sidebar",
 		"itemDescription": "Select an item to view details.",
@@ -1252,7 +1256,7 @@
 		"emojiPacks": {
 			"title": "Explore emoji packs",
 			"kicker": "Discover",
-			"description": "Browse emoji packs from nearby public groups and authors. Join a group or follow an author to unlock them — no separate install needed.",
+			"description": "Browse emoji packs woven by public groups and authors across fount. Small sigils, ready to punctuate your conversations.",
 			"back": "Back to chat",
 			"loading": "Looking for nearby emoji packs…",
 			"empty": "No emoji packs found nearby",
@@ -1587,7 +1591,7 @@
 				},
 				"page": {
 					"title": "Group settings",
-					"description": "Manage group identity, members, permissions, and shared tools.",
+					"description": "Tend to a group's identity, its members, permissions, and the tools that bind your shared stage. Every gathering needs its own agreed-upon light.",
 					"kicker": "Group settings",
 					"subtitle": "Manage group information, members and common functions. Low-frequency permissions, storage, and auditing tools are centralised in advanced settings.",
 					"navigationLabel": "Group settings classification",
@@ -3076,7 +3080,8 @@
 				"toolbar": {
 					"aria-label": "Message multi-select toolbar"
 				}
-			}
+			},
+			"description": "Where words take flight and stories unfold. Engage with your AI companions, shape the narrative, and lose yourself in the ebb and flow of digital dialogue. The heart of fount beats here."
 		},
 		"sidebar": {
 			"settings": {
@@ -3282,7 +3287,7 @@
 		},
 		"profile": {
 			"title": "Profile",
-			"description": "Manage how you appear in chat and social.",
+			"description": "Shape how you appear across chat and social—a public presence tuned to the story you wish to tell.",
 			"settingsEyebrow": "Account settings",
 			"accountAtGlance": "At a glance",
 			"advancedKicker": "When you need it",
@@ -3695,7 +3700,7 @@
 	},
 	"easynew": {
 		"title": "Quick Create",
-		"description": "Quickly scaffold new fount parts like characters, worlds, and plugins using predefined or custom templates. Your next creation is just a few clicks away.",
+		"description": "From template or blank page, coax new parts into being—characters, worlds, plugins—woven with a few deliberate gestures. The loom is ready; you choose the pattern.",
 		"info": {
 			"description": "Templates are for quickly building simple components; more involved creations still need your own hands."
 		},
@@ -3881,7 +3886,7 @@
 		"title": "Component Exporter",
 		"pageTitle": "Component Exporter",
 		"pageSubtitle": "Export your favorite content",
-		"description": "Export your fount creations. This tool gathers your selected parts into a simple zip file for safekeeping or sharing.",
+		"description": "Gather chosen parts into a single parcel for safekeeping or gift. What you made in fount may travel, intact, to another hearth.",
 		"steps": {
 			"part": "Select Components",
 			"action": "Export"
@@ -4061,7 +4066,7 @@
 	},
 	"serviceSource_manager": {
 		"title": "Service Source Management",
-		"description": "Here, you will conduct a symphony of artificial intelligence sounds. Add, carve or silence sources to bring life to your source companions - a subtle dance of code and imagination.",
+		"description": "Here, you conduct the symphony of AI voices. Add, sculpt, or silence the sources that give life to your fount companions—a delicate dance of code and imagination.",
 		"fileList": {
 			"title": "Service source list",
 			"empty": "No service sources yet",
@@ -4378,7 +4383,7 @@
 	},
 	"wechat_bots": {
 		"title": "WeChat Bot",
-		"description": "Run your fount character as a WeChat bot — bind a role, manage bots and keep the companion chat going where you already are.",
+		"description": "Let your fount characters stride into WeChat's familiar halls—companions at hand amid the day's ordinary conversations.",
 		"cardTitle": "WeChat Bot",
 		"botSelectDropdown": {
 			"placeholder": "Choose a bot"
@@ -4472,7 +4477,7 @@
 	},
 	"social": {
 		"title": "Square",
-		"description": "P2P open social posts, following and file sharing",
+		"description": "Wander peer-to-peer feeds, follows, and shared files beneath fount's social sky. A plaza where distant voices may meet without a central tower.",
 		"bootstrapFailed": "Social interface initialisation failed: ${error}",
 		"connectNodeFailed": "Couldn't connect to node: ${error}",
 		"dwellFailed": "Couldn't update taste data from watch time: ${error}",
@@ -5168,7 +5173,7 @@
 	},
 	"cabinet": {
 		"title": "Cabinet",
-		"description": "P2P personal and shared cabinets",
+		"description": "Personal keepsakes and peer-shared treasures, each cabinet a quiet room in fount's distributed halls. Open a drawer; see what stories your network has left for you.",
 		"entries": {
 			"title": "Items",
 			"aria-label": "Items"
@@ -5250,7 +5255,7 @@
 	},
 	"browser_integration": {
 		"title": "Browser integration",
-		"description": "Bridge the gap between fount and the web. This page provides the userscript to enable seamless integration, bringing your AI companions into your browsing experience.",
+		"description": "Let your companions walk beside you as you browse. Here lies the userscript—thread by thread—that binds fount to the open web.",
 		"pageHeader": "Browser integration",
 		"pageDescription": "In order for your fount role to interact with the web page, you need to install this browser integration script. It acts as a bridge between the character and the browser, allowing them to view the page content and perform actions.",
 		"install_script_title": "Installation script",
@@ -5380,7 +5385,7 @@
 		}
 	},
 	"ide_integration": {
-		"description": "Connect the fount role to supported editors (such as Zed, JetBrains, Neovim) through Agent Client Protocol (ACP), configure API keys and roles, and bring AI partners into the development workflow.",
+		"description": "Invite your companions into the forge of code. Through the Agent Client Protocol, bind API keys and characters to your editor—where logic and dialogue share the same bench.",
 		"title": "IDE integration",
 		"heading": "IDE integration",
 		"instruction": "Use fount roles to assist programming in ACP-enabled editors (such as Zed, JetBrains, Neovim, etc.).",
@@ -5431,7 +5436,7 @@
 	},
 	"deskpet": {
 		"title": "Desktop pets",
-		"description": "Launch your fount characters as interactive pets that live on your desktop.",
+		"description": "Summon your fount characters as pets upon the desktop—small presences that linger, watch, and keep you company through the day.",
 		"launcherCard": {
 			"title": "pet starter",
 			"buttons": {
@@ -5487,7 +5492,7 @@
 	},
 	"blog": {
 		"title": "fount Agent Institute",
-		"description": "Notes from the fount workshop: essays on agent design — what an agent truly is, what an LLM is for, and how to build systems that spend intelligence only where it earns its keep.",
+		"description": "Field notes from the fount workshop: essays on agent design — what an agent truly is, what an LLM is for, and how to build systems that spend intelligence only where it earns its keep.",
 		"heading": "fount Agent Institute",
 		"intro": "The fount project's series on agent design — what an agent is, what an LLM is for, and where plain programs do the job better. Read in order or jump around; every essay links the rest.",
 		"search": {
@@ -5529,6 +5534,10 @@
 			"text": "Written by the author of fount, a self-hosted AI companion platform with fully readable source code — agents, shells, personas and memory, all living on your own machine and nowhere else.",
 			"install": "Install fount",
 			"github": "GitHub"
+		},
+		"article_detail": {
+			"title": "fount Agent Institute: An Essay on Agent Design",
+			"description": "One stop along the fount Agent Institute reading path: agents as task systems, LLMs as rented cognition, and the quiet art of not asking the model for what a program already knows."
 		}
 	},
 	"themeManage": {
@@ -5644,7 +5653,7 @@
 	"languageSettings": {
 		"title": "Language settings",
 		"pageTitle": "Language Settings",
-		"description": "Manage your language preferences for the fount application. Customise your experience with the available language options.",
+		"description": "Choose the words in which fount speaks to you. Adjust your language preferences and let the interface settle into a familiar voice.",
 		"pageDescription": "Manage your language preferences here. The languages in the list will take precedence over the browser settings in order.",
 		"availableLanguages": "Available Languages",
 		"preferredLanguages": "Priority Language List",
@@ -5686,7 +5695,7 @@
 	"userSettings": {
 		"title": "User Settings",
 		"PageTitle": "User Settings",
-		"description": "Manage your fount identity details: profile, access security, and connected devices. A calm, private space for your account.",
+		"description": "Tend to the details of your fount identity. Manage your profile, safeguard your access, and view connected devices. A quiet sanctum for your account.",
 		"shell": {
 			"unauthorized": "Login required.",
 			"responseNotJson": "The server returned unparseable content.",
@@ -5915,7 +5924,7 @@
 	},
 	"proxy": {
 		"title": "API Proxy",
-		"description": "For developers and integrators, this page introduces the fount API proxy — your way to weave fount's capabilities into other applications.",
+		"description": "For those who weave fount into other works: here the API proxy stands open—a conduit through which your applications may drink from fount's well.",
 		"heading": "API Proxy Gateway",
 		"instruction": "Generate and manage your API keys on this page to integrate fount with other applications.",
 		"endpointSectionTitle": "API Endpoint",
@@ -5956,7 +5965,7 @@
 	"subfounts": {
 		"title": "Subfounts - peer-to-peer device management",
 		"pageTitle": "subfounts",
-		"description": "Manage peer-to-peer fountain connections",
+		"description": "Reach sibling devices across the network—connection codes lit like candles, commands sent through the dark. A quiet orchestration of distributed presences.",
 		"hostConnectionCode": {
 			"title": "Host connection code",
 			"connectionCodeLabel": "Connection code (Peer ID)",
@@ -6046,7 +6055,7 @@
 	},
 	"achievements": {
 		"title": "Achievement",
-		"description": "Explore the milestones and accomplishments of your journey with fount. Each achievement marks a step in your unique narrative.",
+		"description": "Turn the pages of your journey—each milestone a footnote in a story only you could write. Achievements glimmer like markers along the path you have walked.",
 		"pageHeader": "Hall of achievement",
 		"pageDescription": "Check out your unlocked achievements and milestones here.",
 		"unlocked_on": "Unlocked on ${date}",
@@ -6076,7 +6085,7 @@
 	},
 	"log_viewer": {
 		"title": "Logs",
-		"description": "View live fount server logs and run a JavaScript REPL in your browser.",
+		"description": "Listen to the server's whispered pulse in live logs, or speak directly in a browser-bound REPL. Here, the inner voice of fount answers in plain text.",
 		"connectionError": "Unable to connect to the log service. Please try again after accessing fount locally or logging in.",
 		"logs": {
 			"openSourceFailed": "Could not open source file: ${message}",
@@ -6104,7 +6113,7 @@
 	},
 	"debug_info": {
 		"title": "Debug & System Info",
-		"description": "Get detailed debugging and system information about your fount installation. This is very helpful for troubleshooting and support requests.",
+		"description": "When shadows gather on the path, peer here for system truth—diagnostics and details to illuminate what went astray. A lantern for those who seek understanding.",
 		"heading": "Debug & System Info",
 		"copyButton": "Copy Report",
 		"versionStatus": {
@@ -6184,7 +6193,7 @@
 	},
 	"directoryListing": {
 		"title": "Directory Index",
-		"description": "Browse and explore the files and folders in the fount workspace.",
+		"description": "Wander the shelves of your fount workspace—files and folders laid out like marked paths through a familiar library.",
 		"indexOf": "Index: ${path}",
 		"name": "Name",
 		"mimeType": "MIME type",
@@ -6480,7 +6489,7 @@
 	},
 	"pro_cancel_screen": {
 		"title": "Your fount pro subscription has been cancelled",
-		"description": "Learn how to cancel your fount pro subscription and share the reason for your cancellation.",
+		"description": "See why fount pro was cancelled and share the reason behind your departure.",
 		"intro": "Sorry to see you go. To help us improve fount pro, could you tell us why you're cancelling?",
 		"language_selector": {
 			"button": {
@@ -6502,17 +6511,23 @@
 	},
 	"oauth_handler": {
 		"title": "OAuth login",
-		"description": "Completes AI provider OAuth logins. Token exchange stays on the server.",
+		"description": "Step outward to claim an AI provider's blessing, then return with keys that unlock new voices for your companions.",
 		"callback": {
 			"working": "Finishing login…",
 			"success": "Signed in. You can close this page.",
 			"failed": "Login failed: ${message}",
-			"missingParams": "Callback is missing code or state."
+			"missingParams": "Callback is missing code or state.",
+			"title": "The Sealed Handshake: fount OAuth Callback",
+			"description": "The outer gate closes; authorization returns to your waiting fount. A brief, necessary pause while trust is written into memory."
+		},
+		"pages_bounce": {
+			"title": "A Borrowed Moment: fount OAuth Return",
+			"description": "A brief detour through the wider web, carrying authorization back to your local fount. The handshake completes, and the portal seals behind you."
 		}
 	},
 	"code": {
 		"title": "Code",
-		"description": "AI coding sessions targeting workspaces and machines.",
+		"description": "An AI coding workspace: chat with any character over your projects, run code and edit files on the local machine or connected subfounts.",
 		"sessions": {
 			"new": "New session",
 			"untitled": "Untitled session",
@@ -6920,7 +6935,7 @@
 	},
 	"gist": {
 		"title": "Gist Library",
-		"description": "Save, view, edit and share Markdown documents, with a per-gist security level.",
+		"description": "A quiet library of Markdown leaves: write them, keep them, edit them, hand them on—each gist sealed behind a lock of your choosing.",
 		"error": {
 			"generic": "Something went wrong: ${error}"
 		},
@@ -7257,7 +7272,7 @@
 	},
 	"captcha": {
 		"title": "Confirm your identity",
-		"description": "A fount node wants to confirm you are a human or an autonomous agent.",
+		"description": "Before the gate swings wide, a small question is asked: are you a person, or an agent wandering on your own errand? Answer, and the way into fount opens.",
 		"help": {
 			"button": {
 				"aria-label": "Why am I seeing this?"
@@ -7295,7 +7310,7 @@
 	},
 	"invitation-required": {
 		"title": "fount requires an invitation",
-		"description": "To keep our community trustworthy, fount welcomes new users invited by existing users.",
+		"description": "fount keeps its doors for the invited. Ask someone already inside for a private word—an invitation link—and the threshold will open for you too.",
 		"getLink": "Ask someone you know who already uses fount for a private chat invitation link!",
 		"submit": "Use invitation link",
 		"waiting": "Invitation sent. Please wait for the other person to accept. fount will open automatically afterwards.",

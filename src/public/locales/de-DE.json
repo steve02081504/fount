@@ -633,7 +633,7 @@
 	},
 	"installer_wait_screen": {
 		"title": "Willkommen bei fount!",
-		"description": "Verfolgen Sie den Installationsfortschritt und werfen Sie einen Blick auf die darin enthaltenen Funktionen. fount ist in Kürze startbereit.",
+		"description": "Verfolgen Sie das Gewebe der Installation, während fount zum Leben erwacht. Ein geduldiger Atemzug, dann öffnet sich die Tür zu Ihren Begleitern.",
 		"hero": {
 			"title": "Ein Geistesblitz, aus Gedanken geboren",
 			"description": "fount ist eine KI-gestützte Charakter-Interaktionsplattform, die <i>Sie</i> befähigt. Sie ist eine Brücke, die Sie mit Ihren imaginären Charakteren verbindet und Ihnen ermöglicht, problemlos mit ihnen zu sprechen, Ihre eigenen Charaktere zu erstellen und sie mit der Welt zu teilen."
@@ -734,7 +734,7 @@
 		},
 		"error": {
 			"title": "Installation fehlgeschlagen!",
-			"description": "Mit dem fount-Installationsprogramm scheint etwas nicht zu stimmen.",
+			"description": "Etwas hat das Installationsprogramm aus seinem Rhythmus gebracht. Halten Sie hier inne – wir helfen Ihnen, festen Boden zu finden, bevor die Reise weitergeht.",
 			"connection_failed": "Verbindung fehlgeschlagen!",
 			"close_page": "Seite schließen",
 			"summary": "Mit dem fount-Installationsprogramm scheint etwas nicht zu stimmen.",
@@ -787,7 +787,11 @@
 				"retry": "Erneut versuchen"
 			}
 		},
-		"fountNotFound": "Och nö :(\n\nfount wurde nicht gefunden. Vielleicht müssen Sie es zuerst installieren?"
+		"fountNotFound": "Och nö :(\n\nfount wurde nicht gefunden. Vielleicht müssen Sie es zuerst installieren?",
+		"github": {
+			"title": "Flüstern im digitalen Strom: der fount-Protokollhandler",
+			"description": "Diese Seite lenkt die unsichtbaren Strömungen und sorgt dafür, dass Ihre fount-Links Sie zuverlässig ans Ziel führen – sie verbindet Absichten mit immersiven Wirklichkeiten."
+		}
 	},
 	"startPage": {
 		"title": "fount!",
@@ -884,7 +888,7 @@
 	},
 	"login_info": {
 		"title": "Anmeldeinformationen",
-		"description": "Ein sicherer Bereich zum Verwalten Ihrer fount-Anmeldedaten – die Schlüssel zu Ihrer Welt voller unerzählter Geschichten.",
+		"description": "Ein stilles Refugium zur Pflege Ihrer fount-Anmeldedaten – die Schlüssel zu Welten unerzählter Geschichten, sicher verwahrt, bis Sie das Schloss aufschließen möchten.",
 		"modal": {
 			"title": "Fehler bei Anmeldedaten-Übertragung",
 			"retrieve_error": "Beim Versuch, Ihre Anmeldedaten zu speichern, ist ein Fehler aufgetreten:\n${error}\nSie können fortfahren, die Daten jedoch nicht speichern.",
@@ -1252,7 +1256,7 @@
 		"emojiPacks": {
 			"title": "Emoji-Pakete entdecken",
 			"kicker": "Entdecken",
-			"description": "Emoji-Pakete aus öffentlichen Gruppen und von Autoren in der Nähe durchstöbern. Durch Beitritt oder Folgen freischalten; keine separate Installation nötig.",
+			"description": "Durchstöbern Sie Emoji-Pakete, die öffentliche Gruppen und Autoren in ganz fount gewebt haben. Kleine Zeichen, bereit, Ihre Gespräche zu betonen.",
 			"back": "Zurück zum Chat",
 			"loading": "Suche nach Emoji-Paketen in der Nähe…",
 			"empty": "Keine Emoji-Pakete in der Nähe gefunden",
@@ -1587,7 +1591,7 @@
 				},
 				"page": {
 					"title": "Gruppeneinstellungen",
-					"description": "Verwalten Sie Identität, Mitglieder, Berechtigungen und die Werkzeuge, die Ihre gemeinsame Bühne verbinden.",
+					"description": "Kümmern Sie sich um die Identität einer Gruppe, ihre Mitglieder, Berechtigungen und die Werkzeuge, die Ihre gemeinsame Bühne verbinden. Jede Zusammenkunft braucht ihr eigenes, gemeinsam vereinbartes Licht.",
 					"kicker": "Gruppenleitung",
 					"subtitle": "Verwalten Sie Gruppeninformationen, Mitglieder und allgemeine Funktionen. Low-Frequency-Berechtigungen, Speicher und Überwachungstools sind in erweiterten Einstellungen zentralisiert.",
 					"navigationLabel": "Klassifizierung der Gruppeneinstellungen",
@@ -3076,7 +3080,8 @@
 				"toolbar": {
 					"aria-label": "Werkzeugleiste für die Mehrfachauswahl von Nachrichten"
 				}
-			}
+			},
+			"description": "Wo Worte fliegen und Geschichten sich entfalten. Interagieren Sie mit Ihren KI-Begleitern, gestalten Sie die Erzählung und verlieren Sie sich im Auf und Ab des digitalen Dialogs. Hier schlägt das Herz von fount."
 		},
 		"sidebar": {
 			"settings": {
@@ -3282,7 +3287,7 @@
 		},
 		"profile": {
 			"title": "Profil",
-			"description": "Verwalten Sie Ihr öffentliches Profil in Chat und Social.",
+			"description": "Gestalten Sie, wie Sie in Chat und Social erscheinen – eine öffentliche Präsenz, abgestimmt auf die Geschichte, die Sie erzählen möchten.",
 			"settingsEyebrow": "Kontoeinstellungen",
 			"accountAtGlance": "Kontoübersicht",
 			"advancedKicker": "Nach Bedarf konfigurieren",
@@ -3695,7 +3700,7 @@
 	},
 	"easynew": {
 		"title": "Schnellerstellung",
-		"description": "Erstellen Sie mithilfe vordefinierter oder benutzerdefinierter Vorlagen schnell neue fount-Teile wie Charaktere, Welten und Plugins. Ihre nächste Kreation ist nur ein paar Klicks entfernt.",
+		"description": "Aus einer Vorlage oder von der leeren Seite locken Sie neue Teile ans Licht – Charaktere, Welten, Plugins –, gewebt mit wenigen bewussten Handgriffen. Der Webstuhl steht bereit; Sie wählen das Muster.",
 		"info": {
 			"description": "Diese Vorlagen können nur verwendet werden, um einfache Komponenten schnell zu erstellen. Komplexe Komponenten müssen weiterhin manuell erstellt werden."
 		},
@@ -3881,7 +3886,7 @@
 		"title": "Komponenten-Exporter",
 		"pageTitle": "Komponenten-Exporter",
 		"pageSubtitle": "Exportieren Sie Ihre Lieblingsinhalte",
-		"description": "Exportieren Sie Ihre fount-Kreationen. Dieses Tool sammelt Ihre ausgewählten Komponenten in einer einfachen ZIP-Datei zur sicheren Aufbewahrung oder Weitergabe.",
+		"description": "Bündeln Sie ausgewählte Teile zu einem einzigen Paket für die sichere Aufbewahrung oder als Geschenk. Was Sie in fount geschaffen haben, darf unversehrt zu einem anderen Herd weiterziehen.",
 		"steps": {
 			"part": "Wählen Sie Komponenten aus",
 			"action": "Export"
@@ -4061,7 +4066,7 @@
 	},
 	"serviceSource_manager": {
 		"title": "Verwaltung von Servicequellen",
-		"description": "Hier dirigieren Sie eine Symphonie der Stimmen künstlicher Intelligenz. Fügen Sie Quellen hinzu, verfeinern Sie sie oder schalten Sie sie stumm, um Ihren Quellbegleitern Leben einzuhauchen – ein feiner Tanz aus Code und Fantasie.",
+		"description": "Hier dirigieren Sie die Symphonie der KI-Stimmen. Fügen Sie Quellen hinzu, formen Sie sie oder bringen Sie sie zum Schweigen – Quellen, die Ihren fount-Begleitern Leben einhauchen: ein feiner Tanz aus Code und Fantasie.",
 		"fileList": {
 			"title": "Liste der Dienstquellen",
 			"empty": "Noch keine Dienstquellen",
@@ -4378,7 +4383,7 @@
 	},
 	"wechat_bots": {
 		"title": "WeChat-Bot",
-		"description": "Nutzen Sie einen fount-Charakter als WeChat-Bot: Rolle binden, Bots verwalten, in WeChat chatten.",
+		"description": "Lassen Sie Ihre fount-Charaktere in die vertrauten Hallen von WeChat schreiten – Begleiter zur Hand, mitten in den gewöhnlichen Gesprächen des Tages.",
 		"cardTitle": "WeChat-Bot",
 		"botSelectDropdown": {
 			"placeholder": "Bot auswählen"
@@ -4472,7 +4477,7 @@
 	},
 	"social": {
 		"title": "Plaza",
-		"description": "P2P-Social: Feeds, Follows und Dateifreigabe",
+		"description": "Wandern Sie unter dem sozialen Himmel von fount durch Peer-to-Peer-Feeds, Follows und geteilte Dateien. Ein Platz, an dem ferne Stimmen einander begegnen können, ohne dass ein zentraler Turm nötig wäre.",
 		"bootstrapFailed": "Social-Oberfläche konnte nicht initialisiert werden: ${error}",
 		"connectNodeFailed": "Verbindung zum Knoten fehlgeschlagen: ${error}",
 		"dwellFailed": "Vorlieben konnten anhand der Wiedergabezeit nicht aktualisiert werden: ${error}",
@@ -5168,7 +5173,7 @@
 	},
 	"cabinet": {
 		"title": "Cabinet",
-		"description": "Persönliche und gemeinsam genutzte P2P-Aktenschränke",
+		"description": "Persönliche Andenken und gemeinschaftlich geteilte Schätze – jeder Aktenschrank ein stiller Raum in den verteilten Hallen von fount. Öffnen Sie eine Schublade und sehen Sie, welche Geschichten Ihr Netzwerk für Sie hinterlassen hat.",
 		"entries": {
 			"title": "Einträge",
 			"aria-label": "Einträge"
@@ -5250,7 +5255,7 @@
 	},
 	"browser_integration": {
 		"title": "Browserintegration",
-		"description": "Überbrücken Sie die Lücke zwischen fount und Internet. Diese Seite stellt das Benutzerskript bereit, um eine nahtlose Integration zu ermöglichen und Ihre fount-Begleiter in Ihr Surferlebnis einzubeziehen.",
+		"description": "Lassen Sie Ihre Begleiter beim Surfen an Ihrer Seite gehen. Hier liegt das Benutzerskript – Faden für Faden – das fount mit dem offenen Web verbindet.",
 		"pageHeader": "Browserintegration",
 		"pageDescription": "Damit Ihre fount-Rolle mit der Webseite interagieren kann, müssen Sie dieses Browser-Integrationsskript installieren. Es fungiert als Brücke zwischen dem Charakter und dem Browser, sodass sie den Seiteninhalt anzeigen und Aktionen ausführen können.",
 		"install_script_title": "Skript installieren",
@@ -5380,7 +5385,7 @@
 		}
 	},
 	"ide_integration": {
-		"description": "Verbinden Sie die fount-Rolle über das Agent Client Protocol mit unterstützten Editoren (wie Zed, JetBrains, Neovim), konfigurieren Sie API-Schlüssel und -Rollen und beziehen Sie KI-Partner in den Entwicklungsworkflow ein.",
+		"description": "Bitten Sie Ihre Begleiter in die Schmiede des Codes. Über das Agent Client Protocol binden Sie API-Schlüssel und Charaktere an Ihren Editor – dort, wo Logik und Dialog an derselben Werkbank arbeiten.",
 		"title": "IDE-Integration",
 		"heading": "IDE-Integration",
 		"instruction": "Verwenden Sie fount-Rollen, um die Programmierung in ACP-fähigen Editoren (wie Zed, JetBrains, Neovim usw.) zu unterstützen.",
@@ -5431,7 +5436,7 @@
 	},
 	"deskpet": {
 		"title": "Desktop-Haustiere",
-		"description": "Starten Sie Ihre fount-Charaktere als interaktive Haustiere, die auf Ihrem Desktop leben.",
+		"description": "Beschwören Sie Ihre fount-Charaktere als Haustiere auf den Desktop – kleine Wesen, die verweilen, zusehen und Ihnen durch den Tag Gesellschaft leisten.",
 		"launcherCard": {
 			"title": "Starter für Haustiere",
 			"buttons": {
@@ -5487,7 +5492,7 @@
 	},
 	"blog": {
 		"title": "fount Agent-Institut",
-		"description": "Aufsätze aus der fount-Werkstatt: Gedanken zum Agentendesign — was ein Agent wirklich ist, wofür ein LLM gut ist und wie man Systeme baut, die Intelligenz nur dort einsetzen, wo sie sich lohnt.",
+		"description": "Feldnotizen aus der fount-Werkstatt: Aufsätze über Agentendesign – was ein Agent wirklich ist, wofür ein LLM taugt und wie man Systeme baut, die Intelligenz nur dort einsetzen, wo sie sich bezahlt macht.",
 		"heading": "fount Agent-Institut",
 		"intro": "Die Artikelserie des fount-Projekts zum Thema Agentendesign — was ein Agent ist, welche Rolle ein LLM darin spielt und welche Aufgaben eigentlich besser in gewöhnliche Programme gehören. Sie können sie der Reihe nach lesen oder nach Belieben springen; jeder Artikel verlinkt auf die übrigen.",
 		"search": {
@@ -5529,6 +5534,10 @@
 			"text": "Der Autor dieses Artikels ist zugleich der Autor von fount. fount ist eine selbst gehostete KI-Begleitplattform mit vollständig einsehbarem Quellcode – Agents, Shells, Persönlichkeiten und Erinnerungen, die alle auf Ihrem eigenen Rechner leben.",
 			"install": "fount installieren",
 			"github": "GitHub"
+		},
+		"article_detail": {
+			"title": "fount Agent Institute: Ein Aufsatz über Agentendesign",
+			"description": "Eine Station auf dem Lesepfad des fount Agent Institute: Agenten als Aufgabensysteme, LLMs als gemietete Kognition und die stille Kunst, das Modell nicht nach dem zu fragen, was ein Programm bereits weiß."
 		}
 	},
 	"themeManage": {
@@ -5644,7 +5653,7 @@
 	"languageSettings": {
 		"title": "Spracheinstellungen",
 		"pageTitle": "Spracheinstellungen",
-		"description": "Verwalten Sie Ihre Spracheinstellungen für die fount-Anwendung. Passen Sie Ihr Erlebnis mit den verfügbaren Sprachoptionen an.",
+		"description": "Wählen Sie die Worte, in denen fount zu Ihnen spricht. Passen Sie Ihre Spracheinstellungen an und lassen Sie die Oberfläche in eine vertraute Stimme finden.",
 		"pageDescription": "Verwalten Sie hier Ihre Spracheinstellungen. Die Sprachen in der Liste haben Vorrang vor den Browsereinstellungen in der Reihenfolge.",
 		"availableLanguages": "Verfügbare Sprachen",
 		"preferredLanguages": "Prioritätssprachliste",
@@ -5686,7 +5695,7 @@
 	"userSettings": {
 		"title": "Benutzereinstellungen",
 		"PageTitle": "Benutzereinstellungen",
-		"description": "Kümmern Sie sich um die Details Ihrer fount-Identität. Verwalten Sie Ihr Profil, schützen Sie Ihren Zugriff und sehen Sie verbundene Geräte ein. Ein ruhiger Rückzugsort für Ihr Konto.",
+		"description": "Kümmern Sie sich um die Einzelheiten Ihrer fount-Identität. Verwalten Sie Ihr Profil, schützen Sie Ihren Zugang und sehen Sie verbundene Geräte ein. Ein stilles Refugium für Ihr Konto.",
 		"shell": {
 			"unauthorized": "Anmeldung erforderlich.",
 			"responseNotJson": "Der Server hat Inhalt zurückgegeben, der nicht verarbeitet werden konnte.",
@@ -5915,7 +5924,7 @@
 	},
 	"proxy": {
 		"title": "API-Proxy",
-		"description": "Für Entwickler und Integratoren stellt diese Seite den fount-API-Proxy vor – Ihre Brücke, mit der sich fount in andere Anwendungen einbinden lässt.",
+		"description": "Für alle, die fount in andere Werke einweben: Hier steht der API-Proxy offen – ein Kanal, durch den Ihre Anwendungen aus dem Brunnen von fount trinken können.",
 		"heading": "API-Proxy-Gateway",
 		"instruction": "Erstellen und verwalten Sie auf dieser Seite Ihre API-Schlüssel, um fount in andere Anwendungen zu integrieren.",
 		"endpointSectionTitle": "API-Endpunkt",
@@ -5956,7 +5965,7 @@
 	"subfounts": {
 		"title": "Subfounts – Peer-to-Peer-Geräteverwaltung",
 		"pageTitle": "Subfounts",
-		"description": "Verwalten Sie Peer-to-Peer-Subfount-Verbindungen",
+		"description": "Erreichen Sie Schwestergeräte im Netzwerk – Verbindungscodes leuchten wie Kerzen, Befehle gehen durch die Dunkelheit. Eine stille Orchestrierung verteilter Präsenzen.",
 		"hostConnectionCode": {
 			"title": "Host-Verbindungscode",
 			"connectionCodeLabel": "Verbindungscode (Peer-ID)",
@@ -6046,7 +6055,7 @@
 	},
 	"achievements": {
 		"title": "Leistung",
-		"description": "Entdecken Sie mit fount die Meilensteine und Erfolge Ihrer Reise. Jeder Erfolg markiert einen Schritt in Ihrer einzigartigen Erzählung.",
+		"description": "Blättern Sie durch die Seiten Ihrer Reise – jeder Meilenstein ist eine Fußnote in einer Geschichte, die nur Sie schreiben konnten. Errungenschaften schimmern wie Wegmarken entlang des Pfades, den Sie gegangen sind.",
 		"pageHeader": "Halle der Leistung",
 		"pageDescription": "Sehen Sie sich hier Ihre freigeschalteten Erfolge und Meilensteine an.",
 		"unlocked_on": "Freigeschaltet am ${date}",
@@ -6076,7 +6085,7 @@
 	},
 	"log_viewer": {
 		"title": "Protokolle",
-		"description": "Live-Serverprotokolle von fount anzeigen und ein JavaScript-REPL im Browser ausführen.",
+		"description": "Lauschen Sie dem flüsternden Puls des Servers in den Live-Protokollen oder sprechen Sie direkt in einer browserseitigen REPL. Hier antwortet die innere Stimme von fount in klarem Text.",
 		"connectionError": "Verbindung zum Protokolldienst fehlgeschlagen. Bitte versuchen Sie es erneut, nachdem Sie lokal auf fount zugegriffen oder sich angemeldet haben.",
 		"logs": {
 			"openSourceFailed": "Quelltext konnte nicht geöffnet werden: ${message}",
@@ -6104,7 +6113,7 @@
 	},
 	"debug_info": {
 		"title": "Debugging und Systeminformationen",
-		"description": "Erhalten Sie detaillierte Debugging- und Systeminformationen zu Ihrer fount-Installation. Dies ist sehr hilfreich bei der Fehlerbehebung und bei Supportanfragen.",
+		"description": "Wenn sich Schatten auf den Weg legen, blicken Sie hier nach der Wahrheit des Systems – Diagnosen und Details, die erhellen, was vom rechten Pfad abkam. Eine Laterne für alle, die Verständnis suchen.",
 		"heading": "Debugging und Systeminformationen",
 		"copyButton": "Bericht kopieren",
 		"versionStatus": {
@@ -6178,13 +6187,13 @@
 	},
 	"404": {
 		"title": "Seite nicht gefunden",
-		"description": "Der Weg, den Sie gesucht haben, hat sich in Nebel aufgelöst. War es ein Fehltritt, eine vergessene Wendung? Erlauben Sie uns, Sie zurück ans Ufer zu begleiten, oder machen Sie vielleicht eine Pause für ein Spiel inmitten der stillen Leere.",
+		"description": "Der Weg, den Sie gesucht haben, hat sich in Nebel aufgelöst. War es ein Fehltritt, eine vergessene Kehre? Lassen Sie uns Sie zurück ans Ufer geleiten – oder gönnen Sie sich eine Weile ein Spiel in der stillen Leere.",
 		"pageNotFoundText": "Hoppla! Sie scheinen auf einer Seite gelandet zu sein, die nicht existiert.",
 		"homepageButton": "Zur Startseite zurückkehren"
 	},
 	"directoryListing": {
 		"title": "Verzeichnisindex",
-		"description": "Durchsuchen und erkunden Sie die Dateien und Ordner im fount-Arbeitsbereich.",
+		"description": "Wandern Sie durch die Regale Ihres fount-Arbeitsbereichs – Dateien und Ordner liegen ausgebreitet wie markierte Pfade durch eine vertraute Bibliothek.",
 		"indexOf": "Index: ${path}",
 		"name": "Name",
 		"mimeType": "MIME-Typ",
@@ -6480,7 +6489,7 @@
 	},
 	"pro_cancel_screen": {
 		"title": "Ihr fount pro-Abonnement wurde gekündigt",
-		"description": "Erfahren Sie, wie Sie Ihr fount pro-Abonnement kündigen können, und nennen Sie uns den Grund für Ihre Kündigung.",
+		"description": "Erfahren Sie, warum fount pro gekündigt wurde, und teilen Sie uns den Grund Ihres Abschieds mit.",
 		"intro": "Schade, dass Sie gehen. Damit wir fount pro weiter verbessern können: Würden Sie uns verraten, warum Sie abbestellt haben?",
 		"language_selector": {
 			"button": {
@@ -6502,17 +6511,23 @@
 	},
 	"oauth_handler": {
 		"title": "OAuth-Anmeldung",
-		"description": "Vervollständigen Sie die OAuth-Anmeldung für die AI-Quelle. Der Token-Austausch wird serverseitig abgeschlossen.",
+		"description": "Treten Sie hinaus, um den Segen eines AI-Anbieters zu erlangen, und kehren Sie mit Schlüsseln zurück, die Ihren Begleitern neue Stimmen erschließen.",
 		"callback": {
 			"working": "Anmeldung wird abgeschlossen…",
 			"success": "Angemeldet. Sie können diese Seite schließen.",
 			"failed": "Anmeldung fehlgeschlagen: ${message}",
-			"missingParams": "Callback fehlt code oder state."
+			"missingParams": "Callback fehlt code oder state.",
+			"title": "Der versiegelte Handschlag: fount OAuth-Callback",
+			"description": "Das äußere Tor schließt sich; die Autorisierung kehrt zu Ihrem wartenden fount zurück. Eine kurze, notwendige Pause, während Vertrauen in den Speicher geschrieben wird."
+		},
+		"pages_bounce": {
+			"title": "Ein geliehener Augenblick: fount OAuth-Rückkehr",
+			"description": "Ein kurzer Umweg durch das weite Web, der die Autorisierung zu Ihrem lokalen fount zurückträgt. Der Handschlag wird vollendet, und das Portal versiegelt sich hinter Ihnen."
 		}
 	},
 	"code": {
 		"title": "Code",
-		"description": "KI-Codierungssitzungen für Arbeitsbereiche und Maschinen.",
+		"description": "Ein KI-Arbeitsbereich zum Programmieren: Chatten Sie mit jedem Charakter über Ihre Projekte, führen Sie Code aus und bearbeiten Sie Dateien auf dem lokalen Rechner oder verbundenen Subfounts.",
 		"sessions": {
 			"new": "Neue Sitzung",
 			"untitled": "Unbenannte Sitzung",
@@ -6920,7 +6935,7 @@
 	},
 	"gist": {
 		"title": "Gist-Bibliothek",
-		"description": "Markdown-Dokumente speichern, ansehen, bearbeiten und teilen – Sicherheitsstufe pro gist.",
+		"description": "Eine stille Bibliothek aus Markdown-Blättern: Schreiben Sie sie, bewahren Sie sie auf, bearbeiten Sie sie, reichen Sie sie weiter – jeder Gist verschlossen hinter einem Schloss Ihrer Wahl.",
 		"error": {
 			"generic": "Etwas ist schiefgelaufen: ${error}"
 		},
@@ -7257,7 +7272,7 @@
 	},
 	"captcha": {
 		"title": "Identität bestätigen",
-		"description": "Ein fount-Knoten möchte bestätigen, dass Sie ein Mensch oder ein autonomer Agent sind.",
+		"description": "Bevor sich das Tor weit öffnet, wird eine kleine Frage gestellt: Sind Sie ein Mensch, oder ein Agent, der eigenen Geschäften nachgeht? Antworten Sie, und der Weg in fount steht Ihnen offen.",
 		"help": {
 			"button": {
 				"aria-label": "Warum sehe ich das?"
@@ -7295,7 +7310,7 @@
 	},
 	"invitation-required": {
 		"title": "fount ist nur mit Einladung nutzbar",
-		"description": "Damit unsere Community vertrauenswürdig bleibt, nimmt fount nur neue Nutzer auf, die von bestehenden Nutzern eingeladen wurden.",
+		"description": "fount hält seine Türen den Eingeladenen offen. Bitten Sie jemanden, der bereits drinnen ist, um ein vertrauliches Wort – einen Einladungslink – und auch für Sie öffnet sich die Schwelle.",
 		"getLink": "Bitten Sie jemanden, der fount bereits nutzt, um einen Einladungslink für den privaten Chat!",
 		"submit": "Einladungslink verwenden",
 		"waiting": "Einladung gesendet. Warten Sie auf die Bestätigung der anderen Person; danach öffnet sich fount automatisch.",

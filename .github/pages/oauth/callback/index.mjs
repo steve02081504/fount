@@ -73,7 +73,7 @@ async function attemptConnection() {
  * @returns {Promise<void>}
  */
 async function main() {
-	await initTranslations('oauth_handler')
+	await initTranslations('oauth_handler.pages_bounce')
 	await attemptConnection()
 }
 

@@ -11,6 +11,7 @@ Manifest: `src/scripts/checks/test/manifest.json` (`checks`). Run: `fount test c
 | Suite | Enforces |
 | --- | --- |
 | `html_meta` | HTML meta / landmarks / `drawer-toggle` / aside ARIA; `og_meta_list` `under` prefix filter; pages readme/EULA redirect locales vs `docs/readme/` / `docs/EULA/` |
+| `meta_language` | Full HTML `og:title` / `og:description` / `name="description"` carry no Han / kana / Cyrillic; `<title>` is empty (i18n-supplied) or Chinese-free; an empty title's `<pageid>.description` in en-UK must equal the page's `description` and `og:description` |
 | `info` | parts `locales.json` / `achievements_registry.json` info + remote icon URL; no `null` leaf under a part `locales.json` (a failed `update-locales.py` run leaves `null` for the next retry — committing it ships an empty name / description) |
 | `home_registry` | `home_registry.json` `info` keys resolve in every authoritative locale (`AUTHORITATIVE_LOCALES`: zh-CN, en-UK, ja-JP); display entries (`home_function_buttons` incl. `sub_items`, `home_interfaces`) carry a non-empty `title` |
 | `i18n_keys` | locale key structure + shared-path value kinds vs zh-CN + shared-path `${placeholder}` sets vs zh-CN + **key-set coverage vs zh-CN** (no locale misses or invents a leaf / node) + emoji.json must not carry Han/kana/Cyrillic + emoji.json must not repeat a zh-CN leaf verbatim |
@@ -71,4 +72,8 @@ Enforced by `agents_md_english`; writing rules: [docs/AGENTS.md](../../../docs/A
 ## HTML og meta tone
 
 - Full-page `og:title` / `og:description` should carry imagery and rhetoric (see polished pages such as chat / login / wait).
+- `og:title` / `og:description` / `name="description"` must be English: no Han, kana, or Cyrillic (`checks:meta_language`). A page that fails is asked for poetic English in the assertion message — that is the wording to reuse, not a transliteration.
+- `<title>` is either empty or Chinese-free. An empty one means the page translates its title at runtime (`initTranslations` → `document.title`), so the locale's `<pageid>.title` supplies it; a non-empty one is static text (`fount!`, `preloadrunner`, a wordmark) and only has to avoid Han / kana / Cyrillic.
+- A page whose `<title>` is empty must have `<pageid>.description` in `en-UK.json` **byte-identical** to its `name="description"` and `og:description` (`checks:meta_language`) — `applyTranslations` overwrites the static description meta with the locale value at runtime, so a drift means crawlers and the running page show different copy. Other locales carry a native translation of that description, never the English through.
+- Pages that differ must not share copy: a second page under the same root gets a nested id (`blog.article_detail`, `protocolhandler.github`, `oauth_handler.callback`, `oauth_handler.pages_bounce`), never the parent's id.
 - List all og meta: `deno run --allow-scripts --allow-all ./src/scripts/checks/tools/scan_og_meta_poetic.mjs` (optional subpath). Extraction: `og_meta_list.mjs`.

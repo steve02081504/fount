@@ -633,7 +633,7 @@
 	},
 	"installer_wait_screen": {
 		"title": "Velkomin í fount!",
-		"description": "Fylgstu með framvindu uppsetningar og skoðaðu eiginleikana innan. fount verður tilbúið til ræsingar eftir augnablik.",
+		"description": "Fylgstu með vefnaði uppsetningarinnar þegar fount vaknar til lífs. Einn þolinmóður andardráttur, og svo opnast hurðin að félögum þínum.",
 		"hero": {
 			"title": "Neisti Hugans, Lifandi Félagi",
 			"description": "fount er gervigreindarknúinn samskiptavettvangur fyrir persónur, hannaður til að styrkja <i>þig</i>. Það er brú sem tengir þig við persónur úr ímyndunaraflinu, sem gerir þér kleift að spjalla við þær áreynslulaust, búa til þínar eigin persónur og deila þeim með heiminum."
@@ -734,7 +734,7 @@
 		},
 		"error": {
 			"title": "Uppsetning mistókst!",
-			"description": "Svo virðist sem eitthvað hafi farið úrskeiðis í uppsetningarforriti fount.",
+			"description": "Eitthvað hefur raskað takti uppsetningarforritsins. Staldraðu við hér: við hjálpum þér að finna fast land áður en ferðin heldur áfram.",
 			"connection_failed": "Tenging mistókst!",
 			"close_page": "Loka síðu",
 			"summary": "Svo virðist sem eitthvað hafi farið úrskeiðis í uppsetningarforriti fount.",
@@ -787,7 +787,11 @@
 				"retry": "Reyndu aftur"
 			}
 		},
-		"fountNotFound": "Æ :(\n\nFann ekki fount; þarftu kannski að setja það upp fyrst?"
+		"fountNotFound": "Æ :(\n\nFann ekki fount; þarftu kannski að setja það upp fyrst?",
+		"github": {
+			"title": "Hvísl í stafrænum straumi: samskiptareglumeðhöndlun founts",
+			"description": "Þessi síða stýrir ósýnilegum straumum og tryggir að fount-hlekkir þínir leiði þig rétt, og tengir fyrirætlanir þínar við grípandi veruleika."
+		}
 	},
 	"startPage": {
 		"title": "fount!",
@@ -884,7 +888,7 @@
 	},
 	"login_info": {
 		"title": "Innskráningarupplýsingar",
-		"description": "Öruggt rými til að hafa umsjón með innskráningarskilríkjum þínum - lyklarnir að heimi ósagðra sagna.",
+		"description": "Hljóðlátur helgidómur fyrir umsjón innskráningarskilríkja þinna í fount: lyklarnir að heimum ósagðra sagna, geymdir örugglega þar til þú velur að snúa við lásnum.",
 		"modal": {
 			"title": "Villa við flutning vottorðs",
 			"retrieve_error": "Villa kom upp þegar reynt var að vista innskráningarskilríki þitt:\n${error}\nÞú getur haldið áfram en getur ekki vistað innskráningarupplýsingar.",
@@ -943,7 +947,7 @@
 	},
 	"home": {
 		"title": "Forsíða",
-		"description": "Hjarta fount-upplifunar þinnar. Hér stýrir þú íbúum ímyndunarafls þíns – persónum, heimum og persónuleikum. Sögur þínar hefjast hér og greinast héðan út í ólíka stafi.",
+		"description": "Hjarta fount-upplifunar þinnar. Hér stýrir þú íbúum ímyndunarafls þíns: persónum, heimum og persónuleikum. Sögur þínar hefjast hér og greinast út frá þessum miðlæga kjarna.",
 		"sidebarTitle": "Nánar",
 		"closeSidebar": "Loka hliðarstiku",
 		"itemDescription": "Veldu atriði hér til að sjá nánari upplýsingar.",
@@ -1252,7 +1256,7 @@
 		"emojiPacks": {
 			"title": "Skoða broskallapakka",
 			"kicker": "Uppgötva",
-			"description": "Skoðaðu broskallapakka frá opinberum hópum og höfundum í nágrenninu. Gakktu í hóp eða fylgdu höfundi til að opna þau — engin sérstök uppsetning.",
+			"description": "Skoðaðu broskallapakka sem opinberir hópar og höfundar um allt fount hafa ofið. Lítil tákn, tilbúin að setja punkt í samræður þínar.",
 			"back": "Aftur í spjall",
 			"loading": "Leitar að broskallapökkum í nágrenninu…",
 			"empty": "Engir broskallapakkar fundust í nágrenninu",
@@ -1587,7 +1591,7 @@
 				},
 				"page": {
 					"title": "Hópstillingar",
-					"description": "Sjá um auðkenni hópsins, meðlimi, heimildir og tækin sem binda sameiginlega sviðið.",
+					"description": "Sjá um auðkenni hópsins, meðlimi hans, heimildir og tækin sem binda sameiginlega sviðið. Sérhver samkoma þarf sitt eigið, sameiginlega samþykkt ljós.",
 					"kicker": "Hópstjórn",
 					"subtitle": "Stjórna hópupplýsingum, meðlimum og sameiginlegum aðgerðum. Lágtíðniheimildir, geymsla og endurskoðunartæki eru miðlæg í háþróuðum stillingum.",
 					"navigationLabel": "Flokkun hópstillinga",
@@ -3076,7 +3080,8 @@
 				"toolbar": {
 					"aria-label": "Verkfærastika fyrir fjölval skilaboða"
 				}
-			}
+			},
+			"description": "Þar sem orðin fara á flug og sögur þróast. Eigðu í samskiptum við AI-félaga þína, mótaðu frásögnina og týndu þér í ebb og flæði stafrænna samræðna. Hjarta fount slær hér."
 		},
 		"sidebar": {
 			"settings": {
@@ -3282,7 +3287,7 @@
 		},
 		"profile": {
 			"title": "Prófíll",
-			"description": "Stjórnaðu opinberri ímynd þinni í spjalli og á samfélagsmiðlum.",
+			"description": "Mótaðu hvernig þú birtist í spjalli og á samfélagsmiðlum: opinber nærvera sniðin að þeirri sögu sem þú vilt segja.",
 			"settingsEyebrow": "Reikningsstillingar",
 			"accountAtGlance": "Yfirlit yfir reikning",
 			"advancedKicker": "Stilla eftir þörfum",
@@ -3695,7 +3700,7 @@
 	},
 	"easynew": {
 		"title": "Flýtileið",
-		"description": "Settu fljótt upp nýja fount-íhluta eins og persónur, heima og viðbætur með því að nota fyrirfram skilgreind eða sérsniðin sniðmát. Næsta sköpun þín er aðeins nokkrum smellum í burtu.",
+		"description": "Úr sniðmáti eða auðri síðu lokkar þú nýja íhluti fram — persónur, heima, viðbætur — ofna með nokkrum yfirveguðum hreyfingum. Vefstóllinn er tilbúinn; þú velur mynstrið.",
 		"info": {
 			"description": "Þessi sniðmát eru aðeins til að byggja einfalda íhluti hratt, flóknir íhlutir þurfa enn handvirka smíði."
 		},
@@ -3881,7 +3886,7 @@
 		"title": "Íhluta-útflytjandi",
 		"pageTitle": "Íhluta-útflytjandi",
 		"pageSubtitle": "Flytja út uppáhalds efnið þitt",
-		"description": "Flyttu út fount-verkin þín. Þetta tól safnar völdum hlutum þínum í einfalda zip-skrá til varðveislu eða samnýtingar.",
+		"description": "Safnaðu völdum íhlutum í einn pakka til varðveislu eða gjafar. Það sem þú bjóst til í fount getur ferðast óskert til annars heimilis.",
 		"steps": {
 			"part": "Veldu íhluti",
 			"action": "Útflutningur"
@@ -4061,7 +4066,7 @@
 	},
 	"serviceSource_manager": {
 		"title": "Stjórnun þjónustugjafa",
-		"description": "Hér munt þú stjórna sinfóníu gervigreindarhljóða. Bættu við, klipptu eða þagðu niður heimildir til að vekja líf til upprunafélaga þinna - lúmskur dans á kóða og ímyndunarafli.",
+		"description": "Hér stjórnar þú sinfóníu AI-raddanna. Bættu við heimildirnar sem vekja fount-félaga þína til lífs, mótaðu þær eða þaggaðu niður í þeim — hinn fíngerði dans kóða og ímyndunarafls.",
 		"fileList": {
 			"title": "Upprunalisti þjónustu",
 			"empty": "Engir þjónustugjafar ennþá",
@@ -4378,7 +4383,7 @@
 	},
 	"wechat_bots": {
 		"title": "WeChat-vélmenni",
-		"description": "Keyrðu fount-persónu sem WeChat-vélmenni: binddu hlutverk, stjórnaðu vélmennum og spjallaðu í WeChat.",
+		"description": "Láttu fount-persónurnar þínar stíga inn í kunnuglega sali WeChat: félagar við höndina í hversdagslegum samræðum dagsins.",
 		"cardTitle": "WeChat-vélmenni",
 		"botSelectDropdown": {
 			"placeholder": "Veldu vélmenni"
@@ -4472,7 +4477,7 @@
 	},
 	"social": {
 		"title": "Torg",
-		"description": "P2P opin samfélagsfærslur, fylgni og skráadeiling",
+		"description": "Ráfaðu um jafningja-til-jafningja strauma, fylgni og sameiginlegar skrár undir félagslegum himni founts. Torg þar sem fjarlægar raddir geta mæst án miðlægs turns.",
 		"bootstrapFailed": "Frumstilling samfélagsviðmóts mistókst: ${error}",
 		"connectNodeFailed": "Tenging við hnút mistókst: ${error}",
 		"dwellFailed": "Uppfærsla óskagagna út frá áhorfstíma mistókst: ${error}",
@@ -5168,7 +5173,7 @@
 	},
 	"cabinet": {
 		"title": "Skjalaskápur",
-		"description": "P2P persónulegir og sameiginlegir skjalaskápar",
+		"description": "Persónulegir minjagripir og fjársjóðir sem deilt er með jafningjum: hver skjalaskápur er hljóðlátt herbergi í dreifðum sölum founts. Opnaðu skúffu og sjáðu hvaða sögur netið þitt hefur skilið eftir handa þér.",
 		"entries": {
 			"title": "Atriðalisti",
 			"aria-label": "Atriðalisti"
@@ -5250,7 +5255,7 @@
 	},
 	"browser_integration": {
 		"title": "Sameining vafra",
-		"description": "Brúaðu bilið á milli fount og vefsins. Þessi síða veitir notandahandritið til að virkja óaðfinnanlega samþættingu, sem færir gervigreindarfélaga þína inn í vafraupplifun þína.",
+		"description": "Leyfðu félögum þínum að ganga þér við hlið meðan þú vafrar. Hér liggur notandahandritið — þráð fyrir þráð — sem bindur fount við opna vefinn.",
 		"pageHeader": "Sameining vafra",
 		"pageDescription": "Til þess að fount hlutverk þitt geti haft samskipti við vefsíðuna þarftu að setja upp þetta samþættingarhandrit vafra. Það virkar sem brú milli persónunnar og vafrans, sem gerir þeim kleift að skoða innihald síðunnar og framkvæma aðgerðir.",
 		"install_script_title": "Uppsetningarhandrit",
@@ -5380,7 +5385,7 @@
 		}
 	},
 	"ide_integration": {
-		"description": "Tengdu fount-hlutverkið við studda ritstjóra (eins og Zed, JetBrains, Neovim) í gegnum Agent Client Protocol, stilltu API lykla og hlutverk og færðu gervigreindarfélaga inn í þróunarvinnuflæðið.",
+		"description": "Bjóddu félögum þínum inn í kóðasmiðjuna. Í gegnum Agent Client Protocol tengir þú API-lykla og persónur við ritstjórann þinn — þar sem rökfræði og samræður deila sama bekk.",
 		"title": "IDE samþætting",
 		"heading": "IDE samþætting",
 		"instruction": "Notaðu fount-hlutverk til að aðstoða við forritun í ACP-virkjum ritstjórum (eins og Zed, JetBrains, Neovim, osfrv.).",
@@ -5431,7 +5436,7 @@
 	},
 	"deskpet": {
 		"title": "Gæludýr skrifborðs",
-		"description": "Ræstu fount-persónurnar þínar sem gagnvirk gæludýr sem búa á skjáborðinu þínu.",
+		"description": "Kallaðu fount-persónurnar þínar fram sem gæludýr á skjáborðinu: litlar nærverur sem dvelja, fylgjast með og halda þér félagsskap allan daginn.",
 		"launcherCard": {
 			"title": "Gæludýr ræsir",
 			"buttons": {
@@ -5487,7 +5492,7 @@
 	},
 	"blog": {
 		"title": "fount rannsóknarstofnun",
-		"description": "Ritgerðir úr smiðju fount: hugleiðingar um hönnun umboðsmanna — hvað umboðsmaður er í raun, við hvað LLM er gott, og hvernig byggja eigi kerfi sem eyða greind einungis þar sem hún borgar sig.",
+		"description": "Vettvangsnótur úr smiðju fount: ritgerðir um hönnun umboðsmanna — hvað umboðsmaður er í raun, við hvað LLM er gott og hvernig byggja á kerfi sem verja greind einungis þar sem hún borgar sig.",
 		"heading": "fount rannsóknarstofnun",
 		"intro": "Greinaröð fount-verkefnisins um hönnun Agent — hvað er Agent, hvert er hlutverk LLM í því og hvaða verkefni er í raun betra að láta venjuleg forrit sjá um. Hægt er að lesa þær í röð eða hoppa að vild; hver grein tengist hinum.",
 		"search": {
@@ -5529,6 +5534,10 @@
 			"text": "Höfundur þessarar greinar er einnig höfundur fount. fount er sjálfshýstur AI-félagavettvangur með grunnkóða sem er algjörlega opinn til skoðunar — umboðsmenn, skeljar, persónur og minni, allt einungis í þinni eigin vél.",
 			"install": "Setja upp fount",
 			"github": "GitHub"
+		},
+		"article_detail": {
+			"title": "fount Agent Institute: ritgerð um hönnun umboðsmanna",
+			"description": "Einn viðkomustaður á lestrarleið fount Agent Institute: umboðsmenn sem verkefnakerfi, LLM sem leigð hugsun og hljóðláta listin að spyrja módelið ekki að því sem forritið veit þegar."
 		}
 	},
 	"themeManage": {
@@ -5644,7 +5653,7 @@
 	"languageSettings": {
 		"title": "Tungumálastillingar",
 		"pageTitle": "Tungumálastillingar",
-		"description": "Hafðu umsjón með tungumálastillingum þínum fyrir fount. Sérsníddu upplifun þína með tiltækum tungumálamöguleikum.",
+		"description": "Veldu þau orð sem fount talar til þín í. Stilltu tungumálakjör þín og láttu viðmótið taka á sig kunnuglega rödd.",
 		"pageDescription": "Stjórna tungumálakjörum þínum hér. Tungumálin á listanum munu hafa forgang fram yfir vafrastillingarnar í röð.",
 		"availableLanguages": "Tiltæk tungumál",
 		"preferredLanguages": "Forgangslista",
@@ -5686,7 +5695,7 @@
 	"userSettings": {
 		"title": "Notandastillingar",
 		"PageTitle": "Notandastillingar",
-		"description": "Hafðu umsjón með auðkennisatriðum fount: prófílnum þínum, öryggi aðgangs og tengdum tækjum. Óhreyfður helgidómur fyrir reikninginn þinn.",
+		"description": "Gættu að smáatriðum fount-auðkennis þíns. Hafðu umsjón með prófílnum þínum, verndaðu aðgang þinn og skoðaðu tengd tæki. Hljóðlátur helgidómur fyrir reikninginn þinn.",
 		"shell": {
 			"unauthorized": "Innskráning krafist.",
 			"responseNotJson": "Þjónninn skilaði efni sem ekki var hægt að vinna úr.",
@@ -5915,7 +5924,7 @@
 	},
 	"proxy": {
 		"title": "API milliliður",
-		"description": "Fyrir hönnuði og samþættingaraðila afhjúpar þessi síða fount API umboðið - tengingin þín til að vefja getu founts í önnur forrit.",
+		"description": "Fyrir þau sem flétta fount inn í önnur verk: hér stendur API-milliliðurinn opinn — farvegur sem gerir forritum þínum kleift að drekka úr brunni founts.",
 		"heading": "API milliliðagátt",
 		"instruction": "Búðu til og stjórnaðu API lyklunum þínum á þessari síðu til að samþætta fount við önnur forrit.",
 		"endpointSectionTitle": "API endapunktur",
@@ -5956,7 +5965,7 @@
 	"subfounts": {
 		"title": "Subfount - jafningi-til-jafningi tækjastjórnun",
 		"pageTitle": "Subfounts",
-		"description": "Stjórna jafningi-til-jafningi undirfount-tengingum",
+		"description": "Náðu til systurtækja yfir netið: tengikóðar loga eins og kerti, skipanir sendar í gegnum myrkrið. Hljóðlát hljómsveitarstjórn dreifðra nærvera.",
 		"hostConnectionCode": {
 			"title": "Tengikóði gestgjafa",
 			"connectionCodeLabel": "Tengikóði (peer ID)",
@@ -6046,7 +6055,7 @@
 	},
 	"achievements": {
 		"title": "Afrek",
-		"description": "Kannaðu tímamótin og afrek ferðarinnar þinnar með fount. Hvert afrek markar skref í þinni einstöku frásögn.",
+		"description": "Flettu blaðsíðum ferðar þinnar: hver áfangi er neðanmálsgrein í sögu sem aðeins þú gætir skrifað. Afrek glitra eins og vörður á leiðinni sem þú hefur gengið.",
 		"pageHeader": "Afrekshöll",
 		"pageDescription": "Skoðaðu ólæstu afrekin þín og áfangastaði hér.",
 		"unlocked_on": "Opnað ${date}",
@@ -6076,7 +6085,7 @@
 	},
 	"log_viewer": {
 		"title": "Annáll",
-		"description": "Skoðaðu rauntímaskrár fount-þjónsins og keyrðu JavaScript REPL í vafranum.",
+		"description": "Hlustaðu á hvíslandi púls þjónsins í lifandi annálum, eða talaðu beint í REPL sem keyrir í vafranum. Hér svarar innri rödd fount í hreinum texta.",
 		"connectionError": "Ekki tókst að tengjast annálaþjónustu. Reyndu aftur eftir að hafa opnað fount staðbundið eða skráð þig inn.",
 		"logs": {
 			"openSourceFailed": "Ekki tókst að opna frumkóðaskrána: ${message}",
@@ -6104,7 +6113,7 @@
 	},
 	"debug_info": {
 		"title": "Villuleit og kerfisupplýsingar",
-		"description": "Fáðu nákvæmar villuleitar- og kerfisupplýsingar um uppsetningu fount. Þetta er mjög gagnlegt fyrir úrræðaleit og stuðningsbeiðnir.",
+		"description": "Þegar skuggar safnast á leiðina skaltu líta hingað fyrir sannleika kerfisins: greiningar og smáatriði sem varpa ljósi á það sem fór úrskeiðis. Lukt fyrir þau sem leita skilnings.",
 		"heading": "Villuleit og kerfisupplýsingar",
 		"copyButton": "Afrita skýrslu",
 		"versionStatus": {
@@ -6178,13 +6187,13 @@
 	},
 	"404": {
 		"title": "Síða fannst ekki",
-		"description": "Leiðin sem þú leitaðir að hefur leyst upp í þokunni. Var það mistök, gleymd beygja? Leyfðu okkur að leiðbeina þér aftur að landi, eða kannski að staldra við í leik í rólegu tóminu.",
+		"description": "Leiðin sem þú leitaðir að hefur leyst upp í þokunni. Var það mistök, gleymd beygja? Leyfðu okkur að leiða þig aftur að landi, eða kannski að staldra við í leik í kyrrlátu tóminu.",
 		"pageNotFoundText": "Úps! Svo virðist sem þú hafir lent á síðu sem er ekki til.",
 		"homepageButton": "Aftur á forsíðu"
 	},
 	"directoryListing": {
 		"title": "Skráayfirlit",
-		"description": "Skoðaðu skrárnar og möppurnar á fount-vinnusvæðinu.",
+		"description": "Ráfaðu um hillur fount-vinnusvæðisins: skrár og möppur raðað eins og merktir stígar um kunnuglegt bókasafn.",
 		"indexOf": "Vísitala: ${path}",
 		"name": "nafn",
 		"mimeType": "MIME tegund",
@@ -6480,7 +6489,7 @@
 	},
 	"pro_cancel_screen": {
 		"title": "fount pro áskriftinni þinni hefur verið sagt upp",
-		"description": "Lærðu hvernig þú segir upp fount pro áskriftina þína og deildu ástæðunni fyrir uppsögninni.",
+		"description": "Sjáðu hvers vegna fount pro var sagt upp og deildu ástæðunni fyrir brottför þinni.",
 		"intro": "Leiðinlegt að sjá þig fara. Til að hjálpa okkur að bæta fount pro, gætirðu sagt okkur hvers vegna þú hættir áskriftinni?",
 		"language_selector": {
 			"button": {
@@ -6502,17 +6511,23 @@
 	},
 	"oauth_handler": {
 		"title": "OAuth-innskráning",
-		"description": "Ljúktu við OAuth innskráninguna fyrir gervigreindargjafann. Token-skiptum er lokið á miðlarahlið.",
+		"description": "Stígðu út og aflaðu blessunar AI-veitanda, komdu svo aftur með lykla sem opna nýjar raddir fyrir félaga þína.",
 		"callback": {
 			"working": "Lýkur innskráningu…",
 			"success": "Skráð inn. Þú getur lokað þessari síðu.",
 			"failed": "Innskráning mistókst: ${message}",
-			"missingParams": "Callback vantar code eða state."
+			"missingParams": "Callback vantar code eða state.",
+			"title": "Innsiglað handaband: fount OAuth-svar",
+			"description": "Ytra hliðið lokast; heimildin snýr aftur til fountsins þíns sem bíður. Stutt, nauðsynleg stund á meðan traust er ritað í minnið."
+		},
+		"pages_bounce": {
+			"title": "Lánað augnablik: fount OAuth-endurkoma",
+			"description": "Stutt krókur um víðfeðma vefinn, sem ber heimildina aftur til staðbundins founts þíns. Handabandið lýkur og gáttin lokast að baki þér."
 		}
 	},
 	"code": {
 		"title": "Code",
-		"description": "AI kóðunarlotur fyrir vinnusvæði og vélar.",
+		"description": "Vinnusvæði fyrir AI-kóðun: spjallaðu við hvaða persónu sem er um verkefnin þín, keyrðu kóða og breyttu skrám á staðbundnu vélinni eða tengdum subfountum.",
 		"sessions": {
 			"new": "Ný lota",
 			"untitled": "Ónefnd lota",
@@ -6920,7 +6935,7 @@
 	},
 	"gist": {
 		"title": "Gist-safn",
-		"description": "Vista, skoða, breyta og deila Markdown-skjölum — með öryggisstigi fyrir hvert gist.",
+		"description": "Hljóðlátt bókasafn af Markdown-blöðum: skrifaðu þau, geymdu þau, breyttu þeim og lát þau ganga áfram — hvert gist innsiglað bak við lás að þínu vali.",
 		"error": {
 			"generic": "Eitthvað fór úrskeiðis: ${error}"
 		},
@@ -7257,7 +7272,7 @@
 	},
 	"captcha": {
 		"title": "Staðfestu hver þú ert",
-		"description": "fount-hnútur vill staðfesta að þú sért manneskja eða sjálfstæður agent.",
+		"description": "Áður en hliðið opnast vítt er lítilli spurningu varpað fram: ertu manneskja eða umboðsmaður á eigin erindi? Svaraðu, og leiðin inn í fount opnast.",
 		"help": {
 			"button": {
 				"aria-label": "Af hverju sé ég þetta?"
@@ -7295,7 +7310,7 @@
 	},
 	"invitation-required": {
 		"title": "fount er aðeins notað að fengnu boði",
-		"description": "Til að halda samfélaginu áreiðanlegu tekur fount aðeins við nýjum notendum sem núverandi notendur bjóða.",
+		"description": "fount heldur hurðum sínum fyrir þau sem boðið er. Biddu einhvern sem er þegar inni um einkaboð — boðshlekk — og þröskuldurinn opnast þér líka.",
 		"getLink": "Biddu einhvern sem notar fount nú þegar um boðshlekk í einkaspjalli!",
 		"submit": "Nota boðshlekk",
 		"waiting": "Boðið er sent. Bíddu eftir að hin aðilan samþykki það; eftir það opnast fount sjálfkrafa.",

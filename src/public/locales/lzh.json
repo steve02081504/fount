@@ -633,7 +633,7 @@
 	},
 	"installer_wait_screen": {
 		"title": "幸會fount！",
-		"description": "觀其進度，覽其內秀。頃刻之間，活泉待發。",
+		"description": "觀安裝之織線寸寸推進，fount 正甦醒矣。耐心深吸一息，通君伴之門即開。",
 		"hero": {
 			"title": "靈犀一點，應念而生",
 			"description": "fount者，靈臺也，神思驅之，幻身託焉。旨在通神，以便<i>君</i>行。為津梁，繫遐思，共清談，塑真身，佈天下，皆易如反掌。"
@@ -734,7 +734,7 @@
 		},
 		"error": {
 			"title": "安置未遂。",
-			"description": "fount 置似有不諧。",
+			"description": "有物亂安裝器之節奏。請暫停於此——旅程續行之前，吾助君尋一塊穩地。",
 			"connection_failed": "通之途，遇阻不通。",
 			"close_page": "闔頁",
 			"summary": "fount 置似有不諧。",
@@ -787,7 +787,11 @@
 				"retry": "復試"
 			}
 		},
-		"fountNotFound": "嗚呼哀哉 :(\n\n未覓獲 fount，莫非需先置之？"
+		"fountNotFound": "嗚呼哀哉 :(\n\n未覓獲 fount，莫非需先置之？",
+		"github": {
+			"title": "數位溪流中之低語：fount 協議處理器",
+			"description": "引不可見之流，使每一 fount 之鏈皆引君至真處，接君之意於可沉浸之實。"
+		}
 	},
 	"startPage": {
 		"title": "fount!",
@@ -884,7 +888,7 @@
 	},
 	"login_info": {
 		"title": "登錄資訊",
-		"description": "此乃藏鑰之密所，掌君祕聞之符節。",
+		"description": "一處安放君 fount 登入憑證之靜所——乃通無數未言之故事的鑰匙，妥為看守，待君轉動鎖孔。",
 		"modal": {
 			"title": "憑證傳送之誤",
 			"retrieve_error": "錄存登錄憑證時有誤：\n${error}\n可續行，然憑證不得存，如鏡花水月。",
@@ -943,7 +947,7 @@
 	},
 	"home": {
 		"title": "門戶",
-		"description": "此乃泉源之中樞，君之奇思妙想，化為人物、世界、身份，皆由此生發。",
+		"description": "君 fount 體驗之心。於此理君想像國度之居民——角色、世界與身分。君之故事，皆自此中樞出發，四向分枝。",
 		"sidebarTitle": "詳覽",
 		"closeSidebar": "闔側欄",
 		"itemDescription": "請擇一物以觀其詳。",
@@ -1252,7 +1256,7 @@
 		"emojiPacks": {
 			"title": "覓表情包",
 			"kicker": "發現",
-			"description": "覽近側公開群組與作者之表情包。入群或關注即可用，毋庸另置。",
+			"description": "覽 fount 四方公開之群與作者所織之 emoji 包。小小之印，可為君談話作句讀。",
 			"back": "返清談",
 			"loading": "正覓近側表情包…",
 			"empty": "近側暫無可覓之表情包",
@@ -1587,7 +1591,7 @@
 				},
 				"page": {
 					"title": "群組樞機",
-					"description": "理群之身分、成員、權限與共臺之器。",
+					"description": "理群之身分、其成員、其權限，及繫君共臺之諸器。凡有聚會，皆須一盞相約之燈。",
 					"kicker": "群組管理",
 					"subtitle": "掌群簿牒、成員與常用之法。低頻之權限、庫藏與審計，彙於樞機之制。",
 					"navigationLabel": "群組樞機分類",
@@ -3076,7 +3080,8 @@
 				"toolbar": {
 					"aria-label": "訊息多擇之欄"
 				}
-			}
+			},
+			"description": "言語於此起飛，故事於此展開。與君之 AI 侶交談，塑其敘事，沉於數位對話之潮汐。fount 之心，正在此跳動。"
 		},
 		"sidebar": {
 			"settings": {
@@ -3282,7 +3287,7 @@
 		},
 		"profile": {
 			"title": "簿牒",
-			"description": "掌理君於清談與廣場中之公眾形象。",
+			"description": "塑君於閒談與社交中之貌——一份公之形象，調準於君所欲述之故事。",
 			"settingsEyebrow": "戶籍樞機",
 			"accountAtGlance": "簿牒一覽",
 			"advancedKicker": "相機而設",
@@ -3695,7 +3700,7 @@
 	},
 	"easynew": {
 		"title": "速建",
-		"description": "以既定之規，或隨心之法，速成人物、世界、機巧。佳作將成，彈指之間。",
+		"description": "自範本或空白之頁起，以數個篤定之舉引出新件——角色、世界、外掛。織機已備，花紋由君擇之。",
 		"info": {
 			"description": "此等範本僅可用於速建簡易之器，繁複者仍需手動立，所謂大道至簡也。"
 		},
@@ -3881,7 +3886,7 @@
 		"title": "導出器",
 		"pageTitle": "導出器",
 		"pageSubtitle": "出君所喜之物",
-		"description": "出君泉源之妙造。此器可集君所選之物，裝於一囊，以便珍藏或分享。",
+		"description": "收所選之件為一包裹，妥存或贈人。君於 fount 所成之物，可完整遷往他爐。",
 		"steps": {
 			"part": "擇器",
 			"action": "出"
@@ -4061,7 +4066,7 @@
 	},
 	"serviceSource_manager": {
 		"title": "源流掌司",
-		"description": "此乃調御源流之所。增刪裁度，悉聽君命。賦生機於伴，演符碼之妙。",
+		"description": "於此，君指揮 AI 之聲的交響。為賦 fount 侶生命之源增之、琢之或使之靜——一場代碼與想像之細舞。",
 		"fileList": {
 			"title": "源流名錄",
 			"empty": "未有源流",
@@ -4378,7 +4383,7 @@
 	},
 	"wechat_bots": {
 		"title": "微信靈偶",
-		"description": "承泉源之化身，寓於微信對談，輔理庶務，無遠弗屆。",
+		"description": "使君之 fount 角色步入 WeChat 熟識之廳——於一日尋常對話之間，侶在君手之側。",
 		"cardTitle": "微信靈偶",
 		"botSelectDropdown": {
 			"placeholder": "擇一靈偶"
@@ -4472,7 +4477,7 @@
 	},
 	"social": {
 		"title": "廣場",
-		"description": "P2P 開放社交言、關注與文卷分享",
+		"description": "於 fount 社交之天下，漫步於點對點之流、關注與共享之檔。此一廣場，遠方之聲可不賴中央之高塔而相遇。",
 		"bootstrapFailed": "社交界面初設未遂：${error}",
 		"connectNodeFailed": "連接節點未遂：${error}",
 		"dwellFailed": "依觀看時長更新偏好未遂：${error}",
@@ -5168,7 +5173,7 @@
 	},
 	"cabinet": {
 		"title": "藏經閣",
-		"description": "P2P 個人與共享藏經閣",
+		"description": "私藏之珍與同儕共賞之寶，每一櫥櫃皆 fount 分散廳堂中一靜室。啟一屜，觀君之網絡為君留何故事。",
 		"entries": {
 			"title": "卷目",
 			"aria-label": "卷目"
@@ -5250,7 +5255,7 @@
 	},
 	"browser_integration": {
 		"title": "融於覽器",
-		"description": "跨泉源與通衢之界。此頁供君客腳本，以實現無縫集成，攜君之智靈夥伴，同遊通衢之海。",
+		"description": "閱網之際，使君之侶隨行在側。此處有使用者腳本，一縷一線，繫 fount 於開放之網。",
 		"pageHeader": "覽器統合",
 		"pageDescription": "欲使君之化身通達網頁，須置此統合之策。其為化身與覽器之橋，以窺頁內之文，行其所能之事。",
 		"install_script_title": "置策",
@@ -5380,7 +5385,7 @@
 		}
 	},
 	"ide_integration": {
-		"description": "援 ACP 協定，以 fount 角色連諸編輯器（若 Zed、JetBrains、Neovim 之屬），設符鑰、定職分，引機巧同儕以佐編程之業。",
+		"description": "邀君之侶入代碼之鍛爐。經 Agent Client Protocol，繫 API 密鑰與角色於君之編輯器——邏輯與對話，自此共用一臺。",
 		"title": "工欲善其事",
 		"heading": "工欲善其事",
 		"instruction": "於 Zed、JetBrains、Neovim 等 ACP 之器，以 fount 司職佐編程之事。",
@@ -5431,7 +5436,7 @@
 	},
 	"deskpet": {
 		"title": "案頭靈寵",
-		"description": "化君之泉源人物為桌面靈寵，與君互動，生趣盎然。",
+		"description": "召君之 fount 角色為桌面之寵——小小之存，逗留、凝望，伴君終日。",
 		"launcherCard": {
 			"title": "案上寵",
 			"buttons": {
@@ -5487,7 +5492,7 @@
 	},
 	"blog": {
 		"title": "fount Agent 研院",
-		"description": "出自 fount 工坊之隨筆：論 Agent 之設計——Agent 果為何物、LLM 之所長何在，及如何構築於可值處方用其智之系統。",
+		"description": "fount 工坊田野之記：論 agent 設計之文——agent 究為何物，LLM 究為何用，及如何構系統，使智能惟用於得其值之處。",
 		"heading": "fount Agent 研院",
 		"intro": "fount 論 Agent 設計之系列文章——Agent 為何物、LLM 職司何事、何者宜付諸常程式。可循序讀之，亦可隨意跳轉；諸篇互鏈。",
 		"search": {
@@ -5529,6 +5534,10 @@
 			"text": "此文作者，亦 fount 之作者也。fount 者，可自架之 AI 伴侶之臺，其源碼盡可觀覽——Agent、Shell、人格、記憶，悉棲於君之機上，不外他去。",
 			"install": "安裝 fount",
 			"github": "GitHub"
+		},
+		"article_detail": {
+			"title": "fount Agent Institute：論 agent 設計一文",
+			"description": "fount Agent Institute 閱讀之道上一站：agent 為任務之系統，LLM 為賃來之認知，及不問模型以程序已知之事，此靜藝也。"
 		}
 	},
 	"themeManage": {
@@ -5644,7 +5653,7 @@
 	"languageSettings": {
 		"title": "雅言樞機",
 		"pageTitle": "雅言樞機",
-		"description": "泉源雅言，隨心而設。諸語備選，以彰君風。",
+		"description": "擇 fount 對君言語所用之辭。調君之語言所好，使介面沉入一熟識之聲。",
 		"pageDescription": "雅言之好，在此調度。所列之言，優先于覽器之常規。",
 		"availableLanguages": "諸雅言備選",
 		"preferredLanguages": "所尚雅言之列",
@@ -5686,7 +5695,7 @@
 	"userSettings": {
 		"title": "客樞機",
 		"PageTitle": "客樞機",
-		"description": "此乃君之靜室，可理身份之細，護行蹤之祕，觀所聯之器。",
+		"description": "理君 fount 身分之諸細。管君之資料、守君之存取、觀已接之設備。一處屬君帳號之靜所。",
 		"shell": {
 			"unauthorized": "須先登臺。",
 			"responseNotJson": "伺服所返莫之能辨。",
@@ -5915,7 +5924,7 @@
 	},
 	"proxy": {
 		"title": "API樞紐",
-		"description": "此頁為開發者與集成者揭示泉源之API代理——乃君之通，可將泉源之力，織入他用。",
+		"description": "獻於將 fount 織入他作者：API 代理於此敞開——一管道，使君之應用得飲 fount 之井。",
 		"heading": "API樞紐關隘",
 		"instruction": "於此頁生成並掌管君之API符鑰，以便將fount與他用整合。",
 		"endpointSectionTitle": "API端點",
@@ -5956,7 +5965,7 @@
 	"subfounts": {
 		"title": "Subfounts - 朋輩互連之器",
 		"pageTitle": "子fount",
-		"description": "治 Subfount 朋輩之源流",
+		"description": "伸手及網絡彼端之同伴設備——連接碼如燭火而亮，命令穿暗而至。一場分布存在之靜編。",
 		"hostConnectionCode": {
 			"title": "東道連繫碼",
 			"connectionCodeLabel": "連繫碼 (朋輩ID)",
@@ -6046,7 +6055,7 @@
 	},
 	"achievements": {
 		"title": "功業",
-		"description": "探君泉源之旅之里程與成就。每一功績，皆是君獨特敘事中之一步。",
+		"description": "展君行旅之頁：每一里程碑，皆惟君能書之故事中一注腳也。功業如道旁之標，爍爍照君所行之路。",
 		"pageHeader": "功成名就之堂",
 		"pageDescription": "君之功績與里程，盡列於此，以供閱覽。",
 		"unlocked_on": "成于 ${date}",
@@ -6076,7 +6085,7 @@
 	},
 	"log_viewer": {
 		"title": "日誌",
-		"description": "覽 fount 之即時伺服器日誌，並於瀏覽器中行 JavaScript REPL。",
+		"description": "於實時日誌中聆伺服器低語之脈，或逕於瀏覽器之 REPL 中發言。於此，fount 內心之聲以純文作答。",
 		"connectionError": "通日誌服務未遂。請於本機存取或登入後重試。",
 		"logs": {
 			"openSourceFailed": "啟閱原始碼卷未遂：${message}",
@@ -6104,7 +6113,7 @@
 	},
 	"debug_info": {
 		"title": "糾錯與系統之情",
-		"description": "觀此 fount 系統之詳情，以備糾錯排難之用，甚爲有益。",
+		"description": "陰影聚於路途之時，來此窺系統之真——診斷與細節，照見何處失道。為求理解者之提燈也。",
 		"heading": "糾錯與系統之情",
 		"copyButton": "謄錄報告",
 		"versionStatus": {
@@ -6178,13 +6187,13 @@
 	},
 	"404": {
 		"title": "蹤跡難尋",
-		"description": "君所尋之跡，已沒於迷霧之中。差之毫釐，謬以千里。容吾引君歸返本陣；亦或留步此太虛幻境，自得其樂。",
+		"description": "所求之路，已散入霧中。誤行一步歟？忘其轉角歟？請容吾引君歸岸；抑或於此靜虛之中，小憩一局。",
 		"pageNotFoundText": "嗚呼！君誤入無何有之鄉矣。",
 		"homepageButton": "歸去來兮"
 	},
 	"directoryListing": {
 		"title": "目錄",
-		"description": "閱覽 fount 作業區之文牘與帙。",
+		"description": "漫步於君 fount 工作區之書架——檔案與夾，陳列如熟識書館中標明之小徑。",
 		"indexOf": "目次：${path}",
 		"name": "名",
 		"mimeType": "格致",
@@ -6480,7 +6489,7 @@
 	},
 	"pro_cancel_screen": {
 		"title": "fount pro 訂閱已罷",
-		"description": "欲知罷 fount pro 訂閱之法，且書退訂之由。",
+		"description": "觀 fount pro 因何而消，並述君離去之由。",
 		"intro": "君去殊悵然。欲使 fount pro 益善，敢問何故退訂？",
 		"language_selector": {
 			"button": {
@@ -6502,17 +6511,23 @@
 	},
 	"oauth_handler": {
 		"title": "OAuth 登入",
-		"description": "成 AI 源之 OAuth 登入。令符交換於伺服端完成。",
+		"description": "向外一步，取得某 AI 服務商之授，再攜鑰而歸——其為君之侶開新聲。",
 		"callback": {
 			"working": "成登入中…",
 			"success": "登入成，可關此頁。",
 			"failed": "登入敗：${message}",
-			"missingParams": "回調缺 code 或 state。"
+			"missingParams": "回調缺 code 或 state。",
+			"title": "緘封之握手：fount OAuth 回呼",
+			"description": "外門合攏，授權歸於候君之 fount。短暫而必要之停頓，信任正寫入記憶。"
+		},
+		"pages_bounce": {
+			"title": "借來之一刻：fount OAuth 回返",
+			"description": "穿更廣之網絡繞一小路，送授權回君本機之 fount。握手既成，入口之門於君身後封矣。"
 		}
 	},
 	"code": {
 		"title": "Code",
-		"description": "AI 編碼之會話，施於作業區與機器。",
+		"description": "AI 編程之工作區：就君之專案與任何角色對話，於本機或已接之 subfount 上運行代碼、編輯檔案。",
 		"sessions": {
 			"new": "新會話",
 			"untitled": "無名會話",
@@ -6914,7 +6929,7 @@
 	},
 	"gist": {
 		"title": "gist 文庫",
-		"description": "可存、覽、改、傳 Markdown 之文，其防隨 gist 而異。",
+		"description": "一座靜謐之 Markdown 藏書館：書之、存之、改之、遞之——每一 gist 皆鎖於君自擇之鎖後。",
 		"error": {
 			"generic": "有誤：${error}"
 		},
@@ -7251,7 +7266,7 @@
 	},
 	"captcha": {
 		"title": "請驗其身",
-		"description": "有 fount 節點欲驗君為人或自主 agent。",
+		"description": "門未大開，先有小問：君為人歟？抑或自營其事之 agent 歟？答之，則入 fount 之路開矣。",
 		"help": {
 			"button": {
 				"aria-label": "何故見此？"
@@ -7289,7 +7304,7 @@
 	},
 	"invitation-required": {
 		"title": "fount 乃需邀之軟件",
-		"description": "為保社群之良，fount 只納見邀於現有用戶之新用戶。",
+		"description": "fount 之門，惟為受邀者而開。向已在其中者求一私語——一邀鏈——此門檻亦為君開。",
 		"getLink": "請向左右已用 fount 者，索私談之邀連結！",
 		"submit": "用邀連結",
 		"waiting": "邀已發，請待彼方之確認。確認後自入 fount。",

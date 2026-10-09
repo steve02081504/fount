@@ -633,7 +633,7 @@
 	},
 	"installer_wait_screen": {
 		"title": "歡迎使用 fount！",
-		"description": "追蹤安裝進度並了解其中的功能。fount 很快就可以啟動了。",
+		"description": "看著安裝的織線一寸寸推進，fount 正甦醒過來。耐心深吸一口氣，通往你夥伴的那扇門便會敞開。",
 		"hero": {
 			"title": "靈犀一點，應念而生",
 			"description": "fount 是一個由 AI 驅動的角色互動平台，旨在賦予<i>您</i>能力。它是一座橋樑，將您與您想像中的角色連結起來，讓您輕鬆地與他們對話、建立自己的角色並與世界分享。"
@@ -734,7 +734,7 @@
 		},
 		"error": {
 			"title": "安裝失敗！",
-			"description": "fount 安裝程式似乎出了問題。",
+			"description": "有什麼東西打亂了安裝程式的節奏。先在這裡停一停——在旅程繼續之前，我們幫你找回一塊穩當的地面。",
 			"connection_failed": "連線失敗！",
 			"close_page": "關閉頁面",
 			"summary": "fount 安裝程式似乎出了問題。",
@@ -787,7 +787,11 @@
 				"retry": "重試"
 			}
 		},
-		"fountNotFound": "哎呀 :(\n\n沒有找到 fount，或許你需要先安裝一個？"
+		"fountNotFound": "哎呀 :(\n\n沒有找到 fount，或許你需要先安裝一個？",
+		"github": {
+			"title": "數位溪流中的低語：fount 協定處理器",
+			"description": "它引導著看不見的水流，讓每一條 fount 連結都把你帶向真正該去的地方，把你的意圖接到可以沉浸的現實裡。"
+		}
 	},
 	"startPage": {
 		"title": "fount!",
@@ -884,7 +888,7 @@
 	},
 	"login_info": {
 		"title": "登入資訊",
-		"description": "一個用於管理您的 fount 登入憑證的安全空間——打開您不為人知的故事世界的鑰匙。",
+		"description": "一處安放你 fount 登入憑證的靜修之所——那是通往無數未言故事的鑰匙，被妥善看守，直到你決定轉動鎖孔。",
 		"modal": {
 			"title": "憑證傳輸錯誤",
 			"retrieve_error": "嘗試儲存您的登入憑證時發生錯誤：\n${error}\n您可以繼續但無法儲存登入資訊。",
@@ -943,7 +947,7 @@
 	},
 	"home": {
 		"title": "首頁",
-		"description": "這裡是您 fount 體驗的起點。無論是鮮活的角色、宏偉的世界，還是獨特的身分，您想像國度中的一切盡在掌握。所有故事，將從這裡開始。",
+		"description": "你 fount 體驗的心臟。在這裡打理你想像國度的居民——角色、世界與身分。你的故事都從這個中樞出發，向四處分枝。",
 		"sidebarTitle": "詳情",
 		"closeSidebar": "關閉側邊欄",
 		"itemDescription": "在此處選擇一個項目以檢視詳細資訊。",
@@ -1252,7 +1256,7 @@
 		"emojiPacks": {
 			"title": "表情包探索",
 			"kicker": "發現",
-			"description": "瀏覽附近公開群組與作者的表情包。加入群組或關注作者即可使用，無需另行安裝。",
+			"description": "瀏覽由 fount 各地公開群組與作者們編織的 emoji 包。一枚枚小小的印記，隨時為你的對話落下標點。",
 			"back": "返回聊天",
 			"loading": "正在探索附近表情包…",
 			"empty": "附近暫無可發現的表情包",
@@ -1587,7 +1591,7 @@
 				},
 				"page": {
 					"title": "群組設定",
-					"description": "打理群組身分、成員、權限與維繫共同舞台的各項工具。",
+					"description": "照看群組的身分、成員、權限，以及維繫你們共同舞台的那些工具。每一場相聚，都需要一盞彼此約定的燈。",
 					"kicker": "群組管理",
 					"subtitle": "管理群資料、成員和常用功能。低頻的許可權、儲存與審計工具集中在高階設定中。",
 					"navigationLabel": "群組設定分類",
@@ -3076,7 +3080,8 @@
 				"toolbar": {
 					"aria-label": "訊息多選工具列"
 				}
-			}
+			},
+			"description": "言語在此起飛，故事在此展開。與你的 AI 夥伴交談，塑造敘事，在數位對話的潮起潮落裡沉醉。fount 的心臟，就在這裡跳動。"
 		},
 		"sidebar": {
 			"settings": {
@@ -3282,7 +3287,7 @@
 		},
 		"profile": {
 			"title": "個人資料",
-			"description": "管理你在聊天與社交中的公開形象。",
+			"description": "塑造你在聊天與社群中的樣子——一份公開的形象，調準到你想要講述的那個故事。",
 			"settingsEyebrow": "賬戶設定",
 			"accountAtGlance": "賬戶概覽",
 			"advancedKicker": "依需求設定",
@@ -3695,7 +3700,7 @@
 	},
 	"easynew": {
 		"title": "快速新建",
-		"description": "使用預定義或自訂範本快速建構新的 fount 組件，例如角色、世界和外掛。只需點擊幾下即可完成您的下一個創作。",
+		"description": "從範本或空白頁開始，用幾個篤定的動作把新的部件引出來——角色、世界、外掛。織機已經就緒，花紋由你來挑。",
 		"info": {
 			"description": "這些範本只能用於快速建構簡單的組件，複雜的組件仍然需要手動建立。"
 		},
@@ -3881,7 +3886,7 @@
 		"title": "組件匯出器",
 		"pageTitle": "組件匯出器",
 		"pageSubtitle": "匯出你喜歡的內容",
-		"description": "匯出您的 fount 創作。這項工具會將您選擇的組件收集成一個簡單的 zip 檔案，方便妥善保存或分享。",
+		"description": "把選中的部件收成一只包裹，妥存或贈人。你在 fount 裡做出來的東西，可以完整地遷徙到另一個爐邊。",
 		"steps": {
 			"part": "選擇組件",
 			"action": "匯出"
@@ -4061,7 +4066,7 @@
 	},
 	"serviceSource_manager": {
 		"title": "服務來源管理",
-		"description": "在這裡，你將指揮一場 AI 聲音的交響樂。新增、調校或停用各種來源，為你的來源夥伴賦予生命——一場程式碼與想像力的微妙共舞。",
+		"description": "在這裡，你指揮著 AI 聲音的交響。為賦予 fount 夥伴生命的那些來源增添、雕琢或讓它們靜默——一場程式與想像的細膩共舞。",
 		"fileList": {
 			"title": "服務來源列表",
 			"empty": "暫無服務來源",
@@ -4378,7 +4383,7 @@
 	},
 	"wechat_bots": {
 		"title": "微信 Bot",
-		"description": "讓你的 fount 角色在微信上與你對話。綁定角色、管理多個 Bot，在熟悉的聊天裡延續陪伴。",
+		"description": "讓你的 fount 角色走進 WeChat 熟悉的廳堂——在一天尋常的對話之間，夥伴就在手邊。",
 		"cardTitle": "微信 Bot",
 		"botSelectDropdown": {
 			"placeholder": "選擇一個 Bot"
@@ -4472,7 +4477,7 @@
 	},
 	"social": {
 		"title": "廣場",
-		"description": "P2P 開放社交動態、關注與檔案分享",
+		"description": "在 fount 的社交天穹下漫步於點對點的時間軸、追蹤與共享檔案之間。這是一片廣場，遠方的聲音可以不靠中央高塔便在此相遇。",
 		"bootstrapFailed": "社交介面初始化失敗：${error}",
 		"connectNodeFailed": "連接節點失敗：${error}",
 		"dwellFailed": "觀看時長偏好更新失敗：${error}",
@@ -5168,7 +5173,7 @@
 	},
 	"cabinet": {
 		"title": "文件櫃",
-		"description": "P2P 個人與共享文件櫃",
+		"description": "私人的珍藏與同伴共享的寶物，每一座櫥櫃都是 fount 分散式廳堂裡一間安靜的房間。拉開一只抽屜，看看你的網路為你留下了怎樣的故事。",
 		"entries": {
 			"title": "內容列表",
 			"aria-label": "內容列表"
@@ -5250,7 +5255,7 @@
 	},
 	"browser_integration": {
 		"title": "瀏覽器整合",
-		"description": "彌合 fount 和網路之間的差距。此頁面提供使用者指令碼來實現無縫整合，將您的 AI 伴侶帶進您的瀏覽體驗中。",
+		"description": "瀏覽網頁時，讓你的夥伴就在身旁同行。這裡放著那枚使用者腳本——一縷一縷的線——把 fount 與開放的網際網路縫在一起。",
 		"pageHeader": "瀏覽器整合",
 		"pageDescription": "為了讓您的 fount 角色能夠與網頁互動，需要安裝此瀏覽器整合指令碼。它充當角色與瀏覽器之間的橋樑，使他們能夠檢視頁面內容並執行操作。",
 		"install_script_title": "安裝指令碼",
@@ -5380,7 +5385,7 @@
 		}
 	},
 	"ide_integration": {
-		"description": "透過 Agent Client Protocol（ACP）將 fount 的 Agent 接入支援的編輯器（如 Zed、JetBrains、Neovim），設定 API 金鑰與 Agent，把 AI 夥伴帶進開發工作流。",
+		"description": "把你的夥伴請進程式的鍛爐。透過 Agent Client Protocol 把 API 金鑰與角色綁到你的編輯器上——邏輯與對話就此共用同一張工作檯。",
 		"title": "IDE 整合",
 		"heading": "IDE 整合",
 		"instruction": "在支援 ACP 的編輯器（如 Zed、JetBrains、Neovim 等）中用 fount 角色輔助程式設計。",
@@ -5431,7 +5436,7 @@
 	},
 	"deskpet": {
 		"title": "桌面寵物",
-		"description": "將您的 fount 角色作為桌面上的互動寵物啟動。",
+		"description": "把你的 fount 角色召到桌面成為桌寵——小小的存在，逗留著、望著你，陪你度過一整天。",
 		"launcherCard": {
 			"title": "寵物啟動器",
 			"buttons": {
@@ -5487,7 +5492,7 @@
 	},
 	"blog": {
 		"title": "fount Agent 研究院",
-		"description": "來自 fount 工坊的隨筆：關於 Agent 設計的思考——Agent 究竟是什麼、LLM 到底擅長什麼，以及如何建立只在值得的地方動用智慧的系統。",
+		"description": "來自 fount 工坊的田野筆記：關於 agent 設計的隨筆——agent 究竟是什麼，LLM 究竟為何而生，以及如何打造把智慧只花在刀口上的系統。",
 		"heading": "fount Agent 研究院",
 		"intro": "fount 專案關於 Agent 設計的系列文章——Agent 是什麼、LLM 在其中扮演什麼角色、哪些工作其實交給普通程式更好。可以依序讀，也可以隨意跳轉，每篇都鏈向其餘各篇。",
 		"search": {
@@ -5529,6 +5534,10 @@
 			"text": "本文作者也是 fount 的作者。fount 是一個可自架的 AI 伴侶平台，原始碼完全公開可查——Agent、Shell、人格與記憶，都只棲居在你自己的機器上。",
 			"install": "安裝 fount",
 			"github": "GitHub"
+		},
+		"article_detail": {
+			"title": "fount Agent Institute：一篇論 agent 設計的隨筆",
+			"description": "fount Agent Institute 閱讀之路上的一站：agent 即任務系統，LLM 即租來的認知，以及那門安靜的技藝——不去問模型那些程式早已知道的事。"
 		}
 	},
 	"themeManage": {
@@ -5644,7 +5653,7 @@
 	"languageSettings": {
 		"title": "語言設定",
 		"pageTitle": "語言設定",
-		"description": "管理 fount 應用程式的語言偏好，並用可選的語言自訂您的體驗。",
+		"description": "選擇 fount 對你說話時所用的語言。調整你的語言偏好，讓介面沉入一個熟悉的聲音。",
 		"pageDescription": "在此處管理您的語言偏好。列表中的語言將按順序優先於瀏覽器設定。",
 		"availableLanguages": "可用語言",
 		"preferredLanguages": "優先語言列表",
@@ -5686,7 +5695,7 @@
 	"userSettings": {
 		"title": "使用者設定",
 		"PageTitle": "使用者設定",
-		"description": "打理您的 fount 身分細節。管理您的個人資料、保護您的存取權限並檢視已連線的裝置。這裡是您專屬的靜謐空間。",
+		"description": "照看你 fount 身分的種種細節。管理你的個人資料、守住你的存取權限、查看已連接的裝置。一處屬於你帳號的安靜聖所。",
 		"shell": {
 			"unauthorized": "需要登入。",
 			"responseNotJson": "伺服器傳回了無法剖析的內容。",
@@ -5915,7 +5924,7 @@
 	},
 	"proxy": {
 		"title": "API 代理",
-		"description": "對於開發人員和整合商，此頁面介紹了 fount API 代理，您可以將 fount 的功能編織到其他應用程式中。",
+		"description": "獻給把 fount 織進其他作品的人：API 代理在這裡敞開——一條讓應用程式從 fount 之井取水的管道。",
 		"heading": "API 代理閘道器",
 		"instruction": "在此頁面產生並管理您的 API 金鑰，用來將 fount 與其他應用程式整合。",
 		"endpointSectionTitle": "API 端點",
@@ -5956,7 +5965,7 @@
 	"subfounts": {
 		"title": "子 fount - 點對點裝置管理",
 		"pageTitle": "子 fount",
-		"description": "管理點對點子 fount 連接",
+		"description": "伸手觸及網路另一端的同伴裝置——連線碼像燭火般亮起，命令穿過黑暗送達。一場分散存在的安靜編排。",
 		"hostConnectionCode": {
 			"title": "主機連接碼",
 			"connectionCodeLabel": "連接碼 (Peer ID)",
@@ -6046,7 +6055,7 @@
 	},
 	"achievements": {
 		"title": "成就",
-		"description": "探索你與 fount 旅程中的里程碑與成就。每項成就都標記著你獨特故事裡的一步。",
+		"description": "翻開你旅途的書頁——每一座里程碑，都是只有你才寫得出來的故事裡的一則註腳。成就如路標般閃爍，標記著你走過的路。",
 		"pageHeader": "成就殿堂",
 		"pageDescription": "在這裡檢視您已解鎖的成就和里程碑。",
 		"unlocked_on": "解鎖於 ${date}",
@@ -6076,7 +6085,7 @@
 	},
 	"log_viewer": {
 		"title": "紀錄",
-		"description": "查看 fount 的即時伺服器日誌，並在瀏覽器中執行 JavaScript REPL。",
+		"description": "在即時日誌裡聆聽伺服器低語般的脈搏，或直接在瀏覽器內的 REPL 裡開口。在這裡，fount 的內心之聲以純文字作答。",
 		"connectionError": "無法連線至日誌服務。請在本機存取或登入後再試。",
 		"logs": {
 			"openSourceFailed": "無法在外部編輯器中開啟原始碼：${message}",
@@ -6104,7 +6113,7 @@
 	},
 	"debug_info": {
 		"title": "除錯與系統資訊",
-		"description": "獲取有關您的 fount 安裝的詳細除錯和系統資訊。這對於故障排除和支援請求非常有幫助。",
+		"description": "當陰影在路徑上聚攏，就來這裡窺看系統的真相——診斷資訊與細節，照亮究竟是哪裡岔了路。給求索理解之人的一盞提燈。",
 		"heading": "除錯與系統資訊",
 		"copyButton": "複製報告",
 		"versionStatus": {
@@ -6178,13 +6187,13 @@
 	},
 	"404": {
 		"title": "頁面未找到",
-		"description": "你所尋找的道路已消散在迷霧之中。這是一個錯誤，一個被遺忘的轉彎嗎？讓我們帶您回到岸邊，或者在安靜的虛空中停下來玩一場遊戲。",
+		"description": "你尋找的那條路，已化作霧中一縷散去。是踏錯了一步，還是忘了轉彎？讓我們引你回到岸邊——或者，在這片寂靜的虛空裡，陪你玩上一局。",
 		"pageNotFoundText": "糟糕！您似乎來到了一個不存在的頁面。",
 		"homepageButton": "返回首頁"
 	},
 	"directoryListing": {
 		"title": "目錄索引",
-		"description": "瀏覽並探索 fount 工作區中的檔案和資料夾。",
+		"description": "在 fount 工作區的書架間漫步——檔案與資料夾陳列開來，像熟識的圖書館裡一條條標註好的小徑。",
 		"indexOf": "索引：${path}",
 		"name": "名稱",
 		"mimeType": "MIME 類型",
@@ -6480,7 +6489,7 @@
 	},
 	"pro_cancel_screen": {
 		"title": "fount pro 訂閱已取消",
-		"description": "了解如何取消 fount pro 訂閱並填寫退訂原因。",
+		"description": "了解 fount pro 是因何被取消，也說說你離開的緣由。",
 		"intro": "很遺憾看到你離開。為了讓 fount pro 變得更好，可以告訴我們退訂的原因嗎？",
 		"language_selector": {
 			"button": {
@@ -6502,17 +6511,23 @@
 	},
 	"oauth_handler": {
 		"title": "OAuth 登入",
-		"description": "完成 AI 來源的 OAuth 登入。Token 交換在伺服器端完成。",
+		"description": "向外邁一步，取得某家 AI 服務商的授權，再帶著鑰匙回來——它們會為你的夥伴打開新的聲音。",
 		"callback": {
 			"working": "正在完成登入…",
 			"success": "登入成功，可以關閉此頁。",
 			"failed": "登入失敗：${message}",
-			"missingParams": "回調缺少 code 或 state。"
+			"missingParams": "回調缺少 code 或 state。",
+			"title": "封緘的握手：fount OAuth 回呼",
+			"description": "外門合攏，授權回到等候著的 fount。一段短暫而必要的停頓，信任正被寫入記憶。"
+		},
+		"pages_bounce": {
+			"title": "借來的一刻：fount OAuth 回返",
+			"description": "穿過更廣闊的網路繞一段小路，把授權送回你本機的 fount。握手完成，入口之門在你身後封上。"
 		}
 	},
 	"code": {
 		"title": "Code",
-		"description": "針對工作區與機器的 AI 程式開發工作階段。",
+		"description": "一個 AI 程式開發工作區：就你的專案與任意角色對話，在本機或已連接的 subfount 上執行程式、編輯檔案。",
 		"sessions": {
 			"new": "新對話",
 			"untitled": "未命名對話",
@@ -6914,7 +6929,7 @@
 	},
 	"gist": {
 		"title": "Gist 文件庫",
-		"description": "儲存、檢視、編輯與分享 Markdown 檔案，並依 gist 設定安全等級。",
+		"description": "一座安靜的 Markdown 藏書之館：寫下它們、保存它們、編輯它們、再遞給別人——每一則 gist 都鎖在你親自挑選的那把鎖後面。",
 		"error": {
 			"generic": "發生錯誤：${error}"
 		},
@@ -7251,7 +7266,7 @@
 	},
 	"captcha": {
 		"title": "確認您的身分",
-		"description": "某個 fount 節點想確認您是人類或自主 agent。",
+		"description": "大門敞開之前，先有一個小小的問題：你是人，還是正忙著自己差事的 agent？答得上來，通往 fount 的路就為你敞開。",
 		"help": {
 			"button": {
 				"aria-label": "為什麼我會看到這個？"
@@ -7289,7 +7304,7 @@
 	},
 	"invitation-required": {
 		"title": "fount 是需要邀請才能使用的軟體",
-		"description": "為了確保社群優質可靠，fount 只接納由現有使用者邀請的新使用者。",
+		"description": "fount 的門只為受邀者而開。向已經在裡面的人討一句私語——一條邀請連結——這道門檻也會為你打開。",
 		"getLink": "向身邊任何已經在使用 fount 的人，索取私聊邀請連結！",
 		"submit": "使用邀請連結",
 		"waiting": "邀請已送出，請等待對方確認。確認後會自動進入 fount。",

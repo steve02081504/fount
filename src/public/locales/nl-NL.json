@@ -633,7 +633,7 @@
 	},
 	"installer_wait_screen": {
 		"title": "Welkom bij fount!",
-		"description": "Volg de voortgang van de installatie en bekijk de functies ervan. fount zal binnen enkele ogenblikken klaar zijn voor lancering.",
+		"description": "Kijk hoe het weefsel van de installatie vordert terwijl fount tot leven komt. Een geduldige ademteug, en dan zwaait de deur naar uw metgezellen open.",
 		"hero": {
 			"title": "Een Vonk van de Geest, een Vriend voor het Leven",
 			"description": "fount is een AI-aangedreven platform voor personage-interactie, ontworpen om <i>jou</i> de controle te geven. Het is een brug die je verbindt met de personages uit je verbeelding, waardoor je moeiteloos met hen kunt praten, je eigen personages kunt creëren en ze met de wereld kunt delen."
@@ -734,7 +734,7 @@
 		},
 		"error": {
 			"title": "Installatie mislukt!",
-			"description": "Er lijkt iets mis te zijn gegaan met het installatieprogramma van fount.",
+			"description": "Iets heeft het installatieprogramma uit zijn ritme gebracht. Houd hier even stil: wij helpen u vaste grond te vinden voordat de reis verdergaat.",
 			"connection_failed": "Verbinding mislukt!",
 			"close_page": "Pagina sluiten",
 			"summary": "Er lijkt iets mis te zijn gegaan met het installatieprogramma van fount.",
@@ -787,7 +787,11 @@
 				"retry": "Probeer het opnieuw"
 			}
 		},
-		"fountNotFound": "Oeps :(\n\nKan fount niet vinden, misschien moet je het eerst installeren?"
+		"fountNotFound": "Oeps :(\n\nKan fount niet vinden, misschien moet je het eerst installeren?",
+		"github": {
+			"title": "Fluisteringen in de digitale stroom: de fount-protocolafhandelaar",
+			"description": "Deze pagina leidt de onzichtbare stromen en zorgt dat uw fount-links u betrouwbaar naar de juiste plek voeren, en verbindt bedoelingen met meeslepende werkelijkheden."
+		}
 	},
 	"startPage": {
 		"title": "fount!",
@@ -884,7 +888,7 @@
 	},
 	"login_info": {
 		"title": "Inloggegevens",
-		"description": "Een veilige ruimte voor het beheren van uw inloggegevens: de sleutels tot uw wereld vol onvertelde verhalen.",
+		"description": "Een stille vrijplaats voor het beheren van uw fount-inloggegevens: de sleutels tot werelden van onvertelde verhalen, veilig bewaard tot u besluit het slot om te draaien.",
 		"modal": {
 			"title": "Certificaatoverdrachtsfout",
 			"retrieve_error": "Er is een fout opgetreden bij het proberen uw inloggegevens op te slaan:\n${error}\nU kunt doorgaan, maar kunt de inloggegevens niet opslaan.",
@@ -943,7 +947,7 @@
 	},
 	"home": {
 		"title": "Startpagina",
-		"description": "Het hart van uw fount-ervaring. Beheer hier de bewoners van je verbeelding: personages, werelden en persona's. Jouw verhalen beginnen en vertakken zich vanuit dit centrale knooppunt.",
+		"description": "Het hart van uw fount-ervaring. Hier beheert u de bewoners van uw verbeelding: personages, werelden en persona’s. Uw verhalen beginnen en vertakken zich vanuit dit centrale knooppunt.",
 		"sidebarTitle": "Details",
 		"closeSidebar": "Zijbalk sluiten",
 		"itemDescription": "Selecteer hier een item om de details te bekijken.",
@@ -1252,7 +1256,7 @@
 		"emojiPacks": {
 			"title": "Emoji-pakketten ontdekken",
 			"kicker": "Ontdekken",
-			"description": "Blader door emoji-pakketten van openbare groepen en auteurs bij jou in de buurt. Word lid van een groep of volg de auteur om ze te gebruiken — geen aparte installatie nodig.",
+			"description": "Blader door emojipacks die publieke groepen en auteurs in heel fount hebben geweven. Kleine tekens, klaar om uw gesprekken te accentueren.",
 			"back": "Terug naar chat",
 			"loading": "Zoeken naar emoji-pakketten in de buurt…",
 			"empty": "Geen emoji-pakketten in de buurt gevonden",
@@ -1587,7 +1591,7 @@
 				},
 				"page": {
 					"title": "Groepsinstellingen",
-					"description": "Beheer de identiteit, leden, rechten en de tools die jullie gedeelde podium verbinden.",
+					"description": "Zorg voor de identiteit van een groep, haar leden, rechten en de hulpmiddelen die uw gedeelde podium verbinden. Elke samenkomst heeft haar eigen afgesproken licht nodig.",
 					"kicker": "Groepsbeheer",
 					"subtitle": "Beheer groepsinformatie, leden en gemeenschappelijke functies. Laagfrequente machtigingen, opslag en auditingtools zijn gecentraliseerd in geavanceerde instellingen.",
 					"navigationLabel": "Classificatie van groepsinstellingen",
@@ -3082,7 +3086,8 @@
 				"toolbar": {
 					"aria-label": "Werkbalk voor het selecteren van meerdere berichten"
 				}
-			}
+			},
+			"description": "Waar woorden opstijgen en verhalen zich ontvouwen. Ga in gesprek met uw AI-metgezellen, vorm het verhaal en verlies uzelf in het op en af van de digitale dialoog. Hier klopt het hart van fount."
 		},
 		"sidebar": {
 			"settings": {
@@ -3288,7 +3293,7 @@
 		},
 		"profile": {
 			"title": "Profiel",
-			"description": "Beheer hoe je overkomt in chat en social.",
+			"description": "Vorm hoe u verschijnt in chat en sociaal: een publieke aanwezigheid afgestemd op het verhaal dat u wilt vertellen.",
 			"settingsEyebrow": "Accountinstellingen",
 			"accountAtGlance": "Accountoverzicht",
 			"advancedKicker": "Op aanvraag configureren",
@@ -3701,7 +3706,7 @@
 	},
 	"easynew": {
 		"title": "Snel nieuw",
-		"description": "Creëer snel nieuwe fount-onderdelen zoals personages, werelden en plug-ins met behulp van vooraf gedefinieerde of aangepaste sjablonen. Uw volgende creatie is slechts een paar klikken verwijderd.",
+		"description": "Vanuit een sjabloon of een lege pagina lokt u nieuwe onderdelen tevoorschijn — personages, werelden, plug-ins — geweven met een paar weloverwogen gebaren. Het weefgetouw staat klaar; u kiest het patroon.",
 		"info": {
 			"description": "Deze sjablonen kunnen alleen worden gebruikt om snel eenvoudige componenten te bouwen, complexe componenten moeten nog steeds handmatig worden gemaakt."
 		},
@@ -3887,7 +3892,7 @@
 		"title": "Component-exporteerder",
 		"pageTitle": "Component-exporteerder",
 		"pageSubtitle": "Exporteer je favoriete inhoud",
-		"description": "Exporteer uw fount-creaties. Deze tool verzamelt uw geselecteerde onderdelen in een eenvoudig zip-bestand om te bewaren of te delen.",
+		"description": "Bundel gekozen onderdelen in één pakket om te bewaren of cadeau te doen. Wat u in fount maakte, kan ongeschonden naar een andere haard reizen.",
 		"steps": {
 			"part": "Selecteer componenten",
 			"action": "Exporteren"
@@ -4067,7 +4072,7 @@
 	},
 	"serviceSource_manager": {
 		"title": "Beheer van servicebronnen",
-		"description": "Hier dirigeer je een symfonie van kunstmatige-intelligentiegeluiden. Voeg bronnen toe, snijd ze weg of zet ze stil om je brongenoten tot leven te brengen - een subtiele dans van code en verbeelding.",
+		"description": "Hier dirigeert u de symfonie van AI-stemmen. Voeg bronnen toe, vorm ze of breng ze tot stilte — bronnen die uw fount-metgezellen leven inblazen: een verfijnde dans van code en verbeelding.",
 		"fileList": {
 			"title": "Lijst met servicebronnen",
 			"empty": "Nog geen servicebronnen",
@@ -4384,7 +4389,7 @@
 	},
 	"wechat_bots": {
 		"title": "WeChat-bot",
-		"description": "Gebruik een fount-personage als WeChat-bot: koppel een personage, beheer bots en chat in WeChat.",
+		"description": "Laat uw fount-personages de vertrouwde zalen van WeChat binnenstappen: metgezellen bij de hand te midden van de gewone gesprekken van de dag.",
 		"cardTitle": "WeChat-bot",
 		"botSelectDropdown": {
 			"placeholder": "Kies een bot"
@@ -4478,7 +4483,7 @@
 	},
 	"social": {
 		"title": "Plein",
-		"description": "Open P2P-socialfeed, volgen en bestandsdeling",
+		"description": "Dwaal onder founts sociale hemel door peer-to-peer-feeds, volgers en gedeelde bestanden. Een plein waar verre stemmen elkaar kunnen ontmoeten zonder centrale toren.",
 		"bootstrapFailed": "Initialisatie van sociale interface mislukt: ${error}",
 		"connectNodeFailed": "Verbinding met knooppunt mislukt: ${error}",
 		"dwellFailed": "Voorkeursgegevens bijwerken op basis van kijktijd mislukt: ${error}",
@@ -5174,7 +5179,7 @@
 	},
 	"cabinet": {
 		"title": "Cabinet",
-		"description": "P2P persoonlijke en gedeelde archiefkasten",
+		"description": "Persoonlijke aandenkens en onderling gedeelde schatten: elke kast is een stille kamer in de verdeelde zalen van fount. Open een lade en zie welke verhalen uw netwerk voor u heeft achtergelaten.",
 		"entries": {
 			"title": "Items",
 			"aria-label": "Items"
@@ -5256,7 +5261,7 @@
 	},
 	"browser_integration": {
 		"title": "Browserintegratie",
-		"description": "Overbrug de kloof tussen de fount en het web. Deze pagina biedt het gebruikersscript om een naadloze integratie mogelijk te maken, waardoor uw AI-metgezellen in uw browse-ervaring terechtkomen.",
+		"description": "Laat uw metgezellen naast u lopen terwijl u browset. Hier ligt het gebruikersscript — draad voor draad — dat fount aan het open web verbindt.",
 		"pageHeader": "Browserintegratie",
 		"pageDescription": "Om uw fount-rol te laten communiceren met de webpagina, moet u dit browser-integratiescript installeren. Het fungeert als een brug tussen het personage en de browser, waardoor ze de pagina-inhoud kunnen bekijken en acties kunnen uitvoeren.",
 		"install_script_title": "Installatiescript",
@@ -5386,7 +5391,7 @@
 		}
 	},
 	"ide_integration": {
-		"description": "Verbind de fount-rol met ondersteunde editors (zoals Zed, JetBrains, Neovim) via Agent Client Protocol, configureer API-sleutels en -rollen en betrek AI-partners in de ontwikkelingsworkflow.",
+		"description": "Nodig uw metgezellen uit in de smederij van de code. Via het Agent Client Protocol verbindt u API-sleutels en personages met uw editor, waar logica en dialoog dezelfde werkbank delen.",
 		"title": "IDE-integratie",
 		"heading": "IDE-integratie",
 		"instruction": "Gebruik fount-rollen voor ondersteuning bij het programmeren in ACP-compatibele editors (zoals Zed, JetBrains, Neovim, enz.).",
@@ -5437,7 +5442,7 @@
 	},
 	"deskpet": {
 		"title": "Desktop huisdieren",
-		"description": "Lanceer je fount-personages als interactieve huisdieren die op je bureaublad leven.",
+		"description": "Roep uw fount-personages op als huisdieren op het bureaublad: kleine aanwezigheden die blijven, toekijken en u de dag door gezelschap houden.",
 		"launcherCard": {
 			"title": "huisdier starter",
 			"buttons": {
@@ -5493,7 +5498,7 @@
 	},
 	"blog": {
 		"title": "fount onderzoeksinstituut",
-		"description": "Essays uit de werkplaats van fount: gedachten over het ontwerpen van agents — wat een agent eigenlijk is, waar een LLM goed in is en hoe je systemen bouwt die intelligentie alleen inzetten waar die het waard is.",
+		"description": "Veldnotities uit het fount-atelier: essays over agentontwerp — wat een agent werkelijk is, waar een LLM voor dient, en hoe je systemen bouwt die intelligentie alleen uitgeven waar die zich terugverdient.",
 		"heading": "fount onderzoeksinstituut",
 		"intro": "De artikelenreeks van het fount-project over het ontwerpen van agents — wat is een agent, welke rol speelt een LLM daarin en welke taken kun je beter aan gewone programma's overlaten. Je kunt ze op volgorde lezen of willekeurig heen en weer springen; elk artikel linkt naar de rest.",
 		"search": {
@@ -5535,6 +5540,10 @@
 			"text": "De auteur van dit artikel is ook de auteur van fount. fount is een zelf te hosten AI-gezelschapsplatform met volledig inzichtelijke broncode — agents, shells, persoonlijkheden en geheugen, allemaal alleen op <i>je</i> eigen machine.",
 			"install": "fount installeren",
 			"github": "GitHub"
+		},
+		"article_detail": {
+			"title": "fount Agent Institute: een essay over agentontwerp",
+			"description": "Een halte op het leespad van het fount Agent Institute: agenten als taaksystemen, LLM’s als gehuurde cognitie, en de stille kunst om het model niet te vragen wat een programma al weet."
 		}
 	},
 	"themeManage": {
@@ -5650,7 +5659,7 @@
 	"languageSettings": {
 		"title": "Taalinstellingen",
 		"pageTitle": "Taalinstellingen",
-		"description": "Beheer uw taalvoorkeuren voor de fount-applicatie. Pas uw ervaring aan met de beschikbare taalopties.",
+		"description": "Kies de woorden waarin fount tot u spreekt. Pas uw taalvoorkeuren aan en laat de interface neerstrijken in een vertrouwde stem.",
 		"pageDescription": "Beheer hier uw taalvoorkeuren. De talen in de lijst hebben voorrang op de browserinstellingen in volgorde.",
 		"availableLanguages": "Beschikbare talen",
 		"preferredLanguages": "Prioriteitstaallijst",
@@ -5692,7 +5701,7 @@
 	"userSettings": {
 		"title": "Gebruikersinstellingen",
 		"PageTitle": "Gebruikersinstellingen",
-		"description": "Verzorg de details van uw fount-identiteit. Beheer uw profiel, beveilig uw toegang en bekijk gekoppelde apparaten. Een rustig toevluchtsoord voor uw account.",
+		"description": "Zorg voor de details van uw fount-identiteit. Beheer uw profiel, beveilig uw toegang en bekijk verbonden apparaten. Een stille vrijplaats voor uw account.",
 		"shell": {
 			"unauthorized": "Inloggen vereist.",
 			"responseNotJson": "De server heeft inhoud geretourneerd die niet kon worden verwerkt.",
@@ -5921,7 +5930,7 @@
 	},
 	"proxy": {
 		"title": "API Proxy",
-		"description": "Voor ontwikkelaars en integrators onthult deze pagina de fount API-proxy: uw verbinding om de mogelijkheden van fount in andere applicaties te verweven.",
+		"description": "Voor wie fount in ander werk weeft: hier staat de API-proxy open — een kanaal waardoor uw toepassingen uit de put van fount kunnen drinken.",
 		"heading": "API Proxy Gateway",
 		"instruction": "Genereer en beheer uw API-sleutels op deze pagina om fount te integreren met andere applicaties.",
 		"endpointSectionTitle": "API-eindpunt",
@@ -5962,7 +5971,7 @@
 	"subfounts": {
 		"title": "subfounts - peer-to-peer apparaatbeheer",
 		"pageTitle": "subfounts",
-		"description": "Beheer peer-to-peer-fount-verbindingen",
+		"description": "Bereik zusterapparaten via het netwerk: verbindingscodes die als kaarsen oplichten, opdrachten die door het donker worden gestuurd. Een stille orkestratie van verdeelde aanwezigheden.",
 		"hostConnectionCode": {
 			"title": "Hostverbindingscode",
 			"connectionCodeLabel": "Verbindingscode (Peer-ID)",
@@ -6052,7 +6061,7 @@
 	},
 	"achievements": {
 		"title": "Prestatie",
-		"description": "Ontdek de mijlpalen en prestaties van je reis met fount. Elke prestatie markeert een stap in jouw unieke verhaal.",
+		"description": "Sla de bladzijden van uw reis om: elke mijlpaal is een voetnoot in een verhaal dat alleen u kon schrijven. Prestaties glinsteren als wegwijzers langs het pad dat u hebt gelopen.",
 		"pageHeader": "Hal van prestatie",
 		"pageDescription": "Bekijk hier je ontgrendelde prestaties en mijlpalen.",
 		"unlocked_on": "Ontgrendeld op ${date}",
@@ -6082,7 +6091,7 @@
 	},
 	"log_viewer": {
 		"title": "Logboek",
-		"description": "Bekijk live fount-serverlogboeken en voer JavaScript REPL uit in je browser.",
+		"description": "Luister naar de fluisterende pols van de server in de live logs, of spreek rechtstreeks in een REPL in de browser. Hier antwoordt de innerlijke stem van fount in platte tekst.",
 		"connectionError": "Kan geen verbinding maken met de logservice. Probeer het opnieuw nadat je lokaal toegang hebt of bent ingelogd.",
 		"logs": {
 			"openSourceFailed": "Bronbestand kan niet worden geopend: ${message}",
@@ -6110,7 +6119,7 @@
 	},
 	"debug_info": {
 		"title": "Foutopsporing en systeeminformatie",
-		"description": "Ontvang gedetailleerde foutopsporing en systeeminformatie over uw fount-installatie. Dit is erg handig bij het oplossen van problemen en ondersteuningsverzoeken.",
+		"description": "Wanneer schaduwen zich op het pad verzamelen, kijk hier dan naar de waarheid van het systeem: diagnoses en details die oplichten wat misging. Een lantaarn voor wie begrip zoekt.",
 		"heading": "Foutopsporing en systeeminformatie",
 		"copyButton": "Kopieer rapport",
 		"versionStatus": {
@@ -6184,13 +6193,13 @@
 	},
 	"404": {
 		"title": "Pagina niet gevonden",
-		"description": "Het pad dat je zocht is opgelost in mist. Was het een misstap, een vergeten afslag? Sta ons toe u terug naar de kust te begeleiden, of misschien even te pauzeren voor een spelletje te midden van de stille leegte.",
+		"description": "Het pad dat u zocht is in de mist opgelost. Was het een misstap, een vergeten bocht? Laat ons u terug naar de oever leiden of, misschien, even stilstaan voor een spel in de stille leegte.",
 		"pageNotFoundText": "Oeps! Het lijkt erop dat je op een pagina bent beland die niet bestaat.",
 		"homepageButton": "Terug naar startpagina"
 	},
 	"directoryListing": {
 		"title": "directory-index",
-		"description": "Blader en verken de bestanden en mappen in de fount-werkruimte.",
+		"description": "Dwaal door de planken van uw fount-werkruimte: bestanden en mappen uitgestald als gemarkeerde paden door een vertrouwde bibliotheek.",
 		"indexOf": "Index: ${path}",
 		"name": "naam",
 		"mimeType": "MIME-type",
@@ -6486,7 +6495,7 @@
 	},
 	"pro_cancel_screen": {
 		"title": "Uw fount pro-abonnement is geannuleerd",
-		"description": "Lees hoe u uw fount pro-abonnement kunt opzeggen en deel de reden van uw opzegging.",
+		"description": "Zie waarom fount pro is opgezegd en deel de reden achter uw vertrek.",
 		"intro": "Jammer dat u ons verlaat. Kunt u ons, om fount pro beter te maken, vertellen waarom u uw abonnement opzegt?",
 		"language_selector": {
 			"button": {
@@ -6508,17 +6517,23 @@
 	},
 	"oauth_handler": {
 		"title": "OAuth-login",
-		"description": "Voltooi de OAuth-login voor de AI-bron. De tokenuitwisseling wordt aan de serverzijde voltooid.",
+		"description": "Stap even naar buiten om de zegen van een AI-aanbieder te verkrijgen en kom terug met sleutels die nieuwe stemmen voor uw metgezellen ontsluiten.",
 		"callback": {
 			"working": "Inloggen afronden…",
 			"success": "Ingelogd. Je kunt deze pagina sluiten.",
 			"failed": "Inloggen mislukt: ${message}",
-			"missingParams": "Callback mist code of state."
+			"missingParams": "Callback mist code of state.",
+			"title": "De verzegelde handdruk: de OAuth-callback van fount",
+			"description": "De buitenste poort sluit; de autorisatie keert terug naar uw wachtende fount. Een korte, noodzakelijke pauze terwijl vertrouwen in het geheugen wordt geschreven."
+		},
+		"pages_bounce": {
+			"title": "Een geleend moment: de OAuth-terugkeer van fount",
+			"description": "Een korte omweg door het wijdere web, die de autorisatie terugbrengt naar uw lokale fount. De handdruk wordt voltooid en het portaal verzegelt zich achter u."
 		}
 	},
 	"code": {
 		"title": "Code",
-		"description": "AI-codeersessies voor werkruimten en machines.",
+		"description": "Een AI-werkruimte voor programmeren: chat met elk personage over uw projecten, voer code uit en bewerk bestanden op de lokale machine of verbonden subfounts.",
 		"sessions": {
 			"new": "Nieuwe sessie",
 			"untitled": "Naamloze sessie",
@@ -6926,7 +6941,7 @@
 	},
 	"gist": {
 		"title": "Gist-bibliotheek",
-		"description": "Markdown-documenten opslaan, bekijken, bewerken en delen, met een beveiligingsniveau per gist.",
+		"description": "Een stille bibliotheek van Markdown-bladen: schrijf ze, bewaar ze, bewerk ze, geef ze door — elke gist verzegeld achter een slot naar uw keuze.",
 		"error": {
 			"generic": "Er is iets misgegaan: ${error}"
 		},
@@ -7263,7 +7278,7 @@
 	},
 	"captcha": {
 		"title": "Bevestig je identiteit",
-		"description": "Een fount-knooppunt wil bevestigen dat je een mens of een autonome agent bent.",
+		"description": "Voordat de poort wijd opengaat, wordt een kleine vraag gesteld: bent u een mens, of een agent die zijn eigen zaken nagaat? Antwoord, en de weg naar fount gaat voor u open.",
 		"help": {
 			"button": {
 				"aria-label": "Waarom zie ik dit?"
@@ -7301,7 +7316,7 @@
 	},
 	"invitation-required": {
 		"title": "fount werkt alleen op uitnodiging",
-		"description": "Om onze community betrouwbaar te houden, verwelkomt fount alleen nieuwe gebruikers die door bestaande gebruikers zijn uitgenodigd.",
+		"description": "fount houdt zijn deuren voor genodigden. Vraag iemand die al binnen is om een vertrouwelijk woord — een uitnodigingslink — en ook voor u opent zich de drempel.",
 		"getLink": "Vraag iemand die fount al gebruikt om een uitnodigingslink voor de privéchat!",
 		"submit": "Uitnodigingslink gebruiken",
 		"waiting": "Uitnodiging verstuurd. Wacht tot de ander hem accepteert; daarna opent fount vanzelf.",

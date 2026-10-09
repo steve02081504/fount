@@ -750,6 +750,10 @@ export type LocaleData = {
 			}
 		}
 		fountNotFound: string
+		github: {
+			title: string
+			description: string
+		}
 	}
 	startPage: {
 		title: string
@@ -3039,6 +3043,7 @@ export type LocaleData = {
 					'aria-label': string
 				}
 			}
+			description: string
 		}
 		sidebar: {
 			settings: {
@@ -5492,6 +5497,10 @@ export type LocaleData = {
 			install: string
 			github: string
 		}
+		article_detail: {
+			title: string
+			description: string
+		}
 	}
 	themeManage: {
 		title: string
@@ -6470,6 +6479,12 @@ export type LocaleData = {
 			success: string
 			failed: string
 			missingParams: string
+			title: string
+			description: string
+		}
+		pages_bounce: {
+			title: string
+			description: string
 		}
 	}
 	code: {

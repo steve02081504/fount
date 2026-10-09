@@ -787,7 +787,11 @@
 				"retry": "🔄"
 			}
 		},
-		"fountNotFound": "😢\n\n🤷‍♂️⛲, 📥❓"
+		"fountNotFound": "😢\n\n🤷‍♂️⛲, 📥❓",
+		"github": {
+			"title": "🌊🔗 ⛲ 🔌🔗",
+			"description": "🌊➡️ ⛲🔗✅🎯 ➡️ 🌌"
+		}
 	},
 	"startPage": {
 		"title": "⛲❗️",
@@ -3076,7 +3080,8 @@
 				"toolbar": {
 					"aria-label": "📋☑️"
 				}
-			}
+			},
+			"description": "🗣️✈️📖💫"
 		},
 		"sidebar": {
 			"settings": {
@@ -5529,6 +5534,10 @@
 			"text": "✍️🐟🤖 — 🏠💗, 📖🔍: Agent+Shell+🎭+🧠, 🔒💻🏠.",
 			"install": "⬇️🐟",
 			"github": "🐙🐱"
+		},
+		"article_detail": {
+			"title": "fount Agent 🏛️ 📝🤖",
+			"description": "📖 Agent 🤖=📋, LLM=🧠💰, 🚫🙋🧠❓=💻✅"
 		}
 	},
 	"themeManage": {
@@ -6507,7 +6516,13 @@
 			"working": "⏳",
 			"success": "✅",
 			"failed": "❌ ${message}",
-			"missingParams": "❓ code/state"
+			"missingParams": "❓ code/state",
+			"title": "🔒🤝 ⛲ 🔑↩️",
+			"description": "🚪🔒 ➡️ 🔑🔙 ⛲ · ⏳💾🤝"
+		},
+		"pages_bounce": {
+			"title": "⏳🎁 ⛲ 🔑🔙",
+			"description": "🌐↩️ 🔑 ➡️ 💻⛲ · 🤝✅, 🚪🔒"
 		}
 	},
 	"code": {

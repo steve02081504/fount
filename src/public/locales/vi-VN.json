@@ -633,7 +633,7 @@
 	},
 	"installer_wait_screen": {
 		"title": "Chào mừng đến với fount!",
-		"description": "Theo dõi tiến trình cài đặt và xem qua các tính năng bên trong. fount sẽ sẵn sàng khởi chạy sau giây lát.",
+		"description": "Ngắm tấm vải cài đặt đang dệt khi fount tỉnh dậy. Một hơi thở kiên nhẫn, rồi cánh cửa tới những người bạn đồng hành mở ra.",
 		"hero": {
 			"title": "Từ Ý Niệm, đến Tri Kỷ",
 			"description": "fount là một nền tảng tương tác nhân vật được hỗ trợ bởi AI, thiết kế để trao quyền cho <i>bạn</i>. Đây là cầu nối giúp bạn kết nối với các nhân vật trong tưởng tượng, cho phép bạn dễ dàng trò chuyện, tạo ra nhân vật của riêng mình và chia sẻ chúng với thế giới."
@@ -734,7 +734,7 @@
 		},
 		"error": {
 			"title": "Cài đặt thất bại!",
-			"description": "Dường như có sự cố với trình cài đặt fount.",
+			"description": "Có gì đó đã làm lệch nhịp của trình cài đặt. Hãy dừng lại đây — chúng tôi sẽ giúp bạn tìm lại nền đất vững trước khi hành trình tiếp diễn.",
 			"connection_failed": "Kết nối thất bại!",
 			"close_page": "Đóng trang",
 			"summary": "Dường như có sự cố với trình cài đặt fount.",
@@ -787,7 +787,11 @@
 				"retry": "Thử lại"
 			}
 		},
-		"fountNotFound": "Ối... :(\n\nKhông tìm thấy fount. Có lẽ bạn cần cài đặt trước?"
+		"fountNotFound": "Ối... :(\n\nKhông tìm thấy fount. Có lẽ bạn cần cài đặt trước?",
+		"github": {
+			"title": "Lời thì thầm trong dòng chảy số: bộ xử lý giao thức fount",
+			"description": "Dẫn dắt những dòng chảy vô hình, trang này bảo đảm các liên kết fount đưa bạn tới đúng nơi, nối ý định với những thực tại đắm chìm."
+		}
 	},
 	"startPage": {
 		"title": "fount!",
@@ -884,7 +888,7 @@
 	},
 	"login_info": {
 		"title": "Thông tin đăng nhập",
-		"description": "Một không gian an toàn để quản lý thông tin đăng nhập fount của bạn — chìa khóa mở ra thế giới những câu chuyện chưa kể của bạn.",
+		"description": "Một nơi tĩnh lặng để chăm sóc thông tin đăng nhập fount — chìa khóa tới những thế giới câu chuyện chưa kể, được giữ an toàn cho tới khi bạn quyết định vặn ổ khóa.",
 		"modal": {
 			"title": "Lỗi chuyển chứng chỉ",
 			"retrieve_error": "Đã xảy ra lỗi trong khi cố gắng lưu thông tin đăng nhập của bạn:\n${error}\nBạn có thể tiếp tục nhưng không thể lưu thông tin đăng nhập.",
@@ -943,7 +947,7 @@
 	},
 	"home": {
 		"title": "Trang chủ",
-		"description": "Đây là điểm khởi đầu cho trải nghiệm fount của bạn. Dù là những nhân vật sống động, thế giới rộng lớn hay danh tính độc đáo, mọi thứ trong vương quốc tưởng tượng đều nằm trong tay bạn. Mọi câu chuyện sẽ bắt đầu từ đây.",
+		"description": "Trái tim trải nghiệm fount của bạn. Ở đây, bạn quản lý cư dân trong trí tưởng tượng — nhân vật, thế giới và persona. Câu chuyện của bạn bắt đầu và phân nhánh từ tâm điểm này.",
 		"sidebarTitle": "Chi tiết",
 		"closeSidebar": "Đóng thanh bên",
 		"itemDescription": "Chọn một mục ở đây để xem chi tiết.",
@@ -1252,7 +1256,7 @@
 		"emojiPacks": {
 			"title": "Khám phá gói emoji",
 			"kicker": "Khám phá",
-			"description": "Xem gói emoji từ các nhóm công khai và tác giả gần đây. Tham gia nhóm hoặc theo dõi tác giả để dùng chúng — không cần cài riêng.",
+			"description": "Duyệt qua những gói emoji do các nhóm công khai và tác giả khắp fount dệt nên. Những dấu nhỏ xinh, sẵn sàng chấm câu cho cuộc trò chuyện của bạn.",
 			"back": "Quay lại chat",
 			"loading": "Đang phát hiện gói emoji gần đây…",
 			"empty": "Không có gói emoji nào ở gần",
@@ -1587,7 +1591,7 @@
 				},
 				"page": {
 					"title": "Cài đặt nhóm",
-					"description": "Quản lý danh tính nhóm, thành viên, quyền hạn và các công cụ chung.",
+					"description": "Chăm sóc danh tính của nhóm, các thành viên, quyền hạn và những công cụ gắn kết sân khấu chung của bạn. Mọi cuộc tụ họp đều cần ánh sáng riêng đã được đồng thuận.",
 					"kicker": "Quản lý nhóm",
 					"subtitle": "Quản lý thông tin nhóm, thành viên và chức năng chung. Các công cụ cấp phép, lưu trữ và kiểm tra tần số thấp được tập trung trong cài đặt nâng cao.",
 					"navigationLabel": "Phân loại cài đặt nhóm",
@@ -3076,7 +3080,8 @@
 				"toolbar": {
 					"aria-label": "Thanh công cụ chọn nhiều tin nhắn"
 				}
-			}
+			},
+			"description": "Nơi lời nói cất cánh và câu chuyện mở ra. Trò chuyện với những người bạn AI, nhào nặn mạch truyện, và chìm đắm trong nhịp lên xuống của đối thoại số. Trái tim fount đập ở đây."
 		},
 		"sidebar": {
 			"settings": {
@@ -3282,7 +3287,7 @@
 		},
 		"profile": {
 			"title": "Hồ sơ cá nhân",
-			"description": "Quản lý sự hiện diện công khai của bạn trong trò chuyện và mạng xã hội.",
+			"description": "Định hình cách bạn xuất hiện trong trò chuyện và mạng xã hội — một hiện diện công khai được chỉnh đúng theo câu chuyện bạn muốn kể.",
 			"settingsEyebrow": "Cài đặt tài khoản",
 			"accountAtGlance": "Tổng quan về tài khoản",
 			"advancedKicker": "Cấu hình theo yêu cầu",
@@ -3695,7 +3700,7 @@
 	},
 	"easynew": {
 		"title": "Tạo nhanh",
-		"description": "Nhanh chóng tạo ra những phần fount mới như nhân vật, thế giới và plugin bằng cách sử dụng mẫu dựng sẵn hoặc mẫu tùy chỉnh. Tác phẩm tiếp theo của bạn chỉ cách vài cú nhấp chuột.",
+		"description": "Từ một mẫu hay một trang trắng, khéo léo gọi ra những phần mới — nhân vật, thế giới, plugin — dệt nên bằng vài động tác có chủ ý. Khung cửi đã sẵn sàng; hoa văn do bạn chọn.",
 		"info": {
 			"description": "Mẫu dùng để tạo nhanh các thành phần cơ bản. Những sáng tạo phức tạp hơn vẫn cần chính tay bạn trau chuốt."
 		},
@@ -3881,7 +3886,7 @@
 		"title": "Trình xuất Thành phần",
 		"pageTitle": "Trình xuất Thành phần",
 		"pageSubtitle": "Xuất nội dung yêu thích của bạn",
-		"description": "Xuất các sáng tạo fount của bạn. Công cụ này tập hợp các thành phần đã chọn của bạn thành một tệp zip đơn giản để lưu giữ hoặc chia sẻ an toàn.",
+		"description": "Gom những phần đã chọn vào một gói duy nhất để cất giữ hoặc tặng. Những gì bạn tạo ra trong fount có thể lên đường nguyên vẹn tới một bếp lửa khác.",
 		"steps": {
 			"part": "Chọn các thành phần",
 			"action": "Xuất"
@@ -4061,7 +4066,7 @@
 	},
 	"serviceSource_manager": {
 		"title": "Quản lý nguồn dịch vụ",
-		"description": "Tại đây, bạn sẽ chỉ huy một bản giao hưởng âm thanh của trí tuệ nhân tạo. Thêm, khắc hoặc tắt các nguồn để mang lại sức sống cho những nguồn đồng hành của bạn - một vũ điệu tinh tế của mã và trí tưởng tượng.",
+		"description": "Ở đây, bạn chỉ huy bản giao hưởng của những giọng nói AI. Thêm vào, tạc nên hay làm im lặng những nguồn mang sự sống tới bạn đồng hành fount — một điệu nhảy tinh tế giữa mã nguồn và trí tưởng tượng.",
 		"fileList": {
 			"title": "Danh sách nguồn dịch vụ",
 			"empty": "Chưa có nguồn dịch vụ",
@@ -4378,7 +4383,7 @@
 	},
 	"wechat_bots": {
 		"title": "Bot WeChat",
-		"description": "Chạy nhân vật fount như bot WeChat: liên kết vai trò, quản lý bot và trò chuyện trên WeChat.",
+		"description": "Hãy để nhân vật fount của bạn bước vào những hành lang quen thuộc của WeChat — bạn đồng hành trong tầm tay giữa những cuộc trò chuyện thường ngày.",
 		"cardTitle": "Bot WeChat",
 		"botSelectDropdown": {
 			"placeholder": "Chọn bot"
@@ -4472,7 +4477,7 @@
 	},
 	"social": {
 		"title": "Quảng trường",
-		"description": "P2P mở cập nhật xã hội, theo dõi và chia sẻ tệp",
+		"description": "Dạo qua các dòng tin ngang hàng, theo dõi và tệp chia sẻ dưới bầu trời xã hội của fount. Một quảng trường nơi những giọng nói xa xôi có thể gặp nhau mà không cần tòa tháp trung tâm.",
 		"bootstrapFailed": "Khởi tạo giao diện xã hội không thành công: ${error}",
 		"connectNodeFailed": "Không thể kết nối tới nút: ${error}",
 		"dwellFailed": "Không thể cập nhật dữ liệu sở thích theo thời gian xem: ${error}",
@@ -5168,7 +5173,7 @@
 	},
 	"cabinet": {
 		"title": "Tủ hồ sơ",
-		"description": "Tủ hồ sơ cá nhân và chia sẻ P2P",
+		"description": "Kỷ vật riêng tư và những báu vật chia sẻ giữa các máy ngang hàng: mỗi tủ là một căn phòng tĩnh lặng trong những hành lang phân tán của fount. Mở một ngăn kéo và xem mạng lưới của bạn đã để lại câu chuyện gì.",
 		"entries": {
 			"title": "Danh sách mục",
 			"aria-label": "Danh sách mục"
@@ -5250,7 +5255,7 @@
 	},
 	"browser_integration": {
 		"title": "Tích hợp trình duyệt",
-		"description": "Thu hẹp khoảng cách giữa fount và web. Trang này cung cấp mô tả người dùng để cho phép tích hợp liền mạch, đưa những người bạn đồng hành AI của bạn vào trải nghiệm duyệt web của bạn.",
+		"description": "Hãy để những người bạn đồng hành bước bên bạn khi bạn lướt web. Đây là đoạn script người dùng — từng sợi chỉ một — nối fount với mạng mở.",
 		"pageHeader": "Tích hợp trình duyệt",
 		"pageDescription": "Để vai trò fount của bạn tương tác với trang web, bạn cần cài đặt tập lệnh tích hợp trình duyệt này. Nó hoạt động như một cầu nối giữa ký tự và trình duyệt, cho phép họ xem nội dung trang và thực hiện các hành động.",
 		"install_script_title": "Tập lệnh cài đặt",
@@ -5380,7 +5385,7 @@
 		}
 	},
 	"ide_integration": {
-		"description": "Kết nối vai trò fount với các trình chỉnh sửa được hỗ trợ (chẳng hạn như Zed, JetBrains, Neovim) thông qua Giao thức máy khách tác nhân, định cấu hình các khóa và vai trò API, đồng thời đưa các đối tác AI vào quy trình phát triển.",
+		"description": "Mời những người bạn đồng hành vào lò rèn mã nguồn. Qua Agent Client Protocol, gắn khóa API và nhân vật vào trình soạn thảo — nơi logic và đối thoại dùng chung một bàn làm việc.",
 		"title": "Tích hợp IDE",
 		"heading": "Tích hợp IDE",
 		"instruction": "Sử dụng vai trò fount để hỗ trợ lập trình trong các trình soạn thảo hỗ trợ ACP (chẳng hạn như Zed, JetBrains, Neovim, v.v.).",
@@ -5431,7 +5436,7 @@
 	},
 	"deskpet": {
 		"title": "Thú cưng để bàn",
-		"description": "Khởi chạy các ký tự fount của bạn dưới dạng thú cưng tương tác sống trên màn hình của bạn.",
+		"description": "Triệu hồi nhân vật fount của bạn thành thú cưng trên màn hình — những hiện diện nhỏ nhoi nán lại, ngắm nhìn và bầu bạn cùng bạn suốt ngày.",
 		"launcherCard": {
 			"title": "Trình khởi chạy thú cưng",
 			"buttons": {
@@ -5487,7 +5492,7 @@
 	},
 	"blog": {
 		"title": "Viện nghiên cứu fount",
-		"description": "Các bài luận từ xưởng fount: suy ngẫm về thiết kế Agent — Agent thực chất là gì, LLM giỏi việc gì, và cách xây dựng hệ thống chỉ dùng trí thông minh vào những chỗ thực sự đáng giá.",
+		"description": "Ghi chép từ xưởng fount: những tiểu luận về thiết kế tác nhân — tác nhân thật sự là gì, LLM dùng để làm gì, và cách dựng nên những hệ thống chỉ tiêu trí tuệ ở nơi nó đáng giá.",
 		"heading": "Viện nghiên cứu fount",
 		"intro": "Loạt bài của dự án fount về thiết kế Agent — Agent là gì, LLM đóng vai trò gì trong đó, và công việc nào thực ra nên để cho các chương trình thông thường. Có thể đọc theo thứ tự hoặc nhảy tùy thích; mỗi bài đều liên kết đến các bài khác.",
 		"search": {
@@ -5529,6 +5534,10 @@
 			"text": "Tác giả bài viết này cũng chính là tác giả của fount. fount là nền tảng bạn đồng hành AI tự lưu trữ với mã nguồn công khai hoàn toàn — Agent, Shell, tính cách và ký ức, tất cả chỉ sống trên chính máy của bạn.",
 			"install": "Cài đặt fount",
 			"github": "GitHub"
+		},
+		"article_detail": {
+			"title": "fount Agent Institute: tiểu luận về thiết kế tác nhân",
+			"description": "Một chặng trên lối đọc của fount Agent Institute: tác nhân là hệ thống nhiệm vụ, LLM là nhận thức đi thuê, và nghệ thuật lặng lẽ là không hỏi mô hình điều mà chương trình đã biết."
 		}
 	},
 	"themeManage": {
@@ -5644,7 +5653,7 @@
 	"languageSettings": {
 		"title": "Cài đặt ngôn ngữ",
 		"pageTitle": "Cài đặt ngôn ngữ",
-		"description": "Quản lý tùy chọn ngôn ngữ của bạn cho ứng dụng fount. Tùy chỉnh trải nghiệm của bạn với các tùy chọn ngôn ngữ có sẵn.",
+		"description": "Chọn những từ ngữ mà fount dùng để nói với bạn. Điều chỉnh sở thích ngôn ngữ và để giao diện lắng vào một giọng nói quen thuộc.",
 		"pageDescription": "Quản lý sở thích ngôn ngữ của bạn ở đây. Các ngôn ngữ trong danh sách sẽ được ưu tiên hơn các cài đặt trình duyệt theo thứ tự.",
 		"availableLanguages": "Ngôn ngữ có sẵn",
 		"preferredLanguages": "Danh sách ngôn ngữ ưu tiên",
@@ -5686,7 +5695,7 @@
 	"userSettings": {
 		"title": "Cài đặt người dùng",
 		"PageTitle": "Cài đặt người dùng",
-		"description": "Chăm chút cho các chi tiết về danh tính fount của bạn. Quản lý hồ sơ, bảo mật quyền truy cập và xem các thiết bị đã kết nối. Một không gian yên tĩnh và an toàn cho tài khoản của bạn.",
+		"description": "Chăm sóc từng chi tiết trong danh tính fount của bạn. Quản lý hồ sơ, bảo vệ quyền truy cập và xem các thiết bị đã kết nối. Một nơi tĩnh lặng cho tài khoản của bạn.",
 		"shell": {
 			"unauthorized": "Yêu cầu đăng nhập.",
 			"responseNotJson": "Máy chủ trả về nội dung không thể phân tích.",
@@ -5915,7 +5924,7 @@
 	},
 	"proxy": {
 		"title": "Proxy API",
-		"description": "Đối với các nhà phát triển và nhà tích hợp, trang này giới thiệu proxy API của fount — cầu nối để bạn đưa các khả năng của fount vào các ứng dụng khác.",
+		"description": "Dành cho những ai dệt fount vào tác phẩm khác: đây là nơi proxy API rộng mở — một ống dẫn để ứng dụng của bạn uống từ giếng fount.",
 		"heading": "Cổng Proxy API",
 		"instruction": "Tạo và quản lý các khóa API của bạn trên trang này để tích hợp fount với các ứng dụng khác.",
 		"endpointSectionTitle": "Điểm cuối API",
@@ -5956,7 +5965,7 @@
 	"subfounts": {
 		"title": "Subfount - quản lý fount con",
 		"pageTitle": "fount con",
-		"description": "Quản lý kết nối fount ngang hàng",
+		"description": "Vươn tới những thiết bị anh em qua mạng lưới — mã kết nối sáng như nến, mệnh lệnh gửi xuyên bóng tối. Một dàn nhạc tĩnh lặng của những hiện diện phân tán.",
 		"hostConnectionCode": {
 			"title": "Mã kết nối máy chủ",
 			"connectionCodeLabel": "Mã kết nối (ID ngang hàng)",
@@ -6046,7 +6055,7 @@
 	},
 	"achievements": {
 		"title": "Thành tích",
-		"description": "Khám phá các cột mốc quan trọng và thành tựu trong hành trình của bạn với fount. Mỗi thành tích đánh dấu một bước trong câu chuyện độc đáo của bạn.",
+		"description": "Hãy lật từng trang hành trình của bạn: mỗi cột mốc là một chú thích trong câu chuyện chỉ bạn mới viết được. Thành tựu lấp lánh như những dấu mốc dọc con đường bạn đã đi qua.",
 		"pageHeader": "Hội trường thành tựu",
 		"pageDescription": "Kiểm tra những thành tựu và cột mốc đã mở khóa của bạn tại đây.",
 		"unlocked_on": "Đã mở khóa vào ${date}",
@@ -6076,7 +6085,7 @@
 	},
 	"log_viewer": {
 		"title": "Nhật ký",
-		"description": "Xem nhật ký máy chủ fount theo thời gian thực và chạy JavaScript REPL trong trình duyệt.",
+		"description": "Lắng nghe nhịp đập thì thầm của máy chủ trong nhật ký trực tiếp, hoặc nói thẳng trong REPL ngay trên trình duyệt. Ở đây, giọng nói nội tâm của fount trả lời bằng văn bản thuần.",
 		"connectionError": "Không thể kết nối dịch vụ nhật ký. Vui lòng thử lại sau khi truy cập cục bộ hoặc đăng nhập.",
 		"logs": {
 			"openSourceFailed": "Không thể mở tệp mã nguồn: ${message}",
@@ -6104,7 +6113,7 @@
 	},
 	"debug_info": {
 		"title": "Gỡ lỗi và thông tin hệ thống",
-		"description": "Nhận thông tin hệ thống và gỡ lỗi chi tiết về cài đặt fount của bạn. Điều này rất hữu ích cho việc khắc phục sự cố và yêu cầu hỗ trợ.",
+		"description": "Khi bóng tối tụ lại trên lối đi, hãy nhìn vào đây để thấy sự thật của hệ thống — chẩn đoán và chi tiết soi rõ chỗ nào đã lệch. Một chiếc đèn lồng cho người tìm sự thấu hiểu.",
 		"heading": "Gỡ lỗi và thông tin hệ thống",
 		"copyButton": "Sao chép báo cáo",
 		"versionStatus": {
@@ -6178,13 +6187,13 @@
 	},
 	"404": {
 		"title": "Không tìm thấy trang",
-		"description": "Con đường bạn tìm kiếm đã tan biến trong sương mù. Đó là một bước lỡ, một ngã rẽ bị lãng quên? Hãy để chúng tôi đưa bạn trở lại bờ, hoặc có lẽ, dừng lại chơi một ván giữa khoảng không tĩnh lặng.",
+		"description": "Con đường bạn tìm đã tan vào sương mù. Một bước lỡ, một khúc quanh đã quên? Hãy để chúng tôi dẫn bạn về lại bờ — hoặc, biết đâu, dừng lại chơi một ván giữa khoảng không tĩnh lặng.",
 		"pageNotFoundText": "Ối! Có vẻ như bạn đã truy cập vào một trang không tồn tại.",
 		"homepageButton": "Quay lại trang chủ"
 	},
 	"directoryListing": {
 		"title": "chỉ mục thư mục",
-		"description": "Duyệt và khám phá các tệp và thư mục trong không gian làm việc của fount.",
+		"description": "Dạo qua những giá của không gian làm việc fount — tệp và thư mục bày ra như những lối mòn được đánh dấu trong một thư viện quen thuộc.",
 		"indexOf": "Chỉ mục: ${path}",
 		"name": "tên",
 		"mimeType": "loại MIME",
@@ -6480,7 +6489,7 @@
 	},
 	"pro_cancel_screen": {
 		"title": "Đăng ký fount pro của bạn đã bị hủy",
-		"description": "Tìm hiểu cách hủy đăng ký fount pro của bạn và chia sẻ lý do hủy.",
+		"description": "Xem vì sao fount pro bị hủy và chia sẻ lý do bạn rời đi.",
 		"intro": "Rất tiếc khi bạn rời đi. Để giúp chúng tôi cải thiện fount pro, bạn có thể cho biết lý do hủy đăng ký không?",
 		"language_selector": {
 			"button": {
@@ -6502,17 +6511,23 @@
 	},
 	"oauth_handler": {
 		"title": "Đăng nhập OAuth",
-		"description": "Hoàn tất đăng nhập OAuth cho nguồn AI. Việc trao đổi mã thông báo được hoàn thành ở phía máy chủ.",
+		"description": "Bước ra ngoài để nhận sự cho phép của một nhà cung cấp AI, rồi trở về với những chìa khóa mở ra giọng nói mới cho bạn đồng hành của bạn.",
 		"callback": {
 			"working": "Đang hoàn tất đăng nhập…",
 			"success": "Đăng nhập thành công. Có thể đóng trang này.",
 			"failed": "Đăng nhập thất bại: ${message}",
-			"missingParams": "Callback thiếu code hoặc state."
+			"missingParams": "Callback thiếu code hoặc state.",
+			"title": "Cái bắt tay niêm phong: callback OAuth của fount",
+			"description": "Cổng ngoài khép lại; quyền ủy nhiệm trở về fount đang chờ của bạn. Một khoảng dừng ngắn và cần thiết, trong lúc niềm tin được ghi vào ký ức."
+		},
+		"pages_bounce": {
+			"title": "Một khoảnh khắc vay mượn: ngày trở lại OAuth của fount",
+			"description": "Một vòng đường ngắn qua mạng lưới rộng hơn, mang quyền ủy nhiệm trở lại fount cục bộ của bạn. Cái bắt tay hoàn tất, và cổng vào khép lại sau lưng bạn."
 		}
 	},
 	"code": {
 		"title": "Code",
-		"description": "Phiên lập trình AI cho không gian làm việc và máy.",
+		"description": "Một không gian lập trình với AI: trò chuyện với bất kỳ nhân vật nào về dự án của bạn, chạy mã và sửa tệp trên máy cục bộ hoặc trên các subfount đã kết nối.",
 		"sessions": {
 			"new": "Phiên mới",
 			"untitled": "Phiên chưa đặt tên",
@@ -6914,7 +6929,7 @@
 	},
 	"gist": {
 		"title": "Thư viện gist",
-		"description": "Lưu, xem, chỉnh sửa và chia sẻ tài liệu Markdown, với mức bảo mật riêng cho từng gist.",
+		"description": "Một thư viện tĩnh lặng gồm những lá Markdown: viết chúng, giữ chúng, sửa chúng, trao chúng đi — mỗi gist đều niêm phong sau ổ khóa do bạn chọn.",
 		"error": {
 			"generic": "Đã xảy ra lỗi: ${error}"
 		},
@@ -7251,7 +7266,7 @@
 	},
 	"captcha": {
 		"title": "Xác nhận danh tính của bạn",
-		"description": "Một nút fount muốn xác nhận bạn là người hay một agent tự chủ.",
+		"description": "Trước khi cổng mở rộng, một câu hỏi nhỏ được đặt ra: bạn là người, hay là một tác nhân đang đi lo việc riêng? Trả lời đi, và lối vào fount sẽ mở ra.",
 		"help": {
 			"button": {
 				"aria-label": "Vì sao tôi thấy trang này?"
@@ -7289,7 +7304,7 @@
 	},
 	"invitation-required": {
 		"title": "fount chỉ dùng được khi có lời mời",
-		"description": "Để cộng đồng luôn đáng tin cậy, fount chỉ tiếp nhận người dùng mới được người dùng hiện có mời.",
+		"description": "fount giữ cửa cho những người được mời. Hãy hỏi một người đã ở trong một lời riêng — một liên kết mời — và ngưỡng cửa cũng sẽ mở ra cho bạn.",
 		"getLink": "Hãy hỏi bất kỳ ai đang dùng fount để xin liên kết mời vào trò chuyện riêng!",
 		"submit": "Dùng liên kết mời",
 		"waiting": "Đã gửi lời mời. Hãy chờ người kia xác nhận; sau đó fount sẽ tự mở.",
