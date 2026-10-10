@@ -229,6 +229,9 @@
 		{
 			"name": "agents_md_english",
 			"expected": 700,
+			"triggerFilter": {
+				"ignoreDefaults": false
+			},
 			"run": [
 				"deno",
 				"test",
