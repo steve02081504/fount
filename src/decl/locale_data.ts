@@ -7283,6 +7283,10 @@ export type LocaleData = {
 		title: string
 		description: string
 		language: string
+		omen: string
+		epigraph: string
+		whisper: string
+		watching: LocaleSwitchLeaf
 		risk: {
 			title: string
 			text: string
@@ -7298,6 +7302,20 @@ export type LocaleData = {
 			restart: string
 		}
 		limit: string
+		hint: string
+		lucid: string
+		touched: string
+		away: string
+		sound: {
+			on: {
+				title: string
+				'aria-label': string
+			}
+			off: {
+				title: string
+				'aria-label': string
+			}
+		}
 	}
 }
 /**
@@ -7894,6 +7912,7 @@ export type LocaleKeyParams = {
 	'protocolhandler.runPart.commandError': { error: string | number }
 	'protocolhandler.runPart.confirm.message': { partpath: string | number }
 	'protocolhandler.unknownError': { error: string | number }
+	'proxy_exposure.watching': { count: string | number }
 	'serviceSource_manager.alerts.addFileFailed': { error: string | number }
 	'serviceSource_manager.alerts.deleteFileFailed': { error: string | number }
 	'serviceSource_manager.alerts.fetch.branchesFailed': { error: string | number }

@@ -7318,23 +7318,47 @@
 		}
 	},
 	"proxy_exposure": {
-		"title": "fount đã tạm dừng dịch vụ web",
-		"description": "Một proxy công khai trả lời mà không một lời tín nhiệm, nên nút đã khép cửa. Hãy dạy nó những dấu chuyển tiếp mà nó đang chờ, và dịch vụ sẽ trở lại.",
+		"title": "fount đã tắt dịch vụ Web",
+		"description": "Có thứ gì đó đi qua một máy chủ trung gian công cộng, đeo gương mặt của chính máy này đến gõ cửa. Nút mạng không phân biệt được nó với chính mình, nên đã đóng cửa lại. Hãy dạy máy chủ trung gian để lại dấu chuyển tiếp, dịch vụ mới quay về.",
 		"language": "Ngôn ngữ trang",
+		"omen": "Cánh cửa đang mở.",
+		"epigraph": "Nó đến từ bên ngoài. Giọng nó nói giống hệt giọng bạn.",
+		"whisper": "nó không nói mình đến từ đâu · nó chỉ nói · tôi chính là bạn",
+		"watching": {
+			"switch": "count",
+			"default": "${count} con mắt đang nhìn bạn",
+			"cases": {
+				"0": "Chưa có con mắt nào mở ra"
+			}
+		},
 		"risk": {
-			"title": "Vì sao cấu hình này nguy hiểm?",
-			"text": "fount vốn tin vào những yêu cầu cục bộ trực tiếp. Proxy phải đánh dấu các yêu cầu được chuyển tiếp; nếu lưu lượng công cộng chạm tới dịch vụ qua giao diện vòng lặp, để khách truy cập điều khiển tiêu đề Host và không thêm dấu chuyển tiếp, một khách từ xa có thể mạo nhận một lời gọi cục bộ và giành quyền cục bộ: chạy mã máy chủ, đọc nhật ký và hành động trên tài khoản."
+			"title": "Nó đang mang gương mặt của bạn",
+			"text": "Theo thiết kế, fount tin tưởng các yêu cầu trực tiếp từ chính máy này — đó là giọng nói của chính bạn. Máy chủ trung gian lẽ ra phải để lại dấu trên mỗi yêu cầu nó chuyển tiếp; nhưng nếu lưu lượng công cộng đi vào qua vòng lặp cục bộ, khách truy cập có thể tùy ý sửa Host, còn máy chủ trung gian không để lại một dấu nào, thì thứ đứng ngoài cửa có thể giả làm máy này và chiếm quyền cục bộ: chạy mã máy chủ, đọc nhật ký, thao tác tài khoản."
 		},
 		"action": {
-			"title": "fount đã làm gì",
-			"text": "fount đã dừng dịch vụ HTTP(S) ban đầu và đóng các kết nối đang có, rồi khởi động trên cùng cổng đó một máy chủ cảnh báo riêng. Những yêu cầu chấp nhận HTML được chuyển hướng tới đây; các yêu cầu HTTP khác và việc nâng cấp WebSocket nhận mã 500. Truy cập web cục bộ cũng bị tắt; không có gì khác đang chạy trong tiến trình bị dừng lại."
+			"title": "Cửa đã cài then",
+			"text": "fount đã dừng dịch vụ HTTP(S) ban đầu, cắt mọi kết nối hiện có, và trên cổng cũ chỉ để lại một máy chủ thông báo lặp đi lặp lại chuyện này: các yêu cầu chấp nhận HTML được dẫn đến đây, mọi yêu cầu HTTP khác và nâng cấp WebSocket đều nhận về 500. Truy cập Web từ chính máy này cũng bị phong tỏa; các dịch vụ khác trong tiến trình vẫn tiếp tục chạy, không vì thế mà dừng lại."
 		},
 		"recovery": {
-			"title": "Cách khôi phục dịch vụ",
-			"proxy": "Trước tiên hãy dừng đường hầm hoặc proxy hiện tại, rồi chuyển sang loại có thêm dấu chuyển tiếp, hoặc bật tùy chọn tương ứng trong proxy bạn đang dùng.",
-			"headers": "Hãy để chính proxy thêm Forwarded hoặc X-Forwarded-For, và xóa hoặc ghi đè những tiêu đề ấy khi chúng đến từ khách truy cập. Đừng chỉ dựa vào việc ghi lại Host; fount phải nhận ra được rằng một yêu cầu đã được chuyển tiếp.",
-			"restart": "Sau khi proxy đã được cấu hình, hãy chạy fount reboot trên máy cục bộ và mở lại cổng vào công cộng. Việc tạm dừng kéo dài tới khi khởi động lại; một yêu cầu về sau tình cờ mang dấu chuyển tiếp sẽ không tự gỡ bỏ nó."
+			"title": "Cách đóng cửa cho đúng",
+			"proxy": "Trước hết hãy dừng đường hầm hoặc máy chủ trung gian hiện tại. Chuyển sang loại trung gian có thêm tiêu đề chuyển tiếp, hoặc bật tùy chọn tương ứng trong cái bạn đang dùng.",
+			"headers": "Để máy chủ trung gian tự tay ghi các tiêu đề chuyển tiếp như Forwarded hoặc X-Forwarded-For, đồng thời xóa hoặc ghi đè các tiêu đề cùng tên do khách truy cập tự gửi kèm. Đừng chỉ sửa Host — fount phải nhận ra được: kẻ này đến từ bên ngoài.",
+			"restart": "Sau khi xác nhận cấu hình máy chủ trung gian, hãy chạy fount reboot trên máy này, rồi kiểm tra lại từ lối vào công cộng. Cửa sẽ cài then cho đến khi khởi động lại; các yêu cầu sau đó dù có mang tiêu đề chuyển tiếp cũng sẽ không tự mở được nó."
 		},
-		"limit": "Đây là bước kiểm tra cấu hình triển khai: nó dựa vào tiêu đề Host và việc phân giải DNS, nên không thể hứa sẽ phát hiện mọi cấu hình sai, cũng không thể hoàn tác những gì đã xảy ra trước khi tạm dừng."
+		"limit": "Đây chỉ là một bước kiểm tra cấu hình triển khai: nó dựa vào Host trong yêu cầu và việc phân giải DNS, không đảm bảo phát hiện được mọi cấu hình sai, và cũng không thể hoàn tác những gì đã xảy ra trước khi dịch vụ bị tắt.",
+		"hint": "Nhấn giữ ở bất kỳ đâu để nhìn rõ nó.",
+		"lucid": "Mọi thứ vẫn bình thường. Không có gì đang nhìn bạn. Xin hãy tiếp tục sử dụng.",
+		"touched": "Nó đã chạm vào bạn.",
+		"away": "Nó vẫn đang nhìn.",
+		"sound": {
+			"on": {
+				"title": "Bắt nó im lặng",
+				"aria-label": "Tắt âm thanh sau cánh cửa"
+			},
+			"off": {
+				"title": "Lắng nghe sau cánh cửa",
+				"aria-label": "Bật âm thanh sau cánh cửa"
+			}
+		}
 	}
 }

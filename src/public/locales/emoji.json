@@ -7319,22 +7319,46 @@
 	},
 	"proxy_exposure": {
 		"title": "⛲ 🌐🛑",
-		"description": "🌐🚪 🙈🤝 ➡️ ⛲🚪🔒 · 📢❗🔁 ➡️ ✅🔁",
+		"description": "👤🎭💻 ➡️ 🌐🚪✊ · ⛲🤔🪞 ➡️ 🚪🔒 · 🌐🚪✍️🏷️ ➡️ ✅🔁",
 		"language": "🌐🗣️",
+		"omen": "🚪👐…",
+		"epigraph": "👁️⬅️🌑 · 🗣️ = 🗣️🫵",
+		"whisper": "❓📍 · 🤫 · 🫵 = 👤",
+		"watching": {
+			"switch": "count",
+			"default": "👁️×${count} ➡️ 🫵",
+			"cases": {
+				"0": "👁️💤"
+			}
+		},
 		"risk": {
-			"title": "⚠️❓",
-			"text": "⛲ 🤝💻🙋 · 🌐🚪❗🔒Host ➕ 🚫📢❗ ➡️ 🙈👤=💻🙋 ➕ 💻🔑: ▶️🖥️, 📜👀, 👤🔧"
+			"title": "🎭🫵",
+			"text": "⛲ 🤝💻🗣️ · 🌐🚪✍️🏷️❗ · 🌐➡️🔁💻 ➕ 👤✏️Host ➕ 🚫🏷️ ➡️ 🌑👤🎭💻 ➡️ 🔑💻: ▶️🖥️, 📜👀, 👤🔧"
 		},
 		"action": {
-			"title": "⛲✔️",
-			"text": "⛲ ⏹️HTTP(S) ➕ 🔒🔌, ➕ ▶️ 📢🖥️ 📍🔢 · 📄➡️👈, ➕ 🚫📄/🔌➡️5️⃣0️⃣0️⃣ · 💻🌐🛑 · 🈚➕🛑"
+			"title": "🚪🔒",
+			"text": "⛲ ⏹️HTTP(S) ➕ ✂️🔌 · 📍🔢 ➡️ 📢🖥️🔁 · 📄➡️👈 · 🚫📄/WebSocket ➡️ 500 · 💻🌐🛑 · ⚙️➕ ▶️"
 		},
 		"recovery": {
-			"title": "🔧❓",
-			"proxy": "1️⃣ ⏹️🚪/🌐🚪 ➡️ ✅📢❗🌐🚪 ➕ 🔛🔘",
-			"headers": "🌐🚪 ➕ Forwarded/X-Forwarded-For, ➕ 🗑️/🔄👤❗ · 🚫🙈Host ✍️ · ⛲🔍📢❗✅",
-			"restart": "🌐🚪⚙️✅ ➡️ 💻 `fount reboot` ➡️ 🌐🚪🔁 · 🛑 ⏳♻️ · 📢❗🙅🔓"
+			"title": "🚪🔒✅❓",
+			"proxy": "1️⃣ ⏹️🚇/🌐🚪 ➡️ 🔄🌐🚪✍️🏷️ ➕ 🔛🔘",
+			"headers": "🌐🚪✍️ Forwarded/X-Forwarded-For ➕ 🗑️/🔄👤🏷️ · 🚫🙈Host✏️ · ⛲🔍: 🌑➡️",
+			"restart": "🌐🚪⚙️✅ ➡️ 💻 fount reboot ➡️ 🌐🚪🔁🔍 · 🚪🔒⏳♻️ · 🏷️🙅🔓"
 		},
-		"limit": "🔍⚙️: 🤝Host ➕ DNS · 🚫🔍∞ · 🚫↩️⏪"
+		"limit": "🔍⚙️: 🤝Host ➕ DNS · 🚫🔍∞ · 🚫↩️⏪",
+		"hint": "👆⏳ ➡️ 👀✨",
+		"lucid": "✅✅✅ · 🚫👁️ · ▶️🙂",
+		"touched": "🐙👉🫵",
+		"away": "👁️👁️…",
+		"sound": {
+			"on": {
+				"title": "🤫",
+				"aria-label": "🔇🚪"
+			},
+			"off": {
+				"title": "👂🚪",
+				"aria-label": "🔊🚪"
+			}
+		}
 	}
 }

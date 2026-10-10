@@ -7324,23 +7324,48 @@
 		}
 	},
 	"proxy_exposure": {
-		"title": "fount has suspended its web service",
-		"description": "A public proxy answered without a word of trust, so the node drew its doors shut. Teach it the forwarding marks it is waiting for, and service resumes.",
+		"title": "fount has disabled its web service",
+		"description": "Something came through a public proxy wearing localhost's face. The node could not tell it from itself, so it shut the door. Teach the proxy to leave forwarding marks, and service returns.",
 		"language": "Page language",
+		"omen": "The door is open.",
+		"epigraph": "It came from outside. It speaks in a voice exactly like yours.",
+		"whisper": "it never said where it came from　it only said　i am you",
+		"watching": {
+			"switch": "count",
+			"default": "${count} eyes are watching you",
+			"cases": {
+				"0": "No eye has opened yet",
+				"1": "One eye is watching you"
+			}
+		},
 		"risk": {
-			"title": "Why is this configuration dangerous?",
-			"text": "fount trusts direct local requests by design. A proxy must mark forwarded requests; if public traffic reaches the loopback service, lets visitors control the Host header and adds no forwarding marks, a remote visitor can impersonate a local caller and gain local privileges — running server code, reading logs, acting on accounts."
+			"title": "It wears your face",
+			"text": "By design, fount trusts direct requests from this machine: that is your own voice. A proxy is supposed to mark every request it forwards. But if public traffic enters through the local loopback, visitors may rewrite Host as they please, and the proxy leaves no mark at all, then whatever stands outside can pass for this machine and gain local privileges: running server code, reading logs, and operating accounts."
 		},
 		"action": {
-			"title": "What fount did about it",
-			"text": "fount stopped the original HTTP(S) service and closed existing connections, then started a standalone notice server on the same port. Requests that accept HTML are redirected here; other HTTP requests and WebSocket upgrades receive 500. Local web access is disabled too; nothing else running in the process was stopped."
+			"title": "The door is barred",
+			"text": "fount stopped its original HTTP(S) service, cut every open connection, and left on the same port only a notice server that repeats this one thing: requests that accept HTML are led here, and every other HTTP request and WebSocket upgrade receives 500. Local web access is sealed as well; the other services in the process keep running and were not stopped by this."
 		},
 		"recovery": {
-			"title": "How to recover",
-			"proxy": "Stop the current tunnel or proxy first, then switch to one that adds forwarding marks, or turn on the relevant option in the proxy you already use.",
-			"headers": "Let the proxy add Forwarded or X-Forwarded-For itself, and strip or overwrite the same headers coming from visitors. Do not rely on rewriting Host alone; fount must be able to tell that a request was forwarded.",
-			"restart": "Once the proxy is configured, run fount reboot on the local machine and open the public entry point again. The suspension lasts until a restart; a later request that happens to carry forwarding marks will not lift it by itself."
+			"title": "How to close the door properly",
+			"proxy": "First stop the current tunnel or proxy. Switch to a proxy that adds forwarding headers, or turn on the matching option in the one you have.",
+			"headers": "Have the proxy write Forwarded or X-Forwarded-For headers itself, and strip or overwrite any headers of the same name sent by visitors. Do not rely on rewriting Host alone: fount must be able to recognise that this one came from outside.",
+			"restart": "Once the proxy is configured, run fount reboot on this machine, then check again through the public entrance. The door stays barred until the restart; later requests will not open it by themselves, even if they carry forwarding headers."
 		},
-		"limit": "This is a deployment-configuration check: it relies on the Host header and DNS resolution, so it cannot promise to catch every misconfiguration, and it cannot undo anything that happened before the suspension."
+		"limit": "This is only a deployment configuration check: it relies on the request's Host and DNS resolution, cannot promise to catch every misconfiguration, and cannot undo anything that happened before the service was disabled.",
+		"hint": "Press and hold anywhere to see it clearly.",
+		"lucid": "Everything is fine. Nothing is watching you. Please carry on.",
+		"touched": "It touched you.",
+		"away": "It is still watching.",
+		"sound": {
+			"on": {
+				"title": "Make it quiet",
+				"aria-label": "Turn off the sound behind the door"
+			},
+			"off": {
+				"title": "Listen behind the door",
+				"aria-label": "Turn on the sound behind the door"
+			}
+		}
 	}
 }

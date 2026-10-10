@@ -7330,23 +7330,48 @@
 		}
 	},
 	"proxy_exposure": {
-		"title": "fount ha sospeso il suo servizio web",
-		"description": "Un proxy pubblico ha risposto senza una parola di fiducia, così il nodo ha serrato le sue porte. Indicagli le intestazioni di inoltro che attende e il servizio riprenderà.",
+		"title": "fount ha disattivato il suo servizio Web",
+		"description": "Qualcosa è passato attraverso un proxy pubblico e ha bussato alla porta con il volto di questa macchina. Il nodo non è riuscito a distinguerlo da sé stesso, così ha chiuso la porta. Insegna al proxy a lasciare segni di inoltro e il servizio tornerà.",
 		"language": "Lingua della pagina",
+		"omen": "La porta è aperta.",
+		"epigraph": "Viene da fuori. Parla con una voce identica alla tua.",
+		"whisper": "non ha mai detto da dove veniva · ha detto soltanto · io sono te",
+		"watching": {
+			"switch": "count",
+			"default": "${count} occhi ti stanno guardando",
+			"cases": {
+				"0": "Nessun occhio si è ancora aperto",
+				"1": "Un occhio ti sta guardando"
+			}
+		},
 		"risk": {
-			"title": "Perché questa configurazione è pericolosa?",
-			"text": "fount si fida per progettazione delle richieste locali dirette. Un proxy deve marcare le richieste inoltrate; se il traffico pubblico raggiunge il servizio attraverso l’interfaccia di loopback, lascia che i visitatori controllino l’intestazione Host e non aggiunge marche di inoltro, un visitatore remoto può fingersi una chiamata locale e ottenere privilegi locali: eseguire codice del server, leggere i registri e agire sugli account."
+			"title": "Indossa il tuo volto",
+			"text": "Per progettazione, fount si fida delle richieste dirette provenienti da questa macchina: è la tua stessa voce. Un proxy dovrebbe marcare ogni richiesta che inoltra. Ma se il traffico pubblico entra attraverso l'interfaccia di loopback locale, i visitatori possono riscrivere Host a piacimento e il proxy non lascia alcun segno, ciò che sta là fuori può spacciarsi per questa macchina e ottenere i privilegi locali: eseguire codice del server, leggere i registri e gestire gli account."
 		},
 		"action": {
-			"title": "Che cosa ha fatto fount",
-			"text": "fount ha fermato il servizio HTTP(S) originale e chiuso le connessioni esistenti, poi ha avviato sulla stessa porta un server di avviso indipendente. Le richieste che accettano HTML vengono reindirizzate qui; le altre richieste HTTP e gli upgrade WebSocket ricevono 500. Anche l’accesso web locale è disattivato; nulla d’altro in esecuzione nel processo è stato fermato."
+			"title": "La porta è sbarrata",
+			"text": "fount ha arrestato il suo servizio HTTP(S) originale, ha interrotto tutte le connessioni aperte e ha lasciato sulla stessa porta soltanto un server di avviso che ripete senza sosta quest'unica cosa: le richieste che accettano HTML vengono condotte qui, e tutte le altre richieste HTTP e i passaggi a WebSocket ricevono un 500. Anche l'accesso Web locale è sigillato; gli altri servizi del processo continuano a funzionare e non sono stati fermati da questo."
 		},
 		"recovery": {
-			"title": "Come ripristinare il servizio",
-			"proxy": "Ferma prima il tunnel o il proxy attuale, poi passa a uno che aggiunga marche di inoltro, oppure attiva l’opzione corrispondente nel proxy che già usi.",
-			"headers": "Lascia che sia il proxy ad aggiungere Forwarded o X-Forwarded-For, e rimuovi o sovrascrivi le stesse intestazioni quando arrivano dai visitatori. Non affidarti alla sola riscrittura di Host; fount deve poter riconoscere che una richiesta è stata inoltrata.",
-			"restart": "Con il proxy già configurato, esegui fount reboot sulla macchina locale e riapri l’ingresso pubblico. La sospensione dura fino a un riavvio; una richiesta successiva che porti per caso marche di inoltro non la revocherà da sola."
+			"title": "Come chiudere bene la porta",
+			"proxy": "Per prima cosa ferma il tunnel o il proxy attuale. Passa a un proxy che aggiunga intestazioni di inoltro, oppure attiva l'opzione corrispondente in quello che già usi.",
+			"headers": "Fai scrivere al proxy stesso intestazioni di inoltro come Forwarded o X-Forwarded-For, e fagli rimuovere o sovrascrivere le intestazioni con lo stesso nome inviate dai visitatori. Non limitarti a riscrivere Host: fount deve poter riconoscere che questo viene da fuori.",
+			"restart": "Una volta configurato il proxy, esegui fount reboot su questa macchina, poi controlla di nuovo dall'ingresso pubblico. La porta resta sbarrata fino al riavvio; le richieste successive non la apriranno da sole, nemmeno se portano intestazioni di inoltro."
 		},
-		"limit": "Questo è un controllo della configurazione di distribuzione: si basa sull’intestazione Host e sulla risoluzione DNS, quindi non può promettere di scoprire ogni configurazione errata, né annullare quanto accaduto prima della sospensione."
+		"limit": "Questo è solo un controllo della configurazione di distribuzione: si basa sull'Host della richiesta e sulla risoluzione DNS, non garantisce di individuare ogni configurazione errata e non può annullare ciò che è accaduto prima della disattivazione.",
+		"hint": "Tieni premuto in un punto qualsiasi per vederlo chiaramente.",
+		"lucid": "Va tutto bene. Niente ti sta guardando. Continua pure.",
+		"touched": "Ti ha toccato.",
+		"away": "Sta ancora guardando.",
+		"sound": {
+			"on": {
+				"title": "Fallo tacere",
+				"aria-label": "Spegni il suono dietro la porta"
+			},
+			"off": {
+				"title": "Ascolta dietro la porta",
+				"aria-label": "Accendi il suono dietro la porta"
+			}
+		}
 	}
 }

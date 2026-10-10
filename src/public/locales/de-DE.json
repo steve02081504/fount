@@ -7324,23 +7324,48 @@
 		}
 	},
 	"proxy_exposure": {
-		"title": "fount hat seinen Webdienst ausgesetzt",
-		"description": "Ein öffentlicher Proxy hat ohne ein Wort des Vertrauens geantwortet, worauf der Knoten seine Türen verschlossen hat. Bringen Sie ihm die Weiterleitungsmerkmale bei, auf die er wartet, und der Dienst läuft wieder.",
-		"language": "Sprache der Seite",
+		"title": "fount hat seinen Web-Dienst abgeschaltet",
+		"description": "Etwas kam über einen öffentlichen Proxy und klopfte mit dem Gesicht dieses Rechners an die Tür. Der Knoten konnte es nicht von sich selbst unterscheiden und schloss die Tür. Erst wenn der Proxy lernt, Weiterleitungsspuren zu hinterlassen, kehrt der Dienst zurück.",
+		"language": "Seitensprache",
+		"omen": "Die Tür steht offen.",
+		"epigraph": "Es kam von draußen. Es spricht mit einer Stimme, die genau wie deine klingt.",
+		"whisper": "es hat nie gesagt, woher es kam · es sagte nur · ich bin du",
+		"watching": {
+			"switch": "count",
+			"default": "${count} Augen beobachten dich",
+			"cases": {
+				"0": "Noch hat sich kein Auge geöffnet",
+				"1": "Ein Auge beobachtet dich"
+			}
+		},
 		"risk": {
-			"title": "Warum ist diese Konfiguration gefährlich?",
-			"text": "fount vertraut direkten lokalen Anfragen von Grund auf. Ein Proxy muss weitergeleitete Anfragen kennzeichnen; wenn öffentlicher Verkehr den Dienst über die Loopback-Schnittstelle erreicht, Besucher den Host-Kopf steuern dürfen und keine Weiterleitungsmerkmale gesetzt werden, kann ein entfernter Besucher sich als lokaler Aufrufer ausgeben und lokale Rechte erlangen — Servercode ausführen, Protokolle lesen, auf Konten handeln."
+			"title": "Es trägt dein Gesicht",
+			"text": "fount vertraut absichtlich direkten Anfragen von diesem Rechner – das ist deine eigene Stimme. Ein Proxy sollte jede weitergeleitete Anfrage markieren. Gelangt öffentlicher Verkehr jedoch über die lokale Loopback-Schnittstelle herein, können Besucher Host nach Belieben umschreiben, und hinterlässt der Proxy keinerlei Markierung, dann kann sich das, was draußen steht, als dieser Rechner ausgeben und lokale Rechte erlangen: Servercode ausführen, Protokolle lesen, Konten bedienen."
 		},
 		"action": {
-			"title": "Was fount unternommen hat",
-			"text": "fount hat den ursprünglichen HTTP(S)-Dienst gestoppt und bestehende Verbindungen geschlossen und dann auf demselben Port einen eigenständigen Hinweisserver gestartet. Anfragen, die HTML annehmen, werden hierher umgeleitet; andere HTTP-Anfragen und WebSocket-Aufwertungen erhalten 500. Auch der lokale Webzugang ist deaktiviert; sonst wurde nichts im laufenden Prozess gestoppt."
+			"title": "Die Tür ist verriegelt",
+			"text": "fount hat seinen ursprünglichen HTTP(S)-Dienst beendet, alle bestehenden Verbindungen gekappt und am selben Port nur einen Hinweisserver zurückgelassen, der immer wieder dieses eine sagt: Anfragen, die HTML akzeptieren, werden hierher geleitet; alle übrigen HTTP-Anfragen und Umstellungen auf WebSocket erhalten 500. Auch der lokale Web-Zugriff ist versiegelt; die übrigen Dienste im Prozess laufen weiter und wurden dadurch nicht angehalten."
 		},
 		"recovery": {
-			"title": "Wie Sie den Dienst wiederherstellen",
-			"proxy": "Stoppen Sie zuerst den aktuellen Tunnel oder Proxy und wechseln Sie dann zu einem, der Weiterleitungsmerkmale setzt, oder aktivieren Sie die passende Option in dem Proxy, den Sie bereits nutzen.",
-			"headers": "Lassen Sie den Proxy Forwarded oder X-Forwarded-For selbst setzen und dieselben Köpfe von Besuchern entfernen oder überschreiben. Verlassen Sie sich nicht allein auf das Umschreiben des Host-Kopfes; fount muss erkennen können, dass eine Anfrage weitergeleitet wurde.",
-			"restart": "Führen Sie nach der Konfiguration des Proxys auf dem lokalen Rechner fount reboot aus und öffnen Sie den öffentlichen Zugang erneut. Die Aussetzung bleibt bis zu einem Neustart bestehen; eine spätere Anfrage, die zufällig Weiterleitungsmerkmale trägt, hebt sie nicht von selbst auf."
+			"title": "Wie man die Tür richtig schließt",
+			"proxy": "Halte zuerst den aktuellen Tunnel oder Proxy an. Wechsle zu einem Proxy, der Weiterleitungs-Header hinzufügt, oder aktiviere die entsprechende Option in deinem bestehenden.",
+			"headers": "Lass den Proxy selbst Weiterleitungs-Header wie Forwarded oder X-Forwarded-For schreiben und gleichnamige Header, die Besucher mitbringen, entfernen oder überschreiben. Verlass dich nicht darauf, nur Host umzuschreiben – fount muss erkennen können: Dieser hier kam von draußen.",
+			"restart": "Sobald der Proxy eingerichtet ist, führe auf diesem Rechner fount reboot aus und prüfe dann erneut über den öffentlichen Zugang. Die Tür bleibt bis zum Neustart verriegelt; spätere Anfragen öffnen sie nicht von selbst, selbst wenn sie Weiterleitungs-Header tragen."
 		},
-		"limit": "Dies ist eine Prüfung der Bereitstellungskonfiguration: Sie stützt sich auf den Host-Kopf und die DNS-Auflösung, kann also nicht versprechen, jede Fehlkonfiguration zu finden, und kann nichts rückgängig machen, was vor der Aussetzung geschehen ist."
+		"limit": "Dies ist nur eine Prüfung der Bereitstellungskonfiguration: Sie stützt sich auf den Host der Anfrage und die DNS-Auflösung, kann nicht jede Fehlkonfiguration aufdecken und nichts ungeschehen machen, was vor der Abschaltung bereits geschehen ist.",
+		"hint": "Halte irgendwo gedrückt, um es deutlich zu sehen.",
+		"lucid": "Alles ist in Ordnung. Nichts beobachtet dich. Mach einfach weiter.",
+		"touched": "Es hat dich berührt.",
+		"away": "Es sieht noch immer zu.",
+		"sound": {
+			"on": {
+				"title": "Bring es zum Schweigen",
+				"aria-label": "Geräusch hinter der Tür ausschalten"
+			},
+			"off": {
+				"title": "Hinter die Tür lauschen",
+				"aria-label": "Geräusch hinter der Tür einschalten"
+			}
+		}
 	}
 }

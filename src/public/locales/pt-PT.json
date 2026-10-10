@@ -7330,23 +7330,48 @@
 		}
 	},
 	"proxy_exposure": {
-		"title": "o fount suspendeu o serviço web",
-		"description": "Um proxy público respondeu sem uma palavra de confiança, por isso o nó fechou as suas portas. Ensine-lhe as marcas de reencaminhamento que espera e o serviço retoma.",
+		"title": "O fount desativou o serviço Web",
+		"description": "Algo atravessou um proxy público com o rosto desta máquina e veio bater à porta. O nó não conseguiu distingui-lo de si mesmo, por isso fechou a porta. Ensina o proxy a deixar marcas de reencaminhamento e o serviço regressará.",
 		"language": "Idioma da página",
+		"omen": "A porta está aberta.",
+		"epigraph": "Veio de fora. Fala com uma voz exatamente igual à tua.",
+		"whisper": "nunca disse de onde vinha · só disse · eu sou tu",
+		"watching": {
+			"switch": "count",
+			"default": "${count} olhos estão a olhar para ti",
+			"cases": {
+				"0": "Ainda nenhum olho se abriu",
+				"1": "Um olho está a olhar para ti"
+			}
+		},
 		"risk": {
-			"title": "Porque é que esta configuração é perigosa?",
-			"text": "O fount confia, por desenho, nos pedidos locais diretos. Um proxy tem de marcar os pedidos reencaminhados; se o tráfego público chega ao serviço pela interface de loopback, deixa os visitantes controlar o cabeçalho Host e não acrescenta marcas de reencaminhamento, um visitante remoto pode fazer-se passar por uma chamada local e obter privilégios locais: executar código do servidor, ler registos e agir sobre contas."
+			"title": "Usa o teu rosto",
+			"text": "Por conceção, o fount confia nos pedidos diretos vindos desta máquina: essa é a tua própria voz. Um proxy deveria marcar cada pedido que reencaminha. Mas se o tráfego público entrar pela interface de retorno local, se os visitantes puderem reescrever o Host à vontade e se o proxy não deixar marca alguma, aquilo que está lá fora pode fazer-se passar por esta máquina e obter privilégios locais: executar código no servidor, ler registos e operar contas."
 		},
 		"action": {
-			"title": "O que o fount fez",
-			"text": "O fount parou o serviço HTTP(S) original e fechou as ligações existentes, e depois iniciou na mesma porta um servidor de aviso autónomo. Os pedidos que aceitam HTML são redirecionados para aqui; os restantes pedidos HTTP e as passagens para WebSocket recebem 500. O acesso web local também ficou desativado; nada mais em execução no processo foi parado."
+			"title": "A porta está trancada",
+			"text": "O fount parou o seu serviço HTTP(S) original, cortou todas as ligações abertas e deixou na mesma porta apenas um servidor de aviso que repete esta única coisa: os pedidos que aceitam HTML são trazidos para aqui, e todos os outros pedidos HTTP e atualizações para WebSocket recebem 500. O acesso Web local também foi selado; os outros serviços do processo continuam a funcionar e não foram parados por isto."
 		},
 		"recovery": {
-			"title": "Como restabelecer o serviço",
-			"proxy": "Pare primeiro o túnel ou proxy atual e passe depois para um que acrescente marcas de reencaminhamento, ou ative a opção correspondente no proxy que já usa.",
-			"headers": "Deixe o próprio proxy acrescentar Forwarded ou X-Forwarded-For, e remova ou substitua esses mesmos cabeçalhos quando vierem dos visitantes. Não conte apenas com a reescrita do Host; o fount tem de conseguir reconhecer que um pedido foi reencaminhado.",
-			"restart": "Com o proxy já configurado, execute fount reboot na máquina local e volte a abrir a entrada pública. A suspensão dura até um reinício; um pedido posterior que traga marcas de reencaminhamento por acaso não a levantará sozinho."
+			"title": "Como fechar bem a porta",
+			"proxy": "Primeiro, para o túnel ou proxy atual. Muda para um proxy que adicione cabeçalhos de reencaminhamento, ou ativa a opção correspondente no que já tens.",
+			"headers": "Faz com que o próprio proxy escreva cabeçalhos Forwarded ou X-Forwarded-For, e remove ou substitui quaisquer cabeçalhos com o mesmo nome enviados pelos visitantes. Não te limites a reescrever o Host: o fount tem de conseguir reconhecer que este veio de fora.",
+			"restart": "Depois de configurares o proxy, executa fount reboot nesta máquina e volta a verificar pela entrada pública. A porta fica trancada até ao reinício; os pedidos posteriores não a abrirão sozinhos, mesmo que tragam cabeçalhos de reencaminhamento."
 		},
-		"limit": "Isto é uma verificação da configuração de implementação: assenta no cabeçalho Host e na resolução DNS, por isso não pode prometer detetar todas as configurações erradas, nem desfazer o que aconteceu antes da suspensão."
+		"limit": "Isto é apenas uma verificação da configuração de implementação: depende do Host do pedido e da resolução DNS, não garante detetar todas as configurações erradas e não pode desfazer nada do que aconteceu antes de o serviço ser desativado.",
+		"hint": "Mantém premido em qualquer lado para o veres com clareza.",
+		"lucid": "Está tudo bem. Nada está a olhar para ti. Por favor, continua.",
+		"touched": "Tocou-te.",
+		"away": "Ainda está a olhar.",
+		"sound": {
+			"on": {
+				"title": "Silenciá-lo",
+				"aria-label": "Desligar o som por detrás da porta"
+			},
+			"off": {
+				"title": "Escutar por detrás da porta",
+				"aria-label": "Ligar o som por detrás da porta"
+			}
+		}
 	}
 }

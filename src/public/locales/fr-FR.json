@@ -7330,23 +7330,48 @@
 		}
 	},
 	"proxy_exposure": {
-		"title": "fount a suspendu son service web",
-		"description": "Un proxy public a répondu sans le moindre gage de confiance ; le nœud a donc refermé ses portes. Enseignez-lui les marques de transfert qu’il attend, et le service reprendra.",
+		"title": "fount a désactivé son service Web",
+		"description": "Quelque chose est passé par un proxy public et a frappé à la porte en portant le visage de cette machine. Le nœud n'a pas su le distinguer de lui-même, alors il a fermé la porte. Apprenez au proxy à laisser des marques de transfert, et le service reviendra.",
 		"language": "Langue de la page",
+		"omen": "La porte est ouverte.",
+		"epigraph": "Il vient du dehors. Il parle d'une voix en tout point semblable à la vôtre.",
+		"whisper": "il n'a jamais dit d'où il venait · il a seulement dit · je suis toi",
+		"watching": {
+			"switch": "count",
+			"default": "${count} yeux vous regardent",
+			"cases": {
+				"0": "Aucun œil ne s'est encore ouvert",
+				"1": "Un œil vous regarde"
+			}
+		},
 		"risk": {
-			"title": "Pourquoi cette configuration est-elle dangereuse ?",
-			"text": "fount fait confiance par conception aux requêtes locales directes. Un proxy doit marquer les requêtes transférées ; si le trafic public atteint le service par l’interface de bouclage, laisse les visiteurs contrôler l’en-tête Host et n’ajoute aucune marque de transfert, un visiteur distant peut se faire passer pour un appel local et obtenir des privilèges locaux : exécuter du code serveur, lire les journaux, agir sur les comptes."
+			"title": "Il porte votre visage",
+			"text": "Par conception, fount fait confiance aux requêtes directes provenant de cette machine : c'est votre propre voix. Un proxy est censé marquer chaque requête qu'il transfère. Mais si le trafic public entre par la boucle locale, que les visiteurs peuvent réécrire Host à leur guise et que le proxy ne laisse aucune marque, alors ce qui se tient dehors peut se faire passer pour cette machine et obtenir les privilèges locaux : exécuter du code sur le serveur, lire les journaux, manipuler les comptes."
 		},
 		"action": {
-			"title": "Ce que fount a fait",
-			"text": "fount a arrêté le service HTTP(S) d’origine et fermé les connexions en cours, puis a démarré sur le même port un serveur d’avis indépendant. Les requêtes qui acceptent le HTML sont redirigées ici ; les autres requêtes HTTP et les passages en WebSocket reçoivent 500. L’accès web local est désactivé lui aussi ; rien d’autre en cours dans le processus n’a été arrêté."
+			"title": "La porte est verrouillée",
+			"text": "fount a arrêté son service HTTP(S) d'origine, coupé toutes les connexions ouvertes et n'a laissé sur le même port qu'un serveur d'avertissement qui répète inlassablement cette seule chose : les requêtes qui acceptent HTML sont conduites ici, et toutes les autres requêtes HTTP ainsi que les passages en WebSocket reçoivent une erreur 500. L'accès Web local est lui aussi scellé ; les autres services du processus continuent de tourner et n'ont pas été arrêtés pour autant."
 		},
 		"recovery": {
-			"title": "Comment rétablir le service",
-			"proxy": "Arrêtez d’abord le tunnel ou le proxy actuel, puis passez à un proxy qui ajoute des marques de transfert, ou activez l’option correspondante dans celui que vous utilisez déjà.",
-			"headers": "Laissez le proxy ajouter lui-même Forwarded ou X-Forwarded-For, et supprimez ou réécrivez ces mêmes en-têtes lorsqu’ils viennent des visiteurs. Ne comptez pas sur la seule réécriture de Host ; fount doit pouvoir reconnaître qu’une requête a été transférée.",
-			"restart": "Une fois le proxy configuré, lancez fount reboot sur la machine locale et rouvrez l’entrée publique. La suspension dure jusqu’à un redémarrage ; une requête ultérieure qui porterait par hasard des marques de transfert ne la lèvera pas d’elle-même."
+			"title": "Comment bien refermer la porte",
+			"proxy": "Arrêtez d'abord le tunnel ou le proxy actuel. Passez à un proxy qui ajoute des en-têtes de transfert, ou activez l'option correspondante dans celui que vous utilisez.",
+			"headers": "Faites écrire par le proxy lui-même les en-têtes de transfert comme Forwarded ou X-Forwarded-For, et faites-lui supprimer ou écraser les en-têtes du même nom envoyés par les visiteurs. Ne vous contentez pas de réécrire Host : fount doit pouvoir reconnaître que celui-ci vient du dehors.",
+			"restart": "Une fois le proxy configuré, exécutez fount reboot sur cette machine, puis vérifiez de nouveau depuis l'entrée publique. La porte reste verrouillée jusqu'au redémarrage ; les requêtes suivantes ne l'ouvriront pas d'elles-mêmes, même si elles portent des en-têtes de transfert."
 		},
-		"limit": "Il s’agit d’un contrôle de configuration de déploiement : il s’appuie sur l’en-tête Host et sur la résolution DNS, il ne peut donc pas promettre de détecter toutes les erreurs de configuration, ni annuler ce qui s’est produit avant la suspension."
+		"limit": "Il ne s'agit que d'une vérification de la configuration de déploiement : elle repose sur le Host de la requête et sur la résolution DNS, ne peut garantir de détecter toutes les erreurs de configuration et ne peut défaire ce qui s'est produit avant la désactivation.",
+		"hint": "Maintenez appuyé n'importe où pour le voir distinctement.",
+		"lucid": "Tout va bien. Rien ne vous regarde. Veuillez continuer.",
+		"touched": "Il vous a touché.",
+		"away": "Il regarde toujours.",
+		"sound": {
+			"on": {
+				"title": "Le faire taire",
+				"aria-label": "Couper le son derrière la porte"
+			},
+			"off": {
+				"title": "Écouter derrière la porte",
+				"aria-label": "Activer le son derrière la porte"
+			}
+		}
 	}
 }

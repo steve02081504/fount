@@ -7330,23 +7330,48 @@
 		}
 	},
 	"proxy_exposure": {
-		"title": "fount heeft zijn webdienst stilgelegd",
-		"description": "Een publieke proxy antwoordde zonder een woord van vertrouwen, waarop de node zijn deuren sloot. Leer hem de doorstuurmarkeringen waarop hij wacht, en de dienst hervat.",
-		"language": "Taal van de pagina",
+		"title": "fount heeft zijn webdienst uitgeschakeld",
+		"description": "Iets kwam via een openbare proxy aankloppen, met het gezicht van deze machine op. Het knooppunt kon het niet van zichzelf onderscheiden en sloot daarom de deur. Leer de proxy doorstuursporen achter te laten, dan keert de dienst terug.",
+		"language": "Paginataal",
+		"omen": "De deur staat open.",
+		"epigraph": "Het kwam van buiten. Het spreekt met een stem die precies klinkt als de jouwe.",
+		"whisper": "het zei nooit waar het vandaan kwam · het zei alleen · ik ben jij",
+		"watching": {
+			"switch": "count",
+			"default": "${count} ogen kijken naar je",
+			"cases": {
+				"0": "Er is nog geen oog geopend",
+				"1": "Eén oog kijkt naar je"
+			}
+		},
 		"risk": {
-			"title": "Waarom is deze configuratie gevaarlijk?",
-			"text": "fount vertrouwt directe lokale verzoeken van nature. Een proxy moet doorgestuurde verzoeken markeren; als publiek verkeer de dienst via de loopback-interface bereikt, bezoekers de Host-kop laat beheren en er geen doorstuurmarkeringen worden toegevoegd, kan een bezoeker op afstand zich voordoen als een lokale aanroeper en lokale rechten krijgen: servercode uitvoeren, logboeken lezen en op accounts handelen."
+			"title": "Het draagt jouw gezicht",
+			"text": "fount vertrouwt bewust directe verzoeken van deze machine: dat is je eigen stem. Een proxy hoort elk doorgestuurd verzoek te markeren. Maar als openbaar verkeer via de lokale lusinterface binnenkomt, bezoekers Host naar believen kunnen herschrijven en de proxy geen enkel spoor achterlaat, dan kan wat buiten staat zich voordoen als deze machine en lokale rechten verkrijgen: servercode uitvoeren, logboeken lezen en accounts beheren."
 		},
 		"action": {
-			"title": "Wat fount heeft gedaan",
-			"text": "fount heeft de oorspronkelijke HTTP(S)-dienst gestopt en bestaande verbindingen gesloten, en daarna op dezelfde poort een zelfstandige waarschuwingsserver gestart. Verzoeken die HTML accepteren worden hierheen omgeleid; overige HTTP-verzoeken en WebSocket-upgrades krijgen 500. De lokale webtoegang is ook uitgeschakeld; verder is er niets in het proces gestopt."
+			"title": "De deur is gegrendeld",
+			"text": "fount heeft zijn oorspronkelijke HTTP(S)-dienst gestopt, alle open verbindingen verbroken en op dezelfde poort alleen een meldingsserver achtergelaten die steeds dit ene herhaalt: verzoeken die HTML accepteren worden hierheen geleid, alle andere HTTP-verzoeken en WebSocket-upgrades krijgen 500. Ook lokale webtoegang is afgesloten; de overige diensten in het proces blijven draaien en zijn hierdoor niet gestopt."
 		},
 		"recovery": {
-			"title": "Zo herstelt u de dienst",
-			"proxy": "Stop eerst de huidige tunnel of proxy en stap dan over op een die doorstuurmarkeringen toevoegt, of zet de betreffende optie aan in de proxy die u al gebruikt.",
-			"headers": "Laat de proxy zelf Forwarded of X-Forwarded-For toevoegen, en verwijder of overschrijf diezelfde koppen wanneer ze van bezoekers komen. Vertrouw niet alleen op het herschrijven van Host; fount moet kunnen herkennen dat een verzoek is doorgestuurd.",
-			"restart": "Voer, zodra de proxy is ingesteld, fount reboot uit op de lokale machine en open de publieke ingang opnieuw. De stillegging duurt tot een herstart; een later verzoek dat toevallig doorstuurmarkeringen draagt, heft die niet vanzelf op."
+			"title": "Hoe je de deur goed sluit",
+			"proxy": "Stop eerst de huidige tunnel of proxy. Stap over op een proxy die doorstuurheaders toevoegt, of zet de bijbehorende optie aan in de proxy die je al hebt.",
+			"headers": "Laat de proxy zelf Forwarded- of X-Forwarded-For-headers schrijven, en verwijder of overschrijf alle gelijknamige headers die bezoekers meesturen. Vertrouw niet alleen op het herschrijven van Host: fount moet kunnen herkennen dat deze van buiten kwam.",
+			"restart": "Voer, zodra de proxy is ingesteld, fount reboot uit op deze machine en controleer daarna opnieuw via de openbare ingang. De deur blijft gegrendeld tot de herstart; latere verzoeken openen hem niet vanzelf, ook niet als ze doorstuurheaders meedragen."
 		},
-		"limit": "Dit is een controle op de uitrolconfiguratie: ze leunt op de Host-kop en de DNS-omzetting, dus ze kan niet beloven elke verkeerde configuratie te vinden, en ze kan niets ongedaan maken wat vóór de stillegging is gebeurd."
+		"limit": "Dit is slechts een controle van de implementatieconfiguratie: ze steunt op de Host van het verzoek en op DNS-resolutie, kan niet beloven elke foutieve configuratie te vinden en kan niets ongedaan maken van wat er gebeurde voordat de dienst werd uitgeschakeld.",
+		"hint": "Houd ergens ingedrukt om het duidelijk te zien.",
+		"lucid": "Alles is in orde. Niets kijkt naar je. Ga gerust verder.",
+		"touched": "Het raakte je aan.",
+		"away": "Het kijkt nog steeds.",
+		"sound": {
+			"on": {
+				"title": "Laat het zwijgen",
+				"aria-label": "Het geluid achter de deur uitzetten"
+			},
+			"off": {
+				"title": "Luister achter de deur",
+				"aria-label": "Het geluid achter de deur aanzetten"
+			}
+		}
 	}
 }

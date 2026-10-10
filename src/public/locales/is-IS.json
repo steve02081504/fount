@@ -7324,23 +7324,48 @@
 		}
 	},
 	"proxy_exposure": {
-		"title": "fount hefur stöðvað vefþjónustuna",
-		"description": "Opinber milliliður svaraði án orðs um traust, svo hnúturinn lokaði hliðum sínum. Kenndu honum framsendingarmerkin sem hann bíður eftir, og þjónustan hefst á ný.",
-		"language": "Tungumál síðunnar",
+		"title": "fount hefur gert vefþjónustu sína óvirka",
+		"description": "Eitthvað kom í gegnum opinberan milliþjón og bankaði á dyrnar með andlit þessarar vélar. Hnúturinn gat ekki greint það frá sjálfum sér og lokaði því dyrunum. Kenndu milliþjóninum að skilja eftir áframsendingarmerki, þá snýr þjónustan aftur.",
+		"language": "Tungumál síðu",
+		"omen": "Dyrnar eru opnar.",
+		"epigraph": "Það kom utan frá. Það talar með rödd sem er nákvæmlega eins og þín.",
+		"whisper": "það sagði aldrei hvaðan það kom · það sagði bara · ég er þú",
+		"watching": {
+			"switch": "count",
+			"default": "${count} augu horfa á þig",
+			"cases": {
+				"0": "Ekkert auga hefur enn opnast",
+				"1": "Eitt auga horfir á þig"
+			}
+		},
 		"risk": {
-			"title": "Af hverju er þessi stilling hættuleg?",
-			"text": "fount treystir beinum staðbundnum beiðnum í eðli sínu. Milliliður verður að merkja framsendrar beiðnir; ef almenn umferð nær til þjónustunnar um lykkjuskilinn, lætur gesti stjórna Host-hausnum og bætir engum framsendingarmerkjum við, getur fjarlægur gestur þótt staðbundin beiðni og öðlast staðbundin réttindi: keyrt netþjónakóða, lesið annála og hagað sér fyrir hönd reikninga."
+			"title": "Það ber andlit þitt",
+			"text": "Samkvæmt hönnun treystir fount beinum beiðnum frá þessari vél: það er þín eigin rödd. Milliþjónn á að merkja hverja beiðni sem hann sendir áfram. En ef opinber umferð kemur inn um staðværu bakrásina, gestir geta endurskrifað Host að vild og milliþjónninn skilur ekki eftir neitt merki, þá getur það sem stendur fyrir utan þóst vera þessi vél og öðlast staðbundin réttindi: að keyra kóða á þjóninum, lesa annála og stjórna notendaaðgöngum."
 		},
 		"action": {
-			"title": "Hvað fount gerði",
-			"text": "fount stöðvaði upprunalegu HTTP(S)-þjónustuna og lokaði fyrirliggjandi tengingum, og ræsti síðan sjálfstæðan tilkynningaþjón á sama porti. Beiðnir sem taka við HTML eru endurbeint hingað; aðrar HTTP-beiðnir og WebSocket-uppfærslur fá 500. Staðbundinn vefaðgangur er einnig gerður óvirkur; engu öðru sem keyrir í ferlinum var stöðvað."
+			"title": "Slagbrandur er fyrir dyrunum",
+			"text": "fount stöðvaði upprunalegu HTTP(S)-þjónustuna sína, rauf allar opnar tengingar og skildi aðeins eftir á sömu gátt tilkynningaþjón sem endurtekur þetta eina: beiðnum sem taka við HTML er beint hingað, og allar aðrar HTTP-beiðnir og WebSocket-uppfærslur fá 500. Staðbundinn vefaðgangur er einnig innsiglaður; aðrar þjónustur í ferlinu halda áfram að keyra og stöðvuðust ekki vegna þessa."
 		},
 		"recovery": {
-			"title": "Hvernig á að endurreisa þjónustuna",
-			"proxy": "Stöðvaðu fyrst núverandi göng eða millilið og skiptu síðan yfir í einn sem bætir við framsendingarmerkjum, eða kveiktu á viðeigandi valkosti í milliliðnum sem þú notar þegar.",
-			"headers": "Leyfðu milliliðnum að bæta Forwarded eða X-Forwarded-For við sjálfur, og fjarlægðu eða skrifaðu yfir sömu hausa þegar þeir koma frá gestum. Treystu ekki einvörðungu á að endurskrifa Host; fount verður að geta greint að beiðni hafi verið framsend.",
-			"restart": "Þegar milliliðurinn er stilltur skaltu keyra fount reboot á staðbundnu vélinni og opna almennu inngönguna aftur. Stöðvunin varir þar til endurræst er; seinna beiðni sem ber framsendingarmerki fyrir tilviljun afléttir henni ekki af sjálfu sér."
+			"title": "Hvernig á að loka dyrunum almennilega",
+			"proxy": "Stöðvaðu fyrst núverandi göng eða milliþjón. Skiptu yfir í milliþjón sem bætir við áframsendingarhausum, eða kveiktu á samsvarandi stillingu í þeim sem þú hefur.",
+			"headers": "Láttu milliþjóninn sjálfan skrifa Forwarded- eða X-Forwarded-For-hausa, og fjarlægðu eða skrifaðu yfir alla samnefnda hausa sem gestir senda. Ekki treysta eingöngu á að endurskrifa Host: fount verður að geta þekkt að þessi kom utan frá.",
+			"restart": "Þegar milliþjónninn hefur verið stilltur skaltu keyra fount reboot á þessari vél og athuga svo aftur í gegnum opinbera innganginn. Slagbrandurinn verður fyrir dyrunum fram að endurræsingu; síðari beiðnir opna þær ekki af sjálfu sér, jafnvel þótt þær beri áframsendingarhausa."
 		},
-		"limit": "Þetta er athugun á uppsetningu: hún byggir á Host-hausnum og DNS-upplausn, svo hún getur hvorki lofað að finna hverja rangstilltingu né afturkallað það sem gerðist fyrir stöðvunina."
+		"limit": "Þetta er aðeins athugun á uppsetningarstillingum: hún byggir á Host beiðninnar og DNS-uppflettingu, getur ekki lofað að greina allar rangar stillingar og getur ekki afturkallað neitt sem gerðist áður en þjónustan var gerð óvirk.",
+		"hint": "Haltu inni hvar sem er til að sjá það skýrt.",
+		"lucid": "Allt er í lagi. Ekkert horfir á þig. Haltu endilega áfram.",
+		"touched": "Það snerti þig.",
+		"away": "Það horfir enn.",
+		"sound": {
+			"on": {
+				"title": "Þaggaðu niður í því",
+				"aria-label": "Slökkva á hljóðinu handan dyranna"
+			},
+			"off": {
+				"title": "Hlustaðu handan dyranna",
+				"aria-label": "Kveikja á hljóðinu handan dyranna"
+			}
+		}
 	}
 }

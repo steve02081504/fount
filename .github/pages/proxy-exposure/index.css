@@ -1,0 +1,490 @@
+/* 门开着：血肉背景（#flesh）与触手（#tendrils）由脚本绘制，这里只排版文字与少量 CSS 动效。 */
+
+html {
+	background: #070002;
+	color-scheme: dark;
+	scrollbar-color: #3a0008 #070002;
+}
+
+.pe {
+	margin: 0;
+	min-height: 100vh;
+	color: #d6c7b3;
+	background: #070002;
+	font-family: 'Noto Serif SC', 'Noto Serif CJK SC', 'Source Han Serif SC', 'Songti SC', serif;
+	overflow-x: clip;
+	transition: color 0.6s ease, background-color 0.6s ease;
+}
+
+.pe.no-webgl {
+	background:
+		radial-gradient(ellipse at 20% 30%, #3b0610 0%, transparent 55%),
+		radial-gradient(ellipse at 80% 70%, #2a0410 0%, transparent 50%),
+		#070002;
+}
+
+.pe ::selection {
+	background: #6b0012;
+	color: #fff4e8;
+}
+
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+.pe-layer {
+	position: fixed;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+	display: block;
+}
+
+#flesh {
+	z-index: 0;
+}
+
+#tendrils {
+	z-index: 1;
+}
+
+/* 顶栏：注视计数 + 语言 + 声音 */
+.pe-bar {
+	position: fixed;
+	inset: 0 0 auto;
+	z-index: 5;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: 1rem clamp(1rem, 3vw, 2.5rem);
+}
+
+.pe-watching {
+	margin: 0;
+	font-size: 0.78rem;
+	letter-spacing: 0.35em;
+	color: #a88f7c;
+	font-variant-numeric: tabular-nums;
+	text-shadow: 0 0 8px #000;
+}
+
+.pe-controls {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+.pe-language {
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+	color: #cbbcab;
+}
+
+.pe-language select {
+	appearance: none;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	font-size: 0.85rem;
+	letter-spacing: 0.08em;
+	border: 0;
+	box-shadow: inset 0 -1px 0 #5e2a2a;
+	padding: 0.3rem 0.2rem;
+	cursor: pointer;
+}
+
+.pe-language select option {
+	background: #120306;
+	color: #e8d8c6;
+}
+
+.pe-sound {
+	display: grid;
+	place-items: center;
+	width: 2.75rem;
+	height: 2.75rem;
+	background: transparent;
+	border: 0;
+	color: inherit;
+	cursor: pointer;
+	transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.pe-sound:hover {
+	transform: scale(1.12);
+}
+
+.pe-sound:focus-visible,
+.pe-language select:focus-visible {
+	outline: 1px solid #b33a3a;
+	outline-offset: 3px;
+}
+
+.pe-icon {
+	display: block;
+}
+
+/* 正文 */
+.pe-main {
+	position: relative;
+	z-index: 3;
+	max-width: 44rem;
+	margin: 0 auto;
+	padding: 24vh 1.5rem 28vh;
+	text-shadow: 0 0 2px #000, 0 0 14px #000, 0 0 28px #000;
+}
+
+.pe-title {
+	margin: 0 calc(50% - 50vw);
+	padding: 0 5vw;
+	font-weight: 900;
+}
+
+.pe-omen {
+	--pulse: 0;
+	position: relative;
+	display: block;
+	font-size: clamp(4.5rem, 19vw, 16rem);
+	line-height: 0.92;
+	letter-spacing: -0.05em;
+	color: #efe3d0;
+	text-shadow: 0 0 0.05em #000, 0 0.02em 0.25em rgb(110 0 12 / 0.75), 0 0 0.6em rgb(40 0 4 / 0.9);
+	transform: scale(calc(1 + var(--pulse) * 0.018)) skewY(-2deg);
+	transform-origin: 20% 60%;
+	animation: pe-sag 11s ease-in-out infinite alternate;
+}
+
+.pe-omen::after {
+	content: attr(data-echo);
+	position: absolute;
+	inset: 0;
+	color: transparent;
+	-webkit-text-stroke: 1px rgb(190 20 30 / 0.55);
+	text-shadow: none;
+	animation: pe-echo 3.7s steps(1) infinite;
+	pointer-events: none;
+}
+
+.pe-subtitle {
+	display: block;
+	margin-top: 2.2rem;
+	padding-left: 6vw;
+	font-size: clamp(0.9rem, 1.4vw, 1.15rem);
+	font-weight: 400;
+	letter-spacing: 0.55em;
+	color: #a88a76;
+}
+
+.pe-epigraph {
+	margin: 9vh 0 0 auto;
+	max-width: 30rem;
+	font-size: clamp(1.25rem, 2.4vw, 1.9rem);
+	line-height: 1.75;
+	color: #d3a998;
+	text-align: right;
+}
+
+.pe-lede {
+	margin-top: 9vh;
+	font-size: 1.15rem;
+	line-height: 2.05;
+}
+
+.pe-lucid-line {
+	display: none;
+}
+
+.pe-chapter {
+	position: relative;
+	margin-top: 20vh;
+}
+
+.pe-chapter:nth-of-type(2) {
+	padding-left: clamp(0rem, 6vw, 5rem);
+}
+
+.pe-chapter:nth-of-type(3) {
+	padding-left: clamp(0rem, 12vw, 10rem);
+}
+
+.pe-numeral {
+	position: absolute;
+	top: -0.62em;
+	left: -0.15em;
+	z-index: -1;
+	font-size: clamp(7rem, 16vw, 13rem);
+	font-weight: 900;
+	line-height: 1;
+	color: transparent;
+	-webkit-text-stroke: 1px rgb(200 70 70 / 0.28);
+	text-shadow: none;
+	pointer-events: none;
+}
+
+.pe-chapter h2 {
+	margin: 0 0 1.6rem;
+	font-size: clamp(2.1rem, 5.2vw, 3.8rem);
+	font-weight: 900;
+	line-height: 1.1;
+	letter-spacing: -0.02em;
+	color: #f0e2ce;
+}
+
+.pe-chapter p,
+.pe-chapter li {
+	font-size: 1.08rem;
+	line-height: 2.05;
+}
+
+.pe-chapter ol {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	counter-reset: step;
+}
+
+.pe-chapter li {
+	position: relative;
+	counter-increment: step;
+	padding-left: 3.4rem;
+	margin-bottom: 1.6rem;
+}
+
+.pe-chapter li::before {
+	content: counter(step, decimal-leading-zero);
+	position: absolute;
+	left: 0;
+	top: 0.15rem;
+	font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+	font-size: 0.9rem;
+	letter-spacing: 0.1em;
+	color: #c2464b;
+}
+
+.pe-way-out {
+	transition: transform 1.2s ease;
+}
+
+.pe-way-out:hover {
+	transform: translateX(0.4rem);
+}
+
+.pe-limit {
+	margin-top: 16vh;
+	font-size: 0.85rem;
+	line-height: 1.9;
+	color: #8a7666;
+}
+
+/* 竖排低语 */
+.pe-whisper {
+	position: fixed;
+	top: 50%;
+	left: clamp(0.6rem, 2vw, 1.6rem);
+	z-index: 2;
+	writing-mode: vertical-rl;
+	font-size: 0.82rem;
+	letter-spacing: 0.9em;
+	color: rgb(200 120 110 / 0.38);
+	transform: translateY(-50%);
+	animation: pe-murmur 9s ease-in-out infinite;
+	pointer-events: none;
+}
+
+.pe-footer {
+	position: fixed;
+	inset: auto 0 0;
+	z-index: 5;
+	display: flex;
+	justify-content: center;
+	padding: 1rem;
+	pointer-events: none;
+}
+
+.pe-hint {
+	margin: 0;
+	font-size: 0.8rem;
+	letter-spacing: 0.6em;
+	color: #9b7f6e;
+	text-shadow: 0 0 8px #000;
+	animation: pe-breathe 5s ease-in-out infinite;
+}
+
+.pe-touched {
+	--touch-x: 50vw;
+	--touch-y: 50vh;
+	position: fixed;
+	left: var(--touch-x);
+	top: var(--touch-y);
+	z-index: 10;
+	font-size: clamp(2.6rem, 8vw, 6.5rem);
+	font-weight: 900;
+	white-space: nowrap;
+	color: #f6e8d6;
+	text-shadow: 0 0 0.3em #8a000f, 0 0 0.05em #000;
+	opacity: 0;
+	transform: translate(-50%, -50%);
+	pointer-events: none;
+}
+
+.pe-touched.is-on {
+	animation: pe-touched 1.8s cubic-bezier(0.2, 0.9, 0.2, 1) forwards;
+}
+
+/* 清醒：一张干净得过分的纸 */
+.pe.lucid {
+	color: #23201d;
+}
+
+.pe.lucid .pe-main,
+.pe.lucid .pe-watching,
+.pe.lucid .pe-hint {
+	text-shadow: none;
+}
+
+.pe.lucid .pe-omen {
+	color: #23201d;
+	text-shadow: none;
+	animation-play-state: paused;
+}
+
+.pe.lucid .pe-omen::after,
+.pe.lucid .pe-whisper {
+	opacity: 0;
+}
+
+.pe.lucid .pe-chapter h2,
+.pe.lucid .pe-epigraph {
+	color: #23201d;
+}
+
+.pe.lucid .pe-subtitle,
+.pe.lucid .pe-limit,
+.pe.lucid .pe-watching,
+.pe.lucid .pe-hint,
+.pe.lucid .pe-language {
+	color: #6c6660;
+}
+
+.pe.lucid .pe-numeral {
+	-webkit-text-stroke-color: rgb(0 0 0 / 0.12);
+}
+
+.pe.lucid .pe-chapter li::before {
+	color: #6c6660;
+}
+
+.pe.lucid .pe-lucid-line {
+	display: block;
+	margin-top: 4vh;
+	font-size: 1.3rem;
+	letter-spacing: 0.2em;
+	color: #23201d;
+}
+
+@keyframes pe-sag {
+	from {
+		translate: 0 0;
+	}
+
+	to {
+		translate: 0.02em 0.04em;
+	}
+}
+
+@keyframes pe-echo {
+	0%,
+	100% {
+		translate: 0 0;
+		opacity: 0;
+	}
+
+	12% {
+		translate: 0.03em -0.01em;
+		opacity: 1;
+	}
+
+	14% {
+		translate: -0.02em 0.02em;
+		opacity: 0.6;
+	}
+
+	15% {
+		opacity: 0;
+	}
+
+	61% {
+		translate: -0.04em 0;
+		opacity: 0.8;
+	}
+
+	62% {
+		opacity: 0;
+	}
+}
+
+@keyframes pe-murmur {
+	0%,
+	100% {
+		opacity: 0.35;
+		translate: 0 -2%;
+	}
+
+	50% {
+		opacity: 1;
+		translate: 0 2%;
+	}
+}
+
+@keyframes pe-breathe {
+	0%,
+	100% {
+		opacity: 0.35;
+	}
+
+	50% {
+		opacity: 0.95;
+	}
+}
+
+@keyframes pe-touched {
+	0% {
+		opacity: 0;
+		transform: translate(-50%, -50%) scale(1.6);
+		filter: blur(12px);
+	}
+
+	12% {
+		opacity: 1;
+		transform: translate(-50%, -50%) scale(1);
+		filter: blur(0);
+	}
+
+	70% {
+		opacity: 1;
+	}
+
+	100% {
+		opacity: 0;
+		transform: translate(-50%, -54%) scale(0.96);
+		filter: blur(6px);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.pe-omen,
+	.pe-omen::after,
+	.pe-whisper,
+	.pe-hint,
+	.pe-touched.is-on {
+		animation: none;
+	}
+}
