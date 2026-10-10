@@ -11,6 +11,7 @@
 
 import { formatErrorMessage } from '../../../../../../scripts/error_format.mjs'
 import { snapshotAttachment } from '../../../agent_studio/src/attachments.mjs'
+import { redactPromptStruct } from '../../../agent_studio/src/prompt_redaction.mjs'
 
 import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from './index.mjs'
 import { serializeSnapshotValue } from './serializeSnapshot.mjs'
@@ -65,6 +66,7 @@ function clampText(value) {
  * @returns {Promise<{ systemPrompt: string, messages: Array<{ id: string, role: string, name: string, uid: string, content: string }>, snapshot: string | null }>} 投影
  */
 export async function projectPromptStruct(prompt, options = {}) {
+	prompt = redactPromptStruct(prompt)
 	let systemPrompt = ''
 	try {
 		systemPrompt = structPromptToSingleNoChatLog(prompt) || ''

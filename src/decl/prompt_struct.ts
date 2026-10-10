@@ -10,6 +10,8 @@ import { ReplyPreviewUpdater_t } from './chatLog.ts'
  * 定义了单部分提示的结构。
  */
 export class single_part_prompt_t {
+	/** Agent Studio 记录时遮盖整段提示；模型仍收到原文。不是密码学加密。 */
+	encrypted?: boolean
 	/**
 	 * 文本内容数组。
 	 */
@@ -18,6 +20,8 @@ export class single_part_prompt_t {
 		 * 文本内容。
 		 */
 		content: string;
+		/** Agent Studio 记录时将该片段整段替换为等量估算 token 的 meow。 */
+		encrypted?: boolean;
 		/**
 		 * 描述。
 		 */

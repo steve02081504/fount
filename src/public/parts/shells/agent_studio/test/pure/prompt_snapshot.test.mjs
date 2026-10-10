@@ -4,7 +4,9 @@
  */
 import { assert, assertEquals } from 'jsr:@std/assert'
 
+import { estimateTokenCount } from '../../../../serviceGenerators/AI/proxy/src/identityTokenizer.mjs'
 import { createPromptRequestRecorder, recordPromptRequest, sanitizeForJson } from '../../../chat/src/prompt_struct/snapshot.mjs'
+import { meowPrompt } from '../../src/prompt_redaction.mjs'
 
 /**
  * 无操作的占位函数，用于验证快照会剥离函数值。
@@ -87,4 +89,55 @@ Deno.test('createPromptRequestRecorder snapshots the AI source BuildPrompt struc
 	assert(snapshot.includes('"messages"'))
 	assert(snapshot.includes('you are demo'))
 	assert(snapshot.includes('<buffer 4B'))
+})
+
+Deno.test('encrypted prompt text becomes stable meow prose with the same estimated token size', () => {
+	for (const text of ['', 'a', '秘密提示。'.repeat(100), 'Private instructions! '.repeat(100), '🙂かな한글é']) {
+		const masked = meowPrompt(text)
+		assertEquals(estimateTokenCount(masked), estimateTokenCount(text))
+		assertEquals(meowPrompt(text), masked)
+		assertEquals(masked.replace(/meow|[\s,.!?]/g, ''), '')
+		if (text) assert(masked.includes('meow'))
+	}
+	assert(/[.!?]/.test(meowPrompt('秘密提示。'.repeat(100))))
+})
+
+Deno.test('encrypted parts are masked before both projections without changing model input', async () => {
+	const prompt = makePromptStruct()
+	prompt.char_prompt.encrypted = true
+	prompt.char_prompt.text[0].content = 'private character prompt'
+	prompt.char_prompt.additional_chat_log = [{
+		role: 'system', content: 'private extra context',
+		files: [{ name: 'private.txt', buffer: new Uint8Array([1, 2]), mime_type: 'text/plain' }],
+	}]
+	prompt.world_prompt.text = [{ content: 'public world' }, { content: 'private world', encrypted: true }]
+	prompt.other_chars_prompts.other = { encrypted: true, text: [{ content: 'private other character' }] }
+	prompt.other_personas_prompts.other = { text: [{ content: 'private persona', encrypted: true }] }
+	prompt.plugin_prompts.demo = { text: [{ content: 'private tool', encrypted: true }] }
+	const recorder = createPromptRequestRecorder()
+	const aiSource = {
+		/**
+		 * 构建记录用出站结构。
+		 * @param {object} value 记录副本。
+		 * @returns {object} 模拟出站结构。
+		 */
+		BuildPrompt(value) {
+			return { char: value.char_prompt, world: value.world_prompt, others: value.other_chars_prompts,
+				personas: value.other_personas_prompts, plugins: value.plugin_prompts }
+		},
+	}
+	await recorder.record(prompt, { aiSource })
+	await recorder.record(prompt, { aiSource })
+	const first = recorder.requests[0]
+	assertEquals(JSON.stringify(first).includes('private'), false)
+	assert(first.systemPrompt.includes('public world'))
+	assert(first.systemPrompt.includes('meow'))
+	assertEquals(first.messages[0].content, 'hi')
+	assertEquals(first.messages[1].files, undefined)
+	assertEquals(first.messages[1].id, recorder.requests[1].messages[1].id)
+	assertEquals(first.snapshot, recorder.requests[1].snapshot)
+	assertEquals(prompt.char_prompt.text[0].content, 'private character prompt')
+	assertEquals(prompt.char_prompt.additional_chat_log[0].content, 'private extra context')
+	assertEquals(prompt.char_prompt.additional_chat_log[0].files.length, 1)
+	assertEquals(prompt.world_prompt.text[1].content, 'private world')
 })
