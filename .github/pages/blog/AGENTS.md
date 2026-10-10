@@ -90,5 +90,4 @@ Mermaid diagrams inherit the markdown pipeline's theme (node fills = `--color-ba
 
 - Playwright (pages server): `deno run --allow-scripts --allow-all -c ./deno.json ./.github/pages/test/frontend/run.mjs blog` — spec at `.github/pages/test/frontend/blog.spec.mjs`. The server generates `index.json` on start; run `python3 tools/generate_index.py` manually to validate content without a server.
 - Affected repo checks: `html_meta` (full og meta set + `<main>` landmark in both HTML files, poetic og copy), `i18n_refs` / `i18n_keys` (locale keys), `theme_radius` / `theme_color`, `text_lf` (LF endings, single trailing newline — applies to article `.md` files too), `jsdoc_no_english` (Chinese JSDoc summaries in `.mjs`).
-- After editing locale JSONs, keep zh-CN/en-UK value kinds in sync (string vs `{ "aria-label": … }` objects).
-- New chrome `data-i18n` keys also need a **ja-JP** entry: the page-watch locale task cycles `zh-CN` → `ja-JP` → `en-UK`, and a key missing from ja-JP falls back to zh-CN, tripping `[test:locale] … forbidden-script` on any visible Han text (including `aria-label`). Remaining locales are synced by `update-locales.py` in CI.
+- New chrome `data-i18n` keys also need a **ja-JP** entry before running the spec locally: the page-watch locale task cycles `zh-CN` → `ja-JP` → `en-UK`. Remaining locales are synced by `update-locales.py` in CI.

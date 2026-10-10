@@ -1,3 +1,9 @@
+---
+description: ShellAssist default interface factory for characters (GetDefaultShellAssistInterface)
+globs: src/public/parts/shells/shellassist/**
+alwaysApply: false
+---
+
 # ShellAssist factory
 
 Characters should reuse `GetDefaultShellAssistInterface(charAPI, options)` from `src/default_interface/main.mjs` instead of copying the shell history conversion, world prompt, or command plugin. Declare it in `interfaces`; the factory resolves identity and `interfaces.chat.GetReply` on every `Assist` call, so both may appear after the character has loaded.

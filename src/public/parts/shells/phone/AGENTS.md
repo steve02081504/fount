@@ -74,10 +74,4 @@ The client must:
 
 ## Verification
 
-No live server needed: `deno test --allow-all --allow-scripts -c ./deno.json ./src/public/parts/shells/phone/test/pure/` and `deno lint -c ./deno.json src/public/parts/shells/phone`. After changes, also run the standard pure scanners (`scanTextLf`, `scanMsLiteral`, `scanI18nKeyStructure`, `scanAgentsMdEnglish`) and the module-graph probe `probeShellPart({ partPath: 'shells/phone' })` (`src/scripts/test/shellLoadProbe.mjs`).
-
-## Not implemented yet
-
-- `assist` flow (wake → `chatReplyRequest` → streamed reply): build the request like `shells/code/src/request.mjs`, prepend the live context as a system log, stream deltas back.
-- `plugins/phone` tool surface (`<phone-eval>`, `<phone-context>`, `<phone-frame>`, `<phone-call>`) and `GetPrompt` context injection.
-- Frontend page (`public/index.html`) + Playwright smoke — API-only for now.
+`fount test shells/phone` (pure device-manager tests) plus `fount test checks`. Not implemented yet: the phone-initiated `assist` flow (currently answers `assist_error`), a `plugins/phone` tool surface, and a frontend page — the shell is API-only.
