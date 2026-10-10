@@ -672,7 +672,8 @@ function translateSingularElement(element) {
 		}
 		else {
 			const nested = getNestedValue(i18n, key)
-			if (!Array.isArray(nested) && nested instanceof Object) {
+			// 顶层 switch 叶子是字符串叶子（按参数选分支），不是 applicator 对象
+			if (!Array.isArray(nested) && nested instanceof Object && !isSwitchValue(nested)) {
 				if (!Object.keys(nested).length) break
 				const attributes = ['placeholder', 'title', 'label', 'value', 'alt', 'aria-label']
 				for (const attr of attributes) {
