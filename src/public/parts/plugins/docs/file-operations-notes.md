@@ -1,0 +1,13 @@
+# file-operations / code-execution Internals
+
+Traps inside the `file-operations` and `code-execution` plugins. General plugin guide: [AGENTS.md](../AGENTS.md).
+
+## Pre-read & execution target
+
+- **Pre-read execution target**: a tool result that can carry file diagnostics (shell/JS runs, file ops) should stamp `extension.executionTarget = { machine, workdir | null }` at execution time — build it with `file-operations/src/target.mjs` `executionTargetOf(resolveTarget(args, params))` (local JS uses `{ machine:'0', workdir: process.cwd() }` since it runs in-process; remote JS leaves `workdir: null`). `file-operations` `src/preload.mjs` reads each trailing output's diagnostics against its own target instead of the request workdir, so a tool that ran elsewhere is pre-read there. Async producers pass the target through task `meta.executionTarget` so completion notifications / `<await-async>` settled items carry it; a target with `workdir: null` only matches absolute paths.
+- **Pre-read candidate coverage**: `mentioned_files.mjs` `extractPathCandidates` returns `{ path, start, end }` and `collectMentionedFiles` skips any candidate whose `start` falls inside an already-resolved candidate's span — a nested mention like `"…\Downloads\docs\detection_coordinates(2).txt"` no longer probes its ancestor-dir prefixes (`…\Downloads\`) or per-separator fragments, keeping one RPC per real hit instead of hundreds. When changing candidate extraction/ordering keep the invariant "full path first, prefixes after" (sort same-start longest-first); binary attachments get their `mime_type` from `src/scripts/mimetype.mjs` `mimetypeFromBufferAndName` (magic bytes + filename), not a bare `octet-stream`. A file above `PRELOAD_MAX_FILE_BYTES` is never loaded — it is reported unread; a capped directory listing still reports its `total`.
+
+## Search & edit
+
+- **WASI ripgrep root**: for path globs relative to a search directory, call `npm:ripgrep` with `preopens: { '.': root }` and search `.`; passing an absolute root as a positional path changes how slash-containing globs match. A positive `--glob` can override `.gitignore`, so when file search must respect ignores, list eligible files first and match their root-relative paths afterward. `--files` never lists empty directories; directory patterns need filesystem enumeration.
+- **File-write tag bodies are literal**: in `file-operations`, `<search>` / `<replace>` / `<override-file>` bodies preserve leading indentation, tabs and trailing spaces verbatim; only one tag-boundary newline on each side is stripped (`normalizeTagBody`, `src/edit_safety.mjs`). Never `.trim()` them — trimming search but not replace desyncs the two and shifts indentation on every edit.
