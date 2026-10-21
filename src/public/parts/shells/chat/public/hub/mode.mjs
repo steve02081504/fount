@@ -10,7 +10,7 @@ import { mountTemplate } from '../src/templates.mjs'
 import { setPinsBookmarksWrapVisible, updateStatusBanners } from './banners.mjs'
 import { store, setState } from './core/state.mjs'
 import { updateFriendsHash } from './core/urlHash.mjs'
-import { bumpViewEpoch } from './core/viewEpoch.mjs'
+import { bumpViewEpoch, currentViewEpoch } from './core/viewEpoch.mjs'
 import { loadFriendsList, renderFriendsColumn } from './friendsList.mjs'
 import { cancelScheduledChannelRefresh } from './messages/channelRefreshScheduler.mjs'
 import { mountMessagesPlaceholder } from './messages/messagesPlaceholder.mjs'
@@ -45,15 +45,25 @@ export function setActiveModeTab(mode) {
 export async function setMode(mode) {
 	// 群模式由 selectGroup 统一驱动并已递增代际；其余模式（好友/收件箱/群发现）在此递增，
 	// 使上一视图在途的异步渲染在跨视图落地前失效。
-	if (mode !== 'groups') bumpViewEpoch()
+	const epoch = mode === 'groups' ? currentViewEpoch() : bumpViewEpoch()
+	/**
+	 * 本次模式切换是否仍是当前目标：快速「群 → 收件箱」交替时，群切换可能在收件箱落地之后
+	 * 才走完自己的动态 import，若照旧写入 currentMode 会把 data-surface 抢回群模式（频道栏、
+	 * 主标题栏重新出现，而地址栏还停在 #inbox）。每次跨过 await 都要重新确认。
+	 * @returns {boolean} 未被更新的视图切换顶替则为 true
+	 */
+	const stillCurrent = () => currentViewEpoch() === epoch
 	if (mode !== 'inbox') {
 		const { closeInboxView } = await import('./inboxView.mjs')
+		if (!stillCurrent()) return
 		closeInboxView()
 	}
 
+	if (!stillCurrent()) return
 	setState('context.currentMode', mode)
 	setActiveModeTab(mode)
 	const { showHubNavPane } = await import('./hubPane.mjs')
+	if (!stillCurrent()) return
 	showHubNavPane()
 
 	if (mode === 'inbox') {
@@ -71,6 +81,7 @@ export async function setMode(mode) {
 	// 群侧栏随后直接渲染频道树（或清空）；无需先下载/渲染马上被移除的模板。
 	if (mode === 'groups') container.replaceChildren()
 	else await mountTemplate(container, 'hub/nav/side_muted', { i18nKey: 'chat.hub.loading' })
+	if (!stillCurrent()) return
 	document.getElementById('member-list').innerHTML = ''
 	document.getElementById('info-card-host').innerHTML = ''
 
@@ -90,11 +101,13 @@ export async function setMode(mode) {
 		setState('context.currentChannelId', null)
 		setState('context.currentState', null)
 		const { disableComposer } = await import('./messages/composerController.mjs')
+		if (!stillCurrent()) return
 		disableComposer()
 		document.getElementById('channel-name-display').dataset.i18n = 'chat.hub.friends.header'
 	}
 
 	const { refreshHubHeaderButtons } = await import('./messages/composerController.mjs')
+	if (!stillCurrent()) return
 	refreshHubHeaderButtons()
 	if (mode === 'friends') {
 		// 先挂侧栏（含 #friends-search-input），再挂空态 CTA——否则 label[for] / focus 会打到尚未存在的 input。
@@ -102,6 +115,7 @@ export async function setMode(mode) {
 			await renderHubChannelSidebar(store.context.currentState)
 		else
 			await renderFriendsColumn(await loadFriendsList())
+		if (!stillCurrent()) return
 		if (!keepPrivateGroupSession)
 			await mountMessagesPlaceholder(document.getElementById('messages'), 'hub/empty/friends')
 	}
@@ -113,6 +127,7 @@ export async function setMode(mode) {
 		}
 		else {
 			await renderChannelList(store.context.currentState)
+			if (!stillCurrent()) return
 			await renderMemberList(store.context.currentState)
 			await renderGroupInfoCard(store.context.currentState)
 		}

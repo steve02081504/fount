@@ -883,6 +883,7 @@
 						"src/public/parts/shells/chat/test/frontend/navigation.spec.mjs",
 						"src/public/parts/shells/chat/public/hub/serverBar.mjs",
 						"src/public/parts/shells/chat/public/hub/groupSelection.mjs",
+						"src/public/parts/shells/chat/public/hub/{mode,inboxView,discoveryPanel}.mjs",
 						"src/public/pages/scripts/components/selectionController.mjs",
 						"src/public/parts/shells/chat/public/hub/sidebar/**"
 					]

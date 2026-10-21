@@ -107,6 +107,8 @@ export async function selectChannel(channelId) {
 	}
 	disableComposer()
 	const { showHubMainPane } = await import('../hubPane.mjs')
+	// 动态 import 会让出控制权：期间用户可能已切到收件箱/好友，此时再切主屏会把画面抢回来。
+	if (!stillCurrent()) return
 	showHubMainPane()
 	warmCharEntityHashCache().catch(handleError('chat.hub.warmCharCacheFailed'))
 	const titleEl = document.getElementById('channel-name-display')
@@ -125,6 +127,7 @@ export async function selectChannel(channelId) {
 	}
 	const headerIcon = document.querySelector('.main-header-icon')
 	const { renderHubChannelSidebar } = await import('./index.mjs')
+	if (!stillCurrent()) return
 	// 频道树和图标不阻塞草稿/消息请求；完成后只更新仍选中的频道。
 	renderHubChannelSidebar(store.context.currentState).catch(handleError('chat.hub.operationFailed'))
 	channelTypeIconHtml(channelType).then(iconHtml => {

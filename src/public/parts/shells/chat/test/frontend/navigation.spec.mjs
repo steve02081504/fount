@@ -37,6 +37,23 @@ test.describe('Chat hub navigation', () => {
 		await expect(page.locator('.main-header')).toBeHidden()
 	})
 
+	test('a superseded mode switch cannot restore its own hash or surface', async ({ page, baseUrl, apiKey }) => {
+		await openFreshGroupChannel(page, baseUrl, apiKey)
+		await waitForHub(page, baseUrl)
+		// 交错两次模式切换：先起的「好友」在被「收件箱」顶替后必须整段作废。
+		// 回归：旧实现只在开头递增视图代际、之后各段 await 恢复时照旧写 currentMode / hash，
+		// 于是后起的收件箱先落地、先起的切换随后把画面与地址栏拽回 #friends。
+		await page.evaluate(async () => {
+			const { setMode } = await import('/parts/shells:chat/hub/mode.mjs')
+			const superseded = setMode('friends')
+			const inbox = setMode('inbox')
+			await Promise.all([superseded, inbox])
+		})
+		await expect(page).toHaveURL(/#inbox/)
+		await expect(page.locator('body')).toHaveAttribute('data-surface', 'inbox')
+		await expect(page.locator('.inbox-panel')).toBeVisible()
+	})
+
 	test('switches between groups and friends mode', async ({ page, baseUrl, apiKey }) => {
 		const { groupId } = await openFreshGroupChannel(page, baseUrl, apiKey)
 		await page.route(`**/groups/${groupId}/federation/catchup`, route => route.fulfill({ json: { federationActive: true, peerRosterSize: 0 } }))

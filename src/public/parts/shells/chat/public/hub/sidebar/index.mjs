@@ -91,9 +91,10 @@ async function paintGroupHubChrome(state, stillCurrent) {
  * 进入默认或预设频道。
  * @param {object} state 群 state
  * @param {string | null} presetChannelId 预设频道
+ * @param {() => boolean} stillCurrent 选择仍有效的守卫
  * @returns {Promise<void>}
  */
-async function activateGroupChannel(state, presetChannelId) {
+async function activateGroupChannel(state, presetChannelId, stillCurrent) {
 	const rootChannelId = state.groupSettings?.rootChannelId
 	/**
 	 * @param {string | null | undefined} id 候选频道 id
@@ -109,9 +110,12 @@ async function activateGroupChannel(state, presetChannelId) {
 	if (targetChannelId) await selectChannel(targetChannelId)
 	else {
 		await renderChannelList(state)
+		// 渲染期间用户可能已切走：再写频道/hash 会把地址栏从 #inbox 拽回本群。
+		if (!stillCurrent()) return
 		setState('context.currentChannelId', null)
 		updateHash(store.context.currentGroupId, null)
 		const { disableComposer } = await import('../messages/composerController.mjs')
+		if (!stillCurrent()) return
 		disableComposer()
 		await showNoChannelMainPane(state)
 		updateStatusBanners()
@@ -171,7 +175,7 @@ export async function selectGroup(groupId, presetChannelId = null) {
 		updateHash(groupId, channelId)
 		await paintGroupHubChrome(state, stillCurrent)
 		if (!stillCurrent()) return
-		await activateGroupChannel(state, channelIdFromHashOr(groupId, channelId))
+		await activateGroupChannel(state, channelIdFromHashOr(groupId, channelId), stillCurrent)
 	}
 	catch (error) {
 		if (!stillCurrent()) return

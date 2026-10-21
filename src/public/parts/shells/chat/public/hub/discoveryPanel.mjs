@@ -78,7 +78,7 @@ async function loadDiscoveryEntries(root) {
 
 /** @returns {Promise<void>} 激活群发现主内容页。 */
 export async function activateDiscoveryView() {
-	bumpViewEpoch()
+	const epoch = bumpViewEpoch()
 	updateDiscoveryHash()
 	cancelScheduledChannelRefresh()
 	closeGroupWebSocket()
@@ -88,10 +88,17 @@ export async function activateDiscoveryView() {
 	setState('context.currentState', null)
 	setPinsBookmarksWrapVisible(false)
 	updateStatusBanners()
+	/**
+	 * 本次群发现激活是否仍是当前视图：激活期间的动态 import 与模板挂载会让出控制权，
+	 * 用户此时可能已切走；后续 DOM 与 surface 写入必须作废，否则会把画面拽回群发现。
+	 * @returns {boolean} 未被更新的视图切换顶替则为 true
+	 */
+	const stillCurrent = () => currentViewEpoch() === epoch
 
 	const channelList = document.getElementById('channel-list')
 	if (channelList)
 		await mountTemplate(channelList, 'hub/nav/side_muted', { i18nKey: 'chat.hub.discovery.sidebarHint' })
+	if (!stillCurrent()) return
 	document.getElementById('member-list').replaceChildren()
 	document.getElementById('info-card-host').replaceChildren()
 	document.getElementById('group-name-display').dataset.i18n = 'chat.hub.discovery.title'
@@ -99,6 +106,7 @@ export async function activateDiscoveryView() {
 
 	const messagesHost = document.getElementById('messages')
 	await mountMessagesPlaceholder(messagesHost, 'hub/discovery/panel')
+	if (!stillCurrent()) return
 	const root = messagesHost.querySelector('.discovery-page')
 	if (!(root instanceof HTMLElement)) return
 	root.querySelector('[data-discovery-refresh]')?.addEventListener('click', () => {
@@ -113,6 +121,7 @@ export async function activateDiscoveryView() {
 	})
 
 	const { disableComposer, refreshHubHeaderButtons } = await import('./messages/composerController.mjs')
+	if (!stillCurrent()) return
 	disableComposer()
 	refreshHubHeaderButtons()
 	await loadDiscoveryEntries(root)
