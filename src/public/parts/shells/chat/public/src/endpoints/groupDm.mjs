@@ -22,7 +22,7 @@ export async function createDirectMessageByPubKeys(myPubKeyHex, peerPubKeyHex, o
 			template: 'dm',
 			myPubKeyHex,
 			peerPubKeyHex,
-			...options.dmLinkProof || {},
+			...options.dmLinkProof,
 			...options.friendBinding ? { friendBinding: options.friendBinding } : {},
 			...options.peerNodeHash ? { peerNodeHash: options.peerNodeHash } : {},
 		},
