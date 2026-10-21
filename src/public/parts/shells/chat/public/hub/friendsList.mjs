@@ -292,7 +292,16 @@ export async function renderFriendsColumn(friends) {
 		const { groupId } = el.dataset
 		const row = friends.find(f => f.groupId === groupId)
 		if (!row) return
-		el.addEventListener('click', () => void enterFriendChat({ groupId: row.groupId, binding: row.binding }))
+		el.addEventListener('click', () => {
+			// 对端从未入群的单侧 DM（旧版本建出的、或建群时对端离线）：走 dispatchFriendChat，
+			// 它会按 sessionTag 复用同一个群并重投邀请；正常 DM 直接进会话。
+			const peerMissing = !row.charname
+				&& store.sidebar.groups.find(group => group.groupId === row.groupId)?.memberCount === 1
+			if (peerMissing)
+				void dispatchFriendChat({ type: 'user', entityHash: row.key, displayName: row.displayName })
+			else
+				void enterFriendChat({ groupId: row.groupId, binding: row.binding })
+		})
 		el.addEventListener('contextmenu', (event) => showFriendContextMenu(event, row))
 		bindFriendProfileHover(el, {
 			entityHash: row.key,
