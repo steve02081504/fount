@@ -2010,8 +2010,8 @@
 				"aria-label": "Einstellungskategorien"
 			},
 			"addServerTooltip": {
-				"title": "Erstellen Sie eine Gruppe oder treten Sie einer bei",
-				"tip": "Erstellen Sie eine Gruppe oder treten Sie einer bei"
+				"title": "Gruppe erstellen, einer Gruppe beitreten oder einen Freund hinzufügen",
+				"tip": "Gruppe erstellen, einer Gruppe beitreten oder einen Freund hinzufügen"
 			},
 			"pinsTitle": "Nach oben stecken",
 			"bookmarksTitle": "Lesezeichen",
@@ -2419,7 +2419,7 @@
 				"createDescription": "Fangen Sie bei Null an und laden Sie Freunde ein",
 				"join": "Treten Sie der Gruppe bei",
 				"joinDescription": "Gruppen-ID verwenden",
-				"subtitle": "Erstellen Sie eine neue Gruppe oder treten Sie einer bestehenden Gruppe per ID bei",
+				"subtitle": "Gruppe erstellen oder einer Gruppe beitreten – oder nach Freunden suchen",
 				"title": "Gruppe"
 			},
 			"membersDigest": {

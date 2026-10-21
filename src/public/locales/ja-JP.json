@@ -2010,8 +2010,8 @@
 				"aria-label": "設定カテゴリ"
 			},
 			"addServerTooltip": {
-				"title": "グループを作成または参加する",
-				"tip": "グループを作成または参加する"
+				"title": "グループの作成・参加、友達の追加",
+				"tip": "グループの作成・参加、友達の追加"
 			},
 			"pinsTitle": "上にピンで留める",
 			"bookmarksTitle": "ブックマーク",
@@ -2419,7 +2419,7 @@
 				"createDescription": "ゼロから始めて友達を招待する",
 				"join": "グループに参加する",
 				"joinDescription": "グループIDを使用する",
-				"subtitle": "新しいグループを作成するか、ID で既存のグループに参加できます",
+				"subtitle": "グループの作成や参加、友達の検索ができます",
 				"title": "グループ"
 			},
 			"membersDigest": {

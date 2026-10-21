@@ -2010,8 +2010,8 @@
 				"aria-label": "Secções de definições"
 			},
 			"addServerTooltip": {
-				"title": "Criar or join a group",
-				"tip": "Criar or join a group"
+				"title": "Criar um grupo, entrar num grupo ou adicionar um amigo",
+				"tip": "Criar um grupo, entrar num grupo ou adicionar um amigo"
 			},
 			"pinsTitle": "Fixar no topo",
 			"bookmarksTitle": "Marcador",
@@ -2419,7 +2419,7 @@
 				"createDescription": "Comece do zero e convide amigos",
 				"join": "Junte-se ao grupo",
 				"joinDescription": "Usar ID do grupo",
-				"subtitle": "Criar a New group or join an existing group by ID",
+				"subtitle": "Criar ou entrar num grupo, ou pesquisar amigos",
 				"title": "Grupo"
 			},
 			"membersDigest": {
@@ -2496,7 +2496,7 @@
 			"friends": {
 				"contextNewChat": "Novo bate-papo",
 				"count": "${count} amigos",
-				"emptyAction": "Pesquisar for a role or user",
+				"emptyAction": "Pesquisar um papel ou utilizador",
 				"emptyDescription": "Procure utilizadores no papel local ou noutros nós; também pode abrir o cartão de perfil do membro no chat do grupo para iniciar uma mensagem privada.",
 				"emptyTitle": "Inicie uma nova conversa",
 				"header": "Amigos",

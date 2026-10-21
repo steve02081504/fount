@@ -2010,8 +2010,8 @@
 				"aria-label": "Sezioni impostazioni"
 			},
 			"addServerTooltip": {
-				"title": "Crea o unisciti a un gruppo",
-				"tip": "Crea o unisciti a un gruppo"
+				"title": "Crea o unisciti a un gruppo, o aggiungi un amico",
+				"tip": "Crea o unisciti a un gruppo, o aggiungi un amico"
 			},
 			"pinsTitle": "Appuntato",
 			"bookmarksTitle": "Segnalibri",
@@ -2419,7 +2419,7 @@
 				"createDescription": "Inizia da zero e invita gli amici",
 				"join": "Unisciti al gruppo",
 				"joinDescription": "Utilizza l'ID del gruppo",
-				"subtitle": "Crea un nuovo gruppo o unisciti a un gruppo esistente tramite ID",
+				"subtitle": "Crea o unisciti a un gruppo, oppure cerca amici",
 				"title": "Gruppo"
 			},
 			"membersDigest": {

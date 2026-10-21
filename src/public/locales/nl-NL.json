@@ -2010,8 +2010,8 @@
 				"aria-label": "Instellingscategorieën"
 			},
 			"addServerTooltip": {
-				"title": "Maak een groep of word lid van een groep",
-				"tip": "Maak een groep of word lid van een groep"
+				"title": "Groep maken, lid worden of een vriend toevoegen",
+				"tip": "Groep maken, lid worden of een vriend toevoegen"
 			},
 			"pinsTitle": "speld naar boven",
 			"bookmarksTitle": "Bladwijzer",
@@ -2419,7 +2419,7 @@
 				"createDescription": "Begin helemaal opnieuw en nodig vrienden uit",
 				"join": "Sluit je aan bij de groep",
 				"joinDescription": "Gebruik groeps-ID",
-				"subtitle": "Maak een nieuwe groep aan of word lid van een bestaande groep via ID",
+				"subtitle": "Maak of word lid van een groep, of zoek vrienden",
 				"title": "Groep"
 			},
 			"membersDigest": {

@@ -2010,8 +2010,8 @@
 				"aria-label": "Danh mục cài đặt"
 			},
 			"addServerTooltip": {
-				"title": "Tạo hoặc tham gia một nhóm",
-				"tip": "Tạo hoặc tham gia một nhóm"
+				"title": "Tạo nhóm, tham gia nhóm hoặc thêm bạn bè",
+				"tip": "Tạo nhóm, tham gia nhóm hoặc thêm bạn bè"
 			},
 			"pinsTitle": "ghim lên trên",
 			"bookmarksTitle": "đánh dấu trang",
@@ -2419,7 +2419,7 @@
 				"createDescription": "Bắt đầu lại từ đầu và mời bạn bè",
 				"join": "Tham gia nhóm",
 				"joinDescription": "Sử dụng ID nhóm",
-				"subtitle": "Tạo nhóm mới hoặc tham gia nhóm hiện có theo ID",
+				"subtitle": "Tạo hoặc tham gia nhóm, hoặc tìm kiếm bạn bè",
 				"title": "Nhóm"
 			},
 			"membersDigest": {

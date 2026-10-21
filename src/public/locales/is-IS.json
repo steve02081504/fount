@@ -2010,8 +2010,8 @@
 				"aria-label": "Stillingaflokkar"
 			},
 			"addServerTooltip": {
-				"title": "Búa til eða ganga í hóp",
-				"tip": "Búa til eða ganga í hóp"
+				"title": "Búa til hóp, ganga í hóp eða bæta við vini",
+				"tip": "Búa til hóp, ganga í hóp eða bæta við vini"
 			},
 			"pinsTitle": "Pinna ofan á",
 			"bookmarksTitle": "Bókamerki",
@@ -2419,7 +2419,7 @@
 				"createDescription": "Byrjaðu frá Grunnuri og bjóddu vinum",
 				"join": "Ganga í hóp",
 				"joinDescription": "Notaðu hópauðkenni",
-				"subtitle": "Búa til nýjan hóp eða taka þátt í núverandi hópi með auðkenni",
+				"subtitle": "Búa til eða ganga í hóp, eða leita að vinum",
 				"title": "Hóp"
 			},
 			"membersDigest": {

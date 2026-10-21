@@ -2010,8 +2010,8 @@
 				"aria-label": "설정 분류"
 			},
 			"addServerTooltip": {
-				"title": "그룹 만들기 또는 가입",
-				"tip": "그룹 만들기 또는 가입"
+				"title": "그룹 만들기·가입, 친구 추가",
+				"tip": "그룹 만들기·가입, 친구 추가"
 			},
 			"pinsTitle": "상단에 고정",
 			"bookmarksTitle": "서표",
@@ -2419,7 +2419,7 @@
 				"createDescription": "처음부터 시작하고 친구를 초대하세요",
 				"join": "그룹에 가입",
 				"joinDescription": "그룹 ID 사용",
-				"subtitle": "새 그룹을 만들거나 ID로 기존 그룹에 가입하세요.",
+				"subtitle": "그룹을 만들거나 가입하고, 친구를 검색할 수도 있습니다",
 				"title": "그룹"
 			},
 			"membersDigest": {

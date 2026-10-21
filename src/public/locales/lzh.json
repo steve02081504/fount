@@ -2010,8 +2010,8 @@
 				"aria-label": "樞機分區"
 			},
 			"addServerTooltip": {
-				"title": "立或載入群組",
-				"tip": "立或載入群組"
+				"title": "立群組、入群組，或納知交",
+				"tip": "立群組、入群組，或納知交"
 			},
 			"pinsTitle": "高懸",
 			"bookmarksTitle": "書籤",
@@ -2419,7 +2419,7 @@
 				"createDescription": "從零開始，邀請好友",
 				"join": "載入群組",
 				"joinDescription": "以群組 ID",
-				"subtitle": "立新群組，或以 ID 入既有群組",
+				"subtitle": "立或入群組，亦可尋知交",
 				"title": "群組"
 			},
 			"membersDigest": {

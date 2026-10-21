@@ -2010,8 +2010,8 @@
 				"aria-label": "⚙️📂"
 			},
 			"addServerTooltip": {
-				"title": "➕👥",
-				"tip": "➕👥"
+				"title": "🆕👥 · ➕👥 · ➕👤",
+				"tip": "🆕👥 · ➕👥 · ➕👤"
 			},
 			"pinsTitle": "📌",
 			"bookmarksTitle": "🔖",
@@ -2419,7 +2419,7 @@
 				"createDescription": "🆕0️⃣ · 📨👫",
 				"join": "➕👥",
 				"joinDescription": "🆔👥",
-				"subtitle": "➕🆕👥 · 🆔➕",
+				"subtitle": "🆕👥 · ➕👥 · 🔍👤",
 				"title": "👥"
 			},
 			"membersDigest": {

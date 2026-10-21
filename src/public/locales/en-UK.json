@@ -2010,8 +2010,8 @@
 				"aria-label": "Settings sections"
 			},
 			"addServerTooltip": {
-				"title": "Create or join a group",
-				"tip": "Create or join a group"
+				"title": "Create a group, join a group, or add a friend",
+				"tip": "Create a group, join a group, or add a friend"
 			},
 			"pinsTitle": "Pinned",
 			"bookmarksTitle": "Bookmarks",
@@ -2419,7 +2419,7 @@
 				"createDescription": "Start from scratch and invite friends",
 				"join": "Join group",
 				"joinDescription": "Use group ID",
-				"subtitle": "Create a New group or join an existing group by ID",
+				"subtitle": "Create or join a group, or search for friends",
 				"title": "Group"
 			},
 			"membersDigest": {

@@ -2010,8 +2010,8 @@
 				"aria-label": "Catégories de paramètres"
 			},
 			"addServerTooltip": {
-				"title": "Créer ou rejoindre un groupe",
-				"tip": "Créer ou rejoindre un groupe"
+				"title": "Créer ou rejoindre un groupe, ou ajouter un ami",
+				"tip": "Créer ou rejoindre un groupe, ou ajouter un ami"
 			},
 			"pinsTitle": "épingler en haut",
 			"bookmarksTitle": "Signets",
@@ -2419,7 +2419,7 @@
 				"createDescription": "Repartir de zéro et inviter des amis",
 				"join": "Rejoindre le groupe",
 				"joinDescription": "Utiliser l'ID de groupe",
-				"subtitle": "Créez un nouveau groupe ou rejoignez un groupe existant par ID",
+				"subtitle": "Créez ou rejoignez un groupe, ou recherchez des amis",
 				"title": "Groupe"
 			},
 			"membersDigest": {
