@@ -83,7 +83,7 @@ chat shell 提供联邦群组与 DM、Hub 主壳、实体身份与 EVFS 文件�
 |------|------|------|
 | GET | `P/viewer?groupId=` | 当前 operator 实体 + profile + `agents[]`；带 `groupId` 时附群内视角 |
 | GET | `P/personal-lists` | `{ entries: [{ scope, value, kind: 'block'｜'hide' }] }` |
-| GET | `P/entities/search?q=&limit=` | `q` ≥2 字符；handle 精确 / 展示名模糊，在信任图多跳搜实体 → `{ query, entities[] }` |
+| GET | `P/entities/search?q=&limit=` | `q` ≥2 字符；128 位实体 ID 精确（可带 `@` 前缀、大小写不敏感，直接向 owner 节点拉 profile）/ handle 精确 / 展示名模糊，在信任图多跳搜实体 → `{ query, entities[] }` |
 | GET / PUT | `P/entities/:entityHash` | 读 / 写实体 identity + profile。本机可写实体直写；对远端实体声明主人身份时经主人 EVFS `owned/{target}/profile_update/*` 发布，返回 `202 { queued, contentHash, ts }` |
 | GET | `P/entities/:entityHash/stats?groupId=` | 实体统计（可按群 scoped） |
 | POST | `P/entities/:entityHash/heartbeat` | 在线心跳 |

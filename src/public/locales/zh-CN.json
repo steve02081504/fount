@@ -2010,8 +2010,8 @@
 				"aria-label": "设置分类"
 			},
 			"addServerTooltip": {
-				"title": "新建或加入群组",
-				"tip": "新建或加入群组"
+				"title": "新建群组、加入群组或添加好友",
+				"tip": "新建群组、加入群组或添加好友"
 			},
 			"pinsTitle": "置顶",
 			"bookmarksTitle": "书签",
@@ -2419,7 +2419,7 @@
 				"createDescription": "从零开始，邀请好友",
 				"join": "加入群组",
 				"joinDescription": "使用群组 ID",
-				"subtitle": "创建新群组，或通过 ID 加入已有群组",
+				"subtitle": "创建或加入群组，也可以搜索好友",
 				"title": "群组"
 			},
 			"membersDigest": {

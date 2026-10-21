@@ -59,4 +59,4 @@ Deeper UI (profile card, unread/inbox/aliases, cabinet bind perms): [docs/ui-det
 
 ## Search
 
-Hub `#friends` search: local `chars/` hits → `dispatchFriendChat({ type: 'char' })`. Group creation passes a `friendBinding` of either `{ charname }` or `{ entityHash }` — never both; `POST …/groups` ensures the agent entity for a `charname` binding. Entity search hits carrying `charPartName` are local agents, not remote-user DMs. Network handle search: `GET …/entities/search`.
+Hub `#friends` search: local `chars/` hits → `dispatchFriendChat({ type: 'char' })`. Group creation passes a `friendBinding` of either `{ charname }` or `{ entityHash }` — never both; `POST …/groups` ensures the agent entity for a `charname` binding. Entity search hits carrying `charPartName` are local agents, not remote-user DMs. Network handle search: `GET …/entities/search`; a full 128-hex entity ID (optional `@`, case-insensitive) resolves directly from its owner node, so pasted IDs work without a network-wide index.

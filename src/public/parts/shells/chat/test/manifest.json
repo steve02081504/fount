@@ -189,7 +189,7 @@
 	"suites": [
 		{
 			"name": "pure",
-			"expected": "1m57s",
+			"expected": "8m17s",
 			"trigger": [
 				"shellBackend",
 				"shellPureExtra",
@@ -209,7 +209,7 @@
 		},
 		{
 			"name": "integration",
-			"expected": "2m38s",
+			"expected": "7m10s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -878,7 +878,7 @@
 				},
 				{
 					"name": "navigation",
-					"expected": "2m54s",
+					"expected": "5m35s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/navigation.spec.mjs",
 						"src/public/parts/shells/chat/public/hub/serverBar.mjs",

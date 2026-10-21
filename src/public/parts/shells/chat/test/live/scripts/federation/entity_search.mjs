@@ -1,5 +1,5 @@
 /**
- * 联邦双节点：A 设 handle → 链路预热 → B 按名搜索到 A → 验签含 activePubKeyHex。
+ * 联邦双节点：A 设 handle → 链路预热 → B 先按全量实体 ID 直连解析（@ + 大写）→ 再按名搜索到 A → 验签含 activePubKeyHex。
  * 多跳转发正确性由 fount-p2p part_query integration 覆盖；此处验用户 room 一跳可达 + EVFS 复核闭环。
  */
 import {
@@ -32,6 +32,27 @@ if (put.status !== 200)
 const pubHandle = String(put.json?.profile?.handle || '').toLowerCase()
 if (pubHandle !== handle)
 	throw new Error(`A handle not saved: got ${pubHandle}`)
+
+console.log('=== NodeB: search by full entity id ===')
+await testCase('B resolves A by full entityHash id without a handle', async () => {
+	const found = await pollUntil(async () => {
+		const query = encodeURIComponent(`@${entityA.toUpperCase()}`)
+		const search = await Api(FedB, 'GET', `/entities/search?q=${query}&limit=20`)
+		if (search.status !== 200) {
+			console.log(`  id search status=${search.status}`)
+			return false
+		}
+		const entities = search.json?.entities || []
+		const hit = entities.find(row => String(row.entityHash || '').toLowerCase() === entityA)
+		if (!hit) {
+			console.log(`  no id hit yet (n=${entities.length})`)
+			return false
+		}
+		console.log(`  id hit name=${hit.name} pub=${String(hit.activePubKeyHex || '').slice(0, 8)}…`)
+		return /^[\da-f]{64}$/i.test(String(hit.activePubKeyHex || ''))
+	}, 90, 3)
+	return found
+})
 
 console.log('=== NodeB: search by handle ===')
 await testCase('B finds A by handle with verified activePubKeyHex', async () => {

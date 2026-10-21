@@ -1,3 +1,4 @@
+import { fetchViewerEntityHash } from 'fount/scripts/test/playwright/api.mjs'
 import { waitForHubReady } from 'fount/scripts/test/playwright/ready.mjs'
 
 import {
@@ -195,6 +196,27 @@ test.describe('Chat hub navigation', () => {
 		await expect(picker).toBeVisible()
 		await picker.locator('[data-cancel]').click()
 		await expect(picker).toHaveCount(0)
+	})
+
+	test('server picker opens friend search by id and name', async ({ page, baseUrl }) => {
+		await waitForHub(page, baseUrl)
+		await page.locator('#add-server-button').click()
+		const picker = page.locator('.server-action-picker-box')
+		await expect(picker.locator('[data-action="friend"]')).toBeVisible()
+		await picker.locator('[data-action="friend"]').click()
+		await expect(page).toHaveURL(/#friends/)
+		await expect(page.locator('#friends-search-input')).toBeFocused()
+	})
+
+	test('friends search resolves a pasted entity id', async ({ page, baseUrl, apiKey }) => {
+		const viewerEntityHash = await fetchViewerEntityHash(baseUrl, apiKey)
+		await waitForHub(page, baseUrl)
+		const input = page.locator('#friends-search-input')
+		await expect(input).toBeVisible({ timeout: 60_000 })
+		await input.fill(`@${viewerEntityHash.toUpperCase()}`)
+		await input.press('Enter')
+		const hit = page.locator('.friends-search-hit').filter({ has: page.locator('[data-dm]') }).first()
+		await expect(hit).toBeVisible({ timeout: 60_000 })
 	})
 
 	test('opens hub prefs with translation and federation sections', async ({ page, baseUrl, apiKey }) => {

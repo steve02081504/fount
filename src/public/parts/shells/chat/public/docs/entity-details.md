@@ -4,7 +4,7 @@ Day-to-day rules: [AGENTS.md](../AGENTS.md).
 
 ## Profile handle / entity search
 
-Profile `handle` (`[a-z0-9_.-]{2,32}`, optional, not unique) lives in signed `profile.json`. Network search: `GET …/entities/search` / `ChatClient.entities.search` via `part_query` kind `entity_search` (**handler in chat `Load`**, after `registerShellPartpath`). Local agent hits also match `charPartName`.
+Profile `handle` (`[a-z0-9_.-]{2,32}`, optional, not unique) lives in signed `profile.json`. Network search: `GET …/entities/search` / `ChatClient.entities.search` via `part_query` kind `entity_search` (**handler in chat `Load`**, after `registerShellPartpath`). Local agent hits also match `charPartName`. A full 128-hex entity ID (optional `@` prefix, case-insensitive) is resolved directly from its owner node instead of being broadcast: the route seeds the ID, pulls the signed `profile.json`, and returns the normal entity row.
 
 ## Node-local session events
 

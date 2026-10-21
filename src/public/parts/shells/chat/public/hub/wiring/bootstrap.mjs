@@ -119,9 +119,10 @@ function wireExternalJoinRefresh() {
 	})
 }
 
-/** 弹出「创建 / 加入群组」选择对话框。 @returns {Promise<void>} */
+/** 弹出「好友 / 创建 / 加入」选择对话框。 @returns {Promise<void>} */
 async function showServerActionPicker() {
 	await openDialogFromTemplate('hub/modals/server_action_picker', {
+		friendIconHtml: iconifyImg('mdi/account-plus', { width: 28, height: 28 }),
 		createIconHtml: iconifyImg('mdi/sparkles', { width: 28, height: 28 }),
 		joinIconHtml: iconifyImg('mdi/link-variant', { width: 28, height: 28 }),
 	}, {
@@ -130,6 +131,18 @@ async function showServerActionPicker() {
 		 * @returns {void}
 		 */
 		onReady: dialog => {
+			dialog.querySelector('[data-action="friend"]')?.addEventListener('click', () => {
+				dialog.close()
+				void (async () => {
+					const { setMode } = await import('../mode.mjs')
+					await setMode('friends')
+					const input = document.getElementById('friends-search-input')
+					if (input instanceof HTMLInputElement) {
+						input.focus()
+						input.select()
+					}
+				})()
+			})
 			dialog.querySelector('[data-action="create"]')?.addEventListener('click', () => {
 				void showCreateGroupModal(dialog)
 			})

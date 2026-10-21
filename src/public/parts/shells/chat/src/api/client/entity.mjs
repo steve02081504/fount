@@ -48,7 +48,7 @@ export function createEntityMethods(apiContext) {
 		get entities() {
 			return {
 				/**
-				 * @param {string} q 搜索词
+				 * @param {string} q 搜索词（128 位实体 ID / @handle / 展示名）
 				 * @param {{ maxHits?: number }} [options] 选项
 				 * @returns {Promise<{ query: string, entities: object[] }>} 网络搜索结果
 				 */

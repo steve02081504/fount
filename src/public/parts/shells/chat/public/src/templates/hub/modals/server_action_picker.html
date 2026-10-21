@@ -4,6 +4,13 @@
 		<p data-i18n="chat.hub.serverActionPicker.subtitle"></p>
 	</div>
 	<div class="server-action-picker-body p-5 grid grid-cols-1 gap-3">
+		<div class="server-action-picker-card card bg-base-200 border border-base-300 cursor-pointer hover:border-primary hover:-translate-y-0.5 transition-transform" data-action="friend">
+			<div class="card-body p-4">
+				<div class="server-action-picker-card-icon">${friendIconHtml}</div>
+				<div class="server-action-picker-card-title font-semibold text-base" data-i18n="chat.hub.friends.emptyAction"></div>
+				<div class="server-action-picker-card-description text-sm opacity-80" data-i18n="chat.hub.friends.search.placeholder"></div>
+			</div>
+		</div>
 		<div class="server-action-picker-card card bg-base-200 border border-base-300 cursor-pointer hover:border-primary hover:-translate-y-0.5 transition-transform" data-action="create">
 			<div class="card-body p-4">
 				<div class="server-action-picker-card-icon">${createIconHtml}</div>

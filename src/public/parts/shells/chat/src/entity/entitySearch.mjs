@@ -65,14 +65,29 @@ function profileDisplayName(profile) {
 }
 
 /**
+ * 全量实体 ID 查询：容忍 `@` 前缀与大小写，返回规范化 128 位 entityHash。
+ * @param {string} q 搜索词
+ * @returns {string | null} 合法实体 ID 或 null
+ */
+export function entityHashSearchQuery(q) {
+	const raw = String(q ?? '').trim().replace(/^@+/u, '').toLowerCase()
+	return isEntityHash128(raw)
+}
+
+/**
  * @param {string} q 搜索词
  * @param {{ entityHash: string, handle?: string, name?: string, charPartName?: string }} row 候选
  * @returns {boolean} 是否匹配
  */
 function rowMatchesQuery(q, row) {
 	if (!q) return false
-	const re = new RegExp(escapeRegExp(q), 'iu')
-	const exact = new RegExp(`^${escapeRegExp(q)}$`, 'iu')
+	const directHash = entityHashSearchQuery(q)
+	if (directHash && String(row.entityHash || '').toLowerCase() === directHash) return true
+	// `@handle` 是展示层 id 形态；匹配 handle / 展示名时去掉前缀。
+	const text = q.trim().replace(/^@+/u, '')
+	if (!text) return false
+	const re = new RegExp(escapeRegExp(text), 'iu')
+	const exact = new RegExp(`^${escapeRegExp(text)}$`, 'iu')
 	const handle = row.handle || ''
 	if (handle && (exact.test(handle) || re.test(handle))) return true
 	const charPartName = row.charPartName || ''
@@ -231,18 +246,21 @@ export async function searchEntitiesNetwork(username, q, options = {}) {
 		return { query, entities: [] }
 
 	const maxHits = Math.min(32, Math.max(1, Math.floor(Number(options.maxHits) || 20)))
-	const partpath = getShellPartpath('chat')
+	// 全量实体 ID 直接按 owner 节点拉签名 profile，无需（也不应）把 ID 广播给网络。
+	const directEntityHash = entityHashSearchQuery(normalized)
 	/**
 	 * @param {unknown} row 行
 	 * @returns {string} 去重键
 	 */
 	const clueRowKey = row => String(/** @type {{ entityHash?: unknown }} */row?.entityHash || '')
-	const { rows: clues, sources } = await queryNetwork(username, partpath, ENTITY_SEARCH_KIND, { q: normalized }, {
-		ttl: options.ttl,
-		maxHits,
-		rowKey: clueRowKey,
-		isSourceBlocked: isSourceNodeBlocked,
-	})
+	const { rows: clues, sources } = directEntityHash
+		? { rows: /** @type {unknown[]} */ [], sources: /** @type {Map<string, string[]> | undefined} */ undefined }
+		: await queryNetwork(username, getShellPartpath('chat'), ENTITY_SEARCH_KIND, { q: normalized }, {
+			ttl: options.ttl,
+			maxHits,
+			rowKey: clueRowKey,
+			isSourceBlocked: isSourceNodeBlocked,
+		})
 
 	/** @type {Map<string, { entityHash: string, handle: string, name: string, charPartName?: string, sourceNodes: string[] }>} */
 	const unique = new Map()
@@ -250,6 +268,8 @@ export async function searchEntitiesNetwork(username, q, options = {}) {
 		const row = normalizeClueRow(raw)
 		if (row) unique.set(row.entityHash, { ...row, sourceNodes: sourceNodesOf(sources, clueRowKey(raw)) })
 	}
+	if (directEntityHash)
+		unique.set(directEntityHash, { entityHash: directEntityHash, handle: '', name: '', sourceNodes: [] })
 
 	let hideThreshold = -0.5
 	try {

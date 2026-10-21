@@ -1,5 +1,5 @@
 /**
- * 具名实体搜索：本地 handle 命中、排序与无效 query。
+ * 具名实体搜索：本地 handle / 全量实体 ID 命中、排序与无效 query。
  */
 /* global Deno */
 import { assert, assertEquals } from 'jsr:@std/assert'
@@ -55,6 +55,9 @@ Deno.test('searchEntitiesNetwork finds local handle without network peers', asyn
 	const localRows = await localEntitySearchHandler({ replicaUsername: username }, { q: 'steve' })
 	assert(localRows.some(row => row.entityHash === operator && row.handle === 'steve_test'))
 
+	const atRows = await localEntitySearchHandler({ replicaUsername: username }, { q: '@steve_test' })
+	assert(atRows.some(row => row.entityHash === operator && row.handle === 'steve_test'))
+
 	const { entities } = await searchEntitiesNetwork(username, 'steve', {
 		viewerEntityHash: operator,
 		maxHits: 10,
@@ -103,6 +106,31 @@ Deno.test('searchEntitiesNetwork finds local agent by charPartName', async () =>
 	const hit = entities.find(row => row.entityHash === agent.entityHash)
 	assert(hit, 'expected agent entity in search results')
 	assertEquals(hit.charPartName, charPartName)
+})
+
+Deno.test('searchEntitiesNetwork resolves a full entityHash id directly', async () => {
+	const { username } = await getSession()
+	const { ensureOperatorPubKey, resolveOperatorEntityHashForUser } = await import('../../src/entity/identity.mjs')
+	const {
+		localEntitySearchHandler,
+		searchEntitiesNetwork,
+	} = await import('../../src/entity/entitySearch.mjs')
+
+	await ensureOperatorPubKey(username)
+	const operator = await resolveOperatorEntityHashForUser(username)
+	assert(operator)
+
+	const localRows = await localEntitySearchHandler({ replicaUsername: username }, { q: operator })
+	assert(localRows.some(row => row.entityHash === operator), 'local handler should match the full id')
+
+	// `@` 前缀与大小写都不应影响 ID 解析；直接向 owner 拉 profile，不依赖网络线索。
+	const { entities } = await searchEntitiesNetwork(username, `@${operator.toUpperCase()}`, {
+		viewerEntityHash: operator,
+		maxHits: 10,
+	})
+	const hit = entities.find(row => row.entityHash === operator)
+	assert(hit, 'expected the entity resolved by its full id')
+	assert(Array.isArray(hit.sourceNodes))
 })
 
 Deno.test('searchEntitiesNetwork returns empty for short query', async () => {
