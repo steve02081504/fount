@@ -42,6 +42,31 @@ export function normalizeFriendBinding(raw) {
 }
 
 /**
+ * 按查看者解析 DM 群的好友绑定。
+ *
+ * 群元数据里的 `friendBinding` 只记录**建群者视角**的对端，却随 groupMeta 一起联邦给受邀方；
+ * 受邀方物化同一份元数据后，它指向的就变成了受邀方自己（好友列表里是一行指向自己的空会话）。
+ * 故 ECDH DM 一律按本群活跃成员把对端还原成查看者视角；成员还没汇合时回退到元数据原值。
+ * @param {{ groupMeta?: { dmKind?: string, friendBinding?: unknown }, members?: Record<string, { status?: string, memberKind?: string, entityHash?: string }> }} state 物化群状态
+ * @param {string | null | undefined} localMemberKey 查看者的本群成员键（pubKeyHash）
+ * @returns {FriendBinding | null} 查看者视角的好友绑定
+ */
+export function resolveViewerFriendBinding(state, localMemberKey) {
+	const stored = normalizeFriendBinding(state?.groupMeta?.friendBinding)
+	// DM 以外的群没有「对端」语义，char DM 的 charname 绑定也只对本机成立，都原样返回。
+	if (state?.groupMeta?.dmKind !== 'ecdh' || !localMemberKey) return stored
+	const peers = Object.entries(state.members || {})
+		.filter(([memberKey, member]) => memberKey !== localMemberKey
+			&& member?.status === 'active'
+			&& member?.memberKind !== 'agent')
+	if (peers.length !== 1) return stored
+	const peer = normalizeFriendBinding({ entityHash: peers[0][1].entityHash })
+	if (!peer) return stored
+	// 建群者视角本就指向对端：保留原值（含 displayName 等展示字段）。
+	return stored?.entityHash === peer.entityHash ? stored : peer
+}
+
+/**
  * 构造基于 charname 的建群好友绑定输入（与 entityHash 互斥）。
  * @param {string} charname 角色 part 名
  * @param {string} [displayName] 展示名

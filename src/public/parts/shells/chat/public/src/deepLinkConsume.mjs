@@ -62,8 +62,12 @@ export async function applyChatRunUri(raw) {
 		if (!isHex64(activePubKeyHex))
 			throw new Error('configure activePubKeyHex in federation settings first')
 		const data = await createDirectMessageByPubKeys(activePubKeyHex, dm.pubKeyHex, {
-			dmIntroNonce: dm.nonce,
-			dmIntroSignatureHex: dm.introSignatureHex,
+			dmLinkProof: {
+				dmIntroNonce: dm.nonce,
+				dmIntroSignatureHex: dm.introSignatureHex,
+			},
+			// 签名深链只带公钥；节点身份能让服务端把邀请投过去，对端才会入群。
+			peerNodeHash: dm.nodeHash,
 		})
 		return {
 			kind: 'dm',

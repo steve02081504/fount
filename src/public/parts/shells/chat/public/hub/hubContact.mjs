@@ -23,10 +23,12 @@ export async function applyHubContactQuery(contactRaw) {
 	if (!isEntityHash128(contactRaw)) return false
 
 	await loadGroups()
-	const bound = store.sidebar.groups.find(g => g.friendBinding?.entityHash === contactRaw)?.friendBinding
-	if (bound) {
+	// 只有自己一人的 DM（对端还没入群）不在这里短路：交给下面的 dispatchFriendChat 复用同一个群
+	// 并重新投递邀请，否则重新打开链接永远补不上那一侧。
+	const boundGroup = store.sidebar.groups.find(g => g.friendBinding?.entityHash === contactRaw)
+	if (boundGroup?.friendBinding && boundGroup.memberCount !== 1) {
 		await setMode('friends')
-		await enterFriendChat({ binding: bound })
+		await enterFriendChat({ groupId: boundGroup.groupId, binding: boundGroup.friendBinding })
 		return true
 	}
 
@@ -47,7 +49,7 @@ export async function applyHubContactQuery(contactRaw) {
 	try {
 		const binding = await buildUserFriendBinding({ entityHash: contactRaw })
 		const existing = store.sidebar.groups.find(g => g.friendBinding?.entityHash === binding.entityHash)
-		if (existing?.groupId) {
+		if (existing?.groupId && existing.memberCount !== 1) {
 			await setMode('friends')
 			await enterFriendChat({ groupId: existing.groupId, binding: existing.friendBinding || binding })
 			return true

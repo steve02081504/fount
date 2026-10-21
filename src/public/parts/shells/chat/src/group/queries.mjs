@@ -12,6 +12,7 @@ import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 
 import { filterChannelMessageLinesByBranchTip } from '../../public/shared/branchMessageFilter.mjs'
+import { resolveViewerFriendBinding } from '../../public/shared/friendBinding.mjs'
 import { mergeChannelMessagesForDisplay } from '../../public/shared/messageMerge.mjs'
 import { materializeFromCheckpoint } from '../chat/dag/groupMaterializedState.mjs'
 import { getState } from '../chat/dag/materialize.mjs'
@@ -30,19 +31,20 @@ import { resolveActiveMemberKeyForLocalReplica, resolveActiveMemberKeyForLocalUs
 
 /**
  * 群列表用轻量物化：有 snapshot 时避免全量重放 events.jsonl。
+ * 同时给出本机成员键，避免调用方（查看者视角的好友绑定）再读一遍本地 signer。
  * @param {string} username 用户
  * @param {string} groupId 群 ID
- * @returns {Promise<object>} 物化 state
+ * @returns {Promise<{ state: object, localMemberKey: string | null }>} 物化 state 与本机活跃成员键
  */
 async function loadGroupListState(username, groupId) {
 	const checkpoint = await safeReadJson(snapshotPath(username, groupId))
 	if (checkpoint?.members_record) {
 		const fromCheckpoint = materializeFromCheckpoint(checkpoint)
-		if (await resolveActiveMemberKeyForLocalUser(username, groupId, fromCheckpoint))
-			return fromCheckpoint
+		const localMemberKey = await resolveActiveMemberKeyForLocalUser(username, groupId, fromCheckpoint)
+		if (localMemberKey) return { state: fromCheckpoint, localMemberKey }
 	}
 	const { state } = await getState(username, groupId, { skipLeftPurge: true })
-	return state
+	return { state, localMemberKey: await resolveActiveMemberKeyForLocalUser(username, groupId, state) }
 }
 
 /**
@@ -127,8 +129,8 @@ export async function enumerateJoinedFederatedGroups(username, entityHash) {
 	const readMarkers = loadReadMarkers(username, entityHash)
 	const rows = []
 	for (const groupId of await listUserGroups(username)) {
-		const state = await loadGroupListState(username, groupId)
-		if (!await resolveActiveMemberKeyForLocalUser(username, groupId, state)) {
+		const { state, localMemberKey } = await loadGroupListState(username, groupId)
+		if (!localMemberKey) {
 			// 强制移除但保留本机副本的群仍列出，供用户“留念/删除”。
 			const { loadGroupShunState } = await import('./groupShunState.mjs')
 			if (!(await loadGroupShunState(username, groupId)).replicaRetained) continue
@@ -143,7 +145,8 @@ export async function enumerateJoinedFederatedGroups(username, entityHash) {
 			memberCount: Object.values(state.members).filter(member => member?.status === 'active').length,
 			channelCount: Object.keys(state.channels).length,
 			lastMessageTime: await lastGroupListActivityMs(username, groupId),
-			friendBinding: state.groupMeta?.friendBinding || null,
+			// DM 的对端随查看者而变：群元数据里的绑定是建群者视角，受邀方直接读会看到自己。
+			friendBinding: resolveViewerFriendBinding(state, localMemberKey),
 			unreadCount,
 			channelUnread,
 		})

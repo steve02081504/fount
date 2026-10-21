@@ -255,7 +255,10 @@ async function openFriendGroupChat(groupId, binding, signal, channelIdOpt) {
 		document.getElementById('info-card-host').innerHTML = ''
 
 	const existingBinding = friendBindingForGroup(groupId)
-	if (!friendBindingsEqual(existingBinding, binding))
+	// groupMeta.friendBinding 会随联邦同步给对端：只有建群者（owner 视角）能声明对端；
+	// 受邀方写回会把对端的绑定改成它自己。受邀方的好友绑定由服务端按成员视角推导。
+	const canDeclareBinding = (state.myRoles || []).includes('founder')
+	if (canDeclareBinding && !friendBindingsEqual(existingBinding, binding))
 		await setGroupFriendBinding(groupId, binding)
 	throwIfAborted(signal)
 	loadGroups().catch(handleError('chat.hub.load.groupFailed'))
@@ -340,14 +343,28 @@ export async function dispatchFriendChat(entity) {
 	}
 	if (entity.type !== 'user') return
 	const existing = entity.entityHash && store.sidebar.groups.find(group => !group.isLeaving && friendBindingMatches(group.friendBinding, entity))
-	if (existing) {
+	/**
+	 * 进入已有的好友 DM（本地群已在，无需再建群）。
+	 * @returns {Promise<void>}
+	 */
+	const openExisting = async () => {
+		if (!existing) return
 		await enterFriendChat({ groupId: existing.groupId, binding: { ...existing.friendBinding, ...entity.displayName ? { displayName: entity.displayName } : {} } })
+	}
+	// 对端已在群里就直接进；只有自己一人的 DM 还要走一遍建群端点——它按 sessionTag 复用同一个群，
+	// 并重新把邀请投递给对端（旧版本建出的单侧 DM、或建群时对端离线，都在这里补上）。
+	if (existing && existing.memberCount !== 1) {
+		await openExisting()
 		return
 	}
 
 	const fed = await getFederationSettings()
 	const myPubKeyHex = fed?.activePubKeyHex || ''
 	if (!isHex64(myPubKeyHex)) {
+		if (existing) {
+			await openExisting()
+			return
+		}
 		showToastI18n('warning', 'chat.hub.profilePopup.noFedIdentity')
 		return
 	}
@@ -359,11 +376,21 @@ export async function dispatchFriendChat(entity) {
 		peerHex = data?.profile?.activePubKeyHex || ''
 	}
 	if (!isHex64(peerHex)) {
+		if (existing) {
+			await openExisting()
+			return
+		}
 		showToastI18n('warning', 'chat.hub.profilePopup.peerNoIdentity')
 		return
 	}
-	const data = await createDirectMessageByPubKeys(myPubKeyHex, peerHex)
-	const binding = friendBindingForGroup(data.groupId)
+	const data = await createDirectMessageByPubKeys(myPubKeyHex, peerHex, {
+		// 把对端绑定一起交给服务端：建群同时把 DM 邀请投递给对端节点，对端才会入群并看到这个会话。
+		friendBinding: isEntityHash128(entityHash)
+			? await buildUserFriendBinding({ entityHash, pubKeyHex: peerHex, displayName: entity.displayName }).catch(() => null)
+			: null,
+	})
+	const binding = normalizeFriendBinding(data?.friendBinding)
+		|| friendBindingForGroup(data.groupId)
 		|| await buildUserFriendBinding({
 			entityHash: isEntityHash128(entityHash) ? entityHash : undefined,
 			pubKeyHex: peerHex,

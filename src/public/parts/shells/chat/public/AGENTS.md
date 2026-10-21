@@ -17,6 +17,7 @@ Less-common entity traps (`member_join`, avatars, Load reentrancy, session tip f
 - Owner power: edit/delete that entity's messages/posts **and** update its profile (local keys → local write; else EVFS `owned/{target}/profile_update/*`). Attribution stays the owner's signature. Hub never switches to agent view.
 - Local profile write gate: `isWritableLocalEntityForUser` = node-writable **and** (operator **or** `ownerEntityHash === operator`). Do not gate on `charPartName` alone.
 - **Agent master**: `entity/master.mjs` — trusted owner message requires cryptographic author === declared `ownerEntityHash` and no attribution mismatch. Care lists are UX-only.
+- **DM friend binding is viewer-relative**: `groupMeta.friendBinding` is federated, but the creator writes *their* peer — an invited member would otherwise read itself. `GET G/` returns `resolveViewerFriendBinding` output (pure, `public/shared/friendBinding.mjs`): for `dmKind: 'ecdh'` it derives the other active user member. Never write a binding on a group you did not create (`openFriendGroupChat` guards on `myRoles.includes('founder')`) — that write federates and flips the peer's view. **Creating** a DM only lands a local replica: `POST G/` (`template: 'dm'`) delivers a `dm_invitation` to the peer node (`dm/invitation.mjs` `invitePeerToDmGroup`, bound retries) so the peer joins from `friendBinding.entityHash` or `peerNodeHash`. Without it the peer never learns the DM exists.
 
 ## ChatClient
 

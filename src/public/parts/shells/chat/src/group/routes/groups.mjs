@@ -7,7 +7,8 @@
  */
 import { randomUUID } from 'node:crypto'
 
-import { HEX_ID_64 as PUB_KEY_HEX_64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
+import { HEX_ID_64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 
@@ -16,6 +17,7 @@ import { friendBindingMatches } from '../../../public/shared/friendBinding.mjs'
 import { createGroup, removeLocalGroupReplica } from '../../chat/dag/lifecycle.mjs'
 import { getLocalSignerForNewGroup } from '../../chat/dag/localSigner.mjs'
 import { createEcdhDmGroup } from '../../chat/dm/index.mjs'
+import { invitePeerToDmGroup } from '../../chat/dm/invitation.mjs'
 import { validateDmIntroLinkProof } from '../../chat/dm/linkValidate.mjs'
 import { resolveGroupChannelId } from '../../chat/lib/channelId.mjs'
 import { newMetadata } from '../../chat/session/groupLifecycle.mjs'
@@ -30,6 +32,20 @@ import { enumerateJoinedFederatedGroups } from '../queries.mjs'
 
 import { requireGroupMember } from './middleware.mjs'
 import { GROUPS_PREFIX } from './path.mjs'
+
+/**
+ * DM 对端节点：优先好友绑定的实体（其 entityHash 前缀即其 home 节点），
+ * 其次调用方显式给出的 `peerNodeHash`（签名 DM 深链只带公钥与节点身份，没有 entityHash）。
+ * @param {{ entityHash?: string } | null} friendBinding 物化后的好友绑定
+ * @param {unknown} explicitNodeHash 请求体 `peerNodeHash`
+ * @returns {string} 64 hex nodeHash；无法确定时为空串
+ */
+function resolveDmPeerNodeHash(friendBinding, explicitNodeHash) {
+	const fromBinding = friendBinding?.entityHash ? parseEntityHash(friendBinding.entityHash)?.nodeHash : ''
+	if (fromBinding) return fromBinding
+	const explicit = String(explicitNodeHash ?? '').trim()
+	return HEX_ID_64.test(explicit) ? explicit : ''
+}
 
 /**
  * 注册群列表、创建与删除路由。
@@ -52,7 +68,7 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 		if (template === 'dm') {
 			const myPubKeyHex = body.myPubKeyHex || ''
 			const peerPubKeyHex = body.peerPubKeyHex || ''
-			if (!PUB_KEY_HEX_64.test(myPubKeyHex) || !PUB_KEY_HEX_64.test(peerPubKeyHex))
+			if (!HEX_ID_64.test(myPubKeyHex) || !HEX_ID_64.test(peerPubKeyHex))
 				return res.status(400).json({ error: 'myPubKeyHex and peerPubKeyHex must be 64 hex chars' })
 			if (myPubKeyHex === peerPubKeyHex)
 				return res.status(400).json({ error: 'peerPubKeyHex must differ from myPubKeyHex' })
@@ -69,13 +85,25 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 				if (!dmCheck.ok)
 					return res.status(400).json({ error: dmCheck.error })
 			}
+			const friendBinding = await materializeFriendBinding(username, body.friendBinding)
+			if (body.friendBinding != null && !friendBinding)
+				return res.status(400).json({ error: 'invalid friendBinding' })
 
-			const directMessage = await createEcdhDmGroup(username, myPubKeyHex, peerPubKeyHex)
+			const directMessage = await createEcdhDmGroup(username, myPubKeyHex, peerPubKeyHex, { friendBinding })
+			// 建群只在本机落了群：对端节点不知道它，消息永远出不去、好友列表也不会出现。把邀请投递给对端。
+			// 投递在后台进行（可能等建链），HTTP 不等它：群已在本地可用，失败只记日志、重新点私聊会再投一次。
+			void invitePeerToDmGroup(username, directMessage.groupId, {
+				inviterEntityHash: friendBinding?.entityHash,
+				inviterPubKeyHex: peerPubKeyHex,
+				targetNodeHash: resolveDmPeerNodeHash(friendBinding, body.peerNodeHash),
+			}).catch(error => console.error('DM peer invitation failed', { groupId: directMessage.groupId, error }))
+
 			return res.status(201).json({
 				groupId: directMessage.groupId,
 				defaultChannelId: directMessage.defaultChannelId,
 				dmSessionTag: directMessage.dmSessionTag,
 				dmRoomLabelPrefix: directMessage.dmSessionTag.slice(0, 16),
+				...friendBinding ? { friendBinding } : {},
 			})
 		}
 
