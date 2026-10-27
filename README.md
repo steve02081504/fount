@@ -1,4 +1,14 @@
-Updates have been quiet lately because I'm building a new programming language. Thanks for your patience, and stay tuned!
+## Development update (October 2026)
+
+Updates have been quiet lately because I'm reviving a programming language I designed previously.
+
+With the Deno team joining Cloudflare, they have announced one more year of bug fixes and security updates before ending their development of the standalone runtime. Deno remains open source, but this change has made me rethink the foundation I'm building on. [Deno's announcement](https://deno.com/blog/cloudflare)
+
+I've also grown frustrated with JavaScript's performance limitations, browser restrictions, and the continued wait for the native module hot-reloading support I need. Rather than keep working around those constraints, I've decided to put that effort into my own language.
+
+I expect this work to take roughly one or two months, though that's an estimate rather than a firm deadline. During this period, fount will continue accepting pull requests, but I won't be adding new features myself.
+
+Thanks for your patience.
 
 <details>
 <summary><small>TL;DR</small></summary>
