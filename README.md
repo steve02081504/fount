@@ -1,3 +1,5 @@
+Updates have been quiet lately because I'm building a new programming language. Thanks for your patience, and stay tuned!
+
 <details>
 <summary><small>TL;DR</small></summary>
 
