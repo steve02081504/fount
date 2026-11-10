@@ -422,7 +422,13 @@ async function fetchAndCache(request) {
 
 		if (networkResponse.type === 'opaque' || networkResponse.type === 'opaqueredirect');
 		else if (networkResponse && networkResponse.ok) {
-			if (!ws && new URL(request.url).origin === self.location.origin) connectWebSocket()
+			const requestUrl = new URL(request.url)
+			const confirmsAuthentication = requestUrl.pathname === '/api/whoami'
+			const shouldRecheckAuthentication = confirmsAuthentication || request.mode === 'navigate'
+			if (!ws && requestUrl.origin === self.location.origin && (!wsAuthRejected || shouldRecheckAuthentication)) {
+				if (confirmsAuthentication) wsAuthRejected = false
+				connectWebSocket(shouldRecheckAuthentication)
+			}
 			const responseToCache = networkResponse.clone()
 			const now = Date.now()
 
@@ -705,6 +711,9 @@ const routes = [
 // --- WebSocket Notification Client ---
 
 let ws = null
+let wsConnecting = false
+let wsConnectPending = false
+let wsAuthRejected = false
 let reconnectTimeout = null
 let serverOnline = false
 /** @type {string | null} */
@@ -810,11 +819,40 @@ const wsMessageHandlers = {
 
 /**
  * 连接到 WebSocket 服务器。
- * @returns {void}
+ * @param {boolean} [retryIfConnecting=false] 需要重新鉴权时，确保正在进行的旧检查结束后重试。
+ * @returns {Promise<void>}
  */
-function connectWebSocket() {
+async function connectWebSocket(retryIfConnecting = false) {
 	if (ws) return
+	if (wsConnecting) {
+		if (retryIfConnecting) wsConnectPending = true
+		return
+	}
+	wsConnecting = true
 	reconnectTimeout &&= clearTimeout(reconnectTimeout)
+	try {
+		const response = await fetch('/api/whoami', {
+			headers: { Accept: 'application/json' },
+			cache: 'no-store',
+		})
+		wsAuthRejected = response.status === 401
+		if (!response.ok) {
+			if (!wsAuthRejected && !reconnectTimeout) reconnectTimeout = setTimeout(connectWebSocket, RECONNECT_DELAY)
+			return
+		}
+		if (ws) return
+	}
+	catch {
+		if (!reconnectTimeout) reconnectTimeout = setTimeout(connectWebSocket, RECONNECT_DELAY)
+		return
+	}
+	finally {
+		wsConnecting = false
+		if (wsConnectPending) {
+			wsConnectPending = false
+			queueMicrotask(connectWebSocket)
+		}
+	}
 	// Use a relative URL that will be resolved correctly by the browser
 	// against the service worker's origin.
 	const wsUrl = new URL('/ws/notify', self.location.href)

@@ -74,6 +74,15 @@
 					]
 				},
 				{
+					"name": "serviceWorkerAuth",
+					"expected": "1s",
+					"triggers": [
+						"src/public/pages/test/frontend/serviceWorkerAuth.spec.mjs",
+						"src/public/pages/test/frontend/fixtures.mjs",
+						"src/public/pages/service_worker.mjs"
+					]
+				},
+				{
 					"name": "toast",
 					"expected": "20s",
 					"triggers": [
